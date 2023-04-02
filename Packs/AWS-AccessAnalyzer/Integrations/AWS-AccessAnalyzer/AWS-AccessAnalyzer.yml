@@ -28,16 +28,20 @@ configuration:
   required: false
   type: 15
 - display: Role Arn
+  additionalinfo: The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required.
   name: roleArn
   required: false
   type: 0
 - display: Role Session Name
+  additionalinfo: A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION
   name: roleSessionName
   required: false
   type: 0
 - display: Role Session Duration
+  additionalinfo: The maximum length of each session in seconds. The integration will have the permissions assigned only when the session is initiated and for the defined duration.
   name: sessionDuration
   required: false
+  defaultvalue: 900
   type: 0
 - display: Fetch incidents
   name: isFetch
@@ -48,13 +52,40 @@ configuration:
   required: false
   type: 13
 - display: Access Key
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Secret Key
+- display: Access Key
   name: access_key
   required: false
   type: 0
+  hidden: true
 - display: Secret Key
   name: secret_key
   required: false
   type: 4
+  hidden: true
+- display: First fetch time interval
+  additionalinfo: The time range to consider for the initial data fetch. (<number>
+    <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). 
+  defaultvalue: 3 days
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- display: Maximum number of incidents to fetch every time.
+  defaultvalue: '25'
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- display: Fetch Analyzer ARN
+  name: analyzerArn
+  additionalinfo: The ARN to fetch findings for.
+  defaultvalue: ""
+  type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -63,14 +94,25 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Fetch Analyzer ARN
-  name: analyzerArn
-  additionalinfo: The ARN to fetch findings for
-  defaultvalue: ""
-  type: 0
+- display: Timeout
+  name: timeout
+  additionalinfo: The time in seconds until a timeout exception is reached. You can
+    specify just the read timeout (for example 60) or also the connect timeout following
+    a comma (for example 60,10). If a connect timeout is not specified, a default
+    of 10 seconds will be used.
+  defaultvalue: 60,10
   required: false
+  type: 0
+- display: Retries
+  name: retries
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
+  are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
+  Note: Increasing the number of retries will increase the execution time."
+  required: false
+  type: 0
 description: Amazon Web Services IAM Access Analyzer
-display: AWS - AccessAnalyzer (beta)
+display: AWS - AccessAnalyzer
 name: AWS - AccessAnalyzer
 script:
   commands:
@@ -104,9 +146,12 @@ script:
     execution: false
     name: aws-access-analyzer-list-analyzers
     outputs:
-    - contextPath: AWS.AccessAnalyzer.Analyzers.arn
+    - contextPath: AWS.AccessAnalyzer.Analyzers
       description: List of Analyzers and their details.
       type: Unknown
+    - contextPath: AWS.AccessAnalyzer.Analyzers.arn
+      description: The analyzer ARN.
+      type: String
   - arguments:
     - default: false
       description: The ARN of the analyzer to retrieve a list of analyzed resources from.
@@ -163,9 +208,15 @@ script:
     execution: false
     name: aws-access-analyzer-list-analyzed-resource
     outputs:
-    - contextPath: AWS.AccessAnalyzer.Analyzers.Resource
+    - contextPath: AWS.AccessAnalyzer.Resource
       description: List of analyzed resources.
       type: Unknown
+    - contextPath: AWS.AccessAnalyzer.Resource.resourceArn
+      description: The resource ARN.
+      type: String
+    - contextPath: AWS.AccessAnalyzer.Resource.analyzerArn
+      description: The analyzer ARN.
+      type: String
   - arguments:
     - default: false
       description: The ARN of the analyzer to retrieve findings from.
@@ -233,9 +284,15 @@ script:
     execution: false
     name: aws-access-analyzer-list-findings
     outputs:
-    - contextPath: AWS.AccessAnalyzer.Findings
+    - contextPath: AWS.AccessAnalyzer.Finding
       description: Access Analyzer findings.
       type: Unknown
+    - contextPath: AWS.AccessAnalyzer.Finding.id
+      description: The finding ID.
+      type: String
+    - contextPath: AWS.AccessAnalyzer.Finding.analyzerArn
+      description: The analyzer ARN.
+      type: String
   - arguments:
     - default: false
       description: The ARN of the analyzer to retrieve information from.
@@ -278,9 +335,15 @@ script:
     execution: false
     name: aws-access-analyzer-get-analyzed-resource
     outputs:
-    - contextPath: AWS.AccessAnalyzer.Analyzers.Resource
+    - contextPath: AWS.AccessAnalyzer.Resource
       description: Analyzed resource detail.
       type: Unknown
+    - contextPath: AWS.AccessAnalyzer.Resource.id
+      description: The resource ID.
+      type: String
+    - contextPath: AWS.AccessAnalyzer.Resource.analyzerArn
+      description: The analyzer ARN.
+      type: String
   - arguments:
     - default: false
       description: The ARN of the analyzer to retrieve information from.
@@ -323,9 +386,15 @@ script:
     execution: false
     name: aws-access-analyzer-get-finding
     outputs:
-    - contextPath: AWS.AccessAnalyzer.Analyzers.Finding
+    - contextPath: AWS.AccessAnalyzer.Finding
       description: Finding details.
       type: Unknown
+    - contextPath: AWS.AccessAnalyzer.Finding.id
+      description: The finding ID.
+      type: String
+    - contextPath: AWS.AccessAnalyzer.Finding.analyzerArn
+      description: The analyzer ARN.
+      type: String
   - arguments:
     - default: false
       description: The ARN of the analyzer to use to scan the policies applied to the specified resource.
@@ -418,7 +487,7 @@ script:
     description: Updates findings with the new values provided in the request.
     execution: false
     name: aws-access-analyzer-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.19032
+  dockerimage: demisto/boto3py3:1.0.0.49918
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -426,6 +495,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-beta: true
 tests:
 - No test

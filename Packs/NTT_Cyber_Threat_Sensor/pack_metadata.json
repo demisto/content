@@ -2,18 +2,15 @@
     "name": "NTT Cyber Threat Sensor",
     "description": "NTT Cyber Threat Sensor integration",
     "support": "community",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "NTT Ltd.",
     "url": "https://www.global.ntt",
     "email": "servicedesk@global.ntt",
     "created": "2020-06-25T07:27:48Z",
     "categories": [
-        "Network Security"
+        "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Pcap",
-        "Alerts"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [],
     "dependencies": {

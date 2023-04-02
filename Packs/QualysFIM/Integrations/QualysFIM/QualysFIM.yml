@@ -1,4 +1,7 @@
 category: IT Services
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: qualys_fim
   version: -1
@@ -7,6 +10,7 @@ configuration:
   name: credentials
   required: true
   type: 9
+  section: Connect
 - additionalinfo: |-
     The Qualys API server URL that you should use for API requests depends on the platform where your account is located.
     Platforms and URLS:
@@ -21,28 +25,31 @@ configuration:
   name: platform
   required: true
   type: 0
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
-- additionalinfo: First fetch timestamp (<number> <time unit>) e.g., 12 hours, 7 days
-    etc.
+  section: Collect
+- additionalinfo: First fetch timestamp (<number> <time unit>) e.g., 12 hours, 7 days etc.
   defaultvalue: 7 days
   display: Fetch time
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-- additionalinfo: Max Fetch is limited to 200 incidents per fetch. Choose a value lower
-    than 200.
+  section: Connect
+- additionalinfo: Max Fetch is limited to 200 incidents per fetch. Choose a value lower than 200.
   defaultvalue: '50'
   display: Max Fetch
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: |-
     Filter the incidents fetching by providing a query using Qualys syntax.
     i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"
@@ -53,14 +60,20 @@ configuration:
   name: fetch_filter
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Log and track file changes across global IT systems.
 display: Qualys FIM
 name: qualys_fim
@@ -79,8 +92,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Page number (index) to list items from. The "limit" argument defines the
-        page size (the number of items in a page).
+      description: Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page).
       isArray: false
       name: page_number
       required: false
@@ -93,8 +105,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of incident IDs to be included while searching
-        for events in incidents.
+      description: Comma-separated list of incident IDs to be included while searching for events in incidents.
       isArray: false
       name: incident_ids
       required: false
@@ -179,8 +190,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Page number (index) to list items from. The "limit" argument defines the
-        page size (the number of items in a page).
+      description: Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page).
       isArray: false
       name: page_number
       required: false
@@ -254,8 +264,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Page number (index) to list items from. The "limit" argument defines the
-        page size (the number of items in a page).
+      description: Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page).
       isArray: false
       name: page_number
       required: false
@@ -489,8 +498,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Page number (index) to list items from. The "limit" argument defines the
-        page size (the number of items in a page).
+      description: Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page).
       isArray: false
       name: page_number
       required: false
@@ -516,7 +524,7 @@ script:
     - contextPath: QualysFIM.Assets.created
       description: Date the asset was created.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: true
   longRunning: false

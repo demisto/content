@@ -1,4 +1,7 @@
 category: Network Security
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: ForescoutEyeInspect
   version: -1
@@ -8,21 +11,27 @@ configuration:
   name: server_url
   required: true
   type: 0
+  section: Connect
 - display: Username
   hidden: false
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   hidden: false
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - additionalinfo: Default is 50. Maximum is 200.
   defaultvalue: 50
   display: Maximum incidents per fetch
@@ -30,20 +39,24 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, like 12 hours, 7 days).
   hidden: false
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 description: Delivers flexible and scalable OT/ICS asset visibility.
 display: Forescout EyeInspect
 name: ForescoutEyeInspect
@@ -65,8 +78,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: List only records with the last seen timestamp greater than or equal
-        to the provided parameter.
+      description: List only records with the last seen timestamp greater than or equal to the provided parameter.
       isArray: false
       name: last_seen
       required: false
@@ -78,37 +90,32 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IP addresses. The command will filter
-        the results from the returned page according to the provided values.
+      description: A comma-separated list of IP addresses. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: ip
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of VLAN IDs. The command will filter the
-        results from the returned page according to the provided values.
+      description: A comma-separated list of VLAN IDs. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: vlan_id
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of MAC addresses. The command will filter the
-        results from the returned page according to the provided values.
+      description: A comma-separated list of MAC addresses. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: mac_address
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of sensor IDs. The command will filter the
-        results from the returned page according to the provided values.
+      description: A comma-separated list of sensor IDs. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: sensor_id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: List records and sort them based on the specified field, as well as
-        by ID. Also, the command will filter the results from the returned page.
+      description: List records and sort them based on the specified field, as well as by ID. Also, the command will filter the results from the returned page.
       isArray: false
       name: sort_field
       predefined:
@@ -168,8 +175,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: false
-      description: Indicates whether the result list should be sorted in ascending or
-        descending order.
+      description: Indicates whether the result list should be sorted in ascending or descending order.
       isArray: false
       name: sort_ascending
       predefined:
@@ -235,36 +241,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: List only records with the src_host_id property set to the specified
-        value.
+      description: List only records with the src_host_id property set to the specified value.
       isArray: false
       name: src_host_id
       required: false
       secret: false
     - default: false
-      description: List only records with the dst_host_id property set to the specified
-        value.
+      description: List only records with the dst_host_id property set to the specified value.
       isArray: false
       name: dst_host_id
       required: false
       secret: false
     - default: false
-      description: List only records with the proto field containing the specified
-        value.
+      description: List only records with the proto field containing the specified value.
       isArray: false
       name: proto
       required: false
       secret: false
     - default: false
-      description: List only records with one of the values of the port property equal
-        to the specified parameter.
+      description: List only records with one of the values of the port property equal to the specified parameter.
       isArray: false
       name: port
       required: false
       secret: false
     - default: false
-      description: List only records with the last_seen timestamp greater than or equal
-        to the provided parameter.
+      description: List only records with the last_seen timestamp greater than or equal to the provided parameter.
       isArray: false
       name: last_seen
       required: false
@@ -277,8 +278,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: List records and sort them based on a specific field, as well as
-        on ID.
+      description: List records and sort them based on a specific field, as well as on ID.
       isArray: false
       name: sort_field
       predefined:
@@ -295,8 +295,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: false
-      description: Indicates whether the result list should be sorted in ascending or
-        descending order.
+      description: Indicates whether the result list should be sorted in ascending or descending order.
       isArray: false
       name: sort_ascending
       predefined:
@@ -317,8 +316,7 @@ script:
       description: The unique ID of the destination host in the eyeInspect CC.
       type: Number
     - contextPath: ForescoutEyeInspect.Link.proto
-      description: The name of the protocol (application layer (L7) and transport
-        or datalink layer (L4 or L3/L2) detected for the link.
+      description: The name of the protocol (application layer (L7) and transport or datalink layer (L4 or L3/L2) detected for the link.
       type: String
     - contextPath: ForescoutEyeInspect.Link.tx_bytes
       description: The total number of bytes sent upstream.
@@ -337,15 +335,12 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The unique ID of the vulnerability information record to be retrieved.
-        The CVE ID can be retrieved from public vulnerability databases, such as NVD,
-        or from the "CVEs and IoCs" page inside Forescout EyeInspect.
+      description: The unique ID of the vulnerability information record to be retrieved. The CVE ID can be retrieved from public vulnerability databases, such as NVD, or from the "CVEs and IoCs" page inside Forescout EyeInspect.
       isArray: false
       name: cve_id
       required: true
       secret: false
-    description: Retrieves information about a specific vulnerability stored in the
-      eyeInspect CC database.
+    description: Retrieves information about a specific vulnerability stored in the eyeInspect CC database.
     name: forescout-ei-vulnerability-info-get
     outputs:
     - contextPath: ForescoutEyeInspect.CVE.id
@@ -361,12 +356,10 @@ script:
       description: The vendor-specific advisory ID related to the vulnerability.
       type: String
     - contextPath: ForescoutEyeInspect.CVE.published_date
-      description: The timestamp in ISO format when the vulnerability information
-        was published.
+      description: The timestamp in ISO format when the vulnerability information was published.
       type: String
     - contextPath: ForescoutEyeInspect.CVE.last_modified_date
-      description: The timestamp in ISO format when the vulnerability information
-        was last modified.
+      description: The timestamp in ISO format when the vulnerability information was last modified.
       type: String
     - contextPath: ForescoutEyeInspect.CVE.cvss_score
       description: The CVSS score of the vulnerability.
@@ -411,12 +404,10 @@ script:
       description: A short summary of the vulnerability.
       type: String
     - contextPath: ForescoutEyeInspect.CVE.description
-      description: Description of the vulnerability (including list of vulnerable
-        devices and versions).
+      description: Description of the vulnerability (including list of vulnerable devices and versions).
       type: String
     - contextPath: ForescoutEyeInspect.CVE.solution
-      description: Description of the proposed vulnerability solution (including to
-        what version to update the software/firmware).
+      description: Description of the proposed vulnerability solution (including to what version to update the software/firmware).
       type: String
   - arguments:
     - default: false
@@ -434,30 +425,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: List only records with the timestamp property greater than or equal to
-        the specified value. For example, 2020-05-26T15:00:00.000Z+01:00.
+      description: List only records with the timestamp property greater than or equal to the specified value. For example, 2020-05-26T15:00:00.000Z+01:00.
       isArray: false
       name: start_timestamp
       required: false
       secret: false
     - default: false
-      description: List only records with the timestamp property less than or equal
-        to the specified value. For example, 2020-05-26T15:00:00.000Z+01:00.
+      description: List only records with the timestamp property less than or equal to the specified value. For example, 2020-05-26T15:00:00.000Z+01:00.
       isArray: false
       name: end_timestamp
       required: false
       secret: false
     - default: false
-      description: List records that have the event_type_id property containing the
-        specified parameter.
+      description: List records that have the event_type_id property containing the specified parameter.
       isArray: false
       name: event_type_id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: List records that have the l4_proto property equal to the specified
-        parameter.
+      description: List records that have the l4_proto property equal to the specified parameter.
       isArray: false
       name: l4_proto
       predefined:
@@ -468,51 +455,44 @@ script:
       required: false
       secret: false
     - default: false
-      description: List records that have the l7_proto property equal to the specified
-        parameter.
+      description: List records that have the l7_proto property equal to the specified parameter.
       isArray: false
       name: l7_proto
       required: false
       secret: false
     - default: false
-      description: List records that have the src_ip property equal to the specified
-        parameter, or contained in the given CIDR-defined network.
+      description: List records that have the src_ip property equal to the specified parameter, or contained in the given CIDR-defined network.
       isArray: false
       name: src_ip
       required: false
       secret: false
     - default: false
-      description: List records that have the dst_ip property equal to the specified
-        parameter, or contained in the given CIDR-defined network.
+      description: List records that have the dst_ip property equal to the specified parameter, or contained in the given CIDR-defined network.
       isArray: false
       name: dst_ip
       required: false
       secret: false
     - default: false
-      description: List records that have either the src_ip or the dst_ip property
-        equal to the specified parameter, or contained in the given CIDR-defined network.
+      description: List records that have either the src_ip or the dst_ip property equal to the specified parameter, or contained in the given CIDR-defined network.
       isArray: false
       name: ip
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of severities. The command will filter the
-        results from the returned page according to the provided values.
+      description: A comma-separated list of severities. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: severity
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of VLAN IDs. The command will filter the
-        results from the returned page according to the provided values.
+      description: A comma-separated list of VLAN IDs. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: vlan_id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: A comma-separated list of statuses. The command will filter the
-        results from the returned page according to the provided values.
+      description: A comma-separated list of statuses. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: status
       predefined:
@@ -527,36 +507,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of sensor names. The command will filter the
-        results from the returned page according to the provided values.
+      description: A comma-separated list of sensor names. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: sensor_name
       required: false
       secret: false
     - default: false
-      description: Fetch records that have the dst_port property equal to the specified
-        parameter.
+      description: Fetch records that have the dst_port property equal to the specified parameter.
       isArray: false
       name: dst_port
       required: false
       secret: false
     - default: false
-      description: List records that have the src_ip or src_mac property equal to
-        the IP address or MAC address of the host with the ID equal to the specified parameter.
+      description: List records that have the src_ip or src_mac property equal to the IP address or MAC address of the host with the ID equal to the specified parameter.
       isArray: false
       name: src_host_id
       required: false
       secret: false
     - default: false
-      description: List records that have the dst_ip or dst_mac property equal to
-        the IP address or MAC address of the host with the ID equal to the specified parameter.
+      description: List records that have the dst_ip or dst_mac property equal to the IP address or MAC address of the host with the ID equal to the specified parameter.
       isArray: false
       name: dst_host_id
       required: false
       secret: false
     - default: false
-      description: List records that have either the src_ip, src_mac or dst_ip, dst_mac
-        equal to the IP address or MAC address of the host with the ID equal to the specified parameter.
+      description: List records that have either the src_ip, src_mac or dst_ip, dst_mac equal to the IP address or MAC address of the host with the ID equal to the specified parameter.
       isArray: false
       name: host_id
       required: false
@@ -571,15 +546,13 @@ script:
       description: Timestamp of the alert in ISO format.
       type: String
     - contextPath: ForescoutEyeInspect.Alert.event_type_ids
-      description: The list of unique IDs identifying the type of events reported
-        in the alert.
+      description: The list of unique IDs identifying the type of events reported in the alert.
       type: String
     - contextPath: ForescoutEyeInspect.Alert.event_type_names
       description: The list of names of the type of events reported in the alert.
       type: String
     - contextPath: ForescoutEyeInspect.Alert.description
-      description: A description of the event types reported in the alert, as well
-        as other details regarding the specific alert instance coming from the sensor.
+      description: A description of the event types reported in the alert, as well as other details regarding the specific alert instance coming from the sensor.
       type: String
     - contextPath: ForescoutEyeInspect.Alert.notes
       description: Notes that a eyeInspect user may have attached to the alert.
@@ -615,28 +588,22 @@ script:
       description: The VLAN ID used in the network communication reported in the alert.
       type: String
     - contextPath: ForescoutEyeInspect.Alert.src_mac
-      description: The MAC address of the host initiating the connection reported
-        in the alert.
+      description: The MAC address of the host initiating the connection reported in the alert.
       type: String
     - contextPath: ForescoutEyeInspect.Alert.dst_mac
-      description: The MAC address of the host receiving the connection reported in
-        the alert.
+      description: The MAC address of the host receiving the connection reported in the alert.
       type: String
     - contextPath: ForescoutEyeInspect.Alert.src_ip
-      description: The IP address of the host initiating the connection reported in
-        the alert.
+      description: The IP address of the host initiating the connection reported in the alert.
       type: String
     - contextPath: ForescoutEyeInspect.Alert.dst_ip
-      description: The IP address of the host receiving the connection reported in
-        the alert.
+      description: The IP address of the host receiving the connection reported in the alert.
       type: String
     - contextPath: ForescoutEyeInspect.Alert.src_port
-      description: The source TCP or UDP port used in the connection reported in the
-        alert.
+      description: The source TCP or UDP port used in the connection reported in the alert.
       type: Number
     - contextPath: ForescoutEyeInspect.Alert.dst_port
-      description: The destination TCP or UDP port used in the connection reported
-        in the alert.
+      description: The destination TCP or UDP port used in the connection reported in the alert.
       type: Number
     - contextPath: ForescoutEyeInspect.Alert.severity
       description: The severity level of the alert.
@@ -690,8 +657,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: false
-      description: Whether to retrieve all the sensors (ICS Patrol and passive) or
-        only the passive ones.
+      description: Whether to retrieve all the sensors (ICS Patrol and passive) or only the passive ones.
       isArray: false
       name: all_sensors
       predefined:
@@ -700,30 +666,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of sensor names. The command will filter the
-        results from the returned page according to the provided values.
+      description: A comma-separated list of sensor names. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: name
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IP addresses or domain names. The command
-        will filter the results from the returned page according to the provided values.
+      description: A comma-separated list of IP addresses or domain names. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: address
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of listening ports. The command
-        will filter the results from the returned page according to the provided values.
+      description: A comma-separated list of listening ports. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: port
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: A comma-separated list of sensor types. The command will filter
-        the results according to the provided values.
+      description: A comma-separated list of sensor types. The command will filter the results according to the provided values.
       isArray: true
       name: type
       predefined:
@@ -732,8 +694,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      description: A comma-separated list of sensor states. The command
-        will filter the results from the returned page according to the provided values.
+      description: A comma-separated list of sensor states. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: state
       predefined:
@@ -745,8 +706,7 @@ script:
       - UNKNOWN
       required: false
       secret: false
-    description: Retrieves information about the sensors associated to the eyeInspect
-      CC.
+    description: Retrieves information about the sensors associated to the eyeInspect CC.
     name: forescout-ei-sensor-list
     outputs:
     - contextPath: ForescoutEyeInspect.Sensor.id
@@ -759,8 +719,7 @@ script:
       description: IP address or domain name of the sensor's management interface.
       type: String
     - contextPath: ForescoutEyeInspect.Sensor.port
-      description: TCP port number on which the sensor is listening for incoming CC
-        connections.
+      description: TCP port number on which the sensor is listening for incoming CC connections.
       type: Number
     - contextPath: ForescoutEyeInspect.Sensor.type
       description: Type of the sensor (PASSIVE / PATROL).
@@ -802,15 +761,13 @@ script:
       description: Unique ID of the module in the eyeInspect CC.
       type: Number
     - contextPath: ForescoutEyeInspect.SensorModule.sensor_id
-      description: Unique ID of the sensor the module is deployed in, in the eyeInspect
-        CC.
+      description: Unique ID of the sensor the module is deployed in, in the eyeInspect CC.
       type: Number
     - contextPath: ForescoutEyeInspect.SensorModule.engine
       description: Name of the engine powering the module in the sensor.
       type: String
     - contextPath: ForescoutEyeInspect.SensorModule.singleton
-      description: Whether the module can only have one single instance or can have
-        multiple instances in the sensor.
+      description: Whether the module can only have one single instance or can have multiple instances in the sensor.
       type: Boolean
     - contextPath: ForescoutEyeInspect.SensorModule.name
       description: The name of the module.
@@ -854,8 +811,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If set to true, the module will be started. If set to false, the
-        module will be paused.
+      description: If set to true, the module will be started. If set to false, the module will be paused.
       isArray: false
       name: started
       predefined:
@@ -880,15 +836,13 @@ script:
       description: Unique ID of the module in the eyeInspect CC.
       type: Number
     - contextPath: ForescoutEyeInspect.SensorModule.sensor_id
-      description: Unique ID of the sensor the module is deployed in, in the eyeInspect
-        CC.
+      description: Unique ID of the sensor the module is deployed in, in the eyeInspect CC.
       type: Number
     - contextPath: ForescoutEyeInspect.SensorModule.engine
       description: Name of the engine powering the module in the sensor.
       type: String
     - contextPath: ForescoutEyeInspect.SensorModule.singleton
-      description: Whether the module can only have one single instance or can have
-        multiple instances in the sensor.
+      description: Whether the module can only have one single instance or can have multiple instances in the sensor.
       type: Boolean
     - contextPath: ForescoutEyeInspect.SensorModule.name
       description: The name of the module.
@@ -918,8 +872,7 @@ script:
       name: module_id
       required: true
       secret: false
-    description: Deletes the specified module from the specified sensor and from the
-      eyeInspect CC database.
+    description: Deletes the specified module from the specified sensor and from the eyeInspect CC database.
     name: forescout-ei-sensor-module-delete
     outputs: []
   - arguments:
@@ -943,8 +896,7 @@ script:
       name: limit
       required: false
       secret: false
-    description: Retrieves the IP blacklist from the Industrial Threat Library of
-      the specified sensor.
+    description: Retrieves the IP blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-ip-blacklist-get
     outputs:
     - contextPath: ForescoutEyeInspect.IPBlacklist.address
@@ -972,8 +924,7 @@ script:
       name: comment
       required: false
       secret: false
-    description: Adds a new entry to the IP blacklist from the Industrial Threat Library
-      of the specified sensor.
+    description: Adds a new entry to the IP blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-ip-blacklist-add
     outputs: []
   - arguments:
@@ -997,8 +948,7 @@ script:
       name: limit
       required: false
       secret: false
-    description: Retrieves the domain name blacklist from the Industrial Threat Library
-      of the specified sensor.
+    description: Retrieves the domain name blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-domain-blacklist-get
     outputs:
     - contextPath: ForescoutEyeInspect.DomainBlacklist.domain_name
@@ -1027,8 +977,7 @@ script:
       name: comment
       required: false
       secret: false
-    description: Adds a new entry to the domain name blacklist from the Industrial
-      Threat Library of the specified sensor.
+    description: Adds a new entry to the domain name blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-domain-blacklist-add
     outputs: []
   - arguments:
@@ -1052,8 +1001,7 @@ script:
       name: limit
       required: false
       secret: false
-    description: Retrieves the SSL client application blacklist from the Industrial
-      Threat Library of the specified sensor.
+    description: Retrieves the SSL client application blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-ssl-client-blacklist-get
     outputs:
     - contextPath: ForescoutEyeInspect.SSLClientBlacklist.sensor_id
@@ -1093,8 +1041,7 @@ script:
       name: comment
       required: false
       secret: false
-    description: Adds a new entry to the SSL client application blacklist from the
-      Industrial Threat Library of the specified sensor.
+    description: Adds a new entry to the SSL client application blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-ssl-client-blacklist-add
     outputs: []
   - arguments:
@@ -1118,8 +1065,7 @@ script:
       name: limit
       required: false
       secret: false
-    description: Retrieves the file operation blacklist from the Industrial Threat
-      Library of the specified sensor.
+    description: Retrieves the file operation blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-file-operation-blacklist-get
     outputs:
     - contextPath: ForescoutEyeInspect.FileOperationBlacklist.matching_type
@@ -1176,13 +1122,11 @@ script:
       name: comment
       required: false
       secret: false
-    description: Adds entries to the file operation blacklist from the Industrial
-      Threat Library of the specified sensor.
+    description: Adds entries to the file operation blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-file-operation-blacklist-add
     outputs: []
   - arguments: []
-    description: Retrieves information about all monitored Command Center resources
-      and their health status excluding the logs.
+    description: Retrieves information about all monitored Command Center resources and their health status excluding the logs.
     name: forescout-ei-diagnostics-information-get
     outputs:
     - contextPath: ForescoutEyeInspect.CCInfo.ip_address
@@ -1204,9 +1148,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: true
-      description: Whether to include Command Center diagnostic logs inside the downloaded
-        zip, in addition to sensors logs. If this value is false, the downloaded zip
-        won't contain the general server logs, but only the logs about the sensors.
+      description: Whether to include Command Center diagnostic logs inside the downloaded zip, in addition to sensors logs. If this value is false, the downloaded zip won't contain the general server logs, but only the logs about the sensors.
       isArray: false
       name: cc_info
       predefined:
@@ -1215,14 +1157,12 @@ script:
       required: false
       secret: false
     - default: false
-      description: Include logs from a specific sensor by its ID, or all sensors (by
-        specifying All).
+      description: Include logs from a specific sensor by its ID, or all sensors (by specifying All).
       isArray: false
       name: sensor_id
       required: false
       secret: false
-    description: Download the ZIP file that contains diagnostic logs of the Command
-      Center.
+    description: Download the ZIP file that contains diagnostic logs of the Command Center.
     name: forescout-ei-diagnostic-logs-get
     outputs:
     - contextPath: InfoFile.Size
@@ -1287,18 +1227,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "List of constraints of the policy.\n\nEach policy constraint is\
-        \ an object that includes the following fields:\n* type: The type of the constraint.\
-        \ Possible values are os_version, firmware_version, open_ports.\n* operator:\
-        \ The operator of the constraint. Possible values are equals (all types),\
-        \ allowed (open_ports) and contains (os_version, firmware_version).\n* os_version:\
-        \ The value of the OS version for the os_version type.\n* firmware_version:\
-        \ The value of the firmware version for the firmware_version type.\n* open_ports_tcp:\
-        \ Comma-separated list of ports or range of ports for the open_ports type.\
-        \ Example: \"10, 20-30\".\n* open_ports_udp: Comma-separated list of ports\
-        \ or range of ports for the open_ports type. Example: \"10, 20-30\".\n\nExample\
-        \ for list of policy constraints: [{ \"type\": \"os_version\", \"operator\"\
-        : \"contains\", \"os_version\": \"Windows\" }]. "
+      description: "List of constraints of the policy.\n\nEach policy constraint is an object that includes the following fields:\n* type: The type of the constraint. Possible values are os_version, firmware_version, open_ports.\n* operator: The operator of the constraint. Possible values are equals (all types), allowed (open_ports) and contains (os_version, firmware_version).\n* os_version: The value of the OS version for the os_version type.\n* firmware_version: The value of the firmware version for the firmware_version type.\n* open_ports_tcp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n* open_ports_udp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n\nExample for list of policy constraints: [{ \"type\": \"os_version\", \"operator\": \"contains\", \"os_version\": \"Windows\" }]. "
       isArray: true
       name: constraints
       required: true
@@ -1338,24 +1267,12 @@ script:
       required: true
       secret: false
     - default: false
-      description: "List of constraints of the policy.\n\nEach policy constraint is\
-        \ an object that includes the following fields:\n* type: The type of the constraint.\
-        \ Possible values are os_version, firmware_version, open_ports.\n* operator:\
-        \ The operator of the constraint. Possible values are equals (all types),\
-        \ allowed (open_ports) and contains (os_version, firmware_version).\n* os_version:\
-        \ The value of the OS version for the os_version type.\n* firmware_version:\
-        \ The value of the firmware version for the firmware_version type.\n* open_ports_tcp:\
-        \ Comma-separated list of ports or range of ports for the open_ports type.\
-        \ Example: \"10, 20-30\".\n* open_ports_udp: Comma-separated list of ports\
-        \ or range of ports for the open_ports type. Example: \"10, 20-30\".\n\nExample\
-        \ for list of policy constraints: [{ \"type\": \"os_version\", \"operator\"\
-        : \"contains\", \"os_version\": \"Windows\" }]."
+      description: "List of constraints of the policy.\n\nEach policy constraint is an object that includes the following fields:\n* type: The type of the constraint. Possible values are os_version, firmware_version, open_ports.\n* operator: The operator of the constraint. Possible values are equals (all types), allowed (open_ports) and contains (os_version, firmware_version).\n* os_version: The value of the OS version for the os_version type.\n* firmware_version: The value of the firmware version for the firmware_version type.\n* open_ports_tcp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n* open_ports_udp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n\nExample for list of policy constraints: [{ \"type\": \"os_version\", \"operator\": \"contains\", \"os_version\": \"Windows\" }]."
       isArray: true
       name: constraints
       required: true
       secret: false
-    description: "Update a group policy. Note: Since the entire policy will be overridden,\
-      \ all fields are required."
+    description: "Update a group policy. Note: Since the entire policy will be overridden, all fields are required."
     name: forescout-ei-group-policy-update
     outputs:
     - contextPath: ForescoutEyeInspect.GroupPolicy.id
@@ -1407,8 +1324,7 @@ script:
       name: filter_value
       required: true
       secret: false
-    description: Add all hosts not assigned to any policy (individual or group) matching
-      the filter to the group policy.
+    description: Add all hosts not assigned to any policy (individual or group) matching the filter to the group policy.
     name: forescout-ei-group-policy-hosts-assign
     outputs: []
   - arguments:
@@ -1493,29 +1409,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: List only records with the host_id property equal to the provided
-        parameter.
+      description: List only records with the host_id property equal to the provided parameter.
       isArray: false
       name: host_id
       required: false
       secret: false
     - default: false
-      description: List only records with the timestamp property greater than or equal to
-        the specified value. For example, 2020-05-26T15:00:00.000Z+01:00.
+      description: List only records with the timestamp property greater than or equal to the specified value. For example, 2020-05-26T15:00:00.000Z+01:00.
       isArray: false
       name: start_timestamp
       required: false
       secret: false
     - default: false
-      description: List only records with the timestamp property less than or equal
-        to the specified value. 2020-05-26T15:00:00.000Z+01:00.
+      description: List only records with the timestamp property less than or equal to the specified value. 2020-05-26T15:00:00.000Z+01:00.
       isArray: false
       name: end_timestamp
       required: false
       secret: false
     - default: false
-      description: List only records with the event_type_id property equal to the
-        specified value.
+      description: List only records with the event_type_id property equal to the specified value.
       isArray: false
       name: event_type_id
       required: false
@@ -1546,8 +1458,7 @@ script:
       - hostcl_changed_module_type
       - hostcl_changed_module_vendor
     - default: false
-      description: List only records with the event_type_id property equal to the
-        specified value.
+      description: List only records with the event_type_id property equal to the specified value.
       isArray: false
       name: event_category
       required: false
@@ -1557,8 +1468,7 @@ script:
       - PROPERTIES
       - CONFIGURATION
       - ALL
-    description: Retrieves information about the changes of host properties and configuration
-      from the eyeInspect CC database.
+    description: Retrieves information about the changes of host properties and configuration from the eyeInspect CC database.
     name: forescout-ei-hosts-changelog-list
     outputs:
     - contextPath: ForescoutEyeInspect.HostChangeLog.id
@@ -1577,19 +1487,16 @@ script:
       description: A more general type of the change detected.
       type: String
     - contextPath: ForescoutEyeInspect.HostChangeLog.host_id
-      description: The unique ID of the host in the eyeInspect CC database in
-        which the change was detected.
+      description: The unique ID of the host in the eyeInspect CC database in which the change was detected.
       type: Number
     - contextPath: ForescoutEyeInspect.HostChangeLog.information_source
       description: The source of information for the detected change.
       type: String
     - contextPath: ForescoutEyeInspect.HostChangeLog.sensor_id
-      description: In case the detected change was reported from a sensor, the unique
-        ID in the eyeInspect CC database of the sensor reporting the information.
+      description: In case the detected change was reported from a sensor, the unique ID in the eyeInspect CC database of the sensor reporting the information.
       type: Number
     - contextPath: ForescoutEyeInspect.HostChangeLog.username
-      description: In case the detected change was reported from a eyeInspect user,
-        the username of the user reporting the information.
+      description: In case the detected change was reported from a eyeInspect user, the username of the user reporting the information.
       type: String
     - contextPath: ForescoutEyeInspect.HostChangeLog.old_value
       description: The old value of the host property.
@@ -1598,12 +1505,10 @@ script:
       description: The new value of the host property.
       type: String
     - contextPath: ForescoutEyeInspect.HostChangeLog.host_address
-      description: The IP address, or nested address (in case of a nested device)
-        of the host.
+      description: The IP address, or nested address (in case of a nested device) of the host.
       type: String
     - contextPath: ForescoutEyeInspect.HostChangeLog.host_vlan
-      description: The VLAN ID of the host (only present if the process_vlan_tags
-        option is enabled in the sensor).
+      description: The VLAN ID of the host (only present if the process_vlan_tags option is enabled in the sensor).
       type: String
     - contextPath: ForescoutEyeInspect.HostChangeLog.host_name
       description: The main name of the host.
@@ -1614,7 +1519,7 @@ script:
     - contextPath: ForescoutEyeInspect.HostChangeLog.host_mac_addresses
       description: The MAC addresses associated to the host.
       type: String
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.10.50695
   feed: false
   isfetch: true
   longRunning: false

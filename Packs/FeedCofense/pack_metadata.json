@@ -11,13 +11,10 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Malware"
+        "Threat Intelligence Management"
     ],
     "useCases": [],
-    "keywords": [
-        "Cofense",
-        "Feed"
-    ],
+    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

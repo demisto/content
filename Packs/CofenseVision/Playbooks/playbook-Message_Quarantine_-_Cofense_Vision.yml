@@ -1,0 +1,791 @@
+id: Message Quarantine - Cofense Vision
+version: -1
+name: Message Quarantine - Cofense Vision
+description: This playbook allows users to quarantine various messages that meet their specified criteria.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 5aacc68c-57fb-4b8e-84b3-40c556926c65
+    type: start
+    task:
+      id: 5aacc68c-57fb-4b8e-84b3-40c556926c65
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 9adb0477-3b82-40be-8bbc-516211945a28
+    type: regular
+    task:
+      id: 9adb0477-3b82-40be-8bbc-516211945a28
+      version: -1
+      name: 'Create Message Search'
+      description: Creates a new search.
+      script: Cofense Vision|||cofense-message-search-create
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      attachment_exclude_mime_types:
+        complex:
+          root: inputs.attachment_exclude_mime_types
+      attachment_hash_match_criteria:
+        complex:
+          root: inputs.attachment_hash_match_criteria
+      attachment_hashes:
+        complex:
+          root: 'inputs.attachment_hashes '
+      attachment_mime_types:
+        complex:
+          root: inputs.attachment_mime_types
+      attachment_names:
+        complex:
+          root: inputs.attachment_names
+      domain_match_criteria:
+        complex:
+          root: inputs.domain_match_criteria
+      domains:
+        complex:
+          root: inputs.domains
+      headers:
+        complex:
+          root: inputs.headers
+      internet_message_id:
+        complex:
+          root: inputs.internet_message_id
+      partial_ingest:
+        complex:
+          root: inputs.partial_ingest
+      received_after_date:
+        complex:
+          root: inputs.received_after_date
+      received_before_date:
+        complex:
+          root: inputs.received_before_date
+      recipient:
+        complex:
+          root: inputs.recipient
+      senders:
+        complex:
+          root: inputs.senders
+      subjects:
+        complex:
+          root: inputs.subjects
+      url:
+        complex:
+          root: inputs.url
+      whitelist_urls:
+        complex:
+          root: inputs.whitelist_urls
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: a5b02818-db24-4cad-84cf-97d33b6b8d81
+    type: regular
+    task:
+      id: a5b02818-db24-4cad-84cf-97d33b6b8d81
+      version: -1
+      name: Get Search Results
+      description: Retrieves the results for the search identified by the search ID.
+      script: Cofense Vision|||cofense-message-search-results-get
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      id:
+        complex:
+          root: Cofense.Search
+          accessor: id
+      size:
+        complex:
+          root: inputs.message_size
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 3efd7f76-5bc2-4726-8799-cd29b9c400c8
+    type: condition
+    task:
+      id: 3efd7f76-5bc2-4726-8799-cd29b9c400c8
+      version: -1
+      name: Do you want to Get Message content?
+      description: Check if user want to get message metadata.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '12'
+      Yes:
+      - '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Do you want to Get Message content or Quarantine messages?
+      methods: []
+      format: ''
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - Yes
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 0781e626-3dfd-4ee5-8ca3-e2c3507e9090
+    type: regular
+    task:
+      id: 0781e626-3dfd-4ee5-8ca3-e2c3507e9090
+      version: -1
+      name: Get Message Metadata
+      description: Retrieves the full content of a message that matches the specified Internet message ID and recipient email address of an email.
+      script: Cofense Vision|||cofense-message-metadata-get
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      internet_message_id:
+        complex:
+          root: Cofense
+          accessor: SearchedMessages
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: ':'
+              fields:
+                value:
+                  simple: '1'
+      recipient_address:
+        complex:
+          root: Cofense
+          accessor: SearchedMessages
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: ':'
+              fields:
+                value:
+                  simple: '2'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: a3c6d609-ad79-4162-8a04-c264a8c82309
+    type: regular
+    task:
+      id: a3c6d609-ad79-4162-8a04-c264a8c82309
+      version: -1
+      name: Quarantine Messages
+      description: Creates a new quarantine job.
+      script: '|||cofense-quarantine-job-create'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      quarantine_emails:
+        complex:
+          root: Cofense
+          accessor: SearchedMessages
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 8b3d6f53-45fc-4300-87cf-fe576364e084
+    type: title
+    task:
+      id: 8b3d6f53-45fc-4300-87cf-fe576364e084
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 038d66d8-e823-443d-82e5-3bcbf3ca668c
+    type: condition
+    task:
+      id: 038d66d8-e823-443d-82e5-3bcbf3ca668c
+      version: -1
+      name: Is Cofense Vision Integration Enable?
+      description: Condition to check if Cofense Vision Integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '7'
+      yes:
+      - '1'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cofense Vision
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: eb9cb88e-f596-46da-8245-ddce5ace803d
+    type: regular
+    task:
+      id: eb9cb88e-f596-46da-8245-ddce5ace803d
+      version: -1
+      name: Set Internet Message ID and Recipient Address
+      description: 'Set a value in context for internetMessageId and recipient.address fields in a following format: ```internet_message_id:recipient_address``` '
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      key:
+        simple: Cofense.SearchedMessages
+      value:
+        complex:
+          root: Cofense
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Cofense.Search.Message
+                iscontext: true
+          accessor: SearchedMessages
+          transformers:
+          - operator: GetMessageIdAndRecipients
+            args:
+              key:
+                value:
+                  simple: Cofense.Search.Message
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: 2aca9691-9194-466e-8b42-a7685f3e2c0f
+    type: condition
+    task:
+      id: 2aca9691-9194-466e-8b42-a7685f3e2c0f
+      version: -1
+      name: Is message found?
+      description: Check if results have messages or not.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '7'
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cofense.SearchedMessages
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 9d2a8e74-24a2-4cdf-8223-4d90e5e00acf
+    type: condition
+    task:
+      id: 9d2a8e74-24a2-4cdf-8223-4d90e5e00acf
+      version: -1
+      name: Do you want to Quarantine Messages?
+      description: Condition for user to get quarantine message or not.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '7'
+      Yes:
+      - '6'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Do you want to Get Message content or Quarantine messages?
+      methods: []
+      format: ''
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - Yes
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_7_#default#": 0.26,
+      "12_6_Yes": 0.64,
+      "12_7_#default#": 0.35,
+      "4_12_#default#": 0.47,
+      "9_7_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2180,
+        "width": 1415,
+        "x": 255,
+        "y": 65
+      }
+    }
+  }
+inputs:
+- key: subjects
+  value: {}
+  required: false
+  description: |-
+    A comma-separated string of subjects to create a search for an email's subject. It supports the use of one or more wildcard characters (*) in any position of a subject.
+
+    Note: The search can only have a maximum of 3 values.
+  playbookInputQuery:
+- key: senders
+  value: {}
+  required: false
+  description: |-
+    A comma-separated string of senders to create a search for an email's sender. It supports the use of one or more wildcard characters (*) in any position of a sender's email address.
+
+    Note: The search can only have a maximum of 3 values.
+  playbookInputQuery:
+- key: attachment_names
+  value: {}
+  required: false
+  description: |-
+    A comma-separated string of attachment names to create a search for an email's attachments. It supports the use of one or more wildcard characters (*) in any position of an attachment name.
+
+    Note: The search can only have a maximum of 3 values.
+  playbookInputQuery:
+- key: attachment_hash_match_criteria
+  value:
+    simple: ANY
+  required: false
+  description: |-
+    The type of matching performed on the hashes specified in the attachment_hashes argument.
+
+    Possible values are:
+    ALL: Emails must include all listed attachment hashes.
+    ANY: Emails must contain at least one of the listed attachment hash.
+  playbookInputQuery:
+- key: 'attachment_hashes '
+  value: {}
+  required: false
+  description: |-
+    A comma-separated string of attachment hashes to create a search for an email's attachment hashes.
+
+    Supported format: hashtype1:hashvalue1, hashtype2:hashvalue2
+
+    Possible values for hashtype are: MD5, SHA256
+
+    Example:  md5:938c2cc0dcc05f2b68c4287040cfcf71
+
+    Note: The search can only have a maximum of 3 values.
+  playbookInputQuery:
+- key: attachment_mime_types
+  value: {}
+  required: false
+  description: |-
+    A comma-separated string of MIME types to create a search for an email's attachment MIME type.
+
+    Note: The search can only have a maximum of 3 values.
+  playbookInputQuery:
+- key: attachment_exclude_mime_types
+  value: {}
+  required: false
+  description: |-
+    A comma-separated string of MIME types to create a search for excluding an email's attachment MIME type.
+
+    Note: The search can only have a maximum of 3 values.
+  playbookInputQuery:
+- key: domain_match_criteria
+  value:
+    simple: ANY
+  required: false
+  description: |-
+    The type of matching to perform on the domains specified in the domains argument.
+
+    Possible values are:
+    ALL: Emails must include all listed domains.
+    ANY: Emails must contain at least one of the listed domains.
+  playbookInputQuery:
+- key: domains
+  value: {}
+  required: false
+  description: |-
+    A comma-separated string of domains to create a search for domains in an email's body or its attachment. You can change the type of matching that happens on the specified domains using the domain_match_criteria argument.
+
+    Note: The search can only have a maximum of 3 values.
+  playbookInputQuery:
+- key: whitelist_urls
+  value: {}
+  required: false
+  description: |-
+    A comma-separated string of URLs to be whitelisted.
+
+    Note: The search can only have a maximum of 3 values.
+  playbookInputQuery:
+- key: headers
+  value: {}
+  required: false
+  description: "A comma-separated string of key-value pairs, defining the additional criteria to search for in the email header. \n\nSupported format: key1:value1, key2:value1:value2:value3\n\nExample: Content-Type:application/json\n\nList of available headers to create a search can be retrieved by using the command 'cofense-searchable-headers-list'.\n\nNote: The search can only have a maximum of 3 values."
+  playbookInputQuery:
+- key: internet_message_id
+  value: {}
+  required: false
+  description: |-
+    The unique identifier of the email, enclosed in angle brackets. This argument is case-sensitive.
+
+    Example:  <513C8CD8-E593-4DC4-82BF6202E8AC95CB@example.com>
+  playbookInputQuery:
+- key: partial_ingest
+  value:
+    simple: 'False'
+  required: false
+  description: Whether to create a search with partially ingested emails (true) or not with partially ingested emails (false).
+  playbookInputQuery:
+- key: received_after_date
+  value: {}
+  required: false
+  description: |-
+    Date and time to create a search for emails to specify the received on or after the specified UTC date and time.
+
+    Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
+
+    Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+  playbookInputQuery:
+- key: received_before_date
+  value: {}
+  required: false
+  description: |-
+    Date and time to create a search for emails to specify the received before or on the specified UTC date and time.
+
+    Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
+
+    Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+  playbookInputQuery:
+- key: recipient
+  value: {}
+  required: false
+  description: Create a search with the specified recipient. Supports one or more wildcard characters (*) in any position of a recipient's email address.
+  playbookInputQuery:
+- key: url
+  value: {}
+  required: false
+  description: Create a search with the specified url. Supports one or more wildcard characters (*) in any position of the URL.
+  playbookInputQuery:
+- key: message_size
+  value:
+    simple: '50'
+  required: false
+  description: |-
+    The number of results to retrieve per page. The value must be a positive integer up to 2000.
+
+    Default value is '50'
+  playbookInputQuery:
+outputs:
+- contextPath: Cofense.Search.Message.id
+  description: The ID of the message.
+- contextPath: Cofense.Search.Message.subject
+  description: The subject of the message.
+- contextPath: Cofense.Search.Message.receivedOn
+  description: The date and time when the message was received by the recipient.
+- contextPath: Cofense.Search.Message.sentOn
+  description: The date and time when the message was sent by the sender.
+- contextPath: Cofense.Search.Message.md5
+  description: The MD5 hash of the message.
+- contextPath: Cofense.Search.Message.internetMessageId
+  description: Unique identifier of the email.
+- contextPath: Cofense.Search.Message.from.address
+  description: The email address of the sender.
+- contextPath: Cofense.Search.Message.headers.value
+  description: The value of the header key.
+- contextPath: Cofense.Search.Message.headers.name
+  description: The name of the header key.
+- contextPath: Cofense.Search.Message.recipients.address
+  description: The email address of the recipient.
+- contextPath: Cofense.Search.Message.attachments.filename
+  description: The name of the attachment file.
+- contextPath: Cofense.Search.Message.attachments.md5
+  description: The MD5 hash of the attachment.
+- contextPath: Cofense.Search.Message.attachments.id
+  description: The ID of the attachment.
+- contextPath: Cofense.Message.id
+  description: ID of the message in cofense vision.
+- contextPath: Cofense.Message.subject
+  description: Subject of the email.
+- contextPath: Cofense.Message.receivedOn
+  description: Date and time an email was received by the recipient.
+- contextPath: Cofense.Message.sentOn
+  description: Date and time an email was sent to the recipient.
+- contextPath: Cofense.Message.md5
+  description: MD5 hash of the message.
+- contextPath: Cofense.Message.internetMessageId
+  description: ID of an email assigned by the message transfer agent.
+- contextPath: Cofense.Message.matchingIOCs
+  description: MD5 hash of one or more matching IOCs.
+- contextPath: Cofense.Message.matchingSources
+  description: One or more matching IOC sources.
+- contextPath: Cofense.Message.from.address
+  description: An email address of the sender.
+- contextPath: Cofense.Message.headers.name
+  description: The name of the key in the header.
+- contextPath: Cofense.Message.headers.value
+  description: The value of the key in the header.
+- contextPath: Cofense.Message.recipients.address
+  description: Email address of the recipient.
+- contextPath: Cofense.Message.attachments.filename
+  description: The name of the attachment file.
+- contextPath: Cofense.Message.attachments.md5
+  description: The MD5 hash of the attachment.
+- contextPath: Cofense.Message.attachments.id
+  description: The ID of the attachment.
+- contextPath: Cofense.QuarantineJob.id
+  description: ID of the quarantine job in cofense vision.
+- contextPath: Cofense.QuarantineJob.emailCount
+  description: Number of emails quarantined.
+- contextPath: Cofense.QuarantineJob.matchingIOCs
+  description: MD5 hash of one or more matching IOCs.
+- contextPath: Cofense.QuarantineJob.matchingSources
+  description: One or more IOC sources.
+- contextPath: Cofense.QuarantineJob.quarantineEmails.id
+  description: ID in cofense vision.
+- contextPath: Cofense.QuarantineJob.quarantineEmails.internetMessageID
+  description: ID of the email assigned by the message transfer agent.
+- contextPath: Cofense.QuarantineJob.quarantineEmails.recipientAddress
+  description: Email address of the account containing the emails to be quarantined.
+- contextPath: Cofense.QuarantineJob.quarantineEmails.status
+  description: Status of the email.
+- contextPath: Cofense.QuarantineJob.quarantineJobRuns.id
+  description: ID of the quarantine job in Cofense Vision.
+- contextPath: Cofense.QuarantineJob.quarantineJobRuns.status
+  description: Status of the quarantine job.
+- contextPath: Cofense.QuarantineJob.quarantineJobRuns.total
+  description: Total number of emails in the quarantine job.
+- contextPath: Cofense.Search.Message.from.id
+  description: The ID of the sender.
+- contextPath: Cofense.Search.Message.headers.id
+  description: The ID of the header.
+- contextPath: Cofense.QuarantineJob.matchingIocInfo.id
+  description: MD5 hash composed of the UTF-8 concatenation of "threat_type" and "threat_value" attributes.
+- contextPath: Cofense.QuarantineJob.matchingIocInfo.attributes.threat_type
+  description: Threat type of the IOC match.
+- contextPath: Cofense.QuarantineJob.matchingIocInfo.attributes.threat_value
+  description: Actual value of the IOC match in the email.
+- contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.source
+  description: Data that the IOC source reads and writes.
+tests:
+- CofenseVision-Test
+fromversion: 6.2.0

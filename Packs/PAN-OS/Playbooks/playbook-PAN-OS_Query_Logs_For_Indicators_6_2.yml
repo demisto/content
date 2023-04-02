@@ -1,0 +1,896 @@
+id: PAN-OS Query Logs For Indicators
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: PAN-OS Query Logs For Indicators
+description: 'This playbook queries the following PAN-OS log types: traffic, threat,
+  url, data-filtering and wildfire. The playbook accepts inputs such as IP. hash,
+  and url.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4c6e6664-2b4a-436c-83fa-3e379c606404
+    type: start
+    task:
+      id: 4c6e6664-2b4a-436c-83fa-3e379c606404
+      version: -1
+      name: ""
+      description: Start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 46712325-47fc-42d4-8934-37612d712661
+    type: condition
+    task:
+      id: 46712325-47fc-42d4-8934-37612d712661
+      version: -1
+      name: Is Palo Alto Networks PAN-OS enabled?
+      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS.
+        integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "11"
+      - "20"
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3a72fc10-d362-4036-8912-4d03828cc863
+    type: regular
+    task:
+      id: 3a72fc10-d362-4036-8912-4d03828cc863
+      version: -1
+      name: Panorama query traffic logs
+      description: Query logs.
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.ip
+      log-type:
+        simple: traffic
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d69222cb-a986-4d52-8f73-f020b67ef103
+    type: title
+    task:
+      id: d69222cb-a986-4d52-8f73-f020b67ef103
+      version: -1
+      name: Done
+      description: Header
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 1997c25a-56ad-4648-870d-3f9687ef7c3d
+    type: regular
+    task:
+      id: 1997c25a-56ad-4648-870d-3f9687ef7c3d
+      version: -1
+      name: Panorama query threat logs
+      description: Query logs
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.ip
+      log-type:
+        simple: threat
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f0295d6d-ca7b-4da7-84e2-6a4534187c98
+    type: title
+    task:
+      id: f0295d6d-ca7b-4da7-84e2-6a4534187c98
+      version: -1
+      name: IP search
+      description: Header
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 1a8ee268-d796-4441-87f3-6d39648ab2f1
+    type: condition
+    task:
+      id: 1a8ee268-d796-4441-87f3-6d39648ab2f1
+      version: -1
+      name: Is there an IP address?
+      description: Is there an IP?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+      - "9"
+      - "14"
+      - "17"
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ip
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 13876f73-0e2c-4331-85a0-e81ecf17bd6a
+    type: regular
+    task:
+      id: 13876f73-0e2c-4331-85a0-e81ecf17bd6a
+      version: -1
+      name: Panorama query wildfire logs
+      description: Query logs.
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.ip
+      log-type:
+        simple: wildfire
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: c57dc9bd-13b7-4a3f-8dc8-86ec5ddf4570
+    type: regular
+    task:
+      id: c57dc9bd-13b7-4a3f-8dc8-86ec5ddf4570
+      version: -1
+      name: Panorama query data logs
+      description: Query logs.
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.ip
+      log-type:
+        simple: data
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 3f931dd2-9f60-4889-8cba-2a1be49a7b8c
+    type: regular
+    task:
+      id: 3f931dd2-9f60-4889-8cba-2a1be49a7b8c
+      version: -1
+      name: Panorama query url logs
+      description: Query logs
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.ip
+      log-type:
+        simple: url
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: cee28744-b9b4-498c-86d4-080aae03e0d7
+    type: title
+    task:
+      id: cee28744-b9b4-498c-86d4-080aae03e0d7
+      version: -1
+      name: Hash Search
+      description: Header
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 3e4145cb-b2cb-4055-841f-cd0f9aebfeda
+    type: condition
+    task:
+      id: 3e4145cb-b2cb-4055-841f-cd0f9aebfeda
+      version: -1
+      name: Is there a hash?
+      description: Is there a hash?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.filedigest
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 9903cdd2-6896-4936-8dc4-fb397d046000
+    type: regular
+    task:
+      id: 9903cdd2-6896-4936-8dc4-fb397d046000
+      version: -1
+      name: Panorama query wildfire logs
+      description: Query logs
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      filedigest:
+        complex:
+          root: inputs.filedigest
+      log-type:
+        simple: wildfire
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: d931076b-f81a-4714-8d4a-d6dea69249ff
+    type: title
+    task:
+      id: d931076b-f81a-4714-8d4a-d6dea69249ff
+      version: -1
+      name: Url search
+      description: Header
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1270,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: b9be6fea-a396-4e1c-8fdd-adc32ad3c1ca
+    type: condition
+    task:
+      id: b9be6fea-a396-4e1c-8fdd-adc32ad3c1ca
+      version: -1
+      name: Is there a url?
+      description: Is there a url?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "30"
+      - "32"
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.url
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1270,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: abaf43ab-272a-485c-88a7-95ef5e352794
+    type: regular
+    task:
+      id: abaf43ab-272a-485c-88a7-95ef5e352794
+      version: -1
+      name: Panorama query threat logs
+      description: Query logs
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      log-type:
+        simple: threat
+      polling:
+        simple: "true"
+      url:
+        complex:
+          root: inputs.url
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2100,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 121e065b-b639-4b16-8569-c6b79d4201fc
+    type: regular
+    task:
+      id: 121e065b-b639-4b16-8569-c6b79d4201fc
+      version: -1
+      name: Panorama query data logs
+      description: Query logs.
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      log-type:
+        simple: data
+      polling:
+        simple: "true"
+      url:
+        complex:
+          root: inputs.url
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1270,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: ca130c36-c309-4b73-8bee-174a13a5a55a
+    type: regular
+    task:
+      id: ca130c36-c309-4b73-8bee-174a13a5a55a
+      version: -1
+      name: Panorama query url logs
+      description: Query logs.
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      log-type:
+        simple: url
+      polling:
+        simple: "true"
+      url:
+        complex:
+          root: inputs.url
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1680,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_5_#default#": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 4530,
+        "x": -2100,
+        "y": -260
+      }
+    }
+  }
+inputs:
+- key: url
+  value: {}
+  required: false
+  description: 'URL, for example: "safebrowsing.googleapis.com".'
+  playbookInputQuery: null
+- key: filedigest
+  value: {}
+  required: false
+  description: File hash (for WildFire logs only).
+  playbookInputQuery: null
+- key: ip
+  value: {}
+  required: false
+  description: Source or destination address
+  playbookInputQuery: null
+outputs:
+- contextPath: Panorama.Monitor
+  description: Monitor logs object.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Action
+  description: Action taken for the session. Can be "alert", "allow", "deny", "drop",
+    "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
+  type: string
+- contextPath: Panorama.Monitor.Logs.Application
+  description: Application associated with the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Category
+  description: For URL subtype, it is the URL category; For WildFire subtype, it is
+    the verdict on the file and is either ‘malicious’, ‘phishing’, ‘grayware’, or
+    ‘benign’; For other subtypes, the value is ‘any’.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DeviceName
+  description: The hostname of the firewall on which the session was logged.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DestinationAddress
+  description: Original session destination IP address.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DestinationUser
+  description: Username of the user to which the session was destined.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DestinationCountry
+  description: Destination country or internal region for private addresses. Maximum
+    length is 32 bytes.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DestinationPort
+  description: Destination port utilized by the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.FileDigest
+  description: |-
+    Only for WildFire subtype; all other types do not use this field.
+    The filedigest string shows the binary hash of the file sent to be analyzed by the WildFire service.
+  type: string
+- contextPath: Panorama.Monitor.Logs.FileName
+  description: |-
+    File name or file type when the subtype is file.
+    File name when the subtype is virus.
+    File name when the subtype is wildfire-virus.
+    File name when the subtype is wildfire.
+  type: string
+- contextPath: Panorama.Monitor.Logs.FileType
+  description: |-
+    Only for the WildFire subtype; all other types do not use this field.
+    Specifies the type of file that the firewall forwarded for WildFire analysis.
+  type: string
+- contextPath: Panorama.Monitor.Logs.FromZone
+  description: Zone the session was sourced from.
+  type: string
+- contextPath: Panorama.Monitor.Logs.URLOrFilename
+  description: |-
+    The actual URI when the subtype is url.
+    File name or file type when the subtype is file.
+    File name when the subtype is virus.
+    File name when the subtype is wildfire-virus.
+    File name when the subtype is wildfire.
+    URL or file name when the subtype is vulnerability if applicable.
+  type: string
+- contextPath: Panorama.Monitor.Logs.NATDestinationIP
+  description: If destination NAT performed, the post-NAT destination IP address.
+  type: string
+- contextPath: Panorama.Monitor.Logs.NATDestinationPort
+  description: Post-NAT destination port.
+  type: string
+- contextPath: Panorama.Monitor.Logs.NATSourceIP
+  description: If source NAT performed, the post-NAT source IP address.
+  type: string
+- contextPath: Panorama.Monitor.Logs.NATSourcePort
+  description: Post-NAT source port.
+  type: string
+- contextPath: Panorama.Monitor.Logs.PCAPid
+  description: The packet capture (pcap) ID is a 64 bit unsigned integral denoting
+    an ID to correlate threat pcap files with extended pcaps taken as a part of that
+    flow. All threat logs will contain either a pcap_id of 0 (no associated pcap),
+    or an ID referencing the extended pcap file.
+  type: string
+- contextPath: Panorama.Monitor.Logs.IPProtocol
+  description: IP protocol associated with the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Recipient
+  description: |-
+    Only for the WildFire subtype; all other types do not use this field.
+    Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Rule
+  description: Name of the rule that the session matched.
+  type: string
+- contextPath: Panorama.Monitor.Logs.RuleID
+  description: ID of the rule that the session matched.
+  type: string
+- contextPath: Panorama.Monitor.Logs.ReceiveTime
+  description: Time the log was received at the management plane.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Sender
+  description: |-
+    Only for the WildFire subtype; all other types do not use this field.
+    Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+  type: string
+- contextPath: Panorama.Monitor.Logs.SessionID
+  description: An internal numerical identifier applied to each session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DeviceSN
+  description: The serial number of the firewall on which the session was logged.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Severity
+  description: Severity associated with the threat. Can be "informational", "low",
+    "medium", "high", or "critical".
+  type: string
+- contextPath: Panorama.Monitor.Logs.SourceAddress
+  description: Original session source IP address.
+  type: string
+- contextPath: Panorama.Monitor.Logs.SourceCountry
+  description: Source country or internal region for private addresses. Maximum length
+    is 32 bytes.
+  type: string
+- contextPath: Panorama.Monitor.Logs.SourceUser
+  description: Username of the user who initiated the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.SourcePort
+  description: Source port utilized by the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Name
+  description: Palo Alto Networks identifier for the threat. It is a description string
+    followed by a 64-bit numerical identifier.
+  type: string
+- contextPath: Panorama.Monitor.Logs.ID
+  description: Palo Alto Networks ID for the threat.
+  type: string
+- contextPath: Panorama.Monitor.Logs.ToZone
+  description: The zone to which the session was destined.
+  type: string
+- contextPath: Panorama.Monitor.Logs.TimeGenerated
+  description: Time that the log was generated on the dataplane.
+  type: string
+- contextPath: Panorama.Monitor.Logs.URLCategoryList
+  description: A list of the URL filtering categories that the firewall used to enforce
+    policy.
+  type: string
+- contextPath: Panorama.Monitor.JobID
+  description: Job ID of the logs query.
+- contextPath: Panorama.Monitor.Status
+  description: Status of the logs query.
+  type: string
+- contextPath: Panorama.Monitor.Message
+  description: Message  of the logs query.
+  type: string
+tests:
+- PAN-OS Query Logs For Indicators Test
+fromversion: 6.2.0

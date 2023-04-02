@@ -1,0 +1,36 @@
+{
+    "parsed_results": [
+        {
+            "Type": 1,
+            "ContentsFormat": "json",
+            "Contents": "None",
+            "HumanReadable": "McAfee TIE Hash Reputation For f2c7bb8acc97f92e987a2d4087d021b1 was not found",
+            "EntryContext": {
+                "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
+                    {
+                        "Hashes": [
+                            {
+                                "type": "MD5",
+                                "value": "f2c7bb8acc97f92e987a2d4087d021b1"
+                            }
+                        ],
+                        "MD5": "f2c7bb8acc97f92e987a2d4087d021b1"
+                    }
+                ],
+                "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+                    {
+                        "Indicator": "f2c7bb8acc97f92e987a2d4087d021b1",
+                        "Type": "file",
+                        "Vendor": "",
+                        "Score": 0,
+                        "Reliability": "C - Fairly reliable"
+                    }
+                ]
+            },
+            "IndicatorTimeline": [],
+            "IgnoreAutoExtract": false,
+            "Note": false,
+            "Relationships": []
+        }
+    ]
+}

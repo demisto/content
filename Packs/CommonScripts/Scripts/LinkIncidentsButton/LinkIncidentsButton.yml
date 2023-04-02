@@ -1,0 +1,30 @@
+args:
+- name: linkedIncidentIDs
+  required: true
+  description: Incident ID to link to, or a comma separated list of related Incident IDs.
+- name: action
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - link
+  - unlink
+  description: Action to perform - Link or Unlink Incidents
+comment: |
+  Incident action button script to link or unlink Incidents from an Incident
+commonfields:
+  id: LinkIncidentsButton
+  version: -1
+dockerimage: demisto/python3:3.10.9.42476
+enabled: true
+name: LinkIncidentsButton
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- incident-action-button
+type: python
+fromversion: 5.0.0
+tests:
+- No test

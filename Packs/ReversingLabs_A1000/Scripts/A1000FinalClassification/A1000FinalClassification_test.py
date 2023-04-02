@@ -7,30 +7,30 @@ from A1000FinalClassification import main
 test_args = {
     'a1000_full_report': {
         "results": [{
-            "threat_status": "malicious",
+            "classification": "malicious",
             "sha1": "e5a64e300d880f3f9248a17124ccc49391c760f9"
         }]
     },
     "a1000_classification_report": {
-        "threat_status": "MALICIOUS",
+        "classification": "malicious",
         "sha1": "e5a64e300d880f3f9248a17124ccc49391c760f9"
     }
 }
 
 test_data = [
-    ('UNKNOWN', 'KNOWN', 1),
+    ('UNKNOWN', 'GOODWARE', 1),
     ('UNKNOWN', 'MALICIOUS', 3),
-    ('SUSPICIOUS', 'KNOWN', 2),
-    ('KNOWN', 'MALICIOUS', 3),
-    ('MALICIOUS', 'KNOWN', 3)
+    ('SUSPICIOUS', 'GOODWARE', 2),
+    ('GOODWARE', 'MALICIOUS', 3),
+    ('MALICIOUS', 'GOODWARE', 3)
 ]
 
 
 @pytest.mark.parametrize('a1000_classification, cloud_classification, expected_result', test_data)
 def test_main__happy_path(mocker, a1000_classification, cloud_classification, expected_result):
     args = test_args.copy()
-    args['a1000_classification_report']['threat_status'] = cloud_classification
-    args['a1000_full_report']['results'][0]['threat_status'] = a1000_classification
+    args['a1000_classification_report']['classification'] = cloud_classification
+    args['a1000_full_report']['results'][0]['classification'] = a1000_classification
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch('A1000FinalClassification.return_results')
 

@@ -2,12 +2,14 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "2.3.5",
+    "currentVersion": "2.3.55",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-05-14T08:33:25Z",
-    "categories": [],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
@@ -90,7 +92,7 @@
         },
         "CrowdStrikeFalconX": {
             "mandatory": false,
-            "display_name": "CrowdStrike FalconX"
+            "display_name": "CrowdStrike Falcon Intelligence Sandbox"
         },
         "VirusTotal-Private_API": {
             "mandatory": false,
@@ -285,6 +287,24 @@
             "display_name": "SecneurX Analysis"
         }
     },
+    "excludedDependencies": [
+        "Attlasian",
+        "HelloIAMWorld",
+        "AWS-ILM",
+        "GitHub",
+        "SalesforceFusion",
+        "Salesforce",
+        "PrismaCloud",
+        "Okta",
+        "SAP_IAM",
+        "Oracle_IAM",
+        "Clarizen",
+        "Slack",
+        "Zoom",
+        "Envoy",
+        "ServiceNow",
+        "ExceedLMS"
+    ],
     "displayedImages": [
         "Threat_Crowd",
         "CiscoASA",
@@ -357,6 +377,7 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "xpanse"
     ]
 }

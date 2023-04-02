@@ -1,8 +1,8 @@
 {
-    "name": "BigFix",
-    "description": "IBM BigFix Patch provides an automated, simplified patching process that is administered from a single console.",
+    "name": "HCL BigFix",
+    "description": "HCL BigFix Patch provides an automated, simplified patching process that is administered from a single console.",
     "support": "xsoar",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

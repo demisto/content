@@ -1,0 +1,4 @@
+### One-time token:
+|Internet Message ID|Recipient's Address|Token|
+|---|---|---|
+| test | test | 52c80e98\-4b8b\-4c2a\-9c53\-b965050a9661 |

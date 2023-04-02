@@ -115,10 +115,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of Freeze. You cannot freeze a device that has been reported stolen in the Absolute console.
-        - OnDemand: Freezes a device on its next connection to the Absolute Monitoring Center, which is typically within 15 minutes. This applies for all supported operating systems.
-        - Scheduled: Freezes a device on its next connection to the Absolute Monitoring Center on or after a specified date and time. This applies to Windows and Mac devices. The scheduled freeze date is specified in the scheduled_freeze_date argument. Scheduled Freeze requests are only supported on Windows and Mac devices with an active Absolute agent that is regularly connecting to the Absolute Monitoring Center.
-        - Offline: Freezes a device if it has been offline for a specified period of time. Applies to Windows and Mac devices. Offline period is specified in the offline_time_seconds argument. Offline freeze is not available if your Absolute account has been migrated to Offline Freeze Rules. For more information, see the console Help.'
+      description: 'The type of Freeze. You cannot freeze a device that has been reported stolen in the Absolute console. - OnDemand: Freezes a device on its next connection to the Absolute Monitoring Center, which is typically within 15 minutes. This applies for all supported operating systems. - Scheduled: Freezes a device on its next connection to the Absolute Monitoring Center on or after a specified date and time. This applies to Windows and Mac devices. The scheduled freeze date is specified in the scheduled_freeze_date argument. Scheduled Freeze requests are only supported on Windows and Mac devices with an active Absolute agent that is regularly connecting to the Absolute Monitoring Center. - Offline: Freezes a device if it has been offline for a specified period of time. Applies to Windows and Mac devices. Offline period is specified in the offline_time_seconds argument. Offline freeze is not available if your Absolute account has been migrated to Offline Freeze Rules. For more information, see the console Help.'
       isArray: false
       name: device_freeze_type
       predefined:
@@ -142,10 +139,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of passcode to unfreeze a device. 
-      - UserDefined: Manually set the passcode in passcode. You must specify the passcode argument. 
-      - RandomForEach: A unique passcode is randomly generated for each device. You must specify the passcode_length argument. 
-      - RandomForAll: A passcode is randomly generated and is the same for all devices. You must specify the passcode_length argument.'
+      description: 'The type of passcode to unfreeze a device. - UserDefined: Manually set the passcode in passcode. You must specify the passcode argument. - RandomForEach: A unique passcode is randomly generated for each device. You must specify the passcode_length argument. - RandomForAll: A passcode is randomly generated and is the same for all devices. You must specify the passcode_length argument.'
       isArray: false
       name: passcode_type
       predefined:
@@ -563,7 +557,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximum number of results to return. 
+      description: Maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -681,7 +675,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximum number of results to return. 
+      description: Maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -922,7 +916,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.49934
 fromversion: 6.0.0
 tests:
 - Absolute_TestPlaybook

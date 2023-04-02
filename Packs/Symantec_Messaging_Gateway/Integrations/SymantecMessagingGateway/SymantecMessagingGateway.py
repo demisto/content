@@ -1,12 +1,12 @@
 import os
-
+import urllib3
 import demistomock as demisto  # noqa: F401
 import requests
 from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']

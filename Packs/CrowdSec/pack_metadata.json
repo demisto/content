@@ -1,0 +1,31 @@
+{
+    "name": "CrowdSec",
+    "description": "Enrich the data you have on your threats with the most advanced real-world CTI.",
+    "support": "partner",
+    "currentVersion": "1.0.1",
+    "author": "CrowdSec",
+    "url": "https://www.crowdsec.net/contact-crowdsec",
+    "email": "support@crowdsec.net",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence"
+    ],
+    "useCases": [],
+    "keywords": [
+        "ip",
+        "enrichment",
+        "threat",
+        "intelligence",
+        "crowd"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "support@crowdsec.net"
+    ],
+    "githubUser": []
+}

@@ -1,9 +1,12 @@
 commonfields:
   id: Thinkst Canary
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: Thinkst Canary
 display: Thinkst Canary
-category: Deception
+category: Deception & Breach Simulation
 description: By presenting itself as an apparently benign and legitimate service(s), the Canary draws the attention of unwanted activity. When someone trips one of the Canary's triggers, an alert is sent to notify the responsible parties so that action can be taken before valubale systems in your network are compromised.
 configuration:
 - display: Canary Server URL (e.g., https://***.canary.tools)
@@ -11,37 +14,46 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+  section: Connect
 - display: API Authentication Token
   name: auth_token
   defaultvalue: ""
   type: 4
   required: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetchDelta
   defaultvalue: "24 hours"
   type: 0
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Connect
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.48392
   commands:
   - name: canarytools-list-canaries
     arguments: []

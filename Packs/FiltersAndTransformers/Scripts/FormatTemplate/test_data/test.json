@@ -1,0 +1,282 @@
+[
+  {
+    "args": {
+      "value": null,
+      "template": null,
+      "ctx_data": null,
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": []
+  },
+  {
+    "args": {
+      "value": null,
+      "template": "aaa ${name1} bbb ${name2} ccc",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 bbb value2 ccc"
+  },
+  {
+    "args": {
+      "value": "aaa ${name1} bbb ${name2} ccc",
+      "template": null,
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 bbb value2 ccc"
+  },
+  {
+    "args": {
+      "value": "aaa ${name1} bbb ${name2} ccc",
+      "template": "",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 bbb value2 ccc"
+  },
+  {
+    "args": {
+      "value": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "template": "aaa ${.name1} bbb ${.name2} ccc ${name3} ddd ${name4}",
+      "ctx_data": {
+        "name3": "value3",
+        "name4": "value4"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 bbb value2 ccc value3 ddd value4"
+  },
+  {
+    "args": {
+      "value": null,
+      "template": {
+        "1": "aaa ${name1} bbb",
+        "2": "aaa ${name2} ccc"
+      },
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": {
+      "1": "aaa value1 bbb",
+      "2": "aaa value2 ccc"
+    }
+  },
+  {
+    "args": {
+      "value": null,
+      "template": "{\"1\": \"aaa ${name1} bbb\", \"2\": \"aaa ${name2} ccc\"}",
+      "template_type": "json",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": {
+      "1": "aaa value1 bbb",
+      "2": "aaa value2 ccc"
+    }
+  },
+  {
+    "args": {
+      "value": null,
+      "template": "aaa ${inputs.name1} bbb ${inputs.name2} ccc",
+      "ctx_data": null,
+      "ctx_inputs": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 bbb value2 ccc"
+  },
+  {
+    "args": {
+      "value": null,
+      "template": "aaa ${incident.name1} bbb ${incident.name2} ccc",
+      "ctx_data": null,
+      "ctx_inputs": null,
+      "ctx_inc": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 bbb value2 ccc"
+  },
+  {
+    "args": {
+      "value": null,
+      "template": "${name1}",
+      "ctx_data": {
+        "name1": {
+          "a": "b"
+        }
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": {
+      "a": "b"
+    }
+  },
+  {
+    "args": {
+      "value": null,
+      "template": "aaa {name1} bbb {name2} ccc",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": "{,}",
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 bbb value2 ccc"
+  },
+  {
+    "args": {
+      "value": null,
+      "template": "aaa %%name1%% bbb %%name2%% ccc",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": "%%,%%",
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 bbb value2 ccc"
+  },
+  {
+    "args": {
+      "value": null,
+      "template": "aaa $name1 bbb $name2 ccc",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": "$",
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 bbb value2 ccc"
+  },
+  {
+    "args": {
+      "value": null,
+      "template": "aaa ${name${name1}} ccc",
+      "ctx_data": {
+        "name1": "2",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value2 ccc"
+  },
+  {
+    "args": {
+      "value": null,
+      "template": "aaa ${name1} bbb ${name2} ccc",
+      "ctx_data": {
+        "name1": "value1"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": true
+    },
+    "results": "aaa value1 bbb ${name2} ccc"
+  },
+  {
+    "args": {
+      "value": null,
+      "template": "aaa ${name1} bbb ${name2} ccc",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": null
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": true
+    },
+    "results": "aaa value1 bbb ${name2} ccc"
+  },
+  {
+    "args": {
+      "value": null,
+      "template": "aaa ${name1} bbb ${name2} ccc",
+      "ctx_data": {
+        "name1": "value1"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 bbb  ccc"
+  },
+  {
+    "args": {
+      "value": null,
+      "template": "{${name}}",
+      "ctx_data": {
+        "name": "value"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "{value}"
+  }
+]

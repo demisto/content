@@ -12,36 +12,31 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of incident statuses by which to filter the
-    results. For example: assigned.'
+  description: 'A comma-separated list of incident statuses by which to filter the results. For example: assigned.'
   isArray: true
   name: status
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of incident statuses to exclude from the results.  For
-    example: assigned.'
+  description: 'A comma-separated list of incident statuses to exclude from the results.  For example: assigned.'
   isArray: true
   name: notstatus
   required: false
   secret: false
 - default: false
-  description: A comma-separated list of incident close reasons by which to filter
-    the results.
+  description: A comma-separated list of incident close reasons by which to filter the results.
   isArray: true
   name: reason
   required: false
   secret: false
 - default: false
-  description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00
-    or 2006-01-02T15:04:05Z)
+  description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
   isArray: false
   name: fromdate
   required: false
   secret: false
 - default: false
-  description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or
-    2006-01-02T15:04:05Z)
+  description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
   isArray: false
   name: todate
   required: false
@@ -95,8 +90,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Use free form query (use Lucene syntax) as filter. All other filters
-    will be ignored when this filter is used.
+  description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
   isArray: false
   name: query
   required: false
@@ -107,6 +101,7 @@ args:
   name: page
   required: false
   secret: false
+  deprecated: true
 - default: false
   description: |-
     The number of events to return from the alert JSON. The default is 0, which returns all events.
@@ -115,13 +110,21 @@ args:
   name: trimevents
   required: false
   secret: false
-  defaultValue: '0'
+  hidden: true
 - default: false
   description: Number of incidents per page (per fetch)
   isArray: false
   name: size
   required: false
   secret: false
+  deprecated: true
+- default: false
+  description: The maximum number of incidents to be returned.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+  defaultValue: '100'
 - default: false
   description: Sort in format of field.asc,field.desc,...
   isArray: false
@@ -129,18 +132,33 @@ args:
   required: false
   secret: false
 - default: false
-  description: If provided, the value of this argument will be set under the searchResultsLabel
-    context key for each incident found.
+  description: If provided, the value of this argument will be set under the searchResultsLabel context key for each incident found.
   isArray: false
   name: searchresultslabel
   required: false
   secret: false
+- default: false
+  description: If enabled runs a summarized version of this script. Disables auto-extract, sets fromDate to 30 days, and minimizes the context output. You can add sepcific fields to context using the add_fields_to_summarize_context argument. Default is false.
+  isArray: false
+  name: summarizedversion
+  required: false
+  secret: false
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+- default: false
+  description: A comma seperated list of fields to add to context when using summarized version, (default- id,name,type,severity,status,owner,created,closed)
+  isArray: false
+  name: add_fields_to_summarize_context
+  required: false
+  secret: false
 comment: |-
-  Searches Demisto incidents.
+  Searches Demisto incidents. A summarized version of this scrips is avilable with the summarizedversion argument.
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 commonfields:
   id: SearchIncidentsV2
   version: -1
@@ -193,7 +211,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.4.28442
+dockerimage: demisto/python3:3.10.10.48392
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

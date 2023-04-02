@@ -1,0 +1,58 @@
+{
+  "next": null,
+  "page_size": 10,
+  "previous": null,
+  "results": [
+    {
+      "analyst_score": null,
+      "analyst_tlp": null,
+      "confidence_score": 42,
+      "confidence_type": "ctix",
+      "country": null,
+      "created": 1666717438,
+      "ctix_created": 1666869314,
+      "ctix_modified": 1666869314,
+      "first_seen": null,
+      "id": "ab6620d1-2053-49fc-bf4c-842be7964d90",
+      "indicator_type": "domain-name",
+      "ioc_type": "domain-name",
+      "is_actioned": false,
+      "is_deprecated": false,
+      "is_false_positive": false,
+      "is_reviewed": false,
+      "is_revoked": false,
+      "is_watchlist": false,
+      "is_whitelisted": false,
+      "last_seen": null,
+      "modified": 1666717438,
+      "name": "google.com",
+      "null": [],
+      "primary_attribute": null,
+      "published_collections": [],
+      "risk_severity": "UNKNOWN",
+      "source_collections": [
+        {
+          "id": "2a5a9989-030d-466b-b676-223d2b1f4d1e",
+          "name": "Indicators v4"
+        }
+      ],
+      "source_confidence": "HIGH",
+      "sources": [
+        {
+          "id": "131392bb-ecdf-45ae-8f22-b1160cf03401",
+          "name": "Mandiant Threat Intelligence",
+          "source_type": "API_FEEDS"
+        }
+      ],
+      "sub_type": "value",
+      "subscriber_collections": [],
+      "subscribers": [],
+      "tags": [],
+      "tlp": "AMBER",
+      "type": "indicator",
+      "valid_from": 1409607563,
+      "valid_until": null
+    }
+  ],
+  "total": 1
+}

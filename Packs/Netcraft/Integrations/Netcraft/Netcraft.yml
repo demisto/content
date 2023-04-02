@@ -2,9 +2,9 @@ commonfields:
   id: Netcraft
   version: -1
 name: Netcraft
-display: Netcraft
+display: Netcraft (Deprecated)
 category: Network Security
-description: An integration for Netcraft, allowing you to open and handle takedown requests.
+description: Deprecated. No available replacement.
 configuration:
 - display: Credentials
   name: credentials
@@ -27,7 +27,7 @@ configuration:
 script:
   script: ''
   type: python
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.8.37753
   commands:
   - name: netcraft-report-attack
     arguments:
@@ -90,6 +90,7 @@ script:
       description: The IPv4 address of the attack.
       type: String
     description: Reports an attack to Netcraft.
+    deprecated: true
   - name: netcraft-get-takedown-info
     arguments:
     - name: id
@@ -157,6 +158,7 @@ script:
       description: TTPS certificate details for the hostname, or null if no certificate was found. The value returned is the output of PHP's openssl_x509_parse function.
       type: Unknown
     description: Returns information on existing takedowns. You can retrieve the takedown ID when you report the malicious URL and open the takedown, using the netcraft-report-attack command.
+    deprecated: true
   - name: netcraft-get-takedown-notes
     arguments:
     - name: takedown_id
@@ -189,6 +191,7 @@ script:
       description: 'The date/time the note was created. Format (UTC): YYYY-MM-DD HH:MM:SS.'
       type: string
     description: Returns notes for takedowns.
+    deprecated: true
   - name: netcraft-add-notes-to-takedown
     arguments:
     - name: takedown_id
@@ -204,12 +207,17 @@ script:
       - "False"
       description: Whether to notify Netcraft. Default is "true".
     description: Adds notes to an existing takedown.
+    deprecated: true
   - name: netcraft-escalate-takedown
     arguments:
     - name: takedown_id
       required: true
       description: The ID of the takedown to escalate.
     description: Escalates a takedown.
+    deprecated: true
   runonce: false
   subtype: python3
 fromversion: 5.0.0
+deprecated: true
+tests:
+- No tests (deprecated)

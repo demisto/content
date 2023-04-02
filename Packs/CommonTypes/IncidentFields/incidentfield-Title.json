@@ -32,7 +32,14 @@
   "Mandiant Automated Defense Incident",
   "OpsGenie Incident",
   "ThreatConnect",
-  "Vectra Account"
+  "Vectra Account",
+  "AWS Guard Duty EC2 Finding",
+  "AWS Guard Duty IAM Finding",
+  "AWS Guard Duty Kubernetes Finding",
+  "AWS Guard Duty Malware Protection Finding",
+  "AWS Guard Duty S3 Finding",
+  "Exabeam Incident",
+  "AWS Security Hub Finding"
  ],
  "associatedToAll": false,
  "unmapped": false,

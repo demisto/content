@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: microsoft_wsus_modeling_rule
+name: Microsoft WSUS Modeling Rule
+rules: ''
+schema: ''
+tags: Microsoft WSUS

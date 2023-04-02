@@ -109,11 +109,28 @@ script:
       required: false
       secret: false
     - default: false
-      description: Data to submit for analysis. For URLs give the URL. For files, give the entry-id of the file
+      description: Data to submit for analysis. For URLs and fetch, give the URL. For files, give the entry-id of the file
       isArray: false
       name: data
       required: true
       secret: false
+    - name: password
+      description: A password that may be used to decrypt the provided file, usually an archive
+      isArray: false
+    - name: timeout
+      description: The timeout in seconds of the behavioral analysis
+      isArray: false
+    - name: network
+      auto: PREDEFINED
+      description: The type of network routing to use
+      isArray: false
+      predefined:
+      - internet
+      - drop
+      - tor
+      - sim200
+      - sim404
+      - nxdomain
     deprecated: false
     description: Submits a file or url for analysis
     execution: false
@@ -181,8 +198,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Sample's unique identifier, can be found using the query samples command
-      isArray: false
+      description: One or more comma-separated unique sample identifiers. These can be found using the query samples command.
+      isArray: true
       name: sample_id
       required: true
       secret: false
@@ -646,6 +663,9 @@ script:
       - drop
       - internet
       - proxy
+      - tor
+      - sim200
+      - sim404
       required: false
       secret: false
     deprecated: false
@@ -751,7 +771,7 @@ script:
     execution: false
     name: triage-delete-profile
     description: Update the profile with the specified ID or name. The stored profile is overwritten, so it is important that the submitted profile has all fields, with the exception of the ID
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.9.42476
   feed: false
   isfetch: false
   longRunning: false

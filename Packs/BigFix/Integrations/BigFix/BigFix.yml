@@ -19,7 +19,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: IBM BigFix Patch provides an automated, simplified patching process that is administered from a single console.
+description: HCL BigFix Patch provides an automated, simplified patching process that is administered from a single console.
 display: BigFix
 name: BigFix
 script:
@@ -503,7 +503,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Stops and deletes the specified action. Note: You cannot delete actions that are members of a Multiple Action Group. This note applies to IBM BigFix V9.2 and later.'
+    description: 'Stops and deletes the specified action. Note: You cannot delete actions that are members of a Multiple Action Group. This note applies to HCL BigFix V9.2 and later.'
     execution: false
     name: bigfix-action-delete
   - arguments:
@@ -558,5 +558,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.49934
 fromversion: 5.0.0

@@ -371,12 +371,12 @@ def test_url_not_found():
 
     """
 
-    url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
+    url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com/path'
     status_code = 200
     json_data = {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False}
-    expected_output = "No results were found for url http://www.malware.com"
+    expected_output = "No results were found for url http://www.malware.com/path"
 
-    url_to_check = {'url': 'http://www.malware.com'}
+    url_to_check = {'url': 'http://www.malware.com/path'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
@@ -476,18 +476,18 @@ def test_url_command():
 
     """
 
-    url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                             # noqa: E501
+    url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com/path'
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=http://www.malware.com/path&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                             # noqa: E501
     status_code = 200
     json_data = URL_RES_JSON
     intel_json_data = URL_INTEL_JSON
 
     expected_output = {
-        'URL': [{'Data': 'http://www.malware.com'}],
-        'DBOTSCORE': [{'Indicator': 'http://www.malware.com', 'Type': 'url', 'Vendor': 'iDefense',
+        'URL': [{'Data': 'http://www.malware.com/path'}],
+        'DBOTSCORE': [{'Indicator': 'http://www.malware.com/path', 'Type': 'url', 'Vendor': 'iDefense',
                        'Score': 2, 'Reliability': 'B - Usually reliable'}]}
 
-    url_to_check = {'url': 'http://www.malware.com'}
+    url_to_check = {'url': 'http://www.malware.com/path'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=status_code, json=intel_json_data)
@@ -517,8 +517,8 @@ def test_url_command_when_api_key_not_authorized_for_document_search():
 
     """
 
-    url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
-    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                             # noqa: E501
+    url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com/path'
+    doc_url = 'https://test.com/rest/document/v0?links.display_text.values=http://www.malware.com/path&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                             # noqa: E501
     status_code = 200
     error_status_code = 403
     json_data = URL_RES_JSON
@@ -526,11 +526,11 @@ def test_url_command_when_api_key_not_authorized_for_document_search():
                                      'error': 'Forbidden', 'message': 'Forbidden', 'path': '/rest/document/v0'}
 
     expected_output = {
-        'URL': [{'Data': 'http://www.malware.com'}],
-        'DBOTSCORE': [{'Indicator': 'http://www.malware.com', 'Type': 'url', 'Vendor': 'iDefense',
+        'URL': [{'Data': 'http://www.malware.com/path'}],
+        'DBOTSCORE': [{'Indicator': 'http://www.malware.com/path', 'Type': 'url', 'Vendor': 'iDefense',
                        'Score': 2, 'Reliability': 'B - Usually reliable'}]}
 
-    url_to_check = {'url': 'http://www.malware.com'}
+    url_to_check = {'url': 'http://www.malware.com/path'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=error_status_code, json=doc_search_exception_response)

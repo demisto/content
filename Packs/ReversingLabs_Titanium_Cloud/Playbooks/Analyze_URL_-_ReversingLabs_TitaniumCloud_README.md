@@ -25,7 +25,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| URL | URL to analyze | URL.Data.None | Optional |
+| URL | URL to analyze | URL.Data | Optional |
 
 ## Playbook Outputs
 ---
@@ -45,4 +45,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Analyze URL - ReversingLabs TitaniumCloud](doc_imgs/Analyze_URL_-_ReversingLabs_TitaniumCloud_Fri_Oct_08_2021.png)
+![Analyze URL - ReversingLabs TitaniumCloud](../doc_files/Playbook_-_Analyze_URL_-_ReversingLabs_TitaniumCloud.png)

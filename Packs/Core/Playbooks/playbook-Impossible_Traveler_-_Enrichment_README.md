@@ -1,39 +1,63 @@
-This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert and enriches them based on the following:
+This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert, and enriches them based on the following:
 * Geo location
 * Active Directory
-* Verdict enrichment e.g. VirusTotal, AbuseIPDB, etc.
+* IP enrichment e.g. VirusTotal, AbuseIPDB, etc.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Active Directory - Get User Manager Details
+
+* Account Enrichment - Generic v2.1
 
 ### Integrations
-* CoreIOCs
+
 * CortexCoreIR
+* CoreIOCs
 
 ### Scripts
+
 * http
 * Set
 * DeleteContext
 * ParseJSON
 
 ### Commands
+
 * ip
-* ad-get-user
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| sourceip | The source IP to iterate over |  | Optional |
+| sourceip | The source IP to iterate over. |  | Optional |
+| username | The username to iterate over. |  | Optional |
+| domain | The organization domain. |  | Optional |
 
 ## Playbook Outputs
+
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| ActiveDirectory.Users.manager | The manager of the user. | unknown |
+| IP | The IP enrichment results. | unknown |
+| IP.Geo | The IP geo information. | unknown |
+| IP.Malicious | The IP verdict. | unknown |
+| AbuseIPDB.IP | The IP information retrieved from AbuseIPDB. | unknown |
+| AbuseIPDB.IP.Geo | The IP geo information. | unknown |
+| DBotScore | The DBotScore | unknown |
+| AbuseIPDB.IP.Malicious | The IP verdict. | unknown |
+| Account | The account object. | unknown |
+| ActiveDirectory.Users | The AD users. | unknown |
+| MSGraphUser | The user information retrieved from MSGraphUser | unknown |
+| MSGraphUserManager.Manager | The user's manager information retrieved from MSGraphUser. | unknown |
 
 ## Playbook Image
+
 ---
-![Impossible Traveler - Enrichment](https://raw.githubusercontent.com/demisto/content/b391822313ec453de36439890a0137d4dd126e8e/Packs/Core/doc_files/Impossible_Traveler_-_Enrichment.png)
+
+![Impossible Traveler - Enrichment](../doc_files/Impossible_Traveler_-_Enrichment.png)

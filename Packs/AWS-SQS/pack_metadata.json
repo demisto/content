@@ -2,17 +2,19 @@
     "name": "AWS - SQS",
     "description": "Amazon Web Services Simple Queuing Service (SQS)",
     "support": "xsoar",
-    "currentVersion": "1.2.12",
+    "currentVersion": "1.2.22",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "IT Services"
+        "Cloud Services"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Amazon"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

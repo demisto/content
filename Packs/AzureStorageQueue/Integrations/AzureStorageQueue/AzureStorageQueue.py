@@ -5,7 +5,9 @@ from CommonServerPython import *  # noqa: F401
 
 import base64
 import copy
+import defusedxml.ElementTree as defused_ET
 from requests import Response
+import urllib3
 
 DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
 account_sas_token = ""
@@ -17,9 +19,10 @@ class Client:
     API Client
     """
 
-    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name, api_version):
+    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name,
+                 api_version, managed_identities_client_id: Optional[str] = None):
         self.ms_client = MicrosoftStorageClient(server_url, verify, proxy, account_sas_token, storage_account_name,
-                                                api_version)
+                                                api_version, managed_identities_client_id)
 
     def list_queues_request(self, limit: str = None, prefix: str = None, marker: str = None) -> str:
         """
@@ -228,7 +231,7 @@ def parse_xml_response(xml_string_response: str, tag_path: str = "", find_tag: b
 
     """
 
-    tree = ET.ElementTree(ET.fromstring(xml_string_response))
+    tree = ET.ElementTree(defused_ET.fromstring(xml_string_response))
 
     root = tree.getroot()
 
@@ -322,7 +325,7 @@ def get_pagination_next_marker_element(limit: str, page: int, client_request: Ca
     """
     offset = int(limit) * (page - 1)
     response = client_request(limit=str(offset), **params)
-    tree = ET.ElementTree(ET.fromstring(response))
+    tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
     return root.findtext('NextMarker')  # type: ignore
@@ -830,18 +833,20 @@ def main() -> None:
 
     global account_sas_token
     global storage_account_name
-    account_sas_token = params['credentials']['password']
+    account_sas_token = params.get('credentials', {}).get('password')
     storage_account_name = params['credentials']['identifier']
     api_version = "2020-10-02"
     base_url = f'https://{storage_account_name}.queue.core.windows.net'
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        urllib3.disable_warnings()
         client: Client = Client(base_url, verify_certificate, proxy, account_sas_token, storage_account_name,
-                                api_version)
+                                api_version,
+                                managed_identities_client_id)
 
         commands = {
             'azure-storage-queue-list': list_queues_command,
@@ -858,7 +863,7 @@ def main() -> None:
 
         if command == 'test-module':
             test_module(client, params.get('max_fetch'))  # type: ignore
-        if command == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             fetch_incidents(client, params.get('queue_name'), params.get('max_fetch'))  # type: ignore
         elif command in commands:
             return_results(commands[command](client, args))

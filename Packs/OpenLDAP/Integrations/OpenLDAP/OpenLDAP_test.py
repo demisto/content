@@ -7,7 +7,7 @@ from OpenLDAP import LdapClient
 
 class TestsActiveDirectory:
     """
-        Contains unit tests for functions that deal with Active directory server.
+        Contains unit tests for functions that deal with Active directory server only.
     """
 
     def test_parse_ldap_group_entries_and_referrals(self):
@@ -137,5 +137,130 @@ class TestsActiveDirectory:
 
 class TestsOpenLDAP:
     """
-       Contains unit tests for functions that deal with OpenLDAP server.
+       Contains unit tests for functions that deal with OpenLDAP server only.
     """
+
+    @pytest.mark.parametrize('dn, user_identifier_attribute, expected_result', [
+        ('uid=user_test,cn=users_test,dc=openldap_test,dc=test,dc=int', 'uid', (True, 'user_test')),
+        ('not_a_valid_dn_test', 'uid', (False, 'not_a_valid_dn_test'))
+    ])
+    def test_is_valid_dn(self, dn, user_identifier_attribute, expected_result):
+        """
+             Given:
+                 - A DN and a user identifier attribute:
+                   1. A valid DN.
+                   2. Invalid DN.
+             When:
+                 - Running the '_is_valid_dn()' function.
+             Then:
+                 - Verify that the DN is parsed correctly and that the user returned as expected.
+         """
+        client = LdapClient({'ldap_server_vendor': 'OpenLDAP', 'host': 'server_ip',
+                             'connection_type': 'SSL', 'user_identifier_attribute': user_identifier_attribute})
+
+        actual_result, dn = client._is_valid_dn(dn, client.USER_IDENTIFIER_ATTRIBUTE)
+
+        assert (actual_result, dn) == expected_result
+
+    @pytest.mark.parametrize('dn, user_identifier_attribute', [
+        ('cn=users_test,dc=openldap_test,dc=test,dc=int', 'uid'),
+        ('uid=user_test,cn=users_test,dc=openldap_test,dc=test,dc=int', 'new_uid')
+    ])
+    def test_is_valid_dn_user_id_not_in_dn(self, dn, user_identifier_attribute):
+        """
+             Given:
+                 1. A DN without a user identifier attribute.
+                 2. A DN with a wrong user identifier attribute.
+             When:
+                 - Running the '_is_valid_dn()' function.
+             Then:
+                 - Verify that the expected err message is raised.
+         """
+        client = LdapClient({'ldap_server_vendor': 'OpenLDAP', 'host': 'server_ip',
+                             'connection_type': 'SSL', 'user_identifier_attribute': user_identifier_attribute})
+
+        with pytest.raises(Exception) as e:
+            client._is_valid_dn(dn, client.USER_IDENTIFIER_ATTRIBUTE)
+        assert e.value.args[0] == f'OpenLDAP {user_identifier_attribute} attribute was not found in user DN : {dn}'
+
+    # def test_get_user_data(self):
+    #     client = LdapClient({'ldap_server_vendor': 'OpenLDAP', 'host': 'server_ip',
+    #                          'connection_type': 'SSL', 'user_identifier_attribute': 'uid'})
+    #
+    #     mocker.patch('OpenLDAP.LdapClient.search_user_data', return_value=)
+
+
+class TestLDAPAuthentication:
+    """
+       Contains unit tests for general functions that deal with both OpenLDAP and Active Directory servers.
+    """
+
+    @pytest.mark.parametrize('ssl_version, expected_ssl_version', [
+        ('TLS', 2), ('TLSv1', 3), ('TLSv1_1', 4), ('TLSv1_2', 5), ('TLS_CLIENT', 16), (None, None), ('None', None)
+    ])
+    def test_get_ssl_version(self, ssl_version, expected_ssl_version):
+        """
+            Given:
+                - An ssl protocol version:
+                    1. TLS
+                    2. TLSv1
+                    3. TLSv1_1
+                    4. TLSv1_2
+                    5. TLS_CLIENT
+                    6. None
+                    7. 'None'
+            When:
+                - Running the '_get_ssl_version()' function.
+            Then:
+                - Verify that the returned ssl version value is as expected:
+                    1. TLS - 2
+                    2. TLSv1 - 3
+                    3. TLSv1_1 - 4
+                    4. TLSv1_2 - 5
+                    5. TLS_CLIENT - 16
+                    6. None - None
+                    7. 'None' - None
+        """
+        client = LdapClient({'ldap_server_vendor': 'OpenLDAP', 'host': 'server_ip',
+                             'connection_type': 'SSL', 'ssl_version': ssl_version})
+
+        ssl_version_value = client._get_ssl_version()
+        assert ssl_version_value == expected_ssl_version
+
+    @pytest.mark.parametrize('custom_attributes, expected_formatted_attributes', [
+        ('attr1=val1,attr2=val2,attr3=val3', '(attr1=val1)(attr2=val2)(attr3=val3)'),
+        ('', '')
+    ])
+    def test_get_formatted_custom_attributes(self, custom_attributes, expected_formatted_attributes):
+        """
+             Given:
+                 - Custom attributes:
+                   1. A valid comma separated list of attributes.
+                   2. An empty string of attributes.
+             When:
+                 - Running the '_get_formatted_custom_attributes()' function.
+             Then:
+                 - Verify that the attributed parsed correctly.
+         """
+        client = LdapClient({'ldap_server_vendor': 'OpenLDAP', 'host': 'server_ip',
+                             'connection_type': 'SSL', 'custom_attributes': custom_attributes})
+
+        formatted_attributes = client._get_formatted_custom_attributes()
+        assert formatted_attributes == expected_formatted_attributes
+
+    def test_get_formatted_custom_attributes_invalid_attributes_input(self):
+        """
+             Given:
+                 - Invalid Custom attributes.
+             When:
+                 - Running the '_get_formatted_custom_attributes()' function.
+             Then:
+                 - Verify that the expected error message is raised.
+         """
+        client = LdapClient({'ldap_server_vendor': 'OpenLDAP', 'host': 'server_ip',
+                             'connection_type': 'SSL', 'custom_attributes': 'attr1val1,attr2=val2,attr3=val3'})
+
+        with pytest.raises(Exception) as e:
+            client._get_formatted_custom_attributes()
+        assert e.value.args[0] == (f'User defined attributes must be of the form "attrA=valA,attrB=valB,...", but got: '
+                                   f'{client.CUSTOM_ATTRIBUTE}')

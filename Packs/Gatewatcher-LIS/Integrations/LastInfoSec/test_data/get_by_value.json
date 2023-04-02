@@ -1,0 +1,187 @@
+{
+  "CaseId": "7f40decf-7247-4f4d-bba7-90b134f8f91b",
+  "UpdatedDate": "2022-10-17T08:09:13+00:00",
+  "IOCs": [
+    {
+      "IocId": "56d47e44-18ac-42a7-8c81-94cf7e9d0442",
+      "Value": "DRAFT_BL_114172022.pdf.vbs",
+      "Type": "Filename",
+      "Risk": "Informational",
+      "TLP": "white",
+      "CreationDate": "2022-10-17T06:55:32+00:00",
+      "ExternalLinks": [
+        {
+          "source_name": "Bazaar Abuse.ch",
+          "url": "https://bazaar.abuse.ch/sample/b71c7db7c4b20c354f63820df1f5cd94dbec97849afa690675d221964b8176b5/"
+        }
+      ],
+      "Description": "'DRAFT_BL_114172022.pdf.vbs' is a Informational Filename.\nThe targeted language is da.\nWe advised to use this IoC in informational mode.",
+      "Relations": [],
+      "Tags": [],
+      "TTP": [],
+      "Families": [],
+      "Campaigns": [],
+      "Categories": [],
+      "ThreatActor": [],
+      "TargetedSectors": [],
+      "TargetedOrganizations": [],
+      "TargetedPlatforms": [],
+      "TargetedCountries": [],
+      "Vulnerabilities": [],
+      "KillChainPhases": [],
+      "MetaData": {
+        "cwe": [],
+        "descriptions": [],
+        "lang": "da",
+        "usageMode": "informational"
+      },
+      "UsageMode": "informational"
+    },
+    {
+      "IocId": "f8bfa805-4564-4eb1-a95b-cc2d791f6eec",
+      "Value": "b71c7db7c4b20c354f63820df1f5cd94dbec97849afa690675d221964b8176b5",
+      "Type": "SHA256",
+      "Risk": "Suspicious",
+      "TLP": "white",
+      "CreationDate": "2022-10-17T06:55:42+00:00",
+      "ExternalLinks": [
+        {
+          "source_name": "Bazaar Abuse.ch",
+          "url": "https://bazaar.abuse.ch/sample/b71c7db7c4b20c354f63820df1f5cd94dbec97849afa690675d221964b8176b5/"
+        },
+        {
+          "source_name": "CAPEv23",
+          "url": "https://143.215.130.170/api/tasks/view/320768"
+        }
+      ],
+      "Description": "'b71c7db7c4b20c354f63820df1f5cd94dbec97849afa690675d221964b8176b5' is a Suspicious SHA256. It is linked to a ASCII text, with very long lines, with CRLF line terminators file.\nThis SHA256 is linked to a malware attack.\nWe advised to use this IoC in detection mode.",
+      "Relations": [
+        "0e3cc27b-7999-48ce-8484-dc12b325a355",
+        "56d47e44-18ac-42a7-8c81-94cf7e9d0442"
+      ],
+      "Tags": [
+        "trojan.script.vbs-heuristic.druvzi"
+      ],
+      "TTP": [],
+      "Families": [],
+      "Campaigns": [],
+      "Categories": [
+        "malware"
+      ],
+      "ThreatActor": [],
+      "TargetedSectors": [],
+      "TargetedOrganizations": [],
+      "TargetedPlatforms": [],
+      "TargetedCountries": [],
+      "Vulnerabilities": [],
+      "KillChainPhases": [],
+      "MetaData": {
+        "cwe": [],
+        "descriptions": [],
+        "filetype": "ASCII text, with very long lines, with CRLF line terminators",
+        "ssdeep": "24576:SxduYKj/RXxzbz/VuqwoUxUn/EzcV04ISLm:Sx7s/RXxzc7Un/3V0Wm",
+        "usageMode": "detection"
+      },
+      "UsageMode": "detection"
+    },
+    {
+      "IocId": "bf4e44c9-a2b9-48e8-88be-25c9d5ebfdb9",
+      "Value": "bb9ae60aa4135ace9e93c822520ad1fee0e73181",
+      "Type": "SHA1",
+      "Risk": "Suspicious",
+      "TLP": "white",
+      "CreationDate": "2022-10-17T06:55:42+00:00",
+      "ExternalLinks": [
+        {
+          "source_name": "Bazaar Abuse.ch",
+          "url": "https://bazaar.abuse.ch/sample/b71c7db7c4b20c354f63820df1f5cd94dbec97849afa690675d221964b8176b5/"
+        },
+        {
+          "source_name": "CAPEv23",
+          "url": "https://143.215.130.170/api/tasks/view/320768"
+        }
+      ],
+      "Description": "'bb9ae60aa4135ace9e93c822520ad1fee0e73181' is a Suspicious SHA1. It is linked to a ASCII text, with very long lines, with CRLF line terminators file.\nThis SHA1 is linked to a malware attack.\nWe advised to use this IoC in detection mode.",
+      "Relations": [
+        "56d47e44-18ac-42a7-8c81-94cf7e9d0442",
+        "038a773f-e768-4404-ab5f-136e34a7dc0e",
+        "0e3cc27b-7999-48ce-8484-dc12b325a355",
+        "f8bfa805-4564-4eb1-a95b-cc2d791f6eec"
+      ],
+      "Tags": [
+        "trojan.script.vbs-heuristic.druvzi"
+      ],
+      "TTP": [],
+      "Families": [],
+      "Campaigns": [],
+      "Categories": [
+        "malware"
+      ],
+      "ThreatActor": [],
+      "TargetedSectors": [],
+      "TargetedOrganizations": [],
+      "TargetedPlatforms": [],
+      "TargetedCountries": [],
+      "Vulnerabilities": [],
+      "KillChainPhases": [],
+      "MetaData": {
+        "cwe": [],
+        "descriptions": [],
+        "filetype": "ASCII text, with very long lines, with CRLF line terminators",
+        "ssdeep": "24576:SxduYKj/RXxzbz/VuqwoUxUn/EzcV04ISLm:Sx7s/RXxzc7Un/3V0Wm",
+        "usageMode": "detection"
+      },
+      "UsageMode": "detection"
+    },
+    {
+      "IocId": "038a773f-e768-4404-ab5f-136e34a7dc0e",
+      "Value": "8232e1fc4c120b25dd23203500d55415",
+      "Type": "MD5",
+      "Risk": "Suspicious",
+      "TLP": "white",
+      "CreationDate": "2022-10-17T06:55:42+00:00",
+      "ExternalLinks": [
+        {
+          "source_name": "Bazaar Abuse.ch",
+          "url": "https://bazaar.abuse.ch/sample/b71c7db7c4b20c354f63820df1f5cd94dbec97849afa690675d221964b8176b5/"
+        },
+        {
+          "source_name": "CAPEv23",
+          "url": "https://143.215.130.170/api/tasks/view/320768"
+        }
+      ],
+      "Description": "'8232e1fc4c120b25dd23203500d55415' is a Suspicious MD5. It is linked to a ASCII text, with very long lines, with CRLF line terminators file.\nThis MD5 is linked to a malware attack.\nWe advised to use this IoC in detection mode.",
+      "Relations": [
+        "f8bfa805-4564-4eb1-a95b-cc2d791f6eec",
+        "56d47e44-18ac-42a7-8c81-94cf7e9d0442",
+        "0e3cc27b-7999-48ce-8484-dc12b325a355"
+      ],
+      "Tags": [
+        "trojan.script.vbs-heuristic.druvzi"
+      ],
+      "TTP": [],
+      "Families": [],
+      "Campaigns": [],
+      "Categories": [
+        "malware"
+      ],
+      "ThreatActor": [],
+      "TargetedSectors": [],
+      "TargetedOrganizations": [],
+      "TargetedPlatforms": [],
+      "TargetedCountries": [],
+      "Vulnerabilities": [],
+      "KillChainPhases": [],
+      "MetaData": {
+        "cwe": [],
+        "descriptions": [],
+        "filetype": "ASCII text, with very long lines, with CRLF line terminators",
+        "ssdeep": "24576:SxduYKj/RXxzbz/VuqwoUxUn/EzcV04ISLm:Sx7s/RXxzc7Un/3V0Wm",
+        "usageMode": "detection"
+      },
+      "UsageMode": "detection"
+    }
+  ],
+  "RelatedData": [],
+  "Description": "The threat report contains 4 indicators with a medium confidence average. The category of the threat is malware. "
+}

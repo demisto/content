@@ -22,3 +22,5 @@ This API key is used in the API Key field in the integration configuration.
 1. Navigate to and log into your WildFire Account.
 2. Select the Account tab from the menu.
 3. Copy the API key.
+
+Note: If your API key comes from integrations such as Prisma Cloud or Prisma Access ensure that the API source is set in the instance config.

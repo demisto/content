@@ -1,0 +1,29 @@
+{
+    "name": "CyCognito",
+    "description": "Fetches the issues associated with a particular asset from the CyCognito platform.",
+    "support": "partner",
+    "currentVersion": "1.0.8",
+    "author": "CyCognito",
+    "url": "",
+    "email": "support@cycognito.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence Management"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Issue",
+        "Asset",
+        "Vulnerability",
+        "Attack Surface"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "crestdatasystems"
+    ]
+}

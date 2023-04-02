@@ -28,7 +28,7 @@
             "displayName": "Name",
             "type": "shortText",
             "orgType": "shortText",
-            "required": true,
+            "required": false,
             "script": "",
             "width": 150,
             "isDefault": true,

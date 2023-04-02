@@ -1,0 +1,26 @@
+{
+  "data": {
+    "id": "e3026f0c154395767993f34cc71b13e3",
+    "type": "ioc",
+    "attributes": {
+      "threat_type": "DOMAIN",
+      "threat_value": "qwe.com"
+    },
+    "metadata": {
+      "source": null,
+      "quarantine": {
+        "source_names": [
+          "Vision-UI"
+        ],
+        "expires_at": "2020-01-31T00:00:00.000+00:00",
+        "created_at": "2022-07-08T06:27:47.354+00:00",
+        "first_quarantined_at": null,
+        "last_quarantined_at": null,
+        "match_count": 0,
+        "quarantine_count": 0,
+        "expired": true,
+        "wildcard": false
+      }
+    }
+  }
+}

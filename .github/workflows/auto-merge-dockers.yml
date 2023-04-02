@@ -1,0 +1,41 @@
+name: Docker Update Auto Merge
+on:
+  pull_request:
+    types: [opened, edited, synchronize, assigned]
+
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  auto_approve_and_merge:
+    runs-on: ubuntu-latest
+    if: startsWith(github.head_ref, 'demisto/') && github.repository == 'demisto/content' && contains(github.event.pull_request.labels.*.name, 'docker-image-auto-update')
+    steps:
+      - name: Print out context
+        run: |
+          echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+      - name: Approve and auto-merge for docker update PRs
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Approving the pull request"
+          gh pr review --approve "$PR_URL"
+          echo "Waiting tii all the checks are done"
+          gh pr checks --required --interval 60 --watch "$PR_URL"
+          echo "Merging the pull request"
+          gh pr merge --squash "$PR_URL"
+      - name: Post to a Slack channel
+        if: ${{ failure() }}
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: 'auto-merge-docker-action'
+          slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.CORTEX_XSOAR_SLACK_TOKEN }}
+          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}

@@ -5,13 +5,15 @@ from CommonServerPython import *
 import json
 import os
 import requests
+import urllib3
 import py42.sdk
 import py42.settings
 from datetime import datetime
 from uuid import UUID
 from py42.services.detectionlists.departing_employee import DepartingEmployeeFilters
 from py42.services.detectionlists.high_risk_employee import HighRiskEmployeeFilters
-from py42.sdk.queries.fileevents.file_event_query import FileEventQuery
+from py42.sdk.queries.fileevents.file_event_query import FileEventQuery as FileEventQueryV1
+from py42.sdk.queries.fileevents.v2.file_event_query import FileEventQuery as FileEventQueryV2
 from py42.sdk.queries.fileevents.filters import (
     MD5,
     SHA256,
@@ -20,18 +22,23 @@ from py42.sdk.queries.fileevents.filters import (
     ExposureType,
     FileCategory,
 )
+from py42.sdk.queries.fileevents.v2 import filters as v2_filters
 from py42.sdk.queries.fileevents.util import FileEventFilterStringField
 from py42.sdk.queries.alerts.alert_query import AlertQuery
 from py42.sdk.queries.alerts.filters import DateObserved, Severity, AlertState
-from py42.exceptions import Py42NotFoundError
+from py42.exceptions import Py42NotFoundError, Py42HTTPError
 
 
 class EventId(FileEventFilterStringField):
     _term = "eventId"
 
 
+class EventIdV2(FileEventFilterStringField):
+    _term = "event.id"
+
+
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 """ CONSTANTS """
 CODE42_EVENT_CONTEXT_FIELD_MAPPER = {
@@ -104,6 +111,80 @@ SECURITY_EVENT_HEADERS = [
 ]
 
 SECURITY_ALERT_HEADERS = ["Type", "Occurred", "Username", "Name", "Description", "State", "ID"]
+
+
+def _format_list(_list):
+    return "\n".join(f"• {item}" for item in _list)
+
+
+def _flatten_file_event(_dict: dict) -> dict:
+    flat = {}
+    for key, value in _dict.items():
+        if isinstance(value, dict):
+            for next_k, next_v in _flatten_file_event(value).items():
+                flat[f"{key}.{next_k}"] = next_v
+        elif isinstance(value, list) and len(value):
+            list_str = _format_list(value)
+            if len(_dict) > 1:
+                list_str = "\n" + list_str
+            flat[key] = list_str
+        elif value:
+            flat[key] = value
+    return flat
+
+
+def _columnize_file_event(obj):
+    """
+    If obj is a dictionary, converts it into a vertical column of key: value pairs
+    for aligning vertically in the markdown table.
+    """
+    if isinstance(obj, dict):
+        flat = _flatten_file_event(obj)
+        column_rows = [f"**{k}:** {v}" for k, v in flat.items()]
+        return "\n".join(column_rows)
+    elif isinstance(obj, list) and len(obj):
+        return _format_list(obj)
+    else:
+        return obj
+
+
+def format_file_events(events: List[dict]):
+    """
+    Formats Code42 file events into a markdown table.
+    """
+    formatted_events = []
+    for event in events:
+        formatted = {}
+        for k, v in event.items():
+            column = _columnize_file_event(v)
+            if column:
+                formatted[k] = column
+        formatted_events.append(formatted)
+    return tableToMarkdown("", formatted_events, removeNull=True, sort_headers=False)
+
+
+def deduplicate_v2_file_events(events: List[dict]):
+    """Takes a list of v2 file events and returns a new list removing any duplicate events."""
+    unique = []
+    id_set = set()
+    for event in events:
+        _id = event["event"]["id"]
+        if _id not in id_set:
+            id_set.add(_id)
+            unique.append(event)
+    return unique
+
+
+def deduplicate_v1_file_events(events: List[dict]):
+    """Takes a list of v1 file events and returns a new list removing any duplicate events."""
+    unique = []
+    id_set = set()
+    for event in events:
+        _id = event["eventid"]
+        if _id not in id_set:
+            id_set.add(_id)
+            unique.append(event)
+    return unique
 
 
 def _get_severity_filter_value(severity_arg):
@@ -419,6 +500,13 @@ class Code42UnsupportedHashError(Exception):
         )
 
 
+class Code42UnsupportedV2ParameterError(Exception):
+    def __init__(self, param: str):
+        super(Code42UnsupportedV2ParameterError, self).__init__(
+            f"Unsupported parameter: {param} when 'v2_events' is enabled on Code42 integration."
+        )
+
+
 class Code42MissingSearchArgumentsError(Exception):
     def __init__(self):
         super(Code42MissingSearchArgumentsError, self).__init__(
@@ -478,7 +566,7 @@ class FileEventQueryFilters(Code42SearchFilters):
 
     def to_all_query(self):
         """Convert list of search criteria to *args"""
-        query = FileEventQuery.all(*self._filters)
+        query = FileEventQueryV1.all(*self._filters)
         if self._pg_size:
             query.page_size = self._pg_size
         return query
@@ -515,6 +603,34 @@ def build_query_payload(args):
 
     query = search_args.to_all_query()
     LOG("File Event Query: {}".format(str(query)))
+    return query
+
+
+@logger
+def build_v2_query_payload(args):
+    """Build a query payload combining passed args"""
+    _hash = args.get("hash")
+    hostname = args.get("hostname")
+    username = args.get("username")
+    min_risk_score = arg_to_number(args.get("min_risk_score"), arg_name="min_risk_score") or 1
+
+    if not _hash and not hostname and not username:
+        raise Code42MissingSearchArgumentsError()
+
+    filters = []
+    if _hash:
+        if _hash_is_md5(_hash):
+            filters.append(v2_filters.file.MD5.eq(_hash))
+        elif _hash_is_sha256(_hash):
+            filters.append(v2_filters.file.SHA256.eq(_hash))
+    if hostname:
+        filters.append(v2_filters.source.Name.eq(hostname))
+    if username:
+        filters.append(v2_filters.user.Email.eq(username))
+    if min_risk_score > 0:
+        filters.append(v2_filters.risk.Score.greater_than(min_risk_score - 1))
+
+    query = FileEventQueryV2(*filters)
     return query
 
 
@@ -856,6 +972,9 @@ def highriskemployee_remove_risk_tags_command(client, args):
 
 @logger
 def securitydata_search_command(client, args):
+    file_events_version = demisto.incident()["CustomFields"].get("code42fileeventsversion", "1")
+    if file_events_version == "2":
+        return_error("Integration has been configured for V2 file events, use '!code42-file-events-search' instead.")
     code42_security_data_context = []
     _json = args.get("json")
     file_context = []
@@ -898,6 +1017,42 @@ def securitydata_search_command(client, args):
             outputs_prefix="Code42.SecurityData",
             raw_response={},
         )
+
+
+@logger
+def file_events_search_command(client, args):
+    file_events_version = demisto.incident()["CustomFields"].get("code42fileeventsversion", "1")
+    if file_events_version != "2":
+        return_error("The current incident was created with V1 file events, use '!code42-securitydata-search' instead.")
+    json_query = args.get("json")
+    add_to_context = argToBoolean(args.get("add-to-context"))
+    page_size = arg_to_number(args.get("results"), arg_name="results")
+    # If JSON payload is passed as an argument, ignore all other args and search by JSON payload
+    if json_query is not None:
+        try:
+            query = FileEventQueryV2.from_dict(json.loads(json_query))
+        except KeyError as err:
+            return_error(f"Error parsing json query: {err}")
+    else:
+        query = build_v2_query_payload(args)
+    try:
+        query.page_size = page_size
+        file_events = client.search_file_events(query)
+        markdown_table = format_file_events(file_events)
+        if add_to_context:
+            context = demisto.context()
+            if "Code42" in context and "FileEvents" in context["Code42"]:
+                context_events = context["Code42"]["FileEvents"]
+                file_events = deduplicate_v2_file_events(file_events + context_events)
+            return CommandResults(
+                outputs_prefix="Code42.FileEvents",
+                outputs=file_events,
+                readable_output=markdown_table
+            )
+        else:
+            return CommandResults(readable_output=markdown_table)
+    except Py42HTTPError as err:
+        return_error(f"Error executing json query. Make sure your query is a V2 file event query. Error={err}")
 
 
 @logger
@@ -1158,6 +1313,26 @@ def remove_user_from_watchlist_command(client, args):
     )
 
 
+@logger
+def file_events_to_table_command(client, args):
+    incident = demisto.incident()
+    file_event_version = incident["CustomFields"].get("code42fileeventsversion", "1")
+    path = args.get("include")
+    events = []
+    if path in ("incident", "all"):
+        events.extend(incident["CustomFields"]["code42fileevents"])
+    if path in ("searches", "all"):
+        context = demisto.context()
+        if "Code42" in context and "FileEvents" in context["Code42"]:
+            events.extend(context["Code42"]["FileEvents"])
+    if file_event_version == "2":
+        events = deduplicate_v2_file_events(events)
+    else:
+        events = deduplicate_v1_file_events(events)
+    table = format_file_events(events)
+    return CommandResults(readable_output=table)
+
+
 """Fetching"""
 
 
@@ -1182,6 +1357,7 @@ class Code42SecurityIncidentFetcher(object):
         event_severity_filter,
         fetch_limit,
         include_files,
+        v2_events,
         integration_context=None,
     ):
         self._client = client
@@ -1190,6 +1366,7 @@ class Code42SecurityIncidentFetcher(object):
         self._event_severity_filter = event_severity_filter
         self._fetch_limit = fetch_limit
         self._include_files = include_files
+        self._v2_events = v2_events
         self._integration_context = integration_context
 
     @logger
@@ -1259,9 +1436,14 @@ class Code42SecurityIncidentFetcher(object):
         if not event_ids:
             alert_details["fileevents"] = []
             return alert_details
-        query = FileEventQuery(EventId.is_in(event_ids))
+        if self._v2_events:
+            alert_details["fileevents_version"] = 2
+            query = FileEventQueryV2(EventIdV2.is_in(event_ids))
+        else:
+            alert_details["fileevents_version"] = 1
+            query = FileEventQueryV1(EventId.is_in(event_ids))
         events = self._client.search_file_events(query)
-        alert_details["fileevents"] = [_process_event_from_observation(e) for e in events]
+        alert_details["fileevents"] = list(events)
         return alert_details
 
     def _format_summary(self, alert_details):
@@ -1281,6 +1463,7 @@ def fetch_incidents(
     event_severity_filter,
     fetch_limit,
     include_files,
+    v2_events,
     integration_context=None,
 ):
     fetcher = Code42SecurityIncidentFetcher(
@@ -1290,6 +1473,7 @@ def fetch_incidents(
         event_severity_filter,
         fetch_limit,
         include_files,
+        v2_events,
         integration_context,
     )
     return fetcher.fetch()
@@ -1321,6 +1505,7 @@ def handle_fetch_command(client):
         event_severity_filter=demisto.params().get("alert_severity"),
         fetch_limit=int(demisto.params().get("fetch_limit")),
         include_files=demisto.params().get("include_files"),
+        v2_events=demisto.params().get("v2_events"),
         integration_context=integration_context,
     )
     demisto.setLastRun(next_run)
@@ -1367,6 +1552,8 @@ def main():
         "code42-alert-get": alert_get_command,
         "code42-alert-resolve": alert_resolve_command,
         "code42-securitydata-search": securitydata_search_command,
+        "code42-file-events-search": file_events_search_command,
+        "code42-file-events-table": file_events_to_table_command,
         "code42-departingemployee-add": departingemployee_add_command,
         "code42-departingemployee-remove": departingemployee_remove_command,
         "code42-departingemployee-get-all": departingemployee_get_all_command,

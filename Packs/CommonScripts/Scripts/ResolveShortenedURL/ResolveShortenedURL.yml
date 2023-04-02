@@ -7,23 +7,56 @@ type: python
 subtype: python3
 tags:
 - Utility
-comment: Resolve the original URL from the given shortened URL and place it in both as output and in the context of a playbook. (https://unshorten.me/api)
+comment: This script resolves the original URL from a given shortened URL and places the resolved URL in the playbook context and output.
 enabled: true
 args:
+- name: service
+  required: false
+  description: The service to use for resolving the URL. If not set, a default service is used.
+  auto: PREDEFINED
+  predefined:
+  - "longurl.in"
+  - "unshorten.me"
+  - "Built-In"
 - name: url
   required: true
+  description: The URL to resolve.
   default: true
-  description: URL to resolve
+- name: redirect_limit
+  required: false
+  defaultValue: "5"
+  description: A maximum number of recursions to run in case of nested shortened-URLs. Use 0 for unlimited (not recommended).
 - name: insecure
   required: false
   type: Boolean
-  defaultValue: "false"
-  description: Trust any certificate (not secure)
+  predefined:
+  - "False"
+  - "True"
+  description: Trust any certificate (not secure).
 outputs:
 - contextPath: URL.Data
-  description: Shortened URL
+  description: The resolved URL data.
+  type: string
+- contextPath: ResolveShortenedURL.OriginalURL
+  description: The original shortened URL.
+  type: string
+- contextPath: ResolveShortenedURL.ResolvedURL
+  description: The resolved URL.
+  type: string
+- contextPath: ResolveShortenedURL.ServiceName
+  description: The name of the service used to resolve the URL.
+  type: string
+- contextPath: ResolveShortenedURL.UsageCount
+  description: The usage count for the current IP. If the count exceeds 10 in an hour, an error is returned. Relevant only if the unshorten.me service is used.
+  type: int
+- contextPath: ResolveShortenedURL.RedirectCount
+  description: The number of redirects followed to resolve the URL.
+  type: int
+- contextPath: ResolveShortenedURL.RedirectHistory
+  description: The history of redirects followed to resolve the URL.
+  type: list
 scripttarget: 0
 tests:
 - "No test"
 fromversion: 6.5.0
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: demisto/python3:3.10.9.42476

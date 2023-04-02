@@ -36,7 +36,7 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: Enter the File Sha256 you would like to block.
+- description: Enter the File SHA256 you would like to block. Also, this input can be used in the Threat Hunting step.
   key: FileSha256
   playbookInputQuery:
   required: false
@@ -62,6 +62,81 @@ inputs:
       accessor: processpaths
       transformers:
       - operator: uniq
+- key: ManuallyChooseIOCForHunting
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
+    If false, it will hunt for all IOCs detected in the incident.
+    Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage.
+  playbookInputQuery:
+- key: IP
+  value:
+    complex:
+      root: IP
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      transformers:
+      - operator: uniq
+  required: false
+  description: IP value to hunt for.
+  playbookInputQuery:
+- key: MD5
+  value:
+    complex:
+      root: File.MD5
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      transformers:
+      - operator: uniq
+  required: false
+  description: MD5 file value to hunt for.
+  playbookInputQuery:
+- key: URL_or_Domain
+  value:
+    complex:
+      root: Domain
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain
+            iscontext: true
+      transformers:
+      - operator: append
+        args:
+          item:
+            value:
+              simple: URL
+      - operator: uniq
+  required: false
+  description: URL or domain to hunt for.
+  playbookInputQuery:
+- key: FileSha1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+      transformers:
+      - operator: append
+        args:
+          item:
+            value:
+              simple: incident.filesha1
+            iscontext: true
+      - operator: uniq
+  required: false
+  description: File SHA1 value to hunt on.
+  playbookInputQuery:
 name: Cortex XDR - True Positive Incident Handling
 outputs: []
 starttaskid: '0'
@@ -73,8 +148,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '77'
-      - '21'
+      - "79"
     note: false
     quietmode: 0
     separatecontext: false
@@ -92,10 +166,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1980,
-          "y": -160
+          "x": -1770,
+          "y": -1430
         }
       }
+    continueonerrortype: ""
   '3':
     id: '3'
     ignoreworker: false
@@ -123,6 +198,7 @@ tasks:
           "y": 1205
         }
       }
+    continueonerrortype: ""
   '7':
     id: '7'
     ignoreworker: false
@@ -170,6 +246,7 @@ tasks:
           "y": 1055
         }
       }
+    continueonerrortype: ""
   '19':
     id: '19'
     ignoreworker: false
@@ -220,6 +297,7 @@ tasks:
           "y": 410
         }
       }
+    continueonerrortype: ""
   '20':
     conditions:
     - condition:
@@ -264,6 +342,7 @@ tasks:
           "y": 240
         }
       }
+    continueonerrortype: ""
   '21':
     id: '21'
     ignoreworker: false
@@ -294,6 +373,7 @@ tasks:
           "y": -20
         }
       }
+    continueonerrortype: ""
   '22':
     conditions:
     - condition:
@@ -359,6 +439,7 @@ tasks:
           "y": 110
         }
       }
+    continueonerrortype: ""
   '25':
     id: '25'
     ignoreworker: false
@@ -389,6 +470,7 @@ tasks:
           "y": 770
         }
       }
+    continueonerrortype: ""
   '26':
     id: '26'
     ignoreworker: false
@@ -419,6 +501,7 @@ tasks:
           "y": 120
         }
       }
+    continueonerrortype: ""
   '27':
     form:
       description: ''
@@ -488,6 +571,7 @@ tasks:
           "y": 240
         }
       }
+    continueonerrortype: ""
   '29':
     id: '29'
     ignoreworker: false
@@ -524,6 +608,7 @@ tasks:
           "y": 580
         }
       }
+    continueonerrortype: ""
   '30':
     id: '30'
     ignoreworker: false
@@ -554,6 +639,7 @@ tasks:
           "y": 770
         }
       }
+    continueonerrortype: ""
   '33':
     id: '33'
     ignoreworker: false
@@ -584,6 +670,7 @@ tasks:
           "y": 120
         }
       }
+    continueonerrortype: ""
   '44':
     id: '44'
     ignoreworker: false
@@ -614,6 +701,7 @@ tasks:
           "y": 770
         }
       }
+    continueonerrortype: ""
   '53':
     id: '53'
     ignoreworker: false
@@ -628,14 +716,18 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: aef83a49-1bea-422e-8403-cadf27802149
+      id: 415a1b04-7375-4189-82dd-48f9b54d4ff9
       iscommand: false
       name: Final Closure
       type: title
       version: -1
       description: ''
-    taskid: aef83a49-1bea-422e-8403-cadf27802149
-    timertriggers: []
+    taskid: 415a1b04-7375-4189-82dd-48f9b54d4ff9
+    timertriggers:
+    - fieldname: containmentsla
+      action: stop
+    - fieldname: remediationsla
+      action: stop
     type: title
     view: |-
       {
@@ -644,6 +736,7 @@ tasks:
           "y": 920
         }
       }
+    continueonerrortype: ""
   '54':
     id: '54'
     ignoreworker: false
@@ -681,6 +774,7 @@ tasks:
           "y": 460
         }
       }
+    continueonerrortype: ""
   '55':
     id: '55'
     ignoreworker: false
@@ -717,16 +811,17 @@ tasks:
           "y": 460
         }
       }
+    continueonerrortype: ""
   '56':
     id: '56'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      no:
-      - '25'
       yes:
       - '54'
+      '#default#':
+      - "25"
     note: false
     quietmode: 0
     results:
@@ -738,7 +833,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
       id: 741f883d-a6f0-408a-89fe-f326e39cc9da
       iscommand: false
       name: Is ServiceNow Available?
@@ -755,16 +850,17 @@ tasks:
           "y": 280
         }
       }
+    continueonerrortype: ""
   '57':
     id: '57'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      no:
-      - '25'
       yes:
       - '55'
+      '#default#':
+      - "25"
     note: false
     quietmode: 0
     results:
@@ -776,7 +872,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
       id: b6bda6ab-a83f-4e7d-804a-7c7c255db9d7
       iscommand: false
       name: Is Jira Available?
@@ -793,6 +889,7 @@ tasks:
           "y": 280
         }
       }
+    continueonerrortype: ""
   '64':
     id: '64'
     ignoreworker: false
@@ -809,7 +906,7 @@ tasks:
       brand: ''
       id: 48698586-b1d5-4a9a-8ed3-ee37b7e2a1ee
       iscommand: false
-      name: Done with isolating the infected device
+      name: Done cleaning malicious file
       type: title
       version: -1
       description: ''
@@ -823,6 +920,7 @@ tasks:
           "y": 770
         }
       }
+    continueonerrortype: ""
   '66':
     id: '66'
     ignoreworker: false
@@ -850,9 +948,10 @@ tasks:
       {
         "position": {
           "x": -2240,
-          "y": 120
+          "y": -20
         }
       }
+    continueonerrortype: ""
   '70':
     id: '70'
     ignoreworker: false
@@ -877,13 +976,13 @@ tasks:
     task:
       brand: ''
       description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
-      id: 9343c6d4-5097-47e0-89df-f462cef8aa8a
+      id: 81b48996-c4a7-43c4-851f-77bedd1b169a
       iscommand: false
       name: Cortex XDR - Isolate Endpoint
       type: playbook
       version: -1
       playbookName: Cortex XDR - Isolate Endpoint
-    taskid: 9343c6d4-5097-47e0-89df-f462cef8aa8a
+    taskid: 81b48996-c4a7-43c4-851f-77bedd1b169a
     timertriggers: []
     type: playbook
     view: |-
@@ -893,6 +992,7 @@ tasks:
           "y": 580
         }
       }
+    continueonerrortype: ""
   '71':
     id: '71'
     ignoreworker: false
@@ -912,7 +1012,11 @@ tasks:
       endpoint_id:
         simple: ${inputs.HostID}
       file_path:
-        simple: ${Confirm which SHA1 should be deleted.Answers.0}
+        complex:
+          root: Confirm which File Path will be deleted.Answers
+          accessor: "0"
+          transformers:
+          - operator: uniq
       polling_timeout:
         simple: '10'
     separatecontext: true
@@ -936,6 +1040,7 @@ tasks:
           "y": 580
         }
       }
+    continueonerrortype: ""
   '72':
     id: '72'
     ignoreworker: false
@@ -972,6 +1077,7 @@ tasks:
           "y": 580
         }
       }
+    continueonerrortype: ""
   '74':
     form:
       description: ''
@@ -1038,6 +1144,7 @@ tasks:
           "y": 240
         }
       }
+    continueonerrortype: ""
   '75':
     conditions:
     - condition:
@@ -1079,6 +1186,7 @@ tasks:
           "y": 410
         }
       }
+    continueonerrortype: ""
   '76':
     conditions:
     - condition:
@@ -1121,54 +1229,584 @@ tasks:
           "y": 410
         }
       }
-  '77':
-    id: '77'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    continueonerrortype: ""
+  "78":
+    id: "78"
+    taskid: 77f60012-6352-4ecf-881f-50a16d1a519e
+    type: title
+    task:
+      id: 77f60012-6352-4ecf-881f-50a16d1a519e
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - '26'
-      - '33'
-      - '66'
-    note: false
-    quietmode: 0
+      - "26"
+      - "33"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: b3f53ec5-9365-4717-81a7-73db4ef09539
-      iscommand: false
-      name: Remediation
-      type: title
-      version: -1
-      description: ''
-    taskid: b3f53ec5-9365-4717-81a7-73db4ef09539
-    timertriggers: []
-    type: title
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1610,
+          "x": -1300,
           "y": -20
         }
       }
+    note: false
+    timertriggers:
+    - fieldname: containmentsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 1a7b0178-69d8-49f9-86fa-2f8c467cea8a
+    type: title
+    task:
+      id: 1a7b0178-69d8-49f9-86fa-2f8c467cea8a
+      version: -1
+      name: Threat Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "85"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1770,
+          "y": -1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: b4819f01-6e95-4f60-844f-8c5c6dfa14c4
+    type: title
+    task:
+      id: b4819f01-6e95-4f60-844f-8c5c6dfa14c4
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+      - "78"
+      - "66"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1770,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: f7fb79ae-a021-4009-83c1-cc3ec00bfc66
+    type: playbook
+    task:
+      id: f7fb79ae-a021-4009-83c1-cc3ec00bfc66
+      version: -1
+      name: Threat Hunting - Generic
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: - Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      playbookName: Threat Hunting - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "89"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: uniq
+      QRadarTimeFrame:
+        simple: LAST 7 DAYS
+      SHA1:
+        complex:
+          root: inputs.FileSha1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: inputs.FileSha256
+          transformers:
+          - operator: uniq
+      SplunkEarliestTime:
+        simple: -7d@d
+      SplunkLatestTime:
+        simple: now
+      URLDomain:
+        complex:
+          root: inputs.URL_or_Domain
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1990,
+          "y": -830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 15086b73-5911-4d19-8e35-0e795301c484
+    type: condition
+    task:
+      id: 15086b73-5911-4d19-8e35-0e795301c484
+      version: -1
+      name: Should the analyst choose the indicators to hunt?
+      description: Should the analyst choose the indicators to hunt?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "84"
+      No Hunting:
+      - "83"
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ManuallyChooseIOCForHunting
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: No Hunting
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.ManuallyChooseIOCForHunting
+            iscontext: true
+          right:
+            value:
+              simple: No Threat Hunting
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1770,
+          "y": -1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 35d1b2c6-b7ea-4861-8fe1-6d915ce0bc0b
+    type: collection
+    task:
+      id: 35d1b2c6-b7ea-4861-8fe1-6d915ce0bc0b
+      version: -1
+      name: Specify IOCs to hunt upon
+      description: Specify the IOCs to hunt for.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2390,
+          "y": -1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Specify the IOCs to hunt for.
+      body:
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which IPs should be hunted for?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.IP
+            accessor: Address
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Which SHA256 files should be hunted for?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.FileSha256
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Which SHA1 files should be hunted for?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.FileSha1
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Which MD5 files should be hunted for?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.MD5
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          simple: Which URLs/Domains should be hunted for?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.URL_or_Domain
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Specify the IOCs to hunt upon.
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 0cf8f731-f261-41a3-85e1-4fa4b1a9afe5
+    type: regular
+    task:
+      id: 0cf8f731-f261-41a3-85e1-4fa4b1a9afe5
+      version: -1
+      name: Tag the threat hunting results as Evidence
+      description: |
+        Adds provided entries to the incident Evidence Board. In a playbook, this can be positioned after a task to add the previous task's entries to the Evidence Board automatically (with no need to provide arguments).
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      entryIDs:
+        simple: ${lastCompletedTaskEntries}
+      tags:
+        simple: Found additional assets
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2190,
+          "y": -490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 4375e8c0-3bdd-4e5e-85a7-0cd3dd2a0f68
+    type: regular
+    task:
+      id: 4375e8c0-3bdd-4e5e-85a7-0cd3dd2a0f68
+      version: -1
+      name: Add 'Found additional assets' tag to the incident
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      appendTags:
+        simple: "true"
+      tags:
+        simple: Found additional assets
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2190,
+          "y": -340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 9050d570-9035-49f1-8b76-ebc28731cacb
+    type: condition
+    task:
+      id: 9050d570-9035-49f1-8b76-ebc28731cacb
+      version: -1
+      name: Are there any results?
+      description: Are there any results?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "83"
+      "yes":
+      - "87"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Splunk
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: PANWHunting
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Microsoft365Defender
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: QRadar
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1990,
+          "y": -660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 19cd7958-6923-458d-8235-850eac96511e
+    type: playbook
+    task:
+      id: 19cd7958-6923-458d-8235-850eac96511e
+      version: -1
+      name: Threat Hunting - Generic
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: - Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      playbookName: Threat Hunting - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "89"
+    scriptarguments:
+      IPAddress:
+        simple: ${Specify IOCs to hunt upon.Answers.0}
+      MD5:
+        simple: ${Specify IOCs to hunt upon.Answers.3}
+      QRadarTimeFrame:
+        simple: LAST 7 DAYS
+      SHA1:
+        simple: ${Specify IOCs to hunt upon.Answers.2}
+      SHA256:
+        simple: ${Specify IOCs to hunt upon.Answers.1}
+      SplunkEarliestTime:
+        simple: -7d@d
+      SplunkLatestTime:
+        simple: now
+      URLDomain:
+        simple: ${Specify IOCs to hunt upon.Answers.4}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -2390,
+          "y": -830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1430,
+        "height": 2700,
         "width": 2670,
         "x": -3070,
-        "y": -160
+        "y": -1430
       }
     }
   }
 tests:
-- No tests (auto formatted)
+- Test XDR Playbook
 fromversion: 6.5.0
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This playbook handles a true-positive incident closure for Cortex XDR - Malware Investigation.
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

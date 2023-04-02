@@ -1,0 +1,25 @@
+{
+  "trigger_id": "ba1d7a7c593a407fabc124262e39ff63",
+  "playbook_id": "DropBox - Massive scale operations on files",
+  "suggestion_reason": "Recommended for DropBox massive file alterations, and massive file downloads alerts.",
+  "description": "This trigger is responsible for handling 'DropBox - Massive File Alterations' and 'DropBox - Massive File Downloads' alerts",
+  "trigger_name": "DropBox - Massive Scale Operations on Files Response",
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "DropBox - Massive File Alterations"
+        },
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "DropBox - Massive File Downloads"
+
+        }
+      ]
+    }
+  }
+}
+

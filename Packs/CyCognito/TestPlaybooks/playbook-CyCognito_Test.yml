@@ -1,0 +1,731 @@
+id: CyCognito-Test
+version: -1
+name: CyCognito-Test
+description: Test playbook for CyCognito integration.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 8a433a43-2e55-48ed-89fb-2f3b727b12bf
+    type: start
+    task:
+      id: 8a433a43-2e55-48ed-89fb-2f3b727b12bf
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 3a1f3ace-c95f-41e2-8549-ba3b9ab94b17
+    type: regular
+    task:
+      id: 3a1f3ace-c95f-41e2-8549-ba3b9ab94b17
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 3e883b3f-e9ce-4aaf-885e-117435339531
+    type: regular
+    task:
+      id: 3e883b3f-e9ce-4aaf-885e-117435339531
+      version: -1
+      name: cycognito-issue-get
+      description: Retrieves information about an issue associated with a particular instance based on the provided issue instance ID.
+      script: '|||cycognito-issue-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      issue_instance_id:
+        complex:
+          root: CyCognito.Issue
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: /
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: c449d3ec-1ba1-4cb7-80dd-71646e69c80e
+    type: condition
+    task:
+      id: c449d3ec-1ba1-4cb7-80dd-71646e69c80e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Issue.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Issue.issue_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Issue.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Issue.last_detected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Issue.first_detected
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 1c1b4e80-80a7-44cb-84bc-61098bbead94
+    type: regular
+    task:
+      id: 1c1b4e80-80a7-44cb-84bc-61098bbead94
+      version: -1
+      name: cycognito-asset-get
+      description: Retrieves information about a specific asset according to the specified asset type and asset ID.
+      script: '|||cycognito-asset-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      asset_id:
+        complex:
+          root: CyCognito.Asset
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: /
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: '1'
+      asset_type:
+        simple: ip
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: e2182d27-8dbf-4f2f-81e1-e96b52553423
+    type: condition
+    task:
+      id: e2182d27-8dbf-4f2f-81e1-e96b52553423
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.first_seen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.hosting_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.last_seen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.investigation_status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 3f6bc26d-cea0-4e23-887a-0184ee7795c0
+    type: regular
+    task:
+      id: 3f6bc26d-cea0-4e23-887a-0184ee7795c0
+      version: -1
+      name: cycognito-asset-investigation-status-change
+      description: Modifies the investigation status of the specified asset.
+      script: '|||cycognito-asset-investigation-status-change'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      asset_id:
+        complex:
+          root: CyCognito.Asset
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: /
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: '1'
+      asset_type:
+        simple: ip
+      investigation_status:
+        complex:
+          root: CyCognito.Asset
+          accessor: investigation_status
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: e153d454-280e-4b53-8a12-658e456634e6
+    type: condition
+    task:
+      id: e153d454-280e-4b53-8a12-658e456634e6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.type
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.investigation_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.action_status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 0362f98c-4f77-490d-80c5-a794cf40593a
+    type: regular
+    task:
+      id: 0362f98c-4f77-490d-80c5-a794cf40593a
+      version: -1
+      name: cycognito-issue-investigation-status-change
+      description: Modifies the investigation status of the specified issue.
+      script: '|||cycognito-issue-investigation-status-change'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      investigation_status:
+        complex:
+          root: CyCognito.Issue
+          accessor: investigation_status
+          transformers:
+          - operator: FirstArrayElement
+      issue_instance_id:
+        complex:
+          root: CyCognito.Issue
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: /
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 804d7684-3f23-4159-84ff-1858e49b6aab
+    type: condition
+    task:
+      id: 804d7684-3f23-4159-84ff-1858e49b6aab
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Issue.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Issue.investigation_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Issue.action_status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 8fee4af7-b88a-4567-85a3-74d9cc3f1724
+    type: regular
+    task:
+      id: 8fee4af7-b88a-4567-85a3-74d9cc3f1724
+      version: -1
+      name: cycognito-issues-list
+      description: Retrieves the list of the issues that meet the specified filter criteria.
+      script: '|||cycognito-issues-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      count:
+        simple: '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: cba3f1ff-522a-484b-822e-071ca541e0b0
+    type: condition
+    task:
+      id: cba3f1ff-522a-484b-822e-071ca541e0b0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '2'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CyCognito.Issue.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Issue.issue_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Issue.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Issue.last_detected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Issue.first_detected
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 99b0681b-21e4-4108-877b-ecdddbaf83e3
+    type: regular
+    task:
+      id: 99b0681b-21e4-4108-877b-ecdddbaf83e3
+      version: -1
+      name: cycognito-assets-list
+      description: Retrieves the list of assets that meet specified filter criteria.
+      script: '|||cycognito-assets-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      asset_type:
+        simple: ip
+      count:
+        simple: '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 132e3be9-abe9-46d5-8ff0-3c520e200dc9
+    type: condition
+    task:
+      id: 132e3be9-abe9-46d5-8ff0-3c520e200dc9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CyCognito.Asset.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.hosting_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.investigation_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.first_seen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyCognito.Asset.last_seen
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: 36a1c382-01d2-42c0-815a-800e49e4b55c
+    type: title
+    task:
+      id: 36a1c382-01d2-42c0-815a-800e49e4b55c
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_6_yes": 0.67
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0

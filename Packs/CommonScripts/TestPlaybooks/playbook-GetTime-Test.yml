@@ -1,18 +1,19 @@
 id: GetTime-Test
-version: 3
+version: -1
 name: GetTime-Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c266459f-7fc6-4ad5-8435-1ac3af41cef1
+    taskid: 3e7d192d-4398-4d03-85ac-85276489833c
     type: start
     task:
-      id: c266459f-7fc6-4ad5-8435-1ac3af41cef1
+      id: 3e7d192d-4398-4d03-85ac-85276489833c
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -29,12 +30,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: fd15a147-beff-4829-8ce7-06f32ad4c350
+    taskid: c0851df6-fe45-44fb-84c6-5ed1fdab987e
     type: regular
     task:
-      id: fd15a147-beff-4829-8ce7-06f32ad4c350
+      id: c0851df6-fe45-44fb-84c6-5ed1fdab987e
       version: -1
       name: Get UTC
       scriptName: GetTime
@@ -43,21 +47,16 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "54"
     scriptarguments:
-      contextKey: {}
-      date: {}
       dateFormat:
         simple: utc
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 400
+          "x": -690,
+          "y": 220
         }
       }
     note: false
@@ -65,14 +64,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 892518a7-cc91-44a8-8fbb-86a61d3638d4
+    taskid: 9d0c8b7a-cea9-4faa-8f2b-219f2b6d5d21
     type: regular
     task:
-      id: 892518a7-cc91-44a8-8fbb-86a61d3638d4
+      id: 9d0c8b7a-cea9-4faa-8f2b-219f2b6d5d21
       version: -1
-      name: Check regex
+      name: Check regex new format
       scriptName: MatchRegex
       type: regular
       iscommand: false
@@ -81,19 +83,16 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      contextKey: {}
       data:
         simple: ${TimeNow}
-      flags: {}
-      group: {}
       regex:
-        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+        simple: ^([A-Z][a-z][a-z]), ([0-3]?[0-9] [A-Z][a-z][a-z] [\d]{4}) (\d\d:\d\d:\d\d GMT)$
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 575
+          "x": -670,
+          "y": 750
         }
       }
     note: false
@@ -101,12 +100,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 6d7bb4d4-44e0-4205-8358-5ad2718bd0d2
+    taskid: 1f2ebd3a-c665-4b9a-81cc-37ae71f955f8
     type: regular
     task:
-      id: 6d7bb4d4-44e0-4205-8358-5ad2718bd0d2
+      id: 1f2ebd3a-c665-4b9a-81cc-37ae71f955f8
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -119,10 +121,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -136,12 +134,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 6fcdaef7-8070-4e54-83c1-9a3d7609f598
+    taskid: 3de4d907-56e7-4626-82a3-c69a430957eb
     type: condition
     task:
-      id: 6fcdaef7-8070-4e54-83c1-9a3d7609f598
+      id: 3de4d907-56e7-4626-82a3-c69a430957eb
       version: -1
       name: 'Check if no error occurred '
       type: condition
@@ -165,8 +166,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 750
+          "x": 60,
+          "y": 920
         }
       }
     note: false
@@ -174,12 +175,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 754211de-23a7-4840-807c-7094973e01a1
+    taskid: 8a8cbc9d-6c1e-4c33-8687-f391fa77d255
     type: regular
     task:
-      id: 754211de-23a7-4840-807c-7094973e01a1
+      id: 8a8cbc9d-6c1e-4c33-8687-f391fa77d255
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -192,10 +196,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -209,12 +209,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 0168e047-462c-4be2-8974-cb923a375999
+    taskid: 10cbc72d-686b-4870-8498-6c9e9f0eaeea
     type: regular
     task:
-      id: 0168e047-462c-4be2-8974-cb923a375999
+      id: 10cbc72d-686b-4870-8498-6c9e9f0eaeea
       version: -1
       name: Get ISO
       scriptName: GetTime
@@ -225,13 +228,8 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      contextKey: {}
-      date: {}
       dateFormat:
         simple: ISO
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
     separatecontext: false
     view: |-
       {
@@ -245,12 +243,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: be1de0eb-6c71-40aa-83e7-b42daecc9c80
+    taskid: 75951868-edde-4b51-8922-e1a9e81147a4
     type: regular
     task:
-      id: be1de0eb-6c71-40aa-83e7-b42daecc9c80
+      id: 75951868-edde-4b51-8922-e1a9e81147a4
       version: -1
       name: Check regex
       scriptName: MatchRegex
@@ -261,11 +262,8 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      contextKey: {}
       data:
         simple: ${TimeNow}
-      flags: {}
-      group: {}
       regex:
         simple: ^[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](:[0-5][0-9]){2}.[0-9]{3}Z$
     separatecontext: false
@@ -281,12 +279,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: e3771a32-fd47-4561-884a-d1069c98334e
+    taskid: 9e9b0157-877b-4bcd-8ead-8ccb8237387b
     type: condition
     task:
-      id: e3771a32-fd47-4561-884a-d1069c98334e
+      id: 9e9b0157-877b-4bcd-8ead-8ccb8237387b
       version: -1
       name: 'Check if no error occurred '
       type: condition
@@ -319,12 +320,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 931df17d-92c5-4e48-8a56-19515cf56dc2
+    taskid: 95884b1d-33e1-4c85-89d5-26b7f20a811f
     type: regular
     task:
-      id: 931df17d-92c5-4e48-8a56-19515cf56dc2
+      id: 95884b1d-33e1-4c85-89d5-26b7f20a811f
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -337,10 +341,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -354,12 +354,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 9f3be67c-6de3-4c9c-8a9b-906e28e8eae4
+    taskid: 901a105b-614c-489a-81cf-7e01029a25b8
     type: regular
     task:
-      id: 9f3be67c-6de3-4c9c-8a9b-906e28e8eae4
+      id: 901a105b-614c-489a-81cf-7e01029a25b8
       version: -1
       name: Get Locale
       scriptName: GetTime
@@ -370,13 +373,8 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      contextKey: {}
-      date: {}
       dateFormat:
         simple: locale
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
     separatecontext: false
     view: |-
       {
@@ -390,12 +388,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 234898fb-7a1b-4053-8bb0-804746a02b50
+    taskid: 70c5d814-793c-4889-84cd-cd0f40e324f4
     type: regular
     task:
-      id: 234898fb-7a1b-4053-8bb0-804746a02b50
+      id: 70c5d814-793c-4889-84cd-cd0f40e324f4
       version: -1
       name: Check regex
       scriptName: MatchRegex
@@ -406,11 +407,8 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      contextKey: {}
       data:
         simple: ${TimeNow}
-      flags: {}
-      group: {}
       regex:
         simple: ^[0-1][0-9]/[0-3][0-9]/[0-9]{4}, [0-2][0-9](:[0-5][0-9]){2}$
     separatecontext: false
@@ -426,12 +424,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: b708a53d-31bf-4723-8ea2-9934082140b7
+    taskid: 3355cc7f-282d-43ec-8d2a-5c5b101f0776
     type: condition
     task:
-      id: b708a53d-31bf-4723-8ea2-9934082140b7
+      id: 3355cc7f-282d-43ec-8d2a-5c5b101f0776
       version: -1
       name: 'Check if no error occurred '
       type: condition
@@ -464,12 +465,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 2ac9f36e-a8c6-4fac-873a-ca5a7e932b24
+    taskid: f3892b58-c2c7-4008-8d53-8ce671700927
     type: regular
     task:
-      id: 2ac9f36e-a8c6-4fac-873a-ca5a7e932b24
+      id: f3892b58-c2c7-4008-8d53-8ce671700927
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -482,10 +486,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -499,12 +499,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: ac4da663-5462-4741-84cb-eb8a8f1d9ca2
+    taskid: c16f123f-88fa-48b0-837c-976f571df773
     type: regular
     task:
-      id: ac4da663-5462-4741-84cb-eb8a8f1d9ca2
+      id: c16f123f-88fa-48b0-837c-976f571df773
       version: -1
       name: Get Date
       scriptName: GetTime
@@ -515,13 +518,8 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      contextKey: {}
-      date: {}
       dateFormat:
         simple: date
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
     separatecontext: false
     view: |-
       {
@@ -535,12 +533,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c45211dd-834f-4ac2-8fbe-dc8bacc6a9ba
+    taskid: 3ac92882-bbb9-4df4-8707-5c8230471a39
     type: regular
     task:
-      id: c45211dd-834f-4ac2-8fbe-dc8bacc6a9ba
+      id: 3ac92882-bbb9-4df4-8707-5c8230471a39
       version: -1
       name: Check regex
       scriptName: MatchRegex
@@ -551,11 +552,8 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      contextKey: {}
       data:
         simple: ${TimeNow}
-      flags: {}
-      group: {}
       regex:
         simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4}$
     separatecontext: false
@@ -571,12 +569,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 35cb107e-b0d9-4d86-8917-53ced81032ea
+    taskid: 7ea18651-30b6-4ca4-830e-671becddae3a
     type: condition
     task:
-      id: 35cb107e-b0d9-4d86-8917-53ced81032ea
+      id: 7ea18651-30b6-4ca4-830e-671becddae3a
       version: -1
       name: 'Check if no error occurred '
       type: condition
@@ -609,12 +610,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: bc7ad5fa-bfcd-4559-8727-bcbe5d0d81e2
+    taskid: 70df47fb-2b9b-424e-8c2d-95e1a01125c8
     type: regular
     task:
-      id: bc7ad5fa-bfcd-4559-8727-bcbe5d0d81e2
+      id: 70df47fb-2b9b-424e-8c2d-95e1a01125c8
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -627,10 +631,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -644,12 +644,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 16aee6a6-bcda-4c95-8b57-79c9f2c24bed
+    taskid: 965ce695-eb9f-49a3-8f85-5d4704309e43
     type: regular
     task:
-      id: 16aee6a6-bcda-4c95-8b57-79c9f2c24bed
+      id: 965ce695-eb9f-49a3-8f85-5d4704309e43
       version: -1
       name: Get Day
       scriptName: GetTime
@@ -660,13 +663,8 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      contextKey: {}
-      date: {}
       dateFormat:
         simple: day
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
     separatecontext: false
     view: |-
       {
@@ -680,12 +678,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 6675e329-7f58-4389-815c-2913724be7ef
+    taskid: 6d14a008-cb63-4553-82a1-16a38f5747b4
     type: regular
     task:
-      id: 6675e329-7f58-4389-815c-2913724be7ef
+      id: 6d14a008-cb63-4553-82a1-16a38f5747b4
       version: -1
       name: Check regex
       scriptName: MatchRegex
@@ -696,11 +697,8 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      contextKey: {}
       data:
         simple: ${TimeNow}
-      flags: {}
-      group: {}
       regex:
         simple: ^([1-9]|[12][0-9]|3[01])$
     separatecontext: false
@@ -716,12 +714,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 273bd378-e562-433d-8e79-3e3cbaf5a858
+    taskid: 9ea274ba-bfc0-4ed0-84d6-b9ca952e0841
     type: condition
     task:
-      id: 273bd378-e562-433d-8e79-3e3cbaf5a858
+      id: 9ea274ba-bfc0-4ed0-84d6-b9ca952e0841
       version: -1
       name: 'Check if no error occurred '
       type: condition
@@ -754,12 +755,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: e80bd3b0-10ce-400d-82e1-dcec54d52160
+    taskid: b8bf7818-47b0-4601-856a-e330550bd416
     type: regular
     task:
-      id: e80bd3b0-10ce-400d-82e1-dcec54d52160
+      id: b8bf7818-47b0-4601-856a-e330550bd416
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -772,10 +776,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -789,12 +789,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: b1ab7c09-e465-4edf-8d3b-019206579cfa
+    taskid: 589e75fb-94f5-4162-840d-550e20bf693e
     type: regular
     task:
-      id: b1ab7c09-e465-4edf-8d3b-019206579cfa
+      id: 589e75fb-94f5-4162-840d-550e20bf693e
       version: -1
       name: Get Month
       scriptName: GetTime
@@ -805,13 +808,8 @@ tasks:
       '#none#':
       - "23"
     scriptarguments:
-      contextKey: {}
-      date: {}
       dateFormat:
         simple: month
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
     separatecontext: false
     view: |-
       {
@@ -825,12 +823,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 0359bd0f-aeb0-4b30-8362-234ce1864fe7
+    taskid: 4e0c6137-23ee-4c00-8767-9d59cee1b254
     type: regular
     task:
-      id: 0359bd0f-aeb0-4b30-8362-234ce1864fe7
+      id: 4e0c6137-23ee-4c00-8767-9d59cee1b254
       version: -1
       name: Check regex
       scriptName: MatchRegex
@@ -841,11 +842,8 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      contextKey: {}
       data:
         simple: ${TimeNow}
-      flags: {}
-      group: {}
       regex:
         simple: ^[0-1]{0,1}[0-9]$
     separatecontext: false
@@ -861,12 +859,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 00a11a66-dd68-40b1-87f2-17c0bd6ea75d
+    taskid: bb4188f1-6ceb-4bf6-89a6-f25ca69ffa48
     type: condition
     task:
-      id: 00a11a66-dd68-40b1-87f2-17c0bd6ea75d
+      id: bb4188f1-6ceb-4bf6-89a6-f25ca69ffa48
       version: -1
       name: 'Check if no error occurred '
       type: condition
@@ -899,12 +900,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: e6661786-de33-431d-8748-7f9397ba94ab
+    taskid: 0380ca19-5c29-49a5-8d47-770bdc01b666
     type: regular
     task:
-      id: e6661786-de33-431d-8748-7f9397ba94ab
+      id: 0380ca19-5c29-49a5-8d47-770bdc01b666
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -917,10 +921,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -934,12 +934,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 3b5133e2-4710-455e-8b50-48916dc85e82
+    taskid: 199297f8-a1fb-47d0-8609-480dfd198196
     type: regular
     task:
-      id: 3b5133e2-4710-455e-8b50-48916dc85e82
+      id: 199297f8-a1fb-47d0-8609-480dfd198196
       version: -1
       name: Get Year
       scriptName: GetTime
@@ -950,13 +953,8 @@ tasks:
       '#none#':
       - "27"
     scriptarguments:
-      contextKey: {}
-      date: {}
       dateFormat:
         simple: year
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
     separatecontext: false
     view: |-
       {
@@ -970,12 +968,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 0e3c482a-6c73-4d7c-890a-33e425eb9aec
+    taskid: 85696d05-42ec-4441-8fdd-fd3b5166540f
     type: regular
     task:
-      id: 0e3c482a-6c73-4d7c-890a-33e425eb9aec
+      id: 85696d05-42ec-4441-8fdd-fd3b5166540f
       version: -1
       name: Check regex
       scriptName: MatchRegex
@@ -986,11 +987,8 @@ tasks:
       '#none#':
       - "28"
     scriptarguments:
-      contextKey: {}
       data:
         simple: ${TimeNow}
-      flags: {}
-      group: {}
       regex:
         simple: ^[0-9]{4}$
     separatecontext: false
@@ -1006,12 +1004,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 670e07be-eeed-43d6-87ef-b2e4057c6b53
+    taskid: 9ae07ad3-5304-4274-8a2d-1aca98f9e0b4
     type: condition
     task:
-      id: 670e07be-eeed-43d6-87ef-b2e4057c6b53
+      id: 9ae07ad3-5304-4274-8a2d-1aca98f9e0b4
       version: -1
       name: 'Check if no error occurred '
       type: condition
@@ -1044,12 +1045,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 9aa63e0e-1761-4ee2-8d74-0a08599d1c74
+    taskid: 8c4c9a2f-6b6c-478e-88b4-4b45d47cd8d8
     type: regular
     task:
-      id: 9aa63e0e-1761-4ee2-8d74-0a08599d1c74
+      id: 8c4c9a2f-6b6c-478e-88b4-4b45d47cd8d8
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -1062,10 +1066,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1079,12 +1079,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 4825cda5-ce4c-4032-8904-40493c1b136b
+    taskid: 0511abd8-a8be-4f3a-8d54-067fa62f41b9
     type: regular
     task:
-      id: 4825cda5-ce4c-4032-8904-40493c1b136b
+      id: 0511abd8-a8be-4f3a-8d54-067fa62f41b9
       version: -1
       name: Get DayInWeek
       scriptName: GetTime
@@ -1095,13 +1098,8 @@ tasks:
       '#none#':
       - "31"
     scriptarguments:
-      contextKey: {}
-      date: {}
       dateFormat:
         simple: dayinweek
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
     separatecontext: false
     view: |-
       {
@@ -1115,12 +1113,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: e4bb881c-b58c-4ad6-8b7b-f1414f6383be
+    taskid: 1cf3216c-8e60-4a37-86a2-c6bfe952d2ed
     type: regular
     task:
-      id: e4bb881c-b58c-4ad6-8b7b-f1414f6383be
+      id: 1cf3216c-8e60-4a37-86a2-c6bfe952d2ed
       version: -1
       name: Check regex
       scriptName: MatchRegex
@@ -1131,11 +1132,8 @@ tasks:
       '#none#':
       - "32"
     scriptarguments:
-      contextKey: {}
       data:
         simple: ${TimeNow}
-      flags: {}
-      group: {}
       regex:
         simple: ^[0-6]$
     separatecontext: false
@@ -1151,12 +1149,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: b2297e31-a90e-4101-8900-a65b256c6c1b
+    taskid: aa72b0f7-5a54-4415-8faf-12f6d8da59b4
     type: condition
     task:
-      id: b2297e31-a90e-4101-8900-a65b256c6c1b
+      id: aa72b0f7-5a54-4415-8faf-12f6d8da59b4
       version: -1
       name: 'Check if no error occurred '
       type: condition
@@ -1189,12 +1190,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 97ed5053-85de-411a-83ea-feb05672bec2
+    taskid: 18351776-63c4-4398-8199-eaf71ce1bef7
     type: regular
     task:
-      id: 97ed5053-85de-411a-83ea-feb05672bec2
+      id: 18351776-63c4-4398-8199-eaf71ce1bef7
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -1207,10 +1211,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1224,12 +1224,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: a702f462-f2ca-4c33-87ac-242c364a3121
+    taskid: 42dd5acf-a1e9-499c-8f66-89157033cef4
     type: regular
     task:
-      id: a702f462-f2ca-4c33-87ac-242c364a3121
+      id: 42dd5acf-a1e9-499c-8f66-89157033cef4
       version: -1
       name: Get MonthsAgo
       scriptName: GetTime
@@ -1240,11 +1243,6 @@ tasks:
       '#none#':
       - "35"
     scriptarguments:
-      contextKey: {}
-      date: {}
-      dateFormat: {}
-      hoursAgo: {}
-      minutesAgo: {}
       monthsAgo:
         simple: "3"
     separatecontext: false
@@ -1260,12 +1258,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 83e75131-14aa-4761-8f30-e99d3a30c7dc
+    taskid: 01f65f52-259c-44ca-8a78-60c616eaab2e
     type: regular
     task:
-      id: 83e75131-14aa-4761-8f30-e99d3a30c7dc
+      id: 01f65f52-259c-44ca-8a78-60c616eaab2e
       version: -1
       name: Check regex
       scriptName: MatchRegex
@@ -1276,11 +1277,8 @@ tasks:
       '#none#':
       - "36"
     scriptarguments:
-      contextKey: {}
       data:
         simple: ${TimeNow}
-      flags: {}
-      group: {}
       regex:
         simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
     separatecontext: false
@@ -1296,12 +1294,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 9e0701b2-ea7e-4498-8d27-2cb102cf9308
+    taskid: 3a8ce11b-9745-43e5-8da7-37e811ad2ada
     type: condition
     task:
-      id: 9e0701b2-ea7e-4498-8d27-2cb102cf9308
+      id: 3a8ce11b-9745-43e5-8da7-37e811ad2ada
       version: -1
       name: ' Check if no error occurred '
       type: condition
@@ -1334,12 +1335,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 2e980274-a441-48fe-82e1-7c74b73adcc9
+    taskid: 0bf303b0-498e-4225-8614-0144df97c93d
     type: regular
     task:
-      id: 2e980274-a441-48fe-82e1-7c74b73adcc9
+      id: 0bf303b0-498e-4225-8614-0144df97c93d
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -1352,10 +1356,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1369,12 +1369,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 57443e74-3ebc-47c5-880e-8738272c86b9
+    taskid: 62524094-080d-4d40-80d8-0edfa99bb8e8
     type: regular
     task:
-      id: 57443e74-3ebc-47c5-880e-8738272c86b9
+      id: 62524094-080d-4d40-80d8-0edfa99bb8e8
       version: -1
       name: Get MinutesAgo
       scriptName: GetTime
@@ -1385,13 +1388,8 @@ tasks:
       '#none#':
       - "39"
     scriptarguments:
-      contextKey: {}
-      date: {}
-      dateFormat: {}
-      hoursAgo: {}
       minutesAgo:
         simple: "260"
-      monthsAgo: {}
     separatecontext: false
     view: |-
       {
@@ -1405,12 +1403,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: ccde0ccd-ca62-472a-8a89-086907a93414
+    taskid: f66edfe3-08a6-42b9-8ce7-63a65dcff721
     type: regular
     task:
-      id: ccde0ccd-ca62-472a-8a89-086907a93414
+      id: f66edfe3-08a6-42b9-8ce7-63a65dcff721
       version: -1
       name: Check regex
       scriptName: MatchRegex
@@ -1421,11 +1422,8 @@ tasks:
       '#none#':
       - "40"
     scriptarguments:
-      contextKey: {}
       data:
         simple: ${TimeNow}
-      flags: {}
-      group: {}
       regex:
         simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
     separatecontext: false
@@ -1441,12 +1439,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: b7c1fd78-88e4-462d-89de-90028bcf5cad
+    taskid: 84464414-db4c-42bc-89c0-fe6c542bfcb5
     type: condition
     task:
-      id: b7c1fd78-88e4-462d-89de-90028bcf5cad
+      id: 84464414-db4c-42bc-89c0-fe6c542bfcb5
       version: -1
       name: 'Check if no error occurred '
       type: condition
@@ -1479,12 +1480,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: d0c93fbb-e995-4e66-8b92-58aee22e12df
+    taskid: d2a6d660-dd22-41c6-84c3-25fe05721ca8
     type: regular
     task:
-      id: d0c93fbb-e995-4e66-8b92-58aee22e12df
+      id: d2a6d660-dd22-41c6-84c3-25fe05721ca8
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -1497,10 +1501,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1514,12 +1514,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: c634b1d6-84da-437d-80ad-65f082eee357
+    taskid: 00974413-372d-4a08-88d4-427b0db43ba9
     type: regular
     task:
-      id: c634b1d6-84da-437d-80ad-65f082eee357
+      id: 00974413-372d-4a08-88d4-427b0db43ba9
       version: -1
       name: Get HoursAgo
       scriptName: GetTime
@@ -1530,13 +1533,8 @@ tasks:
       '#none#':
       - "43"
     scriptarguments:
-      contextKey: {}
-      date: {}
-      dateFormat: {}
       hoursAgo:
         simple: "4"
-      minutesAgo: {}
-      monthsAgo: {}
     separatecontext: false
     view: |-
       {
@@ -1550,12 +1548,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 281732d7-2fc7-4f1f-80c6-7566d6c3e6fb
+    taskid: f7c15534-1c7b-42b3-8117-601866e562ce
     type: regular
     task:
-      id: 281732d7-2fc7-4f1f-80c6-7566d6c3e6fb
+      id: f7c15534-1c7b-42b3-8117-601866e562ce
       version: -1
       name: Check regex
       scriptName: MatchRegex
@@ -1566,11 +1567,8 @@ tasks:
       '#none#':
       - "44"
     scriptarguments:
-      contextKey: {}
       data:
         simple: ${TimeNow}
-      flags: {}
-      group: {}
       regex:
         simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
     separatecontext: false
@@ -1586,12 +1584,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 7f5c3b1a-b126-41cf-85c8-fc2a5db53c00
+    taskid: 0ff47a33-e41f-4f8e-82c0-9b4208a72059
     type: condition
     task:
-      id: 7f5c3b1a-b126-41cf-85c8-fc2a5db53c00
+      id: 0ff47a33-e41f-4f8e-82c0-9b4208a72059
       version: -1
       name: 'Check if no error occurred '
       type: condition
@@ -1624,17 +1625,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: d69ac8b3-3d87-482f-8bf8-400e87bae2b8
+    taskid: a2bab24a-0357-41d5-8cce-17ed12076420
     type: title
     task:
-      id: d69ac8b3-3d87-482f-8bf8-400e87bae2b8
+      id: a2bab24a-0357-41d5-8cce-17ed12076420
       version: -1
       name: Test end
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1648,12 +1653,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: f1e1cefb-8090-4918-8f6b-13becfa30811
+    taskid: 93852967-bf85-48ee-801e-d1cfbad0ad5b
     type: regular
     task:
-      id: f1e1cefb-8090-4918-8f6b-13becfa30811
+      id: 93852967-bf85-48ee-801e-d1cfbad0ad5b
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -1666,10 +1674,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1683,12 +1687,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: ff35eca5-142e-4dee-8f0d-9a2ed943f654
+    taskid: 49043ae6-3e0a-4d0c-8bc3-ae2071ef751e
     type: regular
     task:
-      id: ff35eca5-142e-4dee-8f0d-9a2ed943f654
+      id: 49043ae6-3e0a-4d0c-8bc3-ae2071ef751e
       version: -1
       name: Get DaysAgo
       scriptName: GetTime
@@ -1699,15 +1706,8 @@ tasks:
       '#none#':
       - "48"
     scriptarguments:
-      contextKey: {}
-      date: {}
-      dateFormat: {}
       daysAgo:
         simple: "4"
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
-      yearsAgo: {}
     separatecontext: false
     view: |-
       {
@@ -1721,12 +1721,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: e6bd3c78-9e3f-4f1c-895f-01b09e13b971
+    taskid: c367c80e-a469-4394-8cb4-107ab7aa7271
     type: regular
     task:
-      id: e6bd3c78-9e3f-4f1c-895f-01b09e13b971
+      id: c367c80e-a469-4394-8cb4-107ab7aa7271
       version: -1
       name: Check regex
       scriptName: MatchRegex
@@ -1737,11 +1740,8 @@ tasks:
       '#none#':
       - "49"
     scriptarguments:
-      contextKey: {}
       data:
         simple: ${TimeNow}
-      flags: {}
-      group: {}
       regex:
         simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
     separatecontext: false
@@ -1757,12 +1757,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 86f1b94f-60be-42b0-8540-35be6ff3de9c
+    taskid: 20343ad9-d7ee-445b-8f85-29e26c1d46c3
     type: condition
     task:
-      id: 86f1b94f-60be-42b0-8540-35be6ff3de9c
+      id: 20343ad9-d7ee-445b-8f85-29e26c1d46c3
       version: -1
       name: 'Check if no error occurred '
       type: condition
@@ -1795,12 +1798,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 0a6c1cf6-2368-4bed-8490-73ba77368d17
+    taskid: 2bc5495b-eb72-44af-8f70-5141448a008e
     type: regular
     task:
-      id: 0a6c1cf6-2368-4bed-8490-73ba77368d17
+      id: 2bc5495b-eb72-44af-8f70-5141448a008e
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -1813,10 +1819,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1830,12 +1832,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 13b3807d-c5f0-46f6-8515-71c9bdbd9cf7
+    taskid: af4985a7-308a-42ea-88d4-35df500a03a5
     type: regular
     task:
-      id: 13b3807d-c5f0-46f6-8515-71c9bdbd9cf7
+      id: af4985a7-308a-42ea-88d4-35df500a03a5
       version: -1
       name: Get YearsAgo
       scriptName: GetTime
@@ -1846,13 +1851,6 @@ tasks:
       '#none#':
       - "52"
     scriptarguments:
-      contextKey: {}
-      date: {}
-      dateFormat: {}
-      daysAgo: {}
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
       yearsAgo:
         simple: "4"
     separatecontext: false
@@ -1868,12 +1866,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 7117eb7b-87f5-46dd-8e14-1186922366d8
+    taskid: 67dfafda-b953-4945-8d3f-2c6e122d39d3
     type: regular
     task:
-      id: 7117eb7b-87f5-46dd-8e14-1186922366d8
+      id: 67dfafda-b953-4945-8d3f-2c6e122d39d3
       version: -1
       name: Check regex
       scriptName: MatchRegex
@@ -1884,11 +1885,8 @@ tasks:
       '#none#':
       - "53"
     scriptarguments:
-      contextKey: {}
       data:
         simple: ${TimeNow}
-      flags: {}
-      group: {}
       regex:
         simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
     separatecontext: false
@@ -1904,12 +1902,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: cd915b10-8152-46f6-89f8-30fb57228912
+    taskid: f125cff5-a2f8-401a-8947-db1c2df12a0e
     type: condition
     task:
-      id: cd915b10-8152-46f6-89f8-30fb57228912
+      id: f125cff5-a2f8-401a-8947-db1c2df12a0e
       version: -1
       name: 'Check if no error occurred '
       type: condition
@@ -1942,14 +1943,246 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: b37f53db-b8b3-4bca-8c7b-b65cba04151d
+    type: regular
+    task:
+      id: b37f53db-b8b3-4bca-8c7b-b65cba04151d
+      version: -1
+      name: Get Demisto version
+      description: Return the Demisto server version.
+      scriptName: DemistoVersion
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 774ca14e-116d-48a1-89b7-35cf12f57cd4
+    type: condition
+    task:
+      id: 774ca14e-116d-48a1-89b7-35cf12f57cd4
+      version: -1
+      name: Is Demisto Version 8.1.0+ or 6.11.0+
+      description: Sleep for X seconds
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      newFormat:
+      - "2"
+      newFormat2:
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: newFormat
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DemistoVersion
+                accessor: version
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: .
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "8"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DemistoVersion
+                accessor: version
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: .
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "1"
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    - label: newFormat2
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DemistoVersion
+                accessor: version
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: .
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "6"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DemistoVersion
+                accessor: version
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: .
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "1"
+            iscontext: true
+          right:
+            value:
+              simple: "11"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 4430157a-4ec1-4223-84bc-ced15b0c9b48
+    type: regular
+    task:
+      id: 4430157a-4ec1-4223-84bc-ced15b0c9b48
+      version: -1
+      name: Check regex old format
+      description: Deprecated. Use the **MatchRegexV2** script instead.
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1080,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 61aa9868-ca78-4714-8c49-a5a105dd7fd9
+    type: regular
+    task:
+      id: 61aa9868-ca78-4714-8c49-a5a105dd7fd9
+      version: -1
+      name: Check regex new format
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^([A-Z][a-z][a-z]), ([0-3]?[0-9] [A-Z][a-z][a-z] [\d]{4}) (\d\d:\d\d:\d\d GMT)$
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 795,
-        "width": 6130,
-        "x": 50,
+        "height": 965,
+        "width": 7260,
+        "x": -1080,
         "y": 50
       }
     }
@@ -1957,3 +2190,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+marketplaces:
+- xsoar
+description: ''

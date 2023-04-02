@@ -1,0 +1,2087 @@
+category: Network Security
+commonfields:
+  id: Cisco Umbrella Reporting
+  version: -1
+configuration:
+- additionalinfo: Cisco Umbrella Reporting API base URL.
+  defaultvalue: https://reports.api.umbrella.com
+  display: API URL
+  hidden: false
+  name: api_url
+  required: true
+  type: 0
+- additionalinfo: Organization ID
+  display: Organization ID
+  name: organization_id
+  required: true
+  type: 0
+- additionalinfo: Client ID and Client Secret.
+  display: Client ID
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: The Umbrella Reporting v2 API provides visibility into your core network and security activities and Umbrella logs.
+display: Cisco Umbrella Reporting
+name: Cisco Umbrella Reporting
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      description: Specify the type of traffic. By default, all supported traffic types are included.
+      isArray: false
+      name: traffic_type
+      predefined:
+      - dns
+      - proxy
+      - firewall
+      - ip
+      required: false
+      secret: false
+    - default: false
+      description: A domain name or comma-separated list of domain names.
+      isArray: false
+      name: domains
+      required: false
+      secret: false
+    - default: false
+      description: An IP address.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: A URL or comma-separated list of URLs.
+      isArray: false
+      name: urls
+      required: false
+      secret: false
+    - default: false
+      description: A port number or comma-separated list of port numbers.
+      isArray: false
+      name: ports
+      required: false
+      secret: false
+    - default: false
+      description: A SHA-256 hash.
+      isArray: false
+      name: sha256
+      required: false
+      secret: false
+    - default: false
+      description: A threat name or comma-separated list of threat names.
+      isArray: false
+      name: threats
+      required: false
+      secret: false
+    - default: false
+      description: A threat type or comma-separated list of threat types.
+      isArray: false
+      name: threat_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: An Advanced Malware Protection (AMP) disposition string.
+      isArray: false
+      name: amp_disposition
+      predefined:
+      - clean
+      - malicious
+      - unknown
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: An identity type or comma-separated list of identity types.
+      isArray: false
+      name: identity_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A verdict string.
+      isArray: false
+      name: verdict
+      predefined:
+      - allowed
+      - blocked
+      - proxied
+      required: false
+      secret: false
+    - default: false
+      description: The page number. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The number of requested results per page. Default is 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: List of destinations ordered by the number of requests made in descending order.
+    execution: false
+    name: umbrella-reporting-destination-list
+    outputs:
+    - contextPath: UmbrellaReporting.Destination.count
+      description: Total number of requests made for this destination.
+      type: Number
+    - contextPath: UmbrellaReporting.Destination.domain
+      description: Destination.
+      type: String
+    - contextPath: UmbrellaReporting.Destination.bandwidth
+      description: The total bandwidth of proxy requests uploaded and downloaded for this destination.
+      type: Number
+    - contextPath: UmbrellaReporting.Destination.rank
+      description: The rank of the result based on the number of requests.
+      type: Number
+    - contextPath: UmbrellaReporting.Destination.policycategories.id
+      description: ID of the category.
+      type: Number
+    - contextPath: UmbrellaReporting.Destination.policycategories.label
+      description: The human readable label of the category.
+      type: String
+    - contextPath: UmbrellaReporting.Destination.policycategories.type
+      description: The type of category.
+      type: String
+    - contextPath: UmbrellaReporting.Destination.policycategories.deprecated
+      description: Whether the category is a legacy category.
+      type: Boolean
+    - contextPath: UmbrellaReporting.Destination.policycategories.integration
+      description: Whether the category is an integration.
+      type: Boolean
+    - contextPath: UmbrellaReporting.Destination.categories.id
+      description: ID of the category.
+      type: Number
+    - contextPath: UmbrellaReporting.Destination.categories.label
+      description: The human readable label of the category.
+      type: String
+    - contextPath: UmbrellaReporting.Destination.categories.type
+      description: The type of category.
+      type: String
+    - contextPath: UmbrellaReporting.Destination.categories.deprecated
+      description: Whether the category is a legacy category.
+      type: Boolean
+    - contextPath: UmbrellaReporting.Destination.categories.integration
+      description: Whether the category is an integration.
+      type: Boolean
+    - contextPath: UmbrellaReporting.Destination.counts.allowedrequests
+      description: Number of requests that were allowed.
+      type: Number
+    - contextPath: UmbrellaReporting.Destination.counts.blockedrequests
+      description: Number of requests that were blocked.
+      type: Number
+    - contextPath: UmbrellaReporting.Destination.counts.requests
+      description: Total number of requests.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      description: Specify the type of traffic. By default, all supported traffic types are included.
+      isArray: false
+      name: traffic_type
+      predefined:
+      - dns
+      - proxy
+      - ip
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: A domain name or comma-separated list of domain names.
+      isArray: false
+      name: domains
+      required: false
+      secret: false
+    - default: false
+      description: A URL or comma-separated list of URLs.
+      isArray: false
+      name: urls
+      required: false
+      secret: false
+    - default: false
+      description: An IP address.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: A SHA-256 hash.
+      isArray: false
+      name: sha256
+      required: false
+      secret: false
+    - default: false
+      description: A threat name or comma-separated list of threat names.
+      isArray: false
+      name: threats
+      required: false
+      secret: false
+    - default: false
+      description: A threat type or comma-separated list of threat types.
+      isArray: false
+      name: threat_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: An Advanced Malware Protection (AMP) disposition string.
+      isArray: false
+      name: amp_disposition
+      predefined:
+      - clean
+      - malicious
+      - unknown
+      required: false
+      secret: false
+    - default: false
+      description: An identity type or comma-separated list of identity types.
+      isArray: false
+      name: identity_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A verdict string.
+      isArray: false
+      name: verdict
+      predefined:
+      - allowed
+      - blocked
+      - proxied
+      required: false
+      secret: false
+    - default: false
+      description: The page number (page size is 50 entries at max). Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: List of categories ordered by the number of requests made matching the categories in descending order.
+    execution: false
+    name: umbrella-reporting-category-list
+    outputs:
+    - contextPath: UmbrellaReporting.Category.count
+      description: Number of requests made that match this category.
+      type: Number
+    - contextPath: UmbrellaReporting.Category.bandwidth
+      description: The total bandwidth of proxy requests uploaded and downloaded for this category.
+      type: String
+    - contextPath: UmbrellaReporting.Category.category.id
+      description: Category ID.
+      type: Number
+    - contextPath: UmbrellaReporting.Category.category.type
+      description: Category type.
+      type: String
+    - contextPath: UmbrellaReporting.Category.category.label
+      description: Category label.
+      type: String
+    - contextPath: UmbrellaReporting.Category.category.integration
+      description: Category integration.
+      type: Boolean
+    - contextPath: UmbrellaReporting.Category.category.deprecated
+      description: Category deprecated.
+      type: String
+    - contextPath: UmbrellaReporting.Category.rank
+      description: Rank of the category.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      description: Specify the type of traffic. By default, all supported traffic
+        types are included.
+      isArray: false
+      name: traffic_type
+      predefined:
+      - dns
+      - proxy
+      - firewall
+      - ip
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: A domain name or comma-separated list of domain names.
+      isArray: false
+      name: domains
+      required: false
+      secret: false
+    - default: false
+      description: A URL or comma-separated list of URLs.
+      isArray: false
+      name: urls
+      required: false
+      secret: false
+    - default: false
+      description: An IP address.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: A port number or comma-separated list of port numbers.
+      isArray: false
+      name: ports
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A verdict string.
+      isArray: false
+      name: verdict
+      predefined:
+      - allowed
+      - blocked
+      - proxied
+      required: false
+      secret: false
+    - default: false
+      description: A SHA-256 hash.
+      isArray: false
+      name: sha256
+      required: false
+      secret: false
+    - default: false
+      description: A threat name or comma-separated list of threat names.
+      isArray: false
+      name: threats
+      required: false
+      secret: false
+    - default: false
+      description: A threat type or comma-separated list of threat types.
+      isArray: false
+      name: threat_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: An Advanced Malware Protection (AMP) disposition string.
+      isArray: false
+      name: amp_disposition
+      predefined:
+      - clean
+      - malicious
+      - unknown
+      required: false
+      secret: false
+    - default: false
+      description: An identity type or comma-separated list of identity types.
+      isArray: false
+      name: identity_types
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The page number. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The number of requested results per page. Default is 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: List of identities ordered by the number of requests made matching the categories in descending order.
+    execution: false
+    name: umbrella-reporting-identity-list
+    outputs:
+    - contextPath: UmbrellaReporting.Identity.requests
+      description: Total number of requests made by this identity.
+      type: Number
+    - contextPath: UmbrellaReporting.Identity.bandwidth
+      description: The total bandwidth of proxy requests uploaded and downloaded for this identity.
+      type: Number
+    - contextPath: UmbrellaReporting.Identity.rank
+      description: The rank of the result based on the number of requests.
+      type: Number
+    - contextPath: UmbrellaReporting.Identity.counts.allowedrequests
+      description: Number of requests that were allowed.
+      type: Number
+    - contextPath: UmbrellaReporting.Identity.counts.blockedrequests
+      description: Number of requests that were blocked.
+      type: Number
+    - contextPath: UmbrellaReporting.Identity.counts.requests
+      description: Total number of requests.
+      type: Number
+    - contextPath: UmbrellaReporting.Identity.identity.id
+      description: Identity ID.
+      type: Number
+    - contextPath: UmbrellaReporting.Identity.identity.type.id
+      description: Origin type for the identity.
+      type: Number
+    - contextPath: UmbrellaReporting.Identity.identity.type.type
+      description: Origin type name for the identity.
+      type: String
+    - contextPath: UmbrellaReporting.Identity.identity.type.label
+      description: Origin type label for the identity.
+      type: String
+    - contextPath: UmbrellaReporting.Identity.identity.label
+      description: Label for the identity.
+      type: String
+    - contextPath: UmbrellaReporting.Identity.identity.deleted
+      description: Indicates whether the identity was deleted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: A domain name or comma-separated list of domain names.
+      isArray: false
+      name: domains
+      required: false
+      secret: false
+    - default: false
+      description: A URL or comma-separated list of URLs.
+      isArray: false
+      name: urls
+      required: false
+      secret: false
+    - default: false
+      description: An IP address.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: An identity type or comma-separated list of identity types.
+      isArray: false
+      name: identity_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A verdict string.
+      isArray: false
+      name: verdict
+      predefined:
+      - allowed
+      - blocked
+      - proxied
+      required: false
+      secret: false
+    - default: false
+      description: A threat name or comma-separated list of threat names.
+      isArray: false
+      name: threats
+      required: false
+      secret: false
+    - default: false
+      description: A threat type or comma-separated list of threat types.
+      isArray: false
+      name: threat_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: An Advanced Malware Protection (AMP) disposition string.
+      isArray: false
+      name: amp_disposition
+      predefined:
+      - clean
+      - malicious
+      - unknown
+      required: false
+      secret: false
+    - default: false
+      description: The page number. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The number of requested results per page. Default is 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: 'List of event types ordered by the number of requests made for each type of event in descending order. The event types are: domain_security, domain_integration, url_security, url_integration, cisco_amp and antivirus.'
+    execution: false
+    name: umbrella-reporting-event-type-list
+    outputs:
+    - contextPath: UmbrellaReporting.EventType.eventtype
+      description: The event type. One of "domain_security", "domain_integration", "url_security", "url_integration", "cisco_amp" and "antivirus".
+      type: String
+    - contextPath: UmbrellaReporting.EventType.count
+      description: Number of requests made that match this event type.
+      type: Number
+  - arguments:
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A domain name or comma-separated list of domain names.
+      isArray: false
+      name: domains
+      required: false
+      secret: false
+    - default: false
+      description: A URL or comma-separated list of URLs.
+      isArray: false
+      name: urls
+      required: false
+      secret: false
+    - default: false
+      description: An IP address.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A verdict string.
+      isArray: false
+      name: verdict
+      predefined:
+      - allowed
+      - blocked
+      - proxied
+      required: false
+      secret: false
+    - default: false
+      description: A SHA-256 hash.
+      isArray: false
+      name: sha256
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: An Advanced Malware Protection (AMP) disposition string.
+      isArray: false
+      name: amp_disposition
+      predefined:
+      - clean
+      - malicious
+      - unknown
+      required: false
+      secret: false
+    - default: false
+      description: An identity type or comma-separated list of identity types.
+      isArray: false
+      name: identity_types
+      required: false
+      secret: false
+    - default: false
+      description: The page number. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The number of requested results per page. Default is 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: List of files within a time frame. Only returns proxy data.
+    execution: false
+    name: umbrella-reporting-file-list
+    outputs:
+    - contextPath: UmbrellaReporting.File.requests
+      description: Number of requests.
+      type: Number
+    - contextPath: UmbrellaReporting.File.identitycount
+      description: Number of identities for entry.
+      type: Number
+    - contextPath: UmbrellaReporting.File.sha256
+      description: SHA256 for entry.
+      type: String
+    - contextPath: UmbrellaReporting.File.filenames
+      description: Array of filenames for entry.
+      type: Unknown
+    - contextPath: UmbrellaReporting.File.filetypes
+      description: Array of file types for entry.
+      type: Unknown
+    - contextPath: UmbrellaReporting.File.categories.id
+      description: ID of the category.
+      type: Number
+    - contextPath: UmbrellaReporting.File.categories.label
+      description: The human readable label of the category.
+      type: String
+    - contextPath: UmbrellaReporting.File.categories.type
+      description: The type of category.
+      type: String
+    - contextPath: UmbrellaReporting.File.categories.deprecated
+      description: Whether the category is a legacy category.
+      type: Boolean
+    - contextPath: UmbrellaReporting.File.categories.integration
+      description: Whether the category is an integration.
+      type: Boolean
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      description: Specify the type of traffic. By default, all supported traffic types are included.
+      isArray: false
+      name: traffic_type
+      predefined:
+      - dns
+      - proxy
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A domain name or comma-separated list of domain names.
+      isArray: false
+      name: domains
+      required: false
+      secret: false
+    - default: false
+      description: An IP address.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: An identity type or comma-separated list of identity types.
+      isArray: false
+      name: identity_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A verdict string.
+      isArray: false
+      name: verdict
+      predefined:
+      - allowed
+      - blocked
+      - proxied
+      required: false
+      secret: false
+    - default: false
+      description: A threat name or comma-separated list of threat names.
+      isArray: false
+      name: threats
+      required: false
+      secret: false
+    - default: false
+      description: A threat type or comma-separated list of threat types.
+      isArray: false
+      name: threat_types
+      required: false
+      secret: false
+    - default: false
+      description: The page number. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The number of requested results per page. Default is 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: List of top threats within a time frame. Returns both DNS and Proxy data.
+    execution: false
+    name: umbrella-reporting-threat-list
+    outputs:
+    - contextPath: UmbrellaReporting.Threat.threat
+      description: The threat name.
+      type: String
+    - contextPath: UmbrellaReporting.Threat.threattype
+      description: The threat type.
+      type: String
+    - contextPath: UmbrellaReporting.Threat.count
+      description: The number of requests for that threat name.
+      type: Number
+  - arguments:
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A domain name or comma-separated list of domain names.
+      isArray: false
+      name: domains
+      required: false
+      secret: false
+    - default: false
+      description: A URL or comma-separated list of URLs.
+      isArray: false
+      name: urls
+      required: false
+      secret: false
+    - default: false
+      description: An IP address.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: A port number or comma-separated list of port numbers.
+      isArray: false
+      name: ports
+      required: false
+      secret: false
+    - default: false
+      description: An identity type or comma-separated list of identity types.
+      isArray: false
+      name: identity_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A verdict string.
+      isArray: false
+      name: verdict
+      predefined:
+      - allowed
+      - blocked
+      - proxied
+      required: false
+      secret: false
+    - default: false
+      description: A string that identifies a filename. Filter the request by the filename. Supports globbing or use of the wildcard character (''). The asterisk (*) matches zero or more occurrences of any character.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    - default: false
+      description: A threat name or comma-separated list of threat names.
+      isArray: false
+      name: threats
+      required: false
+      secret: false
+    - default: false
+      description: A threat type or comma-separated list of threat types.
+      isArray: false
+      name: threat_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: An Advanced Malware Protection (AMP) disposition string.
+      isArray: false
+      name: amp_disposition
+      predefined:
+      - clean
+      - malicious
+      - unknown
+      required: false
+      secret: false
+    - default: false
+      description: The page number. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The number of requested results per page. Default is 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time frame.
+    execution: false
+    name: umbrella-reporting-activity-list
+    outputs:
+    - contextPath: UmbrellaReporting.Activity.type
+      description: Type of the request.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.externalip
+      description: External IP address for entry.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.internalip
+      description: Internal IP address for entry.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.policycategories.id
+      description: ID of the category.
+      type: Number
+    - contextPath: UmbrellaReporting.Activity.policycategories.label
+      description: The human readable label of the category.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.policycategories.type
+      description: Type of the request. A DNS request always has type dns.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.policycategories.deprecated
+      description: Whether the category is a legacy category.
+      type: Boolean
+    - contextPath: UmbrellaReporting.Activity.policycategories.integration
+      description: Whether the category is an integration.
+      type: Boolean
+    - contextPath: UmbrellaReporting.Activity.categories.id
+      description: ID of the category.
+      type: Number
+    - contextPath: UmbrellaReporting.Activity.categories.label
+      description: The human readable label of the category.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.categories.type
+      description: The type of category.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.categories.deprecated
+      description: Whether the category is a legacy category.
+      type: Boolean
+    - contextPath: UmbrellaReporting.Activity.categories.integration
+      description: Whether the category is an integration.
+      type: Boolean
+    - contextPath: UmbrellaReporting.Activity.verdict
+      description: Verdict for entry.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.domain
+      description: Domain for entry.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.timestamp
+      description: Timestamp in ms.
+      type: Number
+    - contextPath: UmbrellaReporting.Activity.time
+      description: The time in 24 hour format based on the time zone parameter.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.date
+      description: The date from the timestamp based on the time zone parameter.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.identities.id
+      description: ID of the identity.
+      type: Number
+    - contextPath: UmbrellaReporting.Activity.identities.type.id
+      description: Origin type for the identity.
+      type: Number
+    - contextPath: UmbrellaReporting.Activity.identities.type.type
+      description: Origin type name for the identity.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.identities.type.label
+      description: Origin type label for the identity.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.identities.label
+      description: Label for the identity.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.identities.deleted
+      description: Indicates whether the identity was deleted.
+      type: Boolean
+    - contextPath: UmbrellaReporting.Activity.threats.label
+      description: The threat name or label.
+      type: Boolean
+    - contextPath: UmbrellaReporting.Activity.threats.type
+      description: The type of threat.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.allapplications.id
+      description: ID of the application.
+      type: Number
+    - contextPath: UmbrellaReporting.Activity.allapplications.type
+      description: Type of the application, NBAR or AVC.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.allapplications.label
+      description: Label of the application.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.allapplications.category.label
+      description: Label of the application category.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.allapplications.category.id
+      description: ID of the application category.
+      type: Number
+    - contextPath: UmbrellaReporting.Activity.allowedapplications.id
+      description: ID of the application.
+      type: Number
+    - contextPath: UmbrellaReporting.Activity.allowedapplications.label
+      description: Label of the application.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.allowedapplications.type
+      description: Type of the application, NBAR or AVC.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.allowedapplications.category.label
+      description: Label of the application category.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.allowedapplications.category.id
+      description: ID of the application category.
+      type: Number
+    - contextPath: UmbrellaReporting.Activity.querytype
+      description: The type of DNS request that was made. For more information, see Common DNS Request Types. https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-
+      type: String
+    - contextPath: UmbrellaReporting.Activity.returncode
+      description: The DNS return code for this request. For more information, see Common DNS return codes for any DNS service (and Umbrella). https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-
+      type: Number
+    - contextPath: UmbrellaReporting.Activity.blockedapplications.id
+      description: ID of the application.
+      type: Number
+    - contextPath: UmbrellaReporting.Activity.blockedapplications.label
+      description: Label of the application.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.blockedapplications.type
+      description: Type of the application, NBAR or AVC.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.blockedapplications.category.label
+      description: Label of the application category.
+      type: String
+    - contextPath: UmbrellaReporting.Activity.blockedapplications.category.id
+      description: ID of the application category.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      description: |-
+        Specify the type of traffic.  By default, all supported traffic types are included.
+
+         Supported optional parameters for DNS traffic type are limit, from,  to, offset, domains, ip, verdict, threats, threat_types.
+          Supported optional parameters for Proxy traffic type are limit, from, to, offset, domains, ip, verdict, threats, threat_types, urls, ports, identity_types, file_name, amp_disposition.
+          Supported optional parameters for Firewall traffic type are limit, from, to, offset, ip, ports, verdict.
+          Supported optional parameters for Intrusion traffic type are limit, from, to, offset, ip, ports, signatures, intrusion_action.
+          Supported optional parameters for IP traffic type are limit, from, to, offset, ip, ports, identity_types, verdict.
+          Supported optional parameters for Advanced Malware Protection (AMP) traffic type are limit, from, to, offset, amp_disposition, sha256.
+      isArray: false
+      name: traffic_type
+      predefined:
+      - dns
+      - proxy
+      - firewall
+      - intrusion
+      - ip
+      - amp
+      required: true
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A domain name or comma-separated list of domain names.
+      isArray: false
+      name: domains
+      required: false
+      secret: false
+    - default: false
+      description: A URL or comma-separated list of URLs.
+      isArray: false
+      name: urls
+      required: false
+      secret: false
+    - default: false
+      description: An IP address.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: A port number or comma-separated list of port numbers.
+      isArray: false
+      name: ports
+      required: false
+      secret: false
+    - default: false
+      description: An identity type or comma-separated list of identity types.
+      isArray: false
+      name: identity_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A verdict string.
+      isArray: false
+      name: verdict
+      predefined:
+      - allowed
+      - blocked
+      - proxied
+      required: false
+      secret: false
+    - default: false
+      description: A string that identifies a filename. Filter the request by the filename. Supports globbing or use of the wildcard character (''). The asterisk (*) matches zero or more occurrences of any character.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    - default: false
+      description: A threat name or comma-separated list of threat names.
+      isArray: false
+      name: threats
+      required: false
+      secret: false
+    - default: false
+      description: A threat type or comma-separated list of threat types.
+      isArray: false
+      name: threat_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: An Advanced Malware Protection (AMP) disposition string.
+      isArray: false
+      name: amp_disposition
+      predefined:
+      - clean
+      - malicious
+      - unknown
+      required: false
+      secret: false
+    - default: false
+      description: The page number. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The number of requested results per page. Default is 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of Generator id - Signatures ID. Where Generator ID is unique id assigned to the part of the IPS which generated the event and Signature ID is used to uniquely identify signatures. Example:- 1-2,1-4.
+      isArray: false
+      name: signatures
+      required: false
+      secret: false
+    - default: false
+      description: 'Comma-separated list of intrusion actions. Possible values: would_block, blocked, detected.'
+      isArray: false
+      name: intrusion_action
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      List all entries within a time frame based on the traffic type selected. Valid activity types are dns, proxy, firewall, intrusion, ip, amp.
+      Only one activity type can be selected at a time.
+    execution: false
+    name: umbrella-reporting-activity-get
+    outputs:
+    - contextPath: UmbrellaReporting.ActivityDns.type
+      description: Type of the request. A DNS request always has type DNS.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.externalip
+      description: External IP address for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.internalip
+      description: Internal IP address for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.policycategories.id
+      description: ID of the category.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityDns.policycategories.label
+      description: The human readable label of the category.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.policycategories.type
+      description: Type of the request. A DNS request always has type dns.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.policycategories.deprecated
+      description: Whether the category is a legacy category.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityDns.policycategories.integration
+      description: Whether the category is an integration.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityDns.categories.id
+      description: ID of the category.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityDns.categories.label
+      description: The human readable label of the category.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.categories.type
+      description: The type of category.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.categories.deprecated
+      description: Whether the category is a legacy category.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityDns.categories.integration
+      description: Whether the category is an integration.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityDns.verdict
+      description: Verdict for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.domain
+      description: Domain for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.timestamp
+      description: Timestamp in ms.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityDns.time
+      description: The time in 24 hour format based on the time zone parameter.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.date
+      description: The date from the timestamp based on the time zone parameter.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.identities.id
+      description: ID of the identity.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityDns.identities.type.id
+      description: Origin type for the identity.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityDns.identities.type.type
+      description: Origin type name for the identity.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.identities.type.label
+      description: Origin type label for the identity.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.identities.label
+      description: Label for the identity.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.identities.deleted
+      description: Indicates whether the identity was deleted.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityDns.threats.label
+      description: The threat name or label.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityDns.threats.type
+      description: The type of threat.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.allapplications.id
+      description: ID of the application.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityDns.allapplications.type
+      description: Type of the application, NBAR or AVC.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.allapplications.label
+      description: Label of the application.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.allapplications.category.label
+      description: Label of the application category.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.allapplications.category.id
+      description: ID of the application category.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityDns.allowedapplications.id
+      description: ID of the application.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityDns.allowedapplications.label
+      description: Label of the application.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.allowedapplications.type
+      description: Type of the application, NBAR or AVC.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.allowedapplications.category.label
+      description: Label of the application category.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.allowedapplications.category.id
+      description: ID of the application category.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityDns.querytype
+      description: The type of DNS request that was made. For more information, see https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.returncode
+      description: The DNS return code for this request. For more information, see Common DNS return codes for any DNS service (and Umbrella). https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityDns.blockedapplications.id
+      description: ID of the application.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityDns.blockedapplications.label
+      description: Label of the application.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.blockedapplications.type
+      description: Type of the application, NBAR or AVC.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.blockedapplications.category.label
+      description: Label of the application category.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityDns.blockedapplications.category.id
+      description: ID of the application category.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.amp.disposition
+      description: Advanced Malware Protection (AMP) disposition.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.amp.malware
+      description: Advanced Malware Protection (AMP) malware.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.amp.score
+      description: Advanced Malware Protection (AMP) score.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.blockedfiletype
+      description: Locked file type for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.bundleid
+      description: A proxy bundle ID.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.categories.deprecated
+      description: If the category is a legacy category.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityProxy.categories.id
+      description: ID of category.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.categories.integration
+      description: If the category is an integration.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityProxy.categories.label
+      description: The human readable label of the category.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.categories.type
+      description: The type of category.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.contenttype
+      description: The type of web content, typically text/html.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.datacenter.id
+      description: Unique ID for the data center.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.datacenter.label
+      description: Name of the data center.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.datalossprevention.state
+      description: If the request was Blocked for DLP. Either 'blocked' or ''.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.date
+      description: The date from the timestamp based on the timezone parameter.
+      type: Date
+    - contextPath: UmbrellaReporting.ActivityProxy.destinationip
+      description: Destination IP for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.egress.ip
+      description: Egress IP.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.egress.type
+      description: Egress Type.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.externalip
+      description: External IP for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.forwardingmethod
+      description: The request method (GET, POST, HEAD, etc.)
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.identities.deleted
+      description: Indicates whether the identity was deleted or not.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityProxy.identities.id
+      description: ID of identity.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.identities.label
+      description: Label for identity.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.identities.type.id
+      description: Origin type for identity.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.identities.type.label
+      description: Origin type label for identity.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.identities.type.type
+      description: Origin type name for identity.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.internalip
+      description: Internal IP for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.isolated.fileaction
+      description: A string that describes the remote browser isolation (RBI) file action type.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.isolated.state
+      description: A string that describes the remote browser isolation(RBI) isolation type.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.policy.ruleid
+      description: The rule ID for the policy.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.policy.rulesetid
+      description: The rule set ID for the policy.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.policy.timebasedrule
+      description: Whether the policy triggered a time-of-day rule.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityProxy.policy.destinationlistids
+      description: The destination lists that the policy triggered.
+      type: Unknown
+    - contextPath: UmbrellaReporting.ActivityProxy.port
+      description: Request Port.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.referer
+      description: The referring domain or URL.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.requestmethod
+      description: The HTTP request method that was made.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.requestsize
+      description: Request size in bytes.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.responsefilename
+      description: Response filename for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.responsesize
+      description: Response size in bytes.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.securityoverridden
+      description: Specify whether to filter on requests that override security.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityProxy.sha256
+      description: The hex digest of the response content.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.statuscode
+      description: The HTTP status code; should always be 200 or 201.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.tenantcontrols
+      description: If the request was part of a tenant control policy.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityProxy.time
+      description: The time in 24 hour format based on the timezone parameter.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.timestamp
+      description: Timestamp in ms.
+      type: Date
+    - contextPath: UmbrellaReporting.ActivityProxy.type
+      description: Type of the request. A Proxy request always has type Proxy.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.url
+      description: The URL requested.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.useragent
+      description: The browser agent that made the request.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.verdict
+      description: Verdict for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.warnstatus
+      description: Warn Status.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.policycategories.id
+      description: ID of category.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.policycategories.label
+      description: The human readable label of the category.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.policycategories.type
+      description: Type of the request. A dns request always has type dns.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.policycategories.deprecated
+      description: If the category is a legacy category.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityProxy.policycategories.integration
+      description: If the category is an integration.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityProxy.antivirusthreats.others
+      description: Other antivirus threats.
+      type: Unknown
+    - contextPath: UmbrellaReporting.ActivityProxy.antivirusthreats.puas
+      description: Potentially unwanted applications.
+      type: Unknown
+    - contextPath: UmbrellaReporting.ActivityProxy.antivirusthreats.viruses
+      description: Viruses.
+      type: Unknown
+    - contextPath: UmbrellaReporting.ActivityProxy.threats.label
+      description: The threat name or label.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.threats.type
+      description: The type of threat.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.allapplications.id
+      description: ID of the application.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.allapplications.type
+      description: Type of the application, NBAR or AVC.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.allapplications.label
+      description: Label of the application.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.allapplications.category.label
+      description: Label of the application category.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.allapplications.category.id
+      description: ID of the application category.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.allowedapplications.id
+      description: ID of the application.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.allowedapplications.type
+      description: Type of the application, NBAR or AVC.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.allowedapplications.label
+      description: Label of the application.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.allowedapplications.category.label
+      description: Label of the application category.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.allowedapplications.category.id
+      description: ID of the application category.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.blockedapplications.id
+      description: ID of the application.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.blockedapplications.type
+      description: Type of the application, NBAR or AVC.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.blockedapplications.label
+      description: Label of the application.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.blockedapplications.category.label
+      description: Label of the application category.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.blockedapplications.category.id
+      description: ID of the application category.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityProxy.httperrors.reason
+      description: The name of the error.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.httperrors.type
+      description: Type of the error CertificateError or TLSError..
+      type: String
+    - contextPath: UmbrellaReporting.ActivityProxy.httperrors.attributes
+      description: Map of additional information about the error.
+      type: Unknown
+    - contextPath: UmbrellaReporting.ActivityProxy.httperrors.code
+      description: The http error code.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityAMPRetro.timestamp
+      description: Timestamp in ms.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityAMPRetro.firstseenat
+      description: First seen Timestamp.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityAMPRetro.disposition
+      description: Disposition for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityAMPRetro.score
+      description: Score for entry.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityAMPRetro.hostname
+      description: Hostname for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityAMPRetro.malwarename
+      description: Malware name for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityAMPRetro.sha256
+      description: SHA256 for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.date
+      description: The date from the timestamp based on the timezone parameter.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.destinationip
+      description: Destination IP for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.sourceip
+      description: Source IP for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.sourceport
+      description: Source port for entry.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityFirewall.destinationport
+      description: Destination port for entry.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityFirewall.verdict
+      description: Verdict for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.time
+      description: The time in 24 hour format based on the timezone parameter.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.timestamp
+      description: Timestamp in ms.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityFirewall.identities.id
+      description: ID of identity.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityFirewall.identities.label
+      description: Label for identity.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.identities.type.id
+      description: Origin type for identity.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityFirewall.identities.type.label
+      description: Origin type label for identity.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.identities.type.type
+      description: Origin type name for identity.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.identities.deleted
+      description: Indicates whether the identity was deleted or not.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityFirewall.protocol.id
+      description: ID of protocol.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityFirewall.protocol.label
+      description: Name of the protocol.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.rule.id
+      description: ID of rule.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityFirewall.rule.label
+      description: Name of the rule.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.rule.privateapplicationgroup.id
+      description: ID of application group.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityFirewall.rule.privateapplicationgroup.label
+      description: Name of application group.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.type
+      description: Type of the request. A Firewall request always has type Firewall.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.allapplications.id
+      description: ID of the application.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityFirewall.allapplications.label
+      description: Label of the application.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.allapplications.app
+      description: 'Type: "IT Service Management" (string) - application/protocol type.'
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.applicationprotocols.id
+      description: ID of the application.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityFirewall.applicationprotocols.label
+      description: Application/Protocol label.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.applicationprotocols.app
+      description: 'Type: "IT Service Management" (string) - application/protocol type.'
+      type: String
+    - contextPath: UmbrellaReporting.ActivityFirewall.packetsize
+      description: The size of the packet that Umbrella CDFW received.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityFirewall.direction
+      description: The direction of the packet. It is destined either towards the internet or to the customer's network.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIntrusion.type
+      description: Type of the request. A Intrusion request always has type Intrusion.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIntrusion.date
+      description: The date from the timestamp based on the timezone parameter.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIntrusion.destinationip
+      description: Destination IP for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIntrusion.protocol.id
+      description: ID of protocol.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIntrusion.protocol.label
+      description: Name of the protocol.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIntrusion.sourceip
+      description: Source IP for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIntrusion.signaturelist.id
+      description: Unique id assigned to a Default or Custom Signature List.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIntrusion.classification
+      description: The category of attack detected by a rule that is part of a more general type of attack class, such as trojan-activity, attempted-user, and unknown.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIntrusion.sourceport
+      description: Source port for entry.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIntrusion.sessionid
+      description: The unique identifier of a session, which is used to group the correlated events between various services.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIntrusion.verdict
+      description: Verdict for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIntrusion.destinationport
+      description: Destination port for entry.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIntrusion.timestamp
+      description: Timestamp in ms.
+      type: Date
+    - contextPath: UmbrellaReporting.ActivityIntrusion.time
+      description: The time in 24 hour format based on the timezone parameter.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIntrusion.identities.id
+      description: ID of identity.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIntrusion.identities.type.id
+      description: Origin type for identity.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIntrusion.identities.type.type
+      description: Origin type name for identity.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIntrusion.identities.type.label
+      description: Origin type label for identity.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIntrusion.identities.label
+      description: Label for identity.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIntrusion.identities.deleted
+      description: Indicates whether the identity was deleted or not.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityIntrusion.severity
+      description: The severity level of the rule, such as High, Medium, Low, and Very Low.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIntrusion.signature.generatorid
+      description: Unique id assigned to the part of the IPS which generated the event.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIntrusion.signature.id
+      description: ID of the application.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIntrusion.signature.label
+      description: A brief description of the signature.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIntrusion.signature.cves
+      description: An identifier for a known security vulnerability/exposure.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIP.destinationip
+      description: Destination IP for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIP.sourceip
+      description: Source IP for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIP.date
+      description: The date from the timestamp based on the timezone parameter.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIP.sourceport
+      description: Source port for entry.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIP.destinationport
+      description: Destination port for entry.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIP.verdict
+      description: Verdict for entry.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIP.timestamp
+      description: Timestamp in ms.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIP.time
+      description: The time in 24 hour format based on the timezone parameter.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIP.identities.id
+      description: ID of identity.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIP.identities.label
+      description: Label for identity
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIP.identities.type.id
+      description: Origin type for identity.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIP.identities.type.label
+      description: Origin type label for identity
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIP.identities.type.type
+      description: Origin type name for identity.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIP.identities.deleted
+      description: Indicates whether the identity was deleted or not.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityIP.categories.id
+      description: ID of category.
+      type: Number
+    - contextPath: UmbrellaReporting.ActivityIP.categories.label
+      description: The human readable label of the category.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIP.categories.type
+      description: The type of category.
+      type: String
+    - contextPath: UmbrellaReporting.ActivityIP.categories.integration
+      description: If the category is an integration
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityIP.categories.deprecated
+      description: If the category is a legacy category.
+      type: Boolean
+    - contextPath: UmbrellaReporting.ActivityIP.type
+      description: Type of the request. A IP request always has type IP.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      description: |-
+        Get summary list of different summary types. Valid values for summary_type are category, destination, intrusion_rule.
+        If summary type is not provided by the user, then all summary types i.e., category, destination, intrusion_rule will be considered.
+        Supported optional parameters for category summary type are domain, urls, ip, identity_types, verdict, file_name, threats, threat_types, amp_disposition.
+        Supported optional parameters for destination summary type are domain, urls, ip, identity_types, verdict, file_name, threats, threat_types, amp_disposition.
+        Supported optional parameters for intrusion_rule summary type are signatures, ip, identity_types, intrusion_action, ports.
+      isArray: false
+      name: summary_type
+      predefined:
+      - category
+      - destination
+      - intrusion_rule
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A domain name or comma-separated list of domain names.
+      isArray: false
+      name: domains
+      required: false
+      secret: false
+    - default: false
+      description: A URL or comma-separated list of URLs.
+      isArray: false
+      name: urls
+      required: false
+      secret: false
+    - default: false
+      description: An IP address.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: A port number or comma-separated list of port numbers.
+      isArray: false
+      name: ports
+      required: false
+      secret: false
+    - default: false
+      description: An identity type or comma-separated list of identity types.
+      isArray: false
+      name: identity_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A verdict string.
+      isArray: false
+      name: verdict
+      predefined:
+      - allowed
+      - blocked
+      - proxied
+      required: false
+      secret: false
+    - default: false
+      description: A string that identifies a filename. Filter the request by the filename. Supports globbing or use of the wildcard character (''). The asterisk (*) matches zero or more occurrences of any character.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    - default: false
+      description: A threat name or comma-separated list of threat names.
+      isArray: false
+      name: threats
+      required: false
+      secret: false
+    - default: false
+      description: A threat type or comma-separated list of threat types.
+      isArray: false
+      name: threat_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: An Advanced Malware Protection (AMP) disposition string.
+      isArray: false
+      name: amp_disposition
+      predefined:
+      - clean
+      - malicious
+      - unknown
+      required: false
+      secret: false
+    - default: false
+      description: The page number. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The number of requested results per page. Default is 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of Generator id - Signatures ID. Where Generator ID is unique id assigned to the part of the IPS which generated the event and Signature ID is used to uniquely identify signatures. Example:- 1-2,1-4.
+      isArray: false
+      name: signatures
+      required: false
+      secret: false
+    - default: false
+      description: 'Comma-separated List of intrusion actions. Possible values: would_block, blocked, detected.'
+      isArray: false
+      name: intrusion_action
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the summary.
+    execution: false
+    name: umbrella-reporting-summary-list
+    outputs:
+    - contextPath: UmbrellaReporting.Summary.applications
+      description: Total number of applications (avc or total).
+      type: Number
+    - contextPath: UmbrellaReporting.Summary.applicationsallowed
+      description: Total number of allowed applications.
+      type: Number
+    - contextPath: UmbrellaReporting.Summary.applicationsblocked
+      description: Total number of blocked applications.
+      type: Number
+    - contextPath: UmbrellaReporting.Summary.categories
+      description: Total number of categories.
+      type: Number
+    - contextPath: UmbrellaReporting.Summary.domains
+      description: Total number of domains.
+      type: Number
+    - contextPath: UmbrellaReporting.Summary.files
+      description: Total number of files.
+      type: Number
+    - contextPath: UmbrellaReporting.Summary.filetypes
+      description: Total number of file types.
+      type: Number
+    - contextPath: UmbrellaReporting.Summary.identities
+      description: Total number of identities.
+      type: Number
+    - contextPath: UmbrellaReporting.Summary.identitytypes
+      description: Total number of identity types.
+      type: Number
+    - contextPath: UmbrellaReporting.Summary.policycategories
+      description: Total number of blocked categories.
+      type: Number
+    - contextPath: UmbrellaReporting.Summary.policyrequests
+      description: Total number of policy requests.
+      type: Number
+    - contextPath: UmbrellaReporting.Summary.requests
+      description: Total number of requests.
+      type: Number
+    - contextPath: UmbrellaReporting.Summary.requestsallowed
+      description: Total number of allowed requests.
+      type: Number
+    - contextPath: UmbrellaReporting.Summary.requestsblocked
+      description: Total number of blocked requests.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.category.deprecated
+      description: If the category is a legacy category.
+      type: Boolean
+    - contextPath: UmbrellaReporting.SummaryWithCategory.category.id
+      description: ID of category.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.category.integration
+      description: If the category is an integration.
+      type: Boolean
+    - contextPath: UmbrellaReporting.SummaryWithCategory.category.label
+      description: The human readable label of the category.
+      type: String
+    - contextPath: UmbrellaReporting.SummaryWithCategory.category.type
+      description: The type of category.
+      type: String
+    - contextPath: UmbrellaReporting.SummaryWithCategory.summary.applications
+      description: Total number of applications (avc or total).
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.summary.applicationsallowed
+      description: Total number of allowed applications.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.summary.applicationsblocked
+      description: Total number of blocked applications.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.summary.categories
+      description: Total number of categories.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.summary.domains
+      description: Total number of domains.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.summary.files
+      description: Total number of files.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.summary.filetypes
+      description: Total number of file types.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.summary.identities
+      description: Total number of identities.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.summary.identitytypes
+      description: Total number of identity types.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.summary.policycategories
+      description: Total number of blocked categories.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.summary.policyrequests
+      description: Total number of policy requests.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.summary.requests
+      description: Total number of requests.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.summary.requestsallowed
+      description: Total number of allowed requests.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithCategory.summary.requestsblocked
+      description: Total number of blocked requests.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithDestination.domain
+      description: Destination domain.
+      type: String
+    - contextPath: UmbrellaReporting.SummaryWithDestination.summary.applications
+      description: Total number of applications (avc or total).
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithDestination.summary.applicationsallowed
+      description: Total number of allowed applications.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithDestination.summary.applicationsblocked
+      description: Total number of blocked applications.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithDestination.summary.categories
+      description: Total number of categories.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithDestination.summary.domains
+      description: Total number of domains.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithDestination.summary.files
+      description: Total number of files.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithDestination.summary.filetypes
+      description: Total number of file types.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithDestination.summary.identities
+      description: Total number of identities.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithDestination.summary.identitytypes
+      description: Total number of identity types.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithDestination.summary.policycategories
+      description: Total number of blocked categories.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithDestination.summary.policyrequests
+      description: Total number of policy requests.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithDestination.summary.requests
+      description: Total number of requests.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithDestination.summary.requestsallowed
+      description: Total number of allowed requests.
+      type: Number
+    - contextPath: UmbrellaReporting.SummaryWithDestination.summary.requestsblocked
+      description: Total number of blocked requests.
+      type: Number
+    - contextPath: UmbrellaReporting.SignatureListSummary.signaturelist.id
+      description: Unique id assigned to a Default or Custom Signature List.
+      type: Number
+    - contextPath: UmbrellaReporting.SignatureListSummary.signatures.counts.blocked
+      description: Blocked.
+      type: Number
+    - contextPath: UmbrellaReporting.SignatureListSummary.signatures.counts.detected
+      description: Detected.
+      type: Number
+    - contextPath: UmbrellaReporting.SignatureListSummary.signatures.counts.wouldblock
+      description: Would Block.
+      type: Number
+    - contextPath: UmbrellaReporting.SignatureListSummary.signatures.generatorid
+      description: Generator id.
+      type: Number
+    - contextPath: UmbrellaReporting.SignatureListSummary.signatures.lasteventat
+      description: Last Eevent At.
+      type: Date
+    - contextPath: UmbrellaReporting.SignatureListSummary.signatures.id
+      description: Signature ID.
+      type: Number
+  dockerimage: demisto/python3:3.10.10.49934
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- Cisco Umbrella Reporting Test
+fromversion: 6.5.0

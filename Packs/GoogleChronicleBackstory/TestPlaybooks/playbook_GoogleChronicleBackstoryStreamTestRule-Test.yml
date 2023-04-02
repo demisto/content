@@ -1,0 +1,298 @@
+id: Google Chronicle Backstory Stream Test Rule
+version: -1
+name: Google Chronicle Backstory Stream Test Rule
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: c03849a4-a6b5-425a-80c3-fe6e49f2b8be
+    type: start
+    task:
+      id: c03849a4-a6b5-425a-80c3-fe6e49f2b8be
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 95a2940a-4200-4934-8c59-18962b97edfb
+    type: regular
+    task:
+      id: 95a2940a-4200-4934-8c59-18962b97edfb
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 7963a546-688d-4b07-824d-5c11838308b2
+    type: regular
+    task:
+      id: 7963a546-688d-4b07-824d-5c11838308b2
+      version: -1
+      name: gcb-test-rule-stream
+      description: Test a rule over a specified time range. Return any errors and any detections up to the specified maximum.
+      script: '|||gcb-test-rule-stream'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      end_time:
+        simple: '2022-12-07T05:14:47.494476Z'
+      rule_text:
+        simple: "rule demoRuleCreatedFromAPIVersion2 {\n                            meta:\n                            author = \"securityuser2\"\n                            description = \"double event rule that should generate detections\"\n                        \n                            events:\n                            $e.metadata.event_type = \"NETWORK_DNS\"\n                        \n                            condition:\n                            $e\n                        }"
+      start_time:
+        simple: '2022-12-07T05:14:46.494474Z'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: e03e0c84-8189-4baa-8a61-ce372091fc10
+    type: condition
+    task:
+      id: e03e0c84-8189-4baa-8a61-ce372091fc10
+      version: -1
+      name: Is response received from chronicle?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '5'
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleChronicleBackstory.StreamRules
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 644aeae7-6381-43b9-8285-5daa289cfc60
+    type: condition
+    task:
+      id: 644aeae7-6381-43b9-8285-5daa289cfc60
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory.StreamRules.list.detection
+                accessor: type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory.StreamRules.list.detection
+                accessor: id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory.StreamRules.list.detection
+                accessor: detectionTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory.StreamRules.list.detection.detection
+                accessor: ruleName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory.StreamRules.list.detection.detection
+                accessor: ruleType
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory.StreamRules.list.detection.detection
+                accessor: ruleLabels
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 2a559b2f-9824-4a39-87c1-a72b471f3fcb
+    type: regular
+    task:
+      id: 2a559b2f-9824-4a39-87c1-a72b471f3fcb
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '6'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 86382ee1-310e-4e73-8e5e-a435f932ff0f
+    type: title
+    task:
+      id: 86382ee1-310e-4e73-8e5e-a435f932ff0f
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: This playbook uses the Google Chronicle Backstory integration and tests the various scenarios of the "gcb-test-rule-stream" command.
+fromversion: 5.0.0

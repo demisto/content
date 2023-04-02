@@ -1,9 +1,10 @@
 import requests
 
 import demistomock as demisto
+import urllib3.util
 from CommonServerPython import *
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 BASE_URL = demisto.params().get('url')
 VERIFY_CERTIFICATE = not demisto.params().get('unsecure')
@@ -22,7 +23,7 @@ def get_first(iterable, default=None):
 
 
 def get_sites():
-    fullurl = BASE_URL + '/api/sites'
+    fullurl = f'{BASE_URL}/api/sites'
     res = requests.get(
         fullurl,
         auth=(USERNAME, PASSWORD),
@@ -30,8 +31,8 @@ def get_sites():
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error(f'Failed to get sites.\nRequest URL: {fullurl}'
-                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')
+        return_error(f'Failed to get sites.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
+                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')  # type: ignore[str-bytes-safe]
 
     raw_sites = json.loads(xml2json(res.content))
 
@@ -123,7 +124,7 @@ def get_site(site_type, site_name):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error(f'Failed to get site {site_name}.\nRequest URL: {fullurl}'
+        return_error(f'Failed to get site {site_name}.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
                      f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')
 
     raw_site = json.loads(xml2json(res.content))
@@ -182,7 +183,7 @@ def get_endpoints(should_get_endpoint_details):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error(f'Failed to get endpoints.\nRequest URL: {fullurl}'
+        return_error(f'Failed to get endpoints.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
                      f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')
 
     raw_endpoints = json.loads(xml2json(res.content))
@@ -262,8 +263,8 @@ def get_endpoint_details(computer_id):
 
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
-            f'Failed to get computer {computer_id}.\nRequest URL: {fullurl}'
-            f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}'
+            f'Failed to get computer {computer_id}.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
+            f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}'  # type: ignore[str-bytes-safe]
         )
 
     raw_endpoint = json.loads(xml2json(res.content))
@@ -392,8 +393,9 @@ def get_patches(site_type='', site_name=''):
 
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
-            f'Failed to get patches. Request URL: {fullurl}\nStatusCode: {res.status_code}\n'
-            f'Response Body: {res.content}'
+            f'Failed to get patches. Request URL: {fullurl}\n'  # type: ignore[str-bytes-safe]
+            f'StatusCode: {res.status_code}\n'  # type: ignore[str-bytes-safe]
+            f'Response Body: {res.content}'  # type: ignore[str-bytes-safe]
         )
 
     raw_patches = json.loads(xml2json(res.content))
@@ -459,8 +461,8 @@ def get_patch_details(site_type, site_name, patch_id):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error(f'Failed to get patch/fixlet {patch_id}. Request URL: {fullurl}'
-                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')
+        return_error(f'Failed to get patch/fixlet {patch_id}. Request URL: {fullurl}'  # type: ignore[str-bytes-safe]
+                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')  # type: ignore[str-bytes-safe]
 
     raw_patch = json.loads(xml2json(res.content))
     if not raw_patch or 'BES' not in raw_patch:
@@ -550,10 +552,10 @@ def deploy_patch(site_name, computer_ids, fixlet_id, action_id):
         data=request_body
     )
 
-    LOG(f'deploy_patch - raw response: {res.content}')
+    LOG(f'deploy_patch - raw response: {res.content}')  # type: ignore[str-bytes-safe]
     if res.status_code < 200 or res.status_code >= 300:
-        return_error(f'Failed to deploy patch {fixlet_id}.\nRequest URL: {fullurl}'
-                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')
+        return_error(f'Failed to deploy patch {fixlet_id}.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
+                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')  # type: ignore[str-bytes-safe]
 
     raw_action = json.loads(xml2json(res.content))
     if not raw_action or 'BESAPI' not in raw_action:
@@ -610,8 +612,8 @@ def action_delete(action_id):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error(f'Failed to delete action {action_id}.\nRequest URL: {fullurl}'
-                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')
+        return_error(f'Failed to delete action {action_id}.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
+                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')  # type: ignore[str-bytes-safe]
 
 
 def action_delete_command():
@@ -631,8 +633,8 @@ def get_action_status(action_id):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error(f'Failed to get action {action_id} status.\nRequest URL: {fullurl}'
-                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')
+        return_error(f'Failed to get action {action_id} status.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
+                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')  # type: ignore[str-bytes-safe]
 
     raw_action = json.loads(xml2json(res.content))
     if not raw_action or 'BESAPI' not in raw_action:
@@ -671,8 +673,8 @@ def action_stop(action_id):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error(f'Failed to stop action {action_id}.\nRequest URL: {fullurl}'
-                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')
+        return_error(f'Failed to stop action {action_id}.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
+                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')  # type: ignore[str-bytes-safe]
 
 
 def action_stop_command():
@@ -696,12 +698,14 @@ def query(relevance):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error(f'Query failed.\nRequest URL: {fullurl}\nStatusCode: {res.status_code}'
-                     f'\nResponse Body: {res.content}')
+        return_error(
+            f'Query failed.\nRequest URL: {fullurl}\nStatusCode: {res.status_code}'  # type: ignore[str-bytes-safe]
+            f'\nResponse Body: {res.content}')
 
     raw_action = json.loads(xml2json(res.content))
     if not raw_action or 'BESAPI' not in raw_action:
-        demisto.info(f'BigFix query has incorrect response format. Response Body: {res.content}')
+        demisto.info(
+            f'BigFix query has incorrect response format. Response Body: {res.content}')  # type: ignore[str-bytes-safe]
         return_error('The response has incorrect format. Check the logs')
 
     if demisto.get(raw_action, 'BESAPI.Query.Error'):
@@ -748,7 +752,7 @@ try:
         res.raise_for_status()
 
     if demisto.command() == 'test-module':
-        # do requets to /api/help
+        # do requests to /api/help
         # should be good indicator for test connectivity
         test()
         demisto.results('ok')

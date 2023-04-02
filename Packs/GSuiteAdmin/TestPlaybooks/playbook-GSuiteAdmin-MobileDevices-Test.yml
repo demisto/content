@@ -1,0 +1,755 @@
+id: playbook-GSuiteAdmin-MobileDevices-Test
+version: -1
+name: playbook-GSuiteAdmin-MobileDevices-Test
+description: |-
+  This playbook uses the G Suite Admin integration and tests the scenarios
+  of the various commands like gsuite-mobiledevice-list, and gsuite-mobiledevice-action.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 27bb8a7b-617e-48d9-8426-cd52c4b372ed
+    type: start
+    task:
+      id: 27bb8a7b-617e-48d9-8426-cd52c4b372ed
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 2ffa62de-2b56-41af-875b-98d2ecd11cdb
+    type: regular
+    task:
+      id: 2ffa62de-2b56-41af-875b-98d2ecd11cdb
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: e6135281-902f-43f9-8abc-d9486d350d58
+    type: regular
+    task:
+      id: e6135281-902f-43f9-8abc-d9486d350d58
+      version: -1
+      name: GetMobileDevices-AutoPagination
+      description: Retrieves a paginated list that includes company-owned mobile devices.
+      script: GSuiteAdmin|||gsuite-mobiledevice-list
+      type: regular
+      iscommand: true
+      brand: GSuiteAdmin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      customer_id:
+        simple: ${inputs.customer_id}
+      limit:
+        simple: ${inputs.limit}
+      order_by:
+        simple: EMAIL
+      projection:
+        simple: FULL
+      sort_order:
+        simple: DESCENDING
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f578b65b-ccdb-4948-87ae-88cecb6586b9
+    type: condition
+    task:
+      id: f578b65b-ccdb-4948-87ae-88cecb6586b9
+      version: -1
+      name: CheckContentAutoMobileDevices
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: GSuite.MobileDevices
+                accessor: MobileListObjects
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: inputs.limit
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GSuite.MobileDevices.NextPageToken
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f79341ac-dc99-48a7-8355-7583a949437f
+    type: regular
+    task:
+      id: f79341ac-dc99-48a7-8355-7583a949437f
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8f6dbe47-7d02-4a24-8ce3-1c8fd3680708
+    type: regular
+    task:
+      id: 8f6dbe47-7d02-4a24-8ce3-1c8fd3680708
+      version: -1
+      name: GetMobileDevices-ManualPagination
+      description: Retrieves a paginated list that includes company-owned mobile devices.
+      script: GSuiteAdmin|||gsuite-mobiledevice-list
+      type: regular
+      iscommand: true
+      brand: GSuiteAdmin
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      customer_id:
+        simple: ${inputs.customer_id}
+      order_by:
+        simple: MODEL
+      page_size:
+        simple: ${inputs.page_size}
+      projection:
+        simple: FULL
+      sort_order:
+        simple: ASCENDING
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 23d34779-0fc0-4b49-853a-4b264a0da657
+    type: condition
+    task:
+      id: 23d34779-0fc0-4b49-853a-4b264a0da657
+      version: -1
+      name: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GSuite.MobileDevices
+                accessor: MobileListObjects
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.page_size
+                transformers:
+                - operator: multiply
+                  args:
+                    by:
+                      value:
+                        simple: "2"
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f377d259-5c36-4475-825e-d733b113e9b4
+    type: title
+    task:
+      id: f377d259-5c36-4475-825e-d733b113e9b4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8d825cab-0245-49dc-8ce8-0c99b7efb425
+    type: regular
+    task:
+      id: 8d825cab-0245-49dc-8ce8-0c99b7efb425
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: a1d4d878-b163-48f0-8f2f-9b463a4e4fa9
+    type: regular
+    task:
+      id: a1d4d878-b163-48f0-8f2f-9b463a4e4fa9
+      version: -1
+      name: GetMobileDeviceToPerformAction
+      description: Retrieves a paginated list that includes company-owned mobile devices.
+      script: GSuiteAdmin|||gsuite-mobiledevice-list
+      type: regular
+      iscommand: true
+      brand: GSuiteAdmin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      customer_id:
+        simple: ${inputs.customer_id}
+      order_by:
+        simple: LAST_SYNC
+      projection:
+        simple: FULL
+      query:
+        simple: id:${inputs.mobile_device_id} status:approved
+      sort_order:
+        simple: ASCENDING
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 90e552a8-37c1-434f-8901-250f55cc99c7
+    type: regular
+    task:
+      id: 90e552a8-37c1-434f-8901-250f55cc99c7
+      version: -1
+      name: PerformActionOnMobileDevice
+      description: Takes an action that affects a mobile device. For example, remotely
+        wiping a device.
+      script: GSuiteAdmin|||gsuite-mobile-update
+      type: regular
+      iscommand: true
+      brand: GSuiteAdmin
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      action:
+        simple: block
+      customer_id:
+        simple: ${inputs.customer_id}
+      resource_id:
+        simple: ${GSuite.MobileDevices.MobileListObjects.resourceId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: cd51f66e-a424-4e7f-88bd-cac3ff5f3f3f
+    type: regular
+    task:
+      id: cd51f66e-a424-4e7f-88bd-cac3ff5f3f3f
+      version: -1
+      name: GetMobileDeviceToCheckStatus
+      description: Retrieves a paginated list that includes company-owned mobile devices.
+      script: GSuiteAdmin|||gsuite-mobiledevice-list
+      type: regular
+      iscommand: true
+      brand: GSuiteAdmin
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      customer_id:
+        simple: ${inputs.customer_id}
+      order_by:
+        simple: LAST_SYNC
+      projection:
+        simple: FULL
+      query:
+        simple: id:${inputs.mobile_device_id} status:blocked
+      sort_order:
+        simple: ASCENDING
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: a3470fbb-1f45-4864-892a-66664b736c7e
+    type: regular
+    task:
+      id: a3470fbb-1f45-4864-892a-66664b736c7e
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 44d92f99-3364-41a8-8416-64df93f1f3b5
+    type: condition
+    task:
+      id: 44d92f99-3364-41a8-8416-64df93f1f3b5
+      version: -1
+      name: CheckMobileDeviceStatusAfterAction
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GSuite.MobileDevices.MobileListObjects.status
+            iscontext: true
+          right:
+            value:
+              simple: BLOCKED
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 9039fb72-5631-45ce-841b-c07d55054319
+    type: regular
+    task:
+      id: 9039fb72-5631-45ce-841b-c07d55054319
+      version: -1
+      name: RevertMobileDeviceStatus
+      description: Takes an action that affects a mobile device. For example, remotely
+        wiping a device.
+      script: GSuiteAdmin|||gsuite-mobile-update
+      type: regular
+      iscommand: true
+      brand: GSuiteAdmin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      action:
+        simple: approve
+      customer_id:
+        simple: ${inputs.customer_id}
+      resource_id:
+        simple: ${GSuite.MobileDevices.MobileListObjects.resourceId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: ed0aa70b-19e9-47f9-808a-3222a098491e
+    type: regular
+    task:
+      id: ed0aa70b-19e9-47f9-808a-3222a098491e
+      version: -1
+      name: GetMobileDevices-ManualPagination-NextPageToken
+      description: Retrieves a paginated list that includes company-owned mobile devices.
+      script: GSuiteAdmin|||gsuite-mobiledevice-list
+      type: regular
+      iscommand: true
+      brand: GSuiteAdmin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      customer_id:
+        simple: ${inputs.customer_id}
+      order_by:
+        simple: MODEL
+      page_size:
+        simple: ${inputs.page_size}
+      page_token:
+        complex:
+          root: GSuite.MobileDevices.PageToken
+          accessor: NextPageToken
+      projection:
+        simple: FULL
+      sort_order:
+        simple: ASCENDING
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 37973614-2666-4446-859a-0b744e45164f
+    type: regular
+    task:
+      id: 37973614-2666-4446-859a-0b744e45164f
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_10_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2835,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: limit
+  value:
+    simple: "5"
+  required: false
+  description: The max mobile devices to return
+  playbookInputQuery: null
+- key: page_size
+  value:
+    simple: "3"
+  required: false
+  description: The page size
+  playbookInputQuery: null
+- key: mobile_device_id
+  value:
+    simple: 311fc9cb34adecd6
+  required: false
+  description: The mobile device id to perform the action command on it.
+  playbookInputQuery: null
+- key: customer_id
+  value:
+    simple: C02f0zfqw
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
+sourceplaybookid: b6efece6-051a-43f3-8858-fd4bbdae29df
+quiet: true
+fromversion: 6.5.0

@@ -27,8 +27,8 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 #### Required Permissions
 The required API permissions are for the ***Microsoft Threat Protection*** app.
  * offline_access - Delegate
- * Incident.ReadWrite.All - Application
- * AdvancedHunting.Read.All - Application
+ * Incident.ReadWrite.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
+ * AdvancedHunting.Read.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
 
 ## Self-Deployed Application - Client Credentials Flow
 
@@ -59,6 +59,8 @@ Follow these steps for a self-deployed configuration:
     | Password |  | False |
     | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
     | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |

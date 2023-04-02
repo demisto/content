@@ -2,13 +2,14 @@
     "name": "RSS (Deprecated)",
     "description": "Deprecated. Use RSS Feed instead.",
     "support": "community",
-    "currentVersion": "1.0.2",
+    "hidden": true,
+    "currentVersion": "1.0.3",
     "author": "Andrew Shepherd",
     "url": "",
     "email": "",
     "created": "2020-10-21T11:42:09Z",
     "categories": [
-        "Messaging"
+        "Messaging and Conferencing"
     ],
     "tags": [],
     "useCases": [],

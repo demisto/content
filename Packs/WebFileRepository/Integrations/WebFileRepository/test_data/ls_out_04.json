@@ -1,0 +1,32 @@
+{
+    "data": [{
+            "type": "D",
+            "name": "XYZ",
+            "path": "/x/XYZ",
+            "base": "/x",
+            "size": null,
+            "last-modified": null
+        }, {
+            "type": "F",
+            "name": "d.dat",
+            "path": "/x/d.dat",
+            "base": "/x",
+            "size": 3,
+            "last-modified": 1669044167
+        }, {
+            "type": "D",
+            "name": "\u3042\u3044\u3046\u3048\u304a",
+            "path": "/x/\u3042\u3044\u3046\u3048\u304a",
+            "base": "/x",
+            "size": null,
+            "last-modified": null
+        }, {
+            "type": "P",
+            "name": "..",
+            "path": "/",
+            "base": "/x",
+            "size": null,
+            "last-modified": null
+        }
+    ]
+}

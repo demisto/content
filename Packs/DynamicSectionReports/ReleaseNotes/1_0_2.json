@@ -1,0 +1,4 @@
+{
+  "breakingChanges":true,
+  "breakingChangesNotes":"The scripts: DisplayIndicatorReputationContent, DisplayTaggedWarroomEntries moved to *CommunityCommonScripts* pack. Make sure to install the *CommunityCommonScripts* pack in order to use these scripts."
+}

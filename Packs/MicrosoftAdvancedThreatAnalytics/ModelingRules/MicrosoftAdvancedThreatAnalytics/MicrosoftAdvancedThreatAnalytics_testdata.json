@@ -1,0 +1,25 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "8c77aa82-ce1b-48e0-833f-01d2de14427d",
+            "vendor": "microsoft",
+            "product": "ata",
+            "dataset": "microsoft_ata_raw",
+            "event_data": {
+                "start": "", "app": "empty", "cs1": "https://viewmsata.domain.local/", "msg": "The Lightweight Gateway, sheker.local, stopped itself and will restart automatically to protect the domain controller from a low memory condition", "shost": "john.local", "suser": "john", "cefName": "GatewayLowMemoryMonitoringAlert", "request": "", "cs1Label": "url", "cefVersion": "CEF:0", "externalId": "1019", "cefSeverity": "5", "requestMethod": "", "cefDeviceVendor": "Microsoft", "cefDeviceProduct": "ATA", "cefDeviceVersion": "1.9.7576.49398", "cefDeviceEventClassId": "GatewayLowMemoryMonitoringAlert"
+            },
+            "expected_values": {
+                "xdm.event.description": "The Lightweight Gateway, sheker.local, stopped itself and will restart automatically to protect the domain controller from a low memory condition",
+                "xdm.alert.severity": "5",
+                "xdm.intermediate.host.fqdn": "https://viewmsata.domain.local/",
+                "xdm.source.user.username": "john",
+                "xdm.network.application_protocol": "empty",
+                "xdm.source.host.hostname": "john.local",
+                "xdm.observer.version": "1.9.7576.49398",
+                "xdm.event.id": "1019",
+                "xdm.target.host.fqdn": "",
+                "xdm.alert.subcategory": "GatewayLowMemoryMonitoringAlert"
+            }
+        }
+    ]
+}

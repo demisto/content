@@ -38,3 +38,5 @@ ignore=PB106
 [known_words]
 cliname
 CICD
+BitBucket
+GitLab

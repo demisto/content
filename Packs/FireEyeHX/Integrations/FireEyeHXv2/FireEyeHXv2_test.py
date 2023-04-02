@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 import pytest
+from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -753,8 +754,12 @@ UPSERT_COMMAND_DATA_CASES_GET_INDICATOR_RESULT = [
         'File'
     ),
     (
-        {'event_type': 'test'},
+        {'event_type': 'ipv4NetworkEvent'},
         'Ip'
+    ),
+    (
+        {'event_type': 'Unknown'},
+        None
     )
 ]
 
@@ -1530,26 +1535,26 @@ def test_query_fetch(mocker, args, expected_results):
 UPSERT_COMMAND_DATA_CASES_FETCH_INCIDENTS = [
 
     (
-        {"reported_at": "1990-06-24T22:16:26.865Z"},
+        {"reported_at": "1990-06-24T22:16:26.865Z", 'max_fetch': 60},
         [{"reported_at": "test"}, {"reported_at": "test"}],
-        {"parse_alert": 2, "reported_at": 1, "setLastRun": 1}
+        {"parse_alert": 2, "reported_at": 1, "setLastRun": 1, "limit": 60}
 
     ),
     (
-        {},
+        {'max_fetch': 10},
         [{"reported_at": "test"}, {"reported_at": "test"}],
-        {"parse_alert": 2, "reported_at": 0, "setLastRun": 1}
+        {"parse_alert": 2, "reported_at": 0, "setLastRun": 1, "limit": 10}
     ),
     (
         {},
         [],
-        {"parse_alert": 0, "reported_at": 0, "setLastRun": 0}
+        {"parse_alert": 0, "reported_at": 0, "setLastRun": 0, "limit": 50}
     )
 ]
 
 
-@pytest.mark.parametrize('demisto_args, alerts_return, call_count', UPSERT_COMMAND_DATA_CASES_FETCH_INCIDENTS)
-def test_fetch_incidents(mocker, demisto_args, alerts_return, call_count):
+@pytest.mark.parametrize('demisto_args, alerts_return, expected_call', UPSERT_COMMAND_DATA_CASES_FETCH_INCIDENTS)
+def test_fetch_incidents(mocker, demisto_args, alerts_return, expected_call):
 
     from FireEyeHXv2 import fetch_incidents, Client
 
@@ -1557,13 +1562,14 @@ def test_fetch_incidents(mocker, demisto_args, alerts_return, call_count):
     setLastRun = mocker.patch("FireEyeHXv2.demisto.setLastRun", return_value=demisto_args.get('last_run'))
     mocker.patch("FireEyeHXv2.query_fetch", return_value="test")
     reported_at = mocker.patch("FireEyeHXv2.organize_reported_at", return_value="test")
-    mocker.patch("FireEyeHXv2.get_alerts", return_value=alerts_return)
+    get_alerts_call = mocker.patch("FireEyeHXv2.get_alerts", return_value=alerts_return)
     parse_alert = mocker.patch("FireEyeHXv2.parse_alert_to_incident", return_value="test")
     fetch_incidents(Client, demisto_args)
 
-    assert parse_alert.call_count == call_count["parse_alert"]
-    assert reported_at.call_count == call_count["reported_at"]
-    assert setLastRun.call_count == call_count["setLastRun"]
+    assert get_alerts_call.call_args[0][1]['limit'] == expected_call['limit']
+    assert parse_alert.call_count == expected_call["parse_alert"]
+    assert reported_at.call_count == expected_call["reported_at"]
+    assert setLastRun.call_count == expected_call["setLastRun"]
 
 
 UPSERT_COMMAND_DATA_CASES_RUN_COMMANDS_WITHOUT_POLLING = [
@@ -1904,3 +1910,84 @@ def test_create_static_host_request_body(mocker):
     result = client.create_static_host_request_body(host_set_name, host_ids_to_add, host_ids_to_remove)
     assert result == {'changes': [{'add': 'host_ids_to_add', 'command': 'change', 'remove': 'host_ids_to_remove'}],
                       'name': 'host_set_name'}
+
+
+def test_informative_error_in_get_token(mocker):
+    """
+    Given:
+        - 401 error occured in get_token
+
+    When:
+        - init the client and the get token was called
+    Then:
+        - ensure informative message returned
+    """
+
+    from FireEyeHXv2 import Client
+    mocker.patch.object(Client, '_http_request', side_effect=DemistoException('Incorrect user id or password'))
+
+    with pytest.raises(Exception) as err:
+        Client('test_client')
+
+    assert str(err.value) == 'Unauthorized - Incorrect user id or password'
+
+
+def test_headers_file_acquisition_package_request(requests_mock, mocker):
+    """
+    Given:
+        - mock client, acquisition_id
+    When:
+        - running the file_acquisition_package_request
+    Then:
+        - ensure that the headers of this command is what expected:
+            1. Token exists
+            2. Header Accept is octet-stream
+    """
+    from FireEyeHXv2 import Client
+
+    base_url = 'https://example.com/hx/api/v3'
+    mocker.patch.object(Client, 'get_token_request', return_value='test')
+    client = Client(base_url=base_url, auth=('username', 'password'), verify=True, proxy=False)
+    url = 'https://example.com/hx/api/v3/acqs/files/acquisition_id.zip'
+
+    requests_mock.get(url, json={'some_bytes': 'test'})
+    client.file_acquisition_package_request('acquisition_id')
+    assert requests_mock.request_history[0].headers.get('Accept') == 'application/octet-stream'
+    assert requests_mock.request_history[0].headers.get('X-FeApi-Token') == 'test'
+
+
+@pytest.mark.parametrize(
+    'baseurl, expected_error',
+    [
+        (
+            '<dummy_url>/hx',
+            'The base URL is invalid please set the base URL without including /hx'
+        ),
+        (
+            '<dummy_url>/hx/',
+            'The base URL is invalid please set the base URL without including /hx'
+        ),
+        (
+            '<dummy_url>/hx/api',
+            'The base URL is invalid please set the base URL without including /hx/api'
+        ),
+        (
+            '<dummy_url>/hx/api/',
+            'The base URL is invalid please set the base URL without including /hx/api'
+        ),
+        (
+            '<dummy_url>/hx/api/v3',
+            'The base URL is invalid please set the base URL without including /hx/api/v3'
+        ),
+        (
+            '<dummy_url>/hx/api/v3/',
+            'The base URL is invalid please set the base URL without including /hx/api/v3'
+        )
+    ]
+)
+def test_validate_base_url(baseurl: str, expected_error: str):
+    from FireEyeHXv2 import validate_base_url
+
+    with pytest.raises(ValueError) as e:
+        validate_base_url(baseurl)
+    assert str(e.value) == expected_error

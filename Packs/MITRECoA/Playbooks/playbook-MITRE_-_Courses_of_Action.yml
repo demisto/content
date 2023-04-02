@@ -1,0 +1,1325 @@
+id: MITRE ATT&CK - Courses of Action
+version: -1
+name: MITRE ATT&CK - Courses of Action
+description: "This is the parent playbook, which contains all phases and remediates MITRE ATT&CK techniques using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team. The playbook utilizes several other MITRE ATT&CK remediation playbooks.\n \nThe playbook follows the MITRE ATT&CK kill chain phases and takes action to protect the organization from the inputted techniques, displaying and implementing security policy recommendations for Palo Alto Networks products.\n \n***Disclaimer: This playbook does not simulate an attack using the specified techniques, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nPossible playbook triggers:\n- The playbook can be triggered by a feed integration fetching indicators that contain MITRE ATT&CK techniques as “Feed Related Indicators”, using the \"MITRE ATT&CK - Courses of Action - Job\" playbook.\n- The playbook can be triggered manually for specific MITRE ATT&CK techniques using the ‘techniqueByIncident’ playbook input.\n- An incident that contains MITRE ATT&CK technique IDs using the ‘techniqueByIncident’ playbook input.\n"
+inputs:
+- description: MITRE ATT&CK ID of a technique, or comma-separated list of techniques IDs.
+  key: TechniquesList
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: techniqueslist
+      root: incident
+- description: Template name to enforce WildFire best practices profile.
+  key: template
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+  key: pre_post
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The device group for which to return addresses (Panorama instances).
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the rules.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+outputs:
+- contextPath: Handled.Techniques
+  description: The techniques handled in this playbook
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 36728adb-bc6f-4d8e-817f-122dd4396d3e
+      iscommand: false
+      name: ""
+      description: ""
+      version: -1
+    taskid: 36728adb-bc6f-4d8e-817f-122dd4396d3e
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": -660
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      technique:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        This playbook handles MITRE ATT&CK Techniques using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.
+        ***Disclaimer: This playbook does not simulate an attack using the specified techniques, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).
+        Techniques Handled:
+        - T1005 - Data from Local System
+
+        Kill Chain phases:
+        - Collection
+
+        MITRE ATT&CK Description:
+        The adversary is trying to gather data of interest to their goal.
+        Collection consists of techniques adversaries may use to gather information and the sources information is collected from that are relevant to following through on the adversary's objectives. Frequently, the next goal after collecting data is to steal (exfiltrate) the data. Common target sources include various drive types, browsers, audio, video, and email. Common collection methods include capturing screenshots and keyboard input.
+
+        Possible Triggers:
+        - The playbook can be used as a part of the “Courses of Action - Collection” playbook to remediate techniques based on kill chain phase.
+        - The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, that can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.
+      id: 1a48a427-0e95-4534-8d26-142be6104169
+      iscommand: false
+      name: Courses of Action - Collection
+      playbookId: Courses of Action - Collection
+      type: playbook
+      version: -1
+    taskid: 1a48a427-0e95-4534-8d26-142be6104169
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1755
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      technique:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b679fcb3-6ee9-442f-85d5-9a6fde9bf0b8
+      iscommand: false
+      name: Courses of Action - Credential Access
+      description: ""
+      playbookId: Courses of Action - Credential Access
+      type: playbook
+      version: -1
+    taskid: b679fcb3-6ee9-442f-85d5-9a6fde9bf0b8
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1170
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      technique:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      template:
+        complex:
+          root: inputs.template
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ff02eb2a-fda0-4fb9-8d2e-faab5290de5d
+      iscommand: false
+      name: Courses of Action - Defense Evasion
+      playbookId: Courses of Action - Defense Evasion
+      description: ""
+      type: playbook
+      version: -1
+    taskid: ff02eb2a-fda0-4fb9-8d2e-faab5290de5d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 975
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      technique:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a92ff2ac-d330-4936-8f90-ef769caaf658
+      iscommand: false
+      name: Courses of Action - Discovery
+      description: ""
+      playbookId: Courses of Action - Discovery
+      type: playbook
+      version: -1
+    taskid: a92ff2ac-d330-4936-8f90-ef769caaf658
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1365
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      technique:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      template:
+        complex:
+          root: inputs.template
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 04699c07-1ce3-4f4a-8e19-6e3ff1f00b3e
+      iscommand: false
+      name: Courses of Action - Execution
+      description: ""
+      playbookId: Courses of Action - Execution
+      type: playbook
+      version: -1
+    taskid: 04699c07-1ce3-4f4a-8e19-6e3ff1f00b3e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 400
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      technique:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4d00510e-932f-4795-8dd3-564aa5c9a0aa
+      iscommand: false
+      name: Courses of Action - Exfiltration
+      playbookId: Courses of Action - Exfiltration
+      description: ""
+      type: playbook
+      version: -1
+    taskid: 4d00510e-932f-4795-8dd3-564aa5c9a0aa
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 2140
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      technique:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 95decc1e-3b87-482d-8fdd-b754df28b19e
+      iscommand: false
+      name: Courses of Action - Impact
+      playbookId: Courses of Action - Impact
+      description: ""
+      type: playbook
+      version: -1
+    taskid: 95decc1e-3b87-482d-8fdd-b754df28b19e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 2330
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      technique:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      template:
+        complex:
+          root: inputs.template
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4b8f260a-3e5c-4870-86e3-1ac028cb7113
+      iscommand: false
+      name: Courses of Action - Initial Access
+      playbookId: Courses of Action - Initial Access
+      description: ""
+      type: playbook
+      version: -1
+    taskid: 4b8f260a-3e5c-4870-86e3-1ac028cb7113
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 205
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      technique:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d7dd5be0-d17f-4294-86b5-e8160227a121
+      iscommand: false
+      name: Courses of Action - Persistence
+      playbookId: Courses of Action - Persistence
+      description: ""
+      type: playbook
+      version: -1
+    taskid: d7dd5be0-d17f-4294-86b5-e8160227a121
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 590
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      technique:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 47aaa107-905f-4675-85dc-8c438c822b4f
+      iscommand: false
+      name: Courses of Action - Privilege Escalation
+      playbookId: Courses of Action - Privilege Escalation
+      description: ""
+      type: playbook
+      version: -1
+    taskid: 47aaa107-905f-4675-85dc-8c438c822b4f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 780
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "22"
+      "yes":
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Close Investigation?
+      id: 7011fbae-417f-4e2d-8dcf-203b013aed34
+      iscommand: false
+      name: Close Investigation?
+      type: condition
+      version: -1
+    taskid: 7011fbae-417f-4e2d-8dcf-203b013aed34
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 3210
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      technique:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6e64c950-cea6-4eb9-878b-65aca1528958
+      iscommand: false
+      name: Courses of Action - Lateral Movement
+      playbookId: Courses of Action - Lateral Movement
+      description: ""
+      type: playbook
+      version: -1
+    taskid: 6e64c950-cea6-4eb9-878b-65aca1528958
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1560
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      technique:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      template:
+        complex:
+          root: inputs.template
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1f154240-bc91-44d5-837c-d110b6e43768
+      iscommand: false
+      name: Courses of Action - Command and Control
+      playbookId: Courses of Action - Command and Control
+      description: ""
+      type: playbook
+      version: -1
+    taskid: 1f154240-bc91-44d5-837c-d110b6e43768
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1950
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 490e64e1-62cc-4294-872d-7f4a1c02e077
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 490e64e1-62cc-4294-872d-7f4a1c02e077
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 3380
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 420d73f6-e261-4051-8f8a-5eb583abf6e0
+      iscommand: false
+      name: Done
+      description: ""
+      type: title
+      version: -1
+    taskid: 420d73f6-e261-4051-8f8a-5eb583abf6e0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 3550
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manual investigation and review by the analyst
+      id: feb3e3d9-ee19-4fd4-8922-cb41e33216ef
+      iscommand: false
+      name: Manual investigation and review
+      type: regular
+      version: -1
+    taskid: feb3e3d9-ee19-4fd4-8922-cb41e33216ef
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 3380
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.TechniquesList
+          operator: isNotEmpty
+      label: "yes"
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Are there techniques to handle?
+      id: 60b0ffe8-d1c2-47c6-80fe-46f5a4530ddd
+      iscommand: false
+      name: Are there techniques to handle?
+      type: condition
+      version: -1
+    taskid: 60b0ffe8-d1c2-47c6-80fe-46f5a4530ddd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": -150
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: TechniquesList
+      value:
+        complex:
+          root: inputs.TechniquesList
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: split
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 445774cf-874f-453c-8115-57b2a58d8b79
+      iscommand: false
+      name: Set techniques to context
+      script: Set
+      type: regular
+      version: -1
+    taskid: 445774cf-874f-453c-8115-57b2a58d8b79
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 20
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: CoA
+      indicatorsValues:
+        complex:
+          accessor: Techniques
+          root: Handled
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      id: e530ddc6-b6cf-404a-8b7e-1e0cea865f87
+      iscommand: true
+      name: Tag MITRE ATT&CK indicators as handled
+      script: Builtin|||appendIndicatorField
+      type: regular
+      version: -1
+    taskid: e530ddc6-b6cf-404a-8b7e-1e0cea865f87
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 3040
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: TechniquesValues=value
+      query:
+        simple: tags:${Handled.Techniques}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.find.indicators
+      id: 12f3ad9c-7e40-4060-8b84-84a5aae945bb
+      iscommand: true
+      name: Find indicators from type Attack Pattern
+      script: Builtin|||findIndicators
+      type: regular
+      version: -1
+    taskid: 12f3ad9c-7e40-4060-8b84-84a5aae945bb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 2690
+        }
+      }
+  "27":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: TechniquesValues
+          operator: isNotEmpty
+      label: "yes"
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ec608d74-de6c-485c-8ca6-581031d82766
+      iscommand: false
+      name: Are there Attack Pattern indicators?
+      description: "Are there Attack Pattern indicators?"
+      type: condition
+      version: -1
+    taskid: ec608d74-de6c-485c-8ca6-581031d82766
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 2870
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: CoA
+      indicatorsValues:
+        complex:
+          root: TechniquesValues
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      id: d52c0e09-22a1-4953-82a2-5133dd1fa892
+      iscommand: true
+      name: 'Tag Attack Pattern indicators as handled '
+      script: Builtin|||appendIndicatorField
+      type: regular
+      version: -1
+    taskid: d52c0e09-22a1-4953-82a2-5133dd1fa892
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 3040
+        }
+      }
+  "29":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Handled.Techniques
+          operator: isNotEmpty
+      label: "yes"
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e53dc47a-21eb-446c-8c43-82685840b50b
+      iscommand: false
+      name: Are there indicators to tag?
+      description: "Are there indicators to tag?"
+      type: condition
+      version: -1
+    taskid: e53dc47a-21eb-446c-8c43-82685840b50b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 2515
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f54d80da-a0ee-4966-86a2-cd0a55d3b2b4
+      iscommand: false
+      name: Configure Layout
+      description: ""
+      type: title
+      version: -1
+    taskid: f54d80da-a0ee-4966-86a2-cd0a55d3b2b4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": -500
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      bestpracticesdescription:
+        simple: |-
+          This layout tab shows information about best practices profiles in PAN-OS.
+          In this section you will be able to see what profiles were created through the remediation playbook's run, and the BPA scan results for best practices enforcement in your environment.
+
+          For more information, refer to the [MITRE ATT&CK - Courses of Action](https://xsoar.pan.dev/docs/reference/articles/courses-of-action) article.
+      executedremediationsummarydescription:
+        simple: |-
+          This layout tab displays information about the products that were used for remediating techniques in each of the MITRE ATT&CK kill chain phases.
+
+          For more information, refer to the [MITRE ATT&CK - Courses of Action](https://xsoar.pan.dev/docs/reference/articles/courses-of-action) article.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: d2b2a0e6-d1a2-4669-8360-687e730d35fb
+      iscommand: true
+      name: Add descriptions to layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: d2b2a0e6-d1a2-4669-8360-687e730d35fb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": -340
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "23_21_#default#": 0.62
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4275,
+        "width": 1500,
+        "x": 120,
+        "y": -660
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

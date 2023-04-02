@@ -19,6 +19,12 @@ configuration:
   name: credentials
   required: true
   type: 9
+- display: The amount of time (in seconds) that a request will wait for a client to
+    establish a connection to a remote machine before a timeout occurs.
+  name: timeout
+  defaultvalue: "10"
+  type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -1691,7 +1697,7 @@ script:
     - description: ''
       isArray: true
       name: domain_batchexecutecommandrequest_optional_hosts
-      required: true
+      required: false
     - description: ''
       isArray: false
       name: domain_batchexecutecommandrequest_persist_all
@@ -1726,7 +1732,7 @@ script:
     - description: ''
       isArray: true
       name: domain_batchexecutecommandrequest_optional_hosts
-      required: true
+      required: false
     - description: ''
       isArray: false
       name: domain_batchexecutecommandrequest_persist_all
@@ -1761,7 +1767,7 @@ script:
     - description: ''
       isArray: true
       name: domain_batchexecutecommandrequest_optional_hosts
-      required: true
+      required: false
     - description: ''
       isArray: false
       name: domain_batchexecutecommandrequest_persist_all
@@ -1792,7 +1798,7 @@ script:
     - description: ''
       isArray: true
       name: domain_batchgetcommandrequest_optional_hosts
-      required: true
+      required: false
     description: Batch executes `get` command across hosts to retrieve files. After
       this call is made `GET /real-time-response/combined/batch-get-command/v1` is
       used to query for the results.
@@ -1868,7 +1874,7 @@ script:
     - description: ''
       isArray: false
       name: domain_batchinitsessionrequest_existing_batch_id
-      required: true
+      required: false
     - description: ''
       isArray: true
       name: domain_batchinitsessionrequest_host_ids
@@ -3246,7 +3252,7 @@ script:
       name: offset
       required: false
     description: Find hosts that have observed a given custom IOC. For details about
-      those hosts, use GET /devices/entities/devices/v1
+      those hosts, use GET /devices/entities/devices/v2
     name: cs-devices-ran-on
     outputs:
     - contextPath: CrowdStrike.apiMsaReplyDevicesRanOn.errors.code
@@ -27999,7 +28005,7 @@ script:
     - contextPath: CrowdStrike.deviceNetworkHistory.resources.history.timestamp
       description: ''
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: false
   longRunning: false

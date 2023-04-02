@@ -10,35 +10,45 @@ Supported integrations:
 Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-This playbook does not use any sub-playbooks.
+
+* Active Directory - Get User Manager Details
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
-IsIntegrationAvailable
+
+* Set
+* IsIntegrationAvailable
 
 ### Commands
-* aws-iam-get-user
-* identitynow-get-accounts
-* pingone-get-user
+
 * ad-get-user
-* iam-get-user
+* msgraph-user-get
+* pingone-get-user
 * identityiq-search-identities
 * okta-get-user
+* msgraph-user-get-manager
+* iam-get-user
+* aws-iam-get-user
+* identitynow-get-accounts
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Username | The username to enrich. | Account.Username | Optional |
-| Domain | This input is needed for the IAM-get-user command \(used in the Account Enrichment - IAM playbook\). Provide the domain name that the user is related to.<br/>Example: @xsoar.com |  | Optional |
+| Domain | Optional - This input is needed for the IAM-get-user command \(used in the Account Enrichment - IAM playbook\). Please provide the domain name that the user is related to.<br/>Example: @xsoar.com |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -48,7 +58,7 @@ IsIntegrationAvailable
 | ActiveDirectory.Users.userAccountControl | The user's account control flag. | unknown |
 | ActiveDirectory.Users.mail | The user's email address. | unknown |
 | ActiveDirectory.Users.memberOf | Groups the user is a member of. | unknown |
-| IAM | Generic IAM output | unknown |
+| IAM | Generic IAM output. | unknown |
 | IdentityIQ.Identity | Identity asset from IdentityIQ. | unknown |
 | PingOne.Account | Account in PingID. | unknown |
 | ActiveDirectory.Users.manager | The manager of the user. | unknown |
@@ -62,13 +72,13 @@ IsIntegrationAvailable
 | IAM.Vendor.instanceName | Name of the integration instance. | unknown |
 | IAM.Vendor.success | When true, indicates that the command was executed successfully. | unknown |
 | IAM.Vendor.username | The employee's username in the app. | unknown |
-| IdentityIQ.Identity.userName | The IdentityIQ username. \(primary id\). | unknown |
+| IdentityIQ.Identity.userName | The IdentityIQ username \(primary ID\). | unknown |
 | IdentityIQ.Identity.id | The IdentityIQ internal ID \(UUID\). | unknown |
 | IdentityIQ.Identity.active | Indicates whether the ID is active or inactive in IdentityIQ. | unknown |
 | IdentityIQ.Identity.lastModified | Timestamp of when the identity was last modified. | unknown |
 | IdentityIQ.Identity.displayName | The display name of the identity. | unknown |
 | IdentityIQ.Identity.emails | Array of email objects. | unknown |
-| IdentityIQ.Identity.entitlements | Array of entitlements objects that the identity has. | unknown |
+| IdentityIQ.Identity.entitlements | Array of entitlement objects that the identity has. | unknown |
 | IdentityIQ.Identity.roles | Array of role objects that the identity has. | unknown |
 | IdentityIQ.Identity.capabilities | Array of string representations of the IdentityIQ capabilities assigned to this identity. | unknown |
 | IdentityIQ.Identity.name | Account name. | unknown |
@@ -76,10 +86,10 @@ IsIntegrationAvailable
 | IdentityIQ.Identity.name.familyName | The last name of the identity. | unknown |
 | IdentityIQ.Identity.name.givenName | The first name of the identity. | unknown |
 | IdentityIQ.Identity.manager | The account's manager returned from IdentityIQ. | unknown |
-| IdentityIQ.Identity.manager.userName | The IdentityIQ username \(primary ID\) of the identities manager. | unknown |
+| IdentityIQ.Identity.manager.userName | The IdentityIQ username \(primary ID\) of the identity's manager. | unknown |
 | IdentityIQ.Identity.emails.type | Type of the email being returned. | unknown |
 | IdentityIQ.Identity.emails.value | The email address of the identity. | unknown |
-| IdentityIQ.Identity.emails.primary | Indicates if this email address is the identities primary email. | unknown |
+| IdentityIQ.Identity.emails.primary | Indicates if this email address is the identity's primary email. | unknown |
 | PingOne.Account.ID | PingOne account ID. | unknown |
 | PingOne.Account.Username | PingOne account username. | unknown |
 | PingOne.Account.DisplayName | PingOne account display name. | unknown |
@@ -141,7 +151,24 @@ IsIntegrationAvailable
 | SailPointIdentityNow.Account.uncorrelated | Indicates whether the account is uncorrelated. | unknown |
 | SailPointIdentityNow.Account.manuallyCorrelated | Indicates whether the account was manually correlated. | unknown |
 | SailPointIdentityNow.Account.hasEntitlements | Indicates whether the account has entitlement. | unknown |
+| UserManagerEmail | The email of the user's manager. | unknown |
+| UserManagerDisplayName | The display name of the user's manager. | unknown |
+| MSGraphUser.ID | User's ID. | unknown |
+| MSGraphUser.DisplayName | User's display name. | unknown |
+| MSGraphUser.GivenName | User's given name. | unknown |
+| MSGraphUser.JobTitle | User's job title. | unknown |
+| MSGraphUser.Mail | User's mail address. | unknown |
+| MSGraphUser.Surname | User's surname. | unknown |
+| MSGraphUser.UserPrincipalName | User's principal name. | unknown |
+| MSGraphUserManager.Manager.ID | Manager's user ID. | unknown |
+| MSGraphUserManager.Manager.DisplayName | User's display name. | unknown |
+| MSGraphUserManager.Manager.GivenName | User's given name. | unknown |
+| MSGraphUserManager.Manager.Mail | User's mail address. | unknown |
+| MSGraphUserManager.Manager.Surname | User's surname. | unknown |
+| MSGraphUserManager.Manager.UserPrincipalName | User's principal name. | unknown |
 
 ## Playbook Image
+
 ---
-![Account Enrichment - Generic v2.2](../doc_files/Account_Enrichment_-_Generic_v2.2.png)
+
+![Account Enrichment - Generic v2.1](../doc_files/Account_Enrichment_-_Generic_v2.2.png)

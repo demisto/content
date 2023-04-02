@@ -1,0 +1,12 @@
+{
+  "proofpoint_threat_response_raw": {
+    "id": {
+      "type": "string",
+      "is_array": false
+    },
+    "events": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

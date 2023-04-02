@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: DUO Admin
   version: -1
@@ -300,8 +300,8 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-        - 'active'
-        - 'disabled'
+      - 'active'
+      - 'disabled'
     - description: Notes for the user.
       name: notes
       required: false
@@ -333,7 +333,7 @@ script:
     outputs: []
     description: Modify the user account.
     name: duoadmin-modify-user
-  dockerimage: demisto/duoadmin3:1.0.0.34083
+  dockerimage: demisto/duoadmin3:1.0.0.51401
   runonce: false
   script: ''
   type: python

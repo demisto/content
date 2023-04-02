@@ -1,0 +1,44 @@
+{
+    "name": "GCP Enrichment and Remediation",
+    "description": "Playbooks using multiple GCP content packs for enrichment and remediation purposes",
+    "support": "xsoar",
+    "currentVersion": "1.1.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "xpanse"
+    ],
+    "dependencies": {
+        "GCP-IAM": {
+            "mandatory": true,
+            "display_name": "GCP IAM"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "GoogleCloudCompute": {
+            "mandatory": true,
+            "display_name": "Google Cloud Compute"
+        },
+        "GSuiteAdmin": {
+            "mandatory": true,
+            "display_name": "G Suite Admin"
+        }
+    },
+    "displayedImages": [
+        "GSuiteAdmin",
+        "CommonScripts",
+        "GoogleCloudCompute",
+        "GCP-IAM"
+    ]
+}

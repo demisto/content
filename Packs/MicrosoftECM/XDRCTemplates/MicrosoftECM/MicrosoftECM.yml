@@ -1,0 +1,10 @@
+filebeat.inputs:
+- type: filestream
+  enabled: true
+  paths:
+    - "C:\\Program Files\\Microsoft Configuration Manager\\Logs\\*.log"
+  processors:
+    - add_fields:
+        fields:
+          vendor: msft
+          product: ecm

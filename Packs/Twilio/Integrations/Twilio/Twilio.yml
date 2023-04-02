@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Twilio
 display: Twilio
-category: Messaging
+category: Messaging and Conferencing
 description: Send SMS notifications
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

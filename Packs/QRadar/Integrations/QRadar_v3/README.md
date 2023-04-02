@@ -16,13 +16,13 @@ This integration was integrated and tested with API versions 10.1-14.0 on QRadar
     | Fetch mode |  | True |
     | Retry events fetch | Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than `event_count`. Default number of tries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_TRIES. e.g EVENTS_SEARCH_TRIES=5. | False |
     | Number of offenses to pull per API call (max 50) |  | False |
-    | Query to fetch offenses | Define a query to determine which offenses to fetch. E.g., "severity &amp;gt;= 4 AND id &amp;gt; 5 AND status=OPEN". | False |
+    | Query to fetch offenses. | Define a query to determine which offenses to fetch. E.g., "severity >= 4 AND id > 5". Filtering by status in the query may result in unexpected behavior when changing an incident's status.| False |
     | First fetch time | how long to look back while fetching incidents on the first fetch \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
     | Incidents Enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
     | Incidents Enrichment | IP enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
     | Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html | False |
     | Mirroring Options | How mirroring from QRadar to Cortex XSOAR should be done. | False |
-    | Close Mirrored XSOAR Incident | When selected, closing the QRadar offense is mirrored in Cortex XSOAR. | False |
+    | Close Mirrored XSOAR Incident | When selected, closing the QRadar offense is mirrored in Cortex XSOAR. Can't be used with "status=OPEN" query. | False |
     | The number of incoming incidents to mirror each time | Maximum number of incoming incidents to mirror each time. | False |
     | Advanced Parameters | Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5 | False |
     | Trust any certificate (not secure) |  | False |
@@ -2603,3 +2603,234 @@ This uses the instance parameters to create the AQL search query for the events.
 | Potential Windows Exploit | Potential Exploit | 10 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2022-06-23T10:00:22.536000+00:00 | R2R | 1 | Custom Rule Engine-8 :: ip-172-31-41-4 | Custom Rule Engine | 8 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 0 | 0.0.0.0 | 0 | Reserved | Blacklisted hash detected in use | Blacklisted hash detected in use | Detected process with blacklist file hash,<br>BB:NetworkDefinition: Honeypot like Addresses,<br>BB:CategoryDefinition: Suspicious Event Categories,<br>BB:CategoryDefinition: Suspicious Events,<br>ECBB:CategoryDefinition: Destination IP is a Third Country/Region,<br>BB:CategoryDefinition: Medium Magnitude Events,<br>BB:CategoryDefinition: High Magnitude Events,<br>Source Asset Weight is Low,<br>Exploits Events with High Magnitude Become Offenses,<br>Source Address is a Bogon IP,<br>Destination Asset Weight is Low,<br>BB:NetworkDefinition: Darknet Addresses,<br>BB:BehaviorDefinition: Compromise Activities,<br>Load Basic Building Blocks | 10 | 00:00:00:00:00:00 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2022-06-23T10:00:22.536000+00:00 | Administrator | <13>Jun 23 10:00:10 1.1.1.1 AgentDevice=WindowsLog	AgentLogFile=Microsoft-Windows-Sysmon/Operational	PluginVersion=1.1.1.1	Source=Microsoft-Windows-Sysmon	Computer=EC2AMAZ-ETKN6IA	OriginatingComputer=EC2AMAZ-ETKN6IA	User=SYSTEM	Domain=NT AUTHORITY	EventID=1	EventIDCode=1	EventType=4	EventCategory=1	RecordNumber=950763	TimeGenerated=1655978409	TimeWritten=1655978409	Level=Informational	Keywords=0x8000000000000000	Task=SysmonTask-SYSMON_CREATE_PROCESS	Opcode=Info	Message=Process Create: RuleName:  UtcTime: 2022-06-23 10:00:09.018 ProcessGuid: {E3E61DAB-39A9-62B4-0100-00105655970A} ProcessId: 6028 Image: C:\Program Files\Internet Explorer\iexplore.exe FileVersion: 11.00.14393.2007 (rs1_release.171231-1800) Description: Internet Explorer Product: Internet Explorer Company: Microsoft Corporation OriginalFileName: IEXPLORE.EXE CommandLine: "C:\Program Files\Internet Explorer\iexplore.exe"  CurrentDirectory: C:\Windows\system32\ User: EC2AMAZ-ETKN6IA\Administrator LogonGuid: {E3E61DAB-9C68-5F54-0000-0020EB970200} LogonId: 0x297EB TerminalSessionId: 2 IntegrityLevel: High Hashes: SHA1=D4ABAC114DBE28BAD8855C10D37F2B727177C9CA ParentProcessGuid: {E3E61DAB-39A1-62B4-0100-00107230970A} ParentProcessId: 4024 ParentImage: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe ParentCommandLine: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -F "C:\Users\Administrator\Desktop\playbook.ps1"<br> |
 | Potential Windows Exploit | Potential Exploit | 10 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2022-06-22T10:00:24.232000+00:00 | R2R | 1 | Custom Rule Engine-8 :: ip-172-31-41-4 | Custom Rule Engine | 8 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 0 | 0.0.0.0 | 0 | Reserved | Blacklisted hash detected in use | Blacklisted hash detected in use | Detected process with blacklist file hash,<br>BB:NetworkDefinition: Honeypot like Addresses,<br>BB:CategoryDefinition: Suspicious Event Categories,<br>BB:CategoryDefinition: Suspicious Events,<br>ECBB:CategoryDefinition: Destination IP is a Third Country/Region,<br>BB:CategoryDefinition: Medium Magnitude Events,<br>BB:CategoryDefinition: High Magnitude Events,<br>Source Asset Weight is Low,<br>Exploits Events with High Magnitude Become Offenses,<br>Source Address is a Bogon IP,<br>Destination Asset Weight is Low,<br>BB:NetworkDefinition: Darknet Addresses,<br>BB:BehaviorDefinition: Compromise Activities,<br>Load Basic Building Blocks | 10 | 00:00:00:00:00:00 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2022-06-22T10:00:24.232000+00:00 | Administrator | <13>Jun 22 10:00:13 1.1.1.1 AgentDevice=WindowsLog	AgentLogFile=Microsoft-Windows-Sysmon/Operational	PluginVersion=1.1.1.1	Source=Microsoft-Windows-Sysmon	Computer=EC2AMAZ-ETKN6IA	OriginatingComputer=EC2AMAZ-ETKN6IA	User=SYSTEM	Domain=NT AUTHORITY	EventID=1	EventIDCode=1	EventType=4	EventCategory=1	RecordNumber=944558	TimeGenerated=1655892009	TimeWritten=1655892009	Level=Informational	Keywords=0x8000000000000000	Task=SysmonTask-SYSMON_CREATE_PROCESS	Opcode=Info	Message=Process Create: RuleName:  UtcTime: 2022-06-22 10:00:09.689 ProcessGuid: {E3E61DAB-E829-62B2-0100-0010B36C200A} ProcessId: 2016 Image: C:\Program Files\Internet Explorer\iexplore.exe FileVersion: 11.00.14393.2007 (rs1_release.171231-1800) Description: Internet Explorer Product: Internet Explorer Company: Microsoft Corporation OriginalFileName: IEXPLORE.EXE CommandLine: "C:\Program Files\Internet Explorer\iexplore.exe"  CurrentDirectory: C:\Windows\system32\ User: EC2AMAZ-ETKN6IA\Administrator LogonGuid: {E3E61DAB-9C68-5F54-0000-0020EB970200} LogonId: 0x297EB TerminalSessionId: 2 IntegrityLevel: High Hashes: SHA1=D4ABAC114DBE28BAD8855C10D37F2B727177C9CA ParentProcessGuid: {E3E61DAB-E821-62B2-0100-0010CC47200A} ParentProcessId: 2340 ParentImage: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe ParentCommandLine: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -F "C:\Users\Administrator\Desktop\playbook.ps1"<br> |
 | Potential Windows Exploit | Potential Exploit | 10 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2022-06-21T10:00:26.080000+00:00 | R2R | 1 | Custom Rule Engine-8 :: ip-172-31-41-4 | Custom Rule Engine | 8 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 0 | 0.0.0.0 | 0 | Reserved | Blacklisted hash detected in use | Blacklisted hash detected in use | Detected process with blacklist file hash,<br>BB:NetworkDefinition: Honeypot like Addresses,<br>BB:CategoryDefinition: Suspicious Event Categories,<br>BB:CategoryDefinition: Suspicious Events,<br>ECBB:CategoryDefinition: Destination IP is a Third Country/Region,<br>BB:CategoryDefinition: Medium Magnitude Events,<br>BB:CategoryDefinition: High Magnitude Events,<br>Source Asset Weight is Low,<br>Exploits Events with High Magnitude Become Offenses,<br>Source Address is a Bogon IP,<br>Destination Asset Weight is Low,<br>BB:NetworkDefinition: Darknet Addresses,<br>BB:BehaviorDefinition: Compromise Activities,<br>Load Basic Building Blocks | 10 | 00:00:00:00:00:00 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2022-06-21T10:00:26.080000+00:00 | Administrator | <13>Jun 21 10:00:10 1.1.1.1 AgentDevice=WindowsLog	AgentLogFile=Microsoft-Windows-Sysmon/Operational	PluginVersion=1.1.1.1	Source=Microsoft-Windows-Sysmon	Computer=EC2AMAZ-ETKN6IA	OriginatingComputer=EC2AMAZ-ETKN6IA	User=SYSTEM	Domain=NT AUTHORITY	EventID=1	EventIDCode=1	EventType=4	EventCategory=1	RecordNumber=938367	TimeGenerated=1655805608	TimeWritten=1655805608	Level=Informational	Keywords=0x8000000000000000	Task=SysmonTask-SYSMON_CREATE_PROCESS	Opcode=Info	Message=Process Create: RuleName:  UtcTime: 2022-06-21 10:00:08.128 ProcessGuid: {E3E61DAB-96A8-62B1-0100-00108357A909} ProcessId: 5824 Image: C:\Program Files\Internet Explorer\iexplore.exe FileVersion: 11.00.14393.2007 (rs1_release.171231-1800) Description: Internet Explorer Product: Internet Explorer Company: Microsoft Corporation OriginalFileName: IEXPLORE.EXE CommandLine: "C:\Program Files\Internet Explorer\iexplore.exe"  CurrentDirectory: C:\Windows\system32\ User: EC2AMAZ-ETKN6IA\Administrator LogonGuid: {E3E61DAB-9C68-5F54-0000-0020EB970200} LogonId: 0x297EB TerminalSessionId: 2 IntegrityLevel: High Hashes: SHA1=D4ABAC114DBE28BAD8855C10D37F2B727177C9CA ParentProcessGuid: {E3E61DAB-96A1-62B1-0100-00103D33A909} ParentProcessId: 4092 ParentImage: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe ParentCommandLine: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -F "C:\Users\Administrator\Desktop\playbook.ps1"<br> |
+
+
+### qradar-remote-network-cidr-create
+***
+Create remote network CIDRs.
+
+
+#### Base Command
+
+`qradar-remote-network-cidr-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cidrs | An input list of CIDRs to add to QRadar (can be obtained automatically from the EDL integrations and playbook).<br>Multiple values in the same object are separated by commas.<br>A CIDR or query is required. | Optional | 
+| query | The query for getting indicators from Cortex XSOAR.<br>A CIDR or query is required. | Optional | 
+| name | A CIDR (remote network) name that will be displayed for all uploaded values in QRadar. | Required | 
+| description | Description that will be displayed and associated with all the newly uploaded CIDRs on QRadar. | Required | 
+| group | The exact name of the remote network group that CIDRs should be associated with as it appears in QRadar. A single group can be assigned to each create command.<br>A new remote network group can be created in QRadar by giving a new unique remote network group name (that does not already exist in QRadar remote networks). | Required | 
+| fields | Use this parameter to specify which fields you would like to get back in the response.<br>Fields that are not named are excluded from the output.<br>The possible fields are id, group, name, cidr, and description. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
+#### Command example
+```!qradar-remote-network-cidr-create cidrs=1.2.3.4/32,8.8.8.8/2 name=example_name description=example_description group=example_group```
+#### Human Readable Output
+
+### The new staged remote network was successfully created.
+
+<table>
+  <tr>
+    <th>cidrs</th>
+    <td>1.2.3.4/32,<br>8.8.8.8/2</td>
+  </tr>
+  <tr>
+    <th>description</th>
+    <td>example_description</td>
+  </tr>
+  <tr>
+    <th>group</th>
+    <td>example_group</td>
+  </tr>
+  <tr>
+    <th>id</th>
+    <td>12</td>
+  </tr>
+  <tr>
+    <th>name</th>
+    <td>example_name</td>
+  </tr>
+</table>
+
+
+### qradar-remote-network-cidr-list
+***
+Retrieves a list of staged remote networks.
+
+
+#### Base Command
+
+`qradar-remote-network-cidr-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of results to return. The default is 50. | Optional |
+| page | The page number from which to start getting results. | Optional | 
+| page_size | The number of results to return per page. | Optional |
+| group | The name of the remote network group that CIDRs are associated with, as it appears in QRadar. | Optional | 
+| id | Id of CIDR (remote network). | Optional | 
+| name | The name of the CIDRs (remote network) that appear in QRadar. | Required | 
+| filter | Additional options to filter results using a query expression. | Optional | 
+| fields | Use this parameter to specify which fields you would like to get back in the response.<br>Fields that are not named are excluded from the output.<br>The possible fields are id, group, name, cidr, and description. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.RemoteNetworkCIDR | Number | A list of all the retrieved CIDRs. | 
+| QRadar.RemoteNetworkCIDR.id | Number |  ID of each CIDR remote network that is part of the group. | 
+| QRadar.RemoteNetworkCIDR.name | String | The associated CIDR name as it appears in QRadar. | 
+| QRadar.RemoteNetworkCIDR.description | String | The associated CIDR description as it appears in QRadar. | 
+
+
+#### Command example
+```!qradar-remote-network-cidr-list range=0-1```
+#### Human Readable Output
+
+### List of the staged remote networks
+
+| cidrs | description | group | id | name |
+| --- | --- | --- | --- | --- |
+| 1.2.3.4/32,<br>8.8.8.8/2 | example_description | example_group1 | 12 | example_name |
+| 127.0.0.1/32 | example_description | example_group2 | 13 | example_name |
+
+
+### qradar-remote-network-cidr-delete
+***
+Deletes an existing staged remote network.
+
+
+#### Base Command
+
+`qradar-remote-network-cidr-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID that is used to locate the staged remote network to remove from QRadar. | Required |  
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
+#### Command example
+```!qradar-remote-network-cidr-list id=1,2,3,4```
+#### Human Readable Output
+
+### Successfully deleted the following remote network
+
+| ID |
+| --- |
+| 1 |
+| 4 |
+
+### Failed to delete the following remote network
+
+| ID | 	Error |
+| --- | --- |
+| 2 | Error in API call [404] - 404<br>Delete failed. Staged remote network with id=2 does not exist. |
+| 3 | Error in API call [404] - 404<br>Delete failed. Staged remote network with id=3 does not exist. |
+
+
+### qradar-remote-network-cidr-update
+***
+Updates an existing staged remote network.
+
+
+#### Base Command
+
+`qradar-remote-network-cidr-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID that is associated with the CIDR object that needs to be modified. | Required |
+| name | The CIDR name in QRadar. If the CIDR name should be changed, it can be inserted here. | Required |
+| cidrs | An input list of CIDRs to add to QRadar (can be obtained automatically from the EDL integrations and playbook).<br>Multiple values in the same object are separated by commas.<br>A CIDR or query is required. | Optional |
+| query | The query for getting indicators from Cortex XSOAR.<br>A CIDR or query is required. | Optional |
+| description | CIDR associated description presented in QRadar.<br>If the CIDR description should be changed, it can be inserted here. | Required |
+| group | The remote network group that CIDRs should belong to.<br>If the CIDR-associated group should be changed, it can be inserted here. | Required |
+| fields | Use this parameter to specify which fields you would like to get back in the response.<br>Fields that are not named are excluded.<br>Specify subfields in brackets, and multiple fields in the same object are separated by commas.<br>The possible fields are id,group,name,cidr,description.  | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.RemoteNetworkCIDR | Number | A list of all the CIDR ranges that were changed. | 
+| QRadar.RemoteNetworkCIDR.id | Number | The associated CIDR ID. | 
+| QRadar.RemoteNetworkCIDR.name | String | The associated CIDR name. | 
+| QRadar.RemoteNetworkCIDR.group | String | The group to which the remote network belongs. | 
+| QRadar.RemoteNetworkCIDR.description | String | The associated CIDR description. |
+
+
+#### Command example
+```!qradar-remote-network-cidr-update id=45  name="Malicious-IPs-for-blocking" description="Malicious-IPs-for-blocking" group=testenv cidrs=1.2.3.4/8,5.6.7.8/32```
+#### Human Readable Output
+
+### List of the staged remote networks
+
+<table>
+  <tr>
+    <th>cidrs</th>
+    <td>1.2.3.4/8,<br>5.6.7.8/32</td>
+  </tr>
+  <tr>
+    <th>description</th>
+    <td> Malicious-IPs-for-blocking</td>
+  </tr>
+  <tr>
+    <th>group</th>
+    <td>testenv</td>
+  </tr>
+  <tr>
+    <th>id</th>
+    <td>45</td>
+  </tr>
+  <tr>
+    <th>name</th>
+    <td>Malicious-IPs-for-blocking</td>
+  </tr>
+</table>
+
+
+### qradar-remote-network-deploy-execution
+***
+Executes a deployment.
+
+
+#### Base Command
+
+`qradar-remote-network-deploy-execution`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_ip | The IP of the QRadar console host. | Required |
+| status | The deployment status. Must be in capital letters (“INITIATING”). | Optional |
+| deployment_type | The deployment type. Must be in capital letters (“INCREMENTAL” or “FULL”). | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.deploy.status | String | The deployment status (INITIALIZING, IN_PROGRESS, COMPLETE). | 
+
+
+#### Command example
+```!qradar-remote-network-deploy-execution status=INITIATING deployment_type=INCREMENTAL host_ip=127.0.0.1```
+#### Human Readable Output
+
+The remote network deploy execution was successfully created.

@@ -4,11 +4,11 @@ from CommonServerUserPython import *
 
 # IMPORTS
 from datetime import datetime
-import requests
 from typing import List, Tuple, Optional
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+
+urllib3.disable_warnings()
 
 INDICATOR_FIELDS_MAPPER = {
     'stixid': 'id',

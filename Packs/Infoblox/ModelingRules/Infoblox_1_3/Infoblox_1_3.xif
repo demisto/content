@@ -1,0 +1,44 @@
+[MODEL: dataset="infoblox_infoblox_raw"]
+filter
+    _raw_log ~= "client" and _raw_log ~="infoblox-responses" and _raw_log ~="named"
+| alter 
+    process_pid = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"),0),
+    Source_ipv4 = arrayindex(regextract(_raw_log, "\s(\d{1,3}(?:\.\d{1,3}){3})\#"),0),
+    Source_ports = arrayindex(regextract(_raw_log, "#(\d+)"),0),
+    protocol_layers = regextract(_raw_log, "#(?:\d+):\s([A-Z]+)"),
+    dns_question_name = arrayindex(regextract(_raw_log, "query:\s+(\S*)?\s"), 0),
+    dns_question_type = arrayindex(regextract(_raw_log, "query:\s+\S*?\sIN\s(\S*?)\s"), 0),
+    dns_response_code = arrayindex(regextract(_raw_log, "response\:\s(.*?)\s"), 0),
+    dns_resource_record_name = arrayindex(regextract(_raw_log, "(\S*?)\s\d*?\sIN\s\w*?\s\S*?[;]$"), 0),
+    dns_resource_record_type = arrayindex(regextract(_raw_log, "response:\s+.*?\s+(A\s|AAAA\s)"), 0),
+    dns_resource_record_value = arrayindex(regextract(_raw_log, "response:.*?A\s(\S*)[;]$"), 0)
+| alter
+    xdm.source.process.pid = to_number(process_pid),
+    xdm.source.ipv4 = Source_ipv4,
+    xdm.source.port = to_number(Source_ports),
+    xdm.network.protocol_layers = protocol_layers,
+    xdm.network.dns.dns_question.name = dns_question_name,
+    xdm.network.dns.dns_question.type = dns_question_type,
+    xdm.network.dns.response_code = dns_response_code,
+    xdm.network.dns.dns_resource_record.name = dns_resource_record_name,
+    xdm.network.dns.dns_resource_record.type = dns_resource_record_type,
+    xdm.network.dns.dns_resource_record.value = dns_resource_record_value;
+
+filter
+    _raw_log ~= "httpd"
+| alter
+    Client_user_username = arrayindex(regextract(_raw_log, "\s\[(.*?)\]\:"), 0),
+    original_event_type = arrayindex(regextract(_raw_log, ":\s.*?:\s(.*?)\s-\s-"), 0),
+    Server_process_name = arrayindex(regextract(_raw_log, "to=(.*?)\s"), 0),
+    Client_ipv4 = arrayindex(regextract(_raw_log, "ip=(.*?)\s"), 0),
+    auth_methods = arrayindex(regextract(_raw_log, "auth=(.*?)\s"), 0),
+    Client_user_groups = arrayindex(regextract(_raw_log, "group=(.*?)\s"), 0),
+    application_protocols = arrayindex(regextract(_raw_log, "apparently_via=(.*?)$"), 0)
+| alter
+    xdm.source.user.username = Client_user_username,
+    xdm.event.type = original_event_type,
+    xdm.intermediate.process.name = Server_process_name,
+    xdm.source.ipv4 = Client_ipv4,
+    xdm.auth.auth_method = auth_methods,
+    xdm.source.user.groups = arraycreate(coalesce(Client_user_groups, "")),
+    xdm.network.application_protocol = application_protocols;

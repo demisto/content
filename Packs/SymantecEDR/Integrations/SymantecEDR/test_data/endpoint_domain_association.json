@@ -1,0 +1,15 @@
+{
+    "next": "YXNzb2NpYXRpb25zOzE2NzIwMDc0NDMxNDE7MDpEWEYxWlhKNVFXNWtSbVYwWTJnQkFBQUFBQUM5YXhzV2JFdEhWV2xDWkUxVFFpMDJhbEZVUzJKcWFuY3dRUT09",
+    "result": [
+        {
+            "first_seen": "2022-10-21T19:06:39.998Z",
+            "last_seen": "2022-10-21T19:06:39.998Z",
+            "data_source_url": "http://ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/disallowedcertstl.cab?4653cf2caa3508f4",
+            "data_source_url_domain": "ctldl.windowsupdate.com",
+            "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
+            "device_ip": "127.0.0.1",
+            "device_name": "WIN-TFB8L7BI77H"
+        }
+    ],
+    "total": 12
+}

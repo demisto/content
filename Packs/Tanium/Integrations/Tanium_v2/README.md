@@ -18,6 +18,8 @@
 Integration with Tanium REST API. Available from Tanium version 7.3.0. You can manage questions, actions, saved
     questions, packages and sensor information.
 
+The integration was tested with 4.x version of Tanium Threat Response, and is compatible with it.
+
   ## Configuration Parameters
   <ul>
   <li><i>Hostname</i>
@@ -4790,6 +4792,11 @@ There are no context output for this command.
       <td>Optional</td>
     </tr>
     <tr>
+      <td>expiration-time</td>
+      <td>Expiration time (in seconds) for the package.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
       <td>action-name</td>
       <td>The action name.</td>
       <td>Optional</td>
@@ -5010,6 +5017,218 @@ There are no context output for this command.
       </tr>
     </tbody>
   </table>
+
+<h3 id="tn-get-action-result">27. tn-get-action-result</h3>
+<hr>
+<p>Get device actions result.</p>
+<h5>Base Command</h5>
+<p>
+  <code>tn-get-action-result</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>id</td>
+      <td>The device ID.</td>
+      <td>Required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Tanium.ActionResult.now</td>
+      <td>Date</td>
+      <td>The action result time.</td>
+    </tr>
+    <tr>
+    <td>Tanium.ActionResult.max_available_age</td>
+    <td>String</td>
+    <td>The maximum action result age.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.age</td>
+        <td>Number</td>
+        <td>The age of the action result.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.id</td>
+        <td>Number</td>
+        <td>The result sets ID.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.report_count</td>
+        <td>Number</td>
+        <td>The result sets report count.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.saved_question_id</td>
+        <td>Number</td>
+        <td>The result sets saved question ID.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.question_id</td>
+        <td>Number</td>
+        <td>The result sets question ID.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.archived_question_id</td>
+        <td>Number</td>
+        <td>The result sets archived question ID.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.seconds_since_issued</td>
+        <td>Number</td>
+        <td>The result sets seconds since issued.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.issue_seconds</td>
+        <td>Number</td>
+        <td>The result sets issued seconds.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.expire_seconds</td>
+        <td>Number</td>
+        <td>The result sets expire seconds.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.tested</td>
+        <td>Number</td>
+        <td>The result sets tested.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.passed</td>
+        <td>Number</td>
+        <td>The result sets passed.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.mr_tested</td>
+        <td>Number</td>
+        <td>The result sets mr tested.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.mr_passed</td>
+        <td>Number</td>
+        <td>The result sets mr passed.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.estimated_total</td>
+        <td>Number</td>
+        <td>The result sets estimated total.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.select_count</td>
+        <td>Number</td>
+        <td>The result sets select count.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.error_count</td>
+        <td>Number</td>
+        <td>The result sets error count.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.no_results_count</td>
+        <td>Number</td>
+        <td>The result sets no results count.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.columns.hash</td>
+        <td>Number</td>
+        <td>The result sets columns hash.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.columns.name</td>
+        <td>String</td>
+        <td>The result sets columns name.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.columns.type</td>
+        <td>Number</td>
+        <td>The result sets columns type.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.filtered_row_count</td>
+        <td>Number</td>
+        <td>The result sets filtered row count.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.filtered_row_count_machines</td>
+        <td>Number</td>
+        <td>The result sets filtered row count machines.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.row_count</td>
+        <td>Number</td>
+        <td>The result sets row count.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.row_count_machines</td>
+        <td>Number</td>
+        <td>The result sets row count machines.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.item_count</td>
+        <td>Number</td>
+        <td>The result sets item count.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.rows.id</td>
+        <td>Number</td>
+        <td>The action results row ID.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.rows.cid</td>
+        <td>Number</td>
+        <td>The action results computer ID.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.result_sets.rows.data.text</td>
+        <td>Number</td>
+        <td>The action results status.</td>
+    </tr>
+    <tr>
+        <td>Tanium.ActionResult.ID</td>
+        <td>String</td>
+        <td>The action results ID.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!tn-get-action-result id=1 </code>
 </p>
 <h2>Additional Information</h2>
 <h2>Known Limitations</h2>

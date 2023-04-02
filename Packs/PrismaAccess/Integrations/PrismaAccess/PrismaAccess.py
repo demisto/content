@@ -135,7 +135,7 @@ def prisma_access_active_users():
 
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # pylint: disable=no-member
 
 ''' GLOBALS '''
 apiConfigured = False
@@ -393,16 +393,28 @@ def device_group_test():
 
 
 @logger
-def prisma_access_logout_user(computer: str, domain: str, user: str) -> Dict[str, str]:
+def prisma_access_logout_user(computer: str, domain: str, user: str, tenant: str) -> Dict[str, str]:
     if apiConfigured:
         xmlComputer = '<computer>%s</computer>' % b64encode(computer.encode('utf8')).decode('utf8') if computer else ''
         b64User = (b64encode(user.encode('utf8'))).decode('utf8')
+        cmd = ''
+        if domain:
+            cmd = '''<request><plugins><cloud_services><gpcs>
+                  <logout_mobile_user><gateway>%s<domain>%s</domain><user>%s</user></gateway></logout_mobile_user>
+                  </gpcs></cloud_services></plugins></request>''' % (xmlComputer, domain, b64User)
+        else:
+            cmd = '''<request><plugins><cloud_services><gpcs>
+                  <logout_mobile_user><gateway>%s<user>%s</user></gateway></logout_mobile_user>
+                  </gpcs></cloud_services></plugins></request>''' % (xmlComputer, b64User)
+
+        if tenant:
+            tenant_entry = f"<tenant-name><entry name='{tenant}'></entry></tenant-name>"
+            cmd = cmd.replace('<gpcs>', f'<gpcs>{tenant_entry}').replace('</logout_mobile_user>',
+                                                                         '</logout_mobile_user></multi-tenant>')
         params = {
             'type': 'op',
             'key': API_KEY,
-            'cmd': '''<request><plugins><cloud_services><gpcs>
-                    <logout_mobile_user><gateway>%s<domain>%s</domain><user>%s</user></gateway></logout_mobile_user>
-                    </gpcs></cloud_services></plugins></request>''' % (xmlComputer, domain, b64User)
+            'cmd': cmd
         }
         result = http_request(URL, 'GET', params=params)
         return result
@@ -414,8 +426,9 @@ def prisma_access_logout_user_command():
     computer = demisto.args().get('computer', '')
     domain = demisto.args().get('domain', '')
     user = demisto.args().get('user', '')
+    tenant = demisto.args().get('tenant_name', '')
 
-    result = prisma_access_logout_user(computer, domain, user)
+    result = prisma_access_logout_user(computer, domain, user, tenant)
 
     if 'result' in result['response'] and result['response']['@status'] == 'success':
         res = result['response'].get('result', '')

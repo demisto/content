@@ -22,7 +22,7 @@ main(){
 	os=$(detect_os)
 	echo "✓ Detected OS '$os'."
 
-	dependencies=("git" "python3" "demisto-sdk")
+	dependencies=("git" "python3" "demisto-sdk" "jq" "sed")
 	check_dependencies "$os" "${dependencies[@]}"
 	echo "✓ All dependencies met."
 

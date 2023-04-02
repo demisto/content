@@ -12,3 +12,6 @@ ignore=auto-test
 
 [file:MITRE_ATT&CK.json]
 ignore=BA101
+
+[file:FeedMitreAttack_image.png]
+ignore=IM111

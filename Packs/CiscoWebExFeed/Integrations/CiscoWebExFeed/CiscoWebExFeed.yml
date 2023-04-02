@@ -8,8 +8,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Good
   display: Indicator Reputation
   name: feedReputation
@@ -33,8 +32,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -65,14 +63,12 @@ configuration:
   required: false
   type: 19
 - additionalinfo: Supports CSV values.
-  defaultvalue: WebEx
+  defaultvalue: Webex
   display: Tags
   name: feedTags
   required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   defaultvalue: "true"
   display: Bypass exclusion list
   name: feedBypassExclusionList
@@ -86,30 +82,26 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The WebEx IP Address and Domain web site provided by Cisco to document
-  IPs and Domains used by WebEx. The WebEx Feed integration fetches indicators from
-  the web page, with which you can create a list (allow list, block list, EDL, etc.)
-  for your SIEM or firewall service to ingest and apply to its policy rules.
-display: Cisco WebEx Feed
+description: Use the Cisco Webex Feed integration to fetch indicators from Webex.
+display: Cisco Webex Feed
 name: Cisco WebEx Feed
 script:
   commands:
   - arguments:
-    - defaultValue: "100"
-      description: The maximum number of results to return. The default value is 10.
+    - defaultValue: "30"
+      description: The maximum number of results to return.
       name: limit
     - auto: PREDEFINED
       defaultValue: Both
-      description: The indicator type. Can be "IPs", "URLs", or "Both". The default
-        value is "Both".
+      description: The indicator type.
       name: indicator_type
       predefined:
-      - IPs
-      - URLs
+      - CIDR
+      - DOMAIN
       - Both
     description: Gets indicators from the feed.
     name: webex-get-indicators
-  dockerimage: demisto/btfl-soup:1.0.1.20928
+  dockerimage: demisto/btfl-soup:1.0.1.51005
   feed: true
   runonce: false
   script: ''

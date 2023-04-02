@@ -2,23 +2,15 @@
     "name": "Cortex Attack Surface Management",
     "description": "Content for working with Attack Surface Management (ASM).",
     "support": "xsoar",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.6.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Threat Intelligence",
-        "Network",
-        "Security"
-    ],
-    "useCases": [
-        "Asset Management",
-        "Threat Intelligence Management",
-        "Vulnerability Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Attack Surface Management",
         "Cortex",
@@ -27,27 +19,64 @@
         "Palo Alto Networks"
     ],
     "dependencies": {
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
+        "AWS-Enrichment-Remediation": {
+            "mandatory": false,
+            "display_name": "AWS Enrichment and Remediation"
+        },
+        "Azure-Enrichment-Remediation": {
+            "mandatory": false,
+            "display_name": "Azure Enrichment and Remediation"
         },
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
         },
+        "GCP-Enrichment-Remediation": {
+            "mandatory": false,
+            "display_name": "GCP Enrichment and Remediation"
+        },
+        "Nmap": {
+            "mandatory": false,
+            "display_name": "Nmap"
+        },
+        "Rapid7_Nexpose": {
+            "mandatory": false,
+            "display_name": "Rapid7 Nexpose"
+        },
+        "SplunkPy": {
+            "mandatory": false,
+            "display_name": "Splunk"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
         "Tenable_io": {
             "mandatory": false,
             "display_name": "Tenable.io"
         },
-         "ServiceNow": {
+        "qualys": {
             "mandatory": false,
-            "display_name": "ServiceNow"
+            "display_name": "Qualys"
         }
     },
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "xpanse"
     ],
     "itemPrefix": [
         "ASM"
+    ],
+    "displayedImages": [
+        "AWS-Enrichment-Remediation",
+        "Azure-Enrichment-Remediation",
+        "CommonScripts",
+        "GCP-Enrichment-Remediation",
+        "Nmap",
+        "Rapid7_Nexpose",
+        "SplunkPy",
+        "ServiceNow",
+        "Tenable_io",
+        "qualys"
     ]
 }

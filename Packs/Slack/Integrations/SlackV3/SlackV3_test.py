@@ -159,6 +159,7 @@ INBOUND_MESSAGE_FROM_BOT = {
 
 INBOUND_MESSAGE_FROM_USER = {
     "token": "HRaWNBI1UXkKjvIntY29juPo",
+    "user": {'id': "ZSADAD12"},
     "team_id": "TABQMPKP0",
     "api_app_id": "A01TXQAGB2P",
     "event": {
@@ -316,6 +317,37 @@ INBOUND_EVENT_MESSAGE = {
     },
     "type": "interactive",
     "accepts_response_payload": False
+}
+
+INBOUND_MESSAGE_FROM_BOT_WITHOUT_USER_ID = {
+    "token": "HRaWNBI1UXkKjvIntY29juPo",
+    "team_id": "TABQMPKP0",
+    "api_app_id": "A01TXQAGB2P",
+    "event": {
+        "type": "message",
+        "text": "This is a bot message\nView it on: <https:\/\/somexsoarserver.com#\/home>",
+        "ts": "1644999987.969789",
+        "username": "I'm a BOT",
+        "icons": {
+            "image_48": "https:\/\/someimage.png"
+        },
+        "bot_id": "B01UZHGMQ9G",
+        "channel": "C033HLL3N81",
+        "event_ts": "1644999987.969789",
+        "channel_type": "group"
+    },
+    "type": "event_callback",
+    "event_id": "Ev0337CL1P0D",
+    "event_time": 1644999987,
+    "authorizations": [{
+        "enterprise_id": None,
+        "team_id": "TABQMPKP0",
+        "user_id": "U0209BPNFC0",
+        "is_bot": True,
+        "is_enterprise_install": False
+    }],
+    "is_ext_shared_channel": False,
+    "event_context": "4-eyJldCI6Im1lc3NhZ2UiLCJ0aWQiOiJUQUJRTVBLUDAiLCJhaWQiOiJBMDFUWFFBR0IyUCIsImNpZCI6IkMwMzNITEwzTjgxIn0"
 }
 
 
@@ -4353,7 +4385,8 @@ TEST_BANK_MSG = [
     (INBOUND_MESSAGE_FROM_BOT, True),
     (INBOUND_MESSAGE_FROM_USER, False),
     (INBOUND_MESSAGE_FROM_BOT_WITH_BOT_ID, True),
-    (INBOUND_EVENT_MESSAGE, False)
+    (INBOUND_EVENT_MESSAGE, False),
+    (INBOUND_MESSAGE_FROM_BOT_WITHOUT_USER_ID, True)
 ]
 
 
@@ -4365,6 +4398,7 @@ def test_is_bot_message(message, expected_response):
         Test Case 2 - A message from a user
         Test Case 3 - A message from a bot, but only containing a bot id which matches our bot id.
         Test Case 4 - A message from a user which is a reply to an action.
+        Test Case 4 - A message from a bot without bot_msg as a subtype but also without user_id.
     When:
         Determining if the message is from a bot
     Then:
@@ -4372,6 +4406,7 @@ def test_is_bot_message(message, expected_response):
         Test Case 2 - Will determine False
         Test Case 3 - Will determine True
         Test Case 4 - Will determine False
+        Test Case 5 - Will determine True
     """
     import SlackV3
     SlackV3.BOT_ID = 'W12345678'
@@ -4426,17 +4461,17 @@ def test_fetch_context(mocker, monkeypatch, expiry_time, force_refresh, cached_c
 
 
 CREATED_CHANNEL_TESTBANK = [
-    ('Channel123', 'itsamemario', {}, 'Mirrors were not found in cache, refreshing cache.'),
+    ('Channel123', 'itsamemario', {}, 1),
     ('Channel123', 'itsamemario', {
-        'mirrors': json.dumps([])}, 'No mirrors are currently in the cache, refreshing'),
+        'mirrors': json.dumps([])}, 1),
     ('Channel123', 'itsamemario', {
         'mirrors': json.dumps([
-            {'channel_id': 'NotChannel123'}])}, 'Channel is not yet in cached context. Refreshing.'),
+            {'channel_id': 'NotChannel123'}])}, 1),
     ('Channel123', 'itsamemario', {
         'mirrors': json.dumps([
             {'channel_id': 'NotChannel123'},
             {'channel_id': 'StillNotChannel123'},
-            {'channel_id': 'Channel123'}])}, 'The channel Channel123 already exists in cache. No need to refresh.')
+            {'channel_id': 'Channel123'}])}, 0)
 ]
 
 
@@ -4466,7 +4501,7 @@ def test_handle_newly_created_channel(mocker, channel_id, creator, cached_contex
 
     SlackV3.handle_newly_created_channel(creator=creator, channel=channel_id)
 
-    assert demisto.debug.mock_calls[1][1][0] == expected_result
+    assert len(demisto.debug.mock_calls) == expected_result
 
 
 CHANNEL_ID_BANK = [
@@ -4585,15 +4620,15 @@ MOCK_INTEGRATION_CONTEXT = [
 
 
 MIRRORS_TEST_BANK = [
-    ('Channel123', 'Test text', MOCK_USER, 'No mirrors are found in context. Done processing mirror.',
+    ('Channel123', 'Test text', MOCK_USER, 0,
      MOCK_INTEGRATION_CONTEXT[0]),
-    ('Channel123', 'Test text', MOCK_USER, 'Generic Message received, ignoring',
+    ('Channel123', 'Test text', MOCK_USER, 0,
      MOCK_INTEGRATION_CONTEXT[1]),
-    ('Channel123', 'Test text', MOCK_USER, 'Found mirrored message, but incident is only mirroring out.',
+    ('Channel123', 'Test text', MOCK_USER, 0,
      MOCK_INTEGRATION_CONTEXT[2]),
-    ('Channel123', 'Test text', MOCK_USER, 'Already Mirrored',
+    ('Channel123', 'Test text', MOCK_USER, 0,
      MOCK_INTEGRATION_CONTEXT[3]),
-    ('Channel123', 'Test text', MOCK_USER, 'Attempting to update the integration context with version -1.',
+    ('Channel123', 'Test text', MOCK_USER, 3,
      MOCK_INTEGRATION_CONTEXT[4])
 ]
 
@@ -4627,7 +4662,7 @@ async def test_process_mirror(mocker, channel_id, text, user, expected_result, c
 
     await SlackV3.process_mirror(channel_id=channel_id, text=text, user=user)
 
-    assert demisto.debug.mock_calls[1][1][0] == expected_result
+    assert len(demisto.debug.mock_calls) == expected_result
 
 
 ENTITLEMENT_STRING_TEST_BANK = [
@@ -4764,3 +4799,86 @@ def test_slack_get_integration_context(mocker):
     slack_get_integration_context()
 
     assert demisto.results.mock_calls[0][1][0]['HumanReadable'] == expected_results
+
+
+def test_search_slack_users(mocker):
+    """
+    Given:
+        A list of users containing some invalid values
+    When:
+        Searching for a user
+    Then:
+        Assert the returned list contains no null values
+    """
+    import SlackV3
+    from SlackV3 import search_slack_users
+
+    mocker.patch.object(SlackV3, 'get_user_by_name', return_value={"ValidUser"})
+
+    users = ['', 'ValidUser', None]
+    results = search_slack_users(users=users)
+
+    assert results == [{'ValidUser'}]
+
+
+def test_slack_get_integration_context_statistics(mocker):
+    """
+    Given:
+        An integration context containing mirrors, conversations, and channels.
+    When:
+        Generating a report of the integration context statistics.
+    Then:
+        Assert that the value returned matches what we expect to receive back.
+    """
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    from SlackV3 import slack_get_integration_context_statistics
+
+    expected_results = {
+        'Mirrors Count': 5,
+        'Mirror Size In Bytes': 1397,
+        'Conversations Count': 2,
+        'Conversations Size In Bytes': 1706,
+        'Users Count': 2,
+        'Users Size In Bytes': 1843
+    }
+
+    integration_statistics, _ = slack_get_integration_context_statistics()
+
+    assert integration_statistics == expected_results
+
+
+def test_check_for_unanswered_questions(mocker):
+    """
+    Given:
+        Integration Context containing one expired question.
+    When:
+        Checking to see if a question is unanswered.
+    Then:
+        Assert that the question is seen as expired and is then removed from the updated context.
+    """
+    import SlackV3
+    mocker.patch.object(SlackV3, 'fetch_context', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+
+    questions = [{
+        'thread': 'cool',
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
+        'reply': 'Thanks bro',
+        'expiry': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
+        'default_response': 'NoResponse'
+    }]
+
+    set_integration_context({
+        'mirrors': MIRRORS,
+        'users': USERS,
+        'conversations': CONVERSATIONS,
+        'bot_id': 'W12345678',
+        'questions': js.dumps(questions)
+    })
+
+    SlackV3.check_for_unanswered_questions()
+    updated_context = demisto.setIntegrationContext.call_args[0][0]
+    total_questions = js.loads(updated_context.get('questions'))
+
+    assert len(total_questions) == 0

@@ -3,11 +3,11 @@ from CommonServerUserPython import *  # noqa
 
 from octoxlabs import OctoxLabs
 
-import requests
+import urllib3
 from typing import Any, Dict, List, Callable, Optional
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 """ CONSTANTS """
@@ -18,7 +18,9 @@ def convert_to_json(obj: object, keys: List[str]) -> Dict[str, Any]:
     return {k: getattr(obj, k, None) for k in keys}
 
 
-def run_command(octox: OctoxLabs, command_name: str, args: Dict[str, Any]) -> CommandResults:
+def run_command(
+    octox: OctoxLabs, command_name: str, args: Dict[str, Any]
+) -> CommandResults:
     commands: Dict[str, Callable] = {
         "test-module": test_module,
         "octoxlabs-get-adapters": get_adapters,
@@ -27,6 +29,9 @@ def run_command(octox: OctoxLabs, command_name: str, args: Dict[str, Any]) -> Co
         "octoxlabs-get-last-discovery": get_last_discovery,
         "octoxlabs-search-devices": search_devices,
         "octoxlabs-get-device": get_device,
+        "octoxlabs-get-queries": get_queries,
+        "octoxlabs-get-query-by-id": get_query_by_id,
+        "octoxlabs-get-query-by-name": get_query_by_name,
     }
     command_function: Optional[Callable] = commands.get(command_name, None)
     if command_function:
@@ -150,7 +155,7 @@ def search_devices(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     if isinstance(fields, str):
         fields = [f.strip() for f in fields.split(",")]
 
-    count, devices = octox.search_assets(
+    count, devices = octox.search_devices(
         query=args.get("query", ""),
         fields=fields,
         page=args.get("page", 1),
@@ -174,6 +179,83 @@ def get_device(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(outputs_prefix="OctoxLabs.Device", outputs=device)
 
 
+def get_queries(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    count, queries = octox.get_queries(
+        page=args.get("page", 1),
+        search=args.get("search", ""),
+        size=args.get("size", 20),
+    )
+
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Queries",
+        outputs={
+            "count": count,
+            "results": [
+                convert_to_json(
+                    q,
+                    keys=[
+                        "id",
+                        "name",
+                        "text",
+                        "tags",
+                        "count",
+                        "is_public",
+                        "created_at",
+                        "updated_at",
+                        "username",
+                        "is_temporary",
+                    ],
+                )
+                for q in queries
+            ],
+        },
+    )
+
+
+def get_query_by_id(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    query = octox.get_query_by_id(query_id=args.get("query_id"))
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Query",
+        outputs=convert_to_json(
+            obj=query,
+            keys=[
+                "id",
+                "name",
+                "text",
+                "tags",
+                "count",
+                "is_public",
+                "created_at",
+                "updated_at",
+                "username",
+                "is_temporary",
+            ],
+        ),
+    )
+
+
+def get_query_by_name(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
+    query = octox.get_query_by_name(query_name=args.get("query_name"))
+    return CommandResults(
+        outputs_prefix="OctoxLabs.Query",
+        outputs=convert_to_json(
+            obj=query,
+            keys=[
+                "id",
+                "name",
+                "text",
+                "tags",
+                "count",
+                "is_public",
+                "created_at",
+                "updated_at",
+                "username",
+                "is_temporary",
+            ],
+        ),
+    )
+
+
 """ MAIN FUNCTION """
 
 
@@ -184,7 +266,7 @@ def main() -> None:  # pragma: no cover
     :rtype:
     """
     ip = demisto.params().get("octox_ip")
-    token = demisto.params().get('octox_token', {"password": ""}).get('password')
+    token = demisto.params().get("octox_token", {"password": ""}).get("password")
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:

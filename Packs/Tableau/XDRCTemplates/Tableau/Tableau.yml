@@ -1,0 +1,13 @@
+filebeat.inputs:
+- type: filestream
+  enabled: true
+  id: tableau
+  paths:
+    - /tableau/server/data/data/tabsvc/logs/vizportal/*
+    - /tableau/server/data/data/tabsvc/logs/apigateway/*
+    - /tableau/server/data/data/tabsvc/logs/httpd/*
+  processors:
+    - add_fields:
+        fields:
+          vendor: tableau
+          product: log

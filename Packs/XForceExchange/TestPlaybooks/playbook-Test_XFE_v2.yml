@@ -6,14 +6,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1c8f787d-dbd8-41e8-84c6-af42607c37c7
+    taskid: 8436bb9a-ac14-42cf-8cd1-b8023f0b4d94
     type: start
     task:
-      id: 1c8f787d-dbd8-41e8-84c6-af42607c37c7
+      id: 8436bb9a-ac14-42cf-8cd1-b8023f0b4d94
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -30,12 +31,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: b6e2338a-4524-4726-8299-ddeda677290a
+    taskid: da014ec7-a8d2-4724-8a9c-7ef812307a37
     type: regular
     task:
-      id: b6e2338a-4524-4726-8299-ddeda677290a
+      id: da014ec7-a8d2-4724-8a9c-7ef812307a37
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -61,12 +65,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: a0f36331-c0e1-4048-8ad2-f29c10450d1b
+    taskid: 6700dfa7-6819-4bb9-87f3-e98abae5adf5
     type: regular
     task:
-      id: a0f36331-c0e1-4048-8ad2-f29c10450d1b
+      id: 6700dfa7-6819-4bb9-87f3-e98abae5adf5
       version: -1
       name: ip
       description: IP to check
@@ -80,15 +87,10 @@ tasks:
     scriptarguments:
       extend-context:
         simple: error=.
-      fullResponse: {}
       ip:
         simple: 8.8.8.8
-      long: {}
       retries:
         simple: "5"
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
@@ -104,12 +106,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0d1d823b-c5a9-43c7-8ef5-e81636965bb2
+    taskid: 99a6a291-3d52-4d71-8b4b-626d0e37d494
     type: condition
     task:
-      id: 0d1d823b-c5a9-43c7-8ef5-e81636965bb2
+      id: 99a6a291-3d52-4d71-8b4b-626d0e37d494
       version: -1
       name: Verify Outputs for IP
       type: condition
@@ -189,12 +194,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: cc8b4617-2951-4d83-81e2-63bbf84470d2
+    taskid: b13c1758-cd24-4fc7-83b5-608189ce62a3
     type: regular
     task:
-      id: cc8b4617-2951-4d83-81e2-63bbf84470d2
+      id: b13c1758-cd24-4fc7-83b5-608189ce62a3
       version: -1
       name: url
       description: Check the given URL reputation
@@ -208,15 +216,10 @@ tasks:
     scriptarguments:
       extend-context:
         simple: error=.
-      long: {}
       retries:
         simple: "5"
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
       url:
         simple: https://google.com
-      wait: {}
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
@@ -232,12 +235,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: ff5f5b1f-e7db-4387-8702-0f4b62f5fac6
+    taskid: 32b58844-bd07-493a-807c-3c4bec258895
     type: condition
     task:
-      id: ff5f5b1f-e7db-4387-8702-0f4b62f5fac6
+      id: 32b58844-bd07-493a-807c-3c4bec258895
       version: -1
       name: Verify Outputs for URL
       type: condition
@@ -319,12 +325,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 8afb96f9-3bf3-4162-81fd-f529469bcc28
+    taskid: 97685dbf-8981-4332-8a3f-64a7685b638d
     type: regular
     task:
-      id: 8afb96f9-3bf3-4162-81fd-f529469bcc28
+      id: 97685dbf-8981-4332-8a3f-64a7685b638d
       version: -1
       name: file
       description: Check file reputation
@@ -340,13 +349,8 @@ tasks:
         simple: error=.
       file:
         simple: 474B9CCF5AB9D72CA8A333889BBB34F0,474B9CCF5AB9D72CA8A333889BBB34F1
-      long: {}
-      md5: {}
       retries:
         simple: "5"
-      sha256: {}
-      threshold: {}
-      wait: {}
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
@@ -362,12 +366,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: c9a66f7c-f926-412b-83f2-224f1fb73306
+    taskid: 5c3da08c-6f8a-455c-8601-2f30412a2925
     type: condition
     task:
-      id: c9a66f7c-f926-412b-83f2-224f1fb73306
+      id: 5c3da08c-6f8a-455c-8601-2f30412a2925
       version: -1
       name: Verify Outputs for File
       type: condition
@@ -435,12 +442,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 91ac9ad7-0f58-41d4-8d87-03dc46dcec91
+    taskid: 8cc3030c-581d-428f-89b7-38eae938a929
     type: regular
     task:
-      id: 91ac9ad7-0f58-41d4-8d87-03dc46dcec91
+      id: 8cc3030c-581d-428f-89b7-38eae938a929
       version: -1
       name: domain
       description: Check domain reputation
@@ -456,13 +466,8 @@ tasks:
         simple: ibm.com
       extend-context:
         simple: error=.
-      fullResponse: {}
-      long: {}
       retries:
         simple: "5"
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
@@ -478,12 +483,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: b2d6d16d-72f7-4a94-8025-28971e84559a
+    taskid: 40a08e26-aae7-47ef-8c71-c73c183504b0
     type: regular
     task:
-      id: b2d6d16d-72f7-4a94-8025-28971e84559a
+      id: 40a08e26-aae7-47ef-8c71-c73c183504b0
       version: -1
       name: cve-search
       description: Search for details about the given CVE
@@ -514,12 +522,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: cedf060c-d0e4-4ca6-8066-4e7a7e339a52
+    taskid: 2aebac06-5e8e-419f-8717-6bc806e2ff76
     type: condition
     task:
-      id: cedf060c-d0e4-4ca6-8066-4e7a7e339a52
+      id: 2aebac06-5e8e-419f-8717-6bc806e2ff76
       version: -1
       name: Verify Outputs for CVE
       type: condition
@@ -610,12 +621,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 9931a46d-2c90-4378-848f-36e7d530f694
+    taskid: 79bd63a4-d5b5-4455-87d9-94bd7f651346
     type: regular
     task:
-      id: 9931a46d-2c90-4378-848f-36e7d530f694
+      id: 79bd63a4-d5b5-4455-87d9-94bd7f651346
       version: -1
       name: cve-latest
       description: Return the latest vulnerabilities found
@@ -627,11 +641,8 @@ tasks:
       '#none#':
       - "36"
     scriptarguments:
-      end_date: {}
       extend-context:
         simple: error=.
-      limit: {}
-      start_date: {}
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
@@ -647,12 +658,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 378639ec-c285-46b2-8846-dbe2f7b215ba
+    taskid: 97ae25a8-d2b1-488f-8332-5ac36451bd7f
     type: condition
     task:
-      id: 378639ec-c285-46b2-8846-dbe2f7b215ba
+      id: 97ae25a8-d2b1-488f-8332-5ac36451bd7f
       version: -1
       name: Verify Outputs for Recent CVEs
       type: condition
@@ -742,12 +756,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 775c5d05-cfa2-4709-8bb8-1903d4d7db6c
+    taskid: 47adc298-46c9-4f4e-8be9-cc4e38182f9e
     type: regular
     task:
-      id: 775c5d05-cfa2-4709-8bb8-1903d4d7db6c
+      id: 47adc298-46c9-4f4e-8be9-cc4e38182f9e
       version: -1
       name: xfe-whois
       description: Gets information about the given host address
@@ -777,12 +794,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 41bebc15-d027-469e-883c-e5f159347054
+    taskid: fa7fb040-7a83-4667-8018-c5bb101e2002
     type: condition
     task:
-      id: 41bebc15-d027-469e-883c-e5f159347054
+      id: fa7fb040-7a83-4667-8018-c5bb101e2002
       version: -1
       name: Verify Outputs for Whois
       type: condition
@@ -845,12 +865,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 78ff54d4-4f47-42d7-8a11-1a7a9beb728a
+    taskid: d2726846-524c-406f-8830-38e325118f96
     type: regular
     task:
-      id: 78ff54d4-4f47-42d7-8a11-1a7a9beb728a
+      id: d2726846-524c-406f-8830-38e325118f96
       version: -1
       name: xfe-search-cves
       description: Gets list of all vulnerabilities associated with the search term.
@@ -862,13 +885,10 @@ tasks:
       '#none#':
       - "43"
     scriptarguments:
-      bookmark: {}
-      end_date: {}
       extend-context:
         simple: error=.
       q:
         simple: Windows
-      start_date: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -883,12 +903,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 29d05243-ec0e-4be8-8ac0-e3d25d5e545e
+    taskid: a5cb5ecc-cb5f-44e1-84ce-c0308f712950
     type: condition
     task:
-      id: 29d05243-ec0e-4be8-8ac0-e3d25d5e545e
+      id: a5cb5ecc-cb5f-44e1-84ce-c0308f712950
       version: -1
       name: Verify Outputs for Search CVEs by Query
       type: condition
@@ -988,17 +1011,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 590c7e81-3520-42ad-813f-69b2aa02ea38
+    taskid: b16cef86-e603-4ac1-886f-7c65e84b5eef
     type: title
     task:
-      id: 590c7e81-3520-42ad-813f-69b2aa02ea38
+      id: b16cef86-e603-4ac1-886f-7c65e84b5eef
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1012,12 +1039,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 92397fa5-bf94-46b3-8b47-37922b1acc39
+    taskid: 48a69a31-4f34-4b46-8263-f0e58f7d19a0
     type: condition
     task:
-      id: 92397fa5-bf94-46b3-8b47-37922b1acc39
+      id: 48a69a31-4f34-4b46-8263-f0e58f7d19a0
       version: -1
       name: Verify Outputs for Domain
       type: condition
@@ -1046,7 +1076,7 @@ tasks:
           right:
             value:
               simple: domain
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               simple: DBotScore.Vendor
@@ -1082,12 +1112,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 9e8886bb-a6ce-4ee6-8d62-eef71f0ada2c
+    taskid: e5f2a6fa-ac5c-4e7c-8bb4-937b835812ac
     type: regular
     task:
-      id: 9e8886bb-a6ce-4ee6-8d62-eef71f0ada2c
+      id: e5f2a6fa-ac5c-4e7c-8bb4-937b835812ac
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -1101,10 +1134,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1118,17 +1147,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 06571721-5daa-4daa-85c6-899e48647567
+    taskid: 43f34912-c770-4244-8a00-a03dbc2ffaa6
     type: condition
     task:
-      id: 06571721-5daa-4daa-85c6-899e48647567
+      id: 43f34912-c770-4244-8a00-a03dbc2ffaa6
       version: -1
       name: Is Error
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -1154,16 +1184,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 7d2f0dc9-10d0-4f37-88bf-98f53b56b9ba
+    taskid: 12e4c082-1a62-43fc-81fb-d9b7b3e532d2
     type: condition
     task:
-      id: 7d2f0dc9-10d0-4f37-88bf-98f53b56b9ba
+      id: 12e4c082-1a62-43fc-81fb-d9b7b3e532d2
       version: -1
       name: Is Payment Error?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1181,8 +1213,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Your free API usage quota has been exceeded. Please refer to
-                this link
+              simple: Your free API usage quota has been exceeded. Please refer to this link
     view: |-
       {
         "position": {
@@ -1197,16 +1228,18 @@ tasks:
     - {}
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 052e3ef1-8039-42d1-8c6a-109d76f16291
+    taskid: a905fb9d-e89c-4662-86c0-734661b1e6ff
     type: condition
     task:
-      id: 052e3ef1-8039-42d1-8c6a-109d76f16291
+      id: a905fb9d-e89c-4662-86c0-734661b1e6ff
       version: -1
       name: Is Payment Error?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1224,8 +1257,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Your free API usage quota has been exceeded. Please refer to
-                this link
+              simple: Your free API usage quota has been exceeded. Please refer to this link
     view: |-
       {
         "position": {
@@ -1240,17 +1272,18 @@ tasks:
     - {}
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: ebaaf2b2-3103-4f3c-834a-82198c14be6b
+    taskid: 192cb3d8-e44d-4e7d-881a-fb60750d5b26
     type: condition
     task:
-      id: ebaaf2b2-3103-4f3c-834a-82198c14be6b
+      id: 192cb3d8-e44d-4e7d-881a-fb60750d5b26
       version: -1
       name: Is Error
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -1276,12 +1309,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 15be15f2-4df5-40bd-84dd-8b10e319c0d9
+    taskid: 15d51ee7-d0db-4657-8372-d1dd7598f7c7
     type: regular
     task:
-      id: 15be15f2-4df5-40bd-84dd-8b10e319c0d9
+      id: 15d51ee7-d0db-4657-8372-d1dd7598f7c7
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -1292,12 +1328,8 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: error
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1311,12 +1343,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 0d3aef3b-9e0a-4581-8d1a-c05bc1931eb5
+    taskid: e91f6e62-514b-42f2-8f33-272c667f5189
     type: regular
     task:
-      id: 0d3aef3b-9e0a-4581-8d1a-c05bc1931eb5
+      id: e91f6e62-514b-42f2-8f33-272c667f5189
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -1327,12 +1362,8 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: error
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1346,17 +1377,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 4500f5dd-c6cb-455d-8051-1116fad14d62
+    taskid: 3179125d-9681-4dd7-8742-6d9a2f5e0b9f
     type: condition
     task:
-      id: 4500f5dd-c6cb-455d-8051-1116fad14d62
+      id: 3179125d-9681-4dd7-8742-6d9a2f5e0b9f
       version: -1
       name: Is Error
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -1382,16 +1414,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: d260d82f-2e2c-4eea-8a86-1911bc3330bc
+    taskid: 31eea719-0af6-4358-83d1-84f2173d990f
     type: condition
     task:
-      id: d260d82f-2e2c-4eea-8a86-1911bc3330bc
+      id: 31eea719-0af6-4358-83d1-84f2173d990f
       version: -1
       name: Is Payment Error?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1409,8 +1443,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Your free API usage quota has been exceeded. Please refer to
-                this link
+              simple: Your free API usage quota has been exceeded. Please refer to this link
     view: |-
       {
         "position": {
@@ -1425,17 +1458,18 @@ tasks:
     - {}
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 607a0ed7-1864-4d7d-897a-5cc40359aba8
+    taskid: fa7f468d-84df-456f-8f69-76fffe2acb98
     type: condition
     task:
-      id: 607a0ed7-1864-4d7d-897a-5cc40359aba8
+      id: fa7f468d-84df-456f-8f69-76fffe2acb98
       version: -1
       name: Is Error
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -1461,17 +1495,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 47ebfbab-dda9-4396-81d4-91502886d513
+    taskid: 95598a8c-c7eb-42ff-869f-e63d1a115c2b
     type: condition
     task:
-      id: 47ebfbab-dda9-4396-81d4-91502886d513
+      id: 95598a8c-c7eb-42ff-869f-e63d1a115c2b
       version: -1
       name: Is Error
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -1497,16 +1532,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 943188e4-bd3e-4cdc-8303-2e9f09055a30
+    taskid: c2f0b545-6826-425b-8ece-307491190e49
     type: condition
     task:
-      id: 943188e4-bd3e-4cdc-8303-2e9f09055a30
+      id: c2f0b545-6826-425b-8ece-307491190e49
       version: -1
       name: Is Payment Error?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1524,8 +1561,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Your free API usage quota has been exceeded. Please refer to
-                this link
+              simple: Your free API usage quota has been exceeded. Please refer to this link
     view: |-
       {
         "position": {
@@ -1540,16 +1576,18 @@ tasks:
     - {}
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: fd8230fd-c3c7-4331-8f00-2049db8a8a27
+    taskid: b96c394e-c079-4a56-8f8c-facb48f93589
     type: condition
     task:
-      id: fd8230fd-c3c7-4331-8f00-2049db8a8a27
+      id: b96c394e-c079-4a56-8f8c-facb48f93589
       version: -1
       name: Is Payment Error?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1567,8 +1605,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Your free API usage quota has been exceeded. Please refer to
-                this link
+              simple: Your free API usage quota has been exceeded. Please refer to this link
     view: |-
       {
         "position": {
@@ -1583,12 +1620,15 @@ tasks:
     - {}
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 95e1a21e-0472-4847-8d3c-417530eaa093
+    taskid: 318d00ad-9fe0-4ad6-84e8-75254df760a1
     type: regular
     task:
-      id: 95e1a21e-0472-4847-8d3c-417530eaa093
+      id: 318d00ad-9fe0-4ad6-84e8-75254df760a1
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -1599,12 +1639,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: error
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1618,12 +1654,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: bc5a51a6-0d13-4e99-8d9b-2f29576b8b83
+    taskid: 79c0d65d-5485-4746-8991-74714e60b0e5
     type: regular
     task:
-      id: bc5a51a6-0d13-4e99-8d9b-2f29576b8b83
+      id: 79c0d65d-5485-4746-8991-74714e60b0e5
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -1634,12 +1673,8 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: error
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1653,17 +1688,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 35c050f1-88e3-415d-891a-39745720d3cd
+    taskid: 16789e89-7817-4b99-8d8f-206270aed91e
     type: condition
     task:
-      id: 35c050f1-88e3-415d-891a-39745720d3cd
+      id: 16789e89-7817-4b99-8d8f-206270aed91e
       version: -1
       name: Is Error
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -1689,16 +1725,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 3f559e4e-b4fb-46f8-8aa6-9a63167bf1f0
+    taskid: 0d0745bd-0cff-4464-8fec-adb8fd119026
     type: condition
     task:
-      id: 3f559e4e-b4fb-46f8-8aa6-9a63167bf1f0
+      id: 0d0745bd-0cff-4464-8fec-adb8fd119026
       version: -1
       name: Is Payment Error?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1716,8 +1754,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Your free API usage quota has been exceeded. Please refer to
-                this link
+              simple: Your free API usage quota has been exceeded. Please refer to this link
     view: |-
       {
         "position": {
@@ -1732,12 +1769,15 @@ tasks:
     - {}
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 95f47494-dd25-42a8-884f-8c6662e25005
+    taskid: 2c9ecfd5-7df9-40f1-8739-1b1b1b9a1667
     type: regular
     task:
-      id: 95f47494-dd25-42a8-884f-8c6662e25005
+      id: 2c9ecfd5-7df9-40f1-8739-1b1b1b9a1667
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -1748,12 +1788,8 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: error
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1767,17 +1803,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 04e99f96-5315-418a-80f4-6603ed6c7fb4
+    taskid: 9aa93a3f-4e11-4f73-8638-314416831504
     type: condition
     task:
-      id: 04e99f96-5315-418a-80f4-6603ed6c7fb4
+      id: 9aa93a3f-4e11-4f73-8638-314416831504
       version: -1
       name: Is Error
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -1803,16 +1840,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: b2e661fb-6f7b-4a29-8001-8194c85f404d
+    taskid: 360c6d99-035b-4625-8070-12e9ae688739
     type: condition
     task:
-      id: b2e661fb-6f7b-4a29-8001-8194c85f404d
+      id: 360c6d99-035b-4625-8070-12e9ae688739
       version: -1
       name: Is Payment Error?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1830,8 +1869,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Your free API usage quota has been exceeded. Please refer to
-                this link
+              simple: Your free API usage quota has been exceeded. Please refer to this link
     view: |-
       {
         "position": {
@@ -1846,12 +1884,15 @@ tasks:
     - {}
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 1a3d67e7-aea1-46c2-8a16-d7e6ed5b9618
+    taskid: b2a655e6-2d8d-4adf-8ee0-55963996b0cc
     type: regular
     task:
-      id: 1a3d67e7-aea1-46c2-8a16-d7e6ed5b9618
+      id: b2a655e6-2d8d-4adf-8ee0-55963996b0cc
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -1862,12 +1903,8 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: error
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1881,16 +1918,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 03c581f9-5ba1-4a75-8ee4-66a5fedbf954
+    taskid: c3402ac5-b0a2-49a5-8890-ce2480b07c51
     type: condition
     task:
-      id: 03c581f9-5ba1-4a75-8ee4-66a5fedbf954
+      id: c3402ac5-b0a2-49a5-8890-ce2480b07c51
       version: -1
       name: Is Payment Error?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1908,8 +1947,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Your free API usage quota has been exceeded. Please refer to
-                this link
+              simple: Your free API usage quota has been exceeded. Please refer to this link
     view: |-
       {
         "position": {
@@ -1924,17 +1962,18 @@ tasks:
     - {}
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: b78e8e6a-982f-4ec1-82c8-c1459c255871
+    taskid: 404369de-6520-4eff-8a52-1ed561e82203
     type: condition
     task:
-      id: b78e8e6a-982f-4ec1-82c8-c1459c255871
+      id: 404369de-6520-4eff-8a52-1ed561e82203
       version: -1
       name: Is Error
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -1960,6 +1999,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1977,5 +2019,6 @@ inputs:
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+description: ''

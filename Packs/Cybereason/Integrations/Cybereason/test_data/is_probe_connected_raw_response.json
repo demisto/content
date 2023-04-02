@@ -1,0 +1,64 @@
+{
+    "data": {
+        "resultIdToElementDataMap": {
+            "-1826875736.1198775089551518743": {
+                "simpleValues": {
+                    "elementDisplayName": {
+                        "totalValues": 1,
+                        "values": [
+                            "desktop-j60ivd0"
+                        ]
+                    }
+                },
+                "elementValues": {},
+                "suspicions": {},
+                "filterData": {
+                    "sortInGroupValue": "-1826875736.1198775089551518743",
+                    "groupByValue": "MachineRuntime: -1826875736.1198775089551518743 adCanonicalName=null , adCompany=null , adDNSHostName=null , adDepartment=null , adDescription=null , adDisplayName=null , adLocation=null , adMachineRole=null , adOU=null , adOrganization=null , adSid=null , computerName=DESKTOP-J60IVD0 , "
+                },
+                "isMalicious": "false",
+                "suspicionCount": 0,
+                "guidString": "-1826875736.1198775089551518743",
+                "labelsIds": "None",
+                "malopPriority": "None",
+                "suspect": "false",
+                "malicious": "false"
+            }
+        },
+        "suspicionsMap": {},
+        "evidenceMap": {},
+        "totalPossibleResults": 1,
+        "guessedPossibleResults": 0,
+        "queryLimits": {
+            "totalResultLimit": 10000,
+            "perGroupLimit": 100,
+            "perFeatureLimit": 100,
+            "groupingFeature": {
+                "elementInstanceType": "Machine",
+                "featureName": "self"
+            },
+            "sortInGroupFeature": "None"
+        },
+        "queryTerminated": "false",
+        "pathResultCounts": [
+            {
+                "featureDescriptor": {
+                    "elementInstanceType": "Machine",
+                    "featureName": "None"
+                },
+                "count": 1
+            }
+        ],
+        "guids": [],
+        "paginationToken": "None",
+        "executionUUID": "None",
+        "quapiMeasurementData": {
+            "timeToGetGuids": [],
+            "timeToGetData": [],
+            "timeToGetAdditionalData": [],
+            "totalQuapiQueryTime": [],
+            "startTime": [],
+            "endTime": []
+        }
+    }
+}

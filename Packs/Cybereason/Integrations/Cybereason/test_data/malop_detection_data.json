@@ -1,0 +1,73 @@
+{
+    "malops": [
+        {
+            "@class": ".MalopInboxModel",
+            "guid": "AAAA0yUlnvXGQODT",
+            "displayName": "abs.exe",
+            "rootCauseElementType": "File",
+            "primaryRootCauseName": "abs.exe",
+            "rootCauseElementNamesCount": 1,
+            "detectionEngines": [
+                "EDR"
+            ],
+            "detectionTypes": [
+                "Blocklist file hash",
+                "Connection to malicious address"
+            ],
+            "malopDetectionType": "BLACKLIST",
+            "creationTime": 1662563233889,
+            "lastUpdateTime": 1672679951701,
+            "iconBase64": "",
+            "priority": "HIGH",
+            "group": "",
+            "rootCauseElementHashes": "",
+            "status": "Active",
+            "severity": "High",
+            "machines": [
+                {
+                    "@class": ".MachineInboxModel",
+                    "guid": "123",
+                    "displayName": "desktop-1",
+                    "osType": "WINDOWS",
+                    "connected": false,
+                    "isolated": false,
+                    "lastConnected": 1669635162061,
+                    "empty": true
+                },
+                {
+                    "@class": ".MachineInboxModel",
+                    "guid": "456",
+                    "displayName": "win-123",
+                    "osType": "WINDOWS",
+                    "connected": true,
+                    "isolated": false,
+                    "lastConnected": 1672899189676,
+                    "empty": true
+                }
+            ],
+            "containers": [],
+            "labels": [
+                "test",
+                "IT-Closed"
+            ],
+            "decisionStatuses": [],
+            "malopCloseTime": 1666008250925,
+            "closerName": "example@metronlabs.com",
+            "escalated": false,
+            "edr": false,
+            "malopStatus": "Active",
+            "malopSeverity": "High",
+            "malopType": "BLACKLIST",
+            "malopPriority": "HIGH",
+            "closed": true,
+            "empty": true
+        }
+    ],
+    "machineCounterModel": {
+        "totalMachines": 408,
+        "onlineInfectedCount": 1,
+        "onlineCleanCount": 6,
+        "offlineInfectedCount": 6,
+        "offlineCleanCount": 395
+    }
+}

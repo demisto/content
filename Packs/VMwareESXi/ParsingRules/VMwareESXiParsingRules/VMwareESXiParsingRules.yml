@@ -1,0 +1,6 @@
+name: VMware ESXi Parsing Rule
+id: VMwareESXi Parsing Rule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

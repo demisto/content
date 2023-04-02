@@ -44,7 +44,7 @@ def list_queues(args, client):
         if args.get('queueNamePrefix') is not None:
             kwargs.update({'QueueNamePrefix': args.get('queueNamePrefix')})
         response = client.list_queues(**kwargs)
-        for queue in response['QueueUrls']:
+        for queue in response.get('QueueUrls', []):
             data.append({'QueueUrl': queue})
 
         ec = {'AWS.SQS.Queues': data}
@@ -232,8 +232,8 @@ def main():
     aws_role_session_name = params.get('roleSessionName')
     aws_role_session_duration = params.get('sessionDuration')
     aws_role_policy = None
-    aws_access_key_id = params.get('access_key')
-    aws_secret_access_key = params.get('secret_key')
+    aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
+    aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout')
     retries = params.get('retries') or 5

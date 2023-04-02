@@ -9,6 +9,7 @@ configuration:
   required: true
   type: 0
 - additionalinfo: The username and password to use for the connection.
+  display: Credentials
   name: credentials
   required: true
   type: 9
@@ -343,7 +344,7 @@ script:
     description: Adds new content to an existing policy dictionary.
     execution: false
     name: skyhigh-security-policy-dictionary-update
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false

@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Digital Guardian
   version: -1
@@ -7,40 +10,50 @@ configuration:
   name: auth_url
   required: true
   type: 0
+  section: Connect
 - display: Gateway Base URL
   name: arc_url
   required: true
   type: 0
+  section: Connect
 - display: API Client ID
   name: client_id
   required: true
   type: 0
+  section: Connect
 - display: API Client Secret
   name: client_secret
   required: true
   type: 4
+  section: Connect
 - display: Export Profile
   name: export_profile
   required: true
   type: 0
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-description: Use Digital Guardian Integration to fetch incidents and to programmatically
-  add or remove entries from watchlists and component lists.
+  section: Connect
+  advanced: true
+description: Use Digital Guardian Integration to fetch incidents and to programmatically add or remove entries from watchlists and component lists.
 display: Digital Guardian
 name: Digital Guardian
 script:
@@ -155,7 +168,7 @@ script:
     description: Remove Componentlist Entry
     execution: false
     name: digitalguardian-remove-componentlist-entry
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false

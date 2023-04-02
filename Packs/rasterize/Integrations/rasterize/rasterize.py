@@ -236,7 +236,7 @@ def quit_driver_and_display_and_reap_children(driver, display):
             demisto.error(f"Failed to stop display. Error: {edr}. Trace: {traceback.format_exc()}")
 
         zombies, ps_out = find_zombie_processes()
-        if zombies:
+        if zombies:  # pragma: no cover
             demisto.info(f'Found zombie processes will waitpid: {ps_out}')
             for pid in zombies:
                 waitres = os.waitpid(int(pid), os.WNOHANG)[1]
@@ -515,7 +515,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bo
     :return: A list of stream of combined images
     """
     demisto.debug(f'Loading file at Path: {path}')
-    input_pdf = PdfReader(open(path, "rb"), strict=False)
+    input_pdf = PdfReader(open(path, "rb"), strict=False, password=password)
     pages = len(input_pdf.pages) if max_pages == "*" else min(int(max_pages), len(input_pdf.pages))
 
     with tempfile.TemporaryDirectory() as output_folder:
@@ -546,6 +546,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bo
         outputs = []
         for images_list in images_matrix:
             if horizontal:
+                # this line takes a ton of memory and doesnt release all of it
                 imgs_comb = np.hstack([np.asarray(image.resize(min_shape)) for image in images_list])
             else:
                 imgs_comb = np.vstack([np.asarray(image.resize(min_shape)) for image in images_list])
@@ -674,16 +675,20 @@ def rasterize_html_command():
     h = args.get('height', DEFAULT_H).rstrip('px')
     r_type = args.get('type', 'png')
     file_name = args.get('file_name', 'email')
+    full_screen = argToBoolean(demisto.args().get('full_screen', False))
+    wait_time = int(args.get('wait_time', 0))
 
     file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
-
     file_path = demisto.getFilePath(entry_id).get('path')
-    with open(file_path, 'rb') as f:
-        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type=r_type)
-        res = fileResult(filename=file_name, data=output)
-        if r_type == 'png':
-            res['Type'] = entryTypes['image']
-        return_results(res)
+    os.rename(f'./{file_path}', 'file.html')
+
+    output = rasterize(path=f"file://{os.path.realpath('file.html')}", width=w, height=h, r_type=r_type,
+                       full_screen=full_screen, wait_time=wait_time)
+
+    res = fileResult(filename=file_name, data=output)
+    if r_type == 'png':
+        res['Type'] = entryTypes['image']
+    return_results(res)
 
 
 def module_test():

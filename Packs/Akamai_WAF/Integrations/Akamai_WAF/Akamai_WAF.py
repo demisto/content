@@ -1,17 +1,21 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 """ IMPORTS """
 # Std imports
-
+import re
+import time
 # 3-rd party imports
-from typing import Dict, Tuple, Union, Optional, List
+from typing import Dict, List, Optional, Tuple, Union
+
 import requests
 import urllib3
 # Local imports
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 from akamai.edgegrid import EdgeGridAuth
 
-"""GLOBALS/PARAMS
+"""
+
+GLOBALS/PARAMS
 
 Attributes:
     INTEGRATION_NAME:
@@ -24,10 +28,11 @@ Attributes:
     INTEGRATION_CONTEXT_NAME:
         Context output names should be written in camel case, for example: MSGraphUser.
 """
+
+
 INTEGRATION_NAME = 'Akamai WAF'
 INTEGRATION_COMMAND_NAME = 'akamai'
 INTEGRATION_CONTEXT_NAME = 'Akamai'
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -41,6 +46,555 @@ class Client(BaseClient):
         """
         return self.get_network_lists(extended=False, include_elements=False)
 
+    # Created by C.L.
+    def create_enrollment(self,
+                          contract_id: str,
+                          country: str,
+                          company: str,
+                          organizational_unit: str,
+                          city: str,
+                          admin_contact: dict,
+                          tech_contact: dict,
+                          org: dict,
+                          csr_cn: str = "",
+                          change_management: bool = False,
+                          certificate_type: str = "third-party",
+                          enable_multi_stacked_certificates: bool = False,
+                          network_configuration_geography: str = "core",
+                          network_configuration_quic_enabled: bool = True,
+                          network_configuration_secure_network: str = "enhanced-tls",
+                          network_configuration_sni_only: bool = True,
+                          clone_dns_names: bool = True,
+                          exclude_sans: bool = False,
+                          ra: str = "third-party",
+                          validation_type: str = "third-party"
+                          ) -> dict:
+        """
+            Create an enrollment
+        Args:
+            contract_id:                 Contract id
+            country:                    country - Two Letter format
+            company:                    company Name
+            organizational_unit:         Organizational Unit
+            city:                       city Name
+            admin_contact:               Admin Contact - Dictionary
+            tech_contact:                tech_contact - Dictionary
+            org:                        Organization name - Dictionary
+            csr_cn:                     CName
+            contract_id:                 Specify the contract on which to operate or view.
+            csr_cn:                     CName to be created
+            change_management:           change_management
+            certificate_type:            Certificate Type
+            enable_multi_stacked_certificates:     Enable Multi Stacked Certificates
+            network_configuration_geography:     Network Configuration geography
+            network_configuration_quic_enabled:   Network Configuration QuicEnabled
+            network_configuration_secure_network: Network Configuration SecureNetwork
+            network_configuration_sni_only:       Network Configuration sniOnly
+            clone_dns_names:                    Network Configuration - Dns Name Settings - Clone DNS Names
+            exclude_sans:                       Third Party - Exclude Sans
+            ra: str = "third-party",
+            validation_type: str = "third-party",
+
+        Returns:
+            Json response as dictionary
+        """
+        params = {
+            "contractId": contract_id,
+        }
+
+        body = {"csr": {"cn": csr_cn, "c": country, "o": company,
+                        "ou": organizational_unit, "l": city,
+                        },
+                "adminContact": admin_contact,
+                "techContact": tech_contact,
+                "org": org,
+                "networkConfiguration": {"geography": network_configuration_geography,
+                                         "quicEnabled": network_configuration_quic_enabled,
+                                         "sniOnly": network_configuration_sni_only,
+                                         "secureNetwork": network_configuration_secure_network,
+                                         "dnsNameSettings": {
+                                             "cloneDnsNames": clone_dns_names,
+                                             "dnsNames": [csr_cn]
+                                         },
+                                         },
+                "certificateType": certificate_type,
+                "changeManagement": change_management,
+                "enableMultiStackedCertificates": enable_multi_stacked_certificates,
+                "ra": ra,
+                "validationType": validation_type,
+                "thirdParty": {"excludeSans": exclude_sans}
+                }
+
+        # Add Authorization header to this snippet
+        headers = {
+            "Accept": "application/vnd.akamai.cps.enrollment-status.v1+json",
+            "Content-Type": "application/vnd.akamai.cps.enrollment.v11+json"
+        }
+        response = self._http_request(method='POST',
+                                      url_suffix='/cps/v2/enrollments',
+                                      params=params,
+                                      json_data=body,
+                                      headers=headers,
+                                      )
+        return response
+
+    # Created by C.L.
+
+    def list_enrollments(self,
+                         contract_id: str,
+                         ) -> dict:
+        """
+            List enrollments
+            Please refer to https://techdocs.akamai.com/cps/reference/get-enrollments
+
+        Args:
+            contract_id: Specify the contract on which to operate or view.
+
+        Returns:
+            Json response as dictionary
+        """
+        headers = {
+            "Accept": "application/vnd.akamai.cps.enrollments.v11+json",
+
+        }
+        params = {
+            "contractId": contract_id,
+        }
+        return self._http_request(method='GET',
+                                  url_suffix='/cps/v2/enrollments',
+                                  headers=headers,
+                                  timeout=(60, 180),
+                                  params=params
+                                  )
+
+    # Created by C.L.
+
+    def get_change(self,
+                   enrollment_path: str,
+                   allowed_input_type_param: str = "third-party-csr"
+                   ) -> dict:
+        """
+            Get change
+            Please refer to https://techdocs.akamai.com/cps/reference/get-change-allowed-input-param
+
+        Args:
+            enrollment_path: The path that includes enrollmentId and changeId:
+                e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
+            allowed_input_type_param: Specify the contract on which to operate or view.
+
+        Returns:
+            Json response as dictionary
+        """
+        headers = {
+            "Accept": "application/vnd.akamai.cps.csr.v2+json",
+        }
+        return self._http_request(method='GET',
+                                  url_suffix=f'{enrollment_path}/input/info/{allowed_input_type_param}',
+                                  headers=headers)
+
+    # Created by C.L.
+    def update_change(self,
+                      change_path: str,
+                      certificate: str,
+                      trust_chain: str,
+                      allowed_input_type_param: str = "third-party-cert-and-trust-chain"
+                      ) -> dict:
+        """
+            Update a change
+            Please refer to https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
+
+        Args:
+            change_path: The path that includes enrollmentId and changeId: e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
+            changeId: Specify the ChangeID on which to operate or view.
+            enrollmentId: Specify the enrollmentID on which to operate or view.
+            allowed_input_type_param: Specify the contract on which to operate or view.
+
+        Returns:
+            Json response as dictionary
+        """
+        payload = '{\"certificatesAndTrustChains\":[{\"certificate\":\"' + certificate + '\",' \
+            ' \"keyAlgorithm\":\"RSA\",' \
+            '\"trustChain\":\"' + trust_chain + '\"}]}'
+
+        headers = {
+            "Accept": "application/vnd.akamai.cps.change-id.v1+json",
+            "Content-Type": "application/vnd.akamai.cps.certificate-and-trust-chain.v2+json",
+        }
+
+        return self._http_request(method='POST',
+                                  url_suffix=f"{change_path}/input/update/{allowed_input_type_param}",
+                                  headers=headers,
+                                  data=payload
+                                  )
+
+    # Created by C.L.
+
+    def acknowledge_warning(self, change_path: str) -> dict:
+        """
+            Acknowledge the warning message after updating a enrollment change
+
+        Args:
+            change_path: The path that includes enrollmentId and changeId: e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
+
+        Returns:
+            Json response as dictionary
+        """
+        headers = {
+            "Accept": "application/vnd.akamai.cps.change-id.v1+json",
+            "Content-Type": "application/vnd.akamai.cps.acknowledgement.v1+json",
+        }
+        payload = '{"acknowledgement": "acknowledge"}'
+        return self._http_request(
+            method='POST',
+            url_suffix=f"{change_path}/input/update/post-verification-warnings-ack",
+            headers=headers,
+            data=payload
+        )
+
+    def acknowledge_pre_verification_warning(self, change_path: str) -> dict:
+        """
+            Acknowledge the pre verification warning message after initiate an enrollment change
+
+        Args:
+            change_path: The path that includes enrollmentId and changeId: e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
+
+        Returns:
+            Json response as dictionary
+        """
+        headers = {
+            "Content-Type": "application/vnd.akamai.cps.acknowledgement.v1+json",
+            "Accept": "application/vnd.akamai.cps.change-id.v1+json"
+        }
+
+        payload = '{"acknowledgement": "acknowledge"}'
+        return self._http_request(
+            method='POST',
+            url_suffix=f"{change_path}/input/update/pre-verification-warnings-ack",
+            headers=headers,
+            data=payload
+        )
+
+    # Created by C.L. Oct-06-22
+
+    def get_production_deployment(self,
+                                  enrollment_id: str
+                                  ) -> dict:
+        """
+            get production deployment by enrollment id.
+
+        Returns:
+            Json response as dictionary
+        """
+
+        headers = {"accept": "application/vnd.akamai.cps.deployment.v7+json"}
+
+        return self._http_request(method='GET',
+                                  url_suffix=f"/cps/v2/enrollments/{enrollment_id}/deployments/production",
+                                  headers=headers,
+                                  )
+
+    # Created by C.L. Oct-06-22
+    def get_change_history(self,
+                           enrollment_id: str
+                           ) -> dict:
+        """
+            get change history by enrollment id.
+
+        Returns:
+            Json response as dictionary
+        """
+
+        headers = {"accept": "application/vnd.akamai.cps.change-history.v5+json"}
+
+        return self._http_request(method='GET',
+                                  url_suffix=f"/cps/v2/enrollments/{enrollment_id}/history/changes",
+                                  headers=headers,
+                                  )
+
+    # Created by C.L.
+
+    def list_groups(self):
+
+        all_groups = self._http_request(method='GET', url_suffix='/identity-management/v2/user-admin/groups')
+
+        return all_groups
+
+    def get_group(self,
+                  group_id: int = 0
+                  ) -> dict:
+        """
+            Get the information of a group
+        Args:
+            group_id : Group ID
+
+        Returns:
+            Json response as dictionary
+        """
+        # Add Authorization header to this snippet
+        headers = {"Accept": "application/json"}
+
+        return self._http_request(method='GET',
+                                  url_suffix=f"/identity-management/v2/user-admin/groups/{group_id}?actions=false",
+                                  headers=headers)
+
+    # Created by C.L.
+
+    def create_group(self,
+                     group_id: int = 0, groupname: str = ""
+                     ) -> dict:
+        """
+            Create a new group
+        Args:
+            group_id : Group ID
+
+        Returns:
+            Json response as dictionary
+        """
+
+        body = {"groupName": groupname}
+        # Add Authorization header to this snippet
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        }
+
+        return self._http_request(method='POST',
+                                  url_suffix=f"/identity-management/v2/user-admin/groups/{group_id}",
+                                  json_data=body,
+                                  headers=headers)
+
+    # Created by C.L.
+    def get_domains(self):
+        """
+            Get all of the existing domains
+
+        Returns:
+            Json response as dictionary
+        """
+        headers = {"Accept": "application/json"}
+
+        return self._http_request(method='GET',
+                                  url_suffix="/config-gtm/v1/domains",
+                                  headers=headers)
+
+    # Created by C.L.
+    def get_domain(self, domain_name: str):
+        """
+            Get information of a specific domain
+        Args:
+            domain_name : Domain Name
+
+        Returns:
+            Json response as dictionary
+        """
+        url_suffix = f"/config-gtm/v1/domains/{domain_name}"
+
+        headers = {"Accept": "application/vnd.config-gtm.v1.5+json"}
+        response = self._http_request(method='GET',
+                                      url_suffix=url_suffix,
+                                      headers=headers)
+        return response
+
+    # Created by C.L.
+    def create_domain(self, group_id: int, domain_name: str) -> dict:
+        """
+           Creating domains
+        Args:
+            group_id : The group ID
+            domain_name: Domain Name
+
+        Returns:
+            Json response as dictionary
+        """
+
+        body = {
+            "defaultErrorPenalty": 75,
+            "defaultTimeoutPenalty": 25,
+            "emailNotificationList": [
+                "akamaizers@fisglobal.com"
+            ],
+            "endUserMappingEnabled": False,
+            "mapUpdateInterval": 600,
+            "maxProperties": 100,
+            "maxResources": 512,
+            "maxTestTimeout": 60,
+            "maxTTL": 3600,
+            "minTestInterval": 0,
+            "minTTL": 0,
+            "name": domain_name,
+            "type": "weighted",
+            "loadImbalancePercentage": 10,
+            "resources": [],
+            "properties": [],
+            "datacenters": []
+
+        }
+        headers = {
+            "Accept": "application/vnd.config-gtm.v1.5+json",
+            "Content-Type": "application/vnd.config-gtm.v1.5+json"
+        }
+        params = {
+            "gid": group_id}
+
+        return self._http_request(method='POST',
+                                  url_suffix='/config-gtm/v1/domains',
+                                  params=params,
+                                  headers=headers,
+                                  json_data=body)
+
+    # Created by C.L.
+    def create_datacenter(self, domain_name: str, dc_name: str = "", dc_country: str = "",):
+        """
+        Updating or adding datacenter to existing GTM domain
+        Args:
+
+            domain_name: Domain Name
+            DC_nam2: The name of the Data center
+            dc_country: The country of the Data center
+
+
+        Returns:
+            Json response as dictionary
+        """
+
+        body = {
+            "nickname": dc_name,
+            "scorePenalty": 0,
+            "country": dc_country,
+            "virtual": True,
+            "cloudServerTargeting": False,
+            "cloudServerHostHeaderOverride": False,
+        }
+
+        headers = {
+            "Accept": "application/vnd.config-gtm.v1.5+json",
+            "Content-Type": "application/datacenter-vnd-config-gtm.v1.5+json"
+        }
+
+        return self._http_request(method='POST',
+                                  url_suffix=f'/config-gtm/v1/domains/{domain_name}/datacenters',
+                                  headers=headers,
+                                  json_data=body)
+
+    # Created by C.L.
+
+    def update_property(self, property_type: str, domain_name: str, property_name: str,
+                        static_type: str = "", property_comments: str = "", static_server: str = "", server_1: str = "",
+                        server_2: str = "", weight_1: int = 50, weight_2: int = 50, dc1_id: int = 3131, dc2_id: int = 3132):
+        """
+        Updating or adding properties to existing GTM domain
+
+        Args:
+            property_type : Property Type
+            domain_name: Domain Name
+            property_name: Property Name
+            static_type: The type of static property
+            static_server: The server address of static property
+            server_1: The address of server 1
+            server_2: The address of server 2
+            weight_1: The weight of server 1
+            weight_2: The weight of server 2
+
+        Returns:
+            Json response as dictionary
+        """
+        if property_type == "static":
+            staticRRSets = [  # empty if type!=static
+                {
+                    "type": static_type,
+                    "ttl": 300,
+                    "rdata": [
+                        static_server
+                    ]
+                }
+            ]
+            trafficTargets: List[Dict] = []
+        elif property_type == "failover":
+            staticRRSets = []
+            trafficTargets = []
+            if server_1 != "":
+                trafficTargets.append(
+                    {
+                        "datacenterId": dc1_id,  # static number
+                        "enabled": True,
+                        "weight": 1,              # 50 if type== round robin, 1 is primary if type==failover
+                        "servers": [
+                            server_1          # user input
+                        ]
+                    })
+            if server_2 != "":
+                trafficTargets.append(
+                    {
+                        "datacenterId": dc2_id,  # static number
+                        "enabled": True,
+                        "weight": 0,              # 50 if type== round robin, 1 is primary if type==failover
+                        "servers": [
+                            server_2          # user input
+                        ]
+                    })
+
+        elif property_type == "weighted-round-robin":
+            staticRRSets = []
+            trafficTargets = []
+            if server_1 != "":
+                trafficTargets.append(
+
+                    {
+                        "datacenterId": dc1_id,  # static number
+                        "enabled": True,
+                        "weight": weight_1,              # 50 if type== round robin, 1 is primary if type==failover
+                        "servers": [
+                            server_1          # user input
+                        ]
+                    }
+
+
+                )
+            if server_2 != "":
+                trafficTargets.append(
+                    {
+                        "datacenterId": dc2_id,
+                        "enabled": True,
+                        "weight": weight_2,                 # 50 if type== round robin, 0 is secondary if type==failover
+                        "servers": [
+                            server_2            # user input
+                        ]
+                    }
+
+                )
+
+        body = {
+            "balanceByDownloadScore": False,
+            "dynamicTTL": 60,
+            "failoverDelay": 0,
+            "failbackDelay": 0,
+            "ghostDemandReporting": False,
+            "comments": property_comments,
+            "handoutMode": "normal",
+            "handoutLimit": 8,
+            "livenessTests": [],
+            "mxRecords": [],
+            "name": property_name,
+            "scoreAggregationType": "mean",
+            "stickinessBonusConstant": 0,
+            "stickinessBonusPercentage": 0,
+            "staticRRSets": staticRRSets,
+            "trafficTargets": trafficTargets,
+            "type": property_type,
+            "useComputedTargets": False,
+            "ipv6": False
+
+        }
+        headers = {
+            "Accept": "application/vnd.config-gtm.v1.5+json",
+            "Content-Type": "application/vnd.config-gtm.v1.5+json"
+        }
+
+        return self._http_request(method='PUT',
+                                  url_suffix=f'/config-gtm/v1/domains/{domain_name}/properties/{property_name}',
+                                  headers=headers,
+                                  json_data=body)
+
     def get_network_lists(self,
                           search: str = None,
                           list_type: str = None,
@@ -51,7 +605,7 @@ class Client(BaseClient):
             Get network lists
         Args:
             search: Only list items that match the specified substring in any network list’s name or list of items.
-            list_type: Filters the output to lists of only the given type of network lists if provided, either IP or GEO.
+            list_type: Filters the output to lists of only the given type of network lists if provided, either IP or GEO
             extended: Whether to return extended details in the response
             include_elements: Whether to return all list items.
 
@@ -121,6 +675,65 @@ class Client(BaseClient):
                                   url_suffix=f'/network-list/v2/network-lists/{network_list_id}',
                                   resp_type='response')
 
+    def update_network_list_elements(self, network_list_id: str, elements: Union[list, str]) -> dict:
+        """
+            Update network list by ID
+        Args:
+            network_list_id: The ID of the network list to update
+            elements: A comma-separated list of elements to add to the network list.
+
+        Returns:
+            Json response as dictionary
+
+        Notes: The API needs the body in the structure below:
+        {
+            "name":"SAMPLE 1 Anomali Blocklist 1",
+            "syncPoint": 6,
+            "type": "IP",
+            "list": [
+                "1.2.3.4/15",
+                "1.2.3.5"
+            ]
+        }
+
+        We have everything except syncPoint. To make sure different API clients don’t overwrite each other’s
+        data, their API supports optimistic concurrency control for any modifications to network lists.
+        Whenever you run the Get a network list GET operation, you need to retain the value of the response’s
+        syncPoint and pass it back in when you subsequently run the Update a network list PUT operation. The update
+        operation only succeeds if there haven’t been any interim updates by other API clients. If the update fails,
+        you get a 409 error response.
+
+        """
+
+        TempStr = elements[0].strip()
+        TempStr = TempStr.upper()
+
+        # demisto.results(TempStr)
+
+        if (TempStr == 'BLANK'):
+            elements = []
+
+        raw_response: Dict = self.get_network_list_by_id(network_list_id=network_list_id)
+        if raw_response:
+            SyncPoint = raw_response.get('syncPoint')
+            Name = raw_response.get('name')
+            Type = raw_response.get('type')
+
+        else:
+            demisto.results("Could not get the Sync Point...")
+
+        body = {
+            "name": Name,
+            "syncPoint": SyncPoint,
+            "type": Type,
+            "list": elements
+        }
+
+        return self._http_request(method='PUT',
+                                  url_suffix=f'/network-list/v2/network-lists/'
+                                  f'{network_list_id}?extended=true&includeElements=true',
+                                  json_data=body)
+
     def activate_network_list(self, network_list_id: str, env: str, comment: Optional[str],
                               notify: Optional[list]) -> dict:
         """
@@ -140,7 +753,7 @@ class Client(BaseClient):
         }
         return self._http_request(method='POST',
                                   url_suffix=f'/network-list/v2/network-lists/{network_list_id}/environments/{env}'
-                                             f'/activate',
+                                             '/activate',
                                   json_data=body,
                                   resp_type='response')
 
@@ -157,6 +770,9 @@ class Client(BaseClient):
         body = {
             "list": elements
         }
+
+        # demisto.results(elements)
+
         return self._http_request(method='POST',
                                   url_suffix=f'/network-list/v2/network-lists/{network_list_id}/append',
                                   json_data=body)
@@ -191,6 +807,923 @@ class Client(BaseClient):
         """
         return self._http_request(method='GET',
                                   url_suffix=f'/network-list/v2/network-lists/{network_list_id}/environments/{env}/status')
+
+    # Created by D.S.
+    def new_papi_property(self,
+                          product_id: str,
+                          property_name: str,
+                          contract_id: str,
+                          group_id: str,
+                          ) -> dict:
+        """
+            Create a new papi property
+        Args:
+            product_id
+            property_name
+            contract_id
+            group_id
+
+        Returns:
+            The response provides a URL link to the newly created property.
+        """
+        body = {
+            "productId": product_id,
+            "propertyName": property_name,
+            "ruleFormat": 'latest'
+        }
+
+        headers = {
+            "Accept": 'application/json',
+            "PAPI-Use-Prefixes": 'true'
+        }
+
+        params = {
+            "contractId": contract_id,
+            "groupId": group_id
+        }
+
+        return self._http_request(method='POST',
+                                  url_suffix='/papi/v1/properties',
+                                  headers=headers,
+                                  json_data=body,
+                                  params=params,
+                                  )
+
+    # created by D.S.
+    def list_papi_property_bygroup(self,
+                                   contract_id: str,
+                                   group_id: str) -> dict:
+        """
+            clone a new property from an existing template property
+        Args:
+            contract_id:
+            group_id:
+
+        Returns:
+            <Response [200]>
+            The response provides a URL link to the newly created property.
+        """
+
+        params = {
+            "contractId": contract_id,
+            "groupId": group_id,
+        }
+
+        headers = {
+            "PAPI-Use-Prefixes": 'true'
+        }
+
+        return self._http_request(method='GET',
+                                  url_suffix='papi/v1/properties',
+                                  headers=headers,
+                                  params=params)
+
+    # created by D.S.
+    def clone_papi_property(self,
+                            product_id: str,
+                            property_name: str,
+                            contract_id: str,
+                            group_id: str,
+                            property_id: str,
+                            version: str
+                            ) -> dict:
+        """
+            Clone a new papi property from an existing template property
+        Args:
+            product_id
+            property_name
+            contract_id
+            group_id
+
+        Returns:
+            <Response [201]>
+            The response provides a URL link to the newly created property.
+        """
+        body = {
+            "productId": product_id,
+            "propertyName": property_name,
+            "cloneFrom": {
+                "propertyId": property_id,
+                "version": version,
+                "copyHostnames": "False"
+            }
+        }
+
+        headers = {
+            "Accept": 'application/json',
+            "PAPI-Use-Prefixes": 'true'
+        }
+
+        params = {
+            "contractId": contract_id,
+            "groupId": group_id
+        }
+
+        return self._http_request(method='POST',
+                                  url_suffix='papi/v1/properties',
+                                  headers=headers,
+                                  json_data=body,
+                                  params=params
+                                  )
+
+    # created by D.S.
+    def add_papi_property_hostname(self,
+                                   property_version: str,
+                                   property_id: str,
+                                   contract_id: str,
+                                   group_id: str,
+                                   validate_hostnames: bool,
+                                   include_cert_status: bool,
+                                   cname_from: str,
+                                   edge_hostname_id: str,
+                                   ) -> dict:
+        """
+            add a hostname into papi property
+        Args:
+            property_version:
+            property_id:
+            contract_id:
+            group_id:
+            validate_hostnames:
+            include_cert_status:
+            cname_from:
+            edge_hostname_id: str,
+
+        Returns:
+            <Response [200]>
+        """
+        body = {
+            "add": [
+                {
+                    "certProvisioningType": "CPS_MANAGED",
+                    "cnameType": "EDGE_HOSTNAME",
+                    "cnameFrom": cname_from,
+                    "edgeHostnameId": edge_hostname_id,
+                }
+            ]
+        }
+
+        headers = {
+            "Accept": 'application/json',
+            "Content-Type": 'application/json',
+            "PAPI-Use-Prefixes": 'true',
+        }
+
+        params = {
+            "contractId": contract_id,
+            "groupId": group_id,
+            "validateHostnames": validate_hostnames,
+            "includeCertStatus": include_cert_status
+        }
+
+        return self._http_request(method='PATCH',
+                                  url_suffix=f'papi/v1/properties/{property_id}/versions/{property_version}/hostnames',
+                                  headers=headers,
+                                  params=params,
+                                  json_data=body)
+
+    # created by D.S.
+    def list_papi_edgehostname_bygroup(self,
+                                       contract_id: str,
+                                       group_id: str,
+                                       options: str) -> dict:
+        """
+            clone a new property from an existing template property
+        Args:
+            contract_id:
+            group_id:
+            options:
+
+        Returns:
+            <Response [200]>
+            The response provides a URL link to the newly created property.
+        """
+
+        params = {
+            "contractId": contract_id,
+            "groupId": group_id,
+            "options": options
+        }
+
+        headers = {
+            "PAPI-Use-Prefixes": 'true'
+        }
+
+        return self._http_request(method='GET',
+                                  url_suffix='papi/v1/edgehostnames',
+                                  headers=headers,
+                                  params=params)
+
+    # created by D.S.
+    def new_papi_edgehostname(self,
+                              product_id: str,
+                              contract_id: str,
+                              group_id: str,
+                              options: str,
+                              domain_prefix: str,
+                              domain_suffix: str,
+                              ip_version_behavior: str,
+                              secure: str,
+                              secure_network: str,
+                              cert_enrollment_id: str
+                              ) -> dict:
+        """
+            add a new edge hostname via Papi
+        Args:
+            product_id:
+            contract_id:
+            group_id:
+            options:
+            domain_prefix:
+            domain_suffix:
+            ip_version_behavior:
+            secure:
+            secure_network:
+            cert_enrollment_id:
+
+        Returns:
+            <Response [200]>
+
+        """
+        body = {
+            "productId": product_id,
+            "domainPrefix": domain_prefix,
+            "domainSuffix": domain_suffix,
+            "ipVersionBehavior": ip_version_behavior,
+            "secure": secure,
+            "secureNetwork": secure_network,
+            "certEnrollmentId": cert_enrollment_id
+        }
+
+        headers = {
+            "Accept": 'application/json',
+            "Content-Type": 'application/json',
+            "PAPI-Use-Prefixes": 'true'
+        }
+
+        params = {
+            "contractId": contract_id,
+            "groupId": group_id,
+            "options": options
+        }
+
+        return self._http_request(method='POST',
+                                  url_suffix='papi/v1/edgehostnames',
+                                  headers=headers,
+                                  json_data=body,
+                                  params=params)
+
+    # created by D.S.
+    def list_cps_enrollments(self,
+                             contract_id: str,
+                             ) -> dict:
+        """
+            list all cps enrollments
+        Args:
+            contract_id
+
+        Returns:
+            <Response [201]>
+            The response provides a URL link to the newly created property.
+        """
+
+        headers = {
+            "Accept": 'application/vnd.akamai.cps.enrollments.v11+json'
+        }
+
+        contract_id = contract_id.split('_')[1]
+
+        params = {
+            "contractId": contract_id
+        }
+
+        return self._http_request(method='GET',
+                                  url_suffix='cps/v2/enrollments',
+                                  headers=headers,
+                                  params=params)
+
+    # created by D.S.
+    def list_papi_cpcodeid_bygroup(self,
+                                   contract_id: str,
+                                   group_id: str) -> dict:
+        """
+            clone a new property from an existing template property
+        Args:
+            contract_id:
+            group_id:
+
+        Returns:
+            <Response [200]>
+            The response provides a URL link to the newly created property.
+        """
+        headers = {
+            "PAPI-Use-Prefixes": 'true'
+        }
+
+        params = {
+            "contractId": contract_id,
+            "groupId": group_id
+        }
+
+        return self._http_request(method='GET',
+                                  url_suffix='papi/v1/cpcodes',
+                                  headers=headers,
+                                  params=params)
+
+    # created by D.S.
+    def new_papi_cpcode(self,
+                        product_id: str,
+                        contract_id: str,
+                        group_id: str,
+                        cpcode_name: str,
+                        ) -> dict:
+        """
+            clone a new property from an existing template property
+        Args:
+            product_id:
+            contract_id:
+            group_id:
+            cpcode_name:
+
+        Returns:
+            <Response [201]>
+            The response provides a URL link to the newly created property.
+        """
+        body = {
+            "productId": product_id,
+            "cpcodeName": cpcode_name
+        }
+
+        headers = {
+            "Accept": 'application/json',
+            "Content-Type": 'application/json',
+            "PAPI-Use-Prefixes": 'true'
+        }
+
+        params = {
+            "contractId": contract_id,
+            "groupId": group_id
+        }
+
+        return self._http_request(method='POST',
+                                  url_suffix='papi/v1/cpcodes',
+                                  headers=headers,
+                                  json_data=body,
+                                  params=params)
+
+    # created by D.S.
+    def patch_papi_property_rule(self,
+                                 contract_id: str,
+                                 group_id: str,
+                                 property_id: str,
+                                 property_version: str,
+                                 validate_rules: str,
+                                 body,
+                                 ) -> dict:
+        """
+            clone a new property from an existing template property
+        Args:
+            contract_id: str,
+            group_id: str,
+            property_id: str,
+            property_version: str,
+            validate_rules: str,
+            body:
+
+        Returns:
+            <Response [201]>
+            The response provides a URL link to the newly created property.
+        """
+
+        headers = {
+            "Accept": 'application/vnd.akamai.papirules.latest+json',
+            "Content-Type": 'application/json-patch+json',
+            "PAPI-Use-Prefixes": 'true'
+        }
+
+        params = {
+            "contractId": contract_id,
+            "groupId": group_id,
+            "validateRules": validate_rules
+        }
+
+        return self._http_request(method='PATCH',
+                                  url_suffix=f'/papi/v1/properties/{property_id}/versions/{property_version}/rules',
+                                  headers=headers,
+                                  params=params,
+                                  json_data=body)
+
+    # created by D.S.
+    def activate_papi_property(self,
+                               contract_id: str,
+                               group_id: str,
+                               property_id: str,
+                               network: str,
+                               notify_emails: str,
+                               property_version: int,
+                               note: str
+                               ):
+        """
+            activate an property
+        Args:
+            contract_id: str,
+            group_id: str,
+            property_id: grp_#######
+            network: "STAGING" or "PRODUCTION"
+            notify_emails: akamaizers@fisglobal.com
+            property_version:
+
+        Returns:
+            <Response [204]>
+        """
+        body = {
+            "acknowledgeAllWarnings": "true",
+            "activationType": "ACTIVATE",
+            "fastPush": "true",
+            "ignoreHttpErrors": "true",
+            "network": network,
+            "notifyEmails": [notify_emails],
+            "propertyVersion": property_version,
+            "useFastFallback": "false",
+            "note": note
+        }
+
+        headers = {
+            "PAPI-Use-Prefixes": "true"
+        }
+
+        params = {
+            "contractId": contract_id,
+            "groupId": group_id
+        }
+
+        return self._http_request(method='POST',
+                                  url_suffix=f'/papi/v1/properties/{property_id}/activations',
+                                  headers=headers,
+                                  json_data=body,
+                                  params=params)
+
+    # created by D.S.
+    def clone_security_policy(self,
+                              config_id: int,
+                              config_version: int,
+                              create_from_security_policy: str,
+                              policy_name: str,
+                              policy_prefix: str
+                              ):
+        """
+            Clone a new security policy from template policy
+        Args:
+            config_id:
+            create_from_security_policy:
+            policy_name:
+            config_version:
+
+        Returns:
+            <Response [204]>
+        """
+        body = {
+            "createFromSecurityPolicy": create_from_security_policy,
+            "policyName": policy_name,
+            "policyPrefix": policy_prefix
+        }
+
+        headers = {
+            "Content-Type": "application/json",
+        }
+
+        return self._http_request(method='POST',
+                                  url_suffix=f'appsec/v1/configs/{config_id}/versions/{config_version}/security-policies',
+                                  headers=headers,
+                                  json_data=body,
+                                  )
+
+    # created by D.S.
+    def new_match_target(self,
+                         config_id: int,
+                         config_version: int,
+                         match_type: str,
+                         bypass_network_lists: list,
+                         default_file: str,
+                         file_paths: list,
+                         hostnames: list,
+                         policy_id: str
+                         ):
+        """
+            New match target
+        Args:
+            config_id
+            config_version
+            type
+            bypass_network_lists
+            default_file
+            file_paths
+            hostnames
+            securityPolicy
+
+        Returns:
+            <Response [204]>
+
+        """
+
+        body = {
+            'type': match_type,
+            'defaultFile': default_file,
+            'securityPolicy': {'policyId': policy_id},
+            'bypassNetworkLists': bypass_network_lists,
+            'filePaths': file_paths,
+            'hostnames': hostnames
+        }
+
+        headers = {
+            "Content-Type": "application/json",
+        }
+
+        return self._http_request(method='POST',
+                                  url_suffix=f'appsec/v1/configs/{config_id}/versions/{config_version}/match-targets',
+                                  headers=headers,
+                                  json_data=body
+                                  )
+
+    # created by D.S.
+    def activate_appsec_config_version(self,
+                                       config_id: int,
+                                       config_version: int,
+                                       acknowledged_invalid_hosts: list,
+                                       notification_emails: list,
+                                       action: str,
+                                       network: str,
+                                       note: str,
+                                       ):
+        """
+        Activate AppSec Configuration version
+        Args:
+            config_id
+            config_version
+            acknowledged_invalid_hosts
+            notification_emails
+            action
+            network
+            note
+
+        Returns:
+            <Response [204]>
+
+        """
+        body = {
+            "acknowledgedInvalidHosts": acknowledged_invalid_hosts,
+            "activationConfigs": [
+                {
+                    "configId": config_id,
+                    "configVersion": config_version,
+                }
+            ],
+            "notificationEmails": notification_emails,
+            "action": action,
+            "network": network,
+            "note": note,
+        }
+        headers = {
+            "Content-Type": "application/json",
+        }
+
+        return self._http_request(method='POST',
+                                  url_suffix='appsec/v1/activations',
+                                  headers=headers,
+                                  json_data=body,
+                                  )
+
+    # created by D.S.
+    def get_appsec_config_activation_status(self,
+                                            activation_id: str,
+                                            ):
+        """
+            Get AppSec Configuration activation Status
+        Args:
+            activiationId
+
+        Returns:
+            <Response [204]>
+        """
+
+        return self._http_request(method='Get',
+                                  url_suffix=f'appsec/v1/activations/{activation_id}',
+                                  )
+
+    # created by D.S.
+    def list_appsec_config(self):
+        """
+        List security configuration
+        Args:
+
+        Returns:
+            <Response [204]>
+            Sample: TBD
+        """
+
+        return self._http_request(method='Get',
+                                  url_suffix='appsec/v1/configs',
+                                  )
+
+    # created by D.S.
+    def list_appsec_config_versions(self,
+                                    config_id: str):
+        """
+            List security configuration versions
+        Args:
+            config_id
+
+        Returns:
+            <Response [204]>
+            Sample: TBD
+        """
+
+        return self._http_request(method='Get',
+                                  url_suffix=f'appsec/v1/configs/{config_id}/versions',
+                                  )
+
+    # created by D.S.
+    def list_security_policy(self,
+                             config_id: str,
+                             config_version):
+        """
+            List security policy
+        Args:
+            config_id
+            versionId
+
+        Returns:
+            <Response [204]>
+            Sample: TBD
+        """
+
+        params = {"detail": "false"}
+
+        return self._http_request(method='Get',
+                                  url_suffix=f'appsec/v1/configs/{config_id}/versions/{config_version}/security-policies',
+                                  params=params
+                                  )
+
+    # created by D.S.
+    def clone_appsec_config_version(self,
+                                    config_id: str,
+                                    create_from_version: str,
+                                    rule_update: bool = True) -> Dict:
+        """
+        Create a new version of security configuration from a previous version
+        Args:
+            config_id: AppSec configuration ID
+            create_from_version: AppSec configuration version number to create from
+            rule_update: Specifies whether the application rules should be migrated to the latest version.
+
+        Returns:
+            <Response [204]>
+        """
+        body = {
+            "createFromVersion": int(create_from_version),
+            "ruleUpdate": rule_update
+        }
+        return self._http_request(method='Post',
+                                  url_suffix=f'appsec/v1/configs/{config_id}/versions',
+                                  json_data=body,
+                                  timeout=(60, 180),
+                                  retries=0,
+                                  )
+
+    # created by D.S.
+    def get_papi_property_activation_status(self,
+                                            activation_id: int,
+                                            property_id
+                                            ):
+        """
+            Get papi property activation Status
+        Args:
+            activiationId
+            property_id
+        Returns:
+            <Response [204]>
+        """
+
+        headers = {
+            "PAPI-Use-Prefixes": 'true'
+        }
+
+        return self._http_request(method='Get',
+                                  url_suffix=f'papi/v1/properties/{property_id}/activations/{activation_id}',
+                                  headers=headers
+                                  )
+
+    # created by D.S.
+
+    def get_papi_edgehostname_creation_status(self,
+                                              contract_id: str,
+                                              group_id: str,
+                                              edgehostname_id: str,
+                                              options: str
+                                              ):
+        """
+            Get papi edgehostname creation Status
+        Args:
+            contract_id
+            group_id
+            edgehostname_id
+            options
+        Returns:
+            <Response [204]>
+        """
+
+        headers = {
+            "Accept": 'application/json',
+            "PAPI-Use-Prefixes": 'true'
+        }
+
+        return self._http_request(
+            method='Get',
+            url_suffix=f'papi/v1/edgehostnames/{edgehostname_id}?contractId={contract_id}&groupId={group_id}&options={options}',
+            headers=headers
+        )
+
+    # Created by D.S. 2022-10-25
+
+    def modify_appsec_config_selected_hosts(self, config_id: int,
+                                            config_version: int,
+                                            hostname_list: List[Dict[str, Any]],
+                                            mode: str
+                                            ) -> dict:
+        """
+            Update the list of selected hostnames for a configuration version.
+
+        Args:
+            config_id: A unique identifier for each configuration.
+            config_version: A unique identifier for each version of a configuration.
+            hostname_list:  A list hostnames is used to modifying the configuration.
+            mode: The type of update you want to make to the evaluation hostname list.
+                - Use "append" to add additional hostnames.
+                - Use "remove" to delete the hostnames from the list.
+                - Use "replace" to replace the existing list with the hostnames you pass in your request.
+
+        Returns:
+            Json response as dictionary
+
+        Notes:
+           hostname_list = [{"hostname": "*.abc.com"}, {"hostname": "*.bdc.com"}]
+        """
+
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json"
+        }
+
+        body = {
+            "hostnameList": hostname_list,
+            "mode": mode
+        }
+
+        return self._http_request(method='PUT',
+                                  url_suffix=f'appsec/v1/configs/{config_id}/versions/{config_version}/selected-hostnames',
+                                  headers=headers,
+                                  json_data=body)
+
+    # Created by D.S.
+
+    def update_appsec_config_version_notes(self, config_id: int, config_version: int, notes: str) -> dict:
+        """
+            Update application secuirty configuration version notes
+        Args:
+            config_id: The ID of the application seucirty configuration
+            config_version: The version number of the application seucirty configuration
+            notes:  The notes need to be written into the application seucirty configuration version
+
+        Returns:
+            Json response as dictionary
+
+        """
+
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json"
+        }
+
+        body = {"notes": notes}
+
+        return self._http_request(method='PUT',
+                                  url_suffix=f'appsec/v1/configs/{config_id}/versions/{config_version}/version-notes',
+                                  headers=headers,
+                                  json_data=body)
+
+    # created by D.S.
+
+    def list_match_target(self,
+                          config_id: int,
+                          config_version: int,
+                          policy_id: str,
+                          includeChildObjectName: str
+                          ):
+        """
+            list match targets within a Security Policy of the security configuration
+        Args:
+            config_id: A unique identifier for each configuration.
+            config_version: A unique identifier for each version of a configuration.
+            policy_id: Specifies the security policy to filter match targets.
+            includeChildObjectName: Specify whether to return the object name in the payload.
+
+        Returns:
+            <Response [200]>
+
+        """
+
+        headers = {
+            "accept": "application/json",
+        }
+
+        return self._http_request(method='GET',
+                                  url_suffix=f'appsec/v1/configs/{config_id}/versions/{config_version}/match-targets?policyId='
+                                  f'{policy_id}&includeChildObjectName={includeChildObjectName}',
+                                  headers=headers,
+                                  )
+
+    # created by D.S.
+
+    def modify_match_target(self,
+                            config_id: int,
+                            config_version: int,
+                            policy_id: str,
+                            match_target_id: int,
+                            match_type: str,
+                            bypass_network_lists: list,
+                            default_file: str,
+                            file_paths: list,
+                            hostnames: list,
+                            ):
+        """
+            modify match target
+        Args:
+            config_id: A unique identifier for each configuration.
+            config_version: A unique identifier for each version of a configuration.
+            policy_id: Specifies the security policy to filter match targets.
+            match_target_id: A unique identifier for each match target
+            bypass_network_lists: Bypass network lists
+            default_file: Describes the rule to match on paths.
+            file_paths: Contains a list of file paths
+            hostnames: A list of hostnames that need to be added into match target
+
+        Returns:
+            <Response [204]>
+
+        """
+
+        body = {
+            'type': match_type,
+            'defaultFile': default_file,
+            'securityPolicy': {'policyId': policy_id},
+            'bypassNetworkLists': bypass_network_lists,
+            'filePaths': file_paths,
+            'hostnames': hostnames
+        }
+        headers = {
+            "accept": "application/json",
+            "Content-Type": "application/json",
+        }
+
+        return self._http_request(method='PUT',
+                                  url_suffix=f'appsec/v1/configs/{config_id}/versions/{config_version}/'
+                                             f'match-targets/{match_target_id}',
+                                  headers=headers,
+                                  json_data=body
+                                  )
+
+    # created by D.S.
+    def get_papi_property_rule(self,
+                               contract_id: str,
+                               property_id: str,
+                               property_version: int,
+                               group_id: str,
+                               validate_rules: str
+                               ):
+        """
+            get papi property rule dictionary
+        Args:
+            contract_id: str,
+            property_id: str,
+            property_version: int,
+            group_id: str
+            validateRules: str
+        Returns:
+            <Response [200]>
+
+        """
+
+        headers = {
+            "accept": "application/json ",
+            'PAPI-Use-Prefixes': 'true'
+        }
+
+        return self._http_request(method='GET',
+                                  url_suffix=f'papi/v1/properties/{property_id}/versions/{property_version}'
+                                             f'/rules?contractId={contract_id}'
+                                  f'&groupId={group_id}&validateRules={validate_rules}',
+                                  headers=headers,
+                                  )
 
 
 ''' HELPER FUNCTIONS '''
@@ -255,7 +1788,1152 @@ def get_list_from_file(entry_id: Optional[str]) -> list:
     return elements
 
 
+# Created by D.S.
+def new_papi_property_command_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        Parse papi propertyLink
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of property_id
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        propertylink = raw_response.get('propertyLink', '')
+        regex_match = re.search('prp_\d+', propertylink)
+        entry_context.append(assign_params(**{
+            "PropertyLink": propertylink,
+            "PropertyId": regex_match.group(0) if regex_match else '',
+        }))
+        human_readable.append(assign_params(**{
+            "PropertyLink": propertylink,
+            "PropertyId": regex_match.group(0) if regex_match else '',
+        }))
+
+    return entry_context, human_readable
+
+
+# Created by D.S.
+def list_papi_property_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        Parse papi property
+    Args:
+        raw_response:
+    Returns:
+        List of property_id
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        property_name = raw_response.get('propertyName')
+        property_id = raw_response.get('propertyId')
+        assetId = raw_response.get('assetId')
+        entry_context.append(assign_params(**{
+            "PropertyName": property_name,
+            "PropertyId": property_id,
+            "AssetId": assetId
+        }))
+        human_readable.append(assign_params(**{
+            "PropertyName": property_name,
+            "PropertyId": property_id,
+            "AssetId": assetId
+        }))
+    return entry_context, human_readable
+
+# Created by D.S.
+
+
+def clone_papi_property_command_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        Parse papi propertyLink
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of property_id
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        propertylink = raw_response.get('propertyLink', '')
+        property_name = raw_response.get('propertyName')
+        regex_match = re.search('prp_\d+', propertylink)
+        entry_context.append(assign_params(**{
+            "PropertyLink": propertylink,
+            "PropertyName": property_name,
+            "PropertyId": regex_match.group(0) if regex_match else '',
+        }))
+        human_readable.append(assign_params(**{
+            "PropertyLink": propertylink,
+            "PropertyName": property_name,
+            "PropertyId": regex_match.group(0) if regex_match else '',
+        }))
+
+    return entry_context, human_readable
+
+# Created by D.S.
+
+
+def add_papi_property_hostname_command_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        Parse papi property
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of etag
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        domain_prefix = raw_response.get('domainPrefix')
+        edge_hostname_id = raw_response.get('edgeHostnameId')
+        etag = raw_response.get('etag')
+        entry_context.append(assign_params(**{
+            "DomainPrefix": domain_prefix,
+            "EdgeHostnameId": edge_hostname_id,
+            "Etag": etag,
+        }))
+        human_readable.append(assign_params(**{
+            "DomainPrefix": domain_prefix,
+            "EdgeHostnameId": edge_hostname_id,
+            "Etag": etag,
+        }))
+
+    return entry_context, human_readable
+
+# Created by D.S.
+
+
+def list_papi_edgehostname_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        parse edgehostnameId
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of edgehostnameId
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        domain_prefix = raw_response.get('domainPrefix')
+        edge_hostname_id = raw_response.get('edgeHostnameId')
+        entry_context.append(assign_params(**{
+            "DomainPrefix": domain_prefix,
+            "EdgeHostnameId": edge_hostname_id,
+        }))
+        human_readable.append(assign_params(**{
+            "DomainPrefix": domain_prefix,
+            "EdgeHostnameId": edge_hostname_id,
+        }))
+
+    return entry_context, human_readable
+
+# Created by D.S.
+
+
+def new_papi_edgehostname_command_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        parse edgehostnameId
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of edgehostnameId
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        edgeHostnameLink = raw_response.get('edgeHostnameLink', '')
+        domain_prefix = raw_response.get('domainPrefix')
+        regex_match = re.search('ehn_\d+', edgeHostnameLink)
+        edge_hostname_id = regex_match.group(0) if regex_match else ''
+        entry_context.append(assign_params(**{
+            "EdgeHostnameLink": edgeHostnameLink,
+            "DomainPrefix": domain_prefix,
+            "EdgeHostnameId": edge_hostname_id,
+        }))
+        human_readable.append(assign_params(**{
+            "EdgeHostnameLink": edgeHostnameLink,
+            "DomainPrefix": domain_prefix,
+            "EdgeHostnameId": edge_hostname_id,
+        }))
+
+    return entry_context, human_readable
+
+# Created by D.S.
+
+
+def get_cps_enrollment_by_cnname(raw_response: dict, cnname: str) -> Dict:
+    """
+        get cps enrollment info by common name
+
+    Args:
+        raw_response: output from list_cps_enrollments
+        cnname:
+
+    Returns:
+        full enrollment info for given common name
+    """
+
+    for enrollment in raw_response.get("enrollments", []):
+        if enrollment.get("csr").get("cn") == cnname:
+            return enrollment
+
+    err_msg = f'Error in {INTEGRATION_NAME} Integration - get_cps_enrollment_by_cnname'
+    raise DemistoException(err_msg)
+
+# Created by D.S.
+
+
+def get_cps_enrollment_by_cnname_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        parse enrollment and abstract enrollmentId
+
+    Args:
+        raw_response: output from get_cps_enrollment_by_cnname, individual enrollment
+
+    Returns:
+        List of enrollmentId
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        enrollmentId = raw_response.get('id')
+        cnname = raw_response.get("csr", {}).get("cn")
+        entry_context.append(assign_params(**{
+            "EnrollmentId": enrollmentId,
+            "CN": cnname
+        }))
+        human_readable.append(assign_params(**{
+            "EnrollmentId": enrollmentId,
+            "CN": cnname
+        }))
+
+    return entry_context, human_readable
+
+# Created by D.S.
+
+
+def list_papi_cpcodeid_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        parse cpcode cpcId
+    Args:
+        raw_response:
+    Returns:
+        List of cpcode_id
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        cpcode_name = raw_response.get('cpcodeName')
+        cpcode_id = raw_response.get('cpcodeId')
+        entry_context.append(assign_params(**{
+            "CpcodeName": cpcode_name,
+            "CpcodeId": cpcode_id
+        }))
+        human_readable.append(assign_params(**{
+            "CpcodeName": cpcode_name,
+            "CpcodeId": cpcode_id
+        }))
+
+    return entry_context, human_readable
+
+# Created by D.S.
+
+
+def new_papi_cpcode_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        parse cpcode cpcId
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of cpcode_id
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        cpcodeLink = raw_response.get('cpcodeLink', '')
+        cpcode_name = raw_response.get('cpcodeName')
+        regex_match = re.search('cpc_\d+', cpcodeLink)
+        cpcode_id = regex_match.group(0) if regex_match else ''
+        entry_context.append(assign_params(**{
+            "CpcodeLink": cpcodeLink,
+            "CpcodeName": cpcode_name,
+            "CpcodeId": cpcode_id
+        }))
+        human_readable.append(assign_params(**{
+            "CpcodeLink": cpcodeLink,
+            "CpcodeName": cpcode_name,
+            "CpcodeId": cpcode_id
+        }))
+
+    return entry_context, human_readable
+
+# Created by D.S.
+
+
+def patch_papi_property_rule_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        parse property etag
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of etag
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        etag = raw_response.get('etag')
+        entry_context.append(assign_params(**{
+            "Etag": etag,
+        }))
+        human_readable.append(assign_params(**{
+            "Etag": etag,
+        }))
+
+    return entry_context, human_readable
+
+# Created by D.S.
+
+
+def activate_papi_property_command_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        parse property activation_id
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of activation_id
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        activationLink = raw_response.get('activationLink', '')
+        regex_match = re.search('atv_\d+', activationLink)
+        entry_context.append(assign_params(**{
+            "ActivationLink": activationLink,
+            "ActivationId": regex_match.group(0) if regex_match else '',
+        }))
+        human_readable.append(assign_params(**{
+            "ActivationLink": activationLink,
+            "ActivationId": regex_match.group(0) if regex_match else '',
+        }))
+
+    return entry_context, human_readable
+
+# Created by D.S.
+
+
+def clone_security_policy_command_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        parse security policy_id
+    Args:
+        raw_response:
+    Returns:
+        List of security policy_id
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        config_id = raw_response.get('configId')
+        policy_id = raw_response.get('policyId')
+        policy_name = raw_response.get('policyName')
+        entry_context.append(assign_params(**{
+            "Id": config_id,
+            "PolicyId": policy_id,
+            "PolicyName": policy_name
+        }))
+        human_readable.append(assign_params(**{
+            "Id": config_id,
+            "PolicyId": policy_id,
+            "PolicyName": policy_name
+        }))
+
+    return entry_context, human_readable
+
+# Created by D.S.
+
+
+def new_match_target_command_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        parse match target Id
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of match target Id
+    """
+    entry_context = []
+    human_readable = []
+
+    if raw_response:
+        config_id = raw_response.get('configId')
+        targetId = raw_response.get('targetId')
+        policy_id = raw_response.get('securityPolicy', {}).get('policyId')
+        entry_context.append(assign_params(**{
+            "Id": config_id,
+            "TargetId": targetId,
+            "PolicyId": policy_id
+        }))
+        human_readable.append(assign_params(**{
+            "Id": config_id,
+            "TargetId": targetId,
+            "PolicyId": policy_id
+        }))
+
+    return entry_context, human_readable
+
+# Created by D.S.
+
+
+def activate_appsec_config_version_command_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        parse appsec config activation_id
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of appsec config activation_id
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        config_id = raw_response.get('configId')
+        activation_id = raw_response.get('activationId')
+        entry_context.append(assign_params(**{
+            "Id": config_id,
+            "ActivationId": activation_id,
+            "Status": "submitted"
+        }))
+        human_readable.append(assign_params(**{
+            "Id": config_id,
+            "ActivationId": activation_id,
+            "Status": "submitted"
+        }))
+    return entry_context, human_readable
+
+
+# Created by D.S.
+def get_appsec_config_activation_status_command_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        parse appsec config activation status
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of activation status
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        network = raw_response.get('network')
+        status = raw_response.get('status')
+        activation_id = raw_response.get('activationId')
+        entry_context.append(assign_params(**{
+            "ActivationId": activation_id,
+            "Network": network,
+            "Status": status
+        }))
+        human_readable.append(assign_params(**{
+            "ActivationId": activation_id,
+            "Network": network,
+            "Status": status
+        }))
+    return entry_context, human_readable
+
+
+# Created by D.S.
+def get_appsec_config_latest_version_command_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        get latest version of appsec configuration
+
+    Args:
+        raw_response:
+
+    Returns:
+        Dict of latest version
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        name = raw_response.get('name')
+        id = raw_response.get('id')
+        latestVersion = raw_response.get('latestVersion')
+        productionVersion = raw_response.get('productionVersion')
+        stagingVersion = raw_response.get('stagingVersion')
+        entry_context.append(assign_params(**{
+            "Name": name,
+            "Id": id,
+            "LatestVersion": latestVersion,
+            "ProductionVersion": productionVersion,
+            "StagingVersion": stagingVersion,
+        }))
+        human_readable.append(assign_params(**{
+            "Name": name,
+            "Id": id,
+            "LatestVersion": latestVersion,
+            "ProductionVersion": productionVersion,
+            "StagingVersion": stagingVersion,
+        }))
+    return entry_context, human_readable
+
+
+# Created by D.S.
+def get_security_policy_id_by_name_command_ec(raw_response: dict, is_baseline_policy) -> Tuple[list, list]:
+    """
+        parse security policy name and Id
+
+    Args:
+        raw_response:
+
+    Returns:
+        Dict of latest version
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        config_id = raw_response.get('Id')
+        policy_name = raw_response.get('policyName')
+        policy_id = raw_response.get('policyId')
+        if is_baseline_policy == "yes":
+            entry_context.append(assign_params(**{
+                "Id": config_id,
+                "BasePolicyName": policy_name,
+                "BasePolicyId": policy_id,
+            }))
+            human_readable.append(assign_params(**{
+                "Id": config_id,
+                "BasePolicyName": policy_name,
+                "BasePolicyId": policy_id,
+            }))
+        else:
+            entry_context.append(assign_params(**{
+                "PolicyName": policy_name,
+                "PolicyId": policy_id,
+            }))
+            human_readable.append(assign_params(**{
+                "PolicyName": policy_name,
+                "PolicyId": policy_id,
+            }))
+    return entry_context, human_readable
+
+# Created by D.S.
+
+
+def clone_appsec_config_version_command_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        parse security policy name and Id
+
+    Args:
+        raw_response:
+
+    Returns:
+        Dict of latest version
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        config_id = raw_response.get('configId')
+        version = raw_response.get('version')
+        entry_context.append(assign_params(**{
+            "Id": config_id,
+            "NewVersion": version,
+        }))
+        human_readable.append(assign_params(**{
+            "Id": config_id,
+            "NewVersion": version,
+        }))
+    return entry_context, human_readable
+
+# Created by D.S.
+
+
+def generate_policy_prefix():
+    """
+        generate policy_prefix string in length of four with fisrt character in letters and
+                    rest of the three characters in letters and digits.
+    Args:
+        raw_response:
+    Returns:
+        Dict of latest version
+    """
+    import random
+    import string
+    firstChar = random.choice(string.ascii_letters)
+    lastThreeChars = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(3))
+    return firstChar + lastThreeChars
+
+
+# Created by D.S.
+def get_papi_property_activation_status_command_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        parse papi property activation status
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of activation status
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        network = raw_response["activations"]["items"][0].get('network')
+        status = raw_response["activations"]["items"][0].get('status')
+        activation_id = raw_response["activations"]["items"][0].get('activationId')
+        entry_context.append(assign_params(**{
+            "ActivationId": activation_id,
+            "Network": network,
+            "Status": status
+        }))
+        human_readable.append(assign_params(**{
+            "ActivationId": activation_id,
+            "Network": network,
+            "Status": status
+        }))
+    return entry_context, human_readable
+
+
+# Created by D.S.
+def get_papi_edgehostname_creation_status_command_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        parse papi edgehostname creation status
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of activation status
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        edgehostname_id = raw_response["edgeHostnames"]["items"][0].get('edgeHostnameId')
+        status = raw_response["edgeHostnames"]["items"][0].get('status')
+        entry_context.append(assign_params(**{
+            "EdgeHostnameId": edgehostname_id,
+            "Status": status
+        }))
+        human_readable.append(assign_params(**{
+            "EdgeHostnameId": edgehostname_id,
+            "Status": status
+        }))
+
+    return entry_context, human_readable
+
+
 ''' COMMANDS '''
+# Created by C.L.
+
+
+@logger
+def check_group_command(client: Client, checking_group_name: str) -> Tuple[object, dict, Union[List, Dict]]:
+    raw_response: Dict = client.list_groups()
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - List Groups'
+        path = argToList(checking_group_name, separator='>')
+        group_list = raw_response
+        for path_groupname in path:
+            found = False
+            for group in group_list:
+                if path_groupname == group['groupName']:
+                    group_list = group['subGroups']
+                    found = True
+                    break
+
+            if not found:
+                context = {"Akamai.CheckGroup": {
+                    'Found': False,
+                    'checking_group_name': checking_group_name,
+                    'groupName': "No Name",
+                    'parentGroupId': 0,
+                    'groupId': 0,
+                }}
+                return human_readable, context, raw_response
+
+        context = {"Akamai.CheckGroup": {
+            'Found': True,
+            'checking_group_name': checking_group_name,
+            'groupName': group['groupName'],
+            'parentGroupId': group.get('parentGroupId', 0),
+            'groupId': group.get('groupId', 0),
+        }}
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+# Created by C.L.
+
+
+@logger
+def list_groups_command(client: Client) -> Tuple[object, dict, Union[List, Dict]]:
+    """
+    List the information of all groups
+
+    Returns:
+    Json response as dictionary
+    """
+    raw_response: Dict = client.list_groups()
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - List Groups'
+
+        return human_readable, {"Akamai.Group": raw_response}, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+# Created by C.L.
+
+
+@logger
+def get_group_command(client: Client, group_id: int = 0) -> Tuple[object, dict, Union[List, Dict]]:
+    """
+        Get the information of a group
+    Args:
+        group_id : Group ID
+
+    Returns:
+        Json response as dictionary
+    """
+    raw_response: Dict = client.get_group(group_id)
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - get Group: {raw_response}'
+
+        return human_readable, {"Akamai.Group": raw_response}, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+# Created by C.L.
+@logger
+def create_enrollment_command(client: Client,
+                              country: str,
+                              company: str,
+                              organizational_unit: str,
+                              city: str,
+                              admin_contact_address_line_one: str,
+                              admin_contact_first_name: str,
+                              admin_contact_last_name: str,
+                              admin_contact_email: str,
+                              admin_contact_phone: str,
+                              tech_contact_first_name: str,
+                              tech_contact_last_name: str,
+                              tech_contact_email: str,
+                              tech_contact_phone: str,
+                              org_name: str,
+                              org_country: str,
+                              org_city: str,
+                              org_region: str,
+                              org_postal_code: str,
+                              org_phone: str,
+                              org_address_line_one: str,
+                              contract_id: str,
+                              certificate_type: str = "third-party",
+                              csr_cn: str = "",
+                              change_management: bool = False,
+                              enable_multi_stacked_certificates: bool = False,
+                              network_configuration_geography: str = "core",
+                              network_configuration_quic_enabled: bool = True,
+                              network_configuration_secure_network: str = "enhanced-tls",
+                              network_configuration_sni_only: bool = True,
+                              clone_dns_names: bool = True,
+                              exclude_sans: bool = False,
+                              ra: str = "third-party",
+                              validation_type: str = "third-party",
+                              ) -> Tuple[object, dict, Union[List, Dict]]:
+    """
+        Create an enrollment
+    Args:
+        contract_id:                 Contract id
+        country:                    country - Two Letter format
+        company:                    company Name
+        organizational_unit:         Organizational Unit
+        city:                       city Name
+        admin_contact:               Admin Contact - Dictionary
+        tech_contact:                tech_contact - Dictionary
+        org:                        Organization name - Dictionary
+        csr_cn:                     CName
+        contract_id:                 Specify the contract on which to operate or view.
+        csr_cn:                     CName to be created
+        change_management:           change_management
+        certificate_type:            Certificate Type
+        enable_multi_stacked_certificates:     Enable Multi Stacked Certificates
+        network_configuration_geography:     Network Configuration geography
+        network_configuration_quic_enabled:   Network Configuration QuicEnabled
+        network_configuration_secure_network: Network Configuration SecureNetwork
+        network_configuration_sni_only:       Network Configuration sniOnly
+        clone_dns_names:                    Clone DNS Names
+        exclude_sans:                       Exclude Sans
+        ra: str = "third-party",
+        validation_type: str = "third-party"
+
+    Returns:
+        Json response as dictionary
+    """
+    admin_contact = {"addressLineOne": admin_contact_address_line_one, "firstName": admin_contact_first_name,
+                     "lastName": admin_contact_last_name, "email": admin_contact_email, "phone": admin_contact_phone}
+
+    tech_contact = {"firstName": tech_contact_first_name, "lastName": tech_contact_last_name, "email": tech_contact_email,
+                    "phone": tech_contact_phone}
+
+    org = {"name": org_name, "country": org_country, "city": org_city, "region": org_region, "postalCode": org_postal_code,
+           "phone": org_phone, "addressLineOne": org_address_line_one}
+
+    raw_response: Dict = client.create_enrollment(
+        country=country,
+        company=company,
+        organizational_unit=organizational_unit,
+        city=city,
+        admin_contact=admin_contact,
+        tech_contact=tech_contact,
+        org=org,
+        contract_id=contract_id,
+        csr_cn=csr_cn,
+        change_management=change_management,
+        certificate_type=certificate_type,
+        enable_multi_stacked_certificates=enable_multi_stacked_certificates,
+        network_configuration_geography=network_configuration_geography,
+        network_configuration_quic_enabled=network_configuration_quic_enabled,
+        network_configuration_secure_network=network_configuration_secure_network,
+        network_configuration_sni_only=network_configuration_sni_only,
+        clone_dns_names=clone_dns_names,
+        exclude_sans=exclude_sans,
+        ra=ra,
+        validation_type=validation_type
+    )
+
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Enrollment {csr_cn} is created successfully'
+
+        return human_readable, {"Akamai.Enrollment": raw_response}, {}
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+def list_enrollments_command(client: Client, contract_id: str) -> Tuple[object, dict, Union[List, Dict]]:
+    """
+        List enrollments
+    Args:
+        contract_id: Specify the contract on which to operate or view.
+
+    Returns:
+        Json response as dictionary
+    """
+    raw_response: Dict = client.list_enrollments(contract_id)
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - List Enrollments'
+
+        return human_readable, {"Akamai.Enrollments": raw_response}, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+# Created by C.L.
+@logger
+def get_enrollment_by_cn_command(client: Client, target_cn: str, contract_id: str = ""
+                                 ) -> Tuple[object, dict, Union[List, Dict]]:
+    """
+        List enrollments
+    Args:
+        contract_id: Specify the contract on which to operate or view.
+
+    Returns:
+        The enrollment information - Json response as dictionary
+    """
+    raw_response: Dict = client.list_enrollments(contract_id)
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - List Enrollments'
+        context = {}
+        for enrollment in raw_response["enrollments"]:
+            if 'csr' in enrollment.keys():
+                if 'cn' in enrollment["csr"].keys():
+                    if enrollment["csr"]["cn"] == target_cn:
+                        context = enrollment['csr']
+                        context['existing'] = True
+                        context['target_cn'] = target_cn
+                        context['changes'] = enrollment['pendingChanges']
+                        return human_readable, {"Akamai.Enrollment": context}, raw_response
+        context = raw_response
+        context['existing'] = False
+        context['target_cn'] = target_cn
+        return human_readable, {"Akamai.Enrollment": context}, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+# Created by C.L.
+
+
+@logger
+def get_change_command(client: Client, enrollment_path: str, allowed_input_type_param: str = "third-party-csr"
+                       ) -> Tuple[object, dict, Union[List, Dict]]:
+    """
+        Get change
+    Args:
+        enrollment_path: The path that includes enrollmentId and changeId: e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
+        allowed_input_type_param: Specify the contract on which to operate or view.
+
+    Returns:
+        Json response as dictionary
+    """
+    raw_response: Dict = client.get_change(enrollment_path, allowed_input_type_param)
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Get_change'
+
+        return human_readable, {"Akamai.Change": raw_response}, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+# Created by C.L.
+@logger
+def update_change_command(client: Client, change_path: str,
+                          certificate: str, trust_chain: str, allowed_input_type_param: str = "third-party-cert-and-trust-chain"
+                          ) -> Tuple[object, dict, Union[List, Dict]]:
+    """
+        Update a change
+    Args:
+        change_path: The path that includes enrollmentId and changeId : e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
+        certificate :certificate,
+        trust_chain: trust_chain,
+        allowed_input_type_param: Specify the contract on which to operate or view.
+
+    Returns:
+        Json response as dictionary
+    """
+    raw_response: Dict = client.update_change(change_path,
+                                              certificate, trust_chain, allowed_input_type_param)
+
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Update_change'
+
+        return human_readable, {"Akamai.Change": raw_response}, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+# Created by C.L.
+@logger
+def acknowledge_warning_command(client: Client, change_path: str) -> Tuple[object, dict, Union[List, Dict]]:
+
+    raw_response: Dict = client.acknowledge_warning(change_path)
+
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Acknowledge_warning'
+
+        return human_readable, {"Akamai.Acknowledge": raw_response}, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+@logger
+def acknowledge_pre_verification_warning_command(client: Client, change_path: str) -> Tuple[object, dict, Union[List, Dict]]:
+
+    raw_response: Dict = client.acknowledge_pre_verification_warning(change_path)
+
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Acknowledge_warning'
+
+        return human_readable, {"Akamai.Acknowledge": raw_response}, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+def get_production_deployment_command(client: Client, enrollment_id: str) -> Tuple[object, dict, Union[List, Dict]]:
+
+    raw_response: Dict = client.get_production_deployment(enrollment_id)
+
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Get_production_deployment'
+
+        return human_readable, {"Akamai.ProductionDeployment": raw_response}, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+# Created by C.L. Oct-06-22
+
+
+def get_change_history_command(client: Client, enrollment_id: str) -> Tuple[object, dict, Union[List, Dict]]:
+
+    raw_response: Dict = client.get_change_history(enrollment_id)
+
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Get_change_history'
+
+        return human_readable, {"Akamai.ChangeHistory": raw_response}, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+# Created by C.L.
+@logger
+def create_group_command(client: Client, group_path: str = '') -> Tuple[object, dict, Union[List, Dict]]:
+    """
+        Create a new group
+    Args:
+        groupID : Group ID
+
+    Returns:
+        Json response as dictionary
+    """
+
+    raw_response_list: List = client.list_groups()
+    if raw_response_list:
+        if group_path != '':
+            path = group_path.split(">")
+            group_list = raw_response_list
+            found_groupId: int = 0
+            for path_groupname in path:
+                found = False
+                for group in group_list:
+                    if path_groupname == group['groupName']:
+                        group_list = group['subGroups']
+                        found = True
+                        found_groupId = group.get('groupId', 0)
+                        break
+                if not found:
+                    create_folder = client.create_group(found_groupId, path_groupname)
+                    found_groupId = create_folder.get('groupId', 0)
+                    group_list = [client.get_group(found_groupId)]
+        human_readable = f'{INTEGRATION_NAME} - Group {group_path} is created successfully'
+
+        return human_readable, {"Akamai.CreateGroup": found_groupId}, {}
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+# Created by C.L.
+
+
+def get_domains_command(client: Client) -> Tuple[object, dict, Union[List, Dict]]:
+    """
+        Get all of the existing domains
+
+    Returns:
+        Json response as dictionary
+    """
+    raw_response: Dict = client.get_domains()
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Domains are listed successfully'
+
+        return human_readable, {'Akamai.Domain': raw_response}, {}
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+def get_domain_command(client: Client, domain_name: str) -> Tuple[object, dict, Union[List, Dict]]:
+    """
+        Get information of a specific domain
+    Args:
+        domain_name : Domain Name
+
+    Returns:
+        Json response as dictionary
+    """
+    raw_response: Dict = client.get_domain(domain_name)
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - The domain is listed successfully'
+
+        return human_readable, {'Akamai.Domain': raw_response}, {}
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+@logger
+def create_domain_command(client: Client, group_id: int, domain_name: str) -> Tuple[object, dict, Union[List, Dict]]:
+    """
+       Creating domains
+    Args:
+        group_id : The group ID
+        domain_name: Domain Name
+
+    Returns:
+        Json response as dictionary
+    """
+
+    raw_response: Dict = client.create_domain(group_id, domain_name=domain_name)
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Domain is created successfully'
+
+        return human_readable, {"Akamai.Domain": raw_response}, {}
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+# Created by C.L.
+@logger
+def create_datacenter_command(client: Client, domain_name: str, dc_name: str = "", dc_country: str = "US"
+                              ) -> Tuple[object, dict, Union[List, Dict]]:
+    """
+    Updating or adding datacenter to existing GTM domain
+    Args:
+
+        domain_name: Domain Name
+        DC_nam2: The name of the Data center
+        dc_country: The country of the Data center
+
+
+    Returns:
+        Json response as dictionary
+    """
+
+    raw_response: Dict = client.create_datacenter(domain_name, dc_name, dc_country)
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Datacenter is created successfully'
+
+        return human_readable, {"Akamai.Datacenter": raw_response}, {}
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+# Created by C.L.
+@logger
+def update_property_command(client: Client, property_type: str, domain_name: str, property_name: str,
+                            static_type: str = "", property_comments: str = "", static_server: str = "", server_1: str = "",
+                            server_2: str = "", weight_1: int = 50, weight_2: int = 50, dc1_id: int = 3131, dc2_id: int = 3132
+                            ) -> Tuple[object, dict, Union[List, Dict]]:
+    """
+    Updating or adding properties to existing GTM domain
+
+    Args:
+        property_type : Property Type
+        domain_name: Domain Name
+        property_name: Property Name
+        static_type: The type of static property
+        static_server: The server address of static property
+        server_1: The address of server 1
+        server_2: The address of server 2
+        weight_1: The weight of server 1
+        weight_2: The weight of server 2
+
+    Returns:
+        Json response as dictionary
+    """
+    raw_response: Dict = client.update_property(property_type, domain_name=domain_name,
+                                                property_name=property_name, static_type=static_type,
+                                                static_server=static_server, property_comments=property_comments,
+                                                server_1=server_1, server_2=server_2, weight_1=weight_1, weight_2=weight_2,
+                                                dc1_id=dc1_id, dc2_id=dc2_id)
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Property is created successfully'
+
+        return human_readable, {"Akamai.Property": raw_response}, {}
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
 @logger
@@ -407,6 +3085,31 @@ def delete_network_list_command(client: Client, network_list_id: str) -> Tuple[o
 
 
 @logger
+def update_network_list_elements_command(client: Client, network_list_id: str, elements: Optional[Union[str, list]] = None) \
+        -> Tuple[object, dict, Union[List, Dict]]:
+    """Update network list by ID
+
+    Args:
+        client: Client object with request
+        network_list_id: Unique ID of network list
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    elements = argToList(elements)
+    # demisto.results(elements)
+
+    raw_response = client.update_network_list_elements(network_list_id=network_list_id, elements=elements)
+
+    if raw_response:
+        human_readable = f'**{INTEGRATION_NAME} - network list {network_list_id} updated**'
+        return human_readable, {}, {}
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+@logger
 def activate_network_list_command(client: Client, network_list_ids: str, env: str, comment: Optional[str] = None,
                                   notify: Optional[str] = None) -> Tuple[object, dict, Union[List, Dict]]:
     """Activate network list by ID
@@ -430,7 +3133,9 @@ def activate_network_list_command(client: Client, network_list_ids: str, env: st
                                                         comment=comment,
                                                         notify=argToList(notify))
             if raw_response:
-                human_readable += f'{INTEGRATION_NAME} - network list **{network_list_id}** activated on {env} **successfully**\n'
+                human_readable += (
+                    f'{INTEGRATION_NAME} - network list **{network_list_id}** activated on {env} **successfully**\n'
+                )
         except DemistoException as e:
             if "This list version is already active" in e.args[0]:
                 human_readable += f'**{INTEGRATION_NAME} - network list {network_list_id} already active on {env}**\n'
@@ -495,7 +3200,7 @@ def remove_element_from_network_list_command(client: Client, network_list_id: st
 
 @logger
 def get_activation_status_command(client: Client, network_list_ids: Union[str, list], env: str) \
-        -> Tuple[object, dict, Union[List, Dict]]:
+        -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """Get activation status
 
     Args:
@@ -549,6 +3254,1457 @@ def get_activation_status_command(client: Client, network_list_ids: Union[str, l
     return human_readable, context_entry, raws
 
 
+# Created by D.S.
+def clone_papi_property_command(client: Client,
+                                product_id: str,
+                                property_name: str,
+                                contract_id: str,
+                                group_id: str,
+                                property_id: str,
+                                version: str,
+                                check_existence_before_create="yes") -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Post clone property command
+    Args:
+        client: Client object with request
+        product_id
+        property_name
+        contract_id
+        group_id
+        property_id: source property_id to be cloned from
+        version
+        check_existence_before_create: Do not create a new one if one with the same name already exists. Default is "yes".
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    isExistingOneFound = False
+    if check_existence_before_create.lower() == "yes":
+        raw_response: Dict = client.list_papi_property_bygroup(contract_id=contract_id, group_id=group_id)
+        lookupKey = 'propertyName'
+        lookupValue = property_name
+        returnDict = next((item for item in raw_response["properties"]["items"]
+                           if item[lookupKey] == lookupValue), None)
+        if returnDict is not None:
+            isExistingOneFound = True
+            title = f'{INTEGRATION_NAME} - new papi property command - found existing property'
+            entry_context, human_readable_ec = list_papi_property_bygroup_ec(returnDict)
+
+    if not isExistingOneFound:
+        raw_response = client.clone_papi_property(product_id=product_id,
+                                                  property_name=property_name,
+                                                  contract_id=contract_id,
+                                                  group_id=group_id,
+                                                  property_id=property_id,
+                                                  version=version,
+                                                  )
+        if raw_response:
+            title = f'{INTEGRATION_NAME} - Clone papi property {property_name} in group {group_id} from {property_id}'
+            raw_response["propertyName"] = property_name
+            entry_context, human_readable_ec = clone_papi_property_command_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty(val.PropertyName && val.PropertyName == obj.PropertyName)": entry_context
+    }
+    human_readable = tableToMarkdown(name=title,
+                                     t=human_readable_ec,
+                                     removeNull=True)
+
+    return human_readable, context_entry, raw_response
+
+
+# Created by D.S.
+def add_papi_property_hostname_command(client: Client,
+                                       property_version: str,
+                                       property_id: str,
+                                       contract_id: str,
+                                       group_id: str,
+                                       validate_hostnames: str,
+                                       include_cert_status: str,
+                                       cname_from: str,
+                                       edge_hostname_id: str,
+                                       sleep_time: str = '30'
+                                       ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        add hostname papi property
+
+    Args:
+        client: Client object with request
+        property_version:
+        property_id:
+        contract_id:
+        group_id:
+        validate_hostnames:
+        include_cert_status:
+        cname_from:
+        edge_hostname_id:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.add_papi_property_hostname(
+        property_version=property_version,
+        property_id=property_id,
+        contract_id=contract_id,
+        group_id=group_id,
+        validate_hostnames=argToBoolean(validate_hostnames),
+        include_cert_status=argToBoolean(include_cert_status),
+        cname_from=cname_from,
+        edge_hostname_id=edge_hostname_id,
+    )
+    time.sleep(int(sleep_time))
+
+    title = f'{INTEGRATION_NAME} - Add hostname papi property'
+    raw_response["domainPrefix"] = cname_from
+    raw_response["edgeHostnameId"] = edge_hostname_id
+    entry_context, human_readable_ec = add_papi_property_hostname_command_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)":
+            entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+# Created by D.S.
+def list_papi_edgehostname_bygroup_command(client: Client,
+                                           contract_id: str,
+                                           group_id: str,
+                                           domain_prefix: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        add papi edge hostname command
+    Args:
+        client: Client object with request
+        contract_id:
+        group_id:
+        options:
+        domain_prefix:
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    raw_response: Dict = client.list_papi_edgehostname_bygroup(contract_id=contract_id,
+                                                               group_id=group_id,
+                                                               options="mapDetails"
+                                                               )
+    lookupKey = 'domainPrefix'
+    lookupValue = domain_prefix
+    returnDict = next((item for item in raw_response["edgeHostnames"]["items"]
+                       if item[lookupKey] == lookupValue), None)
+
+    title = f'{INTEGRATION_NAME} - new papi edgeHostname command'
+    # raw_response["domainPrefix"] = domain_prefix
+    entry_context, human_readable_ec = list_papi_edgehostname_bygroup_ec(returnDict)  # type: ignore
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames"
+        f"(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+# Created by D.S.
+def new_papi_edgehostname_command(client: Client,
+                                  product_id: str,
+                                  contract_id: str,
+                                  group_id: str,
+                                  options: str,
+                                  domain_prefix: str,
+                                  domain_suffix: str,
+                                  ip_version_behavior: str,
+                                  secure: str,
+                                  secure_network: str,
+                                  cert_enrollment_id: str,
+                                  check_existence_before_create="yes") -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        add papi edge hostname command
+
+    Args:
+        client: Client object with request
+        product_id:
+        contract_id:
+        group_id:
+        options:
+        domain_prefix:
+        domain_suffix:
+        ip_version_behavior:
+        secure:
+        secure_network:
+        cert_enrollment_id:
+        check_existence_before_create: Do not create a new one if one with the same name already exists. Default is "yes".
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    isExistingOneFound = False
+    if check_existence_before_create.lower() == "yes":
+        raw_response: Dict = client.list_papi_edgehostname_bygroup(contract_id=contract_id,
+                                                                   group_id=group_id,
+                                                                   options="mapDetails"
+                                                                   )
+        lookupKey = 'domainPrefix'
+        lookupValue = domain_prefix
+        returnDict = next((item for item in raw_response["edgeHostnames"]["items"]
+                           if item[lookupKey] == lookupValue), None)
+        if returnDict is not None:
+            isExistingOneFound = True
+            title = f'{INTEGRATION_NAME} - new papi edgeHostname command - found existing edgeHostname'
+            entry_context, human_readable_ec = list_papi_edgehostname_bygroup_ec(returnDict)
+
+    if not isExistingOneFound:
+        raw_response = client.new_papi_edgehostname(product_id=product_id,
+                                                    contract_id=contract_id,
+                                                    group_id=group_id,
+                                                    options=options,
+                                                    domain_prefix=domain_prefix,
+                                                    domain_suffix=domain_suffix,
+                                                    ip_version_behavior=ip_version_behavior,
+                                                    secure=secure,
+                                                    secure_network=secure_network,
+                                                    cert_enrollment_id=cert_enrollment_id,
+                                                    )
+        if raw_response:
+            title = f'{INTEGRATION_NAME} - new papi edgeHostname command'
+            raw_response["domainPrefix"] = domain_prefix
+            entry_context, human_readable_ec = new_papi_edgehostname_command_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)":
+            entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+# Created by D.S.
+
+
+@logger
+def get_cps_enrollmentid_by_cnname_command(client: Client,
+                                           contract_id: str,
+                                           cnname: str,
+                                           ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        get CPS EnrollmentID by Common Name
+
+    Args:
+        client: Client object with request
+        contract_id:
+        cnname:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.list_cps_enrollments(contract_id=contract_id)
+
+    enrollment: Dict = get_cps_enrollment_by_cnname(raw_response=raw_response, cnname=cnname)
+    title = f'{INTEGRATION_NAME} - Get cps enrollmentid by cnname command'
+    entry_context, human_readable_ec = get_cps_enrollment_by_cnname_ec(enrollment)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.Cps.Enrollment": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+# Created by D.S.
+@logger
+def new_papi_cpcode_command(client: Client,
+                            product_id: str,
+                            contract_id: str,
+                            group_id: str,
+                            cpcode_name: str,
+                            check_existence_before_create="yes"
+                            ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        get papi property All Versions by group_id and property_id command
+    Args:
+        product_id:
+        contract_id:
+        group_id:
+        cpcode_name:
+        check_existence_before_create: Do not create a new Cpcode if one with the same name already exists. Default is "yes".
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    isExistingOneFound = False
+    if check_existence_before_create.lower() == "yes":
+        raw_response: Dict = client.list_papi_cpcodeid_bygroup(contract_id=contract_id, group_id=group_id)
+        lookupKey = 'cpcodeName'
+        lookupValue = cpcode_name
+        returnDict = next((item for item in raw_response["cpcodes"]["items"]
+                           if item[lookupKey] == lookupValue), None)
+
+        if returnDict is not None:
+            isExistingOneFound = True
+            title = f'{INTEGRATION_NAME} - get papi cpcode command - found existing Cpcode'
+            entry_context, human_readable_ec = list_papi_cpcodeid_bygroup_ec(returnDict)
+    if not isExistingOneFound:
+        raw_response = client.new_papi_cpcode(
+            contract_id=contract_id,
+            group_id=group_id,
+            product_id=product_id,
+            cpcode_name=cpcode_name,
+        )
+        if raw_response:
+            title = f'{INTEGRATION_NAME} - new papi cpcode command'
+            raw_response["cpcodeName"] = cpcode_name
+            entry_context, human_readable_ec = new_papi_cpcode_ec(raw_response)
+
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiCpcode": entry_context
+    }
+    human_readable = tableToMarkdown(name=title,
+                                     t=human_readable_ec,
+                                     removeNull=True)
+
+    return human_readable, context_entry, raw_response
+
+# Created by D.S.
+
+
+@logger
+def patch_papi_property_rule_cpcode_command(client: Client,
+                                            contract_id: str,
+                                            group_id: str,
+                                            property_id: str,
+                                            property_version: str,
+                                            validate_rules: str,
+                                            operation: str,
+                                            path: str,
+                                            cpcode_id: str,
+                                            name: str,
+                                            ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        get papi property All Versions by group_id and property_id command
+    Args:
+        contract_id:
+        group_id:
+        property_id:
+        property_version:
+        validate_rules:
+        operation:
+        path:
+        value:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    body = [
+        {
+            "op": operation,
+            "path": path,
+            "value":
+                {
+                    "id": int(cpcode_id.split('_')[1]),
+                    "name": name
+                }
+        }
+    ]
+
+    raw_response: Dict = client.patch_papi_property_rule(contract_id=contract_id,
+                                                         group_id=group_id,
+                                                         property_id=property_id,
+                                                         property_version=property_version,
+                                                         validate_rules=validate_rules,
+                                                         body=body,
+                                                         )
+
+    title = f'{INTEGRATION_NAME} - Patch papi property cpcode command'
+    entry_context, human_readable_ec = patch_papi_property_rule_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+# Created by D.S.
+@logger
+def patch_papi_property_rule_origin_command(client: Client,
+                                            contract_id: str,
+                                            group_id: str,
+                                            property_id: str,
+                                            property_version: str,
+                                            validate_rules: str,
+                                            operation: str,
+                                            path: str,
+                                            origin: str,
+                                            external_url: str,
+                                            gzip_compression: str,
+                                            sleep_time: str = '30',
+                                            ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        get papi property All Versions by group_id and property_id command
+    Args:
+        contract_id:
+        group_id:
+        property_id:
+        property_version:
+        validate_rules:
+        operation:
+        path:
+        value:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    body = []
+    time.sleep(int(sleep_time))
+    if path == "/rules/behaviors":
+        body = [
+            {
+                "op": operation,
+                "path": path,
+                "value": [
+                    {
+                        "name": "origin",
+                        "options": {
+                            "cacheKeyHostname": "REQUEST_HOST_HEADER",
+                            "compress": True if gzip_compression.lower() == "yes" else False,
+                            "enableTrueClientIp": True,
+                            "forwardHostHeader": "REQUEST_HOST_HEADER",
+                            "httpPort": 80,
+                            "httpsPort": 443,
+                            "originCertificate": "",
+                            "originSni": True,
+                            "originType": "CUSTOMER",
+                            "ports": "",
+                            "trueClientIpClientSetting": False,
+                            "trueClientIpHeader": "True-Client-IP",
+                            "verificationMode": "CUSTOM",
+                            "hostname": origin,
+                            "customValidCnValues": [
+                                "{{Origin Hostname}}",
+                                "{{Forward Host Header}}"
+                            ],
+                            "originCertsToHonor": "STANDARD_CERTIFICATE_AUTHORITIES",
+                            "standardCertificateAuthorities": [
+                                "akamai-permissive",
+                                "THIRD_PARTY_AMAZON"
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    if path == "/rules/children/-":
+        body = [
+            {
+                "op": operation,
+                "path": path,
+                "value": {  # type: ignore
+                    "name": "Origin for " + external_url,
+                    "children": [],
+                    "behaviors": [
+                        {
+                            "name": "origin",
+                            "options": {
+                                "cacheKeyHostname": "REQUEST_HOST_HEADER",
+                                "compress": True if gzip_compression.lower() == "yes" else False,
+                                "enableTrueClientIp": True,
+                                "forwardHostHeader": "REQUEST_HOST_HEADER",
+                                "httpPort": 80,
+                                "httpsPort": 443,
+                                "originCertificate": "",
+                                "originSni": True,
+                                "originType": "CUSTOMER",
+                                "ports": "",
+                                "trueClientIpClientSetting": False,
+                                "trueClientIpHeader": "True-Client-IP",
+                                "verificationMode": "CUSTOM",
+                                "hostname": origin,
+                                "customValidCnValues": [
+                                    "{{Origin Hostname}}",
+                                    "{{Forward Host Header}}"
+                                ],
+                                "originCertsToHonor": "STANDARD_CERTIFICATE_AUTHORITIES",
+                                "standardCertificateAuthorities": [
+                                    "akamai-permissive",
+                                    "THIRD_PARTY_AMAZON"
+                                ]
+                            }
+                        }
+                    ],
+                    "criteria": [
+                        {
+                            "name": "hostname",
+                            "options": {
+                                "matchOperator": "IS_ONE_OF",
+                                "values": [
+                                    external_url
+                                ]
+                            }
+                        }
+                    ],
+                    "criteriaMustSatisfy": "all"
+                }
+            }
+        ]
+
+    raw_response: Dict = client.patch_papi_property_rule(contract_id=contract_id,
+                                                         group_id=group_id,
+                                                         property_id=property_id,
+                                                         property_version=property_version,
+                                                         validate_rules=validate_rules,
+                                                         body=body,
+                                                         )
+
+    title = f'{INTEGRATION_NAME} - Patch papi property origin command'
+    entry_context, human_readable_ec = {"Origins added": origin}, {"Origins added": origin}
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+# Created by D.S.
+@logger
+def activate_papi_property_command(client: Client,
+                                   contract_id: str,
+                                   group_id: str,
+                                   property_id: str,
+                                   network: str,
+                                   notify_emails: str,
+                                   property_version: str,
+                                   note: str,
+                                   ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        activate an property command
+    Args:
+        client: Client object with request
+        contract_id: crt_xxxxxxx
+        group_id: grp_#######
+        property_id: prp_#######
+        network: "STAGING" or "PRODUCTION"
+        notify_emails:
+        property_version:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.activate_papi_property(contract_id=contract_id,
+                                                       group_id=group_id,
+                                                       property_id=property_id,
+                                                       network=network,
+                                                       notify_emails=notify_emails,
+                                                       property_version=arg_to_number(property_version),  # type: ignore[arg-type]
+                                                       note=note,
+                                                       )
+
+    title = f'{INTEGRATION_NAME} - activate an property'
+    entry_context, human_readable_ec = activate_papi_property_command_ec(raw_response)
+    context_entry = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.{network.capitalize()}": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+# Created by D.S.
+@logger
+def clone_security_policy_command(client: Client,
+                                  config_id: str,
+                                  config_version: str,
+                                  create_from_security_policy: str,
+                                  policy_name: str,
+                                  policy_prefix: str = '',
+                                  check_existence_before_create="yes") -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Clone security policy property command
+    Args:
+        client: Client object with request
+        config_id:
+        config_version:
+        create_from_security_policy:
+        policy_name:
+        check_existence_before_create: Continue execution if a Existing Record found without creating an new record
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    if check_existence_before_create.lower() == "yes":
+        raw_response: Dict = client.list_security_policy(config_id=config_id,
+                                                         config_version=config_version)
+        lookupKey = 'policyName'
+        lookupValue = policy_name
+        returnDict = next((item for item in raw_response['policies'] if item[lookupKey] == lookupValue), None)
+        if returnDict is not None:
+            title = f'{INTEGRATION_NAME} - clone security policy command - found existing Security Policy'
+            entry_context, human_readable_ec = clone_security_policy_command_ec(returnDict)
+            context_entry = {
+                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)":
+                    entry_context
+            }
+            human_readable = tableToMarkdown(name=title,
+                                             t=human_readable_ec,
+                                             removeNull=True)
+            return human_readable, context_entry, raw_response
+
+    if not policy_prefix:
+        isDuplicated = True
+        while isDuplicated:
+            policy_prefix = generate_policy_prefix()
+            isErrored = False
+            try:
+                raw_response = client.clone_security_policy(
+                    config_id=arg_to_number(config_id),  # type: ignore[arg-type]
+                    config_version=arg_to_number(config_version),  # type: ignore[arg-type]
+                    create_from_security_policy=create_from_security_policy,
+                    policy_name=policy_name,
+                    policy_prefix=policy_prefix,
+                )
+            except Exception as e:
+                isErrored = True
+                if "You entered a Policy ID that already exists." not in str(e):
+                    err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+                    return_error(err_msg, error=e)
+            if not isErrored:
+                isDuplicated = False
+        if raw_response:
+            title = f'{INTEGRATION_NAME} - clone security policy'
+            entry_context, human_readable_ec = clone_security_policy_command_ec(raw_response)
+            context_entry = {
+                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)":
+                    entry_context
+            }
+            human_readable = tableToMarkdown(name=title,
+                                             t=human_readable_ec,
+                                             removeNull=True)
+        return human_readable, context_entry, raw_response
+    else:
+        raw_response = client.clone_security_policy(
+            config_id=arg_to_number(config_id),  # type: ignore[arg-type]
+            config_version=arg_to_number(config_version),  # type: ignore[arg-type]
+            create_from_security_policy=create_from_security_policy,
+            policy_name=policy_name,
+            policy_prefix=policy_prefix
+        )
+
+        title = f'{INTEGRATION_NAME} - clone security policy'
+        entry_context, human_readable_ec = clone_security_policy_command_ec(raw_response)
+        context_entry = {
+            f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)":
+                entry_context
+        }
+        human_readable = tableToMarkdown(
+            name=title,
+            t=human_readable_ec,
+            removeNull=True,
+        )
+
+        return human_readable, context_entry, raw_response
+
+# Created by D.S.
+
+
+@logger
+def new_match_target_command(client: Client,
+                             config_id: str,
+                             config_version: str,
+                             match_type: str,
+                             bypass_network_lists: str,
+                             default_file: str,
+                             file_paths: str,
+                             hostnames: str,
+                             policy_id: str
+                             ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        New match target command
+    Args:
+        client:
+        config_id
+        config_version
+        type
+        bypass_network_lists
+        default_file
+        file_paths
+        hostnames
+        policy_id
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    networkList = []
+    for network in argToList(bypass_network_lists):
+        networkList.append({'id': network})
+    hostnameList = []
+    for hostname in hostnames.split(','):
+        hostnameList.append(hostname)
+
+    raw_response: Dict = client.new_match_target(config_id=arg_to_number(config_id),  # type: ignore[arg-type]
+                                                 config_version=arg_to_number(config_version),  # type: ignore[arg-type]
+                                                 match_type=match_type,
+                                                 bypass_network_lists=networkList,
+                                                 default_file=default_file,
+                                                 file_paths=argToList(file_paths),
+                                                 hostnames=argToList(hostnameList),
+                                                 policy_id=policy_id,
+                                                 )
+
+    title = f'{INTEGRATION_NAME} - create match target'
+    entry_context, human_readable_ec = new_match_target_command_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyId && val.PolicyId == obj.PolicyId)": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+# Created by D.S.
+@logger
+def activate_appsec_config_version_command(client: Client,
+                                           config_id: str,
+                                           config_version: str,
+                                           acknowledged_invalid_hosts: str,
+                                           notification_emails: str,
+                                           action: str,
+                                           network: str,
+                                           note: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Activate appsec config version command
+    Args:
+        config_id
+        config_version
+        acknowledged_invalid_hosts:
+        notification_emails:
+        action:
+        network:
+        note:
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.activate_appsec_config_version(
+        config_id=arg_to_number(config_id),  # type: ignore[arg-type]
+        config_version=arg_to_number(config_version),  # type: ignore[arg-type]
+        acknowledged_invalid_hosts=argToList(acknowledged_invalid_hosts),
+        notification_emails=argToList(notification_emails),
+        action=action,
+        network=network,
+        note=note,
+    )
+
+    title = f'{INTEGRATION_NAME} - activate appsec config version'
+    entry_context, human_readable_ec = activate_appsec_config_version_command_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.{network.capitalize()}": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+# Created by D.S.
+
+
+@logger
+def get_appsec_config_activation_status_command(client: Client,
+                                                activation_id: str,
+                                                sleep_time: str,
+                                                retries: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Get appsec config version activation status command
+    Args:
+        client:
+        activationsId
+        sleep_time
+        retries
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    retry = 0
+    while retry < int(retries):
+        time.sleep(int(sleep_time))
+
+        raw_response: Dict = client.get_appsec_config_activation_status(activation_id=activation_id)
+        if raw_response:
+            if raw_response['status'] == 'ACTIVATED':
+                title = f'{INTEGRATION_NAME} - get appsec config version activation status'
+                entry_context, human_readable_ec = get_appsec_config_activation_status_command_ec(raw_response)
+                context_entry: Dict = {
+                    f'{INTEGRATION_CONTEXT_NAME}.AppSecConfig'
+                    '(val.ActivationId && val.ActivationId == obj.ActivationId &&'
+                    ' val.Network && val.Network == obj.Network)': entry_context
+                }
+                human_readable = tableToMarkdown(name=title,
+                                                 t=human_readable_ec,
+                                                 removeNull=True)
+                return human_readable, context_entry, raw_response
+        retry += 1
+
+    raise DemistoException(f'Could not get activation status. Number of retries: {retry}', res=raw_response)
+
+# Created by D.S.
+
+
+@logger
+def get_appsec_config_latest_version_command(client: Client,
+                                             sec_config_name: str,
+                                             sleep_time: str,
+                                             retries: str,
+                                             skip_consistency_check: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        1) Get appsec config Id and latestVersion.
+        2) Check latestVersion and stagingVersion, productionVersion consistency
+        if latestVersion, stagingVersion, productionVersion are not the same value,
+        wait sleep_time X seconds and retries Y times.
+    Args:
+        client: http api client
+        sec_config_name: Name of the Security Configuration
+        skip_consistency_check: Do not conduction LatestVersion, Staging Version, Production Version consistency check
+        sleep_time: Number of seconds to wait before the next consistency check
+        retries: Number of retries for the consistency check to be conducted
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    for i in range(0, int(retries)):
+        raw_response: Dict = client.list_appsec_config()
+        lookupKey = 'name'
+        lookupValue = sec_config_name
+        appsec_config_latest: Dict = next(
+            (item for item in raw_response['configurations'] if item[lookupKey] == lookupValue), {})
+        latestVersion = appsec_config_latest.get("latestVersion", 0)
+        stagingVersion = appsec_config_latest.get("stagingVersion")
+        productionVersion = appsec_config_latest.get("productionVersion")
+        if skip_consistency_check == 'yes' or (latestVersion == stagingVersion == productionVersion or int(latestVersion) == 1):
+            title = f'{INTEGRATION_NAME} - get secuirty configuration Latest Version'
+            entry_context, human_readable_ec = get_appsec_config_latest_version_command_ec(appsec_config_latest)
+            appsec_config_latest = demisto.get(demisto.context(), f"{INTEGRATION_CONTEXT_NAME}.AppSec")
+            context_entry: Dict = {
+                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig(val.Name && val.Name == obj.Name)": entry_context
+            }
+
+            human_readable = tableToMarkdown(name=title,
+                                             t=human_readable_ec,
+                                             removeNull=True)
+            return human_readable, context_entry, appsec_config_latest
+        time.sleep(int(sleep_time))
+
+    error_msg = f'inconsistent latestVersion vs stagingVersion vs productionVersion for Security Configuration: {sec_config_name}'
+    raise DemistoException(error_msg)
+
+
+# Created by D.S.
+@logger
+def get_security_policy_id_by_name_command(client: Client,
+                                           config_id: str,
+                                           config_version: str,
+                                           policy_name: str,
+                                           is_baseline_policy: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        get a security policy ID by Policy name
+                    It is also used to get the policy ID of "Baseline Security Policy"
+    Args:
+        client:
+        config_id
+        versonId
+        policy_name
+        is_baseline_policy
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    raw_response: Dict = client.list_security_policy(config_id=config_id,
+                                                     config_version=config_version)
+
+    lookupKey = "policyName"
+    lookupValue = policy_name
+    returnDict = next((item for item in raw_response['policies'] if item[lookupKey] == lookupValue), None)
+    if returnDict is None:
+        err_msg = f'Error in {INTEGRATION_NAME} - get a security policy ID by Policy name: Policy [{policy_name}] not found'
+        raise DemistoException(err_msg, res=raw_response)
+
+    title = f'{INTEGRATION_NAME} - get a security policy ID by Policy name'
+    entry_context, human_readable_ec = get_security_policy_id_by_name_command_ec(returnDict, is_baseline_policy)
+    entry_context[0]['Id'] = config_id
+    if is_baseline_policy == "yes":
+        context_entry = {
+            f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig(val.Id && val.Id == obj.Id)": entry_context
+        }
+    else:
+        context_entry = {
+            f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyId && val.PolicyId == obj.PolicyId)": entry_context
+        }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+# Created by D.S.
+@logger
+def clone_appsec_config_version_command(client: Client,
+                                        config_id: str,
+                                        create_from_version: str,
+                                        do_not_clone: str,
+                                        rule_update: bool = True,
+                                        ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Appsec Configurtion - create a new version by clone the latest version
+    Args:
+        config_id: AppSec configuration ID
+        create_from_version: AppSec configuration version number to create from
+        rule_update: Specifies whether the application rules should be migrated to the latest version.
+        do_not_clone: Do not clone to create a new version, use in the test
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    if do_not_clone == 'yes':
+        raw_response = {
+            "version": create_from_version,
+            "configId": config_id
+        }
+    else:
+        raw_response = client.clone_appsec_config_version(config_id=config_id,
+                                                          create_from_version=create_from_version,
+                                                          rule_update=rule_update,
+                                                          )
+
+    title = f'{INTEGRATION_NAME} - Appsec Configurtion - create a new version by clone the latest version'
+    entry_context, human_readable_ec = clone_appsec_config_version_command_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig(val.Id && val.Id == obj.Id)": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+# Created by D.S.
+@logger
+def patch_papi_property_rule_httpmethods_command(client: Client,
+                                                 contract_id: str,
+                                                 group_id: str,
+                                                 property_id: str,
+                                                 property_version: str,
+                                                 validate_rules: str,
+                                                 operation: str,
+                                                 path: str,
+                                                 value: dict,
+                                                 ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Patch papi property All Versions by group_id and property_id command
+    Args:
+        contract_id:
+        group_id:
+        property_id:
+        property_version:
+        validate_rules:
+        operation:
+        path:
+        value:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    httpAllowedList = ['Post', 'Options', 'Put', 'Delete', 'Patch']
+    (key, val), = value.items()
+    index = httpAllowedList.index(key)
+    allowed = True if val.lower() == "yes" else False
+
+    body = [
+        {
+            "op": operation,
+            "path": path.replace("INDEX", str(index)),
+            "value": allowed
+        }
+    ]
+    time.sleep(5)
+    raw_response: Dict = client.patch_papi_property_rule(contract_id=contract_id,
+                                                         group_id=group_id,
+                                                         property_id=property_id,
+                                                         property_version=property_version,
+                                                         validate_rules=validate_rules,
+                                                         body=body,
+                                                         )
+
+    title = f'{INTEGRATION_NAME} - patch papi property rule httpmethods command'
+    entry_context, human_readable_ec = patch_papi_property_rule_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+# Created by D.S.
+@logger
+def get_papi_property_activation_status_command(client: Client,
+                                                activation_id: int,
+                                                property_id: int,
+                                                sleep_time: str,
+                                                retries: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Get papi property activation status command - retry if the status is not "activate"
+    Args:
+        client:
+        activationsId
+        sleep_time
+        retries
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    retry = 0
+    while retry < int(retries):
+        time.sleep(int(sleep_time))
+
+        raw_response: Dict = client.get_papi_property_activation_status(activation_id=activation_id,
+                                                                        property_id=property_id)
+        if raw_response:
+            if raw_response["activations"]["items"][0]['status'] == 'ACTIVE':
+                network = raw_response["activations"]["items"][0].get('network')
+                title = f'{INTEGRATION_NAME} - get papi property activation status'
+                entry_context, human_readable_ec = get_papi_property_activation_status_command_ec(raw_response)
+                context_entry: Dict = {
+                    f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.{network.capitalize()}"
+                    f"(val.ActivationId && val.ActivationId == obj.ActivationId)": entry_context
+                }
+                human_readable = tableToMarkdown(name=title,
+                                                 t=human_readable_ec,
+                                                 removeNull=True)
+                return human_readable, context_entry, raw_response
+        retry += 1
+
+    raise DemistoException(f'Could not get activation status. Number of retries: {retry}', res=raw_response)
+
+
+# Created by D.S.
+@logger
+def get_papi_edgehostname_creation_status_command(client: Client,
+                                                  contract_id: str,
+                                                  group_id: str,
+                                                  edgehostname_id: str,
+                                                  options: str,
+                                                  sleep_time: str,
+                                                  retries: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Get papi property activation status command - retry if the status is not "activate"
+    Args:
+        contract_id
+        group_id
+        edgehostname_id
+        options
+        sleep_time
+        retries
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    retry = 0
+    while retry < int(retries):
+        time.sleep(int(sleep_time))
+
+        raw_response: Dict = client.get_papi_edgehostname_creation_status(contract_id=contract_id,
+                                                                          group_id=group_id,
+                                                                          edgehostname_id=edgehostname_id,
+                                                                          options=options
+                                                                          )
+
+        if raw_response:
+            if raw_response["edgeHostnames"]["items"][0]['status'] == 'CREATED':
+                title = f'{INTEGRATION_NAME} - get papi edgehostname creation status'
+                entry_context, human_readable_ec = get_papi_edgehostname_creation_status_command_ec(raw_response)
+                context_entry: Dict = {
+                    f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.Edgehostnames"
+                    f"(val.EdgeHostnameId && val.EdgeHostnameId == obj.EdgeHostnameId)": entry_context
+                }
+                human_readable = tableToMarkdown(name=title,
+                                                 t=human_readable_ec,
+                                                 removeNull=True)
+                return human_readable, context_entry, raw_response
+        retry += 1
+
+    raise DemistoException(f'Could not get creation status. Number of retries: {retry}', res=raw_response)
+
+
+# Created by D.S. 2022-10-25
+@logger
+def modify_appsec_config_selected_hosts_command(client: Client,
+                                                config_id: int,
+                                                config_version: int,
+                                                hostname_list: list,
+                                                mode: str
+                                                ) -> Tuple[str, dict, Union[List, Dict]]:
+    """
+        Update the list of selected hostnames for a configuration version.
+
+    Args:
+        config_id: A unique identifier for each configuration.
+        config_version: A unique identifier for each version of a configuration.
+        hostname_list:  A list hostnames is used to modifying the configuration.
+        mode: The type of update you want to make to the evaluation hostname list.
+            - Use "append" to add additional hostnames.
+            - Use "remove" to delete the hostnames from the list.
+            - Use "replace" to replace the existing list with the hostnames you pass in your request.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    hostname_dict_list = []
+    for hostname in hostname_list[0].split(','):
+        hostname_dict_list.append({'hostname': hostname})
+    raw_response: Dict = client.modify_appsec_config_selected_hosts(config_id=config_id,
+                                                                    config_version=config_version,
+                                                                    hostname_list=hostname_dict_list,
+                                                                    mode=mode
+                                                                    )
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Application Security Config selected hostname list has been modified.'
+        return human_readable, {}, raw_response
+    else:
+        human_readable = f'{INTEGRATION_NAME} - Modify Application Security Config selected hostname list has failed.'
+        return human_readable, {}, {}
+
+
+@logger
+def patch_papi_property_rule_siteshield_command(client: Client,
+                                                contract_id: str,
+                                                group_id: str,
+                                                property_id: str,
+                                                property_version: str,
+                                                validate_rules: str,
+                                                operation: str,
+                                                path: str,
+                                                ssmap: str
+                                                ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Patch papi property default rule's site shield command
+    Args:
+        contract_id: Akamai contract Identity
+        group_id: Akamai configuration group Identity
+        property_id: Akamai Ion Property Identity
+        property_version: Akamai Ion Property Version Identity
+        validate_rules: Validate the rule or not - true or false
+        operation: Json patch operation - add / delete / replace
+        path: Json patch Rule path
+        ssmap: siteshiled json format data
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    import json
+
+    body = [
+        {
+            "op": operation,
+            "path": path,
+            "value": json.loads(ssmap)
+        }
+    ]
+
+    raw_response: Dict = client.patch_papi_property_rule(contract_id=contract_id,
+                                                         group_id=group_id,
+                                                         property_id=property_id,
+                                                         property_version=property_version,
+                                                         validate_rules=validate_rules,
+                                                         body=body,
+                                                         )
+
+    title = f'{INTEGRATION_NAME} - Patch papi property site shield command'
+    entry_context, human_readable_ec = patch_papi_property_rule_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+# Created by D.S.
+
+@logger
+def update_appsec_config_version_notes_command(client: Client,
+                                               config_id: int,
+                                               config_version: int,
+                                               notes: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Update application secuirty configuration version notes command
+    Args:
+        config_id: The ID of the application seucirty configuration
+        config_version: The version number of the application seucirty configuration
+        notes:  The notes need to be written into the application seucirty configuration version
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.update_appsec_config_version_notes(config_id=config_id,
+                                                                   config_version=config_version,
+                                                                   notes=notes
+                                                                   )
+
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Application Security Config version notes has been updated.'
+        return human_readable, {}, raw_response
+    else:
+        human_readable = f'{INTEGRATION_NAME} - Update Application Security Config version notes has failed.'
+        return human_readable, {}, {}
+
+
+# created by D.S.
+@logger
+def new_or_renew_match_target_command(client: Client,
+                                      config_id: str,
+                                      config_version: str,
+                                      match_type: str,
+                                      bypass_network_lists: str,
+                                      default_file: str,
+                                      file_paths: str,
+                                      hostnames: str,
+                                      policy_id: str
+                                      ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        New match target if no existing found otherwise update the existing match target hostnames
+        If there are multiple match targets found, the first one in the list will be updated
+    Args:
+        client:
+        config_id: A unique identifier for each configuration.
+        config_version: A unique identifier for each version of a configuration.
+        match_type: The type of the match target
+        bypass_network_lists: bypass network lists
+        default_file: Describes the rule to match on paths.
+        file_paths: Contains a list of file paths
+        hostnames: A list of hostnames that need to be added into match target
+        policy_id: Specifies the security policy to filter match targets
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    networkList = []
+    for network in argToList(bypass_network_lists):
+        networkList.append({'id': network})
+    hostnameList = []
+    for hostname in hostnames.split(','):
+        hostnameList.append(hostname)
+
+    # Get the list of match targets
+    raw_response: Dict = client.list_match_target(config_id=arg_to_number(config_id),  # type: ignore[arg-type]
+                                                  config_version=arg_to_number(config_version),  # type: ignore[arg-type]
+                                                  policy_id=policy_id,
+                                                  includeChildObjectName='true'
+                                                  )
+
+    if not raw_response.get("matchTargets", {}).get("websiteTargets"):
+        # If no list is found, create a new match target and add the hostname in there.
+        raw_response = client.new_match_target(config_id=arg_to_number(config_id),  # type: ignore
+                                               config_version=arg_to_number(config_version),  # type: ignore[arg-type]
+                                               match_type=match_type,
+                                               bypass_network_lists=networkList,
+                                               default_file=default_file,
+                                               file_paths=argToList(file_paths),
+                                               hostnames=argToList(hostnameList),
+                                               policy_id=policy_id
+                                               )
+        title = f'{INTEGRATION_NAME} - create new match target'
+    else:
+        # If a list is found, get the first match target in the list
+        # Append hostnames into the first match target
+        match_target_found = raw_response["matchTargets"]["websiteTargets"][0]
+        existing_hostnames = raw_response["matchTargets"]["websiteTargets"][0]["hostnames"]
+        for item in hostnameList:
+            existing_hostnames.append(item)
+
+        raw_response = client.modify_match_target(config_id=arg_to_number(config_id),  # type: ignore
+                                                  config_version=arg_to_number(config_version),  # type: ignore[arg-type]
+                                                  policy_id=policy_id,
+                                                  match_target_id=match_target_found["targetId"],
+                                                  match_type=match_type,
+                                                  bypass_network_lists=networkList,
+                                                  default_file=default_file,
+                                                  file_paths=argToList(file_paths),
+                                                  hostnames=argToList(existing_hostnames),
+                                                  )
+        title = f'{INTEGRATION_NAME} - update existing match target'
+
+    # Process outputs
+    entry_context, human_readable_ec = new_match_target_command_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyId && val.PolicyId == obj.PolicyId)": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def patch_papi_property_rule_command(client: Client,
+                                     contract_id: str,
+                                     group_id: str,
+                                     property_id: str,
+                                     property_version: str,
+                                     validate_rules: str,
+                                     operation: str,
+                                     path: str,
+                                     value: str,
+                                     value_to_json: str
+                                     ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Generic JSON patch command for Papi Property default rule
+    Args:
+        contract_id:
+        group_id:
+        property_id:
+        property_version:
+        validate_rules:
+        operation:
+        path:
+        value:
+        value_to_josn:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    import json
+
+    body = [
+        {
+            "op": operation,
+            "path": path,
+            "value": json.loads(value) if value_to_json.lower() == "yes" else value
+        }
+    ]
+
+    raw_response: Dict = client.patch_papi_property_rule(contract_id=contract_id,
+                                                         group_id=group_id,
+                                                         property_id=property_id,
+                                                         property_version=property_version,
+                                                         validate_rules=validate_rules,
+                                                         body=body,
+                                                         )
+
+    title = f'{INTEGRATION_NAME} - Patch papi property rule command'
+    entry_context, human_readable_ec = patch_papi_property_rule_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def get_papi_property_rule_command(client: Client,
+                                   contract_id: str,
+                                   property_id: str,
+                                   property_version: int,
+                                   group_id: str,
+                                   validate_rules: str
+                                   ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Get Papi Property default rule
+    Args:
+         contract_id:
+         property_id:
+         property_version:
+         group_id:
+         validateRules:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.get_papi_property_rule(contract_id=contract_id,
+                                                       group_id=group_id,
+                                                       property_id=property_id,
+                                                       property_version=property_version,
+                                                       validate_rules=validate_rules
+                                                       )
+    if raw_response:
+        title = f'{INTEGRATION_NAME} - get papi property default rule command'
+        entry_context = raw_response
+        human_readable_ec = raw_response
+        context_entry: Dict = {
+            f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.DefaultRule": entry_context
+        }
+        human_readable = tableToMarkdown(
+            name=title,
+            t=human_readable_ec,
+            removeNull=True,
+        )
+        return human_readable, context_entry, raw_response
+    else:
+        human_readable = f'{INTEGRATION_NAME} - get papi property default rule command has failed.'
+        return human_readable, {}, {}
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -574,10 +4730,57 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-get-network-list-by-id': get_network_list_by_id_command,
         f'{INTEGRATION_COMMAND_NAME}-create-network-list': create_network_list_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-network-list': delete_network_list_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-network-list-elements': update_network_list_elements_command,
         f'{INTEGRATION_COMMAND_NAME}-activate-network-list': activate_network_list_command,
         f'{INTEGRATION_COMMAND_NAME}-add-elements-to-network-list': add_elements_to_network_list_command,
         f'{INTEGRATION_COMMAND_NAME}-remove-element-from-network-list': remove_element_from_network_list_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-network-list-activation-status': get_activation_status_command
+        f'{INTEGRATION_COMMAND_NAME}-get-network-list-activation-status': get_activation_status_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-groups': list_groups_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-enrollment': create_enrollment_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-enrollments': list_enrollments_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-enrollment-by-cn': get_enrollment_by_cn_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-domains': get_domains_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-domain': get_domain_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-domain': create_domain_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-datacenter': create_datacenter_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-property': update_property_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-change': get_change_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-change': update_change_command,
+        f'{INTEGRATION_COMMAND_NAME}-check-group': check_group_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-group': create_group_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-group': get_group_command,
+        f'{INTEGRATION_COMMAND_NAME}-clone-papi-property': clone_papi_property_command,
+        f'{INTEGRATION_COMMAND_NAME}-add-papi-property-hostname': add_papi_property_hostname_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-papi-edgehostname-bygroup': list_papi_edgehostname_bygroup_command,
+        f'{INTEGRATION_COMMAND_NAME}-new-papi-edgehostname': new_papi_edgehostname_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-cps-enrollmentid-by-cnname': get_cps_enrollmentid_by_cnname_command,
+        f'{INTEGRATION_COMMAND_NAME}-new-papi-cpcode': new_papi_cpcode_command,
+        f'{INTEGRATION_COMMAND_NAME}-patch-papi-property-rule-cpcode': patch_papi_property_rule_cpcode_command,
+        f'{INTEGRATION_COMMAND_NAME}-patch-papi-property-rule-origin': patch_papi_property_rule_origin_command,
+        f'{INTEGRATION_COMMAND_NAME}-activate-papi-property': activate_papi_property_command,
+        f'{INTEGRATION_COMMAND_NAME}-clone-security-policy': clone_security_policy_command,
+        f'{INTEGRATION_COMMAND_NAME}-new-match-target': new_match_target_command,
+        f'{INTEGRATION_COMMAND_NAME}-activate-appsec-config-version': activate_appsec_config_version_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-appsec-config-activation-status': get_appsec_config_activation_status_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-appsec-config-latest-version': get_appsec_config_latest_version_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-security-policy-id-by-name': get_security_policy_id_by_name_command,
+        f'{INTEGRATION_COMMAND_NAME}-clone-appsec-config-version': clone_appsec_config_version_command,
+        f'{INTEGRATION_COMMAND_NAME}-patch-papi-property-rule-httpmethods': patch_papi_property_rule_httpmethods_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-activation-status-command':
+            get_papi_property_activation_status_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status-command':
+            get_papi_edgehostname_creation_status_command,
+        f'{INTEGRATION_COMMAND_NAME}-acknowledge-warning-command': acknowledge_warning_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-production-deployment': get_production_deployment_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-change-history': get_change_history_command,
+        f'{INTEGRATION_COMMAND_NAME}-modify-appsec-config-selected-hosts': modify_appsec_config_selected_hosts_command,
+        f'{INTEGRATION_COMMAND_NAME}-patch-papi-property-rule-siteshield': patch_papi_property_rule_siteshield_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-appsec-config-version-notes': update_appsec_config_version_notes_command,
+        f'{INTEGRATION_COMMAND_NAME}-new-or-renew-match-target': new_or_renew_match_target_command,
+        f'{INTEGRATION_COMMAND_NAME}-patch-papi-property-rule-generic': patch_papi_property_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-rule': get_papi_property_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-acknowledge-pre-verification-warning': acknowledge_pre_verification_warning_command,
+
     }
     try:
         readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())

@@ -2,7 +2,7 @@ comment: "Restricts the Incident Types a user can create manually based on an XS
 commonfields:
   id: CaseMgmtIncidentTypesDisplay
   version: -1
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: demisto/python3:3.10.10.49934
 enabled: true
 name: CaseMgmtIncidentTypesDisplay
 runas: DBotWeakRole

@@ -11,7 +11,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, lo
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, create_corepacks_config, \
-    check_if_index_is_updated, print_packs_summary, get_packs_summary
+    check_if_index_is_updated, print_packs_summary, get_packs_summary, prepare_index_json
 from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, CONTENT_ROOT_PATH
 from demisto_sdk.commands.common.tools import str2bool
 
@@ -311,7 +311,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_b
         pack.cleanup()
         return
 
-    task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number)
+    task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(index_folder_path, build_number)
     if not task_status:
         pack.status = PackStatus.FAILED_RELEASE_NOTES.name
         pack.cleanup()
@@ -379,7 +379,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_b
 
     task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name,
                                       pack_path=pack.path, pack_version=pack.latest_version,
-                                      hidden_pack=pack.hidden)
+                                      hidden_pack=pack.hidden, pack_versions_to_keep=pack_versions_to_keep)
     if not task_status:
         pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
         pack.cleanup()
@@ -545,16 +545,34 @@ def main():
     # finished iteration over content packs
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)
-        upload_index_to_storage(index_folder_path, extract_destination_path, private_index_blob, build_number,
-                                private_packs, current_commit_hash, index_generation, is_private_build,
-                                landing_page_sections=landing_page_sections)
+
+        prepare_index_json(index_folder_path=index_folder_path,
+                           build_number=build_number,
+                           private_packs=private_packs,
+                           current_commit_hash=current_commit_hash,
+                           landing_page_sections=landing_page_sections
+                           )
+
+        upload_index_to_storage(index_folder_path=index_folder_path,
+                                extract_destination_path=extract_destination_path,
+                                index_blob=private_index_blob,
+                                index_generation=index_generation,
+                                is_private=is_private_build)
 
     else:
-        upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
-                                current_commit_hash, index_generation, landing_page_sections=landing_page_sections)
+        prepare_index_json(index_folder_path=index_folder_path,
+                           build_number=build_number,
+                           private_packs=private_packs,
+                           current_commit_hash=current_commit_hash,
+                           landing_page_sections=landing_page_sections)
+
+        upload_index_to_storage(index_folder_path=index_folder_path,
+                                extract_destination_path=extract_destination_path,
+                                index_blob=index_blob,
+                                index_generation=index_generation)
 
     # get the lists of packs divided by their status
-    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    successful_packs, _, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs)

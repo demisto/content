@@ -1,0 +1,2 @@
+[MODEL: dataset=OneModel_raw]
+alter xdm.event.outcome = act;

@@ -151,7 +151,7 @@ script:
     description: Delete domain.
     execution: false
     name: umbrella-domain-delete
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: false
   longRunning: false

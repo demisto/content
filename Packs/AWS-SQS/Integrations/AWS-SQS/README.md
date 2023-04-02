@@ -12,29 +12,29 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | defaultRegion | AWS Default Region | False        |
-    | roleArn | Role Arn Role Arn | False        |
-    | roleSessionName | Role Session Name | False        |
-    | access_key | Access Key | False        |
-    | secret_key | Secret Key | False        |
-    | Role Session Duration |  | False        |
-    | queueUrl | QueueURL | False        |
-    | timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified a default of 10 second will be used. | False        |
-    | retries | T"The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time." More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html). | False        |
+    | AWS Default Region | The AWS Region for this instance of the integration. For example, us-west-2 | False        |
+    | Role Arn | The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required. | False        |
+    | Role Session Name | A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION | False        |
+    | Access Key  | The access key ID used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False        |
+    | Secret Key | The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False        |
+    | Role Session Duration | The maximum length of each session in seconds. Default: 900 seconds. The XSOAR integration will have the permissions assigned only when the session is initiated and for the defined duration. | False        |
+    | Queue URL | URL of an existing Amazon SQS queue. | False        |
+    | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified a default of 10 second will be used. | False        |
+    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html). | False        |
     | Fetch incidents |  | False        |
-    | max_fetch | Maximum incidents for one fetch | 10           |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False        |
+    | Maximum incidents for one fetch. Hard cap of 100. | Maximum number of incidents for a single fetch. | 10           |
+    | First fetch timestamp | First fetch query `<number> <time unit>`, e.g., `7 days`. Default `3 days`)  | False        |
     | Incident type |  | False        |
     | Use system proxy settings |  | False        |
     | Trust any certificate (not secure) |  | False        |
-    | parse_body_as_json | Parse SQS message body as a JSON string | False |
+    | Parse SQS message body as a JSON string |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### There are three options to sign in to the service:
-1. Provide access key id and secret key id.
-2. Provide roleARN and access key id and secret key.
-3. Do not provide any credentials or roleARN than permissions pulled from the service metadata.
+1. Provide Access Key ID and Secret Key ID.
+2. Provide Role ARN and Access Key ID and Secret Key ID.
+3. Do not provide any credentials or Role ARN other than permissions pulled from the service metadata.
 
 
 ## Commands

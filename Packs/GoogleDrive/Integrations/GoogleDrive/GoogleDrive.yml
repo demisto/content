@@ -3208,7 +3208,19 @@ script:
         command.
       required: false
       isArray: false
-  dockerimage: demisto/googleapi-python3:1.0.0.33146
+    - auto: PREDEFINED
+      default: false
+      defaultValue: "false"
+      description: 'Whether the requesting application supports both My Drives and
+        shared drives. Possible values: "true" and "false".'
+      isArray: false
+      name: supports_all_drives
+      predefined:
+        - "true"
+        - "false"
+      required: false
+      secret: false
+  dockerimage: demisto/googleapi-python3:1.0.0.50914
   feed: false
   isfetch: true
   longRunning: false

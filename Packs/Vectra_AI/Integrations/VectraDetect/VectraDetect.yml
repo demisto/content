@@ -2,10 +2,9 @@ commonfields:
   id: Vectra_Detect
   version: -1
 
-beta: true
 name: Vectra_Detect
-display: Vectra Detect (Beta)
-description: This integration allows to create incidents based on Vectra Accounts/Hosts/Detections objects
+display: Vectra Detect
+description: This integration allows to create incidents based on Vectra Accounts/Hosts/Detections objects.
 category: Network Security
 defaultclassifier: Vectra Detect
 defaultmapperin: Vectra Detect - Incoming Mapper
@@ -114,15 +113,16 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   runonce: false
   commands:
-    # Search Accounts / Hosts / Detections
-    # Describe single account / host / detection by ID
+    # Search Accounts / Hosts / Detections / Users / Outcomes (Assignment outcomes) / Assignments
+    # Describe single account / host / detection / outcome / assignment by ID
     # Get detection PCAP
     # Add tags to an account / host / detection
     # Remove tags to an account / host / detection
+    # Create an assignment outcome
 
   - name: vectra-search-accounts
     description: Returns a list of Account objects.
@@ -145,8 +145,8 @@ script:
       description: Filters by state ('active', 'inactive').
       auto: PREDEFINED
       predefined:
-        - active
-        - inactive
+      - active
+      - inactive
     - name: search_query
       description: Search query in Lucene query syntax.
     - name: search_query_only
@@ -226,8 +226,8 @@ script:
       description: Filters by state ('active', 'inactive').
       auto: PREDEFINED
       predefined:
-        - active
-        - inactive
+      - active
+      - inactive
     - name: search_query
       description: Search query in Lucene query syntax.
     - name: search_query_only
@@ -316,8 +316,8 @@ script:
       description: Filters by state ('active', 'inactive').
       auto: PREDEFINED
       predefined:
-        - active
-        - inactive
+      - active
+      - inactive
     - name: search_query
       description: Search query in Lucene query syntax.
     - name: search_query_only
@@ -338,10 +338,10 @@ script:
     - contextPath: Vectra.Detection.Description
       type: String
       description: Detection description
-    - contextPath: vectra.Detection.DestinationIPs
+    - contextPath: Vectra.Detection.DestinationIPs
       type: String
       description: Detection destination IPs
-    - contextPath: vectra.Detection.DestinationPorts
+    - contextPath: Vectra.Detection.DestinationPorts
       type: String
       description: Detection destination ports
     - contextPath: Vectra.Detection.FirstTimestamp
@@ -395,6 +395,120 @@ script:
     - contextPath: Vectra.Detection.URL
       type: String
       description: Detection URL to pivot to Vectra UI
+
+  - name: vectra-search-assignments
+    description: Return a list of assignments.
+      By default already resolved assignment are not returned.
+    execution: false   # This command is not harmful
+    arguments:
+    - name: account_ids
+      description: Filters by accounts IDs
+      isArray: true
+    - name: assignee_ids
+      description: Filters by assignees IDs
+      isArray: true
+    - name: host_ids
+      description: Filters by hosts IDs
+      isArray: true
+    - name: outcome_ids
+      description: Filters by outcomes IDs
+      isArray: true
+    - name: resolved
+      description: Filters by resolution state
+    outputs:  &assignmentOutput
+    - contextPath: Vectra.Assignment.AccountID
+      type: Number
+      description: Account ID this assignment is linked to
+    - contextPath: Vectra.Assignment.AssignedBy
+      type: String
+      description: Who lastly assigned this assignment
+    - contextPath: Vectra.Assignment.AssignedDate
+      type: String
+      description: When this assignment was lastly assigned
+    - contextPath: Vectra.Assignment.AssignedTo
+      type: String
+      description: To who this assignment is assigned
+    - contextPath: Vectra.Assignment.HostID
+      type: String
+      description: Host ID this assignment is linked to
+    - contextPath: Vectra.Assignment.ID
+      type: Number
+      description: Assignment ID (unique)
+    - contextPath: Vectra.Assignment.IsResolved
+      type: Boolean
+      description: Is this assignment resolved
+    - contextPath: Vectra.Assignment.OutcomeCategory
+      type: String
+      description: Assignment Outcome category
+    - contextPath: Vectra.Assignment.OutcomeTitle
+      type: String
+      description: Assignment Outcome title
+    - contextPath: Vectra.Assignment.TriagedDetections
+      type: String
+      description: List of Detection that have been triaged with the resolution
+    - contextPath: Vectra.Assignment.TriagedAs
+      type: String
+      description: Name of the triage rule if any
+    - contextPath: Vectra.Assignment.ResolvedBy
+      type: String
+      description: Who resolved this assignment
+    - contextPath: Vectra.Assignment.ResolvedDate
+      type: string
+      description: When this assignment was resolved
+
+  - name: vectra-search-users
+    description: Returns a list of Vectra Users.
+      All search attributes will be cummulative.
+    execution: false   # This command is not harmful
+    arguments:
+    - name: username
+      description: Filters by user name
+      default: true
+    - name: role
+      description: Filters by user role
+    - name: type
+      description: Filters by type ('Local', 'SAML', ...)
+      auto: PREDEFINED
+      predefined:
+      - local
+      - SAML
+    - name: last_login_datetime
+      description: Filters for Users that logged in since the given datetime
+    outputs:  &userOutput
+    - contextPath: Vectra.User.Email
+      type: String
+      description: User's email address
+    - contextPath: Vectra.User.ID
+      type: Number
+      description: User ID (unique)
+    - contextPath: Vectra.User.Role
+      type: String
+      description: User's role
+    - contextPath: Vectra.User.Type
+      type: String
+      description: User type ('Local', 'SAML', ...)
+    - contextPath: Vectra.User.Username
+      type: String
+      description: Username
+    - contextPath: Vectra.User.LastLoginDate
+      type: String
+      description: User's last login datetime
+
+  - name: vectra-search-outcomes
+    description: Returns a list of assignment outcomes.
+    outputs:  &outcomeOutput
+    - contextPath: Vectra.Outcome.IsBuiltIn
+      type: String
+      description: Is this Outcome a builtin Outcome
+    - contextPath: Vectra.Outcome.Category
+      type: String
+      description: Outcome's category ('False Positive', 'Benign True Positive', 'Malicious True Positive')
+    - contextPath: Vectra.Outcome.ID
+      type: Number
+      description: Outcome ID (unique)
+    - contextPath: Vectra.Outcome.Title
+      type: String
+      description: Outcome title
 
   ######
   ### Accounts
@@ -532,6 +646,95 @@ script:
       isArray: true
     outputs: []
 
+  ######
+  ### Assignment Outcomes
+  #
+  - name: vectra-outcome-describe
+    description: Returns a single outcome details
+    execution: false    # This command is not harmful
+    arguments:
+    - name: id
+      default: true
+      description: Outcome ID you want to get details on
+    outputs: *outcomeOutput
+
+  - name: vectra-outcome-create
+    description: Creates a new assignment outcome
+    execution: true    # This command is harmful
+    arguments:
+    - name: title
+      description: Outcome title (will be visible in the UI)
+    - name: category
+      description: Outcome category (one of the 3)
+      auto: PREDEFINED
+      predefined:
+      - Benign True Positive
+      - Malicious True Positive
+      - False Positive
+    outputs: *outcomeOutput
+
+  ######
+  ### Assignment
+  #
+  - name: vectra-assignment-describe
+    description: Returns a single assignment details
+    execution: false    # This command is not harmful
+    arguments:
+    - name: id
+      default: true
+      description: Assignment ID you want to get details on
+    outputs: *assignmentOutput
+
+  - name: vectra-assignment-assign
+    description: Assigns an Account/Host entity to a Vectra User for investigation.
+      If an assignment already exists on this entity, it will be reassigned
+    execution: true     # This command is harmful
+    arguments:
+    - name: assignee_id
+      description: Assignee's ID (Vectra User ID)
+    - name: assignment_id
+      description: Assignment ID if an assignment already exists for the given entity
+    - name: account_id
+      description: Account ID
+    - name: host_id
+      description: Host ID
+    outputs: *assignmentOutput
+
+  - name: vectra-assignment-resolve
+    description: Resolves an assignment by selecting resolution scheme.
+      Could be 'resolving only' or 'resolving by filtering detections'
+    execution: true     # This command is harmful
+    arguments:
+    - name: assignment_id
+      description: Assignment's ID
+    - name: outcome_id
+      description: Assignment Outcome's ID
+    - name: note
+      description: A note to add to this resolution
+    - name: detections_filter
+      description: Do you want to filter detections when resolving this assignment ? [Default is None]
+      auto: PREDEFINED
+      predefined:
+      - None
+      - Filter Rule
+    - name: filter_rule_name
+      description: Filter rule's name (when using filter_detections="Filter Rule")
+    - name: detections_list
+      description: Detection IDs list you want to filter
+      isArray: true
+    outputs: *assignmentOutput
+
+  ######
+  ### Vectra Users
+  #
+  - name: vectra-user-describe
+    description: Returns a single Vectra User details
+    execution: false    # This command is not harmful
+    arguments:
+    - name: id
+      default: true
+      description: User ID you want to get details on
+    outputs: *userOutput
 
 tests:
 - No tests - Not dev yet

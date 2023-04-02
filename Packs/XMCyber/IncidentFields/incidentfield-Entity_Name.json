@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "modified": "2020-10-27T18:11:33.813524494Z",
-    "name": "Entity Name",
+    "name": "Entity name",
     "ownerOnly": false,
     "cliName": "entityname",
     "type": "shortText",

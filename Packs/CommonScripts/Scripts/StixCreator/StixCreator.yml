@@ -39,7 +39,7 @@ outputs:
   type: date
 scripttarget: 0
 runonce: false
-dockerimage: demisto/py3-tools:1.0.0.32758
+dockerimage: demisto/py3-tools:1.0.0.49703
 subtype: python3
 runas: DBotWeakRole
 tests:

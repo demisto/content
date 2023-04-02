@@ -1,14 +1,18 @@
 {
-    "name": "Prisma Cloud Compute",
+    "name": "Prisma Cloud Compute by Palo Alto Networks",
     "description": "Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.",
     "support": "xsoar",
-    "currentVersion": "1.2.16",
+    "currentVersion": "1.3.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-03-10T08:37:18Z",
-    "categories": [],
-    "tags": [],
+    "categories": [
+        "Cloud Services"
+    ],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

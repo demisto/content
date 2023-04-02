@@ -1,4 +1,4 @@
-category: Messaging
+category: Email
 commonfields:
   id: MailListener - POP3 Beta
   version: -1
@@ -47,7 +47,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.48392
 beta: false
 tests:
 - MailListener-POP3 - Test

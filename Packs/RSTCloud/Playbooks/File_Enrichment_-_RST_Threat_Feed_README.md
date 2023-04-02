@@ -20,7 +20,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| File | The Files to enrich. | File.None | Required |
+| File | The Files to enrich. | File | Required |
 | threshold | Defines the minimum score to set indicators as malicious | inputs.threshold | Optional |
 
 ## Playbook Outputs

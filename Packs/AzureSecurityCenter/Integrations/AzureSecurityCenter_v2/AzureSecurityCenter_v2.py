@@ -1,9 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
+import urllib3
 import ast
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 """ GLOBAL VARS """
 
@@ -90,13 +91,16 @@ class MsClient:
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, server, verify, proxy, self_deployed, subscription_id,
-                 ok_codes, certificate_thumbprint, private_key):
+                 ok_codes, certificate_thumbprint, private_key,
+                 managed_identities_client_id=None):
         base_url_with_subscription = f"{server}subscriptions/{subscription_id}/"
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url_with_subscription, verify=verify, proxy=proxy, self_deployed=self_deployed,
             ok_codes=ok_codes, scope="https://management.azure.com/.default",
-            certificate_thumbprint=certificate_thumbprint, private_key=private_key)
+            certificate_thumbprint=certificate_thumbprint, private_key=private_key,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.management_azure)
         self.server = server
         self.subscription_id = subscription_id
 
@@ -1317,26 +1321,34 @@ def main():
     auth_and_token_url = params.get('auth_id', '')
     enc_key = params.get('enc_key')
     use_ssl = not params.get('unsecure', False)
-    self_deployed: bool = params.get('self_deployed', False)
     proxy = params.get('proxy', False)
     subscription_id = demisto.args().get("subscription_id") or params.get("default_sub_id")
     ok_codes = (200, 201, 202, 204)
     certificate_thumbprint = params.get('certificate_thumbprint')
     private_key = params.get('private_key')
-    if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided. For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-    elif not enc_key and not (certificate_thumbprint and private_key):
-        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.'
-                               'For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
+    self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
+
+    if not managed_identities_client_id:
+        if not (tenant and auth_and_token_url):
+            raise DemistoException('Token and ID must be provided. For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+
+        if not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.'
+                                   'For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
 
     try:
         if demisto.command() in SUB_ID_REQUIRING_CMD and not subscription_id:
             raise DemistoException("A subscription ID must be provided.")
         client = MsClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME, proxy=proxy,
                           server=server, verify=use_ssl, self_deployed=self_deployed, subscription_id=subscription_id,
-                          ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint, private_key=private_key)
+                          ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
+                          managed_identities_client_id=managed_identities_client_id)
 
         if demisto.command() == "test-module":
             # If the command will fail, error will be thrown from the request itself

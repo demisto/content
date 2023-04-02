@@ -65,5 +65,9 @@ args:
   defaultValue: ${currentPlaybookID}
 scripttarget: 0
 runonce: false
+marketplaces:
+- xsoar
+- marketplacev2
+- xpanse
 tests:
 - No tests

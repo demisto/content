@@ -12,10 +12,25 @@ configuration:
   - ROUTE53_HEALTHCHECKS
   - CLOUDFRONT
   - S3
+  - AMAZON_APPFLOW
+  - AMAZON_CONNECT
+  - API_GATEWAY
+  - CHIME_MEETINGS
+  - CHIME_VOICECONNECTOR
+  - CLOUD9
+  - CLOUDFRONT_ORIGIN_FACING
+  - CODEBUILD
+  - DYNAMODB
+  - EBS
+  - EC2_INSTANCE_CONNECT
+  - GLOBALACCELERATOR
+  - KINESIS_VIDEO_STREAMS
+  - ROUTE53_HEALTHCHECKS_PUBLISHING
+  - ROUTE53_RESOLVER
+  - WORKSPACES_GATEWAYS
   required: true
   type: 16
-- additionalinfo: The AWS Regions to fetch indicators by. If empty, all regions will
-    be included.
+- additionalinfo: The AWS Regions to fetch indicators by. If empty, all regions will be included.
   display: Regions
   name: regions
   options:
@@ -69,8 +84,7 @@ configuration:
   - Bad
   required: false
   type: 18
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -84,8 +98,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -120,9 +133,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -153,7 +164,7 @@ script:
     description: Fetches indicators from the feed.
     execution: false
     name: aws-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.33659
+  dockerimage: demisto/py3-tools:1.0.0.51296
   feed: true
   isfetch: false
   longRunning: false

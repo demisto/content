@@ -8,9 +8,6 @@ import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-CONTRIBUTION_BUILD_INSTANCE_URL = "https://content-gold.paloaltonetworks.com/instance/" \
-                                  "execute/GenericWebhook_trigger_contribution_build"
-
 
 def arguments_handler():
 
@@ -26,6 +23,7 @@ def arguments_handler():
     parser.add_argument('-c', '--contrib_branch', help='The contribution branch name.')
     parser.add_argument('-u', '--username', help='The instance username.')
     parser.add_argument('-s', '--password', help='The instance password.')
+    parser.add_argument('-gs', '--gold_server_url', help='The content gold instance url.')
     return parser.parse_args()
 
 
@@ -35,13 +33,17 @@ def trigger_generic_webhook(options):
     contrib_branch = options.contrib_branch
     username = options.username
     password = options.password
+    gold_server_url = options.gold_server_url
+    contribution_build_instance_url = f"{gold_server_url}/instance/" \
+                                      "execute/GenericWebhook_trigger_contribution_build"
+
     body = {
         "name": "GenericWebhook_trigger_contribution_build",
         "raw_json": {"BaseBranch": base_branch, "PullRequestNumber": pr_number, "ContribBranch": contrib_branch,
                      "ProjectID": "2596"},
     }
     # post to Content Gold
-    res = requests.post(CONTRIBUTION_BUILD_INSTANCE_URL, json=body, auth=(username, password))
+    res = requests.post(contribution_build_instance_url, json=body, auth=(username, password))
 
     if res.status_code != 200:
         print(

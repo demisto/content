@@ -24,7 +24,8 @@ configuration:
 - additionalinfo: 'Selects which direction you want the incidents mirrored. You can mirror **Incoming** only (from Zendesk to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to Zendesk), or both **Incoming And Outgoing**.'
   defaultvalue: None
   display: Incident Mirroring Direction
-  hidden: false
+  hidden:
+    - marketplacev2
   name: mirror_direction
   options:
   - None
@@ -39,10 +40,13 @@ configuration:
   type: 8
   required: false
   additionalinfo: If true, XSOAR will mirror also the ticket closeing.
+  hidden:
+    - marketplacev2
 - additionalinfo: Comment and files that will be marked with this tag will be pushed into Zendesk.
   defaultvalue: mirror
   display: Mirror tags
-  hidden: false
+  hidden:
+    - marketplacev2
   name: mirror_tags
   required: false
   type: 0
@@ -90,13 +94,17 @@ script:
   type: python
   commands:
   - name: zendesk-user-list
-    description: Gets the specified user's data.
+    description: |-
+      Gets the specified user's data. 
+      Required permissions: Admins, Agents and Light Agents.
     arguments:
     - name: user_id
       isArray: true
       description: The user's ID to retrieve.
     - name: user_name
-      description: The user's name.
+      description: |-
+        The user's name. 
+        Required permissions to use this argument: Agents. 
     - name: external_id
       description: The user's unique identifier from another system.
     - name: role
@@ -223,7 +231,9 @@ script:
       type: boolean
       description: Whether any of the user's identities is verified.
   - name: zendesk-user-create
-    description: Creates a new Zendesk user.
+    description: |-
+      Creates a new Zendesk user. 
+      Required permissions: Agents, with restrictions on certain actions.
     arguments:
     - name: name
       required: true
@@ -400,7 +410,9 @@ script:
       type: boolean
       description: Whether any of the user's identities is verified.
   - name: zendesk-user-update
-    description: Update user data.
+    description: |-
+      Update user data. 
+      Required permissions: Agents, with restrictions on certain actions.
     arguments:
     - name: user_id
       required: true
@@ -575,17 +587,25 @@ script:
       type: boolean
       description: Whether any of the user's identities is verified.
   - name: zendesk-user-delete
-    description: Delete a user.
+    description: |-
+      Delete a user. 
+      Required permissions: Admins. 
     arguments:
     - name: user_id
       required: true
       description: The ID of the user to delete.
     execution: true
   - name: zendesk-organization-list
-    description: Get organization's data.
+    description: |-
+      Get organization's data. 
+      Required permissions: Agents, with certain restrictions. 
+      If the agent has a custom agent role that restricts the agent's access to only users in their own organization,
+      a 403 Forbidden error is returned. See Creating custom agent roles in the Zendesk help.
     arguments:
     - name: organization_id
-      description: The ID of a specific organization.
+      description: |-
+        The ID of a specific organization. 
+        Required permissions: Admins, Agents. 
     - name: limit
       default: true
       description: Maximum number of results to return. Default is 50.
@@ -634,7 +654,9 @@ script:
       type: string
       description: The API URL of this organization.
   - name: zendesk-ticket-list
-    description: List Zendesk tickets.
+    description: |- 
+      List Zendesk tickets. 
+      Required permissions: Agents. 
     arguments:
     - name: query
       description: 'Query to search for tickets. For more information about the search syntax, see https://developer.zendesk.com/rest_api/docs/core/search. '
@@ -784,7 +806,9 @@ script:
       type: string
       description: The API URL of this ticket.
   - name: zendesk-ticket-create
-    description: Create a new zendesk ticket.
+    description: |-
+      Create a new Zendesk ticket.
+      Required permissions: Agents.
     arguments:
     - name: subject
       required: true
@@ -972,7 +996,9 @@ script:
       type: string
       description: The API URL of this ticket.
   - name: zendesk-ticket-update
-    description: Updates a Zendesk ticket.
+    description: |-
+      Updates a Zendesk ticket.
+      Required permissions: Agents.
     arguments:
     - name: ticket_id
       required: true
@@ -1141,13 +1167,19 @@ script:
       type: string
       description: The API URL of this ticket.
   - name: zendesk-ticket-delete
-    description: Delete ticket.
+    description: |-
+      Delete ticket. 
+      Required permissions: Admins, Agents with permission to delete tickets.
+      Agent delete permissions are set in Support.
+      See Deleting tickets in the Zendesk Support Help Center.
     arguments:
     - name: ticket_id
       required: true
       description: The ID of the ticket to delete.
   - name: zendesk-ticket-comment-list
-    description: List comments for a given ticket.
+    description: |-
+      List comments for a given ticket.
+      Required permissions: Agents.
     arguments:
     - name: ticket_id
       required: true
@@ -1223,7 +1255,9 @@ script:
       type: string
       description: Comment or VoiceComment.
   - name: zendesk-ticket-attachment-add
-    description: Attach file to ticket.
+    description: |-
+      Attach a file to a ticket.
+      Required permissions: End users.
     arguments:
     - name: ticket_id
       required: true
@@ -1240,7 +1274,9 @@ script:
       isArray: true
       description: The filename to upload. Default is the original filename.
   - name: zendesk-attachment-get
-    description: Get attachment.
+    description: |-
+      Get attachment.
+      Required permissions: Admins.
     arguments:
     - name: attachment_id
       required: true
@@ -1263,7 +1299,9 @@ script:
       type: unknown
       description: The search results.
   - name: zendesk-article-list
-    description: List all available articles.
+    description: |-
+      List all available articles.
+      Required permissions: Agents, End users, Anonymous users.
     arguments:
     - name: article_id
       isArray: true
@@ -1317,7 +1355,7 @@ script:
     description: Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   runonce: false
   subtype: python3

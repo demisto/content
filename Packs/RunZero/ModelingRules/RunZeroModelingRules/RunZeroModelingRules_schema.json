@@ -1,0 +1,40 @@
+{
+    "runzero_runzero_raw": {
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "success": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_id": {
+            "type": "string",
+            "is_array": false
+        },        
+        "source_type": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

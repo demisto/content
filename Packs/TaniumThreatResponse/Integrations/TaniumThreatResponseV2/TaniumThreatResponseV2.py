@@ -42,15 +42,16 @@ DEPENDENT_COMMANDS_ERROR_MSG = '\nPlease verify that the connection you have spe
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, api_token=None, **kwargs):
+    def __init__(self, base_url, username, password, api_version, api_token=None, **kwargs):  # pragma: no cover
         self.username = username
         self.password = password
         self.session = ''
         self.api_token = api_token
+        self.api_version = api_version
         super(Client, self).__init__(base_url, **kwargs)
 
     def do_request(self, method: str, url_suffix: str, data: dict = None, params: dict = None, resp_type: str = 'json',
-                   headers: dict = None, body: Any = None):
+                   headers: dict = None, body: Any = None):  # pragma: no cover
         if headers is None:
             headers = {}
         if not self.session:
@@ -97,7 +98,7 @@ class Client(BaseClient):
 
         return res
 
-    def update_session(self):
+    def update_session(self):  # pragma: no cover
         if self.api_token:
             res = self._http_request('GET', 'api/v2/session/current', headers={'session': self.api_token},
                                      ok_codes=(200,))
@@ -118,6 +119,9 @@ class Client(BaseClient):
 
     def login(self):
         return self.update_session()
+
+    def get_threat_response_endpoint(self):
+        return "threat-response" if self.api_version == "4.x" else "detect3"
 
 
 ''' GENERAL HELPER FUNCTIONS '''
@@ -185,7 +189,7 @@ def are_filters_match_response_content(all_filter_arguments: List[Tuple[list, st
     return False
 
 
-def filter_to_tanium_api_syntax(filter_str):
+def filter_to_tanium_api_syntax(filter_str):  # pragma: no cover
     filter_dict = {}
     try:
         if filter_str:
@@ -221,7 +225,7 @@ def get_file_data(entry_id: str) -> Tuple[str, str, str]:
 ''' EVIDENCE HELPER FUNCTIONS '''
 
 
-def get_event_header(event_type):
+def get_event_header(event_type):  # pragma: no cover
     if event_type == 'combined':
         headers = ['id', 'type', 'processPath', 'detail', 'timestamp', 'operation']
 
@@ -254,6 +258,21 @@ def get_event_header(event_type):
     return headers
 
 
+''' GENERAL HELPER FUNCTIONS'''
+
+
+def normalize_api_response(raw_response):
+    """ parse the api response. from 4.x version of the api, the response is returned with a data dict
+        :param raw_response:
+            The raw response returned from api call
+
+        :return: the parsed api response.
+        :rtype: ``dict or list``
+
+    """
+    return raw_response.get('data', raw_response) if type(raw_response) is dict else raw_response
+
+
 ''' INTEL DOCS HELPER FUNCTIONS '''
 
 
@@ -268,16 +287,17 @@ def get_intel_doc_item(intel_doc: dict) -> dict:
         :rtype: ``dict``
 
     """
+    intel_doc_data = normalize_api_response(intel_doc)  # 4.x version parses info in a data dict into the intel_doc dict
     return {
-        'ID': intel_doc.get('id'),
-        'Name': intel_doc.get('name'),
-        'Type': intel_doc.get('type'),
-        'Description': intel_doc.get('description'),
-        'AlertCount': intel_doc.get('alertCount'),
-        'UnresolvedAlertCount': intel_doc.get('unresolvedAlertCount'),
-        'CreatedAt': intel_doc.get('createdAt'),
-        'UpdatedAt': intel_doc.get('updatedAt'),
-        'LabelIds': intel_doc.get('labelIds')}
+        'ID': intel_doc_data.get('id'),
+        'Name': intel_doc_data.get('name'),
+        'Type': intel_doc_data.get('type'),
+        'Description': intel_doc_data.get('description'),
+        'AlertCount': intel_doc_data.get('alertCount'),
+        'UnresolvedAlertCount': intel_doc_data.get('unresolvedAlertCount'),
+        'CreatedAt': intel_doc_data.get('createdAt'),
+        'UpdatedAt': intel_doc_data.get('updatedAt'),
+        'LabelIds': intel_doc_data.get('labelIds')}
 
 
 def get_intel_doc_label_item(intel_doc_label: dict) -> dict:
@@ -370,7 +390,7 @@ def get_alert_item(alert):
 ''' FETCH INCIDENTS HELPER FUNCTIONS '''
 
 
-def alarm_to_incident(client, alarm):
+def alarm_to_incident(client, alarm):  # pragma: no cover
     host = alarm.get('computerName', '')
 
     if details := alarm.get('details'):
@@ -379,13 +399,21 @@ def alarm_to_incident(client, alarm):
 
     intel_doc = ''
     if intel_doc_id := alarm.get('intelDocId', ''):
-        raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}')
-        intel_doc = raw_response.get('name')
-        alarm['intelDocDetails'] = raw_response
+        raw_response = client.do_request('GET', '/plugin/products/'
+                                                f'{client.get_threat_response_endpoint()}'
+                                                f'/api/v1/intels/{intel_doc_id}')
+        raw_response_data = normalize_api_response(raw_response)
+        intel_doc = raw_response_data.get('name')
+        alarm['intelDocDetails'] = raw_response_data
         intel_doc_labels = []
-        intel_doc_labels_resp = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels'
-                                                         f'/{intel_doc_id}/labels')
-        for label in intel_doc_labels_resp:
+        intel_doc_labels_resp =\
+            client.do_request('GET', '/plugin/products/'
+                                     f'{client.get_threat_response_endpoint()}'
+                                     f'/api/v1/intels/{intel_doc_id}/labels')
+
+        labels_list = normalize_api_response(intel_doc_labels_resp)
+
+        for label in labels_list:
             intel_doc_labels.append(label['name'])
         alarm['labels'] = intel_doc_labels
 
@@ -408,10 +436,6 @@ def state_params_suffix(alerts_states_to_retrieve):
     return '&'.join(['state=' + state.lower() for state in alerts_states_to_retrieve])
 
 
-def label_filter_suffix(label_names_to_retrieve: list):
-    return '&' + '&'.join(['labelName=' + urllib.parse.quote(label_name) for label_name in label_names_to_retrieve])
-
-
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 ''' GENERAL COMMANDS FUNCTIONS '''
 
@@ -424,7 +448,8 @@ def test_module(client, data_args):
         raise ValueError(f'Please check your credentials and try again. Error is:\n{str(e)}')
 
 
-def fetch_incidents(client, alerts_states_to_retrieve, label_names_to_retrieve, last_run, fetch_time, max_fetch):
+def fetch_incidents(client: Client, alerts_states_to_retrieve: str, label_name_to_retrieve: str,
+                    last_run: dict, fetch_time: str, max_fetch: int):  # pragma: no cover
     """
     Fetch events from this integration and return them as Demisto incidents
 
@@ -435,8 +460,8 @@ def fetch_incidents(client, alerts_states_to_retrieve, label_names_to_retrieve, 
     last_fetch = last_run.get('time')
     last_id = int(last_run.get('id', '0'))
     alerts_states = argToList(alerts_states_to_retrieve)
-    label_names = label_names_to_retrieve.split(',')
     offset = 0
+    label_name_suffix = ""
 
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
@@ -447,21 +472,25 @@ def fetch_incidents(client, alerts_states_to_retrieve, label_names_to_retrieve, 
     last_fetch = parse(last_fetch)
 
     alerts_states_suffix = state_params_suffix(alerts_states)
-    label_names_suffix = label_filter_suffix(label_names)
+    if label_name_to_retrieve:
+        label_name_suffix = f"&labelName={urllib.parse.quote(label_name_to_retrieve)}"
     incidents = []
 
     while True:
         demisto.debug(f'Sending new alerts api request with offset: {offset}.')
-        url_suffix = '/plugin/products/detect3/api/v1/alerts?' + alerts_states_suffix + \
-                     f'&sort=-createdAt&limit=500&offset={offset}' + label_names_suffix
+        url_suffix = \
+            '/plugin/products/' \
+            f'{client.get_threat_response_endpoint()}/api/v1/alerts?' + \
+            alerts_states_suffix + f'&sort=-createdAt&limit=500&offset={offset}' + label_name_suffix
 
         raw_response = client.do_request('GET', url_suffix)
-        if not raw_response:
+        raw_response_data = normalize_api_response(raw_response)
+        if not raw_response_data:
             demisto.debug('Stop fetch loop, no incidents in raw response.')
             break
 
         # convert the data/events to demisto incidents
-        for alarm in raw_response:
+        for alarm in raw_response_data:
             incident = alarm_to_incident(client, alarm)
             temp_date = parse(incident.get('starttime'))
             new_id = incident.get('alertid')
@@ -514,7 +543,9 @@ def get_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[lis
     """
     id_ = data_args.get('intel_doc_id')
     try:
-        raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels/{id_}')
+        raw_response = client.do_request('GET', '/plugin/products/'
+                                                f'{client.get_threat_response_endpoint()}'
+                                                f'/api/v1/intels/{id_}')
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
     # with a "Not Found" message.
     except requests.HTTPError as e:
@@ -522,10 +553,10 @@ def get_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[lis
             raise DemistoException(f'Check the intel doc ID and try again.\n({str(e)})')
         raise
     intel_doc = get_intel_doc_item(raw_response)
-    # A more readable format for the human readble section.
+    # A more readable format for the human readable section.
     if intel_doc:
         intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
-    context_data = format_context_data(raw_response)
+    context_data = format_context_data(normalize_api_response(raw_response))
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
@@ -552,11 +583,15 @@ def get_intel_docs(client: Client, data_args: dict) -> Tuple[str, dict, Union[li
     params = assign_params(name=data_args.get('name'), description=data_args.get('description'),
                            type=data_args.get('type'), limit=convert_to_int(data_args.get('limit')),
                            offset=convert_to_int(data_args.get('offset')), labelId=data_args.get('label_id'),
-                           mitreTechniqueId=data_args.get('mitre_technique_id'))
-    raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/intels/', params=params)
+                           mitreTechniqueId=data_args.get('mitre_technique_id')) if data_args else {}
+    raw_response = client.do_request('GET', '/plugin/products/'
+                                            f'{client.get_threat_response_endpoint()}'
+                                            f'/api/v1/intels/', params=params)
 
     intel_docs = []
     intel_doc = {}
+
+    raw_response = normalize_api_response(raw_response)
     # append raw response to a list in case raw_response is a dictionary
     tmp_list = [raw_response] if type(raw_response) is dict else raw_response
     for item in tmp_list:
@@ -590,18 +625,21 @@ def get_intel_docs_labels_list(client: Client, data_args: dict) -> Tuple[str, di
     id_ = data_args.get('intel_doc_id')
     try:
         raw_response = client.do_request('GET',
-                                         f'/plugin/products/detect3/api/v1/intels/{id_}/labels')
+                                         '/plugin/products/'
+                                         f'{client.get_threat_response_endpoint()}'
+                                         f'/api/v1/intels/{id_}/labels')
     except requests.HTTPError as e:
         raise DemistoException(f'Check the intel doc ID and try again.\n({str(e)})')
 
     intel_docs_labels = []
     intel_doc_label = {}
+    raw_response_data = normalize_api_response(raw_response)
     # append raw response to a list in case raw_response is a dictionary
-    tmp_list = [raw_response] if type(raw_response) is dict else raw_response
+    tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
     for item in tmp_list:
         intel_doc_label = get_intel_doc_label_item(item)
         intel_docs_labels.append(intel_doc_label)
-    context_data = format_context_data(raw_response)
+    context_data = format_context_data(raw_response_data)
     context = createContext({'IntelDocID': id_, 'LabelsList': context_data}, removeNull=True)
     outputs = {'Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)': context}
     headers = ['ID', 'Name', 'Description', 'IndicatorCount', 'SignalCount', 'CreatedAt', 'UpdatedAt']
@@ -625,10 +663,12 @@ def add_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Un
     intel_doc_id = data_args.get('intel_doc_id')
     label_id = data_args.get('label_id')
     params = assign_params(id=label_id)
-    raw_response = []
+
     try:
         raw_response = client.do_request('PUT',
-                                         f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}/labels', data=params)
+                                         '/plugin/products/'
+                                         f'{client.get_threat_response_endpoint()}'
+                                         f'/api/v1/intels/{intel_doc_id}/labels', data=params)
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
     # with a "Not Found" message.
     except requests.HTTPError as e:
@@ -644,11 +684,12 @@ def add_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Un
 
     intel_docs_labels = []
     intel_doc_label = {}
-    tmp_list = [raw_response] if type(raw_response) is dict else raw_response
+    raw_response_data = normalize_api_response(raw_response)
+    tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
     for item in tmp_list:
         intel_doc_label = get_intel_doc_label_item(item)
         intel_docs_labels.append(intel_doc_label)
-    context_data = format_context_data(raw_response)
+    context_data = format_context_data(raw_response_data)
     context = createContext({'IntelDocID': intel_doc_id, 'LabelsList': context_data}, removeNull=True)
     outputs = {'Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)': context}
     headers = ['ID', 'Name', 'Description', 'IndicatorCount', 'SignalCount', 'CreatedAt', 'UpdatedAt']
@@ -673,10 +714,11 @@ def remove_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict,
 
     intel_doc_id = data_args.get('intel_doc_id')
     label_id_to_delete = data_args.get('label_id')
-    raw_response = []
     try:
         raw_response = client.do_request('DELETE',
-                                         f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}/labels/{label_id_to_delete}')
+                                         '/plugin/products/'
+                                         f'{client.get_threat_response_endpoint()}'
+                                         f'/api/v1/intels/{intel_doc_id}/labels/{label_id_to_delete}')
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
     # with a "Not Found" message.
     except requests.HTTPError as e:
@@ -692,14 +734,15 @@ def remove_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict,
 
     intel_docs_labels = []
     intel_doc_label = {}
-    tmp_list = [raw_response] if type(raw_response) is dict else raw_response
+    raw_response_data = normalize_api_response(raw_response)
+    tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
     for item in tmp_list:
         intel_doc_label = get_intel_doc_label_item(item)
         intel_docs_labels.append(intel_doc_label)
 
     # This API call returns the latest labels associated to the given intel-doc ID.
     # This gives us the ability to update the context on deletion.
-    context_data = format_context_data(raw_response)
+    context_data = format_context_data(raw_response_data)
     context = createContext({'IntelDocID': intel_doc_id, 'LabelsList': context_data}, removeNull=True)
     outputs = {'Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)': context}
     headers = ['ID', 'Name', 'Description', 'IndicatorCount', 'SignalCount', 'CreatedAt', 'UpdatedAt']
@@ -729,16 +772,18 @@ def create_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     except Exception as e:
         raise DemistoException(f'Check your file entry ID.\n{str(e)}')
 
-    raw_response = client.do_request('POST', '/plugin/products/detect3/api/v1/intels',
+    raw_response = client.do_request('POST',
+                                     '/plugin/products/'
+                                     f'{client.get_threat_response_endpoint()}/api/v1/intels',
                                      headers={'Content-Disposition': f'filename=file.{file_extension}',
                                               'Content-Type': 'application/xml'}, body=file_content)
 
     intel_doc = get_intel_doc_item(raw_response)
-    # A more readable format for the human readble section.
+    # A more readable format for the human readable section.
     if intel_doc:
         intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
 
-    context_data = format_context_data(raw_response)
+    context_data = format_context_data(normalize_api_response(raw_response))
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
@@ -766,8 +811,11 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     intrinsic_id = ''
     try:
         # get intel doc intrinsicId
-        raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels/{id_}')
-        intrinsic_id = raw_response.get('intrinsicId')
+        raw_response = client.do_request('GET', '/plugin/products/'
+                                                f'{client.get_threat_response_endpoint()}'
+                                                f'/api/v1/intels/{id_}')
+        raw_response_data = normalize_api_response(raw_response)
+        intrinsic_id = raw_response_data.get('intrinsicId')
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
     # with a "Not Found" message.
     except requests.HTTPError as e:
@@ -792,7 +840,9 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
         # in yara files the update will take place when the previous intrinsic_id is entered in the Content Disposition
         content_disposition = f'filename={intrinsic_id}'
 
-    raw_response = client.do_request('PUT', f'/plugin/products/detect3/api/v1/intels/{id_}',
+    raw_response = client.do_request('PUT', '/plugin/products/'
+                                            f'{client.get_threat_response_endpoint()}'
+                                            f'/api/v1/intels/{id_}',
                                      headers={'Content-Disposition': content_disposition,
                                               'Content-Type': 'application/xml'}, body=updated_content)
 
@@ -801,7 +851,7 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     if intel_doc:
         intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
 
-    context_data = format_context_data(raw_response)
+    context_data = format_context_data(normalize_api_response(raw_response))
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
@@ -816,7 +866,9 @@ def delete_intel_doc(client, data_args):
     params = {
         'id': data_args.get('intel_doc_id')
     }
-    raw_response = client.do_request('DELETE', '/plugin/products/detect3/api/v1/intels/', params=params)
+    raw_response = client.do_request('DELETE', '/plugin/products/'
+                                               f'{client.get_threat_response_endpoint()}'
+                                               f'/api/v1/intels/', params=params)
 
     return 'Intel Doc deleted', {}, raw_response
 
@@ -825,7 +877,7 @@ def start_quick_scan(client, data_args):
     # get computer group ID from computer group name
     computer_group_name = data_args.get('computer_group_name')
     raw_response = client.do_request('GET', f"/api/v2/groups/by-name/{computer_group_name}")
-    raw_response_data = raw_response.get('data')
+    raw_response_data = normalize_api_response(raw_response)
     if not raw_response_data:
         msg = f'No group exists with name {computer_group_name} or' \
               f' your account does not have sufficient permissions to access the groups'
@@ -835,8 +887,12 @@ def start_quick_scan(client, data_args):
         'intelDocId': int(data_args.get('intel_doc_id')),
         'computerGroupId': int(raw_response_data.get('id'))
     }
-    raw_response = client.do_request('POST', '/plugin/products/detect3/api/v1/quick-scans/', data=data)
-    quick_scan = get_quick_scan_item(raw_response)
+    if client.api_version == "4.x":
+        url_suffix = '/plugin/products/threat-response/api/v1/on-demand-scans/'
+    else:
+        url_suffix = '/plugin/products/detect3/api/v1/quick-scans/'
+    raw_response = client.do_request('POST', url_suffix, data=data)
+    quick_scan = get_quick_scan_item(raw_response.get("data", raw_response))
 
     context = createContext(quick_scan, removeNull=True)
     outputs = {'Tanium.QuickScan(val.ID && val.ID === obj.ID)': context}
@@ -922,7 +978,7 @@ def get_alerts(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     offset = arg_to_number(data_args.get('offset'))
     ip_address = data_args.get('computer_ip_address')
     computer_name = data_args.get('computer_name')
-    scan_config_id = data_args.get('scan-config-id')
+    scan_config_id = data_args.get('scan_config_id')
     intel_doc_id = data_args.get('intel_doc_id')
     severity = data_args.get('severity')
     priority = data_args.get('priority')
@@ -939,10 +995,13 @@ def get_alerts(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
                            limit=limit,
                            offset=offset, state=state.lower() if state else None)
 
-    raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/alerts/', params=params)
+    raw_response = client.do_request('GET', '/plugin/products/'
+                                            f'{client.get_threat_response_endpoint()}'
+                                            f'/api/v1/alerts/', params=params)
 
     alerts = []
-    for item in raw_response:
+    raw_response_data = normalize_api_response(raw_response)
+    for item in raw_response_data:
         alert = get_alert_item(item)
         alerts.append(alert)
 
@@ -968,8 +1027,11 @@ def get_alert(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
 
     """
     alert_id = data_args.get('alert_id')
-    raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/alerts/{alert_id}')
-    alert = get_alert_item(raw_response)
+    raw_response = client.do_request('GET', '/plugin/products/'
+                                            f'{client.get_threat_response_endpoint()}'
+                                            f'/api/v1/alerts/{alert_id}')
+    raw_response_data = raw_response.get("data", raw_response)
+    alert = get_alert_item(raw_response_data)
 
     context = createContext(alert, removeNull=True)
     outputs = {'Tanium.Alert(val.ID && val.ID === obj.ID)': context}
@@ -996,10 +1058,17 @@ def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]
     state = data_args.get('state')
 
     body = {
-        'state': state.lower(),
-        'id': alert_ids
+        'state': state.lower()
     }
-    client.do_request('PUT', '/plugin/products/detect3/api/v1/alerts/', data=body)
+    if client.api_version == "4.x":
+        if len(alert_ids) == 1:
+            client.do_request('PUT', f'/plugin/products/threat-response/api/v1/alerts/{alert_ids[0]}', data=body)
+        else:
+            client.do_request('PUT', '/plugin/products/threat-response/api/v1/alerts/',
+                              data=body, params={'id': alert_ids})
+
+    else:
+        client.do_request('PUT', '/plugin/products/detect3/api/v1/alerts/', data=body.update({'id': alert_ids}))
 
     return f'Alert state updated to {state}.', {}, {}
 
@@ -1129,7 +1198,7 @@ def get_connections(client, command_args) -> Tuple[str, dict, Union[list, dict]]
         tuple (str, dict, list[dict]): table output, context output and raw response by the Tanium-Threat-Response API.
     """
     limit = arg_to_number(command_args.get('limit'))
-    offset = arg_to_number(command_args.get('offset'))
+    offset = arg_to_number(command_args.get('offset', 0))
     ips = argToList(arg=command_args.get('ip'))
     statuses = argToList(arg=command_args.get('status'))
     hostnames = argToList(arg=command_args.get('hostname'))
@@ -1267,6 +1336,10 @@ def get_events_by_connection(client, data_args) -> Tuple[str, dict, Union[list, 
         params['g1'] = g1
         params.update(filter_dict)
 
+    if client.api_version == "4.x":
+        params['cid'] = cid
+        params['type'] = event_type
+
     raw_response = client.do_request('GET',
                                      f'/plugin/products/threat-response/api/v1/conns/{cid}/views/{event_type}/events',
                                      params=params)
@@ -1295,14 +1368,17 @@ def get_labels(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
         :rtype: ``tuple``
 
     """
-    limit = arg_to_number(data_args.get('limit'))
-    offset = arg_to_number(data_args.get('offset'))
-    raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/labels/')
+    limit = arg_to_number(data_args.get('limit', 50))
+    offset = arg_to_number(data_args.get('offset', 0))
+    raw_response = client.do_request('GET', '/plugin/products/'
+                                            f'{client.get_threat_response_endpoint()}'
+                                            f'/api/v1/labels/')
     assert offset is not None
-    from_idx = min(offset, len(raw_response))
-    to_idx = min(offset + limit, len(raw_response))  # type: ignore
+    raw_response_data = normalize_api_response(raw_response)
+    from_idx = min(offset, len(raw_response_data))
+    to_idx = min(offset + limit, len(raw_response_data))  # type: ignore
 
-    labels = raw_response[from_idx:to_idx]
+    labels = raw_response_data[from_idx:to_idx]
 
     context = createContext(labels, removeNull=True)
     outputs = {'Tanium.Label(val.id === obj.id)': context}
@@ -1324,12 +1400,15 @@ def get_label(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
 
     """
     label_id = data_args.get('label_id')
-    raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/labels/{label_id}')
+    raw_response = client.do_request('GET', '/plugin/products/'
+                                            f'{client.get_threat_response_endpoint()}'
+                                            f'/api/v1/labels/{label_id}')
 
-    context = createContext(raw_response, removeNull=True)
+    raw_response_data = normalize_api_response(raw_response)
+    context = createContext(raw_response_data, removeNull=True)
     outputs = {'Tanium.Label(val.id && val.id === obj.id)': context}
     headers = ['name', 'description', 'id', 'indicatorCount', 'signalCount', 'createdAt', 'updatedAt']
-    human_readable = tableToMarkdown('Label information', raw_response, headers=headers,
+    human_readable = tableToMarkdown('Label information', raw_response_data, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -1642,6 +1721,10 @@ def get_events_by_process(client, data_args) -> Tuple[str, dict, Union[list, dic
     cid = data_args.get('connection_id')
     ptid = data_args.get('ptid')
     event_type = data_args.get('type').lower()
+    params = {'limit': limit, 'offset': offset}
+    if client.api_version == "4.x":
+        params.update({"cid": cid, "ptid": ptid, "type": event_type})
+
     raw_response = client.do_request('GET',
                                      f'plugin/products/threat-response/api/v1/conns/{cid}/processevents/{ptid}/{event_type}',
                                      params={'limit': limit, 'offset': offset})
@@ -1764,8 +1847,8 @@ def list_evidence(client, commands_args) -> Tuple[str, dict, Union[list, dict]]:
     Returns:
         tuple (str, dict, list[dict]): table output, context output and raw response by the Tanium-Threat-Response API.
     """
-    limit = arg_to_number(commands_args.get('limit'))
-    offset = arg_to_number(commands_args.get('offset'))
+    limit = arg_to_number(commands_args.get('limit', 50))
+    offset = arg_to_number(commands_args.get('offset', 0))
     hostnames = argToList(arg=commands_args.get('hostname'))
     sort = commands_args.get('sort')
     type = commands_args.get('type')
@@ -1958,8 +2041,8 @@ def get_system_status(client, command_args) -> Tuple[str, dict, Union[list, dict
     Returns:
         tuple (str, dict, list[dict]): table output, context output and raw response by the Tanium-Threat-Response API.
     """
-    limit = arg_to_number(command_args.get('limit'))
-    offset = arg_to_number(command_args.get('offset'))
+    limit = arg_to_number(command_args.get('limit', 50))
+    offset = arg_to_number(command_args.get('offset', 0))
     statuses = argToList(arg=command_args.get('status'))
     hostnames = argToList(arg=command_args.get('hostname'))
     ipaddrs_client = argToList(arg=command_args.get('ip_client'))
@@ -2008,23 +2091,17 @@ def main():
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
 
-    api_token = password if '_token' in username else None
-
-    # Remove trailing slash to prevent wrong URL path to service
-    server = params['url'].strip('/')
-    # Should we use SSL
-    use_ssl = not params.get('insecure', False)
-
     # Remove proxy if not set to true in params
     handle_proxy()
     command = demisto.command()
 
     client = Client(
-        server,
+        params.get('url').strip('/'),
         username,
         password,
-        api_token=api_token,
-        verify=use_ssl
+        api_token=password if '_token' in username else None,
+        verify=not params.get('insecure', False),
+        api_version=params.get('api_version', '3.x')
     )
 
     demisto.info(f'Command being called is {command}')
@@ -2091,12 +2168,12 @@ def main():
             # demisto.getLastRun() will returns an obj with the previous run in it.
             last_run = demisto.getLastRun()
             alerts_states_to_retrieve = demisto.params().get('filter_alerts_by_state')
-            filter_label_names = demisto.params().get('filter_by_label_name')
+            filter_label_name = demisto.params().get('filter_by_label_name', '')
             first_fetch = demisto.params().get('first_fetch')
             max_fetch = int(demisto.params().get('max_fetch', '50'))
 
             incidents, next_run = fetch_incidents(client, alerts_states_to_retrieve,
-                                                  filter_label_names, last_run, first_fetch, max_fetch)
+                                                  filter_label_name, last_run, first_fetch, max_fetch)
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)

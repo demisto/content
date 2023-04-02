@@ -1,6 +1,7 @@
 import pytest
 import os
 import json
+from urllib.parse import unquote
 
 from _pytest.python_api import raises
 
@@ -26,7 +27,8 @@ def get_access_token(requests_mock, mocker):
             'url': SERVER_URL,
             'proxy': True,
             'incidents_per_fetch': 2,
-            'fetch_incidents_or_detections': ['Detections', 'Incidents']
+            'fetch_incidents_or_detections': ['Detections', 'Incidents'],
+            'fetch_time': '3 days',
         }
     )
     requests_mock.post(
@@ -2196,10 +2198,15 @@ class TestFetch:
         from CrowdStrikeFalcon import fetch_incidents
         mocker.patch.object(demisto, 'getLastRun',
                             return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z',
-                                          'last_detection_id': 1234})
+                                          'detection_offset': 2,
+                                          'first_behavior_incident_time': '2020-09-04T09:22:10Z',
+                                          'last_fetched_incident': '3',
+                                          'incident_offset': 4,
+                                          })
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_detection_time': '2020-09-04T09:16:10Z',
-                                                          'detection_offset': 2, 'last_detection_id': 1234}
+        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:20:11Z', 'offset': 4, 'limit': 2},
+                                                          {'time': '2020-09-04T09:22:10Z', 'last_fetched_incident': '3',
+                                                           'offset': 4}]
 
     def test_new_fetch_with_offset(self, set_up_mocks, mocker):
         """
@@ -2209,16 +2216,16 @@ class TestFetch:
         When:
             2 results are returned (which equals the FETCH_LIMIT)
         Then:
-            The `first_behavior_time` doesn't change and an `offset` of 2 is added.
+            The `time` changed to the last detection that fetched and an `offset` of 2 is added.
         """
 
         mocker.patch.object(demisto, 'getLastRun',
-                            return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z'})
+                            return_value=[{'time': '2020-09-04T09:16:10Z'}, {}])
         from CrowdStrikeFalcon import fetch_incidents
 
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_detection_time': '2020-09-04T09:16:10Z',
-                                                          'detection_offset': 2}
+        assert demisto.setLastRun.mock_calls[0][1][0][0] == {'time': '2020-09-04T09:20:11Z',
+                                                             'offset': 2, 'limit': 2}
 
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
         """
@@ -2231,8 +2238,8 @@ class TestFetch:
             The `first_behavior_time` changes and no `offset` is added.
         """
         mocker.patch.object(demisto, 'getLastRun',
-                            return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z',
-                                          'detection_offset': 2})
+                            return_value=[{'time': '2020-09-04T09:16:10Z',
+                                          'offset': 2}, {}])
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
@@ -2240,8 +2247,8 @@ class TestFetch:
                                                 'max_severity_displayname': 'Low'}]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_detection_time': '2020-09-04T09:16:11Z',
-                                                          'detection_offset': 0}
+        assert demisto.setLastRun.mock_calls[0][1][0][0] == {'time': '2020-09-04T09:16:11Z',
+                                                             'offset': 0, 'limit': 2}
 
     def test_fetch_incident_type(self, set_up_mocks, mocker):
         """
@@ -2255,10 +2262,9 @@ class TestFetch:
 
         """
         from CrowdStrikeFalcon import fetch_incidents
-        mocker.patch.object(demisto, 'getLastRun', return_value={
-            'first_behavior_detection_time': '2020-09-04T09:16:10Z',
-            'last_detection_id': 1234
-        })
+        mocker.patch.object(demisto, 'getLastRun', return_value=[{
+            'time': '2020-09-04T09:16:10Z',
+        }, {}])
         incidents = fetch_incidents()
         for incident in incidents:
             assert "\"incident_type\": \"detection\"" in incident.get('rawJSON', '')
@@ -2282,34 +2288,25 @@ class TestIncidentFetch:
                            json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
 
-    def test_old_fetch_to_new_fetch(self, set_up_mocks, mocker):
-        from CrowdStrikeFalcon import fetch_incidents
-        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z',
-                                                                 'last_incident_id': 1234})
-        fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:10Z',
-                                                          'incident_offset': 2, 'last_fetched_incident': 'ldt:1',
-                                                          'last_incident_id': 1234}
-
     def test_new_fetch_with_offset(self, set_up_mocks, mocker):
         mocker.patch.object(demisto, 'getLastRun',
-                            return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z'})
+                            return_value=[{}, {'time': '2020-09-04T09:16:10Z'}])
         from CrowdStrikeFalcon import fetch_incidents
 
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:10Z',
-                                                          'incident_offset': 2, 'last_fetched_incident': 'ldt:1'}
+        assert demisto.setLastRun.mock_calls[0][1][0][1] == {'time': '2020-09-04T09:16:11Z',
+                                                             'offset': 2, 'last_fetched_incident': 'ldt:1', 'limit': 2}
 
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
-        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z',
-                                                                 'incident_offset': 2})
+        mocker.patch.object(demisto, 'getLastRun', return_value=[{}, {'time': '2020-09-04T09:16:10Z',
+                                                                      'offset': 2}])
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
                            json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'}]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:11Z',
-                                                          'last_fetched_incident': 'ldt:1', 'incident_offset': 0}
+        assert demisto.setLastRun.mock_calls[0][1][0][1] == {'time': '2020-09-04T09:16:11Z',
+                                                             'last_fetched_incident': 'ldt:1', 'offset': 0, 'limit': 2}
 
     def test_incident_type_in_fetch(self, set_up_mocks, mocker):
         """Tests the addition of incident_type field to the context
@@ -2321,8 +2318,8 @@ class TestIncidentFetch:
             "incident_type": "incident" is in raw result returned by the indicator
 
         """
-        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z',
-                                                                 'last_incident_id': 1234})
+        mocker.patch.object(demisto, 'getLastRun', return_value=[{}, {'time': '2020-09-04T09:16:10Z',
+                                                                      }])
         from CrowdStrikeFalcon import fetch_incidents
         incidents = fetch_incidents()
         for incident in incidents:
@@ -2640,8 +2637,8 @@ def test_search_custom_iocs_command_exists(requests_mock):
     )
     results = search_custom_iocs_command()
     assert '| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | prevent | high | md5 |' \
-           in results["HumanReadable"]
-    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+           in results[0]["HumanReadable"]
+    assert results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
 def test_search_custom_iocs_command__no_iocs(requests_mock, mocker):
@@ -2704,8 +2701,8 @@ def test_search_custom_iocs_command_filter(requests_mock):
         values=ioc_value,
     )
     assert f'| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | prevent | high | {ioc_type} |' \
-           f' {ioc_value} |' in results["HumanReadable"]  # noqa: E501
-    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == ioc_value
+           f' {ioc_value} |' in results[0]["HumanReadable"]  # noqa: E501
+    assert results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == ioc_value
 
 
 def test_get_custom_ioc_command_exists(requests_mock):
@@ -3185,7 +3182,7 @@ def test_search_device_command(requests_mock):
                       'Status': 'normal'}
     endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': 'identifier_number', 'IPAddress': '1.1.1.1',
                         'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
-                        'Status': 'Online', 'Vendor': 'CrowdStrike Falcon'}
+                        'Status': 'Offline', 'Vendor': 'CrowdStrike Falcon'}
     status_res = {
         "meta": {
             "query_time": 0.002455124,
@@ -3197,7 +3194,7 @@ def test_search_device_command(requests_mock):
                 "id": "15dbb9d8f06b45fe9f61eb46e829d986",
                 "cid": "20879a8064904ecfbb62c118a6a19411",
                 "last_seen": "2022-09-03T10:48:12Z",
-                "state": "online"
+                "state": "offline"
             }
         ],
         "errors": []
@@ -3231,7 +3228,7 @@ def test_search_device_command(requests_mock):
             assert context[key] == [endpoint_context]
 
 
-def test_get_endpint_command(requests_mock, mocker):
+def test_get_endpoint_command(requests_mock, mocker):
     """
     Test get_endpint_command with a successful id
     Given
@@ -3272,7 +3269,7 @@ def test_get_endpint_command(requests_mock, mocker):
         status_code=200,
     )
 
-    requests_mock.get(
+    query_mocker = requests_mock.get(
         f'{SERVER_URL}/devices/queries/devices/v1',
         json=response,
         status_code=200,
@@ -3283,12 +3280,14 @@ def test_get_endpint_command(requests_mock, mocker):
         status_code=200,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'id': 'dentifier_numbe'})
+    mocker.patch.object(demisto, 'args', return_value={'id': 'dentifier_numbe', 'hostname': 'host1,host2'})
 
     outputs = get_endpoint_command()
     result = outputs[0].to_context()
     context = result.get('EntryContext')
 
+    assert unquote(query_mocker.last_request.query) == "filter=device_id:'dentifier_numbe'," \
+                                                       "hostname:['host1'],hostname:['host2']"
     assert context['Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'] == [endpoint_context]
 
 
@@ -3379,6 +3378,24 @@ def test_resolve_incident_invalid(status):
     from CrowdStrikeFalcon import resolve_incident_command
     with pytest.raises(DemistoException):
         resolve_incident_command(['test'], status)
+
+
+def test_update_incident_comment(requests_mock):
+    """
+    Test Update incident comment
+    Given
+     - Comment
+    When
+     - Calling update incident comment command
+    Then
+     - Update incident comment
+     """
+    from CrowdStrikeFalcon import update_incident_comment_command
+    m = requests_mock.post(
+        f'{SERVER_URL}/incidents/entities/incident-actions/v1',
+        json={})
+    update_incident_comment_command(['test'], 'comment')
+    assert m.last_request.json()['action_parameters'][0]['value'] == 'comment'
 
 
 def test_list_host_group_members(requests_mock):
@@ -4159,3 +4176,139 @@ def test_error_in_get_detections_by_behaviors(mocker):
     res = get_detection_for_incident_command(incident_id='zz')
     assert res.readable_output
     demisto.error.assert_called_once_with('Error occurred when trying to get detections by behaviors: ')
+
+
+ARGS_vulnerability = [
+    (
+        {'display_remediation_info': 'True',
+         'display_evaluation_logic_info': 'True',
+         'display_host_info': 'False',
+         'limit': '1'}, False,
+        None, 'Please add a at least one filter argument'
+    ),
+    (
+        {"cve_severity": "LOW", 'display_remediation_info': 'True',
+         'display_evaluation_logic_info': 'True',
+         'display_host_info': 'False', 'status': "open,closed"},
+        True,  # Valid case
+        {"resources":
+         [
+             {"id": "id1",
+              "cid": "cid1",
+              "aid": "aid1",
+              "created_timestamp": "2021-09-16T15:12:42Z",
+              "updated_timestamp": "2022-10-19T00:54:43Z",
+              "status": "open",
+              "cve": {
+               "id": "cveid1",
+               "base_score": 3.3,
+               "severity": "LOW",
+               "exploit_status": 0,
+               "exprt_rating": "LOW",
+               "remediation_level": "O",
+               "spotlight_published_date": "2021-09-15T18:33:00Z",
+               "description": "secd",
+               "published_date": "2021-09-15T12:15:00Z"}},
+             {"id": "ID2",
+              "cid": "cid2",
+              "aid": "aid2",
+              "created_timestamp": "2022-10-12T22:12:49Z",
+              "updated_timestamp": "2022-10-18T02:54:43Z",
+              "status": "open",
+              "cve": {"id": "idcve4",
+                        "spotlight_published_date": "2022-10-12T14:57:00Z",
+                        "description": "desc3",
+                        "published_date": "2022-10-11T19:15:00Z",
+                        "exploitability_score": 1.8,
+                        "impact_score": 1.4}}
+         ]
+         },
+        '### List Vulnerabilities\n' \
+        '|ID|Severity|Status|Base Score|Published Date|Impact Score|Exploitability Score|\n' \
+        '|---|---|---|---|---|---|---|\n' \
+        '| cveid1 | LOW | open | 3.3 | 2021-09-15T12:15:00Z |  |  |\n' \
+        '| idcve4 |  | open |  | 2022-10-11T19:15:00Z | 1.4 | 1.8 |\n'  # args list
+
+    )
+]
+
+
+@pytest.mark.parametrize('args, is_valid, result_key_json, expected_hr', ARGS_vulnerability)
+def test_cs_falcon_spotlight_search_vulnerability_command(mocker, args, is_valid, result_key_json, expected_hr):
+    """
+    Test cs_falcon_spotlight_search_vulnerability_command,
+        with a the filters:  cve_severity, status
+    Given
+     - There is a vulnerability that are found
+    When
+     - The user is running cs_falcon_spotlight_search_vulnerability_command with an id
+    Then
+     - Return a CrowdStrike Falcon Vulnerability context output
+     - Return an Endpoint context output
+     """
+    from CrowdStrikeFalcon import cs_falcon_spotlight_search_vulnerability_command
+    from CommonServerPython import DemistoException
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=result_key_json)
+    if is_valid:
+        outputs = cs_falcon_spotlight_search_vulnerability_command(args)
+        assert outputs.readable_output == expected_hr
+    else:
+        with pytest.raises(DemistoException) as e:
+            cs_falcon_spotlight_search_vulnerability_command(args)
+        assert str(e.value) == expected_hr
+
+
+def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker):
+    """
+    Test cs_falcon_spotlight_list_host_by_vulnerability_command,
+        with a the filters:  cve_severity, status
+    Given
+     - There is a vulnerability that are found
+    When
+     - The user is running cs_falcon_spotlight_list_host_by_vulnerability_command with an id
+    Then
+     - Return a CrowdStrike Falcon Vulnerability context output
+     - Return an Endpoint context output
+     """
+    from CrowdStrikeFalcon import cs_falcon_spotlight_list_host_by_vulnerability_command
+
+    result_key_json = {
+        "resources": [
+            {
+                "id": "id1",
+                "cid": "cid1",
+                "aid": "aid1",
+                "created_timestamp": "2022-01-25T22:44:53Z",
+                "updated_timestamp": "2022-10-19T13:56:17Z",
+                "status": "open",
+                "host_info": {
+                    "hostname": "host",
+                    "local_ip": "ip_addr",
+                    "machine_domain": "",
+                    "os_version": "os_ver_example",
+                    "ou": "",
+                    "site_name": "",
+                    "system_manufacturer": "manu_example",
+                    "tags": [],
+                    "platform": "Windows",
+                    "instance_id": "int_id",
+                    "service_provider_account_id": "id1_account",
+                    "service_provider": "id_ser_prov",
+                    "os_build": "1",
+                    "product_type_desc": "Server"
+                },
+                "cve": {
+                    "id": "CVE-2013-3900"
+                }
+            }
+        ]
+    }
+    expected_hr = '### List Vulnerabilities For Host\n'\
+                  '|CVE ID|hostname|os Version|Product Type Desc|Local IP|\n' \
+                  '|---|---|---|---|---|\n' \
+                  '| CVE-2013-3900 | host | os_ver_example | Server | ip_addr |\n'
+    args = {'cve_ids': 'CVE-2013-3900', 'limit': 1}
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=result_key_json)
+
+    outputs = cs_falcon_spotlight_list_host_by_vulnerability_command(args)
+    assert outputs.readable_output == expected_hr

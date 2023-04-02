@@ -1,0 +1,1194 @@
+id: PAN-OS - Enforce Anti-Spyware Best Practices Profile
+name: PAN-OS - Enforce Anti-Spyware Best Practices Profile
+description: |
+  This playbook enforces the Anti-Spyware Best Practices Profile as defined by Palo Alto Networks BPA.
+  The playbook performs the following tasks:
+  - Check for DNS Security license (If license is not activated, the playbook refers users to their Palo Alto Networks account manager for further instructions).
+  - Get the existing profile information.
+  - Get the best practices profile information.
+  - Check if the best practices profile set by Cortex XSOAR is enforced. (If not, the playbook allows the user to compare the existing profile with the best practices and decide on the action to take).
+  - Create best practices profile.
+  - Apply profile to policy rules on PAN-OS firewall or Panorama.
+inputs:
+- description: The device group to work on. Exists only in panorama!
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the results.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
+  key: pre-post-rulebase
+  playbookInputQuery:
+  required: false
+  value: {}
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 40327e99-aede-4feb-8895-86ba17375b63
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 40327e99-aede-4feb-8895-86ba17375b63
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -100
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is PAN-OS integration enabled?
+      id: c49b9893-728b-4d53-860c-6a6fcd6fa248
+      iscommand: false
+      name: Is PAN-OS integration enabled?
+      type: condition
+      version: -1
+    taskid: c49b9893-728b-4d53-860c-6a6fcd6fa248
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4ac17db2-8b32-4f7b-87d6-37cd64f80654
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 4ac17db2-8b32-4f7b-87d6-37cd64f80654
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4250
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets information about available PAN-OS licenses and their statuses.
+      id: 738d6a4b-1545-46dc-8b34-a661098c784d
+      iscommand: true
+      name: PAN-OS - Get licenses
+      script: '|||pan-os-get-licenses'
+      type: regular
+      version: -1
+    taskid: 738d6a4b-1545-46dc-8b34-a661098c784d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 220
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Feature
+                root: Panorama.License
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: dns security
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.License.Expired
+          operator: isEqualString
+          right:
+            value:
+              simple: "no"
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is there a DNS Security license?
+      id: 6ab74e0a-4518-43bb-8ceb-1fa6b348cfab
+      iscommand: false
+      name: Is there a DNS Security license?
+      type: condition
+      version: -1
+    taskid: 6ab74e0a-4518-43bb-8ceb-1fa6b348cfab
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 385
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 393e5633-1cbb-4600-8b89-090b6a8b1b4b
+      iscommand: false
+      name: Missing License
+      type: title
+      version: -1
+      description: ''
+    taskid: 393e5633-1cbb-4600-8b89-090b6a8b1b4b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 555
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      security_profile:
+        simple: spyware
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets information for the specified security profile.
+      id: b32ddbe6-77a4-4b8f-80c3-f9a7dc15a147
+      iscommand: true
+      name: PAN-OS - Get Anti Spyware profile
+      script: '|||pan-os-get-security-profiles'
+      type: regular
+      version: -1
+    taskid: b32ddbe6-77a4-4b8f-80c3-f9a7dc15a147
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 700
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: AntiSpyware.ExistingProfile
+      value:
+        complex:
+          accessor: Spyware
+          root: Panorama
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      id: 4661e733-bd5d-4f69-87e5-6dd1ba34646d
+      iscommand: false
+      name: Set existing Anti Spyware profile
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 4661e733-bd5d-4f69-87e5-6dd1ba34646d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 860
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Panorama.Spyware
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 34d1cbb7-fd07-4664-8b47-dc6820355b67
+      iscommand: false
+      name: Delete context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 34d1cbb7-fd07-4664-8b47-dc6820355b67
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 1020
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get anti-spyware best practices.
+      id: c7ef457e-18a0-4d19-8fbe-1cd9ece9aa17
+      iscommand: true
+      name: PAN-OS - Get Anti Spyware best practice
+      script: '|||pan-os-get-anti-spyware-best-practice'
+      type: regular
+      version: -1
+    taskid: c7ef457e-18a0-4d19-8fbe-1cd9ece9aa17
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 1180
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: AntiSpyware.ExistingProfile.Name
+          operator: isEqualString
+          right:
+            value:
+              simple: Spyware Best Practices - XSOAR
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "17"
+      - "18"
+      "yes":
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is Anti Spyware best practice profile by XSOAR enforced?
+      id: 3d934bb8-f651-4bd1-8bee-6f25e146ec69
+      iscommand: false
+      name: Is Anti Spyware best practice profile by XSOAR enforced?
+      type: condition
+      version: -1
+    taskid: 3d934bb8-f651-4bd1-8bee-6f25e146ec69
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 1340
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      profile_name:
+        simple: Spyware Best Practices - XSOAR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates an Anti-Spyware best practice profile.
+      id: 7fdfdab2-d2b8-4b1e-8464-c2ea6646ff49
+      iscommand: true
+      name: PAN-OS - Create best practice profile
+      script: '|||pan-os-create-anti-spyware-best-practice-profile'
+      type: regular
+      version: -1
+    taskid: 7fdfdab2-d2b8-4b1e-8464-c2ea6646ff49
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2580,
+          "y": 1990
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c9716a59-b36d-49b1-849c-ac63a097f9ec
+      iscommand: false
+      name: PAN-OS Apply profile to a rule
+      type: title
+      version: -1
+      description: ''
+    taskid: c9716a59-b36d-49b1-849c-ac63a097f9ec
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 3130
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "51"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Apply profile to policy rule in PAN-OS?
+      id: 33bba196-514d-4da5-8e82-50af790767fa
+      iscommand: false
+      name: Apply profile to policy rule?
+      type: condition
+      version: -1
+    taskid: 33bba196-514d-4da5-8e82-50af790767fa
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 2960
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "You are missing a DNS Security license which is a prerequisite for this \"PAN-OS -Enforce Anti-Spyware Best Practices Profile\" playbook, and for the related \"Courses of Action\" playbooks. \nPlease contact your Palo Alto Networks account manager for future guidance and assistance."
+      id: 0f9b2835-0ec5-4414-8470-0a4d483b0685
+      iscommand: false
+      name: Missing License - Please contact your Palo Alto Networks account manager
+      type: regular
+      version: -1
+    taskid: 0f9b2835-0ec5-4414-8470-0a4d483b0685
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 700
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre-post-rulebase
+      profile_name:
+        simple: Spyware Best Practices - XSOAR
+      profile_type:
+        simple: spyware
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7a2dbe66-3adf-4b27-8f25-c80712baddde
+      iscommand: false
+      name: PAN-OS - Apply Security Profile to Policy Rule
+      playbookId: PAN-OS - Apply Security Profile to Policy Rule
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 7a2dbe66-3adf-4b27-8f25-c80712baddde
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 3280
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      csvArray:
+        complex:
+          accessor: ExistingProfile
+          root: AntiSpyware
+      fileName:
+        simple: Anti Spyware Existing Profiles
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Export given array to csv file
+      id: ebff7164-4380-4f1f-8136-b71382122bfb
+      iscommand: false
+      name: Export Anti Spyware existing profiles to CSV
+      script: ExportToCSV
+      type: regular
+      version: -1
+    taskid: ebff7164-4380-4f1f-8136-b71382122bfb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2120,
+          "y": 1510
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      csvArray:
+        complex:
+          accessor: Spyware
+          root: Panorama
+      fileName:
+        simple: Anti Spyware Best Practices
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Export given array to csv file
+      id: 18000f0f-e3b4-4517-8270-fbc2209e9665
+      iscommand: false
+      name: Export Anti Spyware best practices to CSV
+      script: ExportToCSV
+      type: regular
+      version: -1
+    taskid: 18000f0f-e3b4-4517-8270-fbc2209e9665
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2540,
+          "y": 1510
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      "No":
+      - "40"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        To understand the difference between the existing policies and the best practices, please compare between the policies by:
+
+        1) Comparing the context data under "AntiSpyware.ExistingProfile" key to the data under "Panorama.Spyware" key.
+        2) Comparing between the exported CSV files - "Anti Spyware Best Practices" and "Anti Spyware Existing Profiles".
+
+        If you have differences between your profiles and the best practices profiles recommended, you are not following the best practices Courses of Action.
+      id: 31046761-27a1-45e2-8410-46db453f9986
+      iscommand: false
+      name: Create Anti Spyware best practice profile?
+      type: condition
+      version: -1
+    taskid: 31046761-27a1-45e2-8410-46db453f9986
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2330,
+          "y": 1820
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "50"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8dba3b9e-fe0c-4e74-8b16-1677059247ab
+      iscommand: false
+      name: PAN-OS Commit Configuration
+      playbookId: PAN-OS Commit Configuration
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 8dba3b9e-fe0c-4e74-8b16-1677059247ab
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 2580,
+          "y": 2165
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b38be68c-5477-4c23-8394-8513daa1d564
+      iscommand: false
+      name: Gather Profiles Information
+      type: title
+      version: -1
+      description: ''
+    taskid: b38be68c-5477-4c23-8394-8513daa1d564
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 555
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7ecf8deb-b1b1-47d3-8271-884126ade54b
+      iscommand: false
+      name: Remediation and Policy Updates
+      type: title
+      version: -1
+      description: ''
+    taskid: 7ecf8deb-b1b1-47d3-8271-884126ade54b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2330,
+          "y": 1680
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      antispywareprofilename:
+        simple: Spyware Best Practices - XSOAR
+      antispywareprofilestatus:
+        simple: The best practices profile has been created by XSOAR.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 3b9abb7f-2734-4de1-87b0-6082e3586525
+      iscommand: true
+      name: Set best practices profile information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 3b9abb7f-2734-4de1-87b0-6082e3586525
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2580,
+          "y": 2500
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 32310856-ce27-4e43-82bb-20223023bd62
+      iscommand: false
+      name: Set Profile information to layout
+      type: title
+      version: -1
+      description: ''
+    taskid: 32310856-ce27-4e43-82bb-20223023bd62
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 3450
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 91d8a728-414e-48ef-8339-823fb9cf9e92
+      iscommand: false
+      name: BPA profile exists
+      type: title
+      version: -1
+      description: ''
+    taskid: 91d8a728-414e-48ef-8339-823fb9cf9e92
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 1510
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      antispywareprofilename:
+        simple: Spyware Best Practices - XSOAR
+      antispywareprofilestatus:
+        simple: The best practices profile by XSOAR already exists.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: beea7af2-31f9-4bd0-814d-ab876d0283b2
+      iscommand: true
+      name: Set best practices profile information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: beea7af2-31f9-4bd0-814d-ab876d0283b2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 1665
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      antispywarerules:
+        complex:
+          accessor: Name
+          root: Rule
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: f623495e-1250-484c-8e54-eb9bc64cefba
+      iscommand: true
+      name: Set best practices profile rules to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: f623495e-1250-484c-8e54-eb9bc64cefba
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 3600
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0a596474-0b79-4cea-8e2d-1cd2a6a4476d
+      iscommand: false
+      name: Not according to BPA
+      type: title
+      version: -1
+      description: ''
+    taskid: 0a596474-0b79-4cea-8e2d-1cd2a6a4476d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2180
+        }
+      }
+  "41":
+    id: "41"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      antispywareprofilename:
+        simple: Spyware Best Practices - XSOAR
+      antispywareprofilestatus:
+        simple: The best practices profile was not created by XSOAR.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 011d053b-4245-4ccd-8f7b-ea3f308824fd
+      iscommand: true
+      name: Set best practices profile information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 011d053b-4245-4ccd-8f7b-ea3f308824fd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2325
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "49"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7449bbad-3e12-473b-8bc8-eab20aa79853
+      iscommand: false
+      name: Trigger BPA Scan
+      type: title
+      version: -1
+      description: ''
+    taskid: 7449bbad-3e12-473b-8bc8-eab20aa79853
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3770
+        }
+      }
+  "49":
+    id: "49"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "52"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      check_id:
+        simple: 266,36,37,38,39,40,201,253
+      failed_grid_id:
+        simple: bpafailedchecksantispyware
+      passed_grid_id:
+        simple: bpapassedchecksantispyware
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: be78f7b7-5fa6-4173-8aae-7d56844ffbbb
+      iscommand: false
+      name: Palo Alto Networks BPA - Submit Scan
+      playbookId: 629bfb7f-d719-4b74-8f1b-7f5a97b816db
+      type: playbook
+      version: -1
+      description: ''
+    taskid: be78f7b7-5fa6-4173-8aae-7d56844ffbbb
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3910
+        }
+      }
+  "50":
+    id: "50"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 142599a1-1121-4ffb-8657-24cfecfe5e33
+      iscommand: false
+      name: BPA profile created
+      type: title
+      version: -1
+      description: ''
+    taskid: 142599a1-1121-4ffb-8657-24cfecfe5e33
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2580,
+          "y": 2340
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      antispywarerules:
+        simple: The best practices profile was not applied to rules by XSOAR.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: d9638d38-0f65-494c-8291-bdc6b6f5f1a4
+      iscommand: true
+      name: Set rules information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: d9638d38-0f65-494c-8291-bdc6b6f5f1a4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 3600
+        }
+      }
+  "52":
+    id: "52"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      bpafailedchecksantispyware:
+        complex:
+          accessor: Failed
+          root: BPA
+          transformers:
+          - operator: uniq
+      bpapassedchecksantispyware:
+        complex:
+          accessor: Passed
+          root: BPA
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 3a6ba0eb-b698-4f9b-829c-83923cd24275
+      iscommand: true
+      name: Set BPA scan results to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 3a6ba0eb-b698-4f9b-829c-83923cd24275
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4080
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "19_11_yes": 0.59,
+      "1_2_#default#": 0.36
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4415,
+        "width": 2510,
+        "x": 450,
+        "y": -100
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2

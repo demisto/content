@@ -11,6 +11,7 @@ configuration:
   name: admin_email
   required: false
   type: 0
+  additionalinfo: An admin email is required for the Test validation to run. If not configured, then each command can receive an optional admin_email argument.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -20,10 +21,589 @@ configuration:
   required: false
   type: 8
 description: G Suite or Google Workspace Admin is an integration to perform an action on IT infrastructure, create users, update settings, and more administrative tasks.
-display: G Suite Admin
+display: Google Workspace Admin
 name: GSuiteAdmin
 script:
   commands:
+  - arguments:
+    - default: false
+      description: The unique ID of the customer's Google Workspace Admin account.
+      isArray: false
+      name: customer_id
+      required: true
+    - default: false
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    - description: Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status). Default is FULL
+      isArray: false
+      name: projection
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - BASIC
+      - FULL
+    - name: query
+      description: Search string using the format given at https://developers.google.com/admin-sdk/directory/v1/search-operators.
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      name: order_by
+      description: Device property to use for sorting results. Default is STATUS.
+      required: false
+      isArray: false
+      predefined:
+      - DEVICE_ID
+      - EMAIL
+      - LAST_SYNC
+      - MODEL
+      - NAME
+      - OS
+      - STATUS
+      - TYPE
+    - auto: PREDEFINED
+      name: sort_order
+      description: Whether to return results in ascending or descending order. Must be used with the order_by parameter. Default is ASCENDING.
+      required: false
+      isArray: false
+      predefined:
+      - ASCENDING
+      - DESCENDING
+    - name: limit
+      description: The maximum number of records to return from the collection. Default is 50.
+      required: false
+      isArray: false
+    - name: page_token
+      description: The token of the page.
+      required: false
+      isArray: false
+    - name: page_size
+      description: The number of requested results per page. Default is 50. Maximum allowed value is 100.
+      required: false
+      isArray: false
+    description: Retrieves a paginated list that includes company-owned mobile devices.
+    name: gsuite-mobiledevice-list
+    outputs:
+    - type: String
+      contextPath: GSuite.MobileDevices.PageToken.NextPageToken
+      description: The token of the next page.
+    - type: Object
+      contextPath: GSuite.MobileDevices.MobileListObjects
+      description: A list of mobile device objects.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.kind
+      description: The type of the API resource.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.etag
+      description: ETag of the resource.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.resourceId
+      description: The unique ID the API service uses to identify the mobile device.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.deviceId
+      description: The serial number for a Google Sync mobile device. For Android and iOS devices, this is a software-generated unique identifier.
+    - type: List
+      contextPath: GSuite.MobileDevices.MobileListObjects.name
+      description: A list of the owner's usernames.
+    - type: List
+      contextPath: GSuite.MobileDevices.MobileListObjects.email
+      description: A list of the owner's email addresses.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.model
+      description: The mobile device's model name.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.os
+      description: The mobile device's operating system.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.type
+      description: The type of mobile device.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.status
+      description: The mobile device's status.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.hardwareId
+      description: The IMEI/MEID unique identifier for Android hardware.
+    - type: Date
+      contextPath: GSuite.MobileDevices.MobileListObjects.firstSync
+      description: The date and time the mobile device was initially synchronized with the policy settings in the Admin console.
+    - type: Date
+      contextPath: GSuite.MobileDevices.MobileListObjects.lastSync
+      description: The date and time the mobile device was last synchronized with the policy settings in the Admin console.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.userAgent
+      description: Gives information about the mobile device such as the operating system version.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.serialNumber
+      description: The mobile device's serial number.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.imei
+      description: The mobile device's IMEI number.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.meid
+      description: The mobile device's MEID number.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.wifiMacAddress
+      description: The mobile device's MAC address on Wi-Fi networks.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.networkOperator
+      description: Mobile device mobile or network operator.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.defaultLanguage
+      description: The default locale used on the mobile device.
+    - type: Boolean
+      contextPath: GSuite.MobileDevices.MobileListObjects.managedAccountIsOnOwnerProfile
+      description: Boolean indicating if this account is on the owner/primary profile.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.deviceCompromisedStatus
+      description: The compromised device status.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.buildNumber
+      description: The mobile device's operating system build number.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.kernelVersion
+      description: The mobile device's kernel version.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.basebandVersion
+      description: The mobile device's baseband version.
+    - type: Boolean
+      contextPath: GSuite.MobileDevices.MobileListObjects.unknownSourcesStatus
+      description: Unknown sources enabled or disabled on the mobile device.
+    - type: Boolean
+      contextPath: GSuite.MobileDevices.MobileListObjects.adbStatus
+      description: Whether adb (USB debugging) is enabled on the mobile device.
+    - type: Boolean
+      contextPath: GSuite.MobileDevices.MobileListObjects.developerOptionsStatus
+      description: Whether developer options are enabled on the mobile device.
+    - type: List
+      contextPath: GSuite.MobileDevices.MobileListObjects.otherAccountsInfo
+      description: A list of accounts added on the device.
+    - type: Boolean
+      contextPath: GSuite.MobileDevices.MobileListObjects.supportsWorkProfile
+      description: Work profile supported on the mobile device.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.manufacturer
+      description: Mobile device manufacturer.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.releaseVersion
+      description: Mobile device release version.
+    - type: Date
+      contextPath: GSuite.MobileDevices.MobileListObjects.securityPatchLevel
+      description: Mobile device security patch level.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.brand
+      description: Mobile device brand.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.bootloaderVersion
+      description: Mobile device bootloader version.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.hardware
+      description: Mobile device hardware.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.encryptionStatus
+      description: Mobile device encryption status.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.devicePasswordStatus
+      description: Mobile device password status.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.privilege
+      description: DM agent permission.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.applications.packageName
+      description: The application's package name.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.applications.displayName
+      description: The application's display name.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.applications.versionName
+      description: The application's version name.
+    - type: String
+      contextPath: GSuite.MobileDevices.MobileListObjects.applications.versionCode
+      description: The application's version code.
+    - type: List
+      contextPath: GSuite.MobileDevices.MobileListObjects.applications.permission
+      description: The list of permissions of this application.
+  - arguments:
+    - default: false
+      description: The unique ID of the customer's Google Workspace Admin account.
+      isArray: false
+      name: customer_id
+      required: true
+    - default: false
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    - description: Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, serialNumber, status, and user).
+      isArray: false
+      name: projection
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - BASIC
+      - FULL
+    - name: query
+      description: "Search string in the format given at https://developers.google.com/admin-sdk/directory/v1/list-query-operators."
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      name: order_by
+      description: Device property to use for sorting results.
+      required: false
+      isArray: false
+      predefined:
+      - ANNOTATED_LOCATION
+      - ANNOTATED_USER
+      - LAST_SYNC
+      - NOTES
+      - SERIAL_NUMBER
+      - STATUS
+    - auto: PREDEFINED
+      name: sort_order
+      description: Whether to return results in ascending or descending order. Must be used with the order_by parameter.
+      required: false
+      isArray: false
+      predefined:
+      - ASCENDING
+      - DESCENDING
+    - name: org_unit_path
+      description: The full path of the organizational unit (without the leading /) or its unique ID.
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      name: include_child_org_units
+      description: Whether to return devices from all child organizational units. If this is set to true, 'org_unit_path' must be provided.
+      required: false
+      isArray: false
+      predefined:
+      - yes
+      - no
+    - name: limit
+      description: The maximum number of records to return from the collection. Default is 50.
+      required: false
+      isArray: false
+    - name: page
+      description: The page number.
+      required: false
+      isArray: false
+    - name: page_size
+      description: The number of requested results per page. Default is 50. Maximum allowed value is 100.
+      required: false
+      isArray: false
+    description: Retrieves a paginated list of company-owned ChromeOS devices.
+    name: gsuite-chromeosdevice-list
+    outputs:
+    - contextPath: GSuite.ChromeOSDevices.PageToken.NextPageToken
+      description: The token of the next page.
+      type: String
+    - contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects
+      description: A list of ChromeOS device objects.
+      type: List
+    - contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceId
+      description: The unique ID of the ChromeOS device.
+      type: String
+    - contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.serialNumber
+      description: The ChromeOS device serial number entered when the device was enabled.
+      type: String
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.status
+      description: Status of the ChromeOS device.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastSync
+      description: The date and time the ChromeOS device was last synchronized with the policy settings in the Admin console.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.supportEndDate
+      description: The final date the ChromeOS device will be supported.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedUser
+      description: The user of the ChromeOS device as noted by the administrator.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedLocation
+      description: The address or location of the ChromeOS device as noted by the administrator.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.notes
+      description: Notes about this ChromeOS device added by the administrator.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.model
+      description: The ChromeOS device's model information.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.meid
+      description: The Mobile Equipment Identifier (MEID) or the International Mobile Equipment Identity (IMEI) for the 3G mobile card in a ChromeOS device.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.orderNumber
+      description: The ChromeOS device's order number.
+    - type: Boolean
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.willAutoRenew
+      description: Determines if the ChromeOS device will auto renew its support after the support end date.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osVersion
+      description: The ChromeOS device's operating system version.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.platformVersion
+      description: The ChromeOS device's platform version.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.firmwareVersion
+      description: The ChromeOS device's firmware version.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.macAddress
+      description: The ChromeOS device's wireless MAC address.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.bootMode
+      description: The boot mode for the ChromeOS device.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastEnrollmentTime
+      description: The date and time the ChromeOS device was last enrolled.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.kind
+      description: The type of resource.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers
+      description: A list of recent ChromeOS device users, in descending order, by last login time.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers.type
+      description: The type of the user.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers.email
+      description: The user's email address.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges
+      description: A list of active time ranges.
+    - type: Integer
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges.activeTime
+      description: Duration of usage in milliseconds.
+    - type: Integer
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges.date
+      description: Date of usage.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.ethernetMacAddress
+      description: The ChromeOS device's MAC address on the ethernet network interface.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedAssetId
+      description: The asset identifier as noted by an administrator or specified during enrollment.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.etag
+      description: ETag of the resource.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports
+      description: Reports of disk space and other info about mounted/connected volumes.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo
+      description: Disk volumes.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.volumeId
+      description: Volume ID.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.storageTotal
+      description: Total disk space [in bytes].
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.storageFree
+      description: Free disk space [in bytes].
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamTotal
+      description: Total RAM on the ChromeOS device in bytes.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports
+      description: Reports of CPU utilization and temperature.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.reportTime
+      description: Date and time the report was received.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuUtilizationPercentageInfo
+      description: The CPU utilization percentage.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo
+      description: A list of CPU temperature samples.
+    - type: Integer
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo.temperature
+      description: Temperature in Celsius degrees.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo.label
+      description: CPU label.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo
+      description: Information regarding CPU specs in the device.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.model
+      description: The CPU model name.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.architecture
+      description: The CPU architecture.
+    - type: Integer
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.maxClockSpeedKhz
+      description: The maximum CPU clock speed in kHz.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus
+      description: Information for the logical CPUs.
+    - type: Integer
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.maxScalingFrequencyKhz
+      description: Maximum frequency the CPU is allowed to run at, by policy.
+    - type: Integer
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.currentScalingFrequencyKhz
+      description: Current frequency the CPU is running at.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.idleDuration
+      description: Idle time since last boot.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates
+      description: The power consumption state of the CPU. For more information, see the documentation published by the CPU maker.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates.displayName
+      description: Name of the state.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates.sessionDuration
+      description: Time spent in the state since the last reboot.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles
+      description: A list of device files to download.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.name
+      description: File name.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.type
+      description: File type.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.downloadUrl
+      description: File download URL.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.createTime
+      description: Date and time the file was created.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports
+      description: Reports of amounts of available RAM memory.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports.reportTime
+      description: Date and time the report was received.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports.systemRamFreeInfo
+      description: Report of free RAM memory.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork
+      description: Contains last known network.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork.ipAddress
+      description: The IP address.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork.wanIpAddress
+      description: The WAN IP address.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.autoUpdateExpiration
+      description: The timestamp after which the device will stop receiving Chrome updates or support.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.ethernetMacAddress0
+      description: MAC address used by the Chromebook's internal ethernet port, and for onboard network (ethernet) interface. The format is twelve (12) hexadecimal digits without any delimiter (uppercase letters). This is only relevant for some devices.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.dockMacAddress
+      description: Built-in MAC address for the docking station that the device connected to. Factory sets Media Access Control address (MAC address) assigned for use by a dock. It is reserved specifically for MAC pass through device policy. The format is twelve (12) hexadecimal digits without any delimiter (uppercase letters). This is only relevant for some devices.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.manufactureDate
+      description: The date the device was manufactured in yyyy-mm-dd format.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.orgUnitPath
+      description: The full parent path with the organizational unit's name associated with the device. Path names are case insensitive. If the parent organizational unit is the top-level organization, it is represented as a forward slash, /.
+    - type: Object
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo
+      description: Trusted Platform Module (TPM).
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.family
+      description: TPM family, using the TPM 2.0 style encoding.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.specLevel
+      description: TPM specification level.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.manufacturer
+      description: TPM manufacturer code.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.tpmModel
+      description: TPM model number.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.firmwareVersion
+      description: TPM firmware version.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.vendorSpecific
+      description: Vendor-specific information such as vendor ID.
+    - type: List
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles
+      description: A list of screenshot files to download.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.name
+      description: File name.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.type
+      description: File type.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.downloadUrl
+      description: File download URL.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.createTime
+      description: Date and time the file was created.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.orgUnitId
+      description: The unique ID of the organizational unit. orgUnitPath is the human readable version of orgUnitId. While orgUnitPath may change by renaming an organizational unit within the path, orgUnitId is unchangeable for one organizational unit.
+    - type: Object
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus
+      description: The status of the operating system updates for the device.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.state
+      description: The update state of an operating system update.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.targetOsVersion
+      description: New platform version of the operating system image being downloaded and applied.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.targetKioskAppVersion
+      description: New required platform version from the pending updated kiosk app.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.updateTime
+      description: Date and time of the last successful operating system update.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.updateCheckTime
+      description: Date and time of the last update check.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.rebootTime
+      description: Date and time of the last reboot.
+    - type: String
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.firstEnrollmentTime
+      description: Date and time for the first time the device was enrolled.
+  - arguments:
+    - default: false
+      description: The unique ID of the customer's Google Workspace Admin account.
+      isArray: false
+      name: customer_id
+      required: true
+    - default: false
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    - description: The unique ID of the device.
+      isArray: false
+      name: resource_id
+      required: true
+    - description: The action to be performed on the ChromeOS device.
+      isArray: false
+      name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - deprovision
+      - disable
+      - reenable
+      - pre_provisioned_disable
+      - pre_provisioned_reenable
+    - description: Reason for deprovision. This field is required only when the action used is deprovision.
+      isArray: false
+      name: deprovision_reason
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - different_model_replacement
+      - retiring_device
+      - same_model_replacement
+      - upgrade_transfer
+    description: Executes an action that affects a ChromeOS device. This includes de-provisioning, disabling, and re-enabling devices.
+    name: gsuite-chromeosdevice-action
   - arguments:
     - default: false
       description: The unique ID of the customer's G Suite account.
@@ -37,8 +617,7 @@ script:
       name: resource_id
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: |-
         The action to be performed on the device.
 
@@ -56,6 +635,9 @@ script:
         cancel_remote_wipe_then_block - Cancels a remote wipe of the device and then blocks it.
       isArray: false
       name: action
+      required: true
+      secret: false
+      auto: PREDEFINED
       predefined:
       - admin_account_wipe
       - admin_remote_wipe
@@ -63,10 +645,8 @@ script:
       - block
       - cancel_remote_wipe_then_activate
       - cancel_remote_wipe_then_block
-      required: true
-      secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -89,7 +669,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -112,7 +692,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -332,7 +912,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -458,7 +1038,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -530,7 +1110,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -583,24 +1163,26 @@ script:
       name: assigned_to
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: The scope in which this role is assigned.
       isArray: false
       name: scope_type
+      required: true
+      secret: false
+      auto: PREDEFINED
       predefined:
       - CUSTOMER
       - ORG_UNIT
-      required: true
-      secret: false
     - default: false
-      description: If the role is restricted to an organization unit, this contains the ID for the organization unit the exercise of this role is restricted to.
+      description: |-
+        If the role is restricted to an organization unit, this contains the ID for the organization unit the exercise of this role is restricted to.
       isArray: false
       name: org_unit_id
       required: false
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: |-
+        Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -657,7 +1239,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -708,13 +1290,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
       secret: false
     deprecated: false
-    description: Delete all access tokens issued by a user for an application.
+    description: |-
+      Delete all access tokens issued by a user for an application.
     execution: false
     name: gsuite-token-revoke
   - arguments:
@@ -743,7 +1326,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -803,7 +1386,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       isArray: false
       name: admin_email
       required: false
@@ -937,7 +1520,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: 'Email ID of the G Suite domain admin who acts on behalf of an end-user.'
       isArray: false
       name: admin_email
       required: false
@@ -2149,7 +2732,7 @@ script:
     - contextPath: GSuite.Group.nonEditableAliases
       description: List of the group's non-editable alias email addresses that are outside of the account's primary domain or subdomains.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.30802
+  dockerimage: demisto/googleapi-python3:1.0.0.50914
   feed: false
   isfetch: false
   longRunning: false
@@ -2160,4 +2743,5 @@ script:
   type: python
 tests:
 - GSuiteAdmin-Test
+- GSuiteAdmin-MobileDevices-Test
 fromversion: 5.0.0

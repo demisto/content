@@ -1,0 +1,647 @@
+id: Cloud Response - Generic
+version: -1
+name: Cloud Response - Generic
+description: |-
+  This playbook provides response playbooks for:
+  - AWS
+  - Azure
+  - GCP
+
+  The response actions available are:
+  - Terminate/Shut down/Power off an instance
+  - Delete/Disable a user
+  - Delete/Revoke/Disable credentials
+  - Block indicators
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f73af578-0487-4572-8c79-7645e59b2dd0
+    type: start
+    task:
+      id: f73af578-0487-4572-8c79-7645e59b2dd0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a13921ba-40b3-489c-88b5-329c60394f8b
+    type: condition
+    task:
+      id: a13921ba-40b3-489c-88b5-329c60394f8b
+      version: -1
+      name: Select cloud provider
+      description: Checks the cloud provider.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      AWS:
+      - "15"
+      Azure:
+      - "16"
+      GCP:
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: AWS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.cloudProvider
+            iscontext: true
+          right:
+            value:
+              simple: AWS
+          ignorecase: true
+    - label: Azure
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.cloudProvider
+            iscontext: true
+          right:
+            value:
+              simple: Azure
+          ignorecase: true
+    - label: GCP
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.cloudProvider
+            iscontext: true
+          right:
+            value:
+              simple: GCP
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 70d956d1-eef8-4a5e-8619-1954322fe6f5
+    type: title
+    task:
+      id: 70d956d1-eef8-4a5e-8619-1954322fe6f5
+      version: -1
+      name: AWS
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 583984bc-19d6-43cd-8529-c1c01d32bf55
+    type: title
+    task:
+      id: 583984bc-19d6-43cd-8529-c1c01d32bf55
+      version: -1
+      name: Azure
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: bfd028c8-874a-4700-82e6-2e55a7038880
+    type: playbook
+    task:
+      id: bfd028c8-874a-4700-82e6-2e55a7038880
+      version: -1
+      name: Cloud Response - AWS
+      description: |-
+        This playbook provides response actions to Azure, the following are available for execution automatically/manually:
+            - Resource remediation:
+                - Terminate the instance
+                - Stop the instance
+            - Identity remediation:
+                - Delete the user
+                - Revoke the user's credentials
+            - Access key remediation:
+                - Disable the access key
+                - Delete the access key
+            - Block indicators
+      playbookName: Cloud Response - AWS
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      accessKeyId:
+        complex:
+          root: inputs.accessKeyId
+      accessKeyRemediationType:
+        complex:
+          root: inputs.AWS-accessKeyRemediationType
+      autoAccessKeyRemediation:
+        complex:
+          root: inputs.autoAccessKeyRemediation
+      autoBlockIndicators:
+        complex:
+          root: inputs.autoBlockIndicators
+      autoResourceRemediation:
+        complex:
+          root: inputs.autoResourceRemediation
+      autoUserRemediation:
+        complex:
+          root: inputs.autoUserRemediation
+      region:
+        complex:
+          root: inputs.region
+      resourceName:
+        complex:
+          root: inputs.resourceName
+      resourceRemediationType:
+        complex:
+          root: inputs.AWS-resourceRemediationType
+      userRemediationType:
+        complex:
+          root: inputs.AWS-userRemediationType
+      username:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 2bde4ff2-2d22-4a58-8a80-923e6b253f52
+    type: playbook
+    task:
+      id: 2bde4ff2-2d22-4a58-8a80-923e6b253f52
+      version: -1
+      name: Cloud Response - Azure
+      description: "This playbook provides response actions to Azure. The following are available for execution automatically/manually:\n    - Resource remediation    \n        - Delete the instance\n        - Power off the instance\n    - Identity remediation:\n        - Disable the user\n        - Change the user's password (Default password should be set in the playbook's inputs)\n    - Block indicators"
+      playbookName: Cloud Response - Azure
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      autoBlockIndicators:
+        complex:
+          root: inputs.autoBlockIndicators
+      autoResourceRemediation:
+        complex:
+          root: inputs.autoResourceRemediation
+      autoUserRemediation:
+        complex:
+          root: inputs.autoUserRemediation
+      resourceGroup:
+        complex:
+          root: inputs.resourceGroup
+      resourceName:
+        complex:
+          root: inputs.resourceName
+      resourceRemediationType:
+        complex:
+          root: inputs.Azure-resourceRemediationType
+      userRemediationType:
+        complex:
+          root: inputs.Azure-userRemediationType
+      username:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: a6297810-76e2-479e-8ded-e644a7480cf8
+    type: title
+    task:
+      id: a6297810-76e2-479e-8ded-e644a7480cf8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 807c2785-80c1-4d45-8e95-b41a0a06a692
+    type: title
+    task:
+      id: 807c2785-80c1-4d45-8e95-b41a0a06a692
+      version: -1
+      name: GCP
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: dfbdc384-d698-46a4-89eb-8dacc0300422
+    type: playbook
+    task:
+      id: dfbdc384-d698-46a4-89eb-8dacc0300422
+      version: -1
+      name: Cloud Response - GCP
+      description: |-
+        This playbook provides response actions to Azure, the following are available for execution automatically/manually:
+            - Resource remediation:
+                - Delete the instance
+                - Stop the instance
+            - Identity remediation:
+                - Disable the user
+                - Delete the user
+            - Access key remediation:
+                - Disable the access key
+                - Delete the access key
+            - Block indicators
+      playbookName: Cloud Response - GCP
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      accessKeyName:
+        complex:
+          root: inputs.accessKeyName
+      accessKeyRemediationType:
+        complex:
+          root: inputs.GCP-accessKeyRemediationType
+      autoAccessKeyRemediation:
+        complex:
+          root: inputs.autoAccessKeyRemediation
+      autoBlockIndicators:
+        complex:
+          root: inputs.autoBlockIndicators
+      autoResourceRemediation:
+        complex:
+          root: inputs.autoResourceRemediation
+      autoUserRemediation:
+        complex:
+          root: inputs.GCP-accessKeyRemediationType
+      resourceName:
+        complex:
+          root: inputs.resourceName
+      resourceRemediationType:
+        complex:
+          root: inputs.GCP-resourceRemediationType
+      resourceZone:
+        complex:
+          root: inputs.resourceZone
+      userRemediationType:
+        complex:
+          root: inputs.GCP-userRemediationType
+      username:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_15_AWS": 0.7,
+      "2_16_Azure": 0.67
+    },
+    "paper": {
+      "dimensions": {
+        "height": 725,
+        "width": 1300,
+        "x": -240,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: cloudProvider
+  value: {}
+  required: false
+  description: The cloud service provider involved.
+  playbookInputQuery:
+- key: autoResourceRemediation
+  value: {}
+  required: false
+  description: Whether to execute the resource remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-resourceRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    AWS available types:
+    Stop - for stopping the instances.
+    Terminate - for terminating the instances.
+  playbookInputQuery:
+- key: Azure-resourceRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    Azure available types:
+    Poweroff - for shutting down the instances.
+    Delete - for deleting the instances.
+  playbookInputQuery:
+- key: GCP-resourceRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    GCP available types:
+    Stop - For stopping the instances.
+    Delete - For deleting the instances.
+  playbookInputQuery:
+- key: autoAccessKeyRemediation
+  value: {}
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-accessKeyRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+
+    AWS available types:
+    Disable - for disabling the user's access key.
+    Delete - for the user's access key deletion.
+  playbookInputQuery:
+- key: GCP-accessKeyRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+
+    GCP available types:
+    Disable - For disabling the user's access key.
+    Delete - For the deleting user's access key.
+  playbookInputQuery:
+- key: autoUserRemediation
+  value: {}
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-userRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    AWS available types:
+    Delete - for the user deletion.
+    Revoke - for revoking the user's credentials.
+  playbookInputQuery:
+- key: Azure-userRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    Azure available types:
+    Disable - for disabling the user.
+    Delete - for deleting the user.
+  playbookInputQuery:
+- key: GCP-userRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    GCP available types:
+    Delete - For deleting the user.
+    Disable - For disabling the user.
+  playbookInputQuery:
+- key: autoBlockIndicators
+  value: {}
+  required: false
+  description: Whether to block the indicators automatically.
+  playbookInputQuery:
+- key: resourceName
+  value: {}
+  required: false
+  description: |-
+    The resource name to take action on.
+
+    Supports: AWS, GCP and Azure
+  playbookInputQuery:
+- key: resourceZone
+  value: {}
+  required: false
+  description: |-
+    The resource's zone to take action on.
+
+    Supports: GCP
+  playbookInputQuery:
+- key: resourceGroup
+  value: {}
+  required: false
+  description: |-
+    Supports: Azure
+    The resource group to take action on.
+  playbookInputQuery:
+- key: accessKeyName
+  value: {}
+  required: false
+  description: |-
+    The access key name in the following format:
+    projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}.
+
+    Supports: GCP
+  playbookInputQuery:
+- key: accessKeyId
+  value: {}
+  required: false
+  description: |-
+    The user's access key ID.
+
+    Supports: AWS
+  playbookInputQuery:
+- key: region
+  value: {}
+  required: false
+  description: |-
+    The resource's region.
+
+    Supports: AWS
+  playbookInputQuery:
+- key: username
+  value: {}
+  required: false
+  description: |-
+    The username to take action on.
+
+    Supports: AWS, GCP and Azure
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

@@ -1,0 +1,31 @@
+{
+    "id": "indicator_feedcycognitoexpiration",
+    "version": -1,
+    "modified": "2022-06-06T17:30:43.38965143+05:30",
+    "name": "FeedCyCognito Expiration",
+    "ownerOnly": false,
+    "cliName": "feedcycognitoexpiration",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CyCognito Asset"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

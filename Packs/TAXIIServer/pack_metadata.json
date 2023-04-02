@@ -2,7 +2,7 @@
     "name": "TAXII Server",
     "description": "This pack provides TAXII Services for system indicators (Outbound feed).",
     "support": "xsoar",
-    "currentVersion": "2.0.14",
+    "currentVersion": "2.0.30",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,7 +11,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "TIM"
+        "Threat Intelligence Management"
     ],
     "useCases": [],
     "keywords": [],

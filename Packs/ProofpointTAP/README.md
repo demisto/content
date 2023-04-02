@@ -7,13 +7,10 @@ This pack includes XSIAM content.
 
 In order to use the collector to collect events from the vendor,  to collect events.You will need to configure the vendor and product for this specific collector.
 
-<~XSIAM>
 <br/>This pack includes XSIAM content.
 
 ### Collect Events from Proofpoint TAP (XSIAM)
 To define a collector for Proofpoint you'll need to configure it in XDR documentation can be found [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors).
-
-</~XSIAM>
 
 ## What does this pack do?
 - Fetches events for all clicks and messages relating to known threats within a specified time period.

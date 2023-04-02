@@ -44,9 +44,19 @@
   - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
   - section_end "Create ID Set"
 
+.create-id-set-xpanse: &create-id-set-xpanse
+  - section_start "Create ID Set" --collapsed
+  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xpanse" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
+  - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
+  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
+  - section_end "Create ID Set"
+
 .download-demisto-conf:
   - section_start "Download content-test-conf" --collapsed
-  - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
+  - ./Tests/scripts/download_demisto_conf.sh | tee --append $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
+  - SECRET_CONF_PATH=$(cat secret_conf_path)
+  - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID"
   - section_end "Download content-test-conf"
 
 .open-ssh-tunnel:
@@ -132,8 +142,16 @@
   - nvm use default
   - echo "Installing Node Modules" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
   - npm ci --cache .npm --prefer-offline | tee --append $ARTIFACTS_FOLDER/logs/installations.log
+  - npm list --json
   - npm link jsdoc-to-markdown@5.0.3 | tee --append $ARTIFACTS_FOLDER/logs/installations.log  # disable-secrets-detection
   - section_end "Installing node modules"
+
+.get_last_upload_commit: &get_last_upload_commit
+  - section_start "Getting last bucket upload commit"
+  - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+  - gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "$ARTIFACTS_FOLDER/previous_index.json"
+  - export LAST_UPLOAD_COMMIT=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq -r ".\"commit\"")
+  - section_end "Getting last bucket upload commit"
 
 .default-before-script:
   before_script:
@@ -147,9 +165,12 @@
     - *install_node_modules
     - *install_venv
     - *get_contribution_pack
+    - *get_last_upload_commit
     - *install_ssh_keys
     - section_start "Build Parameters"
-    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^SLACK_CHANNEL=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ENV_RESULTS_PATH="
+    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^GCS_MARKET_XPANSE_BUCKET=|^SLACK_CHANNEL=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ENV_RESULTS_PATH=|^LAST_UPLOAD_COMMIT="
+    - neo4j-admin dbms set-initial-password contentgraph
+    - neo4j start
     - python --version
     - python2 --version
     - python3 --version
@@ -189,6 +210,7 @@
     paths:
       - /builds/xsoar/content/unit-tests
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   services:
     - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
@@ -211,9 +233,6 @@
         ./Tests/scripts/sdk_pylint_check.sh
       fi
     - section_end "Test Infrastructure"
-    - section_start "Create id set"
-    - *create-id-set
-    - section_end "Create id set"
     - section_start "Run Unit Testing and Lint"
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
@@ -229,23 +248,27 @@
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
         mkdir ./unit-tests
+        if [[ -n "${SHOULD_LINT_ALL}" || -n "${BUCKET_UPLOAD}" ]]; then
+          echo "In should lint all / bucket upload."
+          if [ $DOCKER == "native:dev,from-yml" ]; then
+            echo "removing native:dev from docker list."
+            DOCKER='from-yml'
+          fi
+        fi
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER
+          demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image ${DOCKER}
         else
           if [[ -n $BUCKET_UPLOAD ]]; then
-            gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
-            gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "$ARTIFACTS_FOLDER/previous_index.json"
-            export COMMIT_HASH_COMPARE_TO=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq -r ".\"commit\"")
-            demisto-sdk lint -vvv -p 8 -g --prev-ver $COMMIT_HASH_COMPARE_TO -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -idp $ARTIFACTS_FOLDER/id_set.json -cdam
+            demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
           else
-            echo "Skipping, Should run on circleCi."
+            demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
           fi
         fi
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
-          if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
+          if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||   -n "$SHOULD_LINT_ALL"  ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
             demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --allowed-coverage-degradation-percentage 100
-            if [[ -n "${NIGHTLY}" && "$CI_COMMIT_BRANCH" == "master" ]]; then
+            if [[ -n "${NIGHTLY}" && "$CI_COMMIT_BRANCH" == "master" && $DOCKER == "from-yml" ]]; then
               python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name $ARTIFACTS_FOLDER/coverage_report/coverage.json --minimal_file_name $ARTIFACTS_FOLDER/coverage_report/coverage-min.json
             fi
           else
@@ -254,6 +277,10 @@
         fi
       fi
     - section_end "Run Unit Testing and Lint"
+    - job-done
+  parallel:
+    matrix:
+      - DOCKER: ['native:ga,native:maintenance','native:dev,from-yml']
 
 .run-validations:
   stage: unittests-and-validations
@@ -266,39 +293,19 @@
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   script:
     - section_start "Look For Secrets"
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Look For Secrets"
-    - section_start "Create id set"
-    - *create-id-set
-    - section_end "Create id set"
-    - section_start "Merge public and private id sets"
-    - |
-      if [[ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
-          echo "Skipping, Should not run on contributor's branch."
-      else
-        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
-        echo "successfully activated google cloud service account"
-
-        echo "Download private ID set"
-        gsutil cp "gs://marketplace-dist/content/private_id_set.json" $ARTIFACTS_FOLDER/unified_id_set.json
-        echo "successfully downloaded private ID set"
-        gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
-
-        echo "Merge public and private ID sets"
-        demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $ARTIFACTS_FOLDER/unified_id_set.json
-        echo "successfully merged public and private ID sets"
-      fi
-    - section_end "Merge public and private id sets"
     - section_start "Copy Tests To Artifact Folder"
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Copy Tests To Artifact Folder"
     - section_start "Validate Files and Yaml"
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
-        echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
+      if [[ -n $FORCE_BUCKET_UPLOAD ]]; then
+        echo "Skipping the -Validate Files and Yaml- step when force uploading to a bucket."
       else
         ./Tests/scripts/linters_runner.sh
         ./Tests/scripts/validate.sh
@@ -319,6 +326,7 @@
             echo "No such branch in content-test-conf: $UNDERSCORE_CI_BRANCH"
           else
             echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
+            job-done
             exit 1
           fi
         }
@@ -340,3 +348,9 @@
 
     - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
     - section_end "Validate landingPageSections.json"
+    - job-done
+
+.jobs-done-check:
+  stage: are-jobs-realy-done
+  script:
+    - python3 Tests/scripts/check_jobs_done.py --job-done-files $PIPELINE_JOBS_FOLDER

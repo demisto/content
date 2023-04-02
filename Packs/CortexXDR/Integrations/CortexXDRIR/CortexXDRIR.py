@@ -1,10 +1,11 @@
 import hashlib
 import secrets
 import string
+from itertools import zip_longest
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
-from itertools import zip_longest
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -32,23 +33,6 @@ XDR_INCIDENT_FIELDS = {
     "manual_severity": {"description": "Incident severity assigned by the user. "
                                        "This does not affect the calculated severity low medium high",
                         "xsoar_field_name": "severity"},
-}
-
-XDR_RESOLVED_STATUS_TO_XSOAR = {
-    'resolved_known_issue': 'Other',
-    'resolved_duplicate': 'Duplicate',
-    'resolved_false_positive': 'False Positive',
-    'resolved_true_positive': 'Resolved',
-    'resolved_security_testing': 'Other',
-    'resolved_other': 'Other',
-    'resolved_auto': 'Resolved'
-}
-
-XSOAR_RESOLVED_STATUS_TO_XDR = {
-    'Other': 'resolved_other',
-    'Duplicate': 'resolved_duplicate',
-    'False Positive': 'resolved_false_positive',
-    'Resolved': 'resolved_true_positive',
 }
 
 MIRROR_DIRECTION = {
@@ -318,6 +302,45 @@ class Client(CoreClient):
 
         return incidents
 
+    def update_incident(self, incident_id, status=None, assigned_user_mail=None, assigned_user_pretty_name=None, severity=None,
+                        resolve_comment=None, unassign_user=None, add_comment=None):
+        update_data: dict[str, Any] = {}
+
+        if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
+            raise ValueError("Can't provide both assignee_email/assignee_name and unassign_user")
+        if unassign_user:
+            update_data['assigned_user_mail'] = 'none'
+
+        if assigned_user_mail:
+            update_data['assigned_user_mail'] = assigned_user_mail
+
+        if assigned_user_pretty_name:
+            update_data['assigned_user_pretty_name'] = assigned_user_pretty_name
+
+        if status:
+            update_data['status'] = status
+
+        if severity:
+            update_data['manual_severity'] = severity
+
+        if resolve_comment:
+            update_data['resolve_comment'] = resolve_comment
+
+        if add_comment:
+            update_data['comment'] = {'comment_action': 'add', 'value': add_comment}
+
+        request_data = {
+            'incident_id': incident_id,
+            'update_data': update_data,
+        }
+
+        self._http_request(
+            method='POST',
+            url_suffix='/incidents/update_incident/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
     def get_incident_extra_data(self, incident_id, alerts_limit=1000):
         """
         Returns incident by id
@@ -383,6 +406,28 @@ class Client(CoreClient):
         )
 
         return reply.get('reply')
+
+    def get_tenant_info(self):
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/system/get_tenant_info/',
+            json_data={'request_data': {}},
+            timeout=self.timeout
+        )
+        return reply.get('reply', {})
+
+
+def get_tenant_info_command(client: Client):
+    tenant_info = client.get_tenant_info()
+    readable_output = tableToMarkdown(
+        'Tenant Information', tenant_info, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.TenantInformation',
+        outputs=tenant_info,
+        raw_response=tenant_info
+    )
 
 
 def get_incidents_command(client, args):
@@ -483,6 +528,30 @@ def get_incidents_command(client, args):
     )
 
 
+def update_incident_command(client, args):
+    incident_id = args.get('incident_id')
+    assigned_user_mail = args.get('assigned_user_mail')
+    assigned_user_pretty_name = args.get('assigned_user_pretty_name')
+    status = args.get('status')
+    severity = args.get('manual_severity')
+    unassign_user = args.get('unassign_user') == 'true'
+    resolve_comment = args.get('resolve_comment')
+    add_comment = args.get('add_comment')
+
+    client.update_incident(
+        incident_id=incident_id,
+        assigned_user_mail=assigned_user_mail,
+        assigned_user_pretty_name=assigned_user_pretty_name,
+        unassign_user=unassign_user,
+        status=status,
+        severity=severity,
+        resolve_comment=resolve_comment,
+        add_comment=add_comment,
+    )
+
+    return f'Incident {incident_id} has been updated', None, None
+
+
 def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_timestamp, last_modified_incidents_dict):
     if incident_id in last_modified_incidents_dict:  # search the incident in the dict of modified incidents
         incident_modification_time_in_xdr = int(str(last_modified_incidents_dict[incident_id]))
@@ -568,9 +637,16 @@ def get_incident_extra_data_command(client, args):
     account_context_output = assign_params(**{
         'Username': incident.get('users', '')
     })
-    endpoint_context_output = assign_params(**{
-        'Hostname': incident.get('hosts', '')
-    })
+    endpoint_context_output = []
+
+    for alert in incident.get('alerts') or []:
+        alert_context = {}
+        if hostname := alert.get('host_name'):
+            alert_context['Hostname'] = hostname
+        if endpoint_id := alert.get('endpoint_id'):
+            alert_context['ID'] = endpoint_id
+        if alert_context:
+            endpoint_context_output.append(alert_context)
 
     context_output = {f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident}
     if account_context_output:
@@ -745,7 +821,7 @@ def handle_incoming_closing_incident(incident_data):
             'Contents': {
                 'dbotIncidentClose': True,
                 'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
-                'closeNotes': f'{MIRROR_IN_CLOSE_REASON}\n{incident_data.get("resolve_comment","")}'
+                'closeNotes': incident_data.get('resolve_comment', '')
             },
             'ContentsFormat': EntryFormat.JSON
         }
@@ -874,6 +950,33 @@ def get_remote_data_command(client, args):
             mirrored_object=incident_data,
             entries=[]
         )
+
+
+def update_remote_system_command(client, args):
+    remote_args = UpdateRemoteSystemArgs(args)
+
+    if remote_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
+                      f'incident {remote_args.remote_incident_id}')
+    try:
+        if remote_args.incident_changed:
+            update_args = get_update_args(remote_args)
+
+            update_args['incident_id'] = remote_args.remote_incident_id
+            demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
+            update_incident_command(client, update_args)
+
+        else:
+            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
+                          f'as it is not new nor changed')
+
+        return remote_args.remote_incident_id
+
+    except Exception as e:
+        demisto.debug(f"Error in outgoing mirror for incident {remote_args.remote_incident_id} \n"
+                      f"Error message: {str(e)}")
+
+        return remote_args.remote_incident_id
 
 
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
@@ -1154,6 +1257,9 @@ def main():  # pragma: no cover
         elif command == 'xdr-get-endpoints':
             return_results(get_endpoints_command(client, args))
 
+        elif command == 'xdr-endpoint-alias-change':
+            return_results(endpoint_alias_change_command(client, **args))
+
         elif command == 'xdr-insert-parsed-alert':
             return_outputs(*insert_parsed_alert_command(client, args))
 
@@ -1224,6 +1330,18 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-quarantine-files':
             return_results(quarantine_files_command(client, args))
+
+        elif command == 'xdr-file-quarantine':
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="xdr-file-quarantine",
+                                               command_function=quarantine_files_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'core-quarantine-files':
             polling_args = {
@@ -1445,7 +1563,15 @@ def main():  # pragma: no cover
         elif command == 'xdr-blocklist-files':
             return_results(blocklist_files_command(client, args))
 
+        elif command == 'xdr-blacklist-files':
+            args['prefix'] = 'blacklist'
+            return_results(blocklist_files_command(client, args))
+
         elif command == 'xdr-allowlist-files':
+            return_results(allowlist_files_command(client, args))
+
+        elif command == 'xdr-whitelist-files':
+            args['prefix'] = 'whitelist'
             return_results(allowlist_files_command(client, args))
 
         elif command == 'xdr-remove-blocklist-files':
@@ -1459,6 +1585,15 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-replace-featured-field':
             return_results(replace_featured_field_command(client, args))
+
+        elif command == 'xdr-endpoint-tag-add':
+            return_results(add_tag_to_endpoints_command(client, args))
+
+        elif command == 'xdr-endpoint-tag-remove':
+            return_results(remove_tag_from_endpoints_command(client, args))
+
+        elif command == 'xdr-get-tenant-info':
+            return_results(get_tenant_info_command(client))
 
     except Exception as err:
         return_error(str(err))

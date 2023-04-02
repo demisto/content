@@ -2,13 +2,13 @@
     "name": "Microsoft Advanced Threat Analytics",
     "description": "Manage suspicious activities, monitoring alerts and entities on Microsoft ATA.",
     "support": "xsoar",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-07-27T15:04:39Z",
     "categories": [
-        "Forensics & Malware Analysis"
+        "Analytics & SIEM"
     ],
     "tags": [],
     "useCases": [],

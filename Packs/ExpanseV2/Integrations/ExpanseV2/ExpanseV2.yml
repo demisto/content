@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: ExpanseV2
   version: -1
@@ -8,37 +11,51 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: Xpanse API Key to use to connect.
-  display: API Key
+- name: credentials
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
+  section: Connect
+- display: API Key
   name: apikey
-  required: true
   type: 4
+  additionalinfo: Xpanse API Key to use to connect.
+  hidden: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - display: Fetch Xpanse issues with Priority
   name: priority
   options:
@@ -48,6 +65,8 @@ configuration:
   - Critical
   required: false
   type: 16
+  section: Collect
+  advanced: true
 - defaultvalue: Active
   display: Fetch Xpanse issues with Activity Status
   name: activity_status
@@ -56,6 +75,8 @@ configuration:
   - Inactive
   required: false
   type: 16
+  section: Collect
+  advanced: true
 - display: Fetch Xpanse issues with Progress Status
   name: progress_status
   options:
@@ -66,18 +87,26 @@ configuration:
   - Resolved
   required: false
   type: 16
+  section: Collect
+  advanced: true
 - display: Fetch issues with Business Units (comma separated string)
   name: business_unit
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Fetch issues with Tags (comma separated string)
   name: tag
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Fetch issue with Types (comma separated string)
   name: issue_type
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Fetch Xpanse issues with Cloud Management Status
   name: cloud_management_status
   options:
@@ -86,6 +115,8 @@ configuration:
   - UnmanagedCloud
   required: false
   type: 16
+  section: Collect
+  advanced: true
 - defaultvalue: None
   display: Incident Mirroring Direction
   hidden: false
@@ -97,27 +128,30 @@ configuration:
   - Both
   required: false
   type: 15
+  section: Collect
 - defaultvalue: 'false'
   display: Sync Incident Owners
   hidden: false
   name: sync_owners
   required: false
   type: 8
-- additionalinfo: Assign these XSOAR tags (comma separated list) to the incoming comments
-    mirrored from the Xpanse Issue (must be different from the sync_tags to prevent
-    loops).
+  section: Collect
+  advanced: true
+- additionalinfo: Assign these XSOAR tags (comma separated list) to the incoming comments mirrored from the Xpanse Issue (must be different from the sync_tags to prevent loops).
   defaultvalue: FromExpanse
   display: Tag(s) for mirrored comments
   name: incoming_tags
   required: false
   type: 0
-- additionalinfo: Mirror XSOAR entries with these XSOAR tags (comma separate list)
-    to the corresponding Xpanse Issue as comments (must be different from the incoming_tags
-    to prevent loops).
+  section: Collect
+  advanced: true
+- additionalinfo: Mirror XSOAR entries with these XSOAR tags (comma separate list) to the corresponding Xpanse Issue as comments (must be different from the incoming_tags to prevent loops).
   display: Mirror out Entries with tag(s)
   name: sync_tags
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -132,6 +166,7 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
+  section: Collect
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -142,15 +177,16 @@ configuration:
   - suddenDeath
   required: false
   type: 17
+  section: Collect
+  advanced: true
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   required: false
   type: 1
-description: The Xpanse integration for Cortex XSOAR leverages the Expander API
-  to create incidents from Xpanse issues. It also leverages Xpanse's unparalleled
-  view of the Internet to enrich IPs, domains and certificates using information from
-  assets discovered by Xpanse Expander and risky flows detected by Xpanse Behavior.
+  section: Collect
+  advanced: true
+description: The Xpanse integration for Cortex XSOAR leverages the Expander API to create incidents from Xpanse issues. It also leverages Xpanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Xpanse Expander and risky flows detected by Xpanse Behavior.
 display: Cortex Xpanse
 name: ExpanseV2
 script:
@@ -195,8 +231,7 @@ script:
       description: Description for asset reference reason
       type: String
     - contextPath: Expanse.Service.businessUnits.id
-      description: The internal Xpanse ID for the business unit the affected asset
-        belongs to
+      description: The internal Xpanse ID for the business unit the affected asset belongs to
       type: String
     - contextPath: Expanse.Service.businessUnits.name
       description: The name of the business unit the affected asset belongs to
@@ -527,88 +562,74 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns only results whose contents match the given query. Query
-        can be any generic string (ex. telnet).
+      description: Returns only results whose contents match the given query. Query can be any generic string (ex. telnet).
       isArray: false
       name: content_search
       required: false
       secret: false
     - default: false
-      description: Returns only results that were found on the given providers (comma
-        separated string).
+      description: Returns only results that were found on the given providers (comma separated string).
       isArray: true
       name: provider
       required: false
       secret: false
     - default: false
-      description: Returns only results with a business unit whose name falls in the
-        provided list (comma separated string).
+      description: Returns only results with a business unit whose name falls in the provided list (comma separated string).
       isArray: true
       name: business_unit
       required: false
       secret: false
     - default: false
-      description: Returns only results whose service type name (or classification
-        ID) matches one of the given types (comma separated string).
+      description: Returns only results whose service type name (or classification ID) matches one of the given types (comma separated string).
       isArray: true
       name: service_type
       required: false
       secret: false
     - default: false
-      description: Returns results whose identifier includes an IP matching the query.
-        Search for results in a given IP/CIDR block using a single IP (d.d.d.d), a
-        dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR
-        (d.d.), or a wildcard (d.d.*.d).
+      description: Returns results whose identifier includes an IP matching the query. Search for results in a given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
       isArray: false
       name: inet_search
       required: false
       secret: false
     - default: false
-      description: Returns results whose identifier includes a domain matching the
-        query.
+      description: Returns results whose identifier includes a domain matching the query.
       isArray: false
       name: domain_search
       required: false
       secret: false
     - default: false
-      description: Returns only results whose identifier includes one of the given
-        port numbers (comma separated list).
+      description: Returns only results whose identifier includes one of the given port numbers (comma separated list).
       isArray: true
       name: port_number
       required: false
       secret: false
     - default: false
-      description: Returns only results whose discovery type matches one of the given
-        values (comma separated string, options are 'ColocatedOnIp', 'DirectlyDiscovered').
+      description: Returns only results whose discovery type matches one of the given values (comma separated string, options are 'ColocatedOnIp', 'DirectlyDiscovered').
       isArray: true
       name: discovery_type
       required: false
       secret: false
     - default: false
-      description: Returns only results whose country code matches one of the given
-        ISO-3166 two character country codes (comma separated list).
+      description: Returns only results whose country code matches one of the given ISO-3166 two character country codes (comma separated list).
       isArray: true
       name: country_code
       required: false
       secret: false
     - default: false
-      description: Returns only results whose activity status matches one of the given
-        values. (comma separated string, options are 'Active', 'Inactive').
+      description: Returns only results whose activity status matches one of the given values. (comma separated string, options are 'Active', 'Inactive').
       isArray: true
       name: activity_status
       required: false
       secret: false
     - default: false
-      description: Returns only results that are associated with the provided tag
-        names (comma separated string).
+      description: Returns only results that are associated with the provided tag names (comma separated string).
       isArray: true
       name: tag
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Returns only results whose cloud management status is the following:(comma-separated
-        string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud').
+      description: Returns only results whose cloud management status is the following:(comma-separated string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud').
       isArray: true
       name: cloud_management_status
       predefined:
@@ -665,8 +686,7 @@ script:
       description: Description for asset reference reason
       type: String
     - contextPath: Expanse.Service.businessUnits.id
-      description: The internal Xpanse ID for the business unit the affected asset
-        belongs to
+      description: The internal Xpanse ID for the business unit the affected asset belongs to
       type: String
     - contextPath: Expanse.Service.businessUnits.name
       description: The name of the business unit the affected asset belongs to
@@ -1003,76 +1023,62 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns only results that were found on the given providers (comma
-        separated string).
+      description: Returns only results that were found on the given providers (comma separated string).
       isArray: true
       name: provider
       required: false
       secret: false
     - default: false
-      description: Returns only results with a business unit whose name falls in the
-        provided list (comma separated string).
+      description: Returns only results with a business unit whose name falls in the provided list (comma separated string).
       isArray: true
       name: business_unit
       required: false
       secret: false
     - default: false
-      description: Returns only results whose assignee's username matches one of the
-        given usernames. Use "Unassigned" to fetch issues that are not assigned to
-        any user.
+      description: Returns only results whose assignee's username matches one of the given usernames. Use "Unassigned" to fetch issues that are not assigned to any user.
       isArray: true
       name: assignee
       required: false
       secret: false
     - default: false
-      description: Returns only results whose issue type name matches one of the given
-        types (comma separated string).
+      description: Returns only results whose issue type name matches one of the given types (comma separated string).
       isArray: true
       name: issue_type
       required: false
       secret: false
     - default: false
-      description: Returns results whose identifier includes an IP matching the query.
-        Search for results in a given IP/CIDR block using a single IP (d.d.d.d), a
-        dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR
-        (d.d.), or a wildcard (d.d.*.d).
+      description: Returns results whose identifier includes an IP matching the query. Search for results in a given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
       isArray: false
       name: inet_search
       required: false
       secret: false
     - default: false
-      description: Returns results whose identifier includes a domain matching the
-        query.
+      description: Returns results whose identifier includes a domain matching the query.
       isArray: false
       name: domain_search
       required: false
       secret: false
     - default: false
-      description: Returns only results whose identifier includes one of the given
-        port numbers (comma separated list).
+      description: Returns only results whose identifier includes one of the given port numbers (comma separated list).
       isArray: true
       name: port_number
       required: false
       secret: false
     - default: false
-      description: Returns only results whose priority matches one of the given values
-        (comma separated string, options are 'Low', 'Medium', 'High', 'Critical').
+      description: Returns only results whose priority matches one of the given values (comma separated string, options are 'Low', 'Medium', 'High', 'Critical').
       isArray: true
       name: priority
       required: false
       secret: false
     - default: false
-      description: Returns only results whose progress status matches one of the given
-        values (comma separated string, options are 'New', 'Investigating', 'InProgress',
-        'AcceptableRisk', 'Resolved').
+      description: Returns only results whose progress status matches one of the given values (comma separated string, options are 'New', 'Investigating', 'InProgress', 'AcceptableRisk', 'Resolved').
       isArray: true
       name: progress_status
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Returns only results whose activity status matches one of the given
-        values.
+      description: Returns only results whose activity status matches one of the given values.
       isArray: true
       name: activity_status
       predefined:
@@ -1081,44 +1087,38 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns only results that are associated with the provided tag
-        names (comma separated string).
+      description: Returns only results that are associated with the provided tag names (comma separated string).
       isArray: true
       name: tag
       required: false
       secret: false
     - default: false
-      description: Returns only results created before the provided timestamp (ISO8601
-        format YYYY-MM-DDTHH:MM:SSZ).
+      description: Returns only results created before the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: created_before
       required: false
       secret: false
     - default: false
-      description: Returns only results created after the provided timestamp (ISO8601
-        format YYYY-MM-DDTHH:MM:SSZ).
+      description: Returns only results created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: created_after
       required: false
       secret: false
     - default: false
-      description: Returns only results modified before the provided timestamp (ISO8601
-        format YYYY-MM-DDTHH:MM:SSZ).
+      description: Returns only results modified before the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: modified_before
       required: false
       secret: false
     - default: false
-      description: Returns only results modified after the provided timestamp (ISO8601
-        format YYYY-MM-DDTHH:MM:SSZ).
+      description: Returns only results modified after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: modified_after
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Returns only results whose cloud management status is the following.
-        (comma separated string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud').
+      description: Returns only results whose cloud management status is the following. (comma separated string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud').
       isArray: true
       name: cloud_management_status
       predefined:
@@ -1180,8 +1180,7 @@ script:
       description: The username of the user that has been assigned to the issue
       type: String
     - contextPath: Expanse.Issue.businessUnits.id
-      description: The internal Xpanse ID for the business unit the affected asset
-        belongs to
+      description: The internal Xpanse ID for the business unit the affected asset belongs to
       type: String
     - contextPath: Expanse.Issue.businessUnits.name
       description: The name of the business unit the affected asset belongs to
@@ -1322,8 +1321,7 @@ script:
       description: The issuer in the certificate in the initial observation
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.issuerAlternativeNames
-      description: The issuer alternative names in the certificate in the initial
-        observation
+      description: The issuer alternative names in the certificate in the initial observation
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.issuerCountry
       description: The issuer country in the certificate in the initial observation
@@ -1383,8 +1381,7 @@ script:
       description: The subject in the certificate in the initial observation
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.subjectAlternativeNames
-      description: The subject alternative names in the certificate in the initial
-        observation
+      description: The subject alternative names in the certificate in the initial observation
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.subjectCountry
       description: The subject country in the certificate in the initial observation
@@ -1492,8 +1489,7 @@ script:
       description: The name of the issue type
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.formattedIssuerOrg
-      description: The formatted issuer org in the certificate in the most recent
-        observation
+      description: The formatted issuer org in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.id
       description: The Internal Xpanse certificate ID in the most recent observation
@@ -1502,8 +1498,7 @@ script:
       description: The issuer in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.issuerAlternativeNames
-      description: The issuer alternative names in the certificate in the most recent
-        observation
+      description: The issuer alternative names in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.issuerCountry
       description: The issuer country in the certificate in the most recent observation
@@ -1539,8 +1534,7 @@ script:
       description: The public key in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyAlgorithm
-      description: The public key algorithm in the certificate in the most recent
-        observation
+      description: The public key algorithm in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyBits
       description: The public key bits in the certificate in the most recent observation
@@ -1549,8 +1543,7 @@ script:
       description: The public key modulus in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyRsaExponent
-      description: The public key RSA exponent in the certificate in the most recent
-        observation
+      description: The public key RSA exponent in the certificate in the most recent observation
       type: Number
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeySpki
       description: The public key Spki in the certificate in the most recent observation
@@ -1565,8 +1558,7 @@ script:
       description: The subject in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.subjectAlternativeNames
-      description: The subject alternative names in the certificate in the most recent
-        observation
+      description: The subject alternative names in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.subjectCountry
       description: The subject country in the certificate in the most recent observation
@@ -1590,12 +1582,10 @@ script:
       description: The subject state in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.validNotAfter
-      description: The valid not after date in the certificate in the most recent
-        observation
+      description: The valid not after date in the certificate in the most recent observation
       type: Date
     - contextPath: Expanse.Issue.latestEvidence.certificate.validNotBefore
-      description: The valid not before date in the certificate in the most recent
-        observation
+      description: The valid not before date in the certificate in the most recent observation
       type: Date
     - contextPath: Expanse.Issue.latestEvidence.certificate.version
       description: The version in the certificate in the most recent observation
@@ -1692,15 +1682,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Update types to retrieve (comma separated string. Valid options
-        are 'Assignee', 'Comment', 'Priority', 'ProgressStatus', 'ActivityStatus')
+      description: Update types to retrieve (comma separated string. Valid options are 'Assignee', 'Comment', 'Priority', 'ProgressStatus', 'ActivityStatus')
       isArray: false
       name: update_types
       required: false
       secret: false
     - default: false
-      description: Returns only updates created after the provided timestamp (ISO8601
-        format YYYY-MM-DDTHH:MM:SSZ).
+      description: Returns only updates created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: created_after
       required: false
@@ -1729,8 +1717,7 @@ script:
       description: The previous value of the field that was updated
       type: String
     - contextPath: Expanse.IssueUpdate.updateType
-      description: The type of update that occurred, valid types are ProgressStatus,
-        ActivityStatus, Priority, Assignee, and Comment
+      description: The type of update that occurred, valid types are ProgressStatus, ActivityStatus, Priority, Assignee, and Comment
       type: String
     - contextPath: Expanse.IssueUpdate.user.username
       description: The username of the user who made the update
@@ -1746,8 +1733,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Returns only comments created after the provided timestamp (ISO8601
-        format YYYY-MM-DDTHH:MM:SSZ).
+      description: Returns only comments created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: created_after
       required: false
@@ -1770,8 +1756,7 @@ script:
       description: The previous value of the field that was updated
       type: String
     - contextPath: Expanse.IssueComment.updateType
-      description: The type of update that occurred, valid types are ProgressStatus,
-        ActivityStatus, Priority, Assignee, and Comment
+      description: The type of update that occurred, valid types are ProgressStatus, ActivityStatus, Priority, Assignee, and Comment
       type: String
     - contextPath: Expanse.IssueComment.user.username
       description: The username of the user who made the update
@@ -1823,8 +1808,7 @@ script:
       description: The previous value of the field that was updated
       type: String
     - contextPath: Expanse.IssueUpdate.updateType
-      description: The type of update that occurred, valid types are ProgressStatus,
-        ActivityStatus, Priority, Assignee, and Comment
+      description: The type of update that occurred, valid types are ProgressStatus, ActivityStatus, Priority, Assignee, and Comment
       type: String
     - contextPath: Expanse.IssueUpdate.user.username
       description: The username of the user who made the update
@@ -1869,8 +1853,7 @@ script:
       description: The username of the user that has been assigned to the issue
       type: String
     - contextPath: Expanse.Issue.businessUnits.id
-      description: The internal Xpanse ID for the business unit the affected asset
-        belongs to
+      description: The internal Xpanse ID for the business unit the affected asset belongs to
       type: String
     - contextPath: Expanse.Issue.businessUnits.name
       description: The name of the business unit the affected asset belongs to
@@ -2011,8 +1994,7 @@ script:
       description: The issuer in the certificate in the initial observation
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.issuerAlternativeNames
-      description: The issuer alternative names in the certificate in the initial
-        observation
+      description: The issuer alternative names in the certificate in the initial observation
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.issuerCountry
       description: The issuer country in the certificate in the initial observation
@@ -2072,8 +2054,7 @@ script:
       description: The subject in the certificate in the initial observation
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.subjectAlternativeNames
-      description: The subject alternative names in the certificate in the initial
-        observation
+      description: The subject alternative names in the certificate in the initial observation
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.subjectCountry
       description: The subject country in the certificate in the initial observation
@@ -2181,8 +2162,7 @@ script:
       description: The name of the issue type
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.formattedIssuerOrg
-      description: The formatted issuer org in the certificate in the most recent
-        observation
+      description: The formatted issuer org in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.id
       description: The Internal Xpanse certificate ID in the most recent observation
@@ -2191,8 +2171,7 @@ script:
       description: The issuer in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.issuerAlternativeNames
-      description: The issuer alternative names in the certificate in the most recent
-        observation
+      description: The issuer alternative names in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.issuerCountry
       description: The issuer country in the certificate in the most recent observation
@@ -2228,8 +2207,7 @@ script:
       description: The public key in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyAlgorithm
-      description: The public key algorithm in the certificate in the most recent
-        observation
+      description: The public key algorithm in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyBits
       description: The public key bits in the certificate in the most recent observation
@@ -2238,8 +2216,7 @@ script:
       description: The public key modulus in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyRsaExponent
-      description: The public key RSA exponent in the certificate in the most recent
-        observation
+      description: The public key RSA exponent in the certificate in the most recent observation
       type: Number
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeySpki
       description: The public key Spki in the certificate in the most recent observation
@@ -2254,8 +2231,7 @@ script:
       description: The subject in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.subjectAlternativeNames
-      description: The subject alternative names in the certificate in the most recent
-        observation
+      description: The subject alternative names in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.subjectCountry
       description: The subject country in the certificate in the most recent observation
@@ -2279,12 +2255,10 @@ script:
       description: The subject state in the certificate in the most recent observation
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.validNotAfter
-      description: The valid not after date in the certificate in the most recent
-        observation
+      description: The valid not after date in the certificate in the most recent observation
       type: Date
     - contextPath: Expanse.Issue.latestEvidence.certificate.validNotBefore
-      description: The valid not before date in the certificate in the most recent
-        observation
+      description: The valid not before date in the certificate in the most recent observation
       type: Date
     - contextPath: Expanse.Issue.latestEvidence.certificate.version
       description: The version in the certificate in the most recent observation
@@ -2465,8 +2439,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Phone number of Point of Contact. Should be a numeric string (ex.
-        15551234567)
+      description: Phone number of Point of Contact. Should be a numeric string (ex. 15551234567)
       isArray: false
       name: phone
       required: false
@@ -2526,17 +2499,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the pocs to assign to the asset (comma separated string).
-        If used in combination with 'poc_emails' the lists of pocs are merged. At
-        least one poc ID or poc email must be provided.
+      description: IDs of the pocs to assign to the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
       required: false
       secret: false
     - default: false
-      description: Email Addresses of the pocs to assign to the asset (comma separated
-        string). If used in combination with 'pocs' the lists of pocs are merged.
-        At least one poc ID or poc email must be provided.
+      description: Email Addresses of the pocs to assign to the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
       required: false
@@ -2565,17 +2534,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the pocs to unassign from the asset (comma separated string).
-        If used in combination with 'poc_emails' the lists of pocs are merged. At
-        least one poc ID or poc email must be provided.
+      description: IDs of the pocs to unassign from the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
       required: false
       secret: false
     - default: false
-      description: Names of the pocs to unassign from the asset (comma separated string).
-        If used in combination with 'pocs' the lists of pocs are merged. At least
-        one poc ID or poc email must be provided.
+      description: Names of the pocs to unassign from the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
       required: false
@@ -2592,17 +2557,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the pocs to assign to the IP range (comma separated string).
-        If used in combination with 'poc_emails' the lists of pocs are merged. At
-        least one poc ID or poc email must be provided.
+      description: IDs of the pocs to assign to the IP range (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
       required: false
       secret: false
     - default: false
-      description: Emails of the pocs to assign to the IP range (comma separated string).
-        If used in combination with 'pocs' the lists of pocs are merged. At least
-        one poc ID or poc email must be provided.
+      description: Emails of the pocs to assign to the IP range (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
       required: false
@@ -2619,17 +2580,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the pocs to unassign from the IP range (comma separated
-        string). If used in combination with 'poc_emails' the lists of pocs are merged.
-        At least one poc ID or poc email must be provided.
+      description: IDs of the pocs to unassign from the IP range (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
       required: false
       secret: false
     - default: false
-      description: Names of the pocs to unassign from the IP range (comma separated
-        string). If used in combination with 'pocs' the lists of pocs are merged.
-        At least one poc ID or poc email must be provided.
+      description: Names of the pocs to unassign from the IP range (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
       required: false
@@ -2646,17 +2603,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the pocs to assign to the certificate (comma separated string).
-        If used in combination with 'poc_emails' the lists of pocs are merged. At
-        least one poc ID or poc email must be provided.
+      description: IDs of the pocs to assign to the certificate (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
       required: false
       secret: false
     - default: false
-      description: Emails of the pocs to assign to the certificate (comma separated
-        string). If used in combination with 'pocs' the lists of pocs are merged.
-        At least one poc ID or poc email must be provided.
+      description: Emails of the pocs to assign to the certificate (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
       required: false
@@ -2673,17 +2626,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the pocs to unassign from the certificate (comma separated
-        string). If used in combination with 'poc_emails' the lists of pocs are merged.
-        At least one poc ID or poc email must be provided.
+      description: IDs of the pocs to unassign from the certificate (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
       required: false
       secret: false
     - default: false
-      description: Emails of the pocs to unassign from the certificate (comma separated
-        string). If used in combination with 'pocs' the lists of pocs are merged.
-        At least one poc ID or poc email must be provided.
+      description: Emails of the pocs to unassign from the certificate (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
       required: false
@@ -2700,17 +2649,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the pocs to assign to the domain (comma separated string).
-        If used in combination with 'poc_emails' the lists of pocs are merged. At
-        least one poc ID or poc email must be provided.
+      description: IDs of the pocs to assign to the domain (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
       required: false
       secret: false
     - default: false
-      description: Emails of the pocs to assign to the domain (comma separated string).
-        If used in combination with 'pocs' the lists of pocs are merged. At least
-        one poc ID or poc email must be provided.
+      description: Emails of the pocs to assign to the domain (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
       required: false
@@ -2727,17 +2672,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the pocs to unassign from the domain (comma separated string).
-        If used in combination with 'poc_emails' the lists of pocs are merged. At
-        least one poc ID or poc email must be provided.
+      description: IDs of the pocs to unassign from the domain (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
       required: false
       secret: false
     - default: false
-      description: Emails of the pocs to unassign from the domain (comma separated
-        string). If used in combination with 'pocs' the lists of pocs are merged.
-        At least one poc ID or poc email must be provided.
+      description: Emails of the pocs to unassign from the domain (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
       required: false
@@ -2799,15 +2740,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to assign to the asset (comma separated string).
-        If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to assign to the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to assign to the asset (comma separated string).
-        If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to assign to the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -2836,15 +2775,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to unassign from the asset (comma separated string).
-        If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to unassign from the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to unassign from the asset (comma separated string).
-        If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to unassign from the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -2861,15 +2798,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to assign to the IP range (comma separated string).
-        If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to assign to the IP range (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to assign to the IP range (comma separated string).
-        If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to assign to the IP range (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -2886,15 +2821,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to unassign from the IP range (comma separated
-        string). If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to unassign from the IP range (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to unassign from the IP range (comma separated
-        string). If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to unassign from the IP range (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -2911,15 +2844,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to assign to the certificate (comma separated string).
-        If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to assign to the certificate (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to assign to the certificate (comma separated
-        string). If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to assign to the certificate (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -2936,15 +2867,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to unassign from the certificate (comma separated
-        string). If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to unassign from the certificate (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to unassign from the certificate (comma separated
-        string). If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to unassign from the certificate (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -2961,15 +2890,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to assign to the domain (comma separated string).
-        If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to assign to the domain (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to assign to the domain (comma separated string).
-        If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to assign to the domain (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -2986,15 +2913,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to unassign from the domain (comma separated string).
-        If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to unassign from the domain (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to unassign from the domain (comma separated
-        string). If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to unassign from the domain (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -3044,45 +2969,37 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Asset ID of the Xpanse IP range to retrieve. If provided, other
-        search parameters are ignored.
+      description: Asset ID of the Xpanse IP range to retrieve. If provided, other search parameters are ignored.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided
-        list. (comma separated string). Cannot be used with the 'business_unit_names'
-        argument.
+      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
       isArray: true
       name: business_units
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided
-        list. (comma separated string). Cannot be used with the 'business_units' argument.
+      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
       isArray: true
       name: business_unit_names
       required: false
       secret: false
     - default: false
-      description: Search for given IP/CIDR block using a single IP (d.d.d.d), a dashed
-        IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.),
-        or a wildcard (d.d.*.d).
+      description: Search for given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
       isArray: false
       name: inet
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Tag ID falls in the provided list. (comma
-        separated string). Cannot be used with the 'tag_names' argument.
+      description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Tag name falls in the provided list.
-        (comma separated string). Cannot be used with the 'tags' argument.
+      description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
       isArray: true
       name: tag_names
       required: false
@@ -3090,9 +3007,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: none
-      description: Include "none" or any of the following options in the response
-        (comma separated) - annotations, severityCounts, attributionReasons, relatedRegistrationInformation,
-        locationInformation
+      description: Include "none" or any of the following options in the response (comma separated) - annotations, severityCounts, attributionReasons, relatedRegistrationInformation, locationInformation
       isArray: false
       name: include
       predefined:
@@ -3169,8 +3084,7 @@ script:
       description: The number of IP addresses in the IP range
       type: Number
     - contextPath: Expanse.IPRange.rangeType
-      description: If the IP range is Xpanse-generated parent range or a customer-generated
-        custom range
+      description: If the IP range is Xpanse-generated parent range or a customer-generated custom range
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.country
       description: The country within the IP range registration information
@@ -3191,68 +3105,52 @@ script:
       description: The parent handle within the IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.address
-      description: The address within the registry entities of the IP range registration
-        information
+      description: The address within the registry entities of the IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.email
-      description: The email within the registry entities of the e IP range registration
-        information
+      description: The email within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.action
-      description: The events action within the registry entities of the e IP range
-        registration information
+      description: The events action within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.actor
-      description: The events actor within the registry entities of the e IP range
-        registration information
+      description: The events actor within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.date
-      description: The events date within the registry entities of the e IP range
-        registration information
+      description: The events date within the registry entities of the e IP range registration information
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.firstRegistered
-      description: The first registered date within the registry entities of the e
-        IP range registration information
+      description: The first registered date within the registry entities of the e IP range registration information
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.formattedName
-      description: The formatted name within the registry entities of the e IP range
-        registration information
+      description: The formatted name within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.handle
-      description: The handle within the registry entities of the e IP range registration
-        information
+      description: The handle within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.id
-      description: The ID within the registry entities of the e IP range registration
-        information
+      description: The ID within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.lastChanged
-      description: The last changed date within the registry entities of the e IP
-        range registration information
+      description: The last changed date within the registry entities of the e IP range registration information
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.org
-      description: The org within the registry entities of the e IP range registration
-        information
+      description: The org within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.phone
-      description: The phone number within the registry entities of the e IP range
-        registration information
+      description: The phone number within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.relatedEntityHandles
-      description: The related entity handles within the registry entities of the
-        e IP range registration information
+      description: The related entity handles within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.remarks
-      description: The remarks within the registry entities of the e IP range registration
-        information
+      description: The remarks within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.roles
-      description: The roles within the registry entities of the e IP range registration
-        information
+      description: The roles within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.statuses
-      description: The statuses within the registry entities of the e IP range registration
-        information
+      description: The statuses within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.remarks
       description: The remarks within the IP range registration information
@@ -3267,8 +3165,7 @@ script:
       description: The Whois server within the IP range registration information
       type: String
     - contextPath: Expanse.IPRange.responsiveIpCount
-      description: The number of IPs responsive on the public Internet within the
-        IP range
+      description: The number of IPs responsive on the public Internet within the IP range
       type: Number
     - contextPath: Expanse.IPRange.severityCounts.count
       description: The number of exposures observed on the IP range
@@ -3290,8 +3187,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Domain name to retrieve (exact match). If provided, other search
-        parameters are ignored.
+      description: Domain name to retrieve (exact match). If provided, other search parameters are ignored.
       isArray: false
       name: domain
       required: false
@@ -3326,8 +3222,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Retrieve only domains with or without an active service discovered
-        by Xpanse.
+      description: Retrieve only domains with or without an active service discovered by Xpanse.
       isArray: false
       name: has_active_service
       predefined:
@@ -3337,8 +3232,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Retrieve only domains with or without cloud resources discovered
-        by Xpanse.
+      description: Retrieve only domains with or without cloud resources discovered by Xpanse.
       isArray: false
       name: has_related_cloud_resources
       predefined:
@@ -3347,44 +3241,37 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Tag ID falls in the provided list. (comma
-        separated string). Cannot be used with the 'tag_names' argument.
+      description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
       isArray: false
       name: tags
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Tag name falls in the provided list.
-        (comma separated string). Cannot be used with the 'tags' argument.
+      description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
       isArray: false
       name: tag_names
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided
-        list. (comma separated string). Cannot be used with the 'business_unit_names'
-        argument.
+      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
       isArray: false
       name: business_units
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's name falls in the provided
-        list. (comma separated string). Cannot be used with the 'business_units' argument.
+      description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
       isArray: false
       name: business_unit_names
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Provider's ID falls in the provided
-        list. (comma separated string). Cannot be used with the 'provider_names' argument.
+      description: Returns only results whose Provider's ID falls in the provided list. (comma separated string). Cannot be used with the 'provider_names' argument.
       isArray: false
       name: providers
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Provider's name falls in the provided
-        list. (comma separated string). Cannot be used with the 'providers' argument.
+      description: Returns only results whose Provider's name falls in the provided list. (comma separated string). Cannot be used with the 'providers' argument.
       isArray: false
       name: provider_names
       required: false
@@ -3416,19 +3303,16 @@ script:
       description: Business Units that the domain has been assigned to
       type: String
     - contextPath: Expanse.Domain.businessUnits.tenantId
-      description: Tenant ID for business Units that the domain has been assigned
-        to
+      description: Tenant ID for business Units that the domain has been assigned to
       type: String
     - contextPath: Expanse.Domain.dateAdded
       description: The date that the domain was added to the Expander instance
       type: Date
     - contextPath: Expanse.Domain.details.recentIps.assetKey
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.assetType
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.businessUnits.id
       description: Business Units for the recent IPs that the domain resolved to
@@ -3437,48 +3321,37 @@ script:
       description: Business Units for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.businessUnits.tenantId
-      description: Tenant information for business Units that the recent IPs that
-        the domain resolved to
+      description: Tenant information for business Units that the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.commonName
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.domain
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.ip
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.lastObserved
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: Date
     - contextPath: Expanse.Domain.details.recentIps.provider.id
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.provider.name
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.tenant.id
-      description: Tenant information for the recent IPs that the domain resolved
-        to
+      description: Tenant information for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.tenant.name
-      description: Tenant information for the recent IPs that the domain resolved
-        to
+      description: Tenant information for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.tenant.tenantId
-      description: Tenant information for the recent IPs that the domain resolved
-        to
+      description: Tenant information for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.type
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.dnsResolutionStatus
       description: Latest DNS resolution status
@@ -3487,8 +3360,7 @@ script:
       description: The date that the domain was first observed
       type: Date
     - contextPath: Expanse.Domain.hasLinkedCloudResources
-      description: Whether the domain has any linked cloud resources associated with
-        it
+      description: Whether the domain has any linked cloud resources associated with it
       type: Boolean
     - contextPath: Expanse.Domain.id
       description: Internal Xpanse ID for Domain
@@ -3521,12 +3393,10 @@ script:
       description: Sub-domain metadata
       type: Date
     - contextPath: Expanse.Domain.providers.id
-      description: Information about the hosting provider of the IP the domain resolves
-        to
+      description: Information about the hosting provider of the IP the domain resolves to
       type: String
     - contextPath: Expanse.Domain.providers.name
-      description: Information about the hosting provider of the IP the domain resolves
-        to
+      description: Information about the hosting provider of the IP the domain resolves to
       type: String
     - contextPath: Expanse.Domain.serviceStatus
       description: Detected service statuses for the domain
@@ -3619,8 +3489,7 @@ script:
       description: The registrant organization in the Whois information for the domain
       type: String
     - contextPath: Expanse.Domain.whois.registrant.phoneExtension
-      description: The registrant phone extension in the Whois information for the
-        domain
+      description: The registrant phone extension in the Whois information for the domain
       type: String
     - contextPath: Expanse.Domain.whois.registrant.phoneNumber
       description: The registrant phone number in the Whois information for the domain
@@ -3638,12 +3507,10 @@ script:
       description: The registrant street in the Whois information for the domain
       type: String
     - contextPath: Expanse.Domain.whois.registrar.abuseContactEmail
-      description: The registrar abuse contact email in the Whois information for
-        the domain
+      description: The registrar abuse contact email in the Whois information for the domain
       type: String
     - contextPath: Expanse.Domain.whois.registrar.abuseContactPhone
-      description: The registrar abuse contact phone in the Whois information for
-        the domain''
+      description: The registrar abuse contact phone in the Whois information for the domain''
       type: String
     - contextPath: Expanse.Domain.whois.registrar.formattedName
       description: The registrar formatted name Whois information for the domain
@@ -3655,8 +3522,7 @@ script:
       description: The registrar name in the Whois information for the domain
       type: String
     - contextPath: Expanse.Domain.whois.registrar.registrationExpirationDate
-      description: The registrar registration expiration date in the Whois information
-        for the domain
+      description: The registrar registration expiration date in the Whois information for the domain
       type: Date
     - contextPath: Expanse.Domain.whois.registrar.url
       description: The registrar URL in the Whois information for the domain
@@ -3734,8 +3600,7 @@ script:
       description: Business Units that the cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.businessUnits.tenantId
-      description: Tenant information businessUnits that the cloud resource as been
-        assigned to
+      description: Tenant information businessUnits that the cloud resource as been assigned to
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.dateAdded
       description: The date that the cloud resource was added to the Expander instance
@@ -3783,64 +3648,49 @@ script:
       description: Additional details for the cloud resource linked to the domain
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.assetKey
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.assetType
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.businessUnits.id
-      description: Business Units that the recent IPs linked to the linked cloud resource
-        has been assigned to
+      description: Business Units that the recent IPs linked to the linked cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.businessUnits.name
-      description: Business Units that the recent IPs linked to the linked cloud resource
-        has been assigned to
+      description: Business Units that the recent IPs linked to the linked cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.businessUnits.tenantId
-      description: Business Units that the recent IPs linked to the linked cloud resource
-        has been assigned to
+      description: Business Units that the recent IPs linked to the linked cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.commonName
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.domain
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.ip
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.lastObserved
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: Date
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.provider.id
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.provider.name
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.tenant.id
-      description: Tenant information for the recent IPs linked to the linked cloud
-        resource
+      description: Tenant information for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.tenant.name
-      description: Tenant information for the recent IPs linked to the linked cloud
-        resource
+      description: Tenant information for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.tenant.tenantId
-      description: Tenant information for the recent IPs linked to the linked cloud
-        resource
+      description: Tenant information for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.type
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.annotations.note
       description: Customer provided annotation details for a domain
@@ -3867,8 +3717,7 @@ script:
       description: The total number of engines that checked the indicator.
       type: Number
     - contextPath: Domain.PositiveDetections
-      description: The number of engines that positively detected the indicator as
-        malicious.
+      description: The number of engines that positively detected the indicator as malicious.
       type: Number
     - contextPath: Domain.CreationDate
       description: The date that the domain was created.
@@ -3980,10 +3829,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The common name of the certificate to search domains for. Fuzzy
-        matching is done on this name, however query times can grow quite large when
-        searching for short strings. Ex. "*.myhost.com" is a better search term than
-        "host".
+      description: The common name of the certificate to search domains for. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host".
       isArray: false
       name: common_name
       required: false
@@ -4007,8 +3853,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns all the Xpanse domains which have been seen with the specified
-      certificate or IP address.
+    description: Returns all the Xpanse domains which have been seen with the specified certificate or IP address.
     execution: false
     name: expanse-get-associated-domains
     outputs:
@@ -4038,22 +3883,19 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: MD5 Hash of the certificate. If provided, other search parameters
-        are ignored.
+      description: MD5 Hash of the certificate. If provided, other search parameters are ignored.
       isArray: false
       name: md5_hash
       required: false
       secret: false
     - default: false
-      description: Last date the domain was observed by Xpanse (Format is YYYY-MM-DD),
-        to be used with domain argument.
+      description: Last date the domain was observed by Xpanse (Format is YYYY-MM-DD), to be used with domain argument.
       isArray: false
       name: last_observed_date
       required: false
       secret: false
     - default: false
-      description: Search for  certificates with the specified substring in common
-        name.
+      description: Search for  certificates with the specified substring in common name.
       isArray: false
       name: search
       required: false
@@ -4076,8 +3918,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Retrieve only certificates with or without an active service discovered
-        by Xpanse.
+      description: Retrieve only certificates with or without an active service discovered by Xpanse.
       isArray: false
       name: has_active_service
       predefined:
@@ -4087,8 +3928,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Retrieve only certificates with or without cloud resources discovered
-        by Xpanse.
+      description: Retrieve only certificates with or without cloud resources discovered by Xpanse.
       isArray: false
       name: has_related_cloud_resources
       predefined:
@@ -4097,44 +3937,37 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Tag ID falls in the provided list. (comma
-        separated string). Cannot be used with the 'tag_names' argument.
+      description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
       isArray: false
       name: tags
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Tag name falls in the provided list.
-        (comma separated string). Cannot be used with the 'tags' argument.
+      description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
       isArray: false
       name: tag_names
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided
-        list. (comma separated string). Cannot be used with the 'business_unit_names'
-        argument.
+      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
       isArray: false
       name: business_units
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's name falls in the provided
-        list. (comma separated string). Cannot be used with the 'business_units' argument.
+      description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
       isArray: false
       name: business_unit_names
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Provider's ID falls in the provided
-        list. (comma separated string). Cannot be used with the 'provider_names' argument.
+      description: Returns only results whose Provider's ID falls in the provided list. (comma separated string). Cannot be used with the 'provider_names' argument.
       isArray: false
       name: providers
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Provider's name falls in the provided
-        list. (comma separated string). Cannot be used with the 'providers' argument.
+      description: Returns only results whose Provider's name falls in the provided list. (comma separated string). Cannot be used with the 'providers' argument.
       isArray: false
       name: provider_names
       required: false
@@ -4166,8 +3999,7 @@ script:
       description: Business Units that the certificate has been assigned to
       type: String
     - contextPath: Expanse.Certificate.businessUnits.tenantId
-      description: Tenant information for business units that the certificate has
-        been assigned to
+      description: Tenant information for business units that the certificate has been assigned to
       type: String
     - contextPath: Expanse.Certificate.certificate.formattedIssuerOrg
       description: The formatted issuer org in the certificate
@@ -4290,16 +4122,13 @@ script:
       description: Additional details for the recent IPs linked to the certificate
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.businessUnits.id
-      description: Business Units that the recent IPs linked to the certificate has
-        been assigned to
+      description: Business Units that the recent IPs linked to the certificate has been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.businessUnits.name
-      description: Business Units that the recent IPs linked to the certificate has
-        been assigned to
+      description: Business Units that the recent IPs linked to the certificate has been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.businessUnits.tenantId
-      description: Tenant information for business Units that the recent IPs linked
-        to the certificate has been assigned to
+      description: Tenant information for business Units that the recent IPs linked to the certificate has been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.commonName
       description: Additional details for the recent IPs linked to the certificate
@@ -4335,8 +4164,7 @@ script:
       description: The date that the certificate was first observed
       type: Date
     - contextPath: Expanse.Certificate.hasLinkedCloudResources
-      description: Whether the certificate has any linked cloud resources associated
-        with it
+      description: Whether the certificate has any linked cloud resources associated with it
       type: Boolean
     - contextPath: Expanse.Certificate.id
       description: Internal Xpanse ID for Certificate
@@ -4384,8 +4212,7 @@ script:
       description: Business Units that the cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.businessUnits.tenantId
-      description: Tenant information businessUnits that the cloud resource as been
-        assigned to
+      description: Tenant information businessUnits that the cloud resource as been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.dateAdded
       description: The date that the cloud resource was added to the Expander instance
@@ -4433,64 +4260,49 @@ script:
       description: Additional details for the cloud resource linked to the certificate
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.assetKey
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.assetType
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.businessUnits.id
-      description: Business Units that the recent IPs linked to the linked cloud resource
-        has been assigned to
+      description: Business Units that the recent IPs linked to the linked cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.businessUnits.name
-      description: Business Units that the recent IPs linked to the linked cloud resource
-        has been assigned to
+      description: Business Units that the recent IPs linked to the linked cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.businessUnits.tenantId
-      description: Business Units that the recent IPs linked to the linked cloud resource
-        has been assigned to
+      description: Business Units that the recent IPs linked to the linked cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.commonName
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.domain
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.ip
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.lastObserved
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: Date
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.provider.id
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.provider.name
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.tenant.id
-      description: Tenant information for the recent IPs linked to the linked cloud
-        resource
+      description: Tenant information for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.tenant.name
-      description: Tenant information for the recent IPs linked to the linked cloud
-        resource
+      description: Tenant information for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.tenant.tenantId
-      description: Tenant information for the recent IPs linked to the linked cloud
-        resource
+      description: Tenant information for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.type
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.annotations.note
       description: Customer provided annotation details for a certificate
@@ -4631,8 +4443,7 @@ script:
       description: Business Units that the certificate has been assigned to
       type: String
     - contextPath: Expanse.Certificate.businessUnits.tenantId
-      description: Tenant information for business units that the certificate has
-        been assigned to
+      description: Tenant information for business units that the certificate has been assigned to
       type: String
     - contextPath: Expanse.Certificate.certificate.formattedIssuerOrg
       description: The formatted issuer org in the certificate
@@ -4755,16 +4566,13 @@ script:
       description: Additional details for the recent IPs linked to the certificate
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.businessUnits.id
-      description: Business Units that the recent IPs linked to the certificate has
-        been assigned to
+      description: Business Units that the recent IPs linked to the certificate has been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.businessUnits.name
-      description: Business Units that the recent IPs linked to the certificate has
-        been assigned to
+      description: Business Units that the recent IPs linked to the certificate has been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.businessUnits.tenantId
-      description: Tenant information for business Units that the recent IPs linked
-        to the certificate has been assigned to
+      description: Tenant information for business Units that the recent IPs linked to the certificate has been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.commonName
       description: Additional details for the recent IPs linked to the certificate
@@ -4800,8 +4608,7 @@ script:
       description: The date that the certificate was first observed
       type: Date
     - contextPath: Expanse.Certificate.hasLinkedCloudResources
-      description: Whether the certificate has any linked cloud resources associated
-        with it
+      description: Whether the certificate has any linked cloud resources associated with it
       type: Boolean
     - contextPath: Expanse.Certificate.id
       description: Internal Xpanse ID for Certificate
@@ -4849,8 +4656,7 @@ script:
       description: Business Units that the cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.businessUnits.tenantId
-      description: Tenant information businessUnits that the cloud resource as been
-        assigned to
+      description: Tenant information businessUnits that the cloud resource as been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.dateAdded
       description: The date that the cloud resource was added to the Expander instance
@@ -4898,64 +4704,49 @@ script:
       description: Additional details for the cloud resource linked to the certificate
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.assetKey
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.assetType
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.businessUnits.id
-      description: Business Units that the recent IPs linked to the linked cloud resource
-        has been assigned to
+      description: Business Units that the recent IPs linked to the linked cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.businessUnits.name
-      description: Business Units that the recent IPs linked to the linked cloud resource
-        has been assigned to
+      description: Business Units that the recent IPs linked to the linked cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.businessUnits.tenantId
-      description: Business Units that the recent IPs linked to the linked cloud resource
-        has been assigned to
+      description: Business Units that the recent IPs linked to the linked cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.commonName
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.domain
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.ip
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.lastObserved
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: Date
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.provider.id
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.provider.name
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.tenant.id
-      description: Tenant information for the recent IPs linked to the linked cloud
-        resource
+      description: Tenant information for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.tenant.name
-      description: Tenant information for the recent IPs linked to the linked cloud
-        resource
+      description: Tenant information for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.tenant.tenantId
-      description: Tenant information for the recent IPs linked to the linked cloud
-        resource
+      description: Tenant information for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.type
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.annotations.note
       description: Customer provided annotation details for a certificate
@@ -5054,8 +4845,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Last date the cloud resource was observed by Xpanse (Format is
-        YYYY-MM-DD).
+      description: Last date the cloud resource was observed by Xpanse (Format is YYYY-MM-DD).
       isArray: false
       name: last_observed_date
       required: false
@@ -5073,57 +4863,49 @@ script:
       required: false
       secret: false
     - default: false
-      description: A search string of provider IDs to find cloud resources hosted
-        by specific providers.
+      description: A search string of provider IDs to find cloud resources hosted by specific providers.
       isArray: true
       name: providers
       required: false
       secret: false
     - default: false
-      description: A search string of provider names to find cloud resources hosted
-        by specific providers.
+      description: A search string of provider names to find cloud resources hosted by specific providers.
       isArray: true
       name: provider_names
       required: false
       secret: false
     - default: false
-      description: A search string of business unit IDs to find cloud resources belonging
-        to a specific business unit.
+      description: A search string of business unit IDs to find cloud resources belonging to a specific business unit.
       isArray: true
       name: business_units
       required: false
       secret: false
     - default: false
-      description: A search string of business unit names to find cloud resources
-        belonging to a specific business unit.
+      description: A search string of business unit names to find cloud resources belonging to a specific business unit.
       isArray: true
       name: business_unit_names
       required: false
       secret: false
     - default: false
-      description: A search string of tag IDs to find cloud resources that have been
-        assigned a specific tag.
+      description: A search string of tag IDs to find cloud resources that have been assigned a specific tag.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: A search string of tag names to find cloud resources that have
-        been assigned a specific tag.
+      description: A search string of tag names to find cloud resources that have been assigned a specific tag.
       isArray: true
       name: tag_names
       required: false
       secret: false
     - default: false
-      description: A search string of asset types to find cloud resources of a specific
-        type.
+      description: A search string of asset types to find cloud resources of a specific type.
       isArray: true
       name: types
       required: false
       secret: false
     - default: false
-      description: A search string of regions to find cloud resources that are hosted
-        in a specific region.
+      description: A search string of regions to find cloud resources that are hosted in a specific region.
       isArray: true
       name: regions
       required: false
@@ -5155,15 +4937,13 @@ script:
       description: Note metadata on the cloud resource.
       type: String
     - contextPath: Expanse.CloudResource.businessUnits.id
-      description: The internal ID of the business unit that the cloud resource belongs
-        to.
+      description: The internal ID of the business unit that the cloud resource belongs to.
       type: String
     - contextPath: Expanse.CloudResource.businessUnits.name
       description: The name of the business unit that the cloud resource belongs to.
       type: String
     - contextPath: Expanse.CloudResource.businessUnits.tenantId
-      description: The internal tenant ID of the business unit that the cloud resource
-        belongs to.
+      description: The internal tenant ID of the business unit that the cloud resource belongs to.
       type: String
     - contextPath: Expanse.CloudResource.dateAdded
       description: The date that the cloud resource was added.
@@ -5259,15 +5039,13 @@ script:
       description: Note metadata on the cloud resource.
       type: String
     - contextPath: Expanse.CloudResource.businessUnits.id
-      description: The internal ID of the business unit that the cloud resource belongs
-        to.
+      description: The internal ID of the business unit that the cloud resource belongs to.
       type: String
     - contextPath: Expanse.CloudResource.businessUnits.name
       description: The name of the business unit that the cloud resource belongs to.
       type: String
     - contextPath: Expanse.CloudResource.businessUnits.tenantId
-      description: The internal tenant ID of the business unit that the cloud resource
-        belongs to.
+      description: The internal tenant ID of the business unit that the cloud resource belongs to.
       type: String
     - contextPath: Expanse.CloudResource.dateAdded
       description: The date that the cloud resource was added.
@@ -5343,8 +5121,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter by internal IP range. Supported formats a.b.c.d, a.b.c.d/e,
-        a.b.c.d-a.b.c.d, a., a.*
+      description: Filter by internal IP range. Supported formats a.b.c.d, a.b.c.d/e, a.b.c.d-a.b.c.d, a., a.*
       isArray: false
       name: internal_ip_range
       required: false
@@ -5415,8 +5192,7 @@ script:
       description: The internal port of the communication involved in the risky flow
       type: Number
     - contextPath: Expanse.RiskyFlow.internalTags.ipRange
-      description: Any tags associated with with the internal asset involved in the
-        risky flow
+      description: Any tags associated with with the internal asset involved in the risky flow
       type: String
     - contextPath: Expanse.RiskyFlow.observationTimestamp
       description: The timestamp when the risky flow took place
@@ -5425,8 +5201,7 @@ script:
       description: The protocol of the risky flow
       type: String
     - contextPath: Expanse.RiskyFlow.riskRule.additionalDataFields
-      description: Additional data fields associated with the risk rule for the risky
-        flow
+      description: Additional data fields associated with the risk rule for the risky flow
       type: String
     - contextPath: Expanse.RiskyFlow.riskRule.description
       description: The risk rule description for the risky flow
@@ -5444,8 +5219,7 @@ script:
       description: The internal domains associated with the risky flow
       type: String
     - contextPath: Expanse.RiskyFlow.internalExposureTypes
-      description: The known exposure types associated with the asset involved in
-        the risky flow
+      description: The known exposure types associated with the asset involved in the risky flow
       type: String
   - arguments:
     - default: false
@@ -5514,19 +5288,16 @@ script:
       description: Business Units that the domain has been assigned to
       type: String
     - contextPath: Expanse.Domain.businessUnits.tenantId
-      description: Tenant ID for business Units that the domain has been assigned
-        to
+      description: Tenant ID for business Units that the domain has been assigned to
       type: String
     - contextPath: Expanse.Domain.dateAdded
       description: The date that the domain was added to the Expander instance
       type: Date
     - contextPath: Expanse.Domain.details.recentIps.assetKey
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.assetType
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.businessUnits.id
       description: Business Units for the recent IPs that the domain resolved to
@@ -5535,48 +5306,37 @@ script:
       description: Business Units for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.businessUnits.tenantId
-      description: Tenant information for business Units that the recent IPs that
-        the domain resolved to
+      description: Tenant information for business Units that the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.commonName
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.domain
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.ip
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.lastObserved
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: Date
     - contextPath: Expanse.Domain.details.recentIps.provider.id
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.provider.name
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.tenant.id
-      description: Tenant information for the recent IPs that the domain resolved
-        to
+      description: Tenant information for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.tenant.name
-      description: Tenant information for the recent IPs that the domain resolved
-        to
+      description: Tenant information for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.tenant.tenantId
-      description: Tenant information for the recent IPs that the domain resolved
-        to
+      description: Tenant information for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.details.recentIps.type
-      description: Additional details for the recent IPs that the domain resolved
-        to
+      description: Additional details for the recent IPs that the domain resolved to
       type: String
     - contextPath: Expanse.Domain.dnsResolutionStatus
       description: Latest DNS resolution status
@@ -5585,8 +5345,7 @@ script:
       description: The date that the domain was first observed
       type: Date
     - contextPath: Expanse.Domain.hasLinkedCloudResources
-      description: Whether the domain has any linked cloud resources associated with
-        it
+      description: Whether the domain has any linked cloud resources associated with it
       type: Boolean
     - contextPath: Expanse.Domain.id
       description: Internal Xpanse ID for Domain
@@ -5619,12 +5378,10 @@ script:
       description: Sub-domain metadata
       type: Date
     - contextPath: Expanse.Domain.providers.id
-      description: Information about the hosting provider of the IP the domain resolves
-        to
+      description: Information about the hosting provider of the IP the domain resolves to
       type: String
     - contextPath: Expanse.Domain.providers.name
-      description: Information about the hosting provider of the IP the domain resolves
-        to
+      description: Information about the hosting provider of the IP the domain resolves to
       type: String
     - contextPath: Expanse.Domain.serviceStatus
       description: Detected service statuses for the domain
@@ -5717,8 +5474,7 @@ script:
       description: The registrant organization in the Whois information for the domain
       type: String
     - contextPath: Expanse.Domain.whois.registrant.phoneExtension
-      description: The registrant phone extension in the Whois information for the
-        domain
+      description: The registrant phone extension in the Whois information for the domain
       type: String
     - contextPath: Expanse.Domain.whois.registrant.phoneNumber
       description: The registrant phone number in the Whois information for the domain
@@ -5736,12 +5492,10 @@ script:
       description: The registrant street in the Whois information for the domain
       type: String
     - contextPath: Expanse.Domain.whois.registrar.abuseContactEmail
-      description: The registrar abuse contact email in the Whois information for
-        the domain
+      description: The registrar abuse contact email in the Whois information for the domain
       type: String
     - contextPath: Expanse.Domain.whois.registrar.abuseContactPhone
-      description: The registrar abuse contact phone in the Whois information for
-        the domain''
+      description: The registrar abuse contact phone in the Whois information for the domain''
       type: String
     - contextPath: Expanse.Domain.whois.registrar.formattedName
       description: The registrar formatted name Whois information for the domain
@@ -5753,8 +5507,7 @@ script:
       description: The registrar name in the Whois information for the domain
       type: String
     - contextPath: Expanse.Domain.whois.registrar.registrationExpirationDate
-      description: The registrar registration expiration date in the Whois information
-        for the domain
+      description: The registrar registration expiration date in the Whois information for the domain
       type: Date
     - contextPath: Expanse.Domain.whois.registrar.url
       description: The registrar URL in the Whois information for the domain
@@ -5832,8 +5585,7 @@ script:
       description: Business Units that the cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.businessUnits.tenantId
-      description: Tenant information businessUnits that the cloud resource as been
-        assigned to
+      description: Tenant information businessUnits that the cloud resource as been assigned to
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.dateAdded
       description: The date that the cloud resource was added to the Expander instance
@@ -5881,64 +5633,49 @@ script:
       description: Additional details for the cloud resource linked to the domain
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.assetKey
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.assetType
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.businessUnits.id
-      description: Business Units that the recent IPs linked to the linked cloud resource
-        has been assigned to
+      description: Business Units that the recent IPs linked to the linked cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.businessUnits.name
-      description: Business Units that the recent IPs linked to the linked cloud resource
-        has been assigned to
+      description: Business Units that the recent IPs linked to the linked cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.businessUnits.tenantId
-      description: Business Units that the recent IPs linked to the linked cloud resource
-        has been assigned to
+      description: Business Units that the recent IPs linked to the linked cloud resource has been assigned to
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.commonName
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.domain
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.ip
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.lastObserved
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: Date
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.provider.id
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.provider.name
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.tenant.id
-      description: Tenant information for the recent IPs linked to the linked cloud
-        resource
+      description: Tenant information for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.tenant.name
-      description: Tenant information for the recent IPs linked to the linked cloud
-        resource
+      description: Tenant information for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.tenant.tenantId
-      description: Tenant information for the recent IPs linked to the linked cloud
-        resource
+      description: Tenant information for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.type
-      description: Additional details for the recent IPs linked to the linked cloud
-        resource
+      description: Additional details for the recent IPs linked to the linked cloud resource
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.annotations.note
       description: Customer provided annotation details for a domain
@@ -5965,8 +5702,7 @@ script:
       description: The total number of engines that checked the indicator.
       type: Number
     - contextPath: Domain.PositiveDetections
-      description: The number of engines that positively detected the indicator as
-        malicious.
+      description: The number of engines that positively detected the indicator as malicious.
       type: Number
     - contextPath: Domain.CreationDate
       description: The date that the domain was created.
@@ -6098,8 +5834,7 @@ script:
       description: The type of asset
       type: String
     - contextPath: Expanse.IP.businessUnits.id
-      description: The internal Xpanse ID for the business unit the asset belongs
-        to
+      description: The internal Xpanse ID for the business unit the asset belongs to
       type: String
     - contextPath: Expanse.IP.businessUnits.name
       description: The name of the business unit the asset belongs to
@@ -6144,8 +5879,7 @@ script:
       description: The hostname that is mapped to this IP address.
       type: String
     - contextPath: IP.Geo.Location
-      description: 'The geolocation where the IP address is located, in the format:
-        latitude:longitude.'
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
       type: String
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
@@ -6157,8 +5891,7 @@ script:
       description: The total number of engines that checked the indicator.
       type: Number
     - contextPath: IP.PositiveDetections
-      description: The number of engines that positively detected the indicator as
-        malicious.
+      description: The number of engines that positively detected the indicator as malicious.
       type: Number
     - contextPath: IP.Malicious.Vendor
       description: The vendor reporting the IP address as malicious.
@@ -6187,9 +5920,7 @@ script:
       secret: false
     - default: false
       defaultValue: severityCounts,annotations,attributionReasons,relatedRegistrationInformation,locationInformation
-      description: Include "none" or any of the following options (comma separated)
-        - annotations, severityCounts, attributionReasons, relatedRegistrationInformation,
-        locationInformation
+      description: Include "none" or any of the following options (comma separated) - annotations, severityCounts, attributionReasons, relatedRegistrationInformation, locationInformation
       isArray: false
       name: include
       required: false
@@ -6254,8 +5985,7 @@ script:
       description: The number of IP addresses in the IP range
       type: Number
     - contextPath: Expanse.IPRange.rangeType
-      description: If the IP range is Xpanse-generated parent range or a customer-generated
-        custom range
+      description: If the IP range is Xpanse-generated parent range or a customer-generated custom range
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.country
       description: The country within the IP range registration information
@@ -6276,68 +6006,52 @@ script:
       description: The parent handle within the IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.address
-      description: The address within the registry entities of the IP range registration
-        information
+      description: The address within the registry entities of the IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.email
-      description: The email within the registry entities of the e IP range registration
-        information
+      description: The email within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.action
-      description: The events action within the registry entities of the e IP range
-        registration information
+      description: The events action within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.actor
-      description: The events actor within the registry entities of the e IP range
-        registration information
+      description: The events actor within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.date
-      description: The events date within the registry entities of the e IP range
-        registration information
+      description: The events date within the registry entities of the e IP range registration information
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.firstRegistered
-      description: The first registered date within the registry entities of the e
-        IP range registration information
+      description: The first registered date within the registry entities of the e IP range registration information
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.formattedName
-      description: The formatted name within the registry entities of the e IP range
-        registration information
+      description: The formatted name within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.handle
-      description: The handle within the registry entities of the e IP range registration
-        information
+      description: The handle within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.id
-      description: The ID within the registry entities of the e IP range registration
-        information
+      description: The ID within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.lastChanged
-      description: The last changed date within the registry entities of the e IP
-        range registration information
+      description: The last changed date within the registry entities of the e IP range registration information
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.org
-      description: The org within the registry entities of the e IP range registration
-        information
+      description: The org within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.phone
-      description: The phone number within the registry entities of the e IP range
-        registration information
+      description: The phone number within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.relatedEntityHandles
-      description: The related entity handles within the registry entities of the
-        e IP range registration information
+      description: The related entity handles within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.remarks
-      description: The remarks within the registry entities of the e IP range registration
-        information
+      description: The remarks within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.roles
-      description: The roles within the registry entities of the e IP range registration
-        information
+      description: The roles within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.statuses
-      description: The statuses within the registry entities of the e IP range registration
-        information
+      description: The statuses within the registry entities of the e IP range registration information
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.remarks
       description: The remarks within the IP range registration information
@@ -6352,8 +6066,7 @@ script:
       description: The Whois server within the IP range registration information
       type: String
     - contextPath: Expanse.IPRange.responsiveIpCount
-      description: The number of IPs responsive on the public Internet within the
-        IP range
+      description: The number of IPs responsive on the public Internet within the IP range
       type: Number
     - contextPath: Expanse.IPRange.severityCounts.count
       description: The number of exposures observed on the IP range
@@ -6375,9 +6088,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The certificate common name. Fuzzy matching is done on this name,
-        however query times can grow quite large when searching for short strings.
-        Ex. "*.myhost.com" is a better search term than "host"
+      description: The certificate common name. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host"
       isArray: false
       name: common_name
       required: true
@@ -6399,7 +6110,7 @@ script:
     - contextPath: Expanse.IPDomains.DomainList
       description: An array of domain objects. This is truncated at 50.
       type: Unknown
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.50695
   feed: false
   isfetch: true
   longRunning: false

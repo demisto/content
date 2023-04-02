@@ -1,3 +1,4 @@
+<strong>***Deprecated. Use the Slack v3 integration instead.***</strong>
 <p>
   Send messages and notifications to your Slack Team.
   This integration was integrated and tested with version 4.0.1 of Slack, and is available from Cortex XSOAR version 5.0.

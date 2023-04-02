@@ -1,4 +1,4 @@
-[file:playbook-Accessdata__Dump_memory_for_malicious_process.yml]
+[file:playbook - Accessdata__Dump_memory_for_malicious_process.yml]
 ignore=BA101
 
 [file:README.md]
@@ -6,3 +6,8 @@ ignore=RM104
 
 [file:Accessdata_image.png]
 ignore=IM111
+
+[known_words]
+Exterro
+FTK
+

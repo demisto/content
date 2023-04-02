@@ -3912,3 +3912,106 @@ def test_gcb_update_reference_list_command_when_name_prided_does_not_exists(clie
         gcb_update_reference_list_command(client, args)
     assert str(e.value) == 'Status code: 404\nError: generic::not_found: expected list with name dummy to ' \
                            'already exist, but it does not exist'
+
+
+@pytest.mark.parametrize('args,error_msg',
+                         [({"rule_text": "meta events condition", "start_time": "dummy"},
+                           'Invalid date: "start_time"="dummy"'),
+                          ({"rule_text": "meta events condition", "start_time": "1 day ago", "end_time": "dummy"},
+                           'Invalid date: "end_time"="dummy"'),
+                          ({"rule_text": "meta events condition", "start_time": "1 day ago", "end_time": "1 day ago",
+                            "max_results": 0}, 'Max Results should be in the range 1 to 10000.'),
+                          ({"rule_text": "meta events condition", "start_time": "1 day ago", "end_time": "1 day ago",
+                            "max_results": "asd"}, '"asd" is not a valid number'),
+                          ({"rule_text": "meta events", "start_time": "1 day ago", "end_time": "1 day ago",
+                            "max_results": "3"},
+                           'Invalid rule text provided. Section "meta", "events" or "condition" is missing.')])
+def test_gcb_test_rule_stream_command_invalid_args(client, args, error_msg):
+    """Test gcb_test_rule_stream_command when invalid args are provided."""
+    from GoogleChronicleBackstory import gcb_test_rule_stream_command
+    with pytest.raises(ValueError) as e:
+        gcb_test_rule_stream_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_test_rule_stream_command_valid_args(client):
+    """Test gcb_test_rule_stream_command for valid response when valid args are provided."""
+    from GoogleChronicleBackstory import gcb_test_rule_stream_command
+
+    args = {
+        "rule_text": """rule demoRuleCreatedFromAPIVersion2 {
+                            meta:
+                            author = \"securityuser2\"
+                            description = \"double event rule that should generate detections\"
+
+                            events:
+                            $e.metadata.event_type = \"NETWORK_DNS\"
+
+                            condition:
+                            $e
+                        }""",
+        "start_time": "2 day ago",
+        "end_time": "1 day ago",
+        "max_results": "2"
+    }
+    with open("test_data/gcb_test_rule_stream_command_response.json") as f:
+        response = f.read()
+    with open("test_data/gcb_test_rule_stream_command_ec.json") as f:
+        expected_ec = json.loads(f.read())
+    with open("test_data/gcb_test_rule_stream_command_hr.md") as f:
+        expected_hr = f.read()
+    mock_response = (
+        Response(dict(status=200)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_test_rule_stream_command(client, args)
+
+    assert hr == expected_hr
+    assert ec == expected_ec
+
+
+def test_gcb_test_rule_stream_command_invalid_rule_text_provided(client):
+    """Test gcb_test_rule_stream_command when invalid rule text is provided."""
+    from GoogleChronicleBackstory import gcb_test_rule_stream_command
+    args = {
+        "rule_text": """rule demoRuleCreatedFromAPIVersion2 {
+                                    meta:
+                                    author = \"Crest Data Systems\"
+                                    severity = \"Medium\"
+
+                                    events:
+                                    $event1.metadata.event_type = \"PROCESS_LAUNCH\"
+                                    $full_path = /.*cmd\.exe$/ nocase
+
+                                    $event1.principal.hostname = $hostname
+                                    $event2.principal.hostname = $hostname
+
+                                    not $event1.principal.process.file.full_path = /.*explorer\.exe$/ nocase
+                                    $event1.target.process.file.full_path = $full_path
+
+                                    $event2.principal.process.file.full_path = $full_path
+                                    $event2.target.process.file.full_path = /.*reg\.exe$/ nocase
+
+                                  match:
+                                    $full_path over 5m
+
+                                  condition:
+                                    $event1 and $event2 and $full_path
+                                }""",
+        "start_time": "2 day ago",
+        "end_time": "1 day ago",
+        "max_results": "2"
+    }
+    with open("test_data/gcb_test_rule_stream_command_400.json") as f:
+        response = f.read()
+    mock_response = (
+        Response(dict(status=400)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_test_rule_stream_command(client, args)
+    assert str(e.value) == 'Status code: 400\n' 'Error: generic::invalid_argument: compiling rule: : variable full_path' \
+                           ' used in both condition section and match section, should only be used in one\nline: 23 \n' \
+                           'column: 30-39 '

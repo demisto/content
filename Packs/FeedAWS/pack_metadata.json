@@ -2,7 +2,7 @@
     "name": "AWS Feed",
     "description": "Indicators feed from AWS",
     "support": "xsoar",
-    "currentVersion": "1.1.17",
+    "currentVersion": "1.1.30",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,7 +11,8 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "TIM"
+        "Threat Intelligence Management",
+        "Getting Started"
     ],
     "useCases": [],
     "keywords": [

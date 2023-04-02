@@ -1,3 +1,4 @@
+Amazon Web Services Guard Duty Service (gd)
 Use this integration to detect and manage threats to your AWS system. We recommend that you use roles that have the following
 built-in AWS policies:
 
@@ -11,36 +12,46 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 It is important that you familiarize yourself with and complete all steps detailed in
 the [Amazon AWS Integrations Configuration Guide](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication)
 
+
+Some changes have been made that might affect your existing content. 
+If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---aws-guardduty).
+
 ## Configure AWS - GuardDuty on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for AWS - GuardDuty.
 3. Click **Add instance** to create and configure a new integration instance.
 
-   | **Parameter** | **Description** | **Required** |
-   |---| --- | --- |
-   | AWS Default Region | The AWS Region for this instance of the integration. For example, us-west-2 | True |
-   | Role Arn | The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required. | False |
-   | Role Session Name | A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION | False |
-   | Role Session Duration | The maximum length of each session in seconds. Default: 900 seconds. The XSOAR integration will have the permissions assigned only when the session is initiated and for the defined duration. | False |
-   | Guard Duty Severity level | The severity level or higher of findings to be fetched: Low, Medium, or High. For example, if you set the severity level to Medium, only findings with severity level Medium or High will be fetched.| False | 
-   | Access Key | The access key ID used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False |
-   | Secret Key | The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False |
-   | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
-   | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- |------| --- |
+    | AWS Default Region | The AWS Region for this instance of the integration. For example, us-west-2 | True |
+    | Role Arn | The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required. | False |
+    | Fetch incidents |  | False |
+    | Incident type | Incident type | False |
+    | Role Session Name | A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION | False |
+    | Role Session Duration | The maximum length of each session in seconds. Default: 900 seconds. The Cortex XSOAR integration will have the permissions assigned only when the session is initiated and for the defined duration. | False |
+    | Access Key | The access key ID used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False |
+    | Secret Key | The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False |
+    | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
+    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+    | How many incidents to fetch each time | Default `10` | False |
+    | First fetch timestamp | First fetch query `<number> <time unit>`, e.g., `7 days`. Default `3 days`| False |
+    | Guard Duty Severity level | The severity level or higher of findings to be fetched: Low, Medium, or High. For example, if you set the severity level to Medium, only findings with severity level Medium or High will be fetched. | False |
+    | Archive findings After Fetch | You can set whether findings that are fetched will be moved to the GuardDuty archive. | False |
+    | Incidents Fetch Interval | Time interval for fetching incidents. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
 
-* The integration fetches newly created Guard DutyFindings. Findings that are fetched are moved to Guard duty archive. Each
-  integration instance can fetch findings from a single AWS Region.
+* The integration fetches newly created Guard DutyFindings. 
+  Each integration instance can fetch findings from a single AWS Region.
 * Each region can have a maximum of 1,000 member accounts that are linked to a guard duty master account. For more information see
   the [Amazon GuardDuty documentation](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_accounts.html).
 * You can set the severity level of the findings to be fetched. "Low", "Medium", "High". For example, if you set the severity
   level to "Medium", the integration will only fetch findings with severity level of Medium and higher.
-* Findings in archived status will not be retrieved.
-* The initial fetch interval is one minute.
 
 ## Commands
 
@@ -48,7 +59,6 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 execute a command, a DBot message appears in the War Room with the command details.
 
 ### aws-gd-create-detector
-
 ***
 Create an AWS Guard Duty Detector on the integration instance specified aws account.
 
@@ -60,16 +70,20 @@ Action: _guardduty:CreateDetector_
 #### Base Command
 
 `aws-gd-create-detector`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | enabled | A boolean value that specifies whether the detector is to be enabled. Possible values are: True, False. Default is True. | Required | 
+| enableS3Logs | The status of S3 data event logs as a data source. Possible values are: True, False. | Optional | 
+| enableKubernetesLogs | The status of Kubernetes audit logs as a data source. Possible values are: True, False. | Optional | 
+| ebsVolumesMalwareProtection | Describes the configuration for scanning EBS volumes as a data source. Possible values are: True, False. | Optional | 
+| findingFrequency | Specifies how frequently updated findings are exported. Possible values are: Fifteen Minutes, One Hour, Six Hours. | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
 
 #### Context Output
 
@@ -82,7 +96,6 @@ Action: _guardduty:CreateDetector_
 ```!aws-gd-create-detector enabled=True region=eu-west-2```
 
 ### aws-gd-delete-detector
-
 ***
 Deletes a Amazon GuardDuty detector specified by the detector ID.
 
@@ -94,7 +107,6 @@ Action: _guardduty:DeleteDetector_
 #### Base Command
 
 `aws-gd-delete-detector`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -105,6 +117,7 @@ Action: _guardduty:DeleteDetector_
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
+
 #### Context Output
 
 There is no context output for this command.
@@ -114,7 +127,6 @@ There is no context output for this command.
 ```!aws-gd-delete-detector detectorId=38b1235ed3fe245279cd0c8e235db0715ac5561eb```
 
 ### aws-gd-get-detector
-
 ***
 Retrieves an Amazon GuardDuty detector specified by the detectorId.
 
@@ -126,7 +138,6 @@ Action: _guardduty:GetDetector_
 #### Base Command
 
 `aws-gd-get-detector`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -137,6 +148,7 @@ Action: _guardduty:GetDetector_
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -146,13 +158,20 @@ Action: _guardduty:GetDetector_
 | AWS.GuardDuty.Detectors.ServiceRole | string | Customer serviceRole name or ARN for accessing customer resources. | 
 | AWS.GuardDuty.Detectors.Status | string | The status of detector. | 
 | AWS.GuardDuty.Detectors.UpdatedAt | string | The time a resource was last updated. | 
+| AWS.GuardDuty.Detectors.CloudTrailStatus | string | Describes whether CloudTrail is enabled as a data source for the detector. | 
+| AWS.GuardDuty.Detectors.DNSLogsStatus | string | Denotes whether DNS logs are enabled as a data source. | 
+| AWS.GuardDuty.Detectors.FlowLogsStatus | string | Denotes whether VPC flow logs are enabled as a data source. | 
+| AWS.GuardDuty.Detectors.S3LogsStatus | string | Describes whether S3 data event logs are automatically enabled for new members of the organization. | 
+| AWS.GuardDuty.Detectors.KubernetesAuditLogsStatus | string | Describes whether Kubernetes audit logs are enabled as a data source. | 
+| AWS.GuardDuty.Detectors.MalwareProtectionStatus | string | Describes whether scanning EBS volumes is enabled as a data source. | 
+| AWS.GuardDuty.Detectors.MalwareProtectionReason | string | Specifies the reason why scanning EBS volumes \(Malware Protection\) was not enabled as a data source. | 
+| AWS.GuardDuty.Detectors.Tags | string | The tags of the detector resource. | 
 
 #### Command Example
 
 ```!aws-gd-get-detector detectorId=38b1ed3fe279fdascd0c8edb071dsf5ac5561eb region=eu-west-2```
 
 ### aws-gd-update-detector
-
 ***
 Updates an Amazon GuardDuty detector specified by the detectorId.
 
@@ -164,17 +183,21 @@ Action: _guardduty:UpdateDetector_
 #### Base Command
 
 `aws-gd-update-detector`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | detectorId | The unique ID of the detector that you want to update. | Required | 
 | enable | Updated boolean value for the detector that specifies whether the detector is enabled. Possible values are: True, False. Default is True. | Required | 
+| enableS3Logs | The status of S3 data event logs as a data source. Possible values are: True, False. | Optional | 
+| enableKubernetesLogs | The status of Kubernetes audit logs as a data source. Possible values are: True, False. | Optional | 
+| ebsVolumesMalwareProtection | Describes the configuration for scanning EBS volumes as data source. Possible values are: True, False. | Optional | 
+| findingFrequency | A value that specifies how frequently updated findings are exported. Possible values are: Fifteen Minutes, One Hour, Six Hours. | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
 
 #### Context Output
 
@@ -185,7 +208,6 @@ There is no context output for this command.
 ```aws-gd-update-detector detectorId=38b1ed3fe279fdascd0c8edb071dsf5ac5561eb enable=True```
 
 ### aws-gd-create-ip-set
-
 ***
 A list of trusted IP addresses on allow list for secure communication with AWS infrastructure and applications.
 
@@ -197,7 +219,6 @@ Action: _guardduty:CreateIPSet_
 #### Base Command
 
 `aws-gd-create-ip-set`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -212,6 +233,7 @@ Action: _guardduty:CreateIPSet_
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -223,7 +245,6 @@ Action: _guardduty:CreateIPSet_
 ```!aws-gd-create-ip-set format=TXT location=https://s3.eu-central-1.amazonaws.com/test/ipset.txt activate=True detectorId=38b1ed3fe279czvasdd0c8edb0715azdsfc5561eb name=test region=eu-west-2```
 
 ### aws-gd-delete-ip-set
-
 ***
 Deletes the IPSet specified by the IPSet ID.
 
@@ -235,7 +256,6 @@ Action: _guardduty:DeleteIPSet_
 #### Base Command
 
 `aws-gd-delete-ip-set`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -247,6 +267,7 @@ Action: _guardduty:DeleteIPSet_
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
+
 #### Context Output
 
 There is no context output for this command.
@@ -256,7 +277,6 @@ There is no context output for this command.
 ```!aws-gd-delete-ip-set detectorId=38b1ed3fe279cd0c8edb0715ac5561eb ipSetId=7eb1f440be5931f168280b574a26d44d region=eu-west-2```
 
 ### aws-gd-list-detectors
-
 ***
 Lists detectorIds of all the existing Amazon GuardDuty detector resources.
 
@@ -268,15 +288,18 @@ Action: _guardduty:ListDetectors_
 #### Base Command
 
 `aws-gd-list-detectors`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| limit | Number of total results to query. Default is `50`. | Optional | 
+| page | Specific page to query. | Optional | 
+| page_size | Number of total results in each page. Default is `50`. | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
 
 #### Context Output
 
@@ -289,7 +312,6 @@ Action: _guardduty:ListDetectors_
 ```!aws-gd-list-detectors region=eu-west-2```
 
 ### aws-gd-update-ip-set
-
 ***
 Updates the IPSet specified by the IPSet ID.
 
@@ -301,7 +323,6 @@ Action: _guardduty:UpdateIPSet_
 #### Base Command
 
 `aws-gd-update-ip-set`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -316,6 +337,7 @@ Action: _guardduty:UpdateIPSet_
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
+
 #### Context Output
 
 There is no context output for this command.
@@ -325,7 +347,6 @@ There is no context output for this command.
 ```!aws-gd-update-ip-set detectorId=38b1ed3fe279cd0c8edb0715ac5561eb ipSetId=7eb1f440be5931f168280b574a26d44d activate=False region=eu-west-2```
 
 ### aws-gd-get-ip-set
-
 ***
 Retrieves the IPSet specified by the IPSet ID.
 
@@ -337,7 +358,6 @@ Action: _guardduty:GetIPSet_
 #### Base Command
 
 `aws-gd-get-ip-set`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -348,6 +368,7 @@ Action: _guardduty:GetIPSet_
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
 
 #### Context Output
 
@@ -364,7 +385,6 @@ Action: _guardduty:GetIPSet_
 ```!aws-gd-get-ip-set detectorId=38b1ed3fesdf279cd0c8edbdsf071sdgfac5561eb ipSetId=7eb1sdff440be5931f1682adf80b574a26d44d region=eu-west-2```
 
 ### aws-gd-list-ip-sets
-
 ***
 Lists the IPSets of the GuardDuty service specified by the detector ID.
 
@@ -376,7 +396,6 @@ Action: _guardduty:ListIPSet_
 #### Base Command
 
 `aws-gd-list-ip-sets`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -386,6 +405,10 @@ Action: _guardduty:ListIPSet_
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| limit | Number of total results to query. Default is `50`. | Optional | 
+| page | Specific page to query. | Optional | 
+| page_size | Number of total results in each page. Default is `50`. | Optional | 
+
 
 #### Context Output
 
@@ -398,7 +421,6 @@ Action: _guardduty:ListIPSet_
 ```!aws-gd-list-ip-sets detectorId=38b1ed3fesdf279cd0c8edbdsf071sdgfac5561eb region=eu-west-2```
 
 ### aws-gd-create-threatintel-set
-
 ***
 Create a new ThreatIntelSet. ThreatIntelSets consist of known malicious IP addresses. GuardDuty generates findings based on
 ThreatIntelSets.
@@ -411,7 +433,6 @@ Action: _guardduty:CreateThreatIntelSet_
 #### Base Command
 
 `aws-gd-create-threatintel-set`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -426,6 +447,7 @@ Action: _guardduty:CreateThreatIntelSet_
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -437,7 +459,6 @@ Action: _guardduty:CreateThreatIntelSet_
 ```!aws-gd-create-threatintel-set format=TXT location=https://s3.eu-central-1.amazonaws.com/test/threatintel.txt activate=True detectorId=38b1ed3fe279czvasdd0c8edb0715azdsfc5561eb name=test region=eu-west-2```
 
 ### aws-gd-delete-threatintel-set
-
 ***
 Deletes ThreatIntelSet specified by the ThreatIntelSet ID.
 
@@ -449,7 +470,6 @@ Action: _guardduty:DeleteThreatIntelSet_
 #### Base Command
 
 `aws-gd-delete-threatintel-set`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -461,6 +481,7 @@ Action: _guardduty:DeleteThreatIntelSet_
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
+
 #### Context Output
 
 There is no context output for this command.
@@ -470,7 +491,6 @@ There is no context output for this command.
 ```!aws-gd-delete-threatintel-set detectorId=38b1ed3fe279cd0c8edb0715ac5561eb threatIntelSetId=7eb1f440be5931f168280b574a26d44d region=eu-west-2```
 
 ### aws-gd-get-threatintel-set
-
 ***
 Retrieves the ThreatIntelSet that is specified by the ThreatIntelSet ID.
 
@@ -482,7 +502,6 @@ Action: _guardduty:GetThreatIntelSet_
 #### Base Command
 
 `aws-gd-get-threatintel-set`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -493,6 +512,7 @@ Action: _guardduty:GetThreatIntelSet_
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
 
 #### Context Output
 
@@ -509,7 +529,6 @@ Action: _guardduty:GetThreatIntelSet_
 ```!aws-gd-get-threatintel-set detectorId=38b1ed3fe279cd0c8edb0715ac5561eb threatIntelSetId=7eb1f440be5931f168280b574a26d44d region=eu-west-2```
 
 ### aws-gd-list-threatintel-sets
-
 ***
 Lists the ThreatIntelSets of the GuardDuty service specified by the detector ID.
 
@@ -521,7 +540,6 @@ Action: _guardduty:ListThreatIntelSet_
 #### Base Command
 
 `aws-gd-list-threatintel-sets`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -531,6 +549,10 @@ Action: _guardduty:ListThreatIntelSet_
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| limit | Number of total results to query. Default is `50`. | Optional | 
+| page | Specific page to query. | Optional | 
+| page_size | Number of total results in each page. Default is `50`. | Optional | 
+
 
 #### Context Output
 
@@ -543,7 +565,6 @@ Action: _guardduty:ListThreatIntelSet_
 ```!aws-gd-list-threatintel-sets detectorId=38b1ed3fe279cd0c8edb0715ac5561eb region=eu-west-2```
 
 ### aws-gd-update-threatintel-set
-
 ***
 Updates the ThreatIntelSet specified by ThreatIntelSet ID.
 
@@ -555,7 +576,6 @@ Action: _guardduty:UpdateThreatIntelSet_
 #### Base Command
 
 `aws-gd-update-threatintel-set`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -570,6 +590,7 @@ Action: _guardduty:UpdateThreatIntelSet_
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
+
 #### Context Output
 
 There is no context output for this command.
@@ -579,7 +600,6 @@ There is no context output for this command.
 ```!aws-gd-update-threatintel-set detectorId=38b1ed3fe279cd0c8edb0715ac5561eb threatIntelSetId=7eb1f440be5931f168280b574a26d44d activate=False region=eu-west-2```
 
 ### aws-gd-list-findings
-
 ***
 Lists Amazon GuardDuty findings for the specified detector ID.
 
@@ -591,7 +611,6 @@ Action: _guardduty:ListFindings_
 #### Base Command
 
 `aws-gd-list-findings`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -601,6 +620,10 @@ Action: _guardduty:ListFindings_
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| limit | Number of total results to query. Default is `50`. | Optional | 
+| page | Specific page to query. | Optional | 
+| page_size | Number of total results in each page. Default is `50`. | Optional | 
+
 
 #### Context Output
 
@@ -613,7 +636,6 @@ Action: _guardduty:ListFindings_
 ```!aws-gd-list-findings detectorId=38b1ed3fe279cd0c8edb0715ac5561eb region=eu-west-2```
 
 ### aws-gd-get-findings
-
 ***
 Describes Amazon GuardDuty findings specified by finding IDs.
 
@@ -625,28 +647,51 @@ Action: _guardduty:GetFindings_
 #### Base Command
 
 `aws-gd-get-findings`
-
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| detectorId | The ID of the detector that specifies the GuardDuty service whose findings you want to retrieve. | Required | 
-| findingIds | IDs of the findings that you want to retrieve. | Required | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
-| roleSessionName | An identifier for the assumed role session. | Optional | 
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| **Argument Name**   | **Description**                                                                                                                                           | **Required** |
+|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| detectorId          | The ID of the detector that specifies the GuardDuty service whose findings you want to retrieve.                                                          | Required     | 
+| findingIds          | IDs of the findings that you want to retrieve.                                                                                                            | Required     | 
+| region              | The AWS Region, if not specified the default region will be used.                                                                                         | Optional     | 
+| roleArn             | The Amazon Resource Name (ARN) of the role to assume.                                                                                                     | Optional     | 
+| roleSessionName     | An identifier for the assumed role session.                                                                                                               | Optional     | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional     | 
+| returnRawResponse   | Select 'true' to save all fields from the response to the context. Otherwise, complex fields will be stored in JSON format. Default value is False.       | Optional     |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.GuardDuty.Findings.AccountId | string | The ID of the account in which the finding was generated. | 
+| AWS.GuardDuty.Findings.CreatedAt | string | The time and date when the finding was created. | 
+| AWS.GuardDuty.Findings.Description | string | The description of the finding. | 
+| AWS.GuardDuty.Findings.Region | string | The region where the finding was generated. | 
+| AWS.GuardDuty.Findings.Id | string | The ID of the finding. | 
+| AWS.GuardDuty.Findings.Title | string | The title of the finding. | 
+| AWS.GuardDuty.Findings.Severity | string | The severity of the finding. | 
+| AWS.GuardDuty.Findings.Type | string | The type of finding. | 
+| AWS.GuardDuty.Findings.UpdatedAt | string | The time and date when the finding was last updated. | 
+| AWS.GuardDuty.Findings.Arn | string | The ARN of the finding. | 
+| AWS.GuardDuty.Findings.Confidence | string | The confidence score for the finding. | 
+| AWS.GuardDuty.Findings.Partition | string | The partition associated with the finding. | 
+| AWS.GuardDuty.Findings.ResourceType | string | The type of Amazon Web Services resource. | 
+| AWS.GuardDuty.Findings.SchemaVersion | string | The version of the schema used for the finding. | 
+| AWS.GuardDuty.Findings.Service | string | Contains additional information about the generated finding. | 
+| AWS.GuardDuty.Findings.Resource.AccessKeyDetails | string | The IAM access key details \(IAM user information\) of a user that engaged in the activity that prompted GuardDuty to generate a finding. | 
+| AWS.GuardDuty.Findings.Resource.InstanceDetails | string | The information about the EC2 instance associated with the activity that prompted GuardDuty to generate a finding. | 
+| AWS.GuardDuty.Findings.Resource.EksClusterDetails | string | Details about the EKS cluster involved in a Kubernetes finding. | 
+| AWS.GuardDuty.Findings.Resource.KubernetesDetails | string | Details about the Kubernetes user and workload involved in a Kubernetes finding. | 
+| AWS.GuardDuty.Findings.Resource.EbsVolumeDetails | string | Contains a list of scanned and skipped EBS volumes with details. | 
+| AWS.GuardDuty.Findings.Resource.EcsClusterDetails | string | Contains information about the details of the ECS Cluster. | 
+| AWS.GuardDuty.Findings.Resource.ContainerDetails | string | Details of a container. | 
+| AWS.GuardDuty.Findings.Resource.S3BucketDetails | string | Contains information on the S3 bucket. | 
 
 #### Command Example
 
 ```!aws-gd-get-findings detectorIds=4f1fc7cd7dsg26sdf4328d8dc813 findingIds=96b1ac608sdf00e5183c3dds115c36aac328b,0ab180f5801sdg954418f3806c2a45282c9```
 
 ### aws-gd-create-sample-findings
-
 ***
 Generates example findings of types specified by the list of finding types. If 'NULL' is specified for findingTypes, the API
 generates example findings of all supported finding types.
@@ -659,7 +704,6 @@ Action: _guardduty:CreateSampleFindings_
 #### Base Command
 
 `aws-gd-create-sample-findings`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -671,6 +715,7 @@ Action: _guardduty:CreateSampleFindings_
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
+
 #### Context Output
 
 There is no context output for this command.
@@ -680,7 +725,6 @@ There is no context output for this command.
 ```!aws-gd-create-sample-findings detectorId=4f1fc7cd7dsg2adf6sdf4328d8dc813 findingTypes=NULL region=eu-central-1```
 
 ### aws-gd-archive-findings
-
 ***
 Archives Amazon GuardDuty findings specified by the list of finding IDs.
 
@@ -692,7 +736,6 @@ Action: _guardduty:ArchiveFindings_
 #### Base Command
 
 `aws-gd-archive-findings`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -704,6 +747,7 @@ Action: _guardduty:ArchiveFindings_
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
+
 #### Context Output
 
 There is no context output for this command.
@@ -713,7 +757,6 @@ There is no context output for this command.
 ```!aws-gd-archive-findings detectorIds=4f1fc7cd7dsg26sdf4328d8dc813 findingIds=96b1ac608sdf00e5183c3dds115c36aac328b,0ab180f5801sdg954418f3806c2a45282c9```
 
 ### aws-gd-unarchive-findings
-
 ***
 Unarchives Amazon GuardDuty findings specified by the list of finding IDs.
 
@@ -725,13 +768,13 @@ Action: _guardduty:UnarchiveFindings_
 #### Base Command
 
 `aws-gd-unarchive-findings`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | detectorId | The ID of the detector that specifies the GuardDuty service whose findings you want to unarchive. | Required | 
 | findingIds | IDs of the findings that you want to unarchive. | Optional | 
+
 
 #### Context Output
 
@@ -742,7 +785,6 @@ There is no context output for this command.
 ```!aws-gd-unarchive-findings detectorIds=4f1fc7cd7dsg26sdf4328d8dc813 findingIds=96b1ac608sdf00e5183c3dds115c36aac328b,0ab180f5801sdg954418f3806c2a45282c9```
 
 ### aws-gd-update-findings-feedback
-
 ***
 Marks specified Amazon GuardDuty findings as useful or not useful.
 
@@ -754,7 +796,6 @@ Action: _guardduty:UpdateFindingsFeedback_
 #### Base Command
 
 `aws-gd-update-findings-feedback`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -768,6 +809,7 @@ Action: _guardduty:UpdateFindingsFeedback_
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
+
 #### Context Output
 
 There is no context output for this command.
@@ -777,7 +819,6 @@ There is no context output for this command.
 ```!aws-gd-update-findings-feedback detectorIds=4f1fc7cd7dsg26sdf4328d8dc813 findingIds=96b1ac608sdf00e5183c3dds115c36aac328b comments=Good Job feedback=USEFUL```
 
 ### aws-gd-list-members
-
 ***
 Describes Amazon GuardDuty members for the specified detector ID.
 
@@ -789,7 +830,6 @@ Action: _guardduty:ListMembers_
 #### Base Command
 
 `aws-gd-list-members`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -799,6 +839,10 @@ Action: _guardduty:ListMembers_
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| limit | Number of total results to query. Default is `50`. | Optional | 
+| page | Specific page to query. | Optional | 
+| page_size | Number of total results in each page. Default is `50`. | Optional | 
+
 
 #### Context Output
 
@@ -817,7 +861,6 @@ Action: _guardduty:ListMembers_
 ```!aws-gd-list-members detectorIds=4f1fc7cd7dsg26sdf4328d8dc813```
 
 ### aws-gd-get-members
-
 ***
 Describes Amazon GuardDuty members for the specified detector ID & account ID.
 
@@ -829,7 +872,6 @@ Action: _guardduty:GetMembers_
 #### Base Command
 
 `aws-gd-get-members`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -840,6 +882,7 @@ Action: _guardduty:GetMembers_
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
 
 #### Context Output
 
@@ -858,5 +901,13 @@ Action: _guardduty:GetMembers_
 ```!aws-gd-get-members detectorIds=4f1fc7cd7dsg26sdf4328d8dc813 accountIds=1f3fc2cd1dag26sdf4338d8aa813```
 
 
+## Breaking changes from the previous version of this integration - AWS-GuardDuty
+The following sections list the changes in this version.
 
-
+### Commands
+Fetch incidents command - Findings that are fetched are no longer moved automatically to the GuardDuty archive.
+### Parameters
+The following parameters were added in this version:
+- *How many incidents to fetch each time*
+- *First fetch timestamp*
+- *Archive findings After Fetch*

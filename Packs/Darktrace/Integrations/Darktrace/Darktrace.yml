@@ -1,4 +1,7 @@
 category: Network Security
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Darktrace
   version: -1
@@ -8,36 +11,43 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-- additionalinfo: Public token obtained by creating an API token pair on the /config
-    configuration page
+  section: Connect
+- additionalinfo: Public token obtained by creating an API token pair on the /config configuration page
   displaypassword: Public API Token (Recommended)
   hiddenusername: true
   name: public_creds
   required: false
   type: 9
-- additionalinfo: Private token obtained by creating an API token pair on the /config
-    configuration page
+  section: Connect
+- additionalinfo: Private token obtained by creating an API token pair on the /config configuration page
   displaypassword: Private API Token (Recommended)
   hiddenusername: true
   name: private_creds
   required: false
   type: 9
+  section: Connect
 - additionalinfo: Minimum Darktrace score for fetched incidents (0-100)
   defaultvalue: '0'
   display: Minimum Score
@@ -45,6 +55,7 @@ configuration:
   name: min_score
   required: true
   type: 0
+  section: Collect
 - additionalinfo: Maximum number of Darktrace model breaches to fetch at a time
   defaultvalue: '50'
   display: Maximum Model Breaches per Fetch
@@ -52,31 +63,31 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: Time to start fetching the first incidents. Default is to begin
-    fetching 1 day ago. Max number of model breaches that will be populated upon first
-    fetch is 20.
+  section: Collect
+- additionalinfo: Time to start fetching the first incidents. Default is to begin fetching 1 day ago. Max number of model breaches that will be populated upon first fetch is 20.
   defaultvalue: 1 day ago
   display: First fetch time
   hidden: false
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: Use the "Public API Token (Recommended)" parameter instead.
   display: Public API Token (Deprecated)
   name: public_api_token
   required: false
   type: 4
+  section: Connect
+  advanced: true
 - additionalinfo: Use the "Private API Token (Recommended)" parameter instead.
   display: Private API Token (Deprecated)
   name: private_api_token
   required: false
   type: 4
-description: Rapid detection of malicious behavior can make all the difference in
-  the response to a security event. This pack includes configurations to combine the
-  world-class threat detection of Darktrace with the synchrony and automation abilities
-  of XSOAR, allowing security teams to investigate and manage security events before
-  they have time to escalate.
-display: Darktrace
+  section: Connect
+  advanced: true
+description: Deprecated. Use DarktraceMBs, DarktraceAIA, DarktraceAdmin instead.
+display: Darktrace (Deprecated)
 name: Darktrace
 script:
   commands:
@@ -88,8 +99,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Darktrace-get-breach returns a model breach based on its model breach
-      id (pbid)
+    description: Darktrace-get-breach returns a model breach based on its model breach id (pbid)
     execution: false
     name: darktrace-get-breach
     outputs:
@@ -149,8 +159,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns the comments on a model breach based on its model breach
-      id (pbid)
+    description: Returns the comments on a model breach based on its model breach id (pbid)
     execution: false
     name: darktrace-get-comments
     outputs:
@@ -208,8 +217,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a list of similar devices to a device specified by Darktrace
-      DID
+    description: Returns a list of similar devices to a device specified by Darktrace DID
     execution: false
     name: darktrace-list-similar-devices
     outputs:
@@ -270,8 +278,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns details collected by Darktrace about external IP addresses
-      or hostnames.
+    description: Returns details collected by Darktrace about external IP addresses or hostnames.
     execution: false
     name: darktrace-get-external-endpoint-details
     outputs:
@@ -287,8 +294,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify whether to return data for either connections (co), data
-        size out (sizeout) or data size in (sizein).
+      description: Specify whether to return data for either connections (co), data size out (sizeout) or data size in (sizein).
       isArray: true
       name: data_type
       predefined:
@@ -314,8 +320,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Return an entry for all time intervals in the graph data, including
-        zero counts. (Not recommended)
+      description: Return an entry for all time intervals in the graph data, including zero counts. (Not recommended)
       isArray: true
       name: show_all_graph_data
       predefined:
@@ -333,9 +338,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Return the full device detail objects for all devices referenced
-        by data in an API response. Use of this parameter will alter the JSON structure
-        of the API response for certain calls.
+      description: Return the full device detail objects for all devices referenced by data in an API response. Use of this parameter will alter the JSON structure of the API response for certain calls.
       isArray: true
       name: full_device_details
       predefined:
@@ -344,20 +347,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns the graphable data used in the "Connections Data" view for
-      a specific device that can be accessed from the Threat Visualizer omnisearch
-      in Darktrace. Data returned covers a 4 week period. Parameters are further documented
-      at https://customerportal.darktrace.com/product-guides/main/api-deviceinfo-request.
-      It is recommended to run the command to check the relevant fields in context.
+    description: Returns the graphable data used in the "Connections Data" view for a specific device that can be accessed from the Threat Visualizer omnisearch in Darktrace. Data returned covers a 4 week period. Parameters are further documented at https://customerportal.darktrace.com/product-guides/main/api-deviceinfo-request. It is recommended to run the command to check the relevant fields in context.
     execution: false
     name: darktrace-get-device-connection-info
     outputs:
     - contextPath: Darktrace.DeviceConnectionInfo
-      description: Graphable data used in the "Connections Data" view for a specific
-        device that can be accessed from the Threat Visualizer omnisearch in Darktrace.
-        Data returned covers a 4 week period. Parameters are further documented at
-        https://customerportal.darktrace.com/product-guides/main/api-deviceinfo-request.
-        It is recommended to run the command to check the relevant fields in context.
+      description: Graphable data used in the "Connections Data" view for a specific device that can be accessed from the Threat Visualizer omnisearch in Darktrace. Data returned covers a 4 week period. Parameters are further documented at https://customerportal.darktrace.com/product-guides/main/api-deviceinfo-request. It is recommended to run the command to check the relevant fields in context.
       type: Unknown
   - arguments:
     - default: false
@@ -389,8 +384,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: desc
-      description: Sets the sort order for returned devices as ascending (asc) or
-        descending (desc). Default is ascending.
+      description: Sets the sort order for returned devices as ascending (asc) or descending (desc). Default is ascending.
       isArray: true
       name: order
       predefined:
@@ -414,15 +408,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets device identity information based on label, tag, type, hostname,
-      ip, mac, vendor and os. It is recommended to run the command to check the relevant
-      fields in context.
+    description: Gets device identity information based on label, tag, type, hostname, ip, mac, vendor and os. It is recommended to run the command to check the relevant fields in context.
     execution: false
     name: darktrace-get-device-identity-info
     outputs:
     - contextPath: Darktrace.DeviceIdentityInfo
-      description: Information about the device’s identity. It is recommended to run
-        the command to check the relevant fields in context.
+      description: Information about the device’s identity. It is recommended to run the command to check the relevant fields in context.
       type: Unknown
   - arguments:
     - default: false
@@ -434,8 +425,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Starting index to return results from (for example offset=20 with
-        max_results=50 will bring results from index 20 to index 70)
+      description: Starting index to return results from (for example offset=20 with max_results=50 will bring results from index 20 to index 70)
       isArray: false
       name: offset
       required: false
@@ -478,15 +468,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a time sorted list of connections and events for a device
-      or an entity such as a user credential.
+    description: Returns a time sorted list of connections and events for a device or an entity such as a user credential.
     execution: false
     name: darktrace-get-entity-details
     outputs:
     - contextPath: Darktrace.EntityDetails
-      description: List of entities and their details. Each entity might have different
-        keys. It is recommended to run the command once to check the relevant outputs
-        in context.
+      description: List of entities and their details. Each entity might have different keys. It is recommended to run the command once to check the relevant outputs in context.
       type: Unknown
   - name: darktrace-get-breach-details
     arguments:
@@ -504,21 +491,17 @@ script:
     description: Retrieve additional details on a modelbreach
     outputs:
     - contextPath: Darktrace.ModelBreach
-      description: List of events from the modelbreach and their details. Each event might have different
-        keys. It is recommended to run the command once to check the relevant outputs
-        in context
-      type: Unknown  
+      description: List of events from the modelbreach and their details. Each event might have different keys. It is recommended to run the command once to check the relevant outputs in context
+      type: Unknown
   - name: darktrace-get-model
     arguments:
     - name: uuid
       required: true
-      description:  All models have a uuid and a pid. The uuid (universally unique identifier) is a 128-bit hexadecimal number
+      description: All models have a uuid and a pid. The uuid (universally unique identifier) is a 128-bit hexadecimal number
     description: Get the details of a model given the UUID
     outputs:
     - contextPath: Darktrace.Model
-      description: A dictionary of the details of the model. Each model might have different
-        keys. It is recommended to run the command once to check the relevant outputs
-        in context
+      description: A dictionary of the details of the model. Each model might have different keys. It is recommended to run the command once to check the relevant outputs in context
       type: Unknown
   - name: darktrace-get-component
     arguments:
@@ -528,11 +511,9 @@ script:
     description: Get details of a component given the CID
     outputs:
     - contextPath: Darktrace.Component
-      description:  A dictionary of the details of the model. Each model might have different
-        keys. It is recommended to run the command once to check the relevant outputs
-        in context
+      description: A dictionary of the details of the model. Each model might have different keys. It is recommended to run the command once to check the relevant outputs in context
       type: Unknown
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false
@@ -542,3 +523,6 @@ script:
   subtype: python3
   type: python
 fromversion: 6.0.0
+deprecated: true
+tests:
+- No tests (auto formatted)

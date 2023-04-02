@@ -3,9 +3,8 @@ commonfields:
   version: -1
 name: Symantec Messaging Gateway
 display: Symantec Messaging Gateway
-category: Email Gateway
-description: Symantec Messaging Gateway protects against spam, malware, targeted attacks
-  and provides advanced content filtering, data loss prevention, and email encryption.
+category: Email
+description: Symantec Messaging Gateway protects against spam, malware, targeted attacks and provides advanced content filtering, data loss prevention, and email encryption.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1:20013)
   name: server
@@ -119,5 +118,7 @@ script:
   - name: smg-get-blocked-ips
     arguments: []
     description: Returns a list of all blocked IP addresses.
-  dockerimage: demisto/bs4-py3:1.0.0.34176
+  dockerimage: demisto/bs4-py3:1.0.0.48637
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

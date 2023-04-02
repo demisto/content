@@ -20,7 +20,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 8
-  display: PAN-OS Version
+  display: PAN-OS Version (The exact version, e.g., 10.1.4, 1.1, 9)
   name: version
   type: 0
 - display: Trust any certificate (not secure)
@@ -32,7 +32,7 @@ configuration:
   required: false
   type: 8
 description: Automate your AppID Adoption by using this integration together with your Palo Alto Networks Next-Generation Firewall or Panorama.
-display: PAN-OS Policy Optimizer
+display: PAN-OS Policy Optimizer (Beta)
 name: PAN-OS Policy Optimizer
 script:
   commands:
@@ -102,13 +102,16 @@ script:
       - 'true'
       required: false
       secret: false
-    - default: false
-      description: Whether to get pre-rules or post-rules, 'pre' for pre rules, 'post' for post-rules, only for panorama instances.
+    - auto: PREDEFINED
+      default: false
+      description: Whether to get pre-rules, post-rules or both. 'pre' for pre rules, 'post' for post-rules, only for panorama instances.
       isArray: false
       name: position
+      defaultValue: 'both'
       predefined:
       - pre
       - post
+      - both
       required: false
       secret: false
     - default: false
@@ -169,7 +172,7 @@ script:
     description: Gets a specific dynamic address group.
     execution: false
     name: pan-os-get-dag
-  dockerimage: demisto/python3:3.10.5.33323
+  dockerimage: demisto/python3:3.10.8.37233
   feed: false
   isfetch: false
   longRunning: false
@@ -181,3 +184,4 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+beta: true

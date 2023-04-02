@@ -1,6 +1,9 @@
 commonfields:
   id: QRadar v3
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: QRadar v3
 display: IBM QRadar v3
 category: Analytics & SIEM
@@ -11,25 +14,31 @@ configuration:
   type: 0
   required: true
   additionalinfo: (e.g., https://192.168.0.1)
+  section: Connect
 - display: Username
   name: credentials
   type: 9
   required: true
+  section: Connect
 - display: QRadar API Version
   defaultvalue: 14.0
   additionalinfo: API version of QRadar (e.g., '12.0'). Minimum API version is 10.1.
   name: api_version
   type: 0
   required: true
+  section: Connect
 - display: Incident Type
   name: incident_type
   required: false
   type: 13
+  section: Connect
 - defaultvalue: 3 days
+  additionalinfo: if no offenses are found within the range of first fetch, will be set to fetch the earliest offense.
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: Fetch With All Events
   display: Fetch mode
   hidden: false
@@ -40,29 +49,38 @@ configuration:
   - Fetch Correlation Events Only
   required: true
   type: 15
+  section: Collect
 - defaultvalue: 'true'
   display: Retry events fetch
   name: retry_events_fetch
   required: false
   type: 8
   additionalinfo: "Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than `event_count`. Default number of tries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_TRIES. e.g EVENTS_SEARCH_TRIES=5"
+  section: Collect
+  advanced: true
 - defaultvalue: '20'
   display: Maximum number of events per incident.
   name: events_limit
   additionalinfo: The maximal amount of events to pull per incident.
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Number of offenses to pull per API call (max 50)
   name: offenses_per_fetch
   required: false
   type: 0
   additionalinfo: In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value.
   defaultvalue: '20'
-- display: Query to fetch offenses
+  section: Collect
+  advanced: true
+- display: Query to fetch offenses.
   name: query
   required: false
   type: 0
-  additionalinfo: Define a query to determine which offenses to fetch. E.g., "severity >= 4 AND id > 5 AND status=OPEN".
+  additionalinfo: Define a query to determine which offenses to fetch. E.g., "severity >= 4 AND id > 5". filtering by status in the query may result in unexpected behavior when changing an incident's status.
+  section: Collect
+  advanced: true
 - defaultvalue: IPs And Assets
   display: 'Incidents Enrichment'
   name: enrichment
@@ -74,16 +92,21 @@ configuration:
   - IPs
   - IPs And Assets
   - None
+  section: Collect
+  advanced: true
 - defaultvalue: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime
   display: 'Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping).'
   name: events_columns
   required: false
   type: 12
   additionalinfo: 'The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html'
+  section: Collect
+  advanced: true
 - additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev.
   defaultvalue: 'No Mirroring'
   display: Mirroring Options
-  hidden: false
+  hidden:
+    - marketplacev2
   name: mirror_options
   required: false
   type: 15
@@ -91,32 +114,47 @@ configuration:
   - No Mirroring
   - Mirror Offense
   - Mirror Offense and Events
+  section: Collect
+  advanced: true
 - additionalinfo: When selected, closing the QRadar offense is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
   required: false
   type: 8
-  hidden: false
+  hidden:
+    - marketplacev2
+  section: Collect
+  advanced: true
 - additionalinfo: Maximum number of incoming incidents to mirror each time.
   display: The number of incoming incidents to mirror each time
   name: mirror_limit
   required: false
   type: 0
   defaultvalue: '100'
+  section: Collect
+  advanced: true
+  hidden:
+    - marketplacev2
 - display: Advanced Parameters
   name: adv_params
   type: 12
   required: false
   additionalinfo: Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 script:
   commands:
   - name: qradar-offenses-list
@@ -2576,7 +2614,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Uploads indicators from Demisto to Qradar.
+    description: Uploads indicators from Demisto to QRadar.
     execution: false
     hidden: true
     name: qradar-upload-indicators
@@ -2767,11 +2805,132 @@ script:
     - contextPath: QRadar.SearchEvents.Status
       description: The status of the search ('wait', 'partial', 'success').
       type: Unknown
+  - name: qradar-remote-network-cidr-create
+    arguments:
+    - name: cidrs
+      description: An input list of CIDRs to add to QRadar (can be obtained automatically from EDL integrations and playbook). Multiple values in the same object are separated by commas. A CIDR or query is required.
+      isArray: true
+    - name: query
+      description: The query for getting indicators from Cortex XSOAR. A CIDR or query is required.
+    - name: name
+      required: true
+      description: A CIDR (remote network) name that will be displayed for all uploaded values in QRadar.
+    - name: description
+      required: true
+      description: Description that will be displayed and associated with all the newly uploaded CIDRs in QRadar.
+    - name: group
+      required: true
+      description: The exact name of the remote network group that CIDRs should be associated with as it appears in QRadar. A single group can be assigned to each create command. A new remote network group can be created in QRadar by giving a new unique remote network group name (that does not already exist in QRadar remote networks).
+    - name: fields
+      description: Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded from the output. Specify subfields in brackets, and multiple fields in the same object are separated by commas. The possible fields are id, group, name, CIDR, and description.
+    description: Create remote network CIDRs.
+  - name: qradar-remote-network-cidr-list
+    arguments:
+    - name: limit
+      description: The maximum number of results to return. The default is 50.
+    - name: page
+      description: The page offset.
+    - name: page_size
+      description: Maximum number of results to retrieve in each page.
+    - name: group
+      description: The name of the remote network group that the CIDRs are associated with, as it appears in QRadar.
+    - name: id
+      description: ID of the CIDR (remote network).
+    - name: name
+      description: The name of the CIDRs (remote network) as it appears in QRadar.
+    - name: filter
+      description: Additional options to filter results using a query expression.
+    - name: fields
+      description: Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. By default, this argument returns all fields (id, name, cidrs, group, description).
+    outputs:
+    - contextPath: QRadar.RemoteNetworkCIDR
+      description: A list of all the retrieved CIDRs.
+      type: Number
+    - contextPath: QRadar.RemoteNetworkCIDR.id
+      description: ID of each CIDR remote network that is part of the group.
+      type: Number
+    - contextPath: QRadar.RemoteNetworkCIDR.name
+      description: The associated CIDR name as it appears in QRadar.
+      type: String
+    - contextPath: QRadar.RemoteNetworkCIDR.description
+      description: The associated CIDR description as it appears in QRadar.
+      type: String
+    description: Retrieves the list of staged remote networks.
+  - name: qradar-remote-network-cidr-delete
+    arguments:
+    - name: id
+      type: number
+      isArray: true
+      required: true
+      description: ID that is used to locate the staged remote network that users want to remove from QRadar.
+    description: Deletes an existing staged remote network.
+  - name: qradar-remote-network-cidr-update
+    arguments:
+    - name: id
+      description: The ID that is associated with the CIDR object that needs to be modified.
+      required: true
+    - name: name
+      description: The CIDR name in QRadar. If the CIDR name should be changed, it can be inserted here.
+      required: true
+    - name: cidrs
+      description: An input list of CIDRs to add to QRadar (can be obtained automatically from EDL integrations and playbook). Multiple values in the same object are separated by commas. A CIDR or query is required.
+      isArray: true
+    - name: query
+      description: The query for getting indicators from Cortex XSOAR. A CIDR or query is required.
+    - name: description
+      description: CIDR associated description presented in QRadar. If the CIDR description should be changed, it can be inserted here.
+      required: true
+    - name: group
+      description: The remote network group that CIDRs should belong to. If the CIDR-associated group should be changed, it can be inserted here.
+      required: true
+    - name: fields
+      description: Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets, and multiple fields in the same object are separated by commas. The possible fields are id,group,name,cidr,description.
+    outputs:
+    - contextPath: QRadar.RemoteNetworkCIDR
+      description: A list of all the CIDR ranges that were changed.
+      type: Number
+    - contextPath: QRadar.RemoteNetworkCIDR.id
+      description: The associated CIDR ID.
+      type: Number
+    - contextPath: QRadar.RemoteNetworkCIDR.name
+      description: The associated CIDR name.
+      type: String
+    - contextPath: QRadar.RemoteNetworkCIDR.group
+      description: The group to which the remote network belongs.
+      type: String
+    - contextPath: QRadar.RemoteNetworkCIDR.description
+      description: The description of the remote network.
+      type: String
+    description: Updates an existing staged remote network.
+  - name: qradar-remote-network-deploy-execution
+    arguments:
+    - name: host_ip
+      description: The IP of QRadar console host.
+      required: true
+    - name: status
+      description: The deployment status. Must be in capital letters (“INITIATING”).
+      auto: PREDEFINED
+      predefined:
+      - INITIATING
+    - name: deployment_type
+      auto: PREDEFINED
+      predefined:
+      - INCREMENTAL
+      - FULL
+      description: The deployment type. Must be in capital letters (“INCREMENTAL” or “FULL”).
+      required: true
+    outputs:
+    - contextPath: QRadar.deploy.status
+      description: The deployment status (INITIALIZING, IN_PROGRESS, COMPLETE).
+      type: String
+    description: |
+      Executes a deployment.
+      Potentially harmful: This API command executes any waiting system deployments in QRadar within the same deployment type and hosts defined.
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: false
   isremotesyncin: true

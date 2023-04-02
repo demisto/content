@@ -1,0 +1,12 @@
+{
+  "OriginalURL": "https://invalid.url",
+  "ResolvedURL": "https://invalid.url",
+  "ServiceName": "unshorten.me",
+  "RedirectCount": 0,
+  "RedirectHistory": [
+    "https://invalid.url"
+  ],
+  "EncounteredError": true,
+  "APIUsageCount": 0,
+  "APIRateLimit": 10
+}

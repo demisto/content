@@ -7,6 +7,7 @@ import datetime
 TOKEN = 'dummy_token'
 TENANT = 'dummy_tenant'
 REFRESH_TOKEN = 'dummy_refresh'
+REFRESH_TOKEN_PARAM = 'dummy_refresh_token_param'
 AUTH_ID = 'dummy_auth_id'
 ENC_KEY = 'dummy_enc_key'
 TOKEN_URL = 'mock://dummy_url'
@@ -49,7 +50,8 @@ def oproxy_client_multi_resource():
 
 
 def oproxy_client_refresh():
-    refresh_token = REFRESH_TOKEN
+    refresh_token = REFRESH_TOKEN  # represents the refresh token from the integration context
+    refresh_token_param = REFRESH_TOKEN_PARAM  # represents the token from the current instance config
     auth_id = f'{AUTH_ID}@{TOKEN_URL}'
     enc_key = ENC_KEY
     app_name = APP_NAME
@@ -57,7 +59,8 @@ def oproxy_client_refresh():
     ok_codes = OK_CODES
 
     return MicrosoftClient(self_deployed=False, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-                           refresh_token=refresh_token, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+                           refresh_token=refresh_token, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes,
+                           refresh_token_param=refresh_token_param)
 
 
 def self_deployed_client():
@@ -281,6 +284,52 @@ def test_oproxy_request(mocker, requests_mock, client, enc_content, tokens, res)
     assert req_res == res
 
 
+def test_oproxy_auth_first_attempt_failed(mocker, requests_mock):
+    """
+    This test checks the 'two attempts logic' of the authentication with the oproxy server.
+    'Two attempts logic' - In general we send to the oproxy server a refresh token that was saved in the integration
+    context, If for some reason the authentication request was failed, we will perform a second auth attempt in which
+    we will send the refresh token from the integration parameters - i.e the token is currently configured in the
+    instance.
+
+    In the test, we simulate a case where the oproxy server returns an error when we send an auth request, in this case
+    the 'Two attempts logic' should occur.
+    Given:
+        - A client generated with a refresh_token and a refresh_token_param (represents the token from the integration
+          parameters - i.e current instance config).
+        - An error mock response for the request post command to the oproxy server.
+    When:
+        - running the client._oproxy_authorize() function
+
+    Then:
+        - Verify that the client._oproxy_authorize() function called twice: first attempt with the refresh_token,
+          and second attempt with the refresh_token_param.
+        - Verify that an exception with the expected error message was raised.
+    """
+
+    # Initialize Client
+    client = oproxy_client_refresh()
+
+    # Set Mockers
+    def get_encrypted(content, key):
+        return content + key
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(client, '_add_info_headers')
+    mocker.patch.object(client, 'get_encrypted', side_effect=get_encrypted)
+    post_req_mock = requests_mock._adapter.register_uri('POST',
+                                                        TOKEN_URL,
+                                                        json={'error': 'Permission Denied'},
+                                                        status_code=400)
+
+    # Verify results
+    with pytest.raises(Exception) as err:
+        client._oproxy_authorize()
+    assert post_req_mock.call_count == 2
+    assert REFRESH_TOKEN in post_req_mock.request_history[0].text
+    assert REFRESH_TOKEN_PARAM in post_req_mock.request_history[1].text
+    assert err.value.args[0] == 'Error in authentication. Try checking the credentials you entered.'
+
+
 def test_self_deployed_request(requests_mock):
     import urllib
     # Set
@@ -394,11 +443,16 @@ def test_retry_on_rate_limit(requests_mock, mocker):
     mocker.patch.object(demisto, 'command', return_value='testing_command')
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(sys, 'exit')
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
 
     client.http_request(method='GET', url_suffix='test_id')
-    results: ScheduledCommand = demisto.results.call_args[0][0]
-    assert results.get('PollingCommand') == 'testing_command'
-    assert results.get('PollingArgs') == {'ran_once_flag': True}
+    retry_results: ScheduledCommand = demisto.results.call_args[0][0]
+    assert retry_results.get('PollingCommand') == 'testing_command'
+    assert retry_results.get('PollingArgs') == {'ran_once_flag': True}
+
+    metric_results = demisto.results.call_args_list[0][0][0]
+    assert metric_results.get('Contents') == 'Metrics reported successfully.'
+    assert metric_results.get('APIExecutionMetrics') == [{'Type': 'QuotaError', 'APICallsCount': 1}]
 
 
 def test_fail_on_retry_on_rate_limit(requests_mock, mocker):
@@ -427,6 +481,7 @@ def test_fail_on_retry_on_rate_limit(requests_mock, mocker):
     mocker.patch.object(demisto, 'args', return_value={'ran_once_flag': True})
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(sys, 'exit')
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
 
     try:
         client.http_request(method='GET', url_suffix='test_id')
@@ -462,17 +517,105 @@ def test_rate_limit_when_retry_is_false(requests_mock):
         assert 'Error in API call [429]' in err.args[0]
 
 
-@pytest.mark.parametrize('retry_on_rate_limit, ok_codes, result', [
-    (True, (200, 202), (200, 202, 429)),
-    (True, (200, 202, 429), (200, 202, 429)),
-    (False, (200, 202), (200, 202)),
+@pytest.mark.parametrize('response, result', [
+    (200, [{'Type': 'Successful', 'APICallsCount': 1}]),
+    (429, [{'Type': 'QuotaError', 'APICallsCount': 1}]),
+    (500, [{'Type': 'GeneralError', 'APICallsCount': 1}])
 ])
-def test_ok_codes_429_with_retry_on_rate_limit(retry_on_rate_limit, ok_codes, result):
+def test_create_api_metrics(mocker, response, result):
     """
-    When retry_on_rate_limit is set to True, 429 code should be added to ok_codes
+    Test create_api_metrics function, make sure metrics are reported according to the response
     """
-    client = MicrosoftClient(self_deployed=True, tenant_id=TENANT, auth_id=CLIENT_ID, enc_key=CLIENT_SECRET,
-                             resource=RESOURCE, base_url=BASE_URL, verify=True, proxy=False,
-                             ok_codes=ok_codes, retry_on_rate_limit=retry_on_rate_limit)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
+    mocker.patch('MicrosoftApiModule.is_demisto_version_ge', return_value=True)
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
+    client = retry_on_rate_limit_client(True)
+    client.create_api_metrics(response)
 
-    assert client._ok_codes == result
+    metric_results = demisto.results.call_args_list[0][0][0]
+    assert metric_results.get('Contents') == 'Metrics reported successfully.'
+    assert metric_results.get('APIExecutionMetrics') == result
+
+
+def test_general_error_metrics(requests_mock, mocker):
+    "When we activate the retry mechanism, and we recieve a general error, it's metric should be recorded"
+    client = retry_on_rate_limit_client(True)
+    requests_mock.post(
+        APP_URL,
+        json={'access_token': TOKEN, 'expires_in': '3600'})
+
+    requests_mock.get(
+        'https://graph.microsoft.com/v1.0/test_id',
+        status_code=500,
+        json={'content': "General Error!"}
+    )
+
+    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
+    mocker.patch('MicrosoftApiModule.is_demisto_version_ge', return_value=True)
+    mocker.patch.object(demisto, 'command', return_value='testing_command')
+    mocker.patch.object(demisto, 'results')
+
+    try:
+        client.http_request(method='GET', url_suffix='test_id')
+        assert False
+    except DemistoException:
+        metric_results = demisto.results.call_args_list[0][0][0]
+        assert metric_results.get('Contents') == 'Metrics reported successfully.'
+        assert metric_results.get('APIExecutionMetrics') == [{'Type': 'GeneralError', 'APICallsCount': 1}]
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_get_token_managed_identities(requests_mock, mocker, client_id):
+    """
+    Given:
+        managed identity client id or None
+    When:
+        get access token
+    Then:
+        Verify that the result are as expected
+    """
+    test_token = 'test_token'
+    import MicrosoftApiModule
+
+    mock_token = {'access_token': test_token, 'expires_in': '86400'}
+
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    mocker.patch.object(MicrosoftApiModule, 'get_integration_context', return_value={})
+
+    client = self_deployed_client()
+    client.managed_identities_resource_uri = Resources.graph
+    client.managed_identities_client_id = client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+
+    assert test_token == client.get_access_token()
+    qs = get_mock.last_request.qs
+    assert qs['resource'] == [Resources.graph]
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+def test_get_token_managed_identities__error(requests_mock, mocker):
+    """
+    Given:
+        managed identity client id
+    When:
+        get access token
+    Then:
+        Verify that the result are as expected
+    """
+
+    import MicrosoftApiModule
+
+    mock_token = {'error_description': 'test_error_description'}
+    requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    mocker.patch.object(MicrosoftApiModule, 'return_error', side_effect=Exception())
+    mocker.patch.object(MicrosoftApiModule, 'get_integration_context', return_value={})
+
+    client = self_deployed_client()
+    client.managed_identities_client_id = 'test_client_id'
+    client.managed_identities_resource_uri = Resources.graph
+
+    with pytest.raises(Exception):
+        client.get_access_token()
+
+    err_message = 'Error in Microsoft authorization with Azure Managed Identities'
+    assert err_message in MicrosoftApiModule.return_error.call_args[0][0]

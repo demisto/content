@@ -11,7 +11,7 @@ configuration:
   name: base_url
   type: 0
   required: true
-  additionalinfo: Enter the endpoint URL of your CTIX Instance.
+  additionalinfo: Enter the endpoint URL of your CTIX Instance, e.g. https://example.cyware.com/ctixapi/.
 - display: Access Key
   name: access_id
   type: 4
@@ -30,8 +30,22 @@ configuration:
   name: proxy
   type: 8
   required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
 script:
-  script: ''
+  script: ""
   type: python
   commands:
   - name: ctix-create-tag
@@ -53,8 +67,7 @@ script:
       - pink
       - light-red
       - grey
-      description: New tag's name for the defined colour. If no colour selected, colour
-        grey will be given
+      description: New tag's name for the defined colour. If no colour selected, colour grey will be given
     outputs:
     - contextPath: CTIX.Tag.name
       description: Name of the tag
@@ -79,10 +92,10 @@ script:
     arguments:
     - name: page
       description: Page number for pagination
-      defaultValue: '1'
+      defaultValue: "1"
     - name: page_size
       description: Page size for pagination
-      defaultValue: '10'
+      defaultValue: "10"
     - name: q
       description: search query parameter
     outputs:
@@ -160,11 +173,11 @@ script:
   - name: ctix-get-allowed-iocs
     arguments:
     - name: page
-      description: 'Page number '
-      defaultValue: '1'
+      description: "Page number "
+      defaultValue: "1"
     - name: page_size
       description: Page size
-      defaultValue: '10'
+      defaultValue: "10"
     - name: q
       description: query param for searching
     outputs:
@@ -210,10 +223,10 @@ script:
       description: Query statement for the thread data, please refer to the documentation
     - name: page
       description: page
-      defaultValue: '1'
+      defaultValue: "1"
     - name: page_size
       description: size of page
-      defaultValue: '1'
+      defaultValue: "1"
     outputs:
     - contextPath: CTIX.ThreatData.confidence_score
       description: Confidence Score of the IOC
@@ -378,7 +391,7 @@ script:
     - contextPath: CTIX.Action.action_type
       description: Description of the action
     - contextPath: CTIX.Action.actioned_on
-      description: 'Timestamp of when the action was taken '
+      description: "Timestamp of when the action was taken "
       type: number
     - contextPath: CTIX.Action.app_name
       description: Name of the app for the action in CTIX
@@ -398,7 +411,7 @@ script:
     arguments:
     - name: object_ids
       required: true
-      description: ', seperated list of indicator ids'
+      description: ", seperated list of indicator ids"
       isArray: true
     - name: object_type
       required: true
@@ -505,7 +518,7 @@ script:
     arguments:
     - name: object_ids
       required: true
-      description: 'Object ids '
+      description: "Object ids "
       isArray: true
     - name: object_type
       required: true
@@ -549,11 +562,11 @@ script:
     arguments:
     - name: page
       description: page
-      defaultValue: '1'
+      defaultValue: "1"
     - name: page_size
       default: true
       description: page size
-      defaultValue: '10'
+      defaultValue: "10"
     - name: label_name
       description: label name
     - name: query
@@ -590,10 +603,10 @@ script:
       description: IOC ID
       type: number
     - contextPath: CTIX.SavedResultSet.indicator_type
-      description: 'Type of the indicator '
+      description: "Type of the indicator "
       type: string
     - contextPath: CTIX.SavedResultSet.ioc_type
-      description: 'Type of the IOC '
+      description: "Type of the IOC "
       type: string
     - contextPath: CTIX.SavedResultSet.is_actioned
       description: If there is any action taken on the indicator
@@ -605,7 +618,7 @@ script:
       description: Value of the indicator is false positive or not
       type: boolean
     - contextPath: CTIX.SavedResultSet.is_reviewed
-      description: 'Whether the indicator reviewed or not '
+      description: "Whether the indicator reviewed or not "
       type: boolean
     - contextPath: CTIX.SavedResultSet.is_revoked
       description: Whether the indicator is revoked or not
@@ -626,7 +639,7 @@ script:
       description: Name of the indicator
       type: string
     - contextPath: CTIX.SavedResultSet.null
-      description: 'null'
+      description: "null"
     - contextPath: CTIX.SavedResultSet.primary_attribute
       description: Primary attribute of the IOC
       type: string
@@ -663,11 +676,11 @@ script:
     arguments:
     - name: page
       description: page from where data will be taken
-      defaultValue: '1'
+      defaultValue: "1"
     - name: page_size
       default: true
       description: total number of results to be fetched
-      defaultValue: '10'
+      defaultValue: "10"
     - name: q
       description: query
     - name: object_id
@@ -685,11 +698,11 @@ script:
     arguments:
     - name: page
       description: which page to bring the data from
-      defaultValue: '1'
+      defaultValue: "1"
     - name: page_size
       default: true
       description: number of pages to bring data from
-      defaultValue: '10'
+      defaultValue: "10"
     - name: q
       description: query
     - name: object_id
@@ -707,11 +720,11 @@ script:
     arguments:
     - name: page
       description: number of page from where data needs to brought
-      defaultValue: '1'
+      defaultValue: "1"
     - name: page_size
       default: true
       description: size of the result
-      defaultValue: '10'
+      defaultValue: "10"
     - name: q
       description: query
     outputs:
@@ -741,11 +754,11 @@ script:
     arguments:
     - name: page
       description: from where data has to be brought
-      defaultValue: '1'
+      defaultValue: "1"
     - name: page_size
       default: true
       description: total number of results
-      defaultValue: '10'
+      defaultValue: "10"
     - name: object_id
       description: object id
     - name: object_type
@@ -850,7 +863,7 @@ script:
       description: Timestamp of the indicator from then it was valid
       type: number
     - contextPath: CTIX.IndicatorDetails.valid_until
-      description: 'Timestamp of the indicator till '
+      description: "Timestamp of the indicator till "
     description: Get Indicator Details
   - name: ctix-get-indicator-tags
     arguments:
@@ -861,10 +874,10 @@ script:
     - name: page
       default: true
       description: page
-      defaultValue: '1'
+      defaultValue: "1"
     - name: page_size
       description: page size
-      defaultValue: '10'
+      defaultValue: "10"
     outputs:
     - contextPath: CTIX.IndicatorTags.notes
       description: Notes on the indicator's tag
@@ -907,10 +920,10 @@ script:
     arguments:
     - name: page
       description: page
-      defaultValue: '1'
+      defaultValue: "1"
     - name: page_size
       description: page size
-      defaultValue: '10'
+      defaultValue: "10"
     - name: object_id
       description: object id
     - name: object_type
@@ -921,7 +934,7 @@ script:
     - contextPath: CTIX.IndicatorRelations.sources
       description: Indicator sources
     - contextPath: CTIX.IndicatorRelations.target_ref
-      description: 'Indicator target reference '
+      description: "Indicator target reference "
     description: Get Indicator Relations
   - name: ctix-get-indicator-observations
     arguments:
@@ -946,7 +959,7 @@ script:
       description: Pattern type of Indicator
       type: string
     - contextPath: CTIX.IndicatorObservations.modified
-      description: 'Timestamp when indicator was modified '
+      description: "Timestamp when indicator was modified "
       type: number
     - contextPath: CTIX.IndicatorObservations.ctix_created
       description: Timestamp when indicator was created in CTIX
@@ -964,7 +977,7 @@ script:
       description: STIX pattern
       type: string
     - contextPath: CTIX.IndicatorObservations.fang_description
-      description: 'FANG description '
+      description: "FANG description "
       type: string
     - contextPath: CTIX.IndicatorObservations.defang_description
       description: DEFANG description
@@ -1003,10 +1016,10 @@ script:
     arguments:
     - name: page
       description: page
-      defaultValue: '1'
+      defaultValue: "1"
     - name: page_size
       description: page size
-      defaultValue: '10'
+      defaultValue: "10"
     - name: object_id
       description: object id
     - name: object_type
@@ -1026,122 +1039,735 @@ script:
       type: string
   - name: ctix-get-lookup-threat-data
     arguments:
-    - name: object_type
-      description: object type
+      - name: object_type
+        description: object type
+      - name: object_names
+        description: "Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1"
+        isArray: true
+      - name: page_size
+        description: size of the page
+        defaultValue: "10"
+    outputs:
+      - contextPath: CTIX.ThreatDataLookup.analyst_score
+        description: Analyst score of the indicator
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.analyst_tlp
+        description: Analyst TLP of the indicator
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.confidence_score
+        description: Confidence score of the indicator
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.confidence_type
+        description: Confidence type of the indicator
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.country
+        description: Indicator origin country
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.created
+        description: Timestamp of when the indicator was created
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.ctix_created
+        description: Timestamp of when the indicator was created in CTIX
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.ctix_modified
+        description: Timestamp of when the indicator was modified in CTIX
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.first_seen
+        description: Timestamp of when the indicator was first seen
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.id
+        description: Indicator ID
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.indicator_type
+        description: Indicator type
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.ioc_type
+        description: IOC type
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.is_actioned
+        description: Is actioned
+        type: boolean
+      - contextPath: CTIX.ThreatDataLookup.is_deprecated
+        description: is deprecated
+        type: boolean
+      - contextPath: CTIX.ThreatDataLookup.is_false_positive
+        description: is false positive
+        type: boolean
+      - contextPath: CTIX.ThreatDataLookup.is_reviewed
+        description: "is reviewed "
+        type: boolean
+      - contextPath: CTIX.ThreatDataLookup.is_revoked
+        description: is revoked
+        type: boolean
+      - contextPath: CTIX.ThreatDataLookup.is_watchlist
+        description: is watchlisted
+        type: boolean
+      - contextPath: CTIX.ThreatDataLookup.is_whitelisted
+        description: is allowed
+        type: boolean
+      - contextPath: CTIX.ThreatDataLookup.last_seen
+        description: Timestamp of when the indicator was last seen
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.modified
+        description: Timestamp of when the indicator was modified
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.name
+        description: name of the indicator
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.null
+        description: "null"
+      - contextPath: CTIX.ThreatDataLookup.primary_attribute
+        description: Primary Attribute
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.published_collections
+        description: published collections
+      - contextPath: CTIX.ThreatDataLookup.risk_severity
+        description: Risk severity
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.source_collections
+        description: sources collections
+        type: unknown
+      - contextPath: CTIX.ThreatDataLookup.source_confidence
+        description: "Source confidence "
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.sources
+        description: sources
+      - contextPath: CTIX.ThreatDataLookup.sub_type
+        description: Sub type
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.subscriber_collections
+        description: subscriber collections
+      - contextPath: CTIX.ThreatDataLookup.subscribers
+        description: subscribers
+      - contextPath: CTIX.ThreatDataLookup.tags
+        description: Tags
+      - contextPath: CTIX.ThreatDataLookup.tlp
+        description: TLP
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.type
+        description: Type
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.valid_from
+        description: Timestamp from when the indicator was valid
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.valid_until
+        description: Timestamp till when the indicator was valid
+        type: number
+    description: Lookup to get threat data
+  - name: ctix-get-create-threat-data
+    arguments:
     - name: object_names
-      description: 'Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1'
+      description: "Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1"
       isArray: true
+      required: true
     - name: page_size
       description: size of the page
-      defaultValue: '10'
+      defaultValue: "10"
+    - name: source
+      type: string
+      description: The source of the threat data
+      required: false
+    - name: collection
+      type: string
+      description: The collection to store the threat data in
+      required: false
     outputs:
-    - contextPath: CTIX.ThreatDataLookup.analyst_score
+    - contextPath: CTIX.ThreatDataGetCreate.Found.analyst_score
       description: Analyst score of the indicator
       type: number
-    - contextPath: CTIX.ThreatDataLookup.analyst_tlp
+    - contextPath: CTIX.ThreatDataGetCreate.Found.analyst_tlp
       description: Analyst TLP of the indicator
       type: string
-    - contextPath: CTIX.ThreatDataLookup.confidence_score
+    - contextPath: CTIX.ThreatDataGetCreate.Found.confidence_score
       description: Confidence score of the indicator
       type: number
-    - contextPath: CTIX.ThreatDataLookup.confidence_type
+    - contextPath: CTIX.ThreatDataGetCreate.Found.confidence_type
       description: Confidence type of the indicator
       type: string
-    - contextPath: CTIX.ThreatDataLookup.country
+    - contextPath: CTIX.ThreatDataGetCreate.Found.country
       description: Indicator origin country
       type: string
-    - contextPath: CTIX.ThreatDataLookup.created
+    - contextPath: CTIX.ThreatDataGetCreate.Found.created
       description: Timestamp of when the indicator was created
       type: number
-    - contextPath: CTIX.ThreatDataLookup.ctix_created
+    - contextPath: CTIX.ThreatDataGetCreate.Found.ctix_created
       description: Timestamp of when the indicator was created in CTIX
       type: number
-    - contextPath: CTIX.ThreatDataLookup.ctix_modified
+    - contextPath: CTIX.ThreatDataGetCreate.Found.ctix_modified
       description: Timestamp of when the indicator was modified in CTIX
       type: number
-    - contextPath: CTIX.ThreatDataLookup.first_seen
+    - contextPath: CTIX.ThreatDataGetCreate.Found.first_seen
       description: Timestamp of when the indicator was first seen
       type: number
-    - contextPath: CTIX.ThreatDataLookup.id
+    - contextPath: CTIX.ThreatDataGetCreate.Found.id
       description: Indicator ID
       type: string
-    - contextPath: CTIX.ThreatDataLookup.indicator_type
+    - contextPath: CTIX.ThreatDataGetCreate.Found.indicator_type
       description: Indicator type
       type: string
-    - contextPath: CTIX.ThreatDataLookup.ioc_type
+    - contextPath: CTIX.ThreatDataGetCreate.Found.ioc_type
       description: IOC type
       type: string
-    - contextPath: CTIX.ThreatDataLookup.is_actioned
+    - contextPath: CTIX.ThreatDataGetCreate.Found.is_actioned
       description: Is actioned
       type: boolean
-    - contextPath: CTIX.ThreatDataLookup.is_deprecated
+    - contextPath: CTIX.ThreatDataGetCreate.Found.is_deprecated
       description: is deprecated
       type: boolean
-    - contextPath: CTIX.ThreatDataLookup.is_false_positive
+    - contextPath: CTIX.ThreatDataGetCreate.Found.is_false_positive
       description: is false positive
       type: boolean
-    - contextPath: CTIX.ThreatDataLookup.is_reviewed
-      description: 'is reviewed '
+    - contextPath: CTIX.ThreatDataGetCreate.Found.is_reviewed
+      description: "is reviewed "
       type: boolean
-    - contextPath: CTIX.ThreatDataLookup.is_revoked
+    - contextPath: CTIX.ThreatDataGetCreate.Found.is_revoked
       description: is revoked
       type: boolean
-    - contextPath: CTIX.ThreatDataLookup.is_watchlist
+    - contextPath: CTIX.ThreatDataGetCreate.Found.is_watchlist
       description: is watchlisted
       type: boolean
-    - contextPath: CTIX.ThreatDataLookup.is_whitelisted
+    - contextPath: CTIX.ThreatDataGetCreate.Found.is_whitelisted
       description: is allowed
       type: boolean
-    - contextPath: CTIX.ThreatDataLookup.last_seen
+    - contextPath: CTIX.ThreatDataGetCreate.Found.last_seen
       description: Timestamp of when the indicator was last seen
       type: number
-    - contextPath: CTIX.ThreatDataLookup.modified
+    - contextPath: CTIX.ThreatDataGetCreate.Found.modified
       description: Timestamp of when the indicator was modified
       type: number
-    - contextPath: CTIX.ThreatDataLookup.name
+    - contextPath: CTIX.ThreatDataGetCreate.Found.name
       description: name of the indicator
       type: string
-    - contextPath: CTIX.ThreatDataLookup.null
-      description: 'null'
-    - contextPath: CTIX.ThreatDataLookup.primary_attribute
+    - contextPath: CTIX.ThreatDataGetCreate.Found.null
+      description: "null"
+    - contextPath: CTIX.ThreatDataGetCreate.Found.primary_attribute
       description: Primary Attribute
       type: string
-    - contextPath: CTIX.ThreatDataLookup.published_collections
+    - contextPath: CTIX.ThreatDataGetCreate.Found.published_collections
       description: published collections
-    - contextPath: CTIX.ThreatDataLookup.risk_severity
+    - contextPath: CTIX.ThreatDataGetCreate.Found.risk_severity
       description: Risk severity
       type: string
-    - contextPath: CTIX.ThreatDataLookup.source_collections
+    - contextPath: CTIX.ThreatDataGetCreate.Found.source_collections
       description: sources collections
       type: unknown
-    - contextPath: CTIX.ThreatDataLookup.source_confidence
-      description: 'Source confidence '
+    - contextPath: CTIX.ThreatDataGetCreate.Found.source_confidence
+      description: "Source confidence "
       type: string
-    - contextPath: CTIX.ThreatDataLookup.sources
+    - contextPath: CTIX.ThreatDataGetCreate.Found.sources
       description: sources
-    - contextPath: CTIX.ThreatDataLookup.sub_type
+    - contextPath: CTIX.ThreatDataGetCreate.Found.sub_type
       description: Sub type
       type: string
-    - contextPath: CTIX.ThreatDataLookup.subscriber_collections
+    - contextPath: CTIX.ThreatDataGetCreate.Found.subscriber_collections
       description: subscriber collections
-    - contextPath: CTIX.ThreatDataLookup.subscribers
+    - contextPath: CTIX.ThreatDataGetCreate.Found.subscribers
       description: subscribers
-    - contextPath: CTIX.ThreatDataLookup.tags
+    - contextPath: CTIX.ThreatDataGetCreate.Found.tags
       description: Tags
-    - contextPath: CTIX.ThreatDataLookup.tlp
+    - contextPath: CTIX.ThreatDataGetCreate.Found.tlp
       description: TLP
       type: string
-    - contextPath: CTIX.ThreatDataLookup.type
+    - contextPath: CTIX.ThreatDataGetCreate.Found.type
       description: Type
       type: string
-    - contextPath: CTIX.ThreatDataLookup.valid_from
+    - contextPath: CTIX.ThreatDataGetCreate.Found.valid_from
       description: Timestamp from when the indicator was valid
       type: number
-    - contextPath: CTIX.ThreatDataLookup.valid_until
+    - contextPath: CTIX.ThreatDataGetCreate.Found.valid_until
       description: Timestamp till when the indicator was valid
       type: number
-    description: Lookup to get threat data
-  dockerimage: demisto/python3:3.10.4.29342
+    - contextPath: CTIX.ThreatDataGetCreate.NotFoundCreated
+      description: IOCs that weren't found, and therefore were created
+      type: string
+    - contextPath: CTIX.ThreatDataGetCreate.NotFoundInvalid
+      description: IOCs that were found to be invalid, so they were not created
+      type: string
+    description: Gets or creates threat data
+  - name: domain
+    arguments:
+    - name: domain
+      description: "Will contain domain SDO values. Example: If you need to get the object_ids of indicator example.com then the value will be example.com"
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    description: Lookup domain threat data
+  - name: ip
+    arguments:
+    - name: ip
+      description: "Will contain IP SDO values. Example: If you need to get the object_ids of indicator 1.2.3.4 then the value will be 1.2.3.4"
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: IP.Address
+      description: 'The IP address, for example: 1.2.3.4.'
+      type: String
+    description: Lookup ip threat data
+  - name: file
+    arguments:
+    - name: file
+      description: "Will contain file SDO values. Example: If you need to get the object_ids of a file hash 3ed0a30799543fa2c3a913c7985bffed then the value will be 3ed0a30799543fa2c3a913c7985bffed"
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    description: Lookup file threat data
+  - name: url
+    arguments:
+    - name: url
+      description: "Will contain URL SDO values. Example: If you need to get the object_ids of a URL https://cyware.com/ then the value will be https://cyware.com/"
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    description: Lookup url threat data
+  - name: ctix-get-all-notes
+    arguments:
+    - name: object_id
+      description: if set, this will only retrieve Notes associated with the Threat Data object with ID=`object_id`
+      required: false
+      isArray: false
+    - name: page
+      description: the page number of the Notes to look up, default is the first page
+      defaultValue: "1"
+    - name: page_size
+      default: true
+      description: size of the result
+      defaultValue: "10"
+    outputs:
+    - contextPath: CTIX.Note.created
+      description: The timestamp when the Note was created
+      type: integer
+    - contextPath: CTIX.Note.created_by
+      description: The user who created the Note
+      type: unknown
+    - contextPath: CTIX.Note.created_by.email
+      description: The email of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.created_by.first_name
+      description: The first name of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.created_by.id
+      description: The ID of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.created_by.last_name
+      description: The last name of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.id
+      description: The ID of the Note
+      type: string
+    - contextPath: CTIX.Note.is_json
+      description: A flag indicating whether the Note is in JSON format
+      type: boolean
+    - contextPath: CTIX.Note.meta_data
+      description: Meta data for the Note
+      type: unknown
+    - contextPath: CTIX.Note.meta_data.component
+      description: The component for the Note
+      type: string
+    - contextPath: CTIX.Note.modified
+      description: The timestamp when the Note was last modified
+      type: integer
+    - contextPath: CTIX.Note.modified_by
+      description: The user who last modified the Note
+      type: unknown
+    - contextPath: CTIX.Note.modified_by.email
+      description: The email of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.modified_by.first_name
+      description: The first name of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.modified_by.id
+      description: The ID of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.modified_by.last_name
+      description: The last name of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.object_id
+      description: The object ID of the Note
+      type: string
+    - contextPath: CTIX.Note.text
+      description: The text of the Note
+      type: string
+    - contextPath: CTIX.Note.title
+      description: The title of the Note
+      type: string
+    - contextPath: CTIX.Note.type
+      description: The type of the Note
+      type: string
+    description: Get paginated list of Notes
+  - name: ctix-get-note-details
+    arguments:
+    - name: id
+      description: "the id of the Note"
+      required: true
+      isArray: false
+      default: true
+    outputs:
+    - contextPath: CTIX.Note.created
+      description: The timestamp when the Note was created
+      type: integer
+    - contextPath: CTIX.Note.created_by
+      description: The user who created the Note
+      type: unknown
+    - contextPath: CTIX.Note.created_by.email
+      description: The email of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.created_by.first_name
+      description: The first name of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.created_by.id
+      description: The ID of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.created_by.last_name
+      description: The last name of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.id
+      description: The ID of the Note
+      type: string
+    - contextPath: CTIX.Note.is_json
+      description: A flag indicating whether the Note is in JSON format
+      type: boolean
+    - contextPath: CTIX.Note.meta_data
+      description: Meta data for the Note
+      type: unknown
+    - contextPath: CTIX.Note.meta_data.component
+      description: The component for the Note
+      type: string
+    - contextPath: CTIX.Note.modified
+      description: The timestamp when the Note was last modified
+      type: integer
+    - contextPath: CTIX.Note.modified_by
+      description: The user who last modified the Note
+      type: unknown
+    - contextPath: CTIX.Note.modified_by.email
+      description: The email of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.modified_by.first_name
+      description: The first name of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.modified_by.id
+      description: The ID of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.modified_by.last_name
+      description: The last name of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.object_id
+      description: The object ID of the Note
+      type: string
+    - contextPath: CTIX.Note.text
+      description: The text of the Note
+      type: string
+    - contextPath: CTIX.Note.title
+      description: The title of the Note
+      type: string
+    - contextPath: CTIX.Note.type
+      description: The type of the Note
+      type: string
+    description: Get details of a Note as specified by its ID
+  - name: ctix-create-note
+    arguments:
+    - name: text
+      description: the text that you want the note to have
+      required: true
+      isArray: false
+      default: true
+    - name: object_id
+      description: if set, will associate Note to the Threat Data object with the provided ID
+      required: false
+      isArray: false
+    - name: object_type
+      description: only required if `object_id` is set, used to specify the type of object `object_id` is
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - indicator
+      - malware
+      - threat-actor
+      - vulnerability
+      - attack-pattern
+      - campaign
+      - course-of-action
+      - identity
+      - infrastructure
+      - intrusion-set
+      - location
+      - malware-analysis
+      - observed-data
+      - opinion
+      - tool
+      - report
+      - custom-object
+      - observable
+      - incident
+      - note
+    outputs:
+    - contextPath: CTIX.Note.created
+      description: The timestamp when the Note was created
+      type: integer
+    - contextPath: CTIX.Note.created_by
+      description: The user who created the Note
+      type: unknown
+    - contextPath: CTIX.Note.created_by.email
+      description: The email of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.created_by.first_name
+      description: The first name of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.created_by.id
+      description: The ID of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.created_by.last_name
+      description: The last name of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.id
+      description: The ID of the Note
+      type: string
+    - contextPath: CTIX.Note.is_json
+      description: A flag indicating whether the Note is in JSON format
+      type: boolean
+    - contextPath: CTIX.Note.meta_data
+      description: Meta data for the Note
+      type: unknown
+    - contextPath: CTIX.Note.meta_data.component
+      description: The component for the Note
+      type: string
+    - contextPath: CTIX.Note.modified
+      description: The timestamp when the Note was last modified
+      type: integer
+    - contextPath: CTIX.Note.modified_by
+      description: The user who last modified the Note
+      type: unknown
+    - contextPath: CTIX.Note.modified_by.email
+      description: The email of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.modified_by.first_name
+      description: The first name of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.modified_by.id
+      description: The ID of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.modified_by.last_name
+      description: The last name of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.object_id
+      description: The object ID of the Note
+      type: string
+    - contextPath: CTIX.Note.text
+      description: The text of the Note
+      type: string
+    - contextPath: CTIX.Note.title
+      description: The title of the Note
+      type: string
+    - contextPath: CTIX.Note.type
+      description: The type of the Note
+      type: string
+    description: Creates a new Note from the parameter 'text'
+  - name: ctix-update-note
+    arguments:
+    - name: id
+      description: "the id of the Note"
+      required: true
+      isArray: false
+      default: true
+    - name: text
+      description: the updated text that you want the note to have
+      required: false
+      isArray: false
+    - name: object_id
+      description: if set, will associate Note to the Threat Data object with the provided ID
+      required: false
+      isArray: false
+    - name: object_type
+      description: only required if `object_id` is set, used to specify the type of object `object_id` is
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - indicator
+      - malware
+      - threat-actor
+      - vulnerability
+      - attack-pattern
+      - campaign
+      - course-of-action
+      - identity
+      - infrastructure
+      - intrusion-set
+      - location
+      - malware-analysis
+      - observed-data
+      - opinion
+      - tool
+      - report
+      - custom-object
+      - observable
+      - incident
+      - note
+    outputs:
+    - contextPath: CTIX.Note.created
+      description: The timestamp when the Note was created
+      type: integer
+    - contextPath: CTIX.Note.created_by
+      description: The user who created the Note
+      type: unknown
+    - contextPath: CTIX.Note.created_by.email
+      description: The email of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.created_by.first_name
+      description: The first name of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.created_by.id
+      description: The ID of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.created_by.last_name
+      description: The last name of the user who created the Note
+      type: string
+    - contextPath: CTIX.Note.id
+      description: The ID of the Note
+      type: string
+    - contextPath: CTIX.Note.is_json
+      description: A flag indicating whether the Note is in JSON format
+      type: boolean
+    - contextPath: CTIX.Note.meta_data
+      description: Meta data for the Note
+      type: unknown
+    - contextPath: CTIX.Note.meta_data.component
+      description: The component for the Note
+      type: string
+    - contextPath: CTIX.Note.modified
+      description: The timestamp when the Note was last modified
+      type: integer
+    - contextPath: CTIX.Note.modified_by
+      description: The user who last modified the Note
+      type: unknown
+    - contextPath: CTIX.Note.modified_by.email
+      description: The email of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.modified_by.first_name
+      description: The first name of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.modified_by.id
+      description: The ID of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.modified_by.last_name
+      description: The last name of the user who last modified the Note
+      type: string
+    - contextPath: CTIX.Note.object_id
+      description: The object ID of the Note
+      type: string
+    - contextPath: CTIX.Note.text
+      description: The text of the Note
+      type: string
+    - contextPath: CTIX.Note.title
+      description: The title of the Note
+      type: string
+    - contextPath: CTIX.Note.type
+      description: The type of the Note
+      type: string
+    description: Updates the Note text from an existing Note, as specified by its ID
+  - name: ctix-delete-note
+    arguments:
+    - name: id
+      description: "the id of the Note"
+      required: true
+      isArray: false
+      default: true
+    outputs:
+    - contextPath: CTIX.Note.deletion.details
+      description: Returns "success" if the deletion request was successful, otherwise "failure"
+      type: string
+    description: Deletes an existing Note, as specified by its ID
+  - name: ctix-make-request
+    description: allows you to make any HTTP request using CTIX endpoints
+    arguments:
+    - name: type
+      description: the HTTP method you would like to call
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+    - name: endpoint
+      description: URL suffix of the API call to CTIX
+      isArray: false
+      required: true
+    - name: body
+      description: any data you would like to pass, in JSON format
+      isArray: false
+      required: false
+    - name: params
+      description: any parameters you would like to pass, in JSON format
+      isArray: false
+      required: false
+  dockerimage: demisto/python3:3.10.10.51930
   runonce: false
   subtype: python3
-
+tests:
+- No tests (auto formatted)

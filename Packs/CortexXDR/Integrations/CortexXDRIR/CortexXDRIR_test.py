@@ -6,7 +6,6 @@ from freezegun import freeze_time
 
 import demistomock as demisto
 from CommonServerPython import Common
-from CoreIRApiModule import MIRROR_IN_CLOSE_REASON
 from CortexXDRIR import XDR_RESOLVED_STATUS_TO_XSOAR
 
 XDR_URL = 'https://api.xdrurl.com'
@@ -251,12 +250,20 @@ def test_get_incident_extra_data(requests_mock):
 
     expected_output = {
         'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': expected_incident,
-        Common.File.CONTEXT_PATH: [{'Name': 'wildfire-test-pe-file.exe',
-                                    'SHA256': '8d5aec85593c85ecdc8d5ac601e163a1cc26d877f88c03e9e0e94c9dd4a38fca'}],
-        'Process(val.Name && val.Name == obj.Name)':
-            [{'Name': 'wildfire-test-pe-file.exe',
-              'CommandLine': '"C:\\Users\\Administrator\\Downloads\\wildfire-test-pe-file.exe"',
-              'Hostname': 'AAAAAA'}]
+        Common.File.CONTEXT_PATH: [
+            {
+                'Name': 'wildfire-test-pe-file.exe',
+                'SHA256': '8d5aec85593c85ecdc8d5ac601e163a1cc26d877f88c03e9e0e94c9dd4a38fca'
+            }
+        ],
+        'Process(val.Name && val.Name == obj.Name)': [
+            {
+                'Name': 'wildfire-test-pe-file.exe',
+                'CommandLine': '"C:\\Users\\Administrator\\Downloads\\wildfire-test-pe-file.exe"',
+                'Hostname': 'AAAAAA'
+            }
+        ],
+        'Endpoint(val.Hostname==obj.Hostname)': [{'Hostname': 'AAAAAA', 'ID': '1234'}]
     }
     assert expected_output == outputs
 
@@ -365,6 +372,20 @@ class TestFetchStarredIncident:
                                               starred_incidents_fetch_window='3 days')
 
         assert not incidents
+
+
+def test_get_tenant_info(requests_mock):
+    from CortexXDRIR import get_tenant_info_command, Client
+
+    tenant_info_response = load_test_data('./test_data/get_tenant_info.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/system/get_tenant_info/', json=tenant_info_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1/', headers={}
+    )
+    expected_output = tenant_info_response.get('reply')
+    response = get_tenant_info_command(client)
+    assert response.outputs == expected_output
 
 
 def test_insert_parsed_alert(requests_mock):
@@ -615,7 +636,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker, incid
     raw_incident['reply']['incident']['resolve_comment'] = 'Handled'
 
     close_notes_prefix = 'Known Issue.\n' if incident_status == 'resolved_known_issue' else ''
-    close_notes = f'{close_notes_prefix}{MIRROR_IN_CLOSE_REASON}\nHandled'
+    close_notes = f'{close_notes_prefix}Handled'
 
     expected_modified_incident = raw_incident['reply']['incident'].copy()
     expected_modified_incident['alerts'] = copy.deepcopy(raw_incident['reply'].get('alerts').get('data'))
@@ -780,3 +801,51 @@ def test_replace_featured_field_command(requests_mock):
 
     assert response.outputs == expected_response
     assert len(response.outputs.get('fields')) == 2
+
+
+def test_failure_to_update_incident():
+    from CortexXDRIR import update_incident_command, Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+
+    with pytest.raises(ValueError, match="Can't provide both assignee_email/assignee_name and unassign_user"):
+        update_incident_command(client=client, args={'unassign_user': 'true', 'assigned_user_mail': 'user', 'status': 'new'})
+
+
+def test_update_incident(requests_mock):
+    from CortexXDRIR import update_incident_command, Client
+
+    update_incident_response = load_test_data('./test_data/update_incident.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/update_incident/', json=update_incident_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'incident_id': '1',
+        'status': 'new',
+        'add_comment': 'new comment',
+    }
+    readable_output, outputs, _ = update_incident_command(client, args)
+
+    assert outputs is None
+    assert readable_output == 'Incident 1 has been updated'
+
+
+@pytest.mark.parametrize('incident_changed, delta',
+                         [(True, {'CortexXDRIRstatus': 'investigating'}),
+                          (False, {})])
+def test_update_remote_system_command(incident_changed, delta):
+    from CortexXDRIR import update_remote_system_command, Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    data = {'CortexXDRIRstatus': 'uninvestigated'}
+    expected_remote_id = 'remote_id'
+    args = {'remoteId': expected_remote_id, 'data': data, 'entries': [], 'incidentChanged': incident_changed,
+            'delta': delta,
+            'status': 2,
+            }
+    actual_remote_id = update_remote_system_command(client, args)
+    assert actual_remote_id == expected_remote_id

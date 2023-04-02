@@ -559,5 +559,6 @@
                 "type": "custom"
             }
         ]
-    }
+    },
+    "marketplaces": ["xsoar"]
 }

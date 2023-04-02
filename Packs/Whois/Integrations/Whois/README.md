@@ -32,6 +32,7 @@ Provides data enrichment for domains.
 | --- | --- | --- |
 | query | The domain to enrich. | Required | 
 | recursive | Whether to get the raw response from the whois servers recursively. Default value is True. | Optional | 
+| verbose | Whether to add the raw response as a dictionary to the context. | Optional |
 
 
 #### Context Output
@@ -877,3 +878,5 @@ Provides data enrichment for ips.
 >|---|---|---|---|---|---|
 >| 15169 | 8.8.8.0/24 | 1992-12-01 |  | LVLT-GOGL-8-8-8 | 8.8.8.8 |
 
+## Troubleshooting
+- The error message *Bad Gateway* (502) might occur when using a firewall/proxy. To fix the issue, make sure the whois TLD provider exists in your allowlist.

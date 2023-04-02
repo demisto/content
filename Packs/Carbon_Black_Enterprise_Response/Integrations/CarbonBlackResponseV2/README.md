@@ -1914,7 +1914,7 @@ https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?r
 
 ### endpoint
 ***
-List the CarbonBlack sensors
+Display information about the given sensor
 
 
 #### Base Command

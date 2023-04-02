@@ -88,7 +88,7 @@
                 "packID": "",
                 "params": {
                     "groupBy": [
-                        "type"
+                        "rawType"
                     ],
                     "tableColumns": [
                         {
@@ -918,7 +918,7 @@
                 "packID": "",
                 "params": {
                     "groupBy": [
-                        "closeReason"
+                        "rawCloseReason"
                     ],
                     "tableColumns": [
                         {
@@ -1055,7 +1055,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "runStatus:error",
+                "query": "-status:closed and runStatus:error",
                 "shouldCommit": false,
                 "toServerVersion": "",
                 "vcShouldIgnore": false,

@@ -1,0 +1,544 @@
+id: 73d65261-a8d2-45d0-8a62-000edfdace6b
+version: 16
+vcShouldKeepItemLegacyProdMachine: false
+name: AHA
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5e9daf7d-80b7-4e15-8eba-83d507218ed1
+    type: start
+    task:
+      id: 5e9daf7d-80b7-4e15-8eba-83d507218ed1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 92313c01-2b6d-42d2-8845-9abce760bbbf
+    type: regular
+    task:
+      id: 92313c01-2b6d-42d2-8845-9abce760bbbf
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 943d5164-0c86-43f8-89cc-54022c977c8d
+    type: regular
+    task:
+      id: 943d5164-0c86-43f8-89cc-54022c977c8d
+      version: -1
+      name: AHA-get-all-features
+      description: Will list all features from service, unless a specific feature
+        is specified
+      script: Aha|||aha-get-features
+      type: regular
+      iscommand: true
+      brand: Aha
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 81557931-743c-48ee-8324-496d4d2a9dd9
+    type: condition
+    task:
+      id: 81557931-743c-48ee-8324-496d4d2a9dd9
+      version: -1
+      name: Check Features Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AHA.Feature
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d8c1edbc-6971-49ef-8b74-eea203e53148
+    type: regular
+    task:
+      id: d8c1edbc-6971-49ef-8b74-eea203e53148
+      version: -1
+      name: AHA-get-a-feature
+      description: Will list all features from service, unless a specific feature
+        is specified
+      script: '|||aha-get-features'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      feature_name:
+        simple: DEMO-10
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 77859b25-b111-42ec-8ed2-67b7c16dda93
+    type: regular
+    task:
+      id: 77859b25-b111-42ec-8ed2-67b7c16dda93
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: get-all-features did not fetch any feature.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e1049805-96c0-44fc-8d71-c2185e913090
+    type: condition
+    task:
+      id: e1049805-96c0-44fc-8d71-c2185e913090
+      version: -1
+      name: Check valid feature returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AHA.Feature.reference_num
+            iscontext: true
+          right:
+            value:
+              simple: DEMO-10
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3341e36e-d154-472c-8e99-ac5dd8897ed8
+    type: regular
+    task:
+      id: 3341e36e-d154-472c-8e99-ac5dd8897ed8
+      version: -1
+      name: edit feature
+      description: 'Edit of the following fields in a feature: Name, Status and Description'
+      script: Aha|||aha-edit-feature
+      type: regular
+      iscommand: true
+      brand: Aha
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      feature_name:
+        simple: DEMO-10
+      fields:
+        simple: '{"name":"test","description":"test","status":"Closed"}'
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: admin
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: e4bf547a-59bd-4072-8a15-ede72eda4aa2
+    type: regular
+    task:
+      id: e4bf547a-59bd-4072-8a15-ede72eda4aa2
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Did not fetch the correct feature from AHA
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 1355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 28f09706-ab86-4edf-8d59-5ef1a4114f4d
+    type: regular
+    task:
+      id: 28f09706-ab86-4edf-8d59-5ef1a4114f4d
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: cd10bc2e-c50a-476c-84ac-59374bc6eaa2
+    type: regular
+    task:
+      id: cd10bc2e-c50a-476c-84ac-59374bc6eaa2
+      version: -1
+      name: AHA-get-a-feature
+      description: Will list all features from service, unless a specific feature
+        is specified
+      script: '|||aha-get-features'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      feature_name:
+        simple: DEMO-10
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 02a44a62-8d95-4d12-8698-765c55640f64
+    type: condition
+    task:
+      id: 02a44a62-8d95-4d12-8698-765c55640f64
+      version: -1
+      name: Check valid feature returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AHA.Feature.reference_num
+            iscontext: true
+          right:
+            value:
+              simple: DEMO-10
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AHA.Feature.description
+            iscontext: true
+          right:
+            value:
+              simple: test
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AHA.Feature.name
+            iscontext: true
+          right:
+            value:
+              simple: test
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: c86bfeec-4e8b-4b4a-8cae-b22ca57f91b7
+    type: regular
+    task:
+      id: c86bfeec-4e8b-4b4a-8cae-b22ca57f91b7
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Did not edit the feature fields correctly
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 7cf9db06-e640-4bdf-81c3-f528bf896f5c
+    type: regular
+    task:
+      id: 7cf9db06-e640-4bdf-81c3-f528bf896f5c
+      version: -1
+      name: Untitled Task
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_11_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1945,
+        "width": 880,
+        "x": -460,
+        "y": 20
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.5.0

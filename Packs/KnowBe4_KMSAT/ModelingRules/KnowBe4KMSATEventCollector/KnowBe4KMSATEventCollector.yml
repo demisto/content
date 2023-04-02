@@ -3,5 +3,4 @@ id: KnowBe4KMSATEventCollector
 fromversion: 6.8.0
 rules: ''
 schema: ''
-to_xdr_version: 3.4.9
 toversion: 6.9.9

@@ -46,7 +46,7 @@ def convert_unique_fields(ioc: dict, action: str, host_groups: list, platforms: 
                 ioc['type'] = 'ipv4'
             elif ip_type == 'IPv6':
                 ioc['type'] = 'ipv6'
-        elif indicator_type == 'DOMAIN':
+        elif indicator_type == 'Domain':
             ioc['type'] = 'domain'
         else:
             raise DemistoException(f'The indicator type: {indicator_type} does not exist in CS Falcon')

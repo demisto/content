@@ -23,10 +23,11 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/py3-tools:0.0.1.30715
+dockerimage: demisto/py3-tools:1.0.0.38394
 runas: DBotWeakRole
 fromversion: 6.6.0
 tests:
 - No tests (auto formatted)
 marketplaces:
 - marketplacev2
+- xpanse

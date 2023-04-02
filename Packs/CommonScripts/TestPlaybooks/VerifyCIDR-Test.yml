@@ -1,0 +1,229 @@
+id: VerifyCIDR-Test
+version: -1
+name: VerifyCIDR-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f5cae034-ebff-48f5-8835-5ec016286bd4
+    type: start
+    task:
+      id: f5cae034-ebff-48f5-8835-5ec016286bd4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 65f74e07-a139-4338-8ed3-59cf1d81988b
+    type: regular
+    task:
+      id: 65f74e07-a139-4338-8ed3-59cf1d81988b
+      version: -1
+      name: Extract One Valid CIDR
+      description: Verify that the CIDRs are valid.
+      scriptName: VerifyCIDR
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      input:
+        simple: 200.200.200.200/29
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: bd1264bd-120c-4352-83a8-45bfe98d92fb
+    type: regular
+    task:
+      id: bd1264bd-120c-4352-83a8-45bfe98d92fb
+      version: -1
+      name: Assert Expected CIDR is Extracted
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: LastArrayElement
+      substring:
+        simple: 200.200.200.200/29
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: fce5a7a1-6b98-4ac6-8c5a-7842317b68ab
+    type: regular
+    task:
+      id: fce5a7a1-6b98-4ac6-8c5a-7842317b68ab
+      version: -1
+      name: Extract CIDR from List
+      description: Verify that the CIDRs are valid.
+      scriptName: VerifyCIDR
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      input:
+        simple: 190.0.0.0/1,200.200.200.200/29
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9387a811-75de-4c23-8d1e-7198852ec9d5
+    type: regular
+    task:
+      id: 9387a811-75de-4c23-8d1e-7198852ec9d5
+      version: -1
+      name: Assert Expected CIDR is Extracted
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: LastArrayElement
+      substring:
+        simple: 200.200.200.200/29
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 87a20e17-9fa1-45e4-8ef7-ccddc39f6cf9
+    type: title
+    task:
+      id: 87a20e17-9fa1-45e4-8ef7-ccddc39f6cf9
+      version: -1
+      name: Playbook Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0
+description: Verify CIDR test playbook

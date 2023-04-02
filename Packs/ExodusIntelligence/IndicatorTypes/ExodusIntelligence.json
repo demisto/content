@@ -1,0 +1,18 @@
+{
+    "id": "Exodus Intelligence",
+    "version": -1,
+    "modified": "2022-04-22T11:28:26.114149812-04:00",
+    "shouldCommit": false,
+    "regex": "",
+    "details": "Exodus Intelligence",
+    "prevDetails": "Exodus Intelligence",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "expiration": 0,
+    "fromVersion": "6.2.0",
+    "layout": "Exodus Intelligence"
+}

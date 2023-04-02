@@ -1,0 +1,118 @@
+{
+  "raw_response": {
+    "searches": [
+      {
+        "id": 34,
+        "createdBy": "cds",
+        "createdDate": "2022-07-06T04:51:43.618385",
+        "modifiedBy": "cds",
+        "modifiedDate": "2022-07-06T04:51:43.618385",
+        "subjects": [
+          "test1",
+          "test2"
+        ],
+        "senders": [
+          "abc@example.com",
+          "pqr@example.com"
+        ],
+        "recipient": "xyz@example.com",
+        "attachmentNames": [],
+        "attachmentHashCriteria": {
+          "type": "ANY",
+          "attachmentHashes": []
+        },
+        "domainCriteria": {
+          "type": "ANY",
+          "domains": [],
+          "whiteListUrls": []
+        },
+        "attachmentMimeTypes": [],
+        "attachmentExcludeMimeTypes": [],
+        "receivedAfterDate": null,
+        "receivedBeforeDate": null,
+        "url": null,
+        "internetMessageId": null,
+        "headers": [],
+        "partialIngest": true
+      },
+      {
+        "id": 35,
+        "createdBy": "cds",
+        "createdDate": "2022-07-06T05:09:36.375674",
+        "modifiedBy": "cds",
+        "modifiedDate": "2022-07-06T05:09:36.375674",
+        "subjects": [
+          "test1"
+        ],
+        "senders": [
+          "xyz@example.com"
+        ],
+        "recipient": "abc@example.com",
+        "attachmentNames": [],
+        "attachmentHashCriteria": {
+          "type": "ANY",
+          "attachmentHashes": []
+        },
+        "domainCriteria": {
+          "type": "ANY",
+          "domains": [],
+          "whiteListUrls": []
+        },
+        "attachmentMimeTypes": [],
+        "attachmentExcludeMimeTypes": [],
+        "receivedAfterDate": null,
+        "receivedBeforeDate": null,
+        "url": null,
+        "internetMessageId": null,
+        "headers": [],
+        "partialIngest": true
+      }
+    ]
+  },
+  "outputs": [
+    {
+      "id": 34,
+      "createdBy": "cds",
+      "createdDate": "2022-07-06T04:51:43.618385",
+      "modifiedBy": "cds",
+      "modifiedDate": "2022-07-06T04:51:43.618385",
+      "subjects": [
+        "test1",
+        "test2"
+      ],
+      "senders": [
+        "abc@example.com",
+        "pqr@example.com"
+      ],
+      "recipient": "xyz@example.com",
+      "attachmentHashCriteria": {
+        "type": "ANY"
+      },
+      "domainCriteria": {
+        "type": "ANY"
+      },
+      "partialIngest": true
+    },
+    {
+      "id": 35,
+      "createdBy": "cds",
+      "createdDate": "2022-07-06T05:09:36.375674",
+      "modifiedBy": "cds",
+      "modifiedDate": "2022-07-06T05:09:36.375674",
+      "subjects": [
+        "test1"
+      ],
+      "senders": [
+        "xyz@example.com"
+      ],
+      "recipient": "abc@example.com",
+      "attachmentHashCriteria": {
+        "type": "ANY"
+      },
+      "domainCriteria": {
+        "type": "ANY"
+      },
+      "partialIngest": true
+    }
+  ]
+}

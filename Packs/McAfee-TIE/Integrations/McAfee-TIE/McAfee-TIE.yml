@@ -2,6 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: McAfee Threat Intelligence Exchange
   version: -1
+deprecated: true
 configuration:
 - display: Broker CA certificates content (see `brokercerts.crt` in Integration Tips)
   name: broker_ca_bundle
@@ -50,8 +51,8 @@ configuration:
   display: ''
   required: false
   type: 1
-description: Connect to McAfee TIE using the McAfee DXL client.
-display: McAfee Threat Intelligence Exchange
+description: Deprecated. Use McAfee Threat Intelligence Exchange V2 integration instead.
+display: McAfee Threat Intelligence Exchange (Deprecated)
 name: McAfee Threat Intelligence Exchange
 script:
   commands:
@@ -176,7 +177,7 @@ script:
     - contextPath: File.References.Date
       description: The time the system first referenced the file.
       type: Unknown
-  dockerimage: demisto/dxl2:1.0.0.24033
+  dockerimage: demisto/dxl2:1.0.0.38570
   feed: false
   isfetch: false
   longRunning: false

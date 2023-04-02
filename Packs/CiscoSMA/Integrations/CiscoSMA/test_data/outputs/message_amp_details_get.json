@@ -1,0 +1,55 @@
+{
+    "data": {
+      "messages": {
+        "sdrAge": "30 days (or greater)",
+        "attachments": [
+          "test.jpg"
+        ],
+        "hostName": "esa1.test.eu.iphmx.com (1.1.1.1)",
+        "direction": "incoming",
+        "messageStatus": "Quarantined by Content Filters",
+        "senderGroup": "ACCEPTLIST",
+        "subject": "test",
+        "sdrCategory": "N/A",
+        "mid": [
+          21
+        ],
+        "sendingHostSummary": {
+          
+        },
+        "ampDetails": [
+          {
+            "timestamp": "24 Aug 2022 10:05:55 (GMT)",
+            "description": "File reputation query initiating. File Name = test.jpg, MID = 21, File Size = 325663 bytes, File Type = image/jpeg"
+          },
+          {
+            "timestamp": "24 Aug 2022 10:05:56 (GMT)",
+            "description": "Response received for file reputation query from Cloud. File Name = test.jpg, MID = 21, Disposition = FILE UNKNOWN, Malware = None, Analysis Score = 0, sha256 = 23a9113530549916cd5b410edee79cb5a0fc01233eb9051f9c882a2e7c3fbfbe, upload_action = Recommended to send the file for analysis, verdict_source = AMP"
+          },
+          {
+            "timestamp": "24 Aug 2022 10:05:56 (GMT)",
+            "description": "File not uploaded for analysis. MID = 21 File SHA256[23a9113530549916cd5b410edee79cb5a0fc01233eb9051f9c882a2e7c3fbfbe] file mime[image/jpeg] Reason: The file type is not configured for analysis",
+            "lastEvent": true
+          }
+        ],
+        "ampTgCategories": [
+          
+        ],
+        "smtpAuthId": "",
+        "midHeader": "<test@test.com>",
+        "timestamp": "24 Aug 2022 10:05:52 (GMT)",
+        "messageSize": "439.29 (KB)",
+        "sdrThreatLevels": "3",
+        "sdrReputation": "Neutral",
+        "recipient": [
+          "test@test.com"
+        ],
+        "showAMPDetails": true,
+        "sender": "test@test.com",
+        "allIcid": [
+          1269
+        ],
+        "headerFrom": "test@test.com"
+      }
+    }
+  }

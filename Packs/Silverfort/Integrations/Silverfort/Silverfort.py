@@ -1,9 +1,10 @@
 import time
 import jwt
+import urllib3
 from CommonServerPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 UPDATE_REQ_RESPONSE = {'result': 'updated successfully!'}

@@ -1,4 +1,4 @@
-category: IT Services
+category: Email
 commonfields:
   id: Microsoft_Graph_Files
   version: -1
@@ -8,9 +8,10 @@ configuration:
   name: host
   required: true
   type: 0
+
 - display: ID (received from the admin consent - see Detailed Instructions)
   name: auth_id
-  required: true
+  required: false
   type: 4
 - display: Token (received from the admin consent - see Detailed Instructions)
   name: tenant_id
@@ -20,18 +21,27 @@ configuration:
   name: enc_key
   required: false
   type: 4
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates
-    & secrets" page of the app.
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
-- additionalinfo: Used for certificate authentication. The private key of the registered
-    certificate.
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   required: false
   type: 14
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -44,9 +54,7 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-description: Use the O365 File Management (Onedrive/Sharepoint/Teams) integration
-  to enable your app to get authorized access to files in OneDrive, SharePoint, and
-  MS Teams across your entire organization. This integration requires admin consent.
+description: Use the O365 File Management (Onedrive/Sharepoint/Teams) integration to enable your app to get authorized access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires admin consent.
 display: O365 File Management (Onedrive/Sharepoint/Teams)
 name: Microsoft_Graph_Files
 script:
@@ -155,8 +163,7 @@ script:
       description: The application, user, or device that last modified the item.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.DisplayName
-      description: The identity of the user, device, or application that created the
-        item.
+      description: The identity of the user, device, or application that created the item.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.ID
       description: The ID of the creator.
@@ -202,8 +209,7 @@ script:
         To get the ID of the file you want to replace, use the msgraph-list-drive-content command.
       name: item_id
       required: true
-    - description: The Cortex XSOAR entry ID of the new file that will replace the
-        current file.
+    - description: The Cortex XSOAR entry ID of the new file that will replace the current file.
       name: entry_id
       required: true
     description: Replaces the content of the file in the specified MS Graph resource.
@@ -302,8 +308,7 @@ script:
     - description: The name of the new folder.
       name: folder_name
       required: true
-    description: Creates a new folder in a drive with the specified parent item or
-      path.
+    description: Creates a new folder in a drive with the specified parent item or path.
     name: msgraph-create-new-folder
     outputs:
     - contextPath: MsGraph.Folder
@@ -374,8 +379,7 @@ script:
         The URL for the next results page.
         If a next page of results exists, you will find it in the Cortex XSOAR context under MsGraphFiles.ListDrives.OdataNextLink.
       name: next_page_url
-    description: Returns the list of document libraries (drives) available for a target
-      site.
+    description: Returns the list of document libraries (drives) available for a target site.
     name: msgraph-list-drives-in-site
     outputs:
     - contextPath: MsGraphFiles.ListDrives.Value.LastModifiedDateTime
@@ -394,8 +398,7 @@ script:
       description: Identity of the user, application, or device that created the drive.
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.Owner.DisplayName
-      description: The display name of the user, device, or application that owns
-        the drive.
+      description: The display name of the user, device, or application that owns the drive.
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.Owner.ID
       description: The ID of the user, device, or application that owns the drive.
@@ -489,8 +492,7 @@ script:
       description: The item display name.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.LastModifiedBy.ID
-      description: Identity of the application, user, or device that last modified
-        the item.
+      description: Identity of the application, user, or device that last modified the item.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.CreatedBy.DisplayName
       description: Identity of the user, device, or application that created the item.
@@ -511,8 +513,7 @@ script:
       description: The OData query.
       type: String
   - arguments:
-    - description: Keyword used to search for sites across a SharePoint tenant. If a keyword
-        is not provided, it returns all sites)
+    - description: Keyword used to search for sites across a SharePoint tenant. If a keyword is not provided, it returns all sites)
       name: keyword
     description: Returns a list of the tenant sites.
     name: msgraph-list-sharepoint-sites
@@ -609,11 +610,12 @@ script:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
-  dockerimage: demisto/python_pancloud:1.0.0.27257
+  dockerimage: demisto/python_pancloud:1.0.0.49449
   runonce: false
   script: ''
   subtype: python3
   type: python
 fromversion: 5.0.0
 tests:
-- test_MsGraphFiles
+- test_MsGraphFiles dev
+- test_MsGraphFiles prod

@@ -1,4 +1,7 @@
 category: Utilities
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Armis
   version: -1
@@ -7,19 +10,23 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: UNHANDLED
   display: Fetch alerts with status (UNHANDLED,SUPPRESSED,RESOLVED)
   name: alert_status
@@ -29,6 +36,8 @@ configuration:
   - RESOLVED
   required: false
   type: 16
+  section: Collect
+  advanced: true
 - additionalinfo: The type of alerts are Policy Violation, System Policy Violation, Anomaly Detection. If no type is chosen, all types will be fetched.
   display: Fetch alerts with type
   name: alert_type
@@ -38,6 +47,8 @@ configuration:
   - Anomaly Detection
   required: false
   type: 16
+  section: Collect
+  advanced: true
 - defaultvalue: Low
   display: Minimum severity of alerts to fetch
   name: min_severity
@@ -47,32 +58,41 @@ configuration:
   - High
   required: true
   type: 15
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Secret API Key
   hidden: false
   name: secret
   required: true
   type: 4
+  section: Connect
 - additionalinfo: Use this parameter to fetch incidents using a free AQL string rather than the simpler alert type, severity, etc.
   display: Fetch Alerts AQL
   hidden: false
   name: free_fetch_string
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - additionalinfo: Whether to use the system proxy.
   display: Use system proxy settings
   hidden: false
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Use the Armis integration to search alerts and devices, tag and untag devices, and set alert statuses.
 display: Armis
 name: Armis
@@ -463,7 +483,7 @@ script:
     - contextPath: Armis.Device.visibility
       description: The visibility of the device.
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true
   longRunning: false
@@ -474,6 +494,6 @@ script:
   type: python
 tests:
 - Armis-Test
-defaultmapperin: Armis_mapper-incoming
-defaultclassifier: classifier-armis-alerts
+defaultmapperin: Armis - Incoming Mapper
+defaultclassifier: Armis - Classifier
 fromversion: 5.0.0

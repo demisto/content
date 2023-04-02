@@ -2,13 +2,13 @@
     "name": "Secureworks",
     "description": "Provides access to the Secureworks CTP and Taegis XDR systems",
     "support": "partner",
-    "currentVersion": "4.0.0",
+    "currentVersion": "4.3.0",
     "author": "Secureworks",
     "url": "https://ctpx.secureworks.com",
     "email": "support@secureworks.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Case Management"
+        "Forensics & Malware Analysis"
     ],
     "tags": [],
     "useCases": [],

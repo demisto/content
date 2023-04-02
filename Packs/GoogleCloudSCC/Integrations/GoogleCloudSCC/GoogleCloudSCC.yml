@@ -21,8 +21,9 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: ID of the project to use for fetching incidents. If ID is not provided
-    it will be taken from the provided service account JSON.
+- additionalinfo: |-
+    ID of the project to use for fetching incidents. If ID is not provided it will be taken from the provided service account JSON.
+    Only required if the XSOAR instance is running on AWS or Azure cloud solutions.
   display: Project ID
   hidden: false
   name: project_id
@@ -833,7 +834,7 @@ script:
     - contextPath: GoogleCloudSCC.Finding.securityMarks.marks
       description: Mutable user specified security marks belonging to the parent resource.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.27143
+  dockerimage: demisto/google-api-py3:1.0.0.49920
   feed: false
   isfetch: true
   longRunning: false
@@ -845,5 +846,5 @@ script:
 tests:
 - No tests (auto formatted)
 defaultmapperin: GoogleCloudSCC-mapper
-defaultclassifier: GoogleCloudSCC
-fromversion: 5.0.0
+defaultclassifier: GoogleCloudSCC - Classifier
+fromversion: 6.0.0

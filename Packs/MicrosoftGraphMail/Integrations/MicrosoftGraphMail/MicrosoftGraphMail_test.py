@@ -4,9 +4,7 @@ import pytest
 import requests_mock
 
 from CommonServerPython import *
-from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
-    list_mails_command, item_result_creator, create_attachment, reply_email_command, \
-    send_email_command, list_attachments_command, main, API_DATE_FORMAT
+from MicrosoftGraphMail import *
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
@@ -74,7 +72,8 @@ def test_params_working(mocker, params, expected_results):
     MsGraphClient.__init__.assert_called_with(False, expected_results[0], expected_results[1], expected_results[2],
                                               'ms-graph-mail', '/v1.0', True, False, (200, 201, 202, 204), '', 'Inbox',
                                               '15 minutes', 50, 10, 'com', certificate_thumbprint='', private_key='',
-                                              display_full_email_body=False, look_back=0)
+                                              display_full_email_body=False, mark_fetched_read=False, look_back=0,
+                                              managed_identities_client_id=None)
 
 
 def test_build_mail_object():
@@ -395,7 +394,7 @@ class TestFetchIncidentsWithLookBack:
         first_email = {
             'id': '1',
             'subject': 'email-1',
-            'lastModifiedDateTime': (
+            'receivedDateTime': (
                 self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=2)
             ).strftime(API_DATE_FORMAT)
         }
@@ -403,7 +402,7 @@ class TestFetchIncidentsWithLookBack:
         second_email = {
             'id': '2',
             'subject': 'email-2',
-            'lastModifiedDateTime': (
+            'receivedDateTime': (
                 self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=5)
             ).strftime(API_DATE_FORMAT)
         }
@@ -411,7 +410,7 @@ class TestFetchIncidentsWithLookBack:
         third_email = {
             'id': '3',
             'subject': 'email-3',
-            'lastModifiedDateTime': (
+            'receivedDateTime': (
                 self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=10)
             ).strftime(API_DATE_FORMAT)
         }
@@ -650,6 +649,35 @@ def test_get_attachment(client):
         output = res.to_context().get('EntryContext', {})
         assert output.get(output_prefix).get('ID') == 'exampleID'
         assert output.get(output_prefix).get('Subject') == 'Test it'
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_get_attachments_without_attachment_id(mocker, client):
+    """
+    Given:
+        - A user ID 'ex@example.com'
+
+    When:
+        - Calling 'get_attachment_command' method.
+
+    Then:
+        - Validate that the message object created successfully and all the attachment where downloaded.
+
+    """
+    from MicrosoftGraphMail import get_attachment_command
+    output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
+    with open('test_data/mail_with_attachments') as mail_json:
+        user_id = 'ex@example.com'
+        test_args = {'user_id': user_id}
+        raw_response = json.load(mail_json)
+        mocker.patch.object(client, 'get_attachment', return_value=raw_response)
+        res = get_attachment_command(client, test_args)
+        assert isinstance(res, List)
+        assert len(res) == len(raw_response)
+        for i, attachment in enumerate(res):
+            output = attachment.to_context().get('EntryContext', {})
+            assert output.get(output_prefix).get('ID') == f'exampleID{i}'
+            assert output.get(output_prefix).get('Subject') == f'Test it{i}'
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
@@ -1307,3 +1335,72 @@ def test_fetch_last_emails__all_mails_in_exclude(mocker):
     fetched_emails, ids = client._fetch_last_emails('', last_fetch='2', exclude_ids=['1', '2'])
     assert len(fetched_emails) == 0
     assert ids == ['1', '2']
+
+
+@pytest.mark.parametrize("args",
+                         [
+                             ({"user_id": "test@mail.com", "message_ids": "EMAIL1", "status": "Read"}),
+                             ({"user_id": "test@mail.com", "message_ids": "EMAIL1", "folder_id": "Inbox",
+                               "status": "Read"}),
+                             ({"user_id": "test@mail.com", "message_ids": "EMAIL1", "status": "Unread"}),
+                             ({"user_id": "test@mail.com", "message_ids": "EMAIL1", "folder_id": "Inbox",
+                               "status": "Unread"}),
+                         ])
+def test_update_email_status_command(mocker, args: dict):
+    mark_as_read = (args["status"].lower() == 'read')
+
+    client = self_deployed_client()
+    http_request = mocker.patch.object(MicrosoftClient, "http_request", return_value={})
+
+    result = update_email_status_command(client=client, args=args)
+
+    if "folder_id" in args:
+        http_request.assert_called_with(
+            method="PATCH",
+            url_suffix=f"/users/{args['user_id']}/"
+                       f"{build_folders_path(args['folder_id'])}/messages/{args['message_ids']}",
+            json_data={'isRead': mark_as_read},
+        )
+
+    else:
+        http_request.assert_called_with(
+            method="PATCH",
+            url_suffix=f"/users/{args['user_id']}/messages/{args['message_ids']}",
+            json_data={'isRead': mark_as_read},
+        )
+
+    assert result.outputs is None
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+    from MicrosoftGraphMail import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import re
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    requests_mock.get(re.compile(f'^{Resources.graph}.*'), json={})
+
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'results', return_value=params)
+    mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
+
+    main()
+
+    assert 'ok' in demisto.results.call_args[0][0]
+    qs = get_mock.last_request.qs
+    assert qs['resource'] == [Resources.graph]
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs

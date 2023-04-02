@@ -2,26 +2,15 @@
     "name": "PingIdentity",
     "description": "Integration with PingIdentity's PingOne identity platform",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Ping Identity",
     "url": "https://docs.pingidentity.com/bundle/p14c/page/als1564020488261.html",
     "email": "tap-global@pingidentity.com",
     "categories": [
-        "Identity and Access Management",
-        "Authentication"
+        "Authentication & Identity Management"
     ],
-    "tags": [
-        "GDPR",
-        "HIPAA",
-        "IAM",
-        "IT",
-        "Security"
-    ],
-    "useCases": [
-        "Access",
-        "Identity and Access Management",
-        "IT Services"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "PingIdentity",
         "PingOne",

@@ -1,0 +1,1105 @@
+id: 07c5b111-3824-46cf-8ce8-6d0d5603ee21
+version: 41
+vcShouldKeepItemLegacyProdMachine: false
+name: testplaybook- JoeSecuirtyV2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d79bc6e8-f04e-4f46-8716-d6708681433d
+    type: start
+    task:
+      id: d79bc6e8-f04e-4f46-8716-d6708681433d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: babee61a-3e37-4fce-8a2b-dfe0deb262a8
+    type: regular
+    task:
+      id: babee61a-3e37-4fce-8a2b-dfe0deb262a8
+      version: -1
+      name: Is server online
+      description: Check if the Joe Sandbox analysis back end is online or in maintenance
+        mode.
+      script: JoeSecurityV2|||joe-is-online
+      type: regular
+      iscommand: true
+      brand: JoeSecurityV2
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 36ab755c-e8c4-4159-8053-c52b82cf1a2e
+    type: condition
+    task:
+      id: 36ab755c-e8c4-4159-8053-c52b82cf1a2e
+      version: -1
+      name: Verify is server online
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: Joe.ServerStatus.Online
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 166b054d-5ff2-451f-8d65-647177b15f88
+    type: title
+    task:
+      id: 166b054d-5ff2-451f-8d65-647177b15f88
+      version: -1
+      name: Finish
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d132f737-cd69-43f8-8642-a3199862ce6e
+    type: regular
+    task:
+      id: d132f737-cd69-43f8-8642-a3199862ce6e
+      version: -1
+      name: List analysis limit
+      description: Lists all analyses.
+      script: JoeSecurityV2|||joe-list-analysis
+      type: regular
+      iscommand: true
+      brand: JoeSecurityV2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      limit:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e321448e-1b77-4e94-835a-672dd9bae146
+    type: condition
+    task:
+      id: e321448e-1b77-4e94-835a-672dd9bae146
+      version: -1
+      name: Verify list analysis limit
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: Joe.Analysis
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 89c7df9d-e4d6-4010-8a09-8116fc13428b
+    type: regular
+    task:
+      id: 89c7df9d-e4d6-4010-8a09-8116fc13428b
+      version: -1
+      name: Download report
+      description: Download a resource belonging to a report. This can be the full
+        report, dropped binaries, etc. See integration README for the full supported
+        report types.
+      script: JoeSecurityV2|||joe-download-report
+      type: regular
+      iscommand: true
+      brand: JoeSecurityV2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      type:
+        simple: json
+      webid:
+        complex:
+          root: Joe.Analysis
+          accessor: webid
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d4756927-85f5-4ba3-8daa-8384bd15aa3a
+    type: condition
+    task:
+      id: d4756927-85f5-4ba3-8daa-8384bd15aa3a
+      version: -1
+      name: Verify download report
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: InfoFile
+            iscontext: true
+          right:
+            value: {}
+      - - operator: endWith
+          left:
+            value:
+              simple: InfoFile.Name
+            iscontext: true
+          right:
+            value:
+              simple: .json
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: c85a2014-98d7-4b1c-8dd7-485658a7fcb9
+    type: regular
+    task:
+      id: c85a2014-98d7-4b1c-8dd7-485658a7fcb9
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: b6cdf4ab-e597-4ddd-8bfb-44b6da505049
+    type: regular
+    task:
+      id: b6cdf4ab-e597-4ddd-8bfb-44b6da505049
+      version: -1
+      name: Get account quota
+      description: Retrieve the account quota.
+      script: JoeSecurityV2|||joe-get-account-quota
+      type: regular
+      iscommand: true
+      brand: JoeSecurityV2
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 89ec2196-4348-4f7d-8215-d34e742d09bb
+    type: condition
+    task:
+      id: 89ec2196-4348-4f7d-8215-d34e742d09bb
+      version: -1
+      name: Verify get account quota
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Joe.AccountQuota
+            iscontext: true
+          right:
+            value: {}
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Joe.AccountQuota.quota.monthly.remaining
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Joe.AccountQuota.quota.daily.remaining
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: a1942a9a-2672-44fa-86ab-293982b7777b
+    type: regular
+    task:
+      id: a1942a9a-2672-44fa-86ab-293982b7777b
+      version: -1
+      name: Submit URL
+      script: JoeSecurityV2|||joe-submit-url
+      type: regular
+      iscommand: true
+      brand: JoeSecurityV2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      comments:
+        simple: test_url
+      systems:
+        simple: w7
+      url:
+        simple: ${inputs.url}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 534a79d9-7fd5-4b0e-8f58-dc800b801c41
+    type: condition
+    task:
+      id: 534a79d9-7fd5-4b0e-8f58-dc800b801c41
+      version: -1
+      name: Verify submission URL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.url
+                transformers:
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: http://
+                    suffix: {}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 53b7418d-66b2-4e3e-8f80-db9325a4cfd0
+    type: regular
+    task:
+      id: 53b7418d-66b2-4e3e-8f80-db9325a4cfd0
+      version: -1
+      name: Submission info
+      description: Retrieve the submission info.
+      script: JoeSecurityV2|||joe-submission-info
+      type: regular
+      iscommand: true
+      brand: JoeSecurityV2
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      full_display:
+        simple: "false"
+      submission_ids:
+        simple: ${Joe.Submission.submission_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 87674bd7-a979-4f2d-86af-991af832b658
+    type: condition
+    task:
+      id: 87674bd7-a979-4f2d-86af-991af832b658
+      version: -1
+      name: Verify submission info
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: DBotScore
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 9d453936-e720-441c-8040-c1048192fe75
+    type: regular
+    task:
+      id: 9d453936-e720-441c-8040-c1048192fe75
+      version: -1
+      name: Search URL
+      description: Search through all analyses.
+      script: JoeSecurityV2|||joe-search
+      type: regular
+      iscommand: true
+      brand: JoeSecurityV2
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      full_display:
+        simple: "true"
+      query:
+        complex:
+          root: inputs.url
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: http://
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 68de199f-425c-44e6-843f-d16951134363
+    type: regular
+    task:
+      id: 68de199f-425c-44e6-843f-d16951134363
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 4e620cc1-d6e2-4453-828f-ba95680587df
+    type: condition
+    task:
+      id: 4e620cc1-d6e2-4453-828f-ba95680587df
+      version: -1
+      name: Verify search URL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.url
+                transformers:
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: http://
+                    suffix: {}
+            iscontext: true
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 3baf7e4a-28f5-422f-89c9-096684118a55
+    type: regular
+    task:
+      id: 3baf7e4a-28f5-422f-89c9-096684118a55
+      version: -1
+      name: Submit sample
+      script: JoeSecurityV2|||joe-submit-sample
+      type: regular
+      iscommand: true
+      brand: JoeSecurityV2
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      comments:
+        simple: test
+      entry_id:
+        simple: ${File.EntryID}
+      systems:
+        simple: macvm
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 60df3da3-f80a-4ec0-8da4-552821f41a8c
+    type: regular
+    task:
+      id: 60df3da3-f80a-4ec0-8da4-552821f41a8c
+      version: -1
+      name: Create and upload a sample
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      data:
+        simple: This is a test 123
+      filename:
+        simple: test_submit_sample.txt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: a1ee4ecd-cd2a-41eb-84d2-3528eef262b1
+    type: condition
+    task:
+      id: a1ee4ecd-cd2a-41eb-84d2-3528eef262b1
+      version: -1
+      name: Verify submit sample
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: JoeSecurityV2
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Joe.Analysis.runs.system
+            iscontext: true
+          right:
+            value:
+              simple: macvm
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: ed68d210-5884-4abc-8d84-e97f64018068
+    type: regular
+    task:
+      id: ed68d210-5884-4abc-8d84-e97f64018068
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 60b7547f-7908-46b7-8c0f-2edb853c8c4e
+    type: regular
+    task:
+      id: 60b7547f-7908-46b7-8c0f-2edb853c8c4e
+      version: -1
+      name: Get account quota
+      description: Retrieve the account quota.
+      script: JoeSecurityV2|||joe-get-account-quota
+      type: regular
+      iscommand: true
+      brand: JoeSecurityV2
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: d6748ec5-43f9-4e74-812f-fea88e28e9fa
+    type: condition
+    task:
+      id: d6748ec5-43f9-4e74-812f-fea88e28e9fa
+      version: -1
+      name: Verify get account quota
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Joe.AccountQuota
+            iscontext: true
+          right:
+            value: {}
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Joe.AccountQuota.quota.monthly.remaining
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Joe.AccountQuota.quota.daily.remaining
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: fccd9663-596d-46cf-8f9a-11e620cafde0
+    type: regular
+    task:
+      id: fccd9663-596d-46cf-8f9a-11e620cafde0
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: a8640888-9ff7-4017-8845-86384dda6274
+    type: regular
+    task:
+      id: a8640888-9ff7-4017-8845-86384dda6274
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4410,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: url
+  value:
+    simple: example.com
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
+fromversion: 6.8.0

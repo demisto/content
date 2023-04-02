@@ -17,12 +17,16 @@ configuration:
   name: environment
   required: true
   type: 0
+- display: Create an incident per CSV record
+  name: duplicate_alert
+  required: false
+  type: 8
+  additionalinfo: An incident will be created with the originated Alert details per CSV file record.
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
-- additionalinfo: Severities to fetch. If none is chosen, all severity levels will
-    be returned.
+- additionalinfo: Severities to fetch. If none is chosen, all severity levels will be returned.
   display: Fetch Severity
   name: fetch_severity
   options:
@@ -35,14 +39,13 @@ configuration:
 - additionalinfo: Statuses to fetch. If none is chosen, all statuses will be returned.
   display: Fetch Status
   name: fetch_status
+  required: false
+  type: 16
   options:
   - open
   - acknowledged
   - closed
-  required: false
-  type: 16
-- additionalinfo: Environments to fetch (comma separated). If empty, all available
-    environments will be returned.
+- additionalinfo: Environments to fetch (comma separated). If empty, all available environments will be returned.
   display: Fetch Environment
   name: fetch_environment
   required: false
@@ -50,6 +53,8 @@ configuration:
 - additionalinfo: Types to fetch. If none is chosen, all types will be returned.
   display: Fetch Types
   name: fetch_type
+  required: false
+  type: 16
   options:
   - refund_fraud
   - carding
@@ -92,20 +97,17 @@ configuration:
   - email_security_issues
   - certificate_authority_issues
   - other
-  required: false
-  type: 16
-- additionalinfo: Max number of alerts per fetch. Defaults to  the minimum 10, max
-    is 100.
-  defaultvalue: '10'
+- defaultvalue: '10'
   display: Fetch Limit
   name: max_fetch
   required: false
   type: 0
-- defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  additionalinfo: Max number of alerts per fetch. Defaults to  the minimum 10, max is 100.
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   required: false
   type: 0
+  defaultvalue: 7 days
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -114,9 +116,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Cyberint provides intelligence-driven digital risk protection. This integration
-  will help your enterprise effectively consume actionable cyber alerts to increase
-  your security posture.
+description: Cyberint provides intelligence-driven digital risk protection. This integration will help your enterprise effectively consume actionable cyber alerts to increase your security posture.
 display: Cyberint
 name: cyberint
 script:
@@ -131,59 +131,49 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: Number of results in a page. Default is 10. Must be between 10
-        and 100.
+      description: Number of results in a page. Default is 10. Must be between 10 and 100.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
-      description: ISO-Formatted creation date. Get alerts created since this date
-        (YYYY-MM-DDTHH:MM:SSZ).
+      description: ISO-Formatted creation date. Get alerts created since this date (YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: created_date_from
       required: false
       secret: false
     - default: false
-      description: ISO-Formatted creation date. Get alerts created before this date
-        (YYYY-MM-DDTHH:MM:SSZ).
+      description: ISO-Formatted creation date. Get alerts created before this date (YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: created_date_to
       required: false
       secret: false
     - default: false
-      description: You can specify a date range to search for from the current time.
-        (<number> <time unit>, e.g., 12 hours, 7 days) instead of a start/end time.
-        created_date_range will overwrite created_date
+      description: You can specify a date range to search for from the current time. (<number> <time unit>, e.g., 12 hours, 7 days) instead of a start/end time. created_date_range will overwrite created_date
       isArray: false
       name: created_date_range
       required: false
       secret: false
     - default: false
-      description: ISO-Formatted modification date. Get alerts modified since this
-        date (YYYY-MM-DDTHH:MM:SSZ).
+      description: ISO-Formatted modification date. Get alerts modified since this date (YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: modification_date_from
       required: false
       secret: false
     - default: false
-      description: ISO-Formatted modification date. Get alerts modified before this
-        date (YYYY-MM-DDTHH:MM:SSZ).
+      description: ISO-Formatted modification date. Get alerts modified before this date (YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: modification_date_to
       required: false
       secret: false
     - default: false
-      description: You can specify a date range to search for from the current time.
-        (<number> <time unit>, e.g., 12 hours, 7 days) instead of a start/end time.
-        modified_date_range will overwrite modified_date
+      description: You can specify a date range to search for from the current time. (<number> <time unit>, e.g., 12 hours, 7 days) instead of a start/end time. modified_date_range will overwrite modified_date
       isArray: false
       name: modified_date_range
       required: false
       secret: false
     - default: false
-      description: Environment in which the alerts were created. Can be more than
-        one.
+      description: Environment in which the alerts were created. Can be more than one.
       isArray: true
       name: environments
       required: false
@@ -456,8 +446,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Reason for updating the alerts status to closed. Required when
-        status is closed.
+      description: Reason for updating the alerts status to closed. Required when status is closed.
       isArray: false
       name: closure_reason
       predefined:
@@ -582,7 +571,7 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true
   longRunning: false
@@ -592,5 +581,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests - Deprecated
+- No tests
 fromversion: 5.0.0

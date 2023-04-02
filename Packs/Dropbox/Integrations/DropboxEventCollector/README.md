@@ -3,15 +3,15 @@ This integration was integrated and tested with version 2 of Dropbox API
 
 ## Configure Dropbox Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Configurations** > **Automation and Feed Integrations**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation and Feed Integrations**.
 2. Search for Dropbox Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     |---|---|---|
-    | Server URL | The endpoint to get the logs | True |
-    | App Key | The App key | True |
-    | App Secret | The App secret | True |
+    | Server URL | The endpoint from which to get the logs. | True |
+    | App Key | The App key (created in the Dropbox app console). | True |
+    | App Secret | The App secret (created in the Dropbox app console).  | True |
     | First fetch in timestamp format | First fetch in timestamp format (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
     | The maximum number of events per fetch |  | False |
     | Trust any certificate (not secure) |  | False |
@@ -25,7 +25,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ### dropbox-auth-start
 ***
-Starts the authentication.
+Run this command to start the authorization process and follow the instructions in the command results. This command generates a link. By clicking the link, you get a code for the dropbox-auth-complete command.
 
 
 #### Base Command
@@ -41,7 +41,7 @@ There is no context output for this command.
 
 ### dropbox-auth-complete
 ***
-Completes the authentication.
+Run this command to complete the authorization process. Should be used after running the dropbox-auth-start command.
 
 
 #### Base Command
@@ -60,8 +60,9 @@ There is no context output for this command.
 
 ### dropbox-auth-test
 ***
-Tests the authentication.
+Run this command to test the connectivity to Dropbox. 
 
+***Note: Use this command instead of the Test button in the UI.*** 
 
 #### Base Command
 
@@ -120,4 +121,3 @@ There is no context output for this command.
 >| .tag: admin<br/>admin: {".tag": "team_member", "account_id": "123456", "display_name": "John Smith", "email": "JohnSmith@example.com", "team_member_id": "111111"} | .tag: team_member<br/>account_id: 123456<br/>display_name: John Smith<br/>email: JohnSmith@example.com<br/>team_member_id: 111111 | .tag: member_change_status_details<br/>previous_value: {".tag": "not_joined"}<br/>new_value: {".tag": "active"}<br/>action: {".tag": "team_join_details", "linked_apps": [], "linked_devices": [], "linked_shared_folders": [], "has_linked_apps": false, "has_linked_devices": true, "has_linked_shared_folders": false} | .tag: members | .tag: member_change_status<br/>description: Changed member status (invited, joined, suspended, etc.) | false | geo_location: {"city": "Tel Aviv", "region": "Tel Aviv", "country": "IL", "ip_address": "1.1.1.1"}<br/>access_method: {".tag": "end_user", "end_user": {".tag": "web", "session_id": "222222"}} | 2022-05-16T11:34:29Z |
 >| .tag: admin<br/>admin: {".tag": "team_member", "account_id": "123456", "display_name": "John Smith", "email": "JohnSmith@example.com", "team_member_id": "111111"} | .tag: team_member<br/>account_id: 123456<br/>display_name: John Smith<br/>email: JohnSmith@example.com<br/>team_member_id: 111111 | .tag: member_change_admin_role_details<br/>new_value: {".tag": "team_admin"}<br/>previous_value: {".tag": "member_only"} | .tag: members | .tag: member_change_admin_role<br/>description: Changed team member admin role | false | geo_location: {"city": "Tel Aviv", "region": "Tel Aviv", "country": "IL", "ip_address": "1.1.1.1"}<br/>access_method: {".tag": "end_user", "end_user": {".tag": "web", "session_id": "222222"}} | 2022-05-16T11:34:29Z |
 >| .tag: admin<br/>admin: {".tag": "team_member", "account_id": "123456", "display_name": "John Smith", "email": "JohnSmith@example.com", "team_member_id": "111111"} | .tag: team | .tag: member_send_invite_policy_changed_details<br/>new_value: {".tag": "everyone"}<br/>previous_value: {".tag": "specific_members"} | .tag: team_policies | .tag: member_send_invite_policy_changed<br/>description: Changed member send invite policy for team | false | geo_location: {"city": "Tel Aviv", "region": "Tel Aviv", "country": "IL", "ip_address": "1.1.1.1"}<br/>access_method: {".tag": "end_user", "end_user": {".tag": "web", "session_id": "222222"}} | 2022-05-16T11:34:33Z |
-

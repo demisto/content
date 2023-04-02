@@ -28,61 +28,38 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Akamai WAF integration to manage common sets of lists used by
-  various Akamai security products and features.
+description: |-
+  Use the Akamai WAF integration to manage common sets of lists used by various Akamai security products and features.
+
+  This is the modified version where a new command "akamai-update-network-list-elements" was added by the SA.
 display: Akamai WAF
 name: Akamai WAF
 script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
-      description: The network list type by which to filter the results. Can be "IP"
-        or "GEO".
-      isArray: false
+      description: The network list type by which to filter the results.
       name: list_type
       predefined:
       - IP
       - GEO
-      required: false
-      secret: false
-    - default: false
-      description: The query by which to search for list names and list items.
-      isArray: false
+    - description: The query by which to search for list names and list items.
       name: search
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
-      description: When enabled, provides additional response data identifying who
-        created and updated the list and when, and the network list’s deployment status
-        in both STAGING and PRODUCTION environments. This data takes longer to provide.
-      isArray: false
+      description: When enabled, provides additional response data identifying who created and updated the list and when, and the network list’s deployment status in both STAGING and PRODUCTION environments. This data takes longer to provide.
       name: extended
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: If enabled, the response list includes all items. For large network
-        lists, this may slow responses and yield large response objects. The default
-        false value when listing more than one network list omits the network list’s
-        elements and only provides higher-level metadata.
-      isArray: false
+      defaultValue: 'false'
+      description: If enabled, the response list includes all items. For large network lists, this may slow responses and yield large response objects. The default false value when listing more than one network list omits the network list’s elements and only provides higher-level metadata.
       name: include_elements
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns a list of all network lists available for an authenticated
-      user who belongs to a group.
-    execution: false
+    description: Returns a list of all network lists available for an authenticated user who belongs to a group.
     name: akamai-get-network-lists
     outputs:
     - contextPath: Akamai.NetworkLists.Lists.Name
@@ -125,15 +102,10 @@ script:
       description: The elements in the network list.
       type: String
   - arguments:
-    - default: false
-      description: The network list ID.
-      isArray: false
+    - description: The network list ID.
       name: network_list_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets a network list by the network list ID.
-    execution: false
     name: akamai-get-network-list-by-id
     outputs:
     - contextPath: Akamai.NetworkLists.Lists.Name
@@ -147,7 +119,7 @@ script:
       type: String
     - contextPath: Akamai.NetworkLists.Lists.ElementCount
       description: The number of network list elements.
-      type: String
+      type: Number
     - contextPath: Akamai.NetworkLists.Lists.CreateDate
       description: The network list creation date.
       type: Date
@@ -170,49 +142,30 @@ script:
       description: The network list update date.
       type: String
     - contextPath: Akamai.NetworkLists.Lists.UpdatedBy
-      description: The last user that updated the network list.
+      description: The last user who updated the network list.
       type: String
     - contextPath: Akamai.NetworkLists.Lists.Elements
       description: The elements in the network list.
       type: String
   - arguments:
-    - default: false
-      description: The network list name.
-      isArray: false
+    - description: The network list name.
       name: list_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The network list type. Can be "IP" or "GEO".
-      isArray: false
+      description: The network list type.
       name: list_type
       predefined:
       - IP
       - GEO
       required: true
-      secret: false
-    - default: false
-      description: The network list elements.
+    - description: The network list elements.
       isArray: true
       name: elements
-      required: false
-      secret: false
-    - default: false
-      description: The War Room entry ID of the sample file.
-      isArray: false
+    - description: The War Room entry ID of the sample file.
       name: entry_id
-      required: false
-      secret: false
-    - default: false
-      description: The network list description.
-      isArray: false
+    - description: The network list description.
       name: description
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new network list. Supports TXT file upload for elements.
-    execution: false
     name: akamai-create-network-list
     outputs:
     - contextPath: Akamai.NetworkLists.Lists.Name
@@ -231,130 +184,1064 @@ script:
       description: The elements in the list.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the network list to delete.
-      isArray: false
+    - description: The ID of the network list to delete.
       name: network_list_id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes the specified network list.
-    execution: false
     name: akamai-delete-network-list
   - arguments:
-    - default: false
-      description: 'A comma-separated list of network list IDs to activate. For example:
-        list (list1,list2).'
+    - description: 'A comma-separated list of network list IDs to activate. For example: list (list1,list2).'
       isArray: true
       name: network_list_ids
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The environment type to activate the network list. Can be "STAGING"
-        OR "PRODUCTION".
-      isArray: false
+      description: The environment type to activate the network list.
       name: env
       predefined:
       - STAGING
       - PRODUCTION
       required: true
-      secret: false
-    - default: false
-      description: A comment to be logged.
-      isArray: false
+    - description: A comment to be logged.
       name: comment
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of email addresses.
+    - description: A comma-separated list of email addresses.
       isArray: true
       name: notify
-      required: false
-      secret: false
-    deprecated: false
     description: Activates a network list on the specified environment.
-    execution: false
     name: akamai-activate-network-list
   - arguments:
-    - default: false
-      description: The ID of the network in which to add elements.
-      isArray: false
+    - description: The ID of the network in which to add elements.
       name: network_list_id
       required: true
-      secret: false
-    - default: false
-      description: The War Room entry ID of the sample file.
-      isArray: false
+    - description: The War Room entry ID of the sample file.
       name: entry_id
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of elements to add to the network list.
+    - description: A comma-separated list of elements to add to the network list.
       isArray: true
       name: elements
-      required: false
-      secret: false
-    deprecated: false
     description: Adds elements to the specified network list.
-    execution: false
     name: akamai-add-elements-to-network-list
   - arguments:
-    - default: false
-      description: The ID of the network list from which to remove elements.
-      isArray: false
+    - description: The ID of the network list from which to remove elements.
       name: network_list_id
       required: true
-      secret: false
-    - default: false
-      description: The element to remove from the network list.
-      isArray: false
+    - description: The element to remove from the network list.
       name: element
       required: true
-      secret: false
-    deprecated: false
     description: Removes elements from the specified network list.
-    execution: false
     name: akamai-remove-element-from-network-list
   - arguments:
-    - default: false
-      description: 'A comma-separated list of network list IDs for which to get the
-        activation status. For example: (support list - list1,list2).'
+    - description: 'A comma-separated list of network list IDs for which to get the activation status. For example: (support list - list1,list2).'
       isArray: true
       name: network_list_ids
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The environment type. Can be "PRODUCTION" or "STAGING".
-      isArray: false
+      description: The environment type.
       name: env
       predefined:
       - PRODUCTION
       - STAGING
       required: true
-      secret: false
-    deprecated: false
     description: Gets the activation status of the specified network list.
-    execution: false
     name: akamai-get-network-list-activation-status
     outputs:
     - contextPath: Akamai.NetworkLists.ActivationStatus.UniqueID
       description: The network list ID.
       type: String
     - contextPath: Akamai.NetworkLists.ActivationStatus.StagingStatus
-      description: The network list environment.
+      description: The network list environment staging activation status.
       type: String
     - contextPath: Akamai.NetworkLists.ActivationStatus.ProductionStatus
-      description: The network list environment activation status.
+      description: The network list environment activation production status.
       type: String
-  dockerimage: demisto/akamai:1.0.0.13142
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  - arguments:
+    - description: The ID of the network list to update
+      name: network_list_id
+      required: true
+    - description: Comma-separated list of elements. Use BLANK to empty a list.
+      isArray: true
+      name: elements
+      required: true
+    description: Updates list elements of a network list.
+    name: akamai-update-network-list-elements
+  - arguments:
+    - description: Group Name
+      name: checking_group_name
+      type: textArea
+    description: Check an existing group within the context of your account.
+    name: akamai-check-group
+    outputs:
+    - contextPath: Akamai.CheckGroup
+      description: Group ID.
+    - contextPath: Akamai.CheckGroup.Found
+      description: Was the group found?
+    - contextPath: Akamai.CheckGroup.groupName
+      description: The parent group name.
+    - contextPath: Akamai.CheckGroup.parentGroupId
+      description: The parent group ID.
+    - contextPath: Akamai.CheckGroup.groupId
+      description: The group ID.
+    - contextPath: Akamai.CheckGroup.checking_group_name
+      description: Group name.
+  - arguments:
+    - description: The group path separated with >.
+      name: group_path
+      required: true
+    description: Create a new group under a parent GID.
+    name: akamai-create-group
+  - arguments:
+    - defaultValue: US
+      description: Country.
+      name: country
+      required: true
+      type: textArea
+    - description: Company.
+      name: company
+      required: true
+      type: textArea
+    - description: Organizational unit.
+      name: organizational_unit
+      required: true
+      type: textArea
+    - description: The city of the admin contact.
+      name: city
+      required: true
+    - description: Contract ID.
+      name: contract_id
+      required: true
+      type: textArea
+    - defaultValue: third-party
+      description: Certificate type.
+      name: certificate_type
+      type: textArea
+    - description: Common name.
+      name: csr_cn
+      required: true
+    - description: Address of the admin contact.
+      name: admin_contact_address_line_one
+      required: true
+      type: textArea
+    - description: The first name of the admin contact.
+      name: admin_contact_first_name
+      required: true
+      type: textArea
+    - description: The last name of the admin contact.
+      name: admin_contact_last_name
+      required: true
+      type: textArea
+    - description: The email address of the admin contact.
+      name: admin_contact_email
+      required: true
+      type: textArea
+    - description: The phone number of the admin contact.
+      name: admin_contact_phone
+      required: true
+      type: textArea
+    - description: The first name of the tech contact.
+      name: tech_contact_first_name
+      required: true
+      type: textArea
+    - description: The last name  of the tech contact.
+      name: tech_contact_last_name
+      required: true
+      type: textArea
+    - description: The email address of the tech contact.
+      name: tech_contact_email
+      required: true
+      type: textArea
+    - description: The phone number  of the tech contact.
+      name: tech_contact_phone
+      required: true
+      type: textArea
+    - description: The organization name.
+      name: org_name
+      required: true
+      type: textArea
+    - description: The organization country.
+      name: org_country
+      required: true
+      type: textArea
+    - description: The organization city.
+      name: org_city
+      required: true
+      type: textArea
+    - description: The organization region.
+      name: org_region
+      required: true
+      type: textArea
+    - description: The organization postal code.
+      name: org_postal_code
+      required: true
+      type: textArea
+    - description: The organization phone number.
+      name: org_phone
+      required: true
+      type: textArea
+    - description: The organization address.
+      name: org_address_line_one
+      required: true
+      type: textArea
+    - defaultValue: 'True'
+      description: Network Configuration - Dns Name Settings - Clone DNS Names
+      name: clone_dns_names
+    - defaultValue: 'False'
+      description: Third Party - Exclude Sans
+      name: exclude_sans
+    - defaultValue: 'False'
+      description: Enable this will stop CPS from deploying the certificate to the network
+      name: change_management
+    - defaultValue: core
+      description: Use core to specify worldwide (includes China and Russia), china+core to specify worldwide and China, and 'russia+core` to specify worldwide and Russia.
+      name: network_configuration_geography
+      type: textArea
+    - defaultValue: third-party
+      description: The registration authority or certificate authority (CA) you want to use to obtain a certificate.
+      name: ra
+    - defaultValue: third-party
+      description: Validation type, Either dv, ev, ov, or third-party.
+      name: validation_type
+    - defaultValue: 'False'
+      description: Enable Dual-Stacked certificate deployment for this enrollment.
+      name: enable_multi_stacked_certificates
+    - defaultValue: 'True'
+      description: Set to true to enable QUIC protocol.
+      name: network_configuration_quic_enabled
+    - defaultValue: enhanced-tls
+      description: Set the type of deployment network you want to use.
+      name: network_configuration_secure_network
+    - defaultValue: 'True'
+      description: SNI settings for your enrollment. Set to true to enable SNI-only for the enrollment.
+      name: network_configuration_sni_only
+    description: Create a new enrollment.
+    name: akamai-create-enrollment
+    outputs:
+    - contextPath: Akamai.Enrollment
+      description: Enrollment path.
+      type: string
+  - arguments:
+    - description: Contract ID
+      name: contract_id
+      required: true
+    description: List enrollments of a specific contract.
+    name: akamai-list-enrollments
+  - arguments:
+    - description: Domain name.
+      name: domain_name
+      required: true
+      type: textArea
+    - description: Group ID.
+      name: group_id
+      required: true
+    description: Create a domain with properties and domain controller (DC).
+    name: akamai-create-domain
+  - arguments:
+    - description: The domain name to which the new property is added.
+      name: domain_name
+      required: true
+    - description: New property name.
+      name: property_name
+      required: true
+    - description: Property type.
+      name: property_type
+      required: true
+    - description: 'Static type - "CNAME" or "A".'
+      name: static_type
+    - description: Static server.
+      name: static_server
+    - description: Server 1.
+      name: server_1
+    - description: Server 2.
+      name: server_2
+    - description: Weight 1.
+      name: weight_1
+    - description: Weight 2.
+      name: weight_2
+    - name: property_comments
+      description: GTM property comments
+      type: textArea
+    - description: Data center ID 1
+      name: dc1_id
+    - description: Data center ID 2
+      name: dc2_id
+    description: Update a property for a specific domain.
+    name: akamai-update-property
+  - arguments:
+    - description: Enrollment path.
+      name: enrollment_path
+      required: true
+    - defaultValue: third-party-csr
+      description: Currently supported values include change-management-info, lets-encrypt-challenges, post-verification-warnings, pre-verification-warnings, third-party-csr.
+      name: allowed_input_type_param
+    description: Get the CPS code.
+    name: akamai-get-change
+    outputs:
+    - contextPath: Akamai.Change
+      description: Certificate Signing Request (CSR).
+  - arguments:
+    - description: The path of the changed certificate.
+      name: change_path
+      required: true
+      type: textArea
+    - defaultValue: third-party-cert-and-trust-chain
+      description: Allowed input type parameter.
+      name: allowed_input_type_param
+      type: textArea
+    - description: The updated certificate.
+      name: certificate
+      type: textArea
+    - description: The updated trust chain.
+      name: trust_chain
+      type: textArea
+    description: Update the certs and trust chains.
+    name: akamai-update-change
+  - arguments:
+    - description: Contract ID
+      name: contract_id
+      required: true
+      type: textArea
+    - description: Target common name.
+      name: target_cn
+      required: true
+    description: Get enrollment by common name.
+    name: akamai-get-enrollment-by-cn
+    outputs:
+    - contextPath: Akamai.Enrollment
+      description: Enrollment.
+    - contextPath: Akamai.Enrollment.target_cn
+      description: Target common name.
+  - arguments: []
+    description: Lists groups of Akamai.
+    name: akamai-list-groups
+    outputs:
+    - contextPath: Akamai.Group
+      description: Akmai Group
+  - arguments:
+    - defaultValue: '0'
+      description: Group ID.
+      name: group_id
+      required: true
+    description: Get group.
+    name: akamai-get-group
+  - arguments: []
+    description: Get Google Tag Manager (GTM) domains.
+    name: akamai-get-domains
+    outputs:
+    - contextPath: Akamai.Domain
+      description: Domains.
+  - arguments:
+    - description: Domain name to get.
+      name: domain_name
+      required: true
+    description: Get a specific GTM domain.
+    name: akamai-get-domain
+    outputs:
+    - contextPath: Akamai.Domain
+      description: Domain.
+  - arguments:
+    - description: Domain Name
+      name: domain_name
+      required: true
+    - description: Domain controller name.
+      name: dc_name
+      required: true
+    - defaultValue: US
+      description: Country name.
+      name: dc_country
+    description: Create a data center.
+    name: akamai-create-datacenter
+  - arguments:
+    - description: ID for a specific Akamai product.
+      name: product_id
+      required: true
+      type: textArea
+    - description: Property Manager API (PAPI) (Ion Standard) property name.
+      name: property_name
+      required: true
+      type: textArea
+    - description: Contract ID.
+      name: contract_id
+      required: true
+      type: textArea
+    - description: Configuration group ID.
+      name: group_id
+      required: true
+      type: textArea
+    - description: Property Manager API (PAPI) (Ion Standard) property ID.
+      name: property_id
+      required: true
+      type: textArea
+    - description: Property version.
+      name: version
+      required: true
+      type: textArea
+    - defaultValue: yes
+      description: Whether to continue execution if an existing record is found without creating a new record.
+      name: check_existence_before_create
+      required: true
+    description: Clone a new PAPI property.
+    name: akamai-clone-papi-property
+    outputs:
+    - contextPath: Akamai.PapiProperty.PropertyName
+      description: PAPI (Ion Standard) property name.
+      type: unknown
+    - contextPath: Akamai.PapiProperty.PropertyId
+      description: PAPI (Ion Standard) property ID.
+    - contextPath: Akamai.PapiProperty.AssetId
+      description: PAPI (Ion Standard) property asset ID.
+  - arguments:
+    - defaultValue: '1'
+      description: PAPI (Ion Standard) property version.
+      name: property_version
+      required: true
+      type: textArea
+    - description: PAPI (Ion Standard) property ID.
+      name: property_id
+      required: true
+      type: textArea
+    - description: Contract ID.
+      name: contract_id
+      required: true
+      type: textArea
+    - description: Configuration group ID.
+      name: group_id
+      required: true
+      type: textArea
+    - description: Validate hostnames.
+      name: validate_hostnames
+      type: textArea
+    - description: Include the certificate status for the hostname.
+      name: include_cert_status
+      type: textArea
+    - description: URL of the common name.
+      name: cname_from
+      required: true
+      type: textArea
+    - description: Edge hostname ID.
+      name: edge_hostname_id
+      required: true
+      type: textArea
+    - description: Sleep time in seconds between each iteration.
+      name: sleep_time
+      required: true
+    description: Add hostnames to the PAPI property.
+    name: akamai-add-papi-property-hostname
+    outputs:
+    - contextPath: Akamai.PapiProperty.Etag
+      description: ETag for concurrency control.
+  - arguments:
+    - description: ID for a specific Akamai product.
+      name: product_id
+      required: true
+      type: textArea
+    - description: Contract ID.
+      name: contract_id
+      required: true
+      type: textArea
+    - description: Configuration group ID.
+      name: group_id
+      required: true
+      type: textArea
+    - description: Comma-separated list of options to enable. mapDetails enables extra mapping-related information.
+      name: options
+      type: textArea
+    - description: URL of domain name.
+      name: domain_prefix
+      required: true
+      type: textArea
+    - description: URL of the partial domain name appended by Akamai.
+      name: domain_suffix
+      required: true
+      type: textArea
+    - description: IP version. IPv4, IPv6, or IPv4 plus IPv6.
+      name: ip_version_behavior
+      required: true
+      type: textArea
+    - description: SSL secured URL.
+      name: secure
+      type: textArea
+    - description: SSL secured protocol options.
+      name: secure_network
+      type: textArea
+    - description: Certificate enrollment ID for the domain URL.
+      name: cert_enrollment_id
+      type: textArea
+    - defaultValue: yes
+      description: Whether to continue execution if an existing record is found without creating a new record.
+      name: check_existence_before_create
+      required: true
+    description: Add a PAPI edge hostname.
+    name: akamai-new-papi-edgehostname
+    outputs:
+    - contextPath: Akamai.PapiProperty.EdgeHostnames.EdgeHostnameId
+      description: Edge hostname ID.
+    - contextPath: Akamai.PapiProperty.EdgeHostnames.DomainPrefix
+      description: Edge hostname domain prefix URL.
+  - arguments:
+    - description: Contract ID.
+      name: contract_id
+      required: true
+      type: textArea
+    - description: URL of common name.
+      name: cnname
+      type: textArea
+    description: Get cps certificate enrollment ID by common name.
+    name: akamai-get-cps-enrollmentid-by-cnname
+    outputs:
+    - contextPath: Akamai.Cps.Enrollment.EnrollmentId
+      description: Certificate enrollment ID.
+    - contextPath: Akamai.Cps.Enrollment.CN
+      description: Certificate enrollment common name.
+  - arguments:
+    - description: ID for specific Akamai product.
+      name: product_id
+      required: true
+      type: textArea
+    - description: Contract ID.
+      name: contract_id
+      required: true
+      type: textArea
+    - description: Configuration group ID.
+      name: group_id
+      required: true
+      type: textArea
+    - description: Content provider codes name.
+      name: cpcode_name
+      required: true
+      type: textArea
+    - defaultValue: yes
+      description: Whether to continue execution if an existing record is found without creating a new record.
+      name: check_existence_before_create
+      required: true
+    description: Create a new PAPI CP code.
+    name: akamai-new-papi-cpcode
+    outputs:
+    - contextPath: Akamai.PapiCpcode.CpcodeId
+      description: Content provider code ID.
+  - arguments:
+    - description: Contract ID.
+      name: contract_id
+      required: true
+      type: textArea
+    - description: Configuration group ID.
+      name: group_id
+      required: true
+      type: textArea
+    - description: PAPI (Ion Standard) property ID.
+      name: property_id
+      required: true
+      type: textArea
+    - description: PAPI (Ion Standard) property version.
+      name: property_version
+      type: textArea
+    - description: Whether to validate rules.
+      name: validate_rules
+      type: textArea
+    - description: JSON patch operation. Add, Remove, Replace.
+      name: operation
+      type: textArea
+    - description: Dictionary path.
+      name: path
+      type: textArea
+    - description: Content provider code ID.
+      name: cpcode_id
+      type: textArea
+    - description: Content provider code name.
+      name: name
+      type: textArea
+    description: Patch PAPI property default rule with a CP code.
+    name: akamai-patch-papi-property-rule-cpcode
+    outputs:
+    - contextPath: Akamai.PapiProperty.Etag
+      description: ETag for concurrency control.
+  - arguments:
+    - description: Contract ID.
+      name: contract_id
+      required: true
+      type: textArea
+    - description: Configuration group ID.
+      name: group_id
+      required: true
+      type: textArea
+    - description: PAPI (Ion Standard) property ID.
+      name: property_id
+      required: true
+      type: textArea
+    - description: PAPI (Ion Standard) property version.
+      name: property_version
+      required: true
+      type: textArea
+    - description: Whether to validate rules.
+      name: validate_rules
+      required: true
+      type: textArea
+    - description: JSON patch operation. Add, Remove, Replace
+      name: operation
+      required: true
+      type: textArea
+    - description: Dictionary path.
+      name: path
+      required: true
+      type: textArea
+    - description: value
+      name: origin
+      required: true
+      type: textArea
+    - description: External URL FQDN.
+      name: external_url
+      required: true
+    - description: Gzip compression.
+      name: gzip_compression
+    - description: Sleep time between each iteration.
+      name: sleep_time
+      required: true
+    description: Patch PAPI property default rule with an origin.
+    name: akamai-patch-papi-property-rule-origin
+    outputs:
+    - contextPath: Akamai.PapiProperty.Etag
+      description: Etag for Concurrency Control.
+  - arguments:
+    - description: Contract ID.
+      name: contract_id
+      required: true
+      type: textArea
+    - description: Configuration group ID.
+      name: group_id
+      required: true
+      type: textArea
+    - description: PAPI (Ion Standard) property ID.
+      name: property_id
+      required: true
+      type: textArea
+    - description: STAGING or PRODUCTION
+      name: network
+      type: textArea
+    - description: Notification emails.
+      name: notify_emails
+      type: textArea
+    - description: PAPI (Ion Standard) property version.
+      name: property_version
+      type: textArea
+    - description: activation note
+      name: note
+    description: Activate a PAPI property.
+    name: akamai-activate-papi-property
+    outputs:
+    - contextPath: Akamai.PapiProperty.Staging.ActivationId
+      description: Staging activation ID.
+    - contextPath: Akamai.PapiProperty.Production.ActivationId
+      description: Production activation ID.
+  - arguments:
+    - description: AppSec configuration ID.
+      name: config_id
+      required: true
+    - description: AppSec configuration version.
+      name: config_version
+      required: true
+    - description: Baseline security policy ID.
+      name: create_from_security_policy
+      required: true
+    - description: New security policy name.
+      name: policy_name
+      required: true
+    - description: Security policy ID prefix.
+      name: policy_prefix
+    - defaultValue: yes
+      description: Whether to continue execution if an existing record is found without creating a new record.
+      name: check_existence_before_create
+      required: true
+    description: AppSec clone security policy.
+    name: akamai-clone-security-policy
+    outputs:
+    - contextPath: Akamai.AppSecConfig.Policy.PolicyName
+      description: Security policy name.
+    - contextPath: Akamai.AppSecConfig.Policy.PolicyId
+      description: Security policy ID.
+  - arguments:
+    - description: AppSec configuration ID.
+      name: config_id
+      required: true
+    - description: AppSec configuration version.
+      name: config_version
+      required: true
+    - description: Security policy ID.
+      name: policy_id
+      required: true
+    - description: Website.
+      name: match_type
+      required: true
+    - description: Comma-separated list of hostname URLs.
+      name: hostnames
+      required: true
+    - description: Comma-separated list of bypass networks.
+      name: bypass_network_lists
+      required: true
+    - description: File paths. Default is /*.
+      name: file_paths
+      required: true
+    - description: Default is noMatch.
+      name: default_file
+      required: true
+    description: AppSec create match target.
+    name: akamai-new-match-target
+    outputs:
+    - contextPath: Akamai.AppSecConfig.Policy.PolicyName
+      description: Security policy name.
+    - contextPath: Akamai.AppSecConfig.Policy.PolicyId
+      description: Security policy ID.
+    - contextPath: Akamai.AppSecConfig.Policy.TargetId
+      description: Match target ID.
+  - arguments:
+    - description: AppSec configuration ID.
+      name: config_id
+      required: true
+    - description: AppSec configuration version.
+      name: config_version
+      required: true
+    - description: Default is N/A.
+      name: acknowledged_invalid_hosts
+      required: true
+      type: textArea
+    - description: List of notification emails.
+      name: notification_emails
+      required: true
+      type: textArea
+    - description: Activate.
+      name: action
+      required: true
+      type: textArea
+    - description: STAGING or PRODUCTION.
+      name: network
+      required: true
+      type: textArea
+    - description: Note to describe the activity.
+      name: note
+      required: true
+      type: textArea
+    description: AppSec activate appsec configuration version.
+    name: akamai-activate-appsec-config-version
+    outputs:
+    - contextPath: Akamai.AppSecConfig.Staging.ActivationId
+      description: Security configuration staging activation ID.
+    - contextPath: Akamai.AppSecConfig.Production.ActivationId
+      description: Security configuration production activation ID.
+  - arguments:
+    - description: Security configuration activation ID.
+      name: activation_id
+      required: true
+    - description: Sleep time in seconds between each iteration.
+      name: sleep_time
+      required: true
+    - description: Number of retries of the consistency check to be conducted.
+      name: retries
+      required: true
+    description: AppSec get appsec config activation status.
+    name: akamai-get-appsec-config-activation-status
+    outputs:
+    - contextPath: Akamai.AppSecConfig.Staging
+      description: Staging Security Configration.
+    - contextPath: Akamai.AppSecConfig.Production
+      description: Production Security Configration.
+  - arguments:
+    - description: Name of the security configuration.
+      name: sec_config_name
+      required: true
+    - description: Number of seconds to wait before the next consistency check.
+      name: sleep_time
+      required: true
+      type: textArea
+    - description: Number of retries of the consistency check to be conducted.
+      name: retries
+      required: true
+      type: textArea
+    - description: Do not perform LatestVersion, Staging Version, Production Version consistency check.
+      name: skip_consistency_check
+      required: true
+    description: AppSec get appsec config latest version.
+    name: akamai-get-appsec-config-latest-version
+    outputs:
+    - contextPath: Akamai.AppSecConfig.LatestVersion
+      description: Security configuration latest version number.
+  - arguments:
+    - description: Security Policy Name
+      name: policy_name
+      required: true
+      type: textArea
+    - description: AppSec configuration ID.
+      name: config_id
+      required: true
+    - description: AppSec configuration version.
+      name: config_version
+      required: true
+    - description: Whether this is the baseline security policy.
+      name: is_baseline_policy
+      required: true
+    description: AppSec get security policy ID by name.
+    name: akamai-get-security-policy-id-by-name
+    outputs:
+    - contextPath: Akamai.AppSecConfig.BasePolicyName
+      description: Baseline security policy name.
+    - contextPath: Akamai.AppSecConfig.BasePolicyId
+      description: Baseline security policy ID.
+    - contextPath: Akamai.AppSecConfig.Policy.PolicyName
+      description: Security policy name.
+    - contextPath: Akamai.AppSecConfig.Policy.PolicyId
+      description: Baseline security policy ID.
+    - contextPath: Akamai.AppSecConfig.Id
+      description: AppSec security configuration ID.
+  - arguments:
+    - description: AppSec configuration ID.
+      name: config_id
+      required: true
+    - description: AppSec configuration version.
+      name: create_from_version
+      required: true
+    - description: Specifies whether the application rules should be migrated to the latest version.
+      name: rule_update
+      required: false
+      auto: PREDEFINED
+      defaultValue: 'True'
+      predefined:
+      - 'True'
+      - 'False'
+    - description: Do not clone to create a new version. Use in the test.
+      name: do_not_clone
+      required: true
+    description: AppSec_clone appsec config version
+    name: akamai-clone-appsec-config-version
+    outputs:
+    - contextPath: Akamai.AppSecConfig.Name
+      description: AppSec configuration name.
+    - contextPath: Akamai.AppSecConfig.Id
+      description: AppSec Configration ID
+    - contextPath: Akamai.AppSecConfig.NewVersion
+      description: AppSec Configration New Version
+  - arguments:
+    - description: Contract ID
+      name: contract_id
+      required: true
+    - description: Group ID
+      name: group_id
+      required: true
+    - description: Property ID
+      name: property_id
+      required: true
+    - description: Property Version
+      name: property_version
+    - description: Whether to validate the Rules.
+      name: validate_rules
+      required: true
+    - description: The operation to execute.
+      name: operation
+      required: true
+    - description: The path of the rule.
+      name: path
+      required: true
+    - name: value
+      description: The value of the HTTP Method in dictionary format.
+      required: true
+    description: Patch PAPI property rule HTTP methods.
+    name: akamai-patch-papi-property-rule-httpmethods
+    outputs:
+    - contextPath: Akamai.PapiProperty.Etag
+      description: ETag for concurrency control.
+  - arguments:
+    - description: Ion property activation ID.
+      name: activation_id
+      required: true
+    - description: Ion property ID.
+      name: property_id
+      required: true
+    - description: Sleep time between retries.
+      name: sleep_time
+      required: true
+    - description: Number of retires.
+      name: retries
+      required: true
+    description: Get PAPI property activation status until it is active.
+    name: akamai-get-papi-property-activation-status-command
+  - arguments:
+    - description: contract ID.
+      name: contract_id
+      required: true
+    - description: Group id.
+      name: group_id
+      required: true
+    - description: Edge hostname ID.
+      name: edgehostname_id
+      required: true
+    - description: mapDetails.
+      name: options
+      required: true
+    - description: Sleep time between each iteration.
+      name: sleep_time
+      required: true
+    - description: Number of retries.
+      name: retries
+      required: true
+    description: Get PAPI edgehostname creation status command until it is created.
+    name: akamai-get-papi-edgehostname-creation-status-command
+  - name: akamai-acknowledge-warning-command
+    arguments:
+    - description: The path of the changed certificate.
+      name: change_path
+      required: true
+      type: textArea
+    description: Acknowledge the warning message for uploading the certs and trust chains of enrollments.
+  - arguments:
+    - description: A unique identifier for each configuration.
+      name: config_id
+      required: true
+    - description: A unique identifier for each version of a configuration.
+      name: config_version
+      required: true
+    - description: A list hostnames is used to modifying the configuration.
+      isArray: true
+      name: hostname_list
+      required: true
+    - description: The type of update you want to make to the evaluation hostname list.             - Use "append" to add additional hostnames.             - Use "remove" to delete the hostnames from the list.             - Use "replace" to replace the existing list with the hostnames you pass in your request. Use "append" to add additional hostnames. Use "remove" to delete the hostnames from the list. Use "replace" to replace the existing list with the hostnames you pass in your request.
+      name: mode
+      required: true
+    description: Update the list of selected hostnames for a configuration version.
+    name: akamai-modify-appsec-config-selected-hosts
+  - arguments:
+    - name: enrollment_id
+      description: The enrollment id.
+      required: true
+    description: Get Production Deployment
+    name: akamai-get-production-deployment
+  - arguments:
+    - name: enrollment_id
+      description: The enrollment id.
+      required: true
+    description: Get change history
+    name: akamai-get-change-history
+  - arguments:
+    - description: Akamai contract Identity
+      name: contract_id
+      required: true
+    - description: Akamai configuration group Identity
+      name: group_id
+      required: true
+    - description: Akamai Ion Property Identity
+      name: property_id
+      required: true
+    - description: Akamai Ion Property Version Identity
+      name: property_version
+      required: true
+    - description: Validate the rule or not - true or false
+      name: validate_rules
+      required: true
+    - description: Json patch operation - add / delete / replace
+      name: operation
+      required: true
+    - description: Json patch Rule path
+      name: path
+      required: true
+    - description: siteshiled json format data
+      name: ssmap
+      required: true
+    description: Patch papi property default rule siteshield
+    name: akamai-patch-papi-property-rule-siteshield
+  - arguments:
+    - description: The ID of the application seucirty configuration
+      name: config_id
+      required: true
+    - description: The version number of the application seucirty configuration
+      name: config_version
+      required: true
+    - description: The notes need to be written into the application seucirty configuration version
+      name: notes
+      required: true
+    description: Update application secuirty configuration version notes command
+    name: akamai-update-appsec-config-version-notes
+  - arguments:
+    - description: A unique identifier for each configuration.
+      name: config_id
+      required: true
+    - description: A unique identifier for each version of a configuration.
+      name: config_version
+      required: true
+    - description: The type of the match target
+      name: match_type
+      required: true
+    - description: bypass network lists
+      name: bypass_network_lists
+      required: true
+    - description: Describes the rule to match on paths.
+      name: default_file
+      required: true
+    - description: Contains a list of file paths
+      name: file_paths
+      required: true
+    - description: A list of hostnames that need to be added into match target
+      name: hostnames
+      required: true
+    - description: Specifies the security policy to filter match targets
+      name: policy_id
+      required: true
+    description: New match target if no existing found otherwise update the existing match target hostnames. If there are multiple match targets found, the first one in the list will be updated
+    name: akamai-new-or-renew-match-target
+  - arguments:
+    - description: A unique identifier for each configuration.
+      name: contract_id
+      required: true
+    - description: A unique identifier for each group.
+      name: group_id
+      required: true
+    - description: A unique identifier for each Papi Property
+      name: property_id
+      required: true
+    - description: A unique identifier for each Papi Property Version.
+      name: property_version
+      required: true
+    - description: whether validate rule or not
+      name: validate_rules
+      required: true
+    - description: add/replace/remove
+      name: operation
+      required: true
+    - description: json rule tree path for the default rule
+      name: path
+      required: true
+    - description: value to be operated against
+      name: value
+      required: true
+    - description: whether to convert value to json format. yes/no
+      name: value_to_json
+      predefined:
+      - 'yes'
+      - 'no'
+      auto: PREDEFINED
+    description: Generic JSON patch command for Papi Property Default Rule
+    name: akamai-patch-papi-property-rule-generic
+  - arguments:
+    - description: A unique identifier for each configuration.
+      name: contract_id
+      required: true
+    - description: A unique identifier for each group.
+      name: group_id
+      required: true
+    - description: A unique identifier for each Papi Property
+      name: property_id
+      required: true
+    - description: A unique identifier for each Papi Property Version.
+      name: property_version
+      required: true
+    - description: whether validate rule or not
+      name: validate_rules
+      required: true
+    description: get papi property rule json and dump into string
+    name: akamai-get-papi-property-rule
+    outputs:
+    - contextPath: Akamai.PapiProperty.DefaultRule
+      description: Papi Property default rule
+  - arguments:
+    - description: The path that includes enrollmentId and changeId.
+      name: change_path
+      required: true
+    description: acknowledge pre verification warning
+    name: akamai-acknowledge-pre-verification-warning
+  dockerimage: demisto/akamai:1.0.0.48112
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

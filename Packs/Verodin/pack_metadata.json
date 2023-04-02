@@ -8,9 +8,9 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Network Security"
+        "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": ["Breach Simulation"],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

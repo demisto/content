@@ -11,11 +11,15 @@ configuration:
   name: url
   required: true
   type: 0
+- name: credentials
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: API Key
-  additionalinfo: The API Key to use for connection
   name: apikey
-  required: true
   type: 4
+  additionalinfo: The API Key to use for connection
+  hidden: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -35,40 +39,38 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '7'
-  display: Retrieve indicators observed in the last specified number of days
   name: min_last_observed
+  display: 'Retrieve indicators observed in the last specified number of days'
   required: false
   type: 0
-- defaultvalue: suddenDeath
-  name: feedExpirationPolicy
+- defaultvalue: 'suddenDeath'
   display: ''
+  name: feedExpirationPolicy
+  required: false
+  type: 17
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  required: false
-  type: 17
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '720'
-  display: Feed Fetch Interval
+- display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-  display: Bypass exclusion list
+  defaultvalue: '720'
+- display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
-- display: Source Reliability
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+- additionalinfo: Reliability of the source providing the intelligence data
+  display: Source Reliability
   name: feedReliability
-  defaultvalue: F - Reliability cannot be judged
-  type: 15
-  required: true
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -76,17 +78,19 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  additionalinfo: Reliability of the source providing the intelligence data
+  required: true
+  type: 15
+  defaultvalue: F - Reliability cannot be judged
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   name: feedReputation
+  required: false
+  type: 18
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  required: false
-  type: 18
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
@@ -152,7 +156,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.50695
 fromversion: 6.0.0
 tests:
 - Feed Expanse Test

@@ -1,0 +1,54 @@
+[
+    {
+        "value": "Disco Team Threat Actor Group",
+        "indicator_type": "Threat Actor",
+        "score": 3,
+        "rawJSON": {
+            "type": "threat-actor",
+            "spec_version": "2.1",
+            "id": "threat-actor--dfaa8d77-07e2-4e28-b2c8-92e9f7b04428",
+            "created": "2014-11-19T23:39:03.893Z",
+            "modified": "2014-11-19T23:39:03.893Z",
+            "name": "Disco Team Threat Actor Group",
+            "description": "This organized threat actor group operates to create profit from all types of crime.",
+            "threat_actor_types": [
+                "crime-syndicate"
+            ],
+            "aliases": [
+                "Equipo del Discoteca"
+            ],
+            "roles": [
+                "agent"
+            ],
+            "goals": [
+                "Steal Credit Card Information"
+            ],
+            "sophistication": "expert",
+            "resource_level": "organization",
+            "primary_motivation": "personal-gain"
+        },
+        "customFields": {
+            "stixid": "threat-actor--dfaa8d77-07e2-4e28-b2c8-92e9f7b04428",
+            "firstseenbysource": "2014-11-19T23:39:03.893Z",
+            "modified": "2014-11-19T23:39:03.893Z",
+            "description": "This organized threat actor group operates to create profit from all types of crime.",
+            "aliases": [
+                "Equipo del Discoteca"
+            ],
+            "threat_actor_types": [
+                "crime-syndicate"
+            ],
+            "roles": [
+                "agent"
+            ],
+            "goals": [
+                "Steal Credit Card Information"
+            ],
+            "sophistication": "expert",
+            "resource_level": "organization",
+            "primary_motivation": "personal-gain",
+            "secondary_motivations": [],
+            "tags": []
+        }
+    }
+]

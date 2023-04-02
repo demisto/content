@@ -1,0 +1,370 @@
+description: |
+  This playbook is used to find and remove all rules that allow unauthorized applications communication as any.
+  The playbook performs the following tasks:
+  - Lists PAN-OS policy rules.
+  - Checks for a rule that allows applications as any.
+  - Deletes the rule based on user approval.
+  - Commits the configuration.
+id: PAN-OS - Block all unknown and unauthorized applications
+inputs:
+- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+  key: pre_post
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The device group for which to return addresses (Panorama instances).
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the rules.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+name: PAN-OS - Block all unknown and unauthorized applications
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 73652d5d-e0d6-4ace-8ae4-9156517f4a21
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 73652d5d-e0d6-4ace-8ae4-9156517f4a21
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 18b8e23d-981f-4182-87d5-f02b8f64d24e
+      iscommand: false
+      name: Is PAN-OS integration enabled?
+      description: "Is PAN-OS integration enabled?"
+      type: condition
+      version: -1
+    taskid: 18b8e23d-981f-4182-87d5-f02b8f64d24e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2b9c5f2c-95cb-4eb6-8500-4a3409d8ee11
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 2b9c5f2c-95cb-4eb6-8500-4a3409d8ee11
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1200
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre-post-rulebase
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns a list of predefined Security Rules.
+      id: ef7878c5-0fed-4be0-8c65-041afa365547
+      iscommand: true
+      name: PAN-OS - List rules
+      script: '|||pan-os-list-rules'
+      type: regular
+      version: -1
+    taskid: ef7878c5-0fed-4be0-8c65-041afa365547
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 350
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Panorama.SecurityRule.Action
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: allow
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Panorama.SecurityRule.Service
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: any
+                root: Panorama.SecurityRule
+          operator: isExists
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is there a rule that allows application as any?
+      id: 89005b06-9fb0-4678-8717-145b0ae8faed
+      iscommand: false
+      name: Is there a rule that allows application as any?
+      type: condition
+      version: -1
+    taskid: 89005b06-9fb0-4678-8717-145b0ae8faed
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 520
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rulename:
+        complex:
+          accessor: Name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Panorama.SecurityRule.Action
+              operator: isEqualString
+              right:
+                value:
+                  simple: allow
+          - - left:
+                iscontext: true
+                value:
+                  simple: Panorama.SecurityRule.Service
+              operator: isEqualString
+              right:
+                value:
+                  simple: any
+          root: Panorama.SecurityRule
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Deletes a policy rule.
+      id: 8a6eb138-e0c4-4c0a-8070-552ca171c950
+      iscommand: true
+      name: PAN-OS - Delete rule
+      script: '|||pan-os-delete-rule'
+      type: regular
+      version: -1
+    taskid: 8a6eb138-e0c4-4c0a-8070-552ca171c950
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 860
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Choose whether to delete the rule.
+      id: ab4c14d4-d41e-40fa-8eaa-9ccb804aa5ba
+      iscommand: false
+      name: Delete rule?
+      type: condition
+      version: -1
+    taskid: ab4c14d4-d41e-40fa-8eaa-9ccb804aa5ba
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 690
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9b883bd0-ba88-4a79-8cf7-a0fbba7945f5
+      iscommand: false
+      name: PAN-OS Commit Configuration
+      playbookId: PAN-OS Commit Configuration
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 9b883bd0-ba88-4a79-8cf7-a0fbba7945f5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1030
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.2,
+      "4_2_#default#": 0.33,
+      "6_2_no": 0.33
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1215,
+        "width": 1080,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2

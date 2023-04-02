@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Whois
   version: -1
@@ -7,17 +10,23 @@ configuration:
   name: with_error
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Proxy URL
   additionalinfo: "Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080). Will effect all commands except for the `ip` command."
   name: proxy_url
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   additionalinfo: "Effect the `ip` command and the other commands only if the Proxy URL is not set."
   hidden: false
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -32,6 +41,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 description: Provides data enrichment for domains.
 display: Whois
 name: Whois
@@ -47,6 +57,14 @@ script:
     - name: recursive
       description: Whether to get the raw response from the whois servers recursively. Default value is True.
       defaultValue: true
+    - name: verbose
+      description: Whether to add the raw response as a dictionary to the context. Default value is False.
+      required: false
+      defaultValue: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     deprecated: false
     description: Provides data enrichment for domains.
     execution: false
@@ -80,13 +98,13 @@ script:
       description: The name servers.
       type: string
     - contextPath: Domain.Whois.CreationDate
-      description: The date that the domain was created.
+      description: The date that the domain was created (UTC).
       type: date
     - contextPath: Domain.Whois.UpdatedDate
-      description: The date that the domain was last updated.
+      description: The date that the domain was last updated (UTC).
       type: date
     - contextPath: Domain.Whois.ExpirationDate
-      description: The date that the domain expires.
+      description: The date that the domain expires (UTC).
       type: date
     - contextPath: Domain.Whois.Registrar.Name
       description: The name of the registrar.
@@ -236,13 +254,13 @@ script:
       description: The name servers.
       type: string
     - contextPath: Domain.Whois.CreationDate
-      description: The date that the domain was created.
+      description: The date that the domain was created (UTC).
       type: date
     - contextPath: Domain.Whois.UpdatedDate
-      description: The date that the domain was last updated.
+      description: The date that the domain was last updated (UTC).
       type: date
     - contextPath: Domain.Whois.ExpirationDate
-      description: The date that the domain expires.
+      description: The date that the domain expires (UTC).
       type: date
     - contextPath: Domain.Whois.Registrar.Name
       description: The name of the registrar.
@@ -365,13 +383,13 @@ script:
       description: The state of domain administrator.
       type: String
     - contextPath: Domain.CreationDate
-      description: The date that the domain was created.
+      description: The date that the domain was created (UTC).
       type: Date
     - contextPath: Domain.DomainStatus
       description: The domain status.
       type: String
     - contextPath: Domain.ExpirationDate
-      description: The date that the domain expires.
+      description: The date that the domain expires (UTC).
       type: Date
     - contextPath: Domain.FeedRelatedIndicators.type
       description: Indicators that are associated with the Domain.
@@ -416,7 +434,7 @@ script:
       description: The organization of the tech administrator.
       type: String
     - contextPath: Domain.UpdatedDate
-      description: The date that the domain was last updated.
+      description: The date that the domain was last updated (UTC).
       type: Date
   - arguments:
     - default: true
@@ -541,7 +559,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.34106
+  dockerimage: demisto/ippysocks-py3:1.0.0.49341
   feed: false
   isfetch: false
   longRunning: false

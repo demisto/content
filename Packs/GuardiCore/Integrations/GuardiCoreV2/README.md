@@ -9,7 +9,7 @@ This integration was integrated and tested with version 3.0.0 of the GuardiCore 
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | API Server URL |  | True |
+    | API Server URL | For example: `https://example.com/api/v3.0/` | True |
     | Username for API |  | True |
     | Password for API |  | True |
     | Source | Fetch incidents - Guardicore Source Incident Value | False |

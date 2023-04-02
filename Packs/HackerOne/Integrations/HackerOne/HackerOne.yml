@@ -21,8 +21,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: "Date or relative timestamp to start fetching incidents from. \n\
-    \nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, ISO timestamp."
+- additionalinfo: "Date or relative timestamp to start fetching incidents from. \n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, ISO timestamp."
   defaultvalue: 3 days
   display: First fetch time interval
   name: first_fetch
@@ -36,8 +35,7 @@ configuration:
   name: program_handle
   required: false
   type: 0
-- additionalinfo: "Fetches reports based on the specified report state. \n\nNote:\
-    \ Supports comma separated values."
+- additionalinfo: "Fetches reports based on the specified report state. \n\nNote: Supports comma separated values."
   display: State
   name: state
   options:
@@ -53,8 +51,7 @@ configuration:
   - new
   required: false
   type: 16
-- additionalinfo: "Fetches reports based on severity ratings of the report. \n\nNote:\
-    \ Supports comma separated values."
+- additionalinfo: "Fetches reports based on severity ratings of the report. \n\nNote: Supports comma separated values."
   display: Severity
   name: severity
   options:
@@ -97,9 +94,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: HackerOne integration allows users to fetch reports by using the fetch
-  incidents capability. It also provides commands to retrieve all the reports and
-  programs.
+description: HackerOne integration allows users to fetch reports by using the fetch incidents capability. It also provides commands to retrieve all the reports and programs.
 display: HackerOne
 name: HackerOne
 script:
@@ -128,8 +123,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "The number of reports to retrieve per page. Default value is 50. \n\nNote: Possible\
-        \ values are between 1 and 100."
+      description: "The number of reports to retrieve per page. Default value is 50. \n\nNote: Possible values are between 1 and 100."
       isArray: false
       name: page_size
       required: false
@@ -204,107 +198,73 @@ script:
       description: The title of the report.
       type: String
     - contextPath: HackerOne.Report.attributes.state
-      description: The state of the Report. It can be new, pending-program-review,
-        triaged, needs-more-info, resolved, not-applicable, informative, duplicate,
-        spam or retesting.
+      description: The state of the Report. It can be new, pending-program-review, triaged, needs-more-info, resolved, not-applicable, informative, duplicate, spam or retesting.
       type: String
     - contextPath: HackerOne.Report.attributes.created_at
-      description: The date and time the object was created. Formatted according to
-        ISO 8601.
+      description: The date and time the object was created. Formatted according to ISO 8601.
       type: Date
     - contextPath: HackerOne.Report.attributes.vulnerability_information
-      description: Detailed information about the vulnerability including the steps
-        to reproduce as well as supporting material and references.
+      description: Detailed information about the vulnerability including the steps to reproduce as well as supporting material and references.
       type: String
     - contextPath: HackerOne.Report.attributes.triaged_at
-      description: The date and time the object was triaged. Formatted according to
-        ISO 8601.
+      description: The date and time the object was triaged. Formatted according to ISO 8601.
       type: Date
     - contextPath: HackerOne.Report.attributes.closed_at
-      description: The date and time the object was closed. Formatted according to
-        ISO 8601.
+      description: The date and time the object was closed. Formatted according to ISO 8601.
       type: Date
     - contextPath: HackerOne.Report.attributes.last_reporter_activity_at
-      description: The date and time that the most recent reporter activity was posted
-        on the report. Formatted according to ISO 8601.
+      description: The date and time that the most recent reporter activity was posted on the report. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.attributes.first_program_activity_at
-      description: The date and time that the first program activity was posted on
-        the report. Formatted according to ISO 8601.
+      description: The date and time that the first program activity was posted on the report. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.attributes.last_program_activity_at
-      description: The date and time that the most recent program activity was posted
-        on the report. Formatted according to ISO 8601.
+      description: The date and time that the most recent program activity was posted on the report. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.attributes.bounty_awarded_at
-      description: The date and time that the most recent bounty was awarded on the
-        report. Formatted according to ISO 8601.
+      description: The date and time that the most recent bounty was awarded on the report. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.attributes.swag_awarded_at
-      description: The date and time that the most recent swag was awarded on the
-        report. Formatted according to ISO 8601.
+      description: The date and time that the most recent swag was awarded on the report. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.attributes.disclosed_at
-      description: The date and time the report was disclosed. Formatted according
-        to ISO 8601.
+      description: The date and time the report was disclosed. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.attributes.reporter_agreed_on_going_public_at
-      description: The date and time the reporter agreed for the public disclosure.
-        Formatted according to ISO 8601.
+      description: The date and time the reporter agreed for the public disclosure. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.attributes.last_public_activity_at
-      description: The date and time that the most recent public activity was posted
-        on the report. Formatted according to ISO 8601.
+      description: The date and time that the most recent public activity was posted on the report. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.attributes.last_activity_at
-      description: The date and time that the most recent activity was posted on the
-        report. Formatted according to ISO 8601.
+      description: The date and time that the most recent activity was posted on the report. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.attributes.source
-      description: A free-form string defining the source of the report for tracking
-        purposes. For example, "detectify", "rapid7" or "jira".
+      description: A free-form string defining the source of the report for tracking purposes. For example, "detectify", "rapid7" or "jira".
       type: String
     - contextPath: HackerOne.Report.attributes.timer_bounty_awarded_elapsed_time
-      description: The total number of seconds that have elapsed between when the
-        timer started and when it stopped ticking. The timer does not take weekends
-        into account. If the field is null and the corresponding miss_at field is
-        set, it means the timer is still counting.
+      description: The total number of seconds that have elapsed between when the timer started and when it stopped ticking. The timer does not take weekends into account. If the field is null and the corresponding miss_at field is set, it means the timer is still counting.
       type: Number
     - contextPath: HackerOne.Report.attributes.timer_bounty_awarded_miss_at
-      description: The date and time the system expects the program to have awarded
-        a bounty by. The field is null when the system does not expect the report
-        to receive a bounty at the time.
+      description: The date and time the system expects the program to have awarded a bounty by. The field is null when the system does not expect the report to receive a bounty at the time.
       type: Date
     - contextPath: HackerOne.Report.attributes.timer_first_program_response_miss_at
-      description: The date and time the system expects the program to have posted
-        an initial public comment to the report by.
+      description: The date and time the system expects the program to have posted an initial public comment to the report by.
       type: Date
     - contextPath: HackerOne.Report.attributes.timer_first_program_response_elapsed_time
-      description: The total number of seconds that have elapsed between when the
-        timer started and when it stopped ticking. The timer does not take weekends
-        into account. If the field is null and the corresponding miss_at field is
-        set, it means the timer is still counting.
+      description: The total number of seconds that have elapsed between when the timer started and when it stopped ticking. The timer does not take weekends into account. If the field is null and the corresponding miss_at field is set, it means the timer is still counting.
       type: Number
     - contextPath: HackerOne.Report.attributes.timer_report_resolved_miss_at
-      description: The date and time the system expects the program to have closed
-        the report by. The field is null when the report seems blocked by the reporter.
+      description: The date and time the system expects the program to have closed the report by. The field is null when the report seems blocked by the reporter.
       type: Date
     - contextPath: HackerOne.Report.attributes.timer_report_resolved_elapsed_time
-      description: The total number of seconds that have elapsed between when the
-        timer started and when it stopped ticking. The timer does not take weekends
-        into account. If the  field is null and the corresponding miss_at field is
-        set, it means the timer is still counting.
+      description: The total number of seconds that have elapsed between when the timer started and when it stopped ticking. The timer does not take weekends into account. If the  field is null and the corresponding miss_at field is set, it means the timer is still counting.
       type: Number
     - contextPath: HackerOne.Report.attributes.timer_report_triage_miss_at
-      description: The date and time the system expects the program to have triaged
-        the report by. The  field is null when the system does not expect the report
-        to be triaged at the time.
+      description: The date and time the system expects the program to have triaged the report by. The  field is null when the system does not expect the report to be triaged at the time.
       type: Date
     - contextPath: HackerOne.Report.attributes.timer_report_triage_elapsed_time
-      description: The total number of seconds that have elapsed between when the
-        timer started and when it stopped ticking. The timer does not take weekends
-        into account. If the field is null and the corresponding miss_at field is
-        set, it means the timer is still counting.
+      description: The total number of seconds that have elapsed between when the timer started and when it stopped ticking. The timer does not take weekends into account. If the field is null and the corresponding miss_at field is set, it means the timer is still counting.
       type: Number
     - contextPath: HackerOne.Report.relationships.reporter.data.id
       description: The unique ID of the reporter.
@@ -322,8 +282,7 @@ script:
       description: Indicates if the reporter is disabled.
       type: Boolean
     - contextPath: HackerOne.Report.data.relationships.reporter.data.attributes.created_at
-      description: The date and time the object was created. Formatted according to
-        ISO 8601.
+      description: The date and time the object was created. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.data.relationships.reporter.data.attributes.profile_picture.62x62
       description: URL of the profile photo of a reporter of size 62x62.
@@ -344,12 +303,10 @@ script:
       description: The reputation of the reporter.
       type: Number
     - contextPath: HackerOne.Report.data.relationships.reporter.data.attributes.signal
-      description: The signal of the reporter. This number ranges from -10 to 7. The
-        closer to 7, the higher the average submission quality of the reporter.
+      description: The signal of the reporter. This number ranges from -10 to 7. The closer to 7, the higher the average submission quality of the reporter.
       type: Number
     - contextPath: HackerOne.Report.data.relationships.reporter.data.attributes.impact
-      description: The impact of the reporter. This number ranges from 0 to 50. The
-        closer to 50, the higher the average severity of the reporter's reports is.
+      description: The impact of the reporter. This number ranges from 0 to 50. The closer to 50, the higher the average severity of the reporter's reports is.
       type: Number
     - contextPath: HackerOne.Report.data.relationships.reporter.data.attributes.website
       description: The reporter's website, as provided by the reporter.
@@ -370,12 +327,10 @@ script:
       description: The handle of the program.
       type: String
     - contextPath: HackerOne.Report.data.relationships.program.data.attributes.created_at
-      description: The date and time the object was created. Formatted according to
-        ISO 8601.
+      description: The date and time the object was created. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.data.relationships.program.data.attributes.updated_at
-      description: The date and time the object was updated. Formatted according to
-        ISO 8601.
+      description: The date and time the object was updated. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.data.relationships.severity.data.id
       description: The unique ID of the severity.
@@ -393,46 +348,34 @@ script:
       description: The unique id of the user who created the object.
       type: Number
     - contextPath: HackerOne.Report.data.relationships.severity.data.attributes.created_at
-      description: The date and time the object was created. Formatted according to
-        ISO 8601.
+      description: The date and time the object was created. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.data.relationships.severity.data.attributes.score
-      description: The vulnerability score calculated from the Common Vulnerability
-        Scoring System (CVSS).
+      description: The vulnerability score calculated from the Common Vulnerability Scoring System (CVSS).
       type: Number
     - contextPath: HackerOne.Report.data.relationships.severity.data.attributes.attack_complexity
-      description: A CVSS metric that describes the conditions beyond the attacker's
-        control that must exist in order to exploit the vulnerability.
+      description: A CVSS metric that describes the conditions beyond the attacker's control that must exist in order to exploit the vulnerability.
       type: String
     - contextPath: HackerOne.Report.data.relationships.severity.data.attributes.attack_vector
-      description: A CVSS metric that reflects the context by which vulnerability
-        exploitation is possible.
+      description: A CVSS metric that reflects the context by which vulnerability exploitation is possible.
       type: String
     - contextPath: HackerOne.Report.data.relationships.severity.data.attributes.availability
-      description: A CVSS metric that measures the availability of the impacted component
-        resulting from a successfully exploited vulnerability.
+      description: A CVSS metric that measures the availability of the impacted component resulting from a successfully exploited vulnerability.
       type: String
     - contextPath: HackerOne.Report.data.relationships.severity.data.attributes.confidentiality
-      description: A CVSS metric that measures the impact to the confidentiality of
-        the information resources managed by a software component due to a successfully
-        exploited vulnerability.
+      description: A CVSS metric that measures the impact to the confidentiality of the information resources managed by a software component due to a successfully exploited vulnerability.
       type: String
     - contextPath: HackerOne.Report.data.relationships.severity.data.attributes.integrity
-      description: A CVSS metric that measures the impact to the integrity of a successfully
-        exploited vulnerability.
+      description: A CVSS metric that measures the impact to the integrity of a successfully exploited vulnerability.
       type: String
     - contextPath: HackerOne.Report.data.relationships.severity.data.attributes.privileges_required
-      description: A CVSS metric that describes the level of privileges an attacker
-        must possess before successfully exploiting the vulnerability.
+      description: A CVSS metric that describes the level of privileges an attacker must possess before successfully exploiting the vulnerability.
       type: String
     - contextPath: HackerOne.Report.data.relationships.severity.data.attributes.user_interaction
-      description: A CVSS metric that captures the requirement for a user, other than
-        the attacker, to participate in the successful compromise of the vulnerability
-        component.
+      description: A CVSS metric that captures the requirement for a user, other than the attacker, to participate in the successful compromise of the vulnerability component.
       type: String
     - contextPath: HackerOne.Report.data.relationships.severity.data.attributes.scope
-      description: A CVSS metric that determines if a successful attack impacts a
-        component other than the vulnerable component.
+      description: A CVSS metric that determines if a successful attack impacts a component other than the vulnerable component.
       type: String
     - contextPath: HackerOne.Report.data.relationships.weakness.data.id
       description: The unique ID of the weakness.
@@ -450,8 +393,7 @@ script:
       description: The weakness' external reference to CWE or CAPEC.
       type: String
     - contextPath: HackerOne.Report.data.relationships.weakness.data.attributes.created_at
-      description: The date and time the object was created. Formatted according to
-        ISO 8601.
+      description: The date and time the object was created. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.data.relationships.custom_field_values.data.id
       description: The unique ID of the custom field value.
@@ -463,12 +405,10 @@ script:
       description: The attribute's value.
       type: String
     - contextPath: HackerOne.Report.data.relationships.custom_field_values.data.attributes.created_at
-      description: The date and time the object was created. Formatted according to
-        ISO 8601.
+      description: The date and time the object was created. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.data.relationships.custom_field_values.data.attributes.updated_at
-      description: The date and time the object was updated. Formatted according to
-        ISO 8601.
+      description: The date and time the object was updated. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.id
       description: The unique ID of the custom field attribute.
@@ -504,16 +444,13 @@ script:
       description: A regex used to validate the input for a text field.
       type: String
     - contextPath: HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.created_at
-      description: The date and time the object was created. Formatted according to
-        ISO 8601.
+      description: The date and time the object was created. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.updated_at
-      description: The date and time the object was updated. Formatted according to
-        ISO 8601.
+      description: The date and time the object was updated. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.data.relationships.custom_field_values.data.relationships.custom_field_attribute.data.attributes.archived_at
-      description: The date and time the object was archived. Formatted according
-        to ISO 8601.
+      description: The date and time the object was archived. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.data.relationships.assignee.data.id
       description: The unique ID of the user.
@@ -525,12 +462,10 @@ script:
       description: The name of the assignee.
       type: Unknown
     - contextPath: HackerOne.Report.data.relationships.assignee.data.attributes.created_at
-      description: The date and time the object was created. Formatted according to
-        ISO 8601.
+      description: The date and time the object was created. Formatted according to ISO 8601.
       type: String
     - contextPath: HackerOne.Report.data.relationships.assignee.data.attributes.permissions
-      description: The permissions of the group/user. Possible values are reward_management,
-        program_management, user_management, and report_management.
+      description: The permissions of the group/user. Possible values are reward_management, program_management, user_management, and report_management.
       type: String
     - contextPath: HackerOne.Report.data.relationships.assignee.data.attributes.username
       description: The username of the assignee.
@@ -551,12 +486,10 @@ script:
       description: URL of the profile photo of the assignee of size 260x260.
       type: String
     - contextPath: HackerOne.Report.data.relationships.assignee.data.attributes.signal
-      description: The signal of the assignee. The number ranges from -10 to 7. The
-        closer to 7, the higher the average submission quality of the user.
+      description: The signal of the assignee. The number ranges from -10 to 7. The closer to 7, the higher the average submission quality of the user.
       type: Number
     - contextPath: HackerOne.Report.data.relationships.assignee.data.attributes.impact
-      description: The impact of the assignee. This number ranges from 0 to 50. The
-        closer to 50, the higher the average severity of the user's reports is.
+      description: The impact of the assignee. This number ranges from 0 to 50. The closer to 50, the higher the average severity of the user's reports is.
       type: Number
     - contextPath: HackerOne.Report.data.relationships.assignee.data.attributes.reputation
       description: The reputation of the assignee.
@@ -595,16 +528,13 @@ script:
       description: The raw instruction of the asset provided by the program.
       type: String
     - contextPath: HackerOne.Report.data.relationships.structured_scope.data.attributes.max_severity
-      description: The qualitative rating of the maximum severity allowed on this
-        asset.
+      description: The qualitative rating of the maximum severity allowed on this asset.
       type: String
     - contextPath: HackerOne.Report.data.relationships.structured_scope.data.attributes.created_at
-      description: The date and time the object was created. Formatted according to
-        ISO 8601.
+      description: The date and time the object was created. Formatted according to ISO 8601.
       type: Date
     - contextPath: HackerOne.Report.data.relationships.structured_scope.data.attributes.updated_at
-      description: The date and time the object was updated. Formatted according to
-        ISO 8601.
+      description: The date and time the object was updated. Formatted according to ISO 8601.
       type: Date
     - contextPath: HackerOne.Report.data.relationships.structured_scope.data.attributes.reference
       description: The customer defined reference identifier or tag of the asset.
@@ -616,8 +546,7 @@ script:
       description: The type of the HackerOne object.
       type: String
     - contextPath: HackerOne.Report.data.relationships.bounties.data.attributes.created_at
-      description: The date and time the object was created. Formatted according to
-        ISO 8601.
+      description: The date and time the object was created. Formatted according to ISO 8601.
       type: Date
     - contextPath: HackerOne.Report.data.relationships.bounties.data.attributes.amount
       description: Amount in USD.
@@ -674,14 +603,12 @@ script:
       description: The policy of the program.
       type: String
     - contextPath: HackerOne.Program.attributes.created_at
-      description: The date and time the object was created. Formatted according to
-        ISO 8601.
+      description: The date and time the object was created. Formatted according to ISO 8601.
       type: Date
     - contextPath: HackerOne.Program.attributes.updated_at
-      description: The date and time the object was updated. Formatted according to
-        ISO 8601.
+      description: The date and time the object was updated. Formatted according to ISO 8601.
       type: Date
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true
   longRunning: false

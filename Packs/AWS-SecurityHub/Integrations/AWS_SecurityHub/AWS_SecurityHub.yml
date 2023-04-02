@@ -1,4 +1,7 @@
 category: IT Services
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: AWS - Security Hub
   version: -1
@@ -7,10 +10,14 @@ configuration:
   name: roleArn
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Role Session Name
   name: roleSessionName
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: AWS Default Region
   name: defaultRegion
   options:
@@ -34,70 +41,157 @@ configuration:
   - us-gov-west-1
   required: false
   type: 15
+  section: Connect
+  advanced: true
 - display: Role Session Duration
   name: sessionDuration
   required: false
   type: 0
+  section: Connect
+  advanced: true
+- display: Access Key
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Secret Key
 - display: Access Key
   name: access_key
   required: false
   type: 0
+  section: Connect
+  hidden: true
 - display: Secret Key
   name: secret_key
   required: false
   type: 4
+  section: Connect
+  hidden: true
 - display: Timeout
   name: timeout
-  additionalinfo: The time in seconds till a timeout exception is reached. You can
-    specify just the read timeout (for example 60) or also the connect timeout followed
-    after a comma (for example 60,10). If a connect timeout is not specified, a default
-    of 10 second will be used.
+  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Retries
   name: retries
   defaultvalue: 5
-  additionalinfo: "The maximum number of retry attempts when connection or throttling\
-    \ errors are encountered. Set to 0 to disable retries. The default value is 5\
-    \ and the limit is 10. Note: Increasing the number of retries will increase the\
-    \ execution time."
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - defaultvalue: 15 days
-  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
-    1 year)
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch_timestamp
   required: false
   type: 0
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - display: Security Hub Incidents Severity Level
   name: sh_severity
   required: false
-  type: 0
+  type: 15
+  section: Collect
+  advanced: true
+  options:
+    - Informational
+    - Low
+    - Medium
+    - High
+    - Critical
+  additionalinfo: "Severity level of fetched incidents. Could be Informational, Low, Medium, High and Critical. For example, if you set the severity level to Medium, only findings with severity level Medium, High or Critical will be fetched."
 - display: Additional Incidents Filters
   name: additionalFilters
   required: false
   type: 0
+  section: Collect
+  advanced: true
+  additionalinfo: "A comma-separated list of additional incident filters in the format 'name=name1,value=value1,comparison=comparison1."
 - display: Change findings workflow to 'NOTIFIED'
   name: archiveFindings
   required: false
   type: 8
+  section: Collect
+  advanced: true
+  additionalinfo: "Notify the resource owner about the security issue. You can use this status when you are not the resource owner, and you need intervention from the resource owner in order to resolve a security issue."
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from AWS - Security Hub to Cortex XSOAR), Outgoing (from Cortex XSOAR to AWS - Security Hub), or Incoming and Outgoing (from/to Cortex XSOAR and AWS - Security Hub).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+  section: Collect
+  hidden:
+    - marketplacev2
+- display: Resolve findings of closed incidents from XSOAR in AWS Security Hub
+  additionalinfo: After closing an incident in XSOAR, update its finding workflow status in AWS Security Hub to resolved
+  defaultvalue: 'true'
+  name: resolve_finding
+  required: false
+  type: 8
+  section: Collect
+  hidden:
+    - marketplacev2
+- display: Finding Type
+  additionalinfo: 'You can set the type of the findings to be fetched: "Software and Configuration Checks", "TTPs", "Effects", "Unusual Behaviors", "Sensitive Data Identifications". For example, if you set the finding type to "TTPs", the integration will only fetch findings with the finding type that match TTPs.'
+  name: finding_type
+  type: 16
+  required: false
+  section: Collect
+  advanced: true
+  options:
+  - Software and Configuration Checks
+  - TTPs
+  - Effects
+  - Unusual Behaviors
+  - Sensitive Data Identifications
+- display: Workflow Status
+  additionalinfo: 'You can set the workflow status of the findings to be fetched: "New", "Notified", "Resolved", "Suppressed". For example, if you set the workflow status to "Suppressed", the integration will only fetch findings with the workflow status of Suppressed.'
+  name: workflow_status
+  type: 16
+  required: false
+  section: Collect
+  advanced: true
+  options:
+  - New
+  - Notified
+  - Resolved
+  - Suppressed
+- display: Product Name
+  name: product_name
+  additionalinfo: 'You can enter a comma-separated list of product names. In order to get the product name, click Integrations in the AWS - Security Hub menu. Use only the product name (the value after the colon (:)) for this parameter.'
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
 description: Amazon Web Services Security Hub Service.
 display: AWS - Security Hub
 name: AWS - Security Hub
@@ -123,9 +217,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.'
+      description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
       isArray: false
       name: roleSessionDuration
       required: false
@@ -137,15 +229,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Disables Security Hub in your account only in the current Region.
-      To disable Security Hub in all Regions, you must submit one request per Region
-      where you have enabled Security Hub. When you disable Security Hub for a master
-      account, it doesn't disable Security Hub for any associated member accounts.
-      When you disable Security Hub, your existing findings and insights and any Security
-      Hub configuration settings are deleted after 90 days and can't be recovered.
-      Any standards that were enabled are disabled, and your master and member account
-      associations are removed. If you want to save your existing findings, you must
-      export them before you disable Security Hub.
+    description: Disables Security Hub in your account only in the current Region. To disable Security Hub in all Regions, you must submit one request per Region where you have enabled Security Hub. When you disable Security Hub for a master account, it doesn't disable Security Hub for any associated member accounts. When you disable Security Hub, your existing findings and insights and any Security Hub configuration settings are deleted after 90 days and can't be recovered. Any standards that were enabled are disabled, and your master and member account associations are removed. If you want to save your existing findings, you must export them before you disable Security Hub.
     execution: false
     name: aws-securityhub-disable-security-hub
   - arguments:
@@ -155,20 +239,14 @@ script:
       name: roleArn
     - description: An identifier for the assumed role session.
       name: roleSessionName
-    - description: 'The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.'
+    - description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
       name: roleSessionDuration
     - description: Override arguments and send a formatted JSON file.
       name: raw_json
-    - description: The identifier of the finding that was specified by the finding.
-        Can be retrieved using the 'aws-securityhub-get-findings' command provider.
+    - description: The identifier of the finding that was specified by the finding. Can be retrieved using the 'aws-securityhub-get-findings' command provider.
       name: finding_identifiers_id
       required: true
-    - description: The ARN generated by Security Hub that uniquely identifies a product
-        that generates findings. This can be the ARN for a third-party product that
-        is integrated with Security Hub, or the ARN for a custom integration. Can
-        be retrieved using the 'aws-securityhub-get-findings' command
+    - description: The ARN generated by Security Hub that uniquely identifies a product that generates findings. This can be the ARN for a third-party product that is integrated with Security Hub, or the ARN for a custom integration. Can be retrieved using the 'aws-securityhub-get-findings' command
       name: finding_identifiers_product_arn
       required: true
     - description: The updated note text.
@@ -176,11 +254,7 @@ script:
     - description: The principal that updated the note.
       name: note_updated_by
     - auto: PREDEFINED
-      description: "The severity value of the finding. The allowed values are the\
-        \ following. *   INFORMATIONAL - No issue was found. *   LOW - The issue does\
-        \ not require action on its own. *   MEDIUM - The issue must be addressed\
-        \ but not urgently. *   HIGH - The issue must be addressed as a priority.\
-        \ *   CRITICAL - The issue must be remediated immediately to avoid it escalating."
+      description: "The severity value of the finding. The allowed values are the following. *   INFORMATIONAL - No issue was found. *   LOW - The issue does not require action on its own. *   MEDIUM - The issue must be addressed but not urgently. *   HIGH - The issue must be addressed as a priority. *   CRITICAL - The issue must be remediated immediately to avoid it escalating."
       name: severity_label
       predefined:
       - INFORMATIONAL
@@ -189,35 +263,19 @@ script:
       - HIGH
       - CRITICAL
     - auto: PREDEFINED
-      description: "Indicates the veracity of a finding. The available values for\
-        \ VerificationState are as follows. *   UNKNOWN - The default disposition\
-        \ of a security finding. *   TRUE_POSITIVE - The security finding is confirmed.\
-        \ *   FALSE_POSITIVE - The security finding was determined to be a false alarm.\
-        \ *   BENIGN_POSITIVE - A special case of TRUE_POSITIVE where the finding\
-        \ doesn't pose any threat, is expected, or both."
+      description: "Indicates the veracity of a finding. The available values for VerificationState are as follows. *   UNKNOWN - The default disposition of a security finding. *   TRUE_POSITIVE - The security finding is confirmed. *   FALSE_POSITIVE - The security finding was determined to be a false alarm. *   BENIGN_POSITIVE - A special case of TRUE_POSITIVE where the finding doesn't pose any threat, is expected, or both."
       name: verification_state
       predefined:
       - UNKNOWN
       - TRUE_POSITIVE
       - FALSE_POSITIVE
       - BENIGN_POSITIVE
-    - description: "One or more finding types in the format of namespace/category/classifier\
-        \ that classify a finding. Valid namespace values are as follows. *  Software\
-        \ and Configuration Checks *  TTPs *  Effects *  Unusual Behaviors *  Sensitive\
-        \ Data Identifications"
+    - description: "One or more finding types in the format of namespace/category/classifier that classify a finding. Valid namespace values are as follows. *  Software and Configuration Checks *  TTPs *  Effects *  Unusual Behaviors *  Sensitive Data Identifications"
       name: types
-    - description: A list of name/value string pairs associated with the finding.
-        These are custom, user-defined fields added to a finding.
+    - description: A list of name/value string pairs associated with the finding. These are custom, user-defined fields added to a finding.
       name: user_defined_fields
     - auto: PREDEFINED
-      description: "The status of the investigation into the finding. The allowed\
-        \ values are the following. *   NEW - The initial state of a finding, before\
-        \ it is reviewed. *   NOTIFIED - Indicates that you notified the resource\
-        \ owner about the security issue. Used when the initial reviewer is not the\
-        \ resource owner, and needs intervention from the resource owner. *   RESOLVED\
-        \ - The finding was reviewed and remediated and is now considered resolved.\
-        \ *   SUPPRESSED - The finding will not be reviewed again and will not be\
-        \ acted upon."
+      description: "The status of the investigation into the finding. The allowed values are the following. *   NEW - The initial state of a finding, before it is reviewed. *   NOTIFIED - Indicates that you notified the resource owner about the security issue. Used when the initial reviewer is not the resource owner, and needs intervention from the resource owner. *   RESOLVED - The finding was reviewed and remediated and is now considered resolved. *   SUPPRESSED - The finding will not be reviewed again and will not be acted upon."
       name: workflow_status
       predefined:
       - NEW
@@ -228,33 +286,19 @@ script:
       name: related_findings_product_arn
     - description: The product-generated identifier for a related finding.
       name: related_findings_id
-    description: "Used by Security Hub customers to update information about their\
-      \ investigation into a finding. Requested by master accounts or member accounts.\
-      \ Master accounts can update findings for their account and their member accounts.\
-      \ Member accounts can update findings for their account. Updates from BatchUpdateFindings\
-      \ do not affect the value of UpdatedAt for a finding. Master accounts can use\
-      \ BatchUpdateFindings to update the following finding fields and objects. *\
-      \   Confidence *   Criticality *   Note *   RelatedFindings *   Severity * \
-      \  Types *   UserDefinedFields *   VerificationState *   Workflow Member accounts\
-      \ can only use BatchUpdateFindings to update the Note object."
+    description: "Used by Security Hub customers to update information about their investigation into a finding. Requested by master accounts or member accounts. Master accounts can update findings for their account and their member accounts. Member accounts can update findings for their account. Updates from BatchUpdateFindings do not affect the value of UpdatedAt for a finding. Master accounts can use BatchUpdateFindings to update the following finding fields and objects. *   Confidence *   Criticality *   Note *   RelatedFindings *   Severity *   Types *   UserDefinedFields *   VerificationState *   Workflow Member accounts can only use BatchUpdateFindings to update the Note object."
     name: aws-securityhub-batch-update-findings
     outputs:
     - contextPath: AWS-SecurityHub.ProcessedFindings.Id
-      description: The identifier of the finding that was specified by the finding
-        provider.
+      description: The identifier of the finding that was specified by the finding provider.
     - contextPath: AWS-SecurityHub.ProcessedFindings.ProductArn
-      description: The ARN generated by Security Hub that uniquely identifies a product
-        that generates findings. This can be the ARN for a third-party product that
-        is integrated with Security Hub, or the ARN for a custom integration.
+      description: The ARN generated by Security Hub that uniquely identifies a product that generates findings. This can be the ARN for a third-party product that is integrated with Security Hub, or the ARN for a custom integration.
     - contextPath: AWS-SecurityHub.ProcessedFindings
       description: The list of findings that were updated successfully.
     - contextPath: AWS-SecurityHub.UnprocessedFindings.FindingIdentifier.Id
-      description: The identifier of the finding that was specified by the finding
-        provider.
+      description: The identifier of the finding that was specified by the finding provider.
     - contextPath: AWS-SecurityHub.UnprocessedFindings.FindingIdentifier.ProductArn
-      description: The ARN generated by Security Hub that uniquely identifies a product
-        that generates findings. This can be the ARN for a third-party product that
-        is integrated with Security Hub, or the ARN for a custom integration.
+      description: The ARN generated by Security Hub that uniquely identifies a product that generates findings. This can be the ARN for a third-party product that is integrated with Security Hub, or the ARN for a custom integration.
     - contextPath: AWS-SecurityHub.UnprocessedFindings.FindingIdentifier
       description: The identifier of the finding that was not updated.
     - contextPath: AWS-SecurityHub.UnprocessedFindings.ErrorCode
@@ -283,9 +327,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.'
+      description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
       isArray: false
       name: roleSessionDuration
       required: false
@@ -303,12 +345,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Enables Security Hub for your account in the current Region or the
-      Region you specify in the request. Enabling Security Hub also enables the CIS
-      AWS Foundations standard. When you enable Security Hub, you grant to Security
-      Hub the permissions necessary to gather findings from AWS Config, Amazon GuardDuty,
-      Amazon Inspector, and Amazon Macie. To learn more, see Setting Up AWS Security
-      Hub.
+    description: Enables Security Hub for your account in the current Region or the Region you specify in the request. Enabling Security Hub also enables the CIS AWS Foundations standard. When you enable Security Hub, you grant to Security Hub the permissions necessary to gather findings from AWS Config, Amazon GuardDuty, Amazon Inspector, and Amazon Macie. To learn more, see Setting Up AWS Security Hub.
     execution: false
     name: aws-securityhub-enable-security-hub
   - arguments:
@@ -331,9 +368,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.'
+      description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
       isArray: false
       name: roleSessionDuration
       required: false
@@ -352,8 +387,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings
+      description: The condition to be applied to a string value when querying for findings
       isArray: false
       name: product_arn_comparison
       predefined:
@@ -369,8 +403,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: aws_account_id_comparison
       predefined:
@@ -386,8 +419,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: id_comparison
       predefined:
@@ -403,8 +435,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: generator_id_comparison
       predefined:
@@ -420,8 +451,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: type_comparison
       predefined:
@@ -494,8 +524,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: severity_label_comparison
       predefined:
@@ -511,8 +540,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: title_comparison
       predefined:
@@ -528,8 +556,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: description_comparison
       predefined:
@@ -545,8 +572,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: recommendation_text_comparison
       predefined:
@@ -562,8 +588,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: source_url_comparison
       predefined:
@@ -585,8 +610,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to apply to a key value when querying for findings
-        with a map filter.
+      description: The condition to apply to a key value when querying for findings with a map filter.
       isArray: false
       name: product_fields_comparison
       predefined:
@@ -601,8 +625,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: product_name_comparison
       predefined:
@@ -618,8 +641,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: company_name_comparison
       predefined:
@@ -641,8 +663,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to apply to a key value when querying for findings
-        with a map filter.
+      description: The condition to apply to a key value when querying for findings with a map filter.
       isArray: false
       name: user_defined_fields_comparison
       predefined:
@@ -657,8 +678,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: malware_name_comparison
       predefined:
@@ -674,8 +694,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: malware_type_comparison
       predefined:
@@ -691,8 +710,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: malware_path_comparison
       predefined:
@@ -708,8 +726,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: malware_state_comparison
       predefined:
@@ -725,8 +742,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: network_direction_comparison
       predefined:
@@ -742,8 +758,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: network_protocol_comparison
       predefined:
@@ -771,8 +786,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: network_source_domain_comparison
       predefined:
@@ -788,8 +802,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: network_source_mac_comparison
       predefined:
@@ -817,8 +830,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: network_destination_domain_comparison
       predefined:
@@ -834,8 +846,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: process_name_comparison
       predefined:
@@ -851,8 +862,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: process_path_comparison
       predefined:
@@ -892,8 +902,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: threat_intel_indicator_type_comparison
       predefined:
@@ -909,8 +918,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: threat_intel_indicator_value_comparison
       predefined:
@@ -926,8 +934,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: threat_intel_indicator_category_comparison
       predefined:
@@ -955,8 +962,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: threat_intel_indicator_source_comparison
       predefined:
@@ -972,8 +978,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: threat_intel_indicator_source_url_comparison
       predefined:
@@ -989,8 +994,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_type_comparison
       predefined:
@@ -1006,8 +1010,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_id_comparison
       predefined:
@@ -1023,8 +1026,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_partition_comparison
       predefined:
@@ -1040,8 +1042,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_region_comparison
       predefined:
@@ -1063,8 +1064,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to apply to a key value when querying for findings
-        with a map filter.
+      description: The condition to apply to a key value when querying for findings with a map filter.
       isArray: false
       name: resource_tags_comparison
       predefined:
@@ -1079,8 +1079,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_ec2_instance_type_comparison
       predefined:
@@ -1096,8 +1095,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_ec2_instance_image_id_comparison
       predefined:
@@ -1125,8 +1123,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_ec2_instance_key_name_comparison
       predefined:
@@ -1142,8 +1139,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_ec2_instance_iam_instance_profile_arn_comparison
       predefined:
@@ -1159,8 +1155,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_ec2_instance_vpc_id_comparison
       predefined:
@@ -1176,8 +1171,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_ec2_instance_subnet_id_comparison
       predefined:
@@ -1205,8 +1199,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_s3_bucket_owner_id_comparison
       predefined:
@@ -1222,8 +1215,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_s3_bucket_owner_name_comparison
       predefined:
@@ -1239,8 +1231,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_iam_access_key_user_name_comparison
       predefined:
@@ -1256,8 +1247,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_iam_access_key_status_comparison
       predefined:
@@ -1285,8 +1275,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_container_name_comparison
       predefined:
@@ -1302,8 +1291,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_container_image_id_comparison
       predefined:
@@ -1319,8 +1307,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_container_image_name_comparison
       predefined:
@@ -1354,8 +1341,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to apply to a key value when querying for findings
-        with a map filter.
+      description: The condition to apply to a key value when querying for findings with a map filter.
       isArray: false
       name: resource_details_other_comparison
       predefined:
@@ -1370,8 +1356,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: compliance_status_comparison
       predefined:
@@ -1387,8 +1372,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: verification_state_comparison
       predefined:
@@ -1404,8 +1388,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: workflow_state_comparison
       predefined:
@@ -1421,8 +1404,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: record_state_comparison
       predefined:
@@ -1438,8 +1420,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: related_findings_product_arn_comparison
       predefined:
@@ -1455,8 +1436,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: related_findings_id_comparison
       predefined:
@@ -1472,8 +1452,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: note_text_comparison
       predefined:
@@ -1501,8 +1480,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: note_updated_by_comparison
       predefined:
@@ -1533,10 +1511,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Paginates results. On your first call to the GetFindings operation,
-        set the value of this parameter to NULL. For subsequent calls to the operation,
-        fill nextToken in the request with the value of nextToken from the previous
-        response to continue listing data.
+      description: Paginates results. On your first call to the GetFindings operation, set the value of this parameter to NULL. For subsequent calls to the operation, fill nextToken in the request with the value of nextToken from the previous response to continue listing data.
       isArray: false
       name: next_token
       required: false
@@ -1553,45 +1528,31 @@ script:
       description: The security findings provider-specific identifier for a finding.
       type: string
     - contextPath: AWS-SecurityHub.Findings.ProductArn
-      description: 'The ARN generated by Security Hub that uniquely identifies a third-party
-        company (security-findings provider) after this provider''s product (solution
-        that generates findings) is registered with Security Hub. '
+      description: 'The ARN generated by Security Hub that uniquely identifies a third-party company (security-findings provider) after this provider''s product (solution that generates findings) is registered with Security Hub. '
       type: string
     - contextPath: AWS-SecurityHub.Findings.GeneratorId
-      description: 'The identifier for the solution-specific component (a discrete
-        unit of logic) that generated a finding. In various security-findings providers''
-        solutions, this generator can be called a rule, a check, a detector, a plug-in,
-        etc. '
+      description: 'The identifier for the solution-specific component (a discrete unit of logic) that generated a finding. In various security-findings providers'' solutions, this generator can be called a rule, a check, a detector, a plug-in, etc. '
       type: string
     - contextPath: AWS-SecurityHub.Findings.AwsAccountId
       description: The AWS account ID that a finding is generated in.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Types
-      description: 'One or more finding types in the format of namespace/category/classifier
-        that classify a finding. Valid namespace values are as follows.  Software
-        and Configuration Checks, TTPs, Effects, Unusual Behaviors, Sensitive Data
-        Identifications'
+      description: 'One or more finding types in the format of namespace/category/classifier that classify a finding. Valid namespace values are as follows.  Software and Configuration Checks, TTPs, Effects, Unusual Behaviors, Sensitive Data Identifications'
       type: Unknown
     - contextPath: AWS-SecurityHub.Findings.FirstObservedAt
-      description: An ISO8601-formatted timestamp that indicates when the security-findings
-        provider first observed the potential security issue that a finding captured.
+      description: An ISO8601-formatted timestamp that indicates when the security-findings provider first observed the potential security issue that a finding captured.
       type: date
     - contextPath: AWS-SecurityHub.Findings.LastObservedAt
-      description: An ISO8601-formatted timestamp that indicates when the security-findings
-        provider most recently observed the potential security issue that a finding
-        captured.
+      description: An ISO8601-formatted timestamp that indicates when the security-findings provider most recently observed the potential security issue that a finding captured.
       type: date
     - contextPath: AWS-SecurityHub.Findings.CreatedAt
-      description: An ISO8601-formatted timestamp that indicates when the security-findings
-        provider created the potential security issue that a finding captured.
+      description: An ISO8601-formatted timestamp that indicates when the security-findings provider created the potential security issue that a finding captured.
       type: date
     - contextPath: AWS-SecurityHub.Findings.UpdatedAt
-      description: 'An ISO8601-formatted timestamp that indicates when the security-findings
-        provider last updated the finding record. '
+      description: 'An ISO8601-formatted timestamp that indicates when the security-findings provider last updated the finding record. '
       type: date
     - contextPath: AWS-SecurityHub.Findings.Severity.Product
-      description: The native severity as defined by the AWS service or integrated
-        partner product that generated the finding.
+      description: The native severity as defined by the AWS service or integrated partner product that generated the finding.
       type: number
     - contextPath: AWS-SecurityHub.Findings.Severity.Normalized
       description: The normalized severity of a finding.
@@ -1600,50 +1561,37 @@ script:
       description: A finding's severity.
       type: Unknown
     - contextPath: AWS-SecurityHub.Findings.Confidence
-      description: A finding's confidence. Confidence is defined as the likelihood
-        that a finding accurately identifies the behavior or issue that it was intended
-        to identify. Confidence is scored on a 0-100 basis using a ratio scale, where
-        0 means zero percent confidence and 100 means 100 percent confidence.
+      description: A finding's confidence. Confidence is defined as the likelihood that a finding accurately identifies the behavior or issue that it was intended to identify. Confidence is scored on a 0-100 basis using a ratio scale, where 0 means zero percent confidence and 100 means 100 percent confidence.
       type: number
     - contextPath: AWS-SecurityHub.Findings.Criticality
-      description: The level of importance assigned to the resources associated with
-        the finding. A score of 0 means that the underlying resources have no criticality,
-        and a score of 100 is reserved for the most critical resources.
+      description: The level of importance assigned to the resources associated with the finding. A score of 0 means that the underlying resources have no criticality, and a score of 100 is reserved for the most critical resources.
       type: number
     - contextPath: AWS-SecurityHub.Findings.Title
       description: 'A finding''s title.  In this release, Title is a required property. '
       type: string
     - contextPath: AWS-SecurityHub.Findings.Description
-      description: 'A finding''s description.  In this release, Description is a required
-        property. '
+      description: 'A finding''s description.  In this release, Description is a required property. '
       type: string
     - contextPath: AWS-SecurityHub.Findings.Remediation.Recommendation.Text
-      description: Describes the recommended steps to take to remediate an issue identified
-        in a finding.
+      description: Describes the recommended steps to take to remediate an issue identified in a finding.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Remediation.Recommendation.Url
-      description: A URL to a page or site that contains information about how to
-        remediate a finding.
+      description: A URL to a page or site that contains information about how to remediate a finding.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Remediation.Recommendation
-      description: A recommendation on the steps to take to remediate the issue identified
-        by a finding.
+      description: A recommendation on the steps to take to remediate the issue identified by a finding.
       type: Unknown
     - contextPath: AWS-SecurityHub.Findings.Remediation
       description: A data type that describes the remediation options for a finding.
       type: Unknown
     - contextPath: AWS-SecurityHub.Findings.SourceUrl
-      description: A URL that links to a page about the current finding in the security-findings
-        provider's solution.
+      description: A URL that links to a page about the current finding in the security-findings provider's solution.
       type: string
     - contextPath: AWS-SecurityHub.Findings.ProductFields
-      description: A data type where security-findings providers can include additional
-        solution-specific details that aren't part of the defined AwsSecurityFinding
-        format.
+      description: A data type where security-findings providers can include additional solution-specific details that aren't part of the defined AwsSecurityFinding format.
       type: Unknown
     - contextPath: AWS-SecurityHub.Findings.UserDefinedFields
-      description: 'A list of name/value string pairs associated with the finding.
-        These are custom, user-defined fields added to a finding. '
+      description: 'A list of name/value string pairs associated with the finding. These are custom, user-defined fields added to a finding. '
       type: Unknown
     - contextPath: AWS-SecurityHub.Findings.Name
       description: The name of the malware that was observed.
@@ -1667,12 +1615,10 @@ script:
       description: The protocol of network-related information about a finding.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Network.SourceIpV4
-      description: The source IPv4 address of network-related information about a
-        finding.
+      description: The source IPv4 address of network-related information about a finding.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Network.SourceIpV6
-      description: The source IPv6 address of network-related information about a
-        finding.
+      description: The source IPv6 address of network-related information about a finding.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Network.SourcePort
       description: The source port of network-related information about a finding.
@@ -1681,16 +1627,13 @@ script:
       description: The source domain of network-related information about a finding.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Network.SourceMac
-      description: The source media access control (MAC) address of network-related
-        information about a finding.
+      description: The source media access control (MAC) address of network-related information about a finding.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Network.DestinationIpV4
-      description: The destination IPv4 address of network-related information about
-        a finding.
+      description: The destination IPv4 address of network-related information about a finding.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Network.DestinationIpV6
-      description: The destination IPv6 address of network-related information about
-        a finding.
+      description: The destination IPv6 address of network-related information about a finding.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Network.DestinationPort
       description: The destination port of network-related information about a finding.
@@ -1732,15 +1675,13 @@ script:
       description: The category of a threat intel indicator.
       type: string
     - contextPath: AWS-SecurityHub.Findings.ThreatIntelIndicators.LastObservedAt
-      description: The date and time when the most recent instance of a threat intel
-        indicator was observed.
+      description: The date and time when the most recent instance of a threat intel indicator was observed.
       type: string
     - contextPath: AWS-SecurityHub.Findings.ThreatIntelIndicators.Source
       description: The source of the threat intel indicator.
       type: string
     - contextPath: AWS-SecurityHub.Findings.ThreatIntelIndicators.SourceUrl
-      description: The URL to the page or site where you can get more information
-        about the threat intel indicator.
+      description: The URL to the page or site where you can get more information about the threat intel indicator.
       type: string
     - contextPath: AWS-SecurityHub.Findings.ThreatIntelIndicators
       description: Threat intel details related to a finding.
@@ -1758,8 +1699,7 @@ script:
       description: The canonical AWS external Region name where this resource is located.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Tags
-      description: A list of AWS tags associated with a resource at the time the finding
-        was processed.
+      description: A list of AWS tags associated with a resource at the time the finding was processed.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsCloudFrontDistribution.DomainName
       description: The domain name corresponding to the distribution.
@@ -1777,42 +1717,34 @@ script:
       description: With this field, you can enable or disable the selected distribution.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsCloudFrontDistribution.Logging.IncludeCookies
-      description: Specifies whether you want CloudFront to include cookies in access
-        logs.
+      description: Specifies whether you want CloudFront to include cookies in access logs.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsCloudFrontDistribution.Logging.Prefix
-      description: An optional string that you want CloudFront to prefix to the access
-        log filenames for this distribution.
+      description: An optional string that you want CloudFront to prefix to the access log filenames for this distribution.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsCloudFrontDistribution.Logging
-      description: A complex type that controls whether access logs are written for
-        the distribution.
+      description: A complex type that controls whether access logs are written for the distribution.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsCloudFrontDistribution.Origins.Items.DomainName
-      description: 'Amazon S3 origins: The DNS name of the Amazon S3 bucket from which
-        you want CloudFront to get objects for this origin.'
+      description: 'Amazon S3 origins: The DNS name of the Amazon S3 bucket from which you want CloudFront to get objects for this origin.'
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsCloudFrontDistribution.Origins.Items.Id
       description: A unique identifier for the origin or origin group.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsCloudFrontDistribution.Origins.Items.OriginPath
-      description: An optional element that causes CloudFront to request your content
-        from a directory in your Amazon S3 bucket or your custom origin.
+      description: An optional element that causes CloudFront to request your content from a directory in your Amazon S3 bucket or your custom origin.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsCloudFrontDistribution.Origins.Items
-      description: A complex type that contains origins or origin groups for this
-        distribution.
+      description: A complex type that contains origins or origin groups for this distribution.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsCloudFrontDistribution.Origins
-      description: A complex type that contains information about origins for this
-        distribution.
+      description: A complex type that contains information about origins for this distribution.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsCloudFrontDistribution.Status
       description: Indicates the current status of the distribution.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsCloudFrontDistribution.WebAclId
-      description: A unique identifier that specifies the AWS WAF web ACL, if any,
-        to associate with this distribution.
+      description: A unique identifier that specifies the AWS WAF web ACL, if any, to associate with this distribution.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsCloudFrontDistribution
       description: Details about a CloudFront distribution.
@@ -1851,15 +1783,13 @@ script:
       description: The name of the Availability Zone.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsElbv2LoadBalancer.AvailabilityZones.SubnetId
-      description: The ID of the subnet. You can specify one subnet per Availability
-        Zone.
+      description: The ID of the subnet. You can specify one subnet per Availability Zone.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsElbv2LoadBalancer.AvailabilityZones
       description: The Availability Zones for the load balancer.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsElbv2LoadBalancer.CanonicalHostedZoneId
-      description: The ID of the Amazon Route 53 hosted zone associated with the load
-        balancer.
+      description: The ID of the Amazon Route 53 hosted zone associated with the load balancer.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsElbv2LoadBalancer.CreatedTime
       description: The date and time the load balancer was created.
@@ -1868,9 +1798,7 @@ script:
       description: The public DNS name of the load balancer.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsElbv2LoadBalancer.IpAddressType
-      description: The type of IP addresses used by the subnets for your load balancer.
-        The possible values are ipv4 (for IPv4 addresses) and dualstack (for IPv4
-        and IPv6 addresses).
+      description: The type of IP addresses used by the subnets for your load balancer. The possible values are ipv4 (for IPv4 addresses) and dualstack (for IPv4 and IPv6 addresses).
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsElbv2LoadBalancer.Scheme
       description: The nodes of an Internet-facing load balancer have public IP addresses.
@@ -1879,9 +1807,7 @@ script:
       description: The IDs of the security groups for the load balancer.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsElbv2LoadBalancer.State.Code
-      description: 'The state code. The initial state of the load balancer is provisioning.
-        After the load balancer is fully set up and ready to route traffic, its state
-        is active. If the load balancer could not be set up, its state is failed. '
+      description: 'The state code. The initial state of the load balancer is provisioning. After the load balancer is fully set up and ready to route traffic, its state is active. If the load balancer could not be set up, its state is failed. '
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsElbv2LoadBalancer.State.Reason
       description: A description of the state.
@@ -1908,9 +1834,7 @@ script:
       description: Details about an Amazon S3 Bucket related to a finding.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsIamAccessKey.UserName
-      description: The user associated with the IAM access key related to a finding.
-        The UserName parameter has been replaced with the PrincipalName parameter
-        because access keys can also be assigned to principals that are not IAM users.
+      description: The user associated with the IAM access key related to a finding. The UserName parameter has been replaced with the PrincipalName parameter because access keys can also be assigned to principals that are not IAM users.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsIamAccessKey.Status
       description: The status of the IAM access key related to a finding.
@@ -1934,8 +1858,7 @@ script:
       description: The trust policy that grants permission to assume the role.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsIamRole.CreateDate
-      description: The date and time, in ISO 8601 date-time format, when the role
-        was created.
+      description: The date and time, in ISO 8601 date-time format, when the role was created.
       type: date
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsIamRole.RoleId
       description: The stable and unique string identifying the role.
@@ -1944,8 +1867,7 @@ script:
       description: The friendly name that identifies the role.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsIamRole.MaxSessionDuration
-      description: The maximum session duration (in seconds) that you want to set
-        for the specified role.
+      description: The maximum session duration (in seconds) that you want to set for the specified role.
       type: number
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsIamRole.Path
       description: The path to the role.
@@ -1963,36 +1885,28 @@ script:
       description: The globally unique identifier for the CMK.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsKmsKey.KeyManager
-      description: The manager of the CMK. CMKs in your AWS account are either customer
-        managed or AWS managed.
+      description: The manager of the CMK. CMKs in your AWS account are either customer managed or AWS managed.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsKmsKey.KeyState
       description: The state of the CMK.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsKmsKey.Origin
-      description: The source of the CMK's key material. When this value is AWS\_KMS,
-        AWS KMS created the key material. When this value is EXTERNAL, the key material
-        was imported from your existing key management infrastructure or the CMK lacks
-        key material. When this value is AWS\_CLOUDHSM, the key material was created
-        in the AWS CloudHSM cluster associated with a custom key store.
+      description: The source of the CMK's key material. When this value is AWS\_KMS, AWS KMS created the key material. When this value is EXTERNAL, the key material was imported from your existing key management infrastructure or the CMK lacks key material. When this value is AWS\_CLOUDHSM, the key material was created in the AWS CloudHSM cluster associated with a custom key store.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsKmsKey
       description: Details about a KMS key.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsLambdaFunction.Code.S3Bucket
-      description: An Amazon S3 bucket in the same AWS Region as your function. The
-        bucket can be in a different AWS account.
+      description: An Amazon S3 bucket in the same AWS Region as your function. The bucket can be in a different AWS account.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsLambdaFunction.Code.S3Key
       description: The Amazon S3 key of the deployment package.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsLambdaFunction.Code.S3ObjectVersion
-      description: For versioned objects, the version of the deployment package object
-        to use.
+      description: For versioned objects, the version of the deployment package object to use.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsLambdaFunction.Code.ZipFile
-      description: The base64-encoded contents of the deployment package. AWS SDK
-        and AWS CLI clients handle the encoding for you.
+      description: The base64-encoded contents of the deployment package. AWS SDK and AWS CLI clients handle the encoding for you.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsLambdaFunction.Code
       description: An AwsLambdaFunctionCode object.
@@ -2001,8 +1915,7 @@ script:
       description: The SHA256 hash of the function's deployment package.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsLambdaFunction.DeadLetterConfig.TargetArn
-      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon
-        SNS topic.
+      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsLambdaFunction.DeadLetterConfig
       description: The function's dead letter queue.
@@ -2029,12 +1942,10 @@ script:
       description: The function that Lambda calls to begin executing your function.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsLambdaFunction.KmsKeyArn
-      description: The KMS key that's used to encrypt the function's environment variables.
-        This key is only returned if you've configured a customer managed CMK.
+      description: The KMS key that's used to encrypt the function's environment variables. This key is only returned if you've configured a customer managed CMK.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsLambdaFunction.LastModified
-      description: The date and time that the function was last updated, in ISO-8601
-        format (YYYY-MM-DDThh:mm:ss.sTZD).
+      description: The date and time that the function was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
       type: date
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsLambdaFunction.Layers.Arn
       description: The Amazon Resource Name (ARN) of the function layer.
@@ -2061,8 +1972,7 @@ script:
       description: The runtime environment for the Lambda function.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsLambdaFunction.Timeout
-      description: The amount of time that Lambda allows a function to run before
-        stopping it.
+      description: The amount of time that Lambda allows a function to run before stopping it.
       type: number
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsLambdaFunction.TracingConfig.Mode
       description: The tracing mode.
@@ -2089,8 +1999,7 @@ script:
       description: Details about a Lambda function.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsSnsTopic.KmsMasterKeyId
-      description: The ID of an AWS-managed customer master key (CMK) for Amazon SNS
-        or a custom CMK.
+      description: The ID of an AWS-managed customer master key (CMK) for Amazon SNS or a custom CMK.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsSnsTopic.Subscription.Endpoint
       description: The subscription's endpoint (format depends on the protocol).
@@ -2099,8 +2008,7 @@ script:
       description: The subscription's protocol.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsSnsTopic.Subscription
-      description: Subscription is an embedded property that describes the subscription
-        endpoints of an Amazon SNS topic.
+      description: Subscription is an embedded property that describes the subscription endpoints of an Amazon SNS topic.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsSnsTopic.TopicName
       description: The name of the topic.
@@ -2112,19 +2020,16 @@ script:
       description: Details about an SNS topic.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsSqsQueue.KmsDataKeyReusePeriodSeconds
-      description: The length of time, in seconds, for which Amazon SQS can reuse
-        a data key to encrypt or decrypt messages before calling AWS KMS again.
+      description: The length of time, in seconds, for which Amazon SQS can reuse a data key to encrypt or decrypt messages before calling AWS KMS again.
       type: number
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsSqsQueue.KmsMasterKeyId
-      description: The ID of an AWS-managed customer master key (CMK) for Amazon SQS
-        or a custom CMK.
+      description: The ID of an AWS-managed customer master key (CMK) for Amazon SQS or a custom CMK.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsSqsQueue.QueueName
       description: The name of the new queue.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsSqsQueue.DeadLetterTargetArn
-      description: 'The Amazon Resource Name (ARN) of the dead-letter queue to which
-        Amazon SQS moves messages after the value of maxReceiveCount is exceeded.'
+      description: 'The Amazon Resource Name (ARN) of the dead-letter queue to which Amazon SQS moves messages after the value of maxReceiveCount is exceeded.'
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources.Details.AwsSqsQueue
       description: Details about an SQS queue.
@@ -2151,16 +2056,13 @@ script:
       description: Additional details about the resource related to a finding.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Resources
-      description: A set of resource data types that describe the resources that the
-        finding refers to.
+      description: A set of resource data types that describe the resources that the finding refers to.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Compliance.Status
       description: The result of a compliance check.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Compliance
-      description: This data type is exclusive to findings that are generated as the
-        result of a check run against a specific rule in a supported standard (for
-        example, CIS AWS Foundations). Contains compliance-related finding details.
+      description: This data type is exclusive to findings that are generated as the result of a check run against a specific rule in a supported standard (for example, CIS AWS Foundations). Contains compliance-related finding details.
       type: string
     - contextPath: AWS-SecurityHub.Findings.VerificationState
       description: Indicates the veracity of a finding.
@@ -2215,9 +2117,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.'
+      description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
       isArray: false
       name: roleSessionDuration
       required: false
@@ -2229,14 +2129,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Provides the details for the Security Hub master account to the current
-      member account.
+    description: Provides the details for the Security Hub master account to the current member account.
     execution: false
     name: aws-securityhub-get-master-account
     outputs:
     - contextPath: AWS-SecurityHub.Master.AccountId
-      description: The account ID of the Security Hub master account that the invitation
-        was sent from.
+      description: The account ID of the Security Hub master account that the invitation was sent from.
       type: string
     - contextPath: AWS-SecurityHub.Master.InvitationId
       description: The ID of the invitation sent to the member account.
@@ -2245,12 +2143,10 @@ script:
       description: The timestamp of when the invitation was sent.
       type: date
     - contextPath: AWS-SecurityHub.Master.MemberStatus
-      description: The current status of the association between member and master
-        accounts.
+      description: The current status of the association between member and master accounts.
       type: string
     - contextPath: AWS-SecurityHub.Master
-      description: 'A list of details about the Security Hub master account for the
-        current member account. '
+      description: 'A list of details about the Security Hub master account for the current member account. '
       type: Unknown
   - arguments:
     - default: false
@@ -2272,9 +2168,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.'
+      description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
       isArray: false
       name: roleSessionDuration
       required: false
@@ -2287,13 +2181,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: <p>Specifies which member accounts the response includes based
-        on their relationship status with the master account. The default value is
-        <code>TRUE</code>. If <code>onlyAssociated</code> is set to <code>TRUE</code>,
-        the response includes member accounts whose relationship status with the master
-        is set to <code>ENABLED</code> or <code>DISABLED</code>. If <code>onlyAssociated</code>
-        is set to <code>FALSE</code>, the response includes all existing member accounts.
-        </p>
+      description: <p>Specifies which member accounts the response includes based on their relationship status with the master account. The default value is <code>TRUE</code>. If <code>onlyAssociated</code> is set to <code>TRUE</code>, the response includes member accounts whose relationship status with the master is set to <code>ENABLED</code> or <code>DISABLED</code>. If <code>onlyAssociated</code> is set to <code>FALSE</code>, the response includes all existing member accounts. </p>
       isArray: false
       name: only_associated
       predefined:
@@ -2302,17 +2190,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Paginates results. Set the value of this parameter to NULL on
-        your first call to the ListMembers operation. For subsequent calls to the
-        operation, fill nextToken in the request with the value of nextToken from
-        the previous response to continue listing data.'
+      description: 'Paginates results. Set the value of this parameter to NULL on your first call to the ListMembers operation. For subsequent calls to the operation, fill nextToken in the request with the value of nextToken from the previous response to continue listing data.'
       isArray: false
       name: next_token
       required: false
       secret: false
     deprecated: false
-    description: Lists details about all member accounts for the current Security
-      Hub master account.
+    description: Lists details about all member accounts for the current Security Hub master account.
     execution: false
     name: aws-securityhub-list-members
     outputs:
@@ -2323,20 +2207,16 @@ script:
       description: The email address of the member account.
       type: string
     - contextPath: AWS-SecurityHub.Members.MasterId
-      description: The AWS account ID of the Security Hub master account associated
-        with this member account.
+      description: The AWS account ID of the Security Hub master account associated with this member account.
       type: string
     - contextPath: AWS-SecurityHub.Members.MemberStatus
-      description: The status of the relationship between the member account and its
-        master account.
+      description: The status of the relationship between the member account and its master account.
       type: string
     - contextPath: AWS-SecurityHub.Members.InvitedAt
-      description: A timestamp for the date and time when the invitation was sent
-        to the member account.
+      description: A timestamp for the date and time when the invitation was sent to the member account.
       type: date
     - contextPath: AWS-SecurityHub.Members.UpdatedAt
-      description: The timestamp for the date and time when the member account was
-        updated.
+      description: The timestamp for the date and time when the member account was updated.
       type: date
     - contextPath: AWS-SecurityHub.Members
       description: Member details returned by the operation.
@@ -2364,9 +2244,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.'
+      description: 'The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.'
       isArray: false
       name: roleSessionDuration
       required: false
@@ -2385,8 +2263,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: product_arn_comparison
       predefined:
@@ -2402,8 +2279,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: aws_account_id_comparison
       predefined:
@@ -2419,8 +2295,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: id_comparison
       predefined:
@@ -2436,8 +2311,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: generator_id_comparison
       predefined:
@@ -2453,8 +2327,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: type_comparison
       predefined:
@@ -2527,8 +2400,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: severity_label_comparison
       predefined:
@@ -2544,8 +2416,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: title_comparison
       predefined:
@@ -2561,8 +2432,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: description_comparison
       predefined:
@@ -2578,8 +2448,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: recommendation_text_comparison
       predefined:
@@ -2595,8 +2464,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: source_url_comparison
       predefined:
@@ -2618,8 +2486,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to apply to a key value when querying for findings
-        with a map filter.
+      description: The condition to apply to a key value when querying for findings with a map filter.
       isArray: false
       name: product_fields_comparison
       predefined:
@@ -2634,8 +2501,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: product_name_comparison
       predefined:
@@ -2651,8 +2517,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: company_name_comparison
       predefined:
@@ -2674,8 +2539,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to apply to a key value when querying for findings
-        with a map filter.
+      description: The condition to apply to a key value when querying for findings with a map filter.
       isArray: false
       name: user_defined_fields_comparison
       predefined:
@@ -2690,8 +2554,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: malware_name_comparison
       predefined:
@@ -2707,8 +2570,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: malware_type_comparison
       predefined:
@@ -2724,8 +2586,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: malware_path_comparison
       predefined:
@@ -2741,8 +2602,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: malware_state_comparison
       predefined:
@@ -2758,8 +2618,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: network_direction_comparison
       predefined:
@@ -2775,8 +2634,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: network_protocol_comparison
       predefined:
@@ -2804,8 +2662,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: network_source_domain_comparison
       predefined:
@@ -2821,8 +2678,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: network_source_mac_comparison
       predefined:
@@ -2850,8 +2706,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: network_destination_domain_comparison
       predefined:
@@ -2867,8 +2722,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: process_name_comparison
       predefined:
@@ -2884,8 +2738,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: process_path_comparison
       predefined:
@@ -2925,8 +2778,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: threat_intel_indicator_type_comparison
       predefined:
@@ -2942,8 +2794,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: threat_intel_indicator_value_comparison
       predefined:
@@ -2959,8 +2810,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: threat_intel_indicator_category_comparison
       predefined:
@@ -2988,8 +2838,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: threat_intel_indicator_source_comparison
       predefined:
@@ -3005,8 +2854,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: threat_intel_indicator_source_url_comparison
       predefined:
@@ -3022,8 +2870,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_type_comparison
       predefined:
@@ -3039,8 +2886,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_id_comparison
       predefined:
@@ -3056,8 +2902,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_partition_comparison
       predefined:
@@ -3073,8 +2918,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_region_comparison
       predefined:
@@ -3096,8 +2940,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to apply to a key value when querying for findings
-        with a map filter.
+      description: The condition to apply to a key value when querying for findings with a map filter.
       isArray: false
       name: resource_tags_comparison
       predefined:
@@ -3112,8 +2955,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_ec2_instance_type_comparison
       predefined:
@@ -3129,8 +2971,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_ec2_instance_image_id_comparison
       predefined:
@@ -3158,8 +2999,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_ec2_instance_key_name_comparison
       predefined:
@@ -3175,8 +3015,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_ec2_instance_iam_instance_profile_arn_comparison
       predefined:
@@ -3192,8 +3031,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_ec2_instance_vpc_id_comparison
       predefined:
@@ -3209,8 +3047,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_ec2_instance_subnet_id_comparison
       predefined:
@@ -3238,8 +3075,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_s3_bucket_owner_id_comparison
       predefined:
@@ -3255,8 +3091,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_s3_bucket_owner_name_comparison
       predefined:
@@ -3272,8 +3107,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_iam_access_key_user_name_comparison
       predefined:
@@ -3289,8 +3123,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_aws_iam_access_key_status_comparison
       predefined:
@@ -3318,8 +3151,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_container_name_comparison
       predefined:
@@ -3335,8 +3167,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_container_image_id_comparison
       predefined:
@@ -3352,8 +3183,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: resource_container_image_name_comparison
       predefined:
@@ -3387,8 +3217,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to apply to a key value when querying for findings
-        with a map filter.
+      description: The condition to apply to a key value when querying for findings with a map filter.
       isArray: false
       name: resource_details_other_comparison
       predefined:
@@ -3403,8 +3232,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: compliance_status_comparison
       predefined:
@@ -3420,8 +3248,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: verification_state_comparison
       predefined:
@@ -3437,8 +3264,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: workflow_state_comparison
       predefined:
@@ -3454,8 +3280,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: record_state_comparison
       predefined:
@@ -3471,8 +3296,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: related_findings_product_arn_comparison
       predefined:
@@ -3488,8 +3312,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: related_findings_id_comparison
       predefined:
@@ -3505,8 +3328,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: note_text_comparison
       predefined:
@@ -3534,8 +3356,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The condition to be applied to a string value when querying for
-        findings.
+      description: The condition to be applied to a string value when querying for findings.
       isArray: false
       name: note_updated_by_comparison
       predefined:
@@ -3575,15 +3396,41 @@ script:
     description: Deprecated, use aws-securityhub-batch-update-findings instead.
     execution: false
     name: aws-securityhub-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.33896
+  - name: get-remote-data
+    deprecated: false
+    description: Get remote data from a remote incident. This method does not update
+      the current incident, and should be used for debugging purposes only.
+    execution: false
+    arguments:
+    - name: id
+      default: false
+      description: The remote incident ID.
+      isArray: false
+      required: true
+      secret: false
+    - name: lastUpdate
+      default: false
+      defaultValue: '0'
+      description: The UTC timestamp in seconds since the last update. The incident is only updated if it was modified after the last update time.
+      isArray: false
+      required: false
+      secret: false
+  - name: get-mapping-fields
+    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+  dockerimage: demisto/boto3py3:1.0.0.49601
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
+defaultmapperin: AWS Security Hub - Incoming Mapper
+defaultmapperout: AWS Security Hub - Outgoing Mapper
 fromversion: 5.0.0
 tests:
 - AWS-securityhub Test

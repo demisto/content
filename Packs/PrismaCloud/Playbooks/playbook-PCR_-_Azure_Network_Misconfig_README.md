@@ -33,7 +33,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Prisma Cloud Remediation - Azure Network Security Group Misconfiguration
 
 ### Integrations
-* RedLock
+* PrismaCloud v2
 
 ### Scripts
 * IsIntegrationAvailable
@@ -49,7 +49,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | AutoRemediateAzureNetwork | Execute Azure Network remediation automatically? | no | Optional |
 | policyId | Grab the Prisma Cloud policy Id. | incident.labels.policy | Optional |
-| portNumber | Port number. | incident.None | Optional |
+| portNumber | Port number. | incident | Optional |
 
 ## Playbook Outputs
 ---

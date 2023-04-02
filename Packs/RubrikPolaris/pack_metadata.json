@@ -2,24 +2,16 @@
     "name": "Rubrik Polaris",
     "description": "Rubrik Polaris revolutionizes the data management market, specifically backup/recovery, archival, and DR, by providing a global policy framework, workflow orchestration, and deep data intelligence as cloud-delivered applications. The content pack fetches Rubrik Radar Anomaly Event and provides playbooks to analyze, discover and recover -- to mention a few -- organizational data. The content pack is rich with commands to perform on-demand scans, backups, recoveries and many more features exposed by the Polaris API.",
     "support": "partner",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.8",
     "author": "Rubrik",
     "url": "https://www.rubrik.com/support/",
     "email": "support@rubrik.com",
     "created": "2020-12-20T10:47:58Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Analytics & SIEM"
     ],
-    "tags": [
-        "Breach",
-        "Attack",
-        "Threat Intelligence",
-        "Security"
-    ],
-    "useCases": [
-        "Threat Intelligence Management",
-        "Ransomware"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Rubrik",
         "Polaris",

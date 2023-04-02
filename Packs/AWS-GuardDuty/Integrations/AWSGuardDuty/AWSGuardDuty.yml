@@ -37,45 +37,70 @@ configuration:
   section: Connect
   advanced: true
 - display: Access Key
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Secret Key
+- display: Access Key
   name: access_key
   required: false
   type: 0
   section: Connect
+  hidden: true
 - display: Secret Key
   name: secret_key
   required: false
   type: 4
   section: Connect
+  hidden: true
 - display: Timeout
   name: timeout
-  additionalinfo: The time in seconds till a timeout exception is reached. You can
-    specify just the read timeout (for example 60) or also the connect timeout followed
-    after a comma (for example 60,10). If a connect timeout is not specified, a default
-    of 10 second will be used.
   defaultvalue: 60,10
+  additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
   required: false
   type: 0
   section: Connect
   advanced: true
 - display: Retries
   name: retries
-  defaultvalue: 5
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
-  are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
-  Note: Increasing the number of retries will increase the execution time."
   required: false
   type: 0
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   section: Connect
   advanced: true
-- display: Guard Duty Severity level
-  name: gs_severity
-  additionalinfo: You can set the severity level of the findings to be fetched. "Low", "Medium", "High". 
-    For example, if you set the severity
-    level to "Medium", the integration will only fetch findings with severity level of Medium and higher.
+- display: How many incidents to fetch each time
+  name: fetch_limit
   required: false
   type: 0
+  defaultvalue: '10'
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  name: first_fetch_time
+  required: false
+  type: 0
+  defaultvalue: 3 days
+- display: Guard Duty Severity level
+  additionalinfo: 'You can set the severity level of the findings to be fetched: "Low", "Medium", "High". For example, if you set the severity level to "Medium", the integration will only fetch findings with severity level of Medium and higher.'
+  name: gs_severity
+  type: 16
+  required: false
   section: Collect
   advanced: true
+  options:
+  - Low
+  - Medium
+  - High
+- display: Archive findings After Fetch
+  name: is_archive
+  required: false
+  type: 8
+  defaultvalue: "false"
+  additionalinfo: You can set whether findings that are fetched will be moved to the GuardDuty archive.
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+  defaultvalue: '1'
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure
@@ -107,8 +132,41 @@ script:
       - 'False'
       required: true
       secret: false
+    - description: The status of S3 data event logs as a data source.
+      isArray: false
+      name: enableS3Logs
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - description: The status of Kubernetes audit logs as a data source.
+      isArray: false
+      name: enableKubernetesLogs
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - description: Describes the configuration for scanning EBS volumes as a data source.
+      isArray: false
+      name: ebsVolumesMalwareProtection
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - description: Specifies how frequently updated findings are exported.
+      isArray: false
+      name: findingFrequency
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'Fifteen Minutes'
+      - 'One Hour'
+      - 'Six Hours'
     - default: false
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified the default region will be used.
       isArray: false
       name: region
       required: false
@@ -126,16 +184,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Create an AWS Guard Duty Detector on the integration instance specified
-      aws account.
+    description: Create an AWS Guard Duty Detector on the integration instance specified aws account.
     execution: false
     name: aws-gd-create-detector
     outputs:
@@ -168,9 +223,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -205,9 +258,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -232,6 +283,30 @@ script:
     - contextPath: AWS.GuardDuty.Detectors.UpdatedAt
       description: The time a resource was last updated.
       type: string
+    - contextPath: AWS.GuardDuty.Detectors.CloudTrailStatus
+      description: Describes whether CloudTrail is enabled as a data source for the detector.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.DNSLogsStatus
+      description: Denotes whether DNS logs are enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.FlowLogsStatus
+      description: Denotes whether VPC flow logs are enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.S3LogsStatus
+      description: Describes whether S3 data event logs are automatically enabled for new members of the organization.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.KubernetesAuditLogsStatus
+      description: Describes whether Kubernetes audit logs are enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.MalwareProtectionStatus
+      description: Describes whether scanning EBS volumes is enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.MalwareProtectionReason
+      description: The reason why scanning EBS volumes (Malware Protection) was not enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.Tags
+      description: The tags of the detector resource.
+      type: string
   - arguments:
     - default: false
       description: The unique ID of the detector that you want to update.
@@ -242,8 +317,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Updated boolean value for the detector that specifies whether the
-        detector is enabled.
+      description: Updated boolean value for the detector that specifies whether the detector is enabled.
       isArray: false
       name: enable
       predefined:
@@ -251,8 +325,41 @@ script:
       - 'False'
       required: true
       secret: false
+    - description: The status of S3 data event logs as a data source.
+      isArray: false
+      name: enableS3Logs
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - description: The status of Kubernetes audit logs as a data source.
+      isArray: false
+      name: enableKubernetesLogs
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - description: Describes the configuration for scanning EBS volumes as a data source.
+      isArray: false
+      name: ebsVolumesMalwareProtection
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - description: Specifies how frequently updated findings are exported.
+      isArray: false
+      name: findingFrequency
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'Fifteen Minutes'
+      - 'One Hour'
+      - 'Six Hours'
     - default: false
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified the default region will be used.
       isArray: false
       name: region
       required: false
@@ -270,9 +377,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -285,8 +390,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: A boolean value that indicates whether GuardDuty is to start using
-        the uploaded IPSet.
+      description: A boolean value that indicates whether GuardDuty is to start using the uploaded IPSet.
       isArray: false
       name: activate
       predefined:
@@ -321,9 +425,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The user friendly name to identify the IPSet. This name is displayed
-        in all findings that are triggered by activity that involves IP addresses
-        included in this IPSet.
+      description: The user friendly name to identify the IPSet. This name is displayed in all findings that are triggered by activity that involves IP addresses included in this IPSet.
       isArray: false
       name: name
       required: false
@@ -347,16 +449,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: A list of trusted IP addresses on allow list for secure
-      communication with AWS infrastructure and applications.
+    description: A list of trusted IP addresses on allow list for secure communication with AWS infrastructure and applications.
     execution: false
     name: aws-gd-create-ip-set
     outputs:
@@ -365,8 +464,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The detectorID that specifies the GuardDuty service whose IPSet
-        you want to delete.
+      description: The detectorID that specifies the GuardDuty service whose IPSet you want to delete.
       isArray: false
       name: detectorId
       required: true
@@ -396,9 +494,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -409,7 +505,27 @@ script:
     name: aws-gd-delete-ip-set
   - arguments:
     - default: false
-      description: The AWS Region, if not specified the default region will be used.
+      description: Number of total results to query.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: '50'
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+      defaultValue: '50'
+    - default: false
+      description: The AWS Region. If not specified the default region will be used.
       isArray: false
       name: region
       required: false
@@ -427,9 +543,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -445,8 +559,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The updated boolean value that specifies whether the IPSet is active
-        or not.
+      description: The updated boolean value that specifies whether the IPSet is active or not.
       isArray: false
       name: activate
       predefined:
@@ -455,8 +568,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The detectorID that specifies the GuardDuty service whose IPSet
-        you want to update.
+      description: The detectorID that specifies the GuardDuty service whose IPSet you want to update.
       isArray: false
       name: detectorId
       required: true
@@ -468,8 +580,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The updated URI of the file that contains the IPSet. For example
-        (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
+      description: The updated URI of the file that contains the IPSet. For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
       isArray: false
       name: location
       required: false
@@ -499,9 +610,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -512,8 +621,7 @@ script:
     name: aws-gd-update-ip-set
   - arguments:
     - default: false
-      description: The detectorID that specifies the GuardDuty service whose IPSet
-        you want to retrieve.
+      description: The detectorID that specifies the GuardDuty service whose IPSet you want to retrieve.
       isArray: false
       name: detectorId
       required: true
@@ -543,9 +651,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -596,16 +702,33 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results to query.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     deprecated: false
-    description: Lists the IPSets of the GuardDuty service specified by the detector
-      ID.
+    description: Lists the IPSets of the GuardDuty service specified by the detector ID.
     execution: false
     name: aws-gd-list-ip-sets
     outputs:
@@ -616,8 +739,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: A boolean value that indicates whether GuardDuty is to start using
-        the uploaded ThreatIntelSet.
+      description: A boolean value that indicates whether GuardDuty is to start using the uploaded ThreatIntelSet.
       isArray: false
       name: activate
       predefined:
@@ -646,15 +768,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The URI of the file that contains the ThreatIntelSet. For example
-        (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
+      description: The URI of the file that contains the ThreatIntelSet. For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
       isArray: false
       name: location
       required: true
       secret: false
     - default: false
-      description: A user-friendly ThreatIntelSet name that is displayed in all finding
-        generated by activity that involves IP addresses included in this ThreatIntelSet.
+      description: A user-friendly ThreatIntelSet name that is displayed in all finding generated by activity that involves IP addresses included in this ThreatIntelSet.
       isArray: false
       name: name
       required: true
@@ -678,16 +798,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Create a new ThreatIntelSet. ThreatIntelSets consist of known malicious
-      IP addresses. GuardDuty generates findings based on ThreatIntelSets.
+    description: Create a new ThreatIntelSet. ThreatIntelSets consist of known malicious IP addresses. GuardDuty generates findings based on ThreatIntelSets.
     execution: false
     name: aws-gd-create-threatintel-set
     outputs:
@@ -696,15 +813,13 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet
-        you want to delete.
+      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet you want to delete.
       isArray: false
       name: detectorId
       required: true
       secret: false
     - default: false
-      description: The unique ID that specifies the ThreatIntelSet that you want to
-        delete.
+      description: The unique ID that specifies the ThreatIntelSet that you want to delete.
       isArray: false
       name: threatIntelSetId
       required: true
@@ -728,9 +843,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -741,15 +854,13 @@ script:
     name: aws-gd-delete-threatintel-set
   - arguments:
     - default: false
-      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet
-        you want to describe.
+      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet you want to describe.
       isArray: false
       name: detectorId
       required: true
       secret: false
     - default: false
-      description: The unique ID that specifies the ThreatIntelSet that you want to
-        describe.
+      description: The unique ID that specifies the ThreatIntelSet that you want to describe.
       isArray: false
       name: threatIntelSetId
       required: true
@@ -773,16 +884,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Retrieves the ThreatIntelSet that is specified by the ThreatIntelSet
-      ID.
+    description: Retrieves the ThreatIntelSet that is specified by the ThreatIntelSet ID.
     execution: false
     name: aws-gd-get-threatintel-set
     outputs:
@@ -803,8 +911,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSets
-        you want to list.
+      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSets you want to list.
       isArray: false
       name: detectorId
       required: true
@@ -828,16 +935,33 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results to query.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     deprecated: false
-    description: Lists the ThreatIntelSets of the GuardDuty service specified by the
-      detector ID.
+    description: Lists the ThreatIntelSets of the GuardDuty service specified by the detector ID.
     execution: false
     name: aws-gd-list-threatintel-sets
     outputs:
@@ -846,23 +970,20 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet
-        you want to update.
+      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet you want to update.
       isArray: false
       name: detectorId
       required: true
       secret: false
     - default: false
-      description: The unique ID that specifies the ThreatIntelSet that you want to
-        update.
+      description: The unique ID that specifies the ThreatIntelSet that you want to update.
       isArray: false
       name: threatIntelSetId
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The updated boolean value that specifies whether the ThreatIntelSet
-        is active or not.
+      description: The updated boolean value that specifies whether the ThreatIntelSet is active or not.
       isArray: false
       name: activate
       predefined:
@@ -871,8 +992,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The updated URI of the file that contains the ThreatIntelSet. For
-        example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
+      description: The updated URI of the file that contains the ThreatIntelSet. For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
       isArray: false
       name: location
       required: false
@@ -902,9 +1022,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -915,8 +1033,7 @@ script:
     name: aws-gd-update-threatintel-set
   - arguments:
     - default: false
-      description: The ID of the detector that specifies the GuardDuty service whose
-        findings you want to list.
+      description: The ID of the detector that specifies the GuardDuty service whose findings you want to list.
       isArray: false
       name: detectorId
       required: true
@@ -940,11 +1057,29 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results to query.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
       required: false
       secret: false
     deprecated: false
@@ -957,8 +1092,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The ID of the detector that specifies the GuardDuty service whose
-        findings you want to retrieve.
+      description: The ID of the detector that specifies the GuardDuty service whose findings you want to retrieve.
       isArray: false
       name: detectorId
       required: true
@@ -988,17 +1122,93 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
+    - name: returnRawResponse
+      description: Select 'true' to save all fields from the response to the context. Otherwise, complex fields will be stored in JSON format. Default value is False.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: false
     deprecated: false
     description: Describes Amazon GuardDuty findings specified by finding IDs.
     execution: false
     name: aws-gd-get-findings
+    outputs:
+    - contextPath: 'AWS.GuardDuty.Findings.AccountId'
+      description: The ID of the account in which the finding was generated.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.CreatedAt'
+      description: The time and date when the finding was created.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Description'
+      description: The description of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Region'
+      description: The region where the finding was generated.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Id'
+      description: The ID of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Title'
+      description: The title of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Severity'
+      description: The severity of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Type'
+      description: The type of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.UpdatedAt'
+      description: The time and date when the finding was last updated.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Arn'
+      description: The ARN of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Confidence'
+      description: The confidence score for the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Partition'
+      description: The partition associated with the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.ResourceType'
+      description: The type of Amazon Web Services resource.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.SchemaVersion'
+      description: The version of the schema used for the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.AccessKeyDetails'
+      description: The IAM access key details (IAM user information) of a user that engaged in the activity that prompted GuardDuty to generate a finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.InstanceDetails'
+      description: The information about the EC2 instance associated with the activity that prompted GuardDuty to generate a finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.EksClusterDetails'
+      description: Details about the EKS cluster involved in a Kubernetes finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.KubernetesDetails'
+      description: Details about the Kubernetes user and workload involved in a Kubernetes finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.EbsVolumeDetails'
+      description: Contains a list of scanned and skipped EBS volumes with details.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.EcsClusterDetails'
+      description: Contains information about the details of the ECS cluster.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.ContainerDetails'
+      description: Details of a container.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.S3BucketDetails'
+      description: Contains information on the S3 bucket.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Service'
+      description: Contains additional information about the generated finding.
+      type: string
   - arguments:
     - default: false
       description: The ID of the detector to create sample findings for.
@@ -1007,8 +1217,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Types of sample findings that you want to generate. Separated by
-        comma.
+      description: Types of sample findings that you want to generate. Separated by comma.
       isArray: false
       name: findingTypes
       required: false
@@ -1032,23 +1241,18 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Generates example findings of types specified by the list of finding
-      types. If 'NULL' is specified for findingTypes, the API generates example findings
-      of all supported finding types.
+    description: Generates example findings of types specified by the list of finding types. If 'NULL' is specified for findingTypes, the API generates example findings of all supported finding types.
     execution: false
     name: aws-gd-create-sample-findings
   - arguments:
     - default: false
-      description: The ID of the detector that specifies the GuardDuty service whose
-        findings you want to archive.
+      description: The ID of the detector that specifies the GuardDuty service whose findings you want to archive.
       isArray: false
       name: detectorId
       required: true
@@ -1078,22 +1282,18 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Archives Amazon GuardDuty findings specified by the list of finding
-      IDs.
+    description: Archives Amazon GuardDuty findings specified by the list of finding IDs.
     execution: false
     name: aws-gd-archive-findings
   - arguments:
     - default: false
-      description: The ID of the detector that specifies the GuardDuty service whose
-        findings you want to unarchive.
+      description: The ID of the detector that specifies the GuardDuty service whose findings you want to unarchive.
       isArray: false
       name: detectorId
       required: true
@@ -1105,14 +1305,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Unarchives Amazon GuardDuty findings specified by the list of finding
-      IDs.
+    description: Unarchives Amazon GuardDuty findings specified by the list of finding IDs.
     execution: false
     name: aws-gd-unarchive-findings
   - arguments:
     - default: false
-      description: The ID of the detector that specifies the GuardDuty service whose
-        findings you want to mark as useful or not useful.
+      description: The ID of the detector that specifies the GuardDuty service whose findings you want to mark as useful or not useful.
       isArray: false
       name: detectorId
       required: true
@@ -1158,9 +1356,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -1171,8 +1367,7 @@ script:
     name: aws-gd-update-findings-feedback
   - arguments:
     - default: false
-      description: The ID of the detector that specifies the GuardDuty service whose
-        members you want to retrieve.
+      description: The ID of the detector that specifies the GuardDuty service whose members you want to retrieve.
       isArray: false
       name: detectorId
       required: true
@@ -1196,11 +1391,29 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results to query.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
       required: false
       secret: false
     deprecated: false
@@ -1231,15 +1444,13 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The ID of the detector that specifies the GuardDuty service whose
-        members you want to retrieve.
+      description: The ID of the detector that specifies the GuardDuty service whose members you want to retrieve.
       isArray: false
       name: detectorId
       required: true
       secret: false
     - default: false
-      description: The ID of the account that specifies the GuardDuty service whose
-        details you want to retrieve.
+      description: The ID of the account that specifies the GuardDuty service whose details you want to retrieve.
       isArray: false
       name: accountIds
       required: true
@@ -1263,16 +1474,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Describes Amazon GuardDuty members for the specified detector ID
-      & account ID.
+    description: Describes Amazon GuardDuty members for the specified detector ID & account ID.
     execution: false
     name: aws-gd-get-members
     outputs:
@@ -1297,7 +1505,7 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.33854
+  dockerimage: demisto/boto3py3:1.0.0.49694
   feed: false
   isfetch: true
   longRunning: false
@@ -1309,3 +1517,5 @@ script:
 tests:
 - No tests
 fromversion: 5.0.0
+defaultmapperin: AWSGuardDuty - Incoming Mapper
+defaultclassifier: AWSGuardDuty - Classifier

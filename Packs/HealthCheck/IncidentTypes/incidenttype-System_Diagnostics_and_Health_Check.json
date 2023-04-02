@@ -8,7 +8,7 @@
     "disabled": false,
     "extractSettings": {
         "fieldCliNameToExtractSettings": {},
-        "mode": "Specific"
+        "mode": "All"
     },
     "hours": 0,
     "hoursR": 0,
@@ -16,13 +16,14 @@
     "layout": "System Diagnostics and Health Check",
     "locked": false,
     "name": "System Diagnostics and Health Check",
-    "onChangeRepAlg": 0,
+    "onChangeRepAlg": 1,
     "playbookId": "HealthCheck",
     "readonly": false,
-    "reputationCalc": 0,
+    "reputationCalc": 1,
     "system": false,
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "marketplaces": ["xsoar"]
 }

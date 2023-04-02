@@ -1,5 +1,5 @@
 [file:ServiceNowv2.yml]
-ignore=IN126,IN135,IN124
+ignore=IN126,IN135,IN124,IN139
 
 [file:playbook-Create_ServiceNow_Ticket.yml]
 ignore=PB106
@@ -29,6 +29,8 @@ ignore=BA101
 ignore=BA101
 [file:incidentfield-ServiceNow_Ticket_Number.json]
 ignore=IF100
+[file:incidentfield-ServiceNow_Ticket_ID.json]
+ignore=IF100
 
 [known_words]
 lookback
@@ -37,6 +39,10 @@ params
 README
 ampersand
 concat
+CMDB
+BypassAddRecord
+closeReason
+closeNotes
 
 [file:classifier-ServiceNow.json]
 ignore=BA101

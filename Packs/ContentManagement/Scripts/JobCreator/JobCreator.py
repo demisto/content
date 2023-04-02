@@ -4,7 +4,7 @@ from CommonServerPython import *
 SCRIPT_NAME = 'JobCreator'
 
 
-def configure_job(job_name: str, existing_job: Optional[Dict[str, Any]] = None) -> bool:
+def configure_job(job_name: str, existing_job: Optional[Dict[str, Any]] = None, instance_name: str = None) -> bool:
     """Configures the job in the XSOAR instance.
     """
     instance_context = demisto.context()
@@ -22,9 +22,14 @@ def configure_job(job_name: str, existing_job: Optional[Dict[str, Any]] = None) 
     if is_scheduled is False:
         job_params['scheduled'] = False
 
+    args = {'uri': '/jobs', 'body': job_params}
+
+    if instance_name:
+        args['using'] = instance_name
+
     status, res = execute_command(
         'demisto-api-post',
-        {'uri': '/jobs', 'body': job_params},
+        args,
         fail_on_error=False,
     )
 
@@ -36,11 +41,12 @@ def configure_job(job_name: str, existing_job: Optional[Dict[str, Any]] = None) 
     return True
 
 
-def search_existing_job(job_name: str) -> Dict[str, Any]:
+def search_existing_job(job_name: str, instance_name: str = None) -> Dict[str, Any]:
     """Searches the machine for previously configured jobs with the given name.
 
     Args:
         job_name (str): The name of the job to update it's past configurations.
+        instance_name (str): Demisto REST API instance name.
 
     Returns:
         Dict[str, Any]. The job data as configured on the machine.
@@ -51,9 +57,14 @@ def search_existing_job(job_name: str) -> Dict[str, Any]:
         'query': f'name:"{job_name}"',
     }
 
+    args = {'uri': '/jobs/search', 'body': body}
+
+    if instance_name:
+        args['using'] = instance_name
+
     status, res = execute_command(
         'demisto-api-post',
-        {'uri': '/jobs/search', 'body': body},
+        args,
         fail_on_error=False,
     )
 
@@ -71,11 +82,12 @@ def search_existing_job(job_name: str) -> Dict[str, Any]:
 
 def main():
     args = demisto.args()
+    instance_name = args.get('using')
     job_name = args.get('job_name')
 
     try:
-        existing_job = search_existing_job(job_name)
-        configuration_status = configure_job(job_name, existing_job)
+        existing_job = search_existing_job(job_name, instance_name)
+        configuration_status = configure_job(job_name, existing_job, instance_name)
 
         return_results(
             CommandResults(

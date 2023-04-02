@@ -1,14 +1,8 @@
 {
-  "Apache_httpd_error": {
-    "_raw_log": {
-      "type": "string",
-      "is_array": false
-    }
-  },
-  "httpd_access": {
+  "apache_httpd_raw": {
     "_raw_log": {
       "type": "string",
       "is_array": false
     }
   }
-}
+}    

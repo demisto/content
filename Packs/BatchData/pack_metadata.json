@@ -1,13 +1,15 @@
 {
-    "name": "BatchData",
-    "description": "This script is used to split large list data sets into a defined batch size. A common use case is for api requests that can only handle a set number of items per request. ",
+    "name": "BatchData (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "cstone112",
     "url": "",
     "email": "",
     "created": "2022-03-02T16:40:15Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
@@ -17,5 +19,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }

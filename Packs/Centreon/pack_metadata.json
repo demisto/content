@@ -2,13 +2,13 @@
     "name": "Centreon",
     "description": "IT & Network Monitoring",
     "support": "xsoar",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.15",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Case Management"
+        "IT Services"
     ],
     "tags": [],
     "useCases": [],

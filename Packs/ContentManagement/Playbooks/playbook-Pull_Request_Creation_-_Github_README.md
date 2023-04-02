@@ -15,11 +15,11 @@ This playbook does not use any integrations.
 * SuggestBranchName
 
 ### Commands
-* GitHub-create-pull-request
+* GitHub-request-review
 * GitHub-create-branch
+* GitHub-create-pull-request
 * GitHub-list-branch-pull-requests
 * GitHub-get-branch
-* GitHub-request-review
 
 ## Playbook Inputs
 ---

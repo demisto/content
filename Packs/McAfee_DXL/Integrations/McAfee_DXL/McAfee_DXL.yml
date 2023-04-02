@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence
+category: Messaging and Conferencing
 commonfields:
   id: McAfee DXL
   version: -1
@@ -197,7 +197,7 @@ script:
     description: The push hash to the DXL fabric.
     execution: false
     name: dxl-push-hash
-  dockerimage: demisto/dxl:1.0.0.24037
+  dockerimage: demisto/dxl:1.0.0.35274
   isfetch: false
   longRunning: false
   longRunningPort: false

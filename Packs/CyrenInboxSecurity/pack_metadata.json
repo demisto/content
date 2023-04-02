@@ -2,26 +2,15 @@
     "name": "Cyren Inbox Security",
     "description": "Cyren Inbox Security protects Office 365 mailboxes from evasive phishing, business email compromise, and fraud.",
     "support": "partner",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.6",
     "author": "Cyren",
     "url": "https://www.cyren.com/products/cyren-inbox-security",
     "email": "paltoalto-cortex-xsoar@cyren.com",
     "categories": [
-        "Utilities",
         "Forensics & Malware Analysis"
     ],
-    "tags": [
-        "Alerts",
-        "Email",
-        "Incident Response",
-        "Incident Handling",
-        "Security"
-    ],
-    "useCases": [
-        "Phishing",
-        "Malware",
-        "Incident Response"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "cyren",
         "phishing",

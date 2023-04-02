@@ -1,0 +1,66 @@
+{
+    "data": {
+      "messages": {
+        "ampTgCategories": [
+          
+        ],
+        "showDLPDetails": true,
+        "direction": "outgoing",
+        "smtpAuthId": "",
+        "sender": "test@test.com",
+        "midHeader": "<TEST.TEST.COM>",
+        "timestamp": "21 Sep 2022 08:42:21 (GMT +00:00)",
+        "hostName": "(Name unresolved,  SN:123123-123123)",
+        "mid": [
+          1131
+        ],
+        "sendingHostSummary": {
+          
+        },
+        "attachments": [
+          
+        ],
+        "messageSize": "28.64 (KB)",
+        "dlpDetails": {
+          "violationSeverity": "HIGH",
+          "dlpMatchedContent": [
+            {
+              "messagePartMatch": [
+                {
+                  "classifier": "Proper Names (US)",
+                  "classifierMatch": [
+                    "Tim Lowe",
+                    "Albert Iorio",
+                    "Adriane Morrison",
+                    "Lisa Garrison",
+                    "Charles Jackson"
+                  ]
+                },
+                {
+                  "classifier": "Personal Information (US)",
+                  "classifierMatch": [
+                    "Test Test <test@test.com> Subject: DLP  First and Last Name     SSN     Credit Card Number Visa MC AMEX Robert Aragon   489-36-8350     4929-3813-3266-4295 Ashley Borden",
+                    "Test Test  Subject: Fw: DLP From: Test Test Sent: Tuesday, September 20, 2022 4:35 PM To: Test Test  Subject: DLP First and Last Name   SSN"
+                  ]
+                }
+              ],
+              "messagePart": "Message"
+            }
+          ],
+          "mid": "1131",
+          "riskFactor": 72,
+          "dlpPolicy": "US HIPAA and HITECH (Low Threshold)"
+        },
+        "messageStatus": "Delivered",
+        "allIcid": [
+          23919
+        ],
+        "senderGroup": "RELAY_O365",
+        "recipient": [
+          "test@test.com"
+        ],
+        "headerFrom": "test@test.com",
+        "subject": "Fw: DLP"
+      }
+    }
+  }

@@ -8,11 +8,12 @@ from CommonServerPython import *
 import dateparser
 import requests
 import trustar
+import urllib3
 from trustar.models.indicator import Indicator
 from trustar.models.report import Report
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 handle_proxy()
 

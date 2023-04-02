@@ -1,15 +1,19 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import os
 import sys
 import time
 import traceback
 from datetime import datetime
+import urllib3
 
-import demistomock as demisto  # noqa: F401
 import requests
-from CommonServerPython import *  # noqa: F401
+
 from requests.exceptions import HTTPError
 
-requests.packages.urllib3.disable_warnings()
+# Disable insecure warnings
+urllib3.disable_warnings()
+
 
 FIELD_NAMES_MAP = {
     'ScanType': 'Type',
@@ -137,9 +141,10 @@ severity_to_text = [
 BASE_URL = demisto.params()['url']
 ACCESS_KEY = demisto.params()['access-key']
 SECRET_KEY = demisto.params()['secret-key']
-AUTH_HEADERS = {'X-ApiKeys': 'accessKey={}; secretKey={}'.format(ACCESS_KEY, SECRET_KEY)}
+USER_AGENT_HEADERS_VALUE = 'Integration/1.0 (PAN; Cortex-XSOAR; Build/2.0)'
+AUTH_HEADERS = {'X-ApiKeys': f"accessKey={ACCESS_KEY}; secretKey={SECRET_KEY}"}
 NEW_HEADERS = {
-    'X-ApiKeys': 'accessKey={}; secretKey={}'.format(ACCESS_KEY, SECRET_KEY),
+    'X-ApiKeys': f'accessKey={ACCESS_KEY}; secretKey={SECRET_KEY}',
     'accept': "application/json",
     'content-type': "application/json"
 }
@@ -263,7 +268,7 @@ def date_range_to_param(date_range):
             date_range = int(date_range)
             params['date_range'] = date_range
         except ValueError:
-            return_error("Invalid date range: {}".format(date_range))
+            return_error(f"Invalid date range: {date_range}")
     return params
 
 
@@ -271,12 +276,12 @@ def get_scan_error_message(response, scan_id):
     code = response.status_code
     message = "Error processing request"
     if scan_id:
-        message += " for scan with id {}".format(scan_id)
-    message += ". Got response status code: {}".format(code)
+        message += f" for scan with id {scan_id}"
+    message += f". Got response status code: {code}"
     if code == 401:
         message += " - Scan is disabled."
     elif code == 403:
-        message += " - {}".format(response.json()['error'])
+        message += f" - {response.json()['error']}"
     elif code == 404:
         message += " - Scan does not exist."
     elif code == 409:
@@ -316,7 +321,7 @@ def get_scan_info(scans_result_elem):
 
 
 def send_vuln_details_request(plugin_id, date_range=None):
-    full_url = "{}{}{}/{}".format(BASE_URL, "workbenches/vulnerabilities/", plugin_id, "info")
+    full_url = f"{BASE_URL}workbenches/vulnerabilities/{plugin_id}/info"
     res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=date_range_to_param(date_range))
     return res.json()
 
@@ -336,7 +341,7 @@ def get_vuln_info(vulns):
 
 
 def send_assets_request(params):
-    full_url = "{}{}".format(BASE_URL, "workbenches/assets")
+    full_url = f"{BASE_URL}workbenches/assets"
     res = requests.request("GET", full_url, headers=AUTH_HEADERS, params=params, verify=USE_SSL)
     return res.json()
 
@@ -351,9 +356,47 @@ def get_asset_id(params):
 
 
 def send_asset_vuln_request(asset_id, date_range):
-    full_url = "{}workbenches/assets/{}/vulnerabilities/".format(BASE_URL, asset_id)
+    full_url = f"{BASE_URL}workbenches/assets/{asset_id}/vulnerabilities/"
     res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=date_range_to_param(date_range))
     res.raise_for_status()
+    return res.json()
+
+
+def send_asset_details_request(asset_id: str) -> Dict[str, Any]:
+    """Gets asset details using the '{BASE_URL}workbenches/assets/{asset_id}/info' endpoint.
+
+    Args:
+        asset_id (string): id of the asset.
+
+    Returns:
+        dict: dict containing information on an asset.
+    """
+    full_url = f"{BASE_URL}workbenches/assets/{asset_id}/info"
+    try:
+        res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL)
+        res.raise_for_status()
+    except HTTPError as exc:
+        return_error(f'Error calling for url {full_url}: error message {exc}')
+
+    return res.json()
+
+
+def send_asset_attributes_request(asset_id: str) -> Dict[str, Any]:
+    """Gets asset attributes using the '{BASE_URL}api/v3/assets/{asset_id}/attributes' endpoint.
+
+    Args:
+        asset_id (string): id of the asset.
+
+    Returns:
+        dict: dict containing information on an asset.
+    """
+    full_url = f"{BASE_URL}api/v3/assets/{asset_id}/attributes"
+    try:
+        res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL)
+        res.raise_for_status()
+    except HTTPError as exc:
+        return_error(f'Error calling for url {full_url}: error message {exc}')
+
     return res.json()
 
 
@@ -362,11 +405,31 @@ def test_module():
     return 'ok'
 
 
+def relational_date_to_epoch_date_format(date: Optional[str]) -> Optional[int]:
+    """ Retrieves date string or relational expression to date YYYY-MM-DD format.
+        Example arg is "7 days ago".
+        Args:
+            date: str - date or relational expression.
+        Returns:
+            A str in epoch date format or None.
+    """
+    if date:
+        if date.isnumeric():
+            return int(date)
+        else:
+            date_datetime = dateparser.parse(date)  # parser for human readable dates
+            if date_datetime:  # dateparser.parse returns datetime representing parsed date if successful, else returns None
+                if date := date_datetime.strftime('%Y-%m-%d'):
+                    date_int = (int(time.mktime(datetime.strptime(date, "%Y-%m-%d").timetuple())))
+                    return date_int
+            else:
+                raise DemistoException('Tenable.io: Date format is invalid')
+    return None
+
+
 def get_scans_command():
-    folder_id, last_modification_date = demisto.getArg('folderId'), demisto.getArg('lastModificationDate')
-    if last_modification_date:
-        last_modification_date = int(time.mktime(datetime.strptime(last_modification_date[0:len('YYYY-MM-DD')],
-                                                                   "%Y-%m-%d").timetuple()))
+    folder_id = demisto.args().get('folderId'),
+    last_modification_date = relational_date_to_epoch_date_format(demisto.getArg('lastModificationDate'))
     response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
     scan_entries = list(map(get_scan_info, response['scans']))
     valid_scans = [x for x in scan_entries if x is not None]
@@ -436,7 +499,7 @@ def get_vulnerability_details_command():
     info = send_vuln_details_request(plugin_id, date_range)
     if 'error' in info:
         return_error(info['error'])
-    return get_entry_for_object('Vulnerability details - {}'.format(plugin_id), 'TenableIO.Vulnerabilities',
+    return get_entry_for_object(f'Vulnerability details - {plugin_id}', 'TenableIO.Vulnerabilities',
                                 convert_severity_values(replace_keys(flatten(info['info']))),
                                 VULNERABILITY_DETAILS_HEADERS)
 
@@ -455,11 +518,60 @@ def args_to_request_params(hostname, ip, date_range):
 
     if date_range:
         if not date_range.isdigit():
-            return_error("Invalid date range: {}".format(date_range))
+            return_error(f"Invalid date range: {date_range}")
         else:
             params["date_range"] = date_range
 
     return params, indicator
+
+
+def get_asset_details_command() -> CommandResults:
+    """
+    tenable-io-get-asset-details: Retrieves details for the specified asset to include custom attributes.
+
+    Args:
+        None
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains asset
+        details.
+    """
+    ip = demisto.getArg('ip')
+
+    if not ip:
+        return_error("Please provide an IP address")
+
+    params = {
+        "filter.0.filter": "host.target",
+        "filter.0.quality": "eq",
+        "filter.0.value": ip
+    }
+
+    asset_id = get_asset_id(params)
+    if not asset_id:
+        return CommandResults(readable_output=f'Asset not found: {ip}')
+
+    try:
+        info = send_asset_details_request(asset_id)
+        attrs = send_asset_attributes_request(asset_id)
+        if attrs:
+            attributes = []
+            for attr in attrs.get("attributes", []):
+                attributes.append({attr.get('name', ''): attr.get('value', '')})
+            info["info"]["attributes"] = attributes
+
+    except DemistoException as e:
+        return_error(f'Failed to include custom attributes. {e}')
+
+    readable_output = tableToMarkdown(
+        f'Asset Info for {ip}', info["info"], headers=["attributes", "fqdn", "interfaces", "ipv4", "id", "last_seen"])
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=info["info"],
+        outputs_prefix='TenableIO.AssetDetails',
+        outputs_key_field='id',
+        outputs=info["info"]
+    )
 
 
 def get_vulnerabilities_by_asset_command():
@@ -468,7 +580,7 @@ def get_vulnerabilities_by_asset_command():
 
     asset_id = get_asset_id(params)
     if not asset_id:
-        return 'No Vulnerabilities for asset {}'.format(indicator)
+        return f'No Vulnerabilities for asset {indicator}'
 
     info = send_asset_vuln_request(asset_id, date_range)
     if 'error' in info:
@@ -476,7 +588,7 @@ def get_vulnerabilities_by_asset_command():
 
     vulns = convert_severity_values(replace_keys(info['vulnerabilities'], ASSET_VULNS_NAMES_MAP))
     if vulns:
-        entry = get_entry_for_object('Vulnerabilities for asset {}'.format(indicator), 'TenableIO.Vulnerabilities',
+        entry = get_entry_for_object(f'Vulnerabilities for asset {indicator}', 'TenableIO.Vulnerabilities',
                                      vulns, ASSET_VULNS_HEADERS)
         entry['EntryContext']['TenableIO.Assets(val.Hostname === obj.Hostname)'] = {
             'Vulnerabilities': [x['plugin_id'] for x in info['vulnerabilities']],
@@ -492,7 +604,7 @@ def get_scan_status_command():
         'Id': scan_id,
         'Status': scan_details['info']['status']
     }
-    return get_entry_for_object('Scan status for {}'.format(scan_id), 'TenableIO.Scan(val.Id && val.Id === obj.Id)',
+    return get_entry_for_object(f'Scan status for {scan_id}', 'TenableIO.Scan(val.Id && val.Id === obj.Id)',
                                 scan_status)
 
 
@@ -522,8 +634,8 @@ def pause_scan_command():
 
         else:
             results.append(
-                "Command 'tenable-io-pause-scan' cannot be called while scan status is {} for scanID"
-                " {}".format(scan_status["Status"], scan_id))
+                f"Command 'tenable-io-pause-scan' cannot be called while scan status is {scan_status['Status']} for scanID"
+                " {scan_id}")
 
     return results
 
@@ -553,10 +665,453 @@ def resume_scan_command():
 
         else:
             results.append(
-                "Command 'tenable-io-resume-scan' cannot be called while scan status is {} for scanID "
-                "{}".format(scan_status["Status"], scan_id))
+                f"Command 'tenable-io-resume-scan' cannot be called while scan status is {scan_status['Status']} for scanID "
+                "{scan_id}")
 
     return results
+
+
+def export_request(request_params: dict, assets_or_vulns: str) -> dict:
+    """Gets the UUID of the assets/vulnerabilities export job.
+
+    Args:
+        request_params (dict): The request params.
+        assets_or_vulns (string): A string represents part of the endpoint according to the requested (assets or vulnerabilities)
+
+    Returns:
+        dict: The UUID of the assets export job or raise DemistoException.
+    """
+    full_url = f'{BASE_URL}{assets_or_vulns}/export'
+    res = requests.post(full_url, headers=NEW_HEADERS, verify=USE_SSL, json=request_params)
+    if res.status_code != 200:
+        raise DemistoException(res.text)
+    return res.json()
+
+
+def export_request_with_export_uuid(export_uuid: str, assets_or_vulns: str) -> dict:
+    """Gets status details of the export job.
+
+    Args:
+        export_uuid (string): The UUID of the assets/vulnerabilities export job.
+        assets_or_vulns (string): A string represents part of the endpoint according to the requested (assets or vulnerabilities)
+
+    Returns:
+        dict: Status of the export job or raise DemistoException.
+    """
+    full_url = f'{BASE_URL}{assets_or_vulns}/export/{export_uuid}/status'
+    res = requests.get(full_url, headers=NEW_HEADERS, verify=USE_SSL)
+    if res.status_code != 200:
+        raise DemistoException(res.text)
+    return res.json()
+
+
+def get_chunks_request(export_uuid: str, chunk_id: str, assets_or_vulns: str) -> dict:
+    """Gets chunks of assets or vulnerabilities
+
+    Args:
+        export_uuid (string): The UUID of the assets/vulnerabilities export job.
+        assets_or_vulns (string): A string represents part of the endpoint according to the
+                                  requested data (assets or vulnerabilities)
+        chunk_id (string): the id of assets/vulnerabilities the chunk requested to export.
+    Returns:
+        dict: Status of the export job or raise DemistoException.
+    """
+    full_url = f'{BASE_URL}{assets_or_vulns}/export/{export_uuid}/chunks/{chunk_id}'
+    res = requests.get(full_url, headers=NEW_HEADERS, verify=USE_SSL)
+    if res.status_code != 200:
+        raise DemistoException(res.text)
+    return res.json()
+
+
+def get_export_chunks_details(export_uuid_status_response: dict, export_uuid: str, assets_or_vulns: str) -> list[Dict]:
+    """Gets All chunks of assets or vulnerabilities export.
+
+    Args:
+        export_uuid_status_response (dict): The response with the chunks details.
+        export_uuid (string): The UUID of the assets/vulnerabilities export job.
+        assets_or_vulns (string): A string represents part of
+                                  the endpoint according to the requested data (assets or vulnerabilities)
+    Returns:
+        dict: Status of the export job.
+    """
+    chunks_list_id = export_uuid_status_response.get('chunks_available')
+    chunks_response_list: list = []
+    if chunks_list_id:
+        for chunk_id in chunks_list_id:
+            chunk_response = get_chunks_request(export_uuid, chunk_id, assets_or_vulns)
+            chunks_response_list.extend(chunk_response)
+    return chunks_response_list
+
+
+def export_assets_build_command_result(chunks_details_list: list[dict]) -> CommandResults:
+    """Builds command result object from chunks details list
+
+    Args:
+        chunks_details_list (list[dict]): a list[dict] of assets details.
+    Returns:
+        CommandResults: Command Results object with the relevant data.
+    """
+    headers = ['ASSET ID', 'DNS NAME (FQDN)', 'SYSTEM TYPE', 'OPERATING SYSTEM', 'IPV4 ADDRESS', 'NETWORK',
+               'FIRST SEEN', 'LAST SEEN', 'LAST LICENSED SCAN', 'SOURCE', 'TAGS']
+    human_readable = []
+    for chunk_details in chunks_details_list:
+        human_readable_to_append = {}
+        if fqdns := chunk_details.get('fqdns'):
+            human_readable_to_append.update({'DNS NAME (FQDN)': fqdns[0]})
+        if tag := chunk_details.get("tags"):
+            if first_tag := tag[0]:
+                human_readable_to_append.update({'TAGS': f'{first_tag.get("key")}:{first_tag.get("value")}'})
+        if sources := chunk_details.get("sources"):
+            if first_source := sources[0]:
+                human_readable_to_append.update({'SOURCE': first_source.get('name')})
+        if network_interfaces := chunk_details.get('network_interfaces'):
+            if first_network_interfaces := network_interfaces[0]:
+                human_readable_to_append.update({'IPV4 ADDRESS': first_network_interfaces.get('ipv4s')})
+        human_readable_to_append.update(
+            {'ASSET ID': chunk_details.get('id'),
+             'SYSTEM TYPE': chunk_details.get('system_types'),
+             'OPERATING SYSTEM': chunk_details.get('operating_systems'),
+             'NETWORK': chunk_details.get('network_name'),
+             'FIRST SEEN': chunk_details.get('first_seen'),
+             'LAST SEEN': chunk_details.get('last_seen'),
+             'LAST LICENSED SCAN': chunk_details.get('last_licensed_scan_date')}
+        )
+        remove_nulls_from_dictionary(chunk_details)
+        human_readable.append(human_readable_to_append)
+    return CommandResults(
+        outputs_key_field='id',
+        outputs_prefix='TenableIO.Asset',
+        outputs=chunks_details_list,
+        raw_response=chunks_details_list,
+        readable_output=tableToMarkdown('Assets', human_readable, headers=headers, removeNull=True)
+    )
+
+
+def request_uuid_export_assets(args: Dict[str, Any]) -> PollResult:
+    """
+    Gets the UUID of the assets export job.
+
+    Args:
+        args (Dict[str, Any]): Arguments passed down by the CLI to provide in the HTTP request.
+
+    Returns:
+        PollResult: A result to return to the user which will be set as a CommandResults.
+    """
+    tag_category = args.get('tagCategory')
+    tag_value = args.get('tagValue')
+    request_params = remove_empty_elements(
+        {
+            "chunk_size": arg_to_number(args.get("chunkSize")),
+            "include_unlicensed": args.get("isLicensed"),
+            "filters": {
+                "created_at": relational_date_to_epoch_date_format(
+                    args.get("createdAt")
+                ),
+                "updated_at": relational_date_to_epoch_date_format(args.get("updatedAt")),
+                "terminated_at": relational_date_to_epoch_date_format(
+                    args.get("terminatedAt")
+                ),
+                "is_terminated": argToBoolean(args.get("isTerminated")) if args.get("isTerminated") else None,
+                "deleted_at": relational_date_to_epoch_date_format(args.get("deletedAt")),
+                "is_deleted": argToBoolean(args.get("isDeleted")) if args.get("isDeleted") else None,
+                "is_licensed": argToBoolean(args.get("isLicensed")) if args.get("isLicensed") else None,
+                "first_scan_time": relational_date_to_epoch_date_format(args.get("firstScanTime")),
+                "last_authenticated_scan_time": relational_date_to_epoch_date_format(args.get("lastAuthenticatedScanTime")),
+                "last_assessed": relational_date_to_epoch_date_format(args.get("lastAssessed")),
+                "servicenow_sysid": argToBoolean(args.get("serviceNowSysId")) if args.get("serviceNowSysId") else None,
+                "sources": argToList(args.get("sources")),
+                "has_plugin_results": argToBoolean(args.get("hasPluginResults")) if args.get("hasPluginResults") else None,
+            },
+        })
+    if tag_category and tag_value:
+        if request_params.get('filters'):
+            request_params.get('filters')[f'tag.{tag_category}'] = tag_value
+        else:
+            request_params['filters'] = {f'tag.{tag_category}': tag_value}
+
+    if (tag_category and not tag_value) or (not tag_category and tag_value):
+        raise DemistoException('Please specify tagCategory and tagValue')
+
+    demisto.debug("request params export assets", request_params)
+    api_response = export_request(request_params, 'assets')
+    export_uuid = api_response.get('export_uuid')
+    demisto.debug(f'export_uuid: {export_uuid}')
+    status = api_response.get('status')
+    return PollResult(
+        response=None,
+        partial_result=CommandResults(
+            outputs_prefix="TenableIO.Asset",
+            outputs_key_field="id",
+            readable_output="Waiting for export assets to finish...",
+        ),
+        continue_to_poll=True,
+        args_for_next_run={"exportUuid": export_uuid, "status": status, **args},
+    )
+
+
+def build_vpr_score(args: Dict[str, Any]) -> dict:
+    """
+    Builds the vpr score request body.
+
+    Args:
+        args (Dict[str, Any]): Arguments vprScoreOperator, vprScoreRange, vprScoreValue
+        passed down by the CLI to provide in the HTTP request.
+
+    Returns:
+        dict: vpr score dict.
+    """
+    if not args.get('vprScoreValue') and args.get('vprScoreOperator'):
+        raise DemistoException('Please specify vprScoreValue and vprScoreOperator')
+    elif args.get('vprScoreRange') and args.get('vprScoreOperator'):
+        raise DemistoException('Please specify only one of vprScoreRange or vprScoreOperator')
+    elif args.get('vprScoreValue') and not args.get('vprScoreOperator'):
+        raise DemistoException('Please specify vprScoreValue and vprScoreOperator')
+    vpr_score_value = args.get('vprScoreValue')
+    vpr_score = {}
+    if vpr_score_value:
+        vpr_score = {'eq': [float(x) for x in argToList(vpr_score_value)] if args.get('vprScoreOperator') == 'equal' else None,
+                     'neq': [float(x) for x in argToList(vpr_score_value)]
+                     if args.get('vprScoreOperator') == 'not equal' else None,
+                     'gt': float(vpr_score_value) if args.get('vprScoreOperator') == 'gt' else None,
+                     'lt': float(vpr_score_value) if args.get('vprScoreOperator') == 'lt' else None,
+                     'gte': float(vpr_score_value) if args.get('vprScoreOperator') == 'gte' else None,
+                     'lte': float(vpr_score_value) if args.get('vprScoreOperator') == 'lte' else None}
+
+    if args.get('vprScoreRange'):
+        lower_range_bound, upper_range_bound = validate_range(args.get('vprScoreRange'))
+        vpr_score['lte'] = upper_range_bound
+        vpr_score['gte'] = lower_range_bound
+    return vpr_score
+
+
+def request_uuid_export_vulnerabilities(args: Dict[str, Any]) -> PollResult:
+    """
+    Gets the UUID of the vulnerabilities export job.
+
+    Args:
+        args (Dict[str, Any]): Arguments passed down by the CLI to provide in the HTTP request.
+
+    Returns:
+        PollResult: A result to return to the user which will be set as a CommandResults.
+    """
+    tag_category = args.get("tagCategory")
+    tag_value = args.get("tagValue")
+    request_params = remove_empty_elements(
+        {
+            'num_assets': arg_to_number(args.get('numAssets')),
+            'include_unlicensed': argToBoolean(args.get('includeUnlicensed')) if args.get('includeUnlicensed') else None,
+            'filters': {
+                'cidr_range': args.get('cidrRange'),
+                'first_found': relational_date_to_epoch_date_format(args.get('firstFound')),
+                'last_fixed': relational_date_to_epoch_date_format(args.get('lastFixed')),
+                'last_found': relational_date_to_epoch_date_format(args.get('lastFound')),
+                'network_id': args.get('networkId'),
+                'plugin_id': [arg_to_number(x) for x in argToList(args.get('pluginId'))],
+                'plugin_type': args.get('pluginType'),
+                'severity': argToList(args.get('severity')),
+                'since': relational_date_to_epoch_date_format(args.get('since')),
+                'state': argToList(args.get('state')),
+                'vpr_score': build_vpr_score(args),
+            }
+        }
+    )
+    if tag_category and tag_value:
+        if request_params.get('filters'):
+            request_params.get('filters')[f'tag.{tag_category}'] = tag_value
+        else:
+            request_params['filters'] = {f'tag.{tag_category}': tag_value}
+
+    if (tag_category and not tag_value) or (not tag_category and tag_value):
+        raise DemistoException('Please specify tagCategory and tagValue')
+
+    demisto.debug("request params export vulnerabilities", request_params)
+    api_response = export_request(request_params, 'vulns')
+    export_uuid = api_response.get('export_uuid')
+    demisto.debug(f'export_uuid: {export_uuid}')
+    return PollResult(
+        response=None,
+        partial_result=CommandResults(
+            outputs_prefix="TenableIO.Vulnerability",
+            readable_output="Waiting for export vulnerabilities to finish...",
+        ),
+        continue_to_poll=True,
+        args_for_next_run={"exportUuid": export_uuid, **args},
+    )
+
+
+@polling_function(name=demisto.command(), timeout=arg_to_number(demisto.args().get('timeout', 600)),
+                  interval=arg_to_number(demisto.args().get('intervalInSeconds', 10)),
+                  requires_polling_arg=False)
+def export_assets_command(args: Dict[str, Any]) -> PollResult:
+    """
+    Polling command to export_assets.
+    After the first run, progress will be shown through the status QUEUED, PROCESSING, CANCELED, ERROR and FINISHED.
+    Export assets command will run till its status is 'FINISHED'.
+
+    Args:
+        args (Dict[str, Any]): Arguments passed down by the CLI to provide in the HTTP request.
+
+    Returns:
+        PollResult: A result to return to the user which will be set as a CommandResults.
+            The result itself will depend on the stage of polling.
+    """
+    export_uuid = demisto.args().get('exportUuid')
+    if export_uuid:
+        demisto.debug(f'export_uuid: {export_uuid}')
+        export_uuid_status_response = export_request_with_export_uuid(export_uuid, 'assets')
+        status = export_uuid_status_response.get('status')
+        if status == 'FINISHED':
+            chunks_details_list = get_export_chunks_details(export_uuid_status_response, export_uuid, 'assets')
+            command_results = export_assets_build_command_result(chunks_details_list)
+            return PollResult(command_results)
+        elif status == 'PROCESSING' or status == 'QUEUED':
+            return PollResult(
+                response=None,
+                partial_result=CommandResults(
+                    outputs_prefix="TenableIO.Asset",
+                    outputs_key_field="id",
+                    readable_output="Waiting for export assets to finish...",
+                ),
+                continue_to_poll=True,
+                args_for_next_run={"exportUuid": export_uuid, "status": status, **args},
+            )
+        else:
+            return PollResult(
+                response=CommandResults(
+                    outputs_key_field='id',
+                    outputs_prefix='TenableIO.Asset',
+                    readable_output=f'TenableIO: {status}',
+                ),
+                continue_to_poll=False,
+            )
+    else:
+        return request_uuid_export_assets(args)
+
+
+def export_vulnerabilities_build_command_result(chunks_details_list: list[dict]) -> CommandResults:
+    """Builds command result object from chunks details list
+
+    Args:
+        chunks_details_list (list[dict]): a list[dict] of assets details.
+    Returns:
+        CommandResults: Command Results object with the relevant data.
+    """
+    headers = ['ASSET ID', 'ASSET NAME', 'IPV4 ADDRESS', 'OPERATING SYSTEM', 'SYSTEM TYPE', 'DNS NAME (FQDN)',
+               'SEVERITY', 'PLUGIN ID', 'PLUGIN NAME', 'VULNERABILITY PRIORITY RATING', 'CVSSV2 BASE SCORE'
+               'CVE', 'PROTOCOL', 'PORT', 'FIRST SEEN', 'LAST SEEN', 'DESCRIPTION', 'SOLUTION']
+    human_readable = []
+    for chunk_details in chunks_details_list:
+        asset_details = chunk_details.get('asset')
+        plugin_details = chunk_details.get('plugin')
+        port_details = chunk_details.get('port')
+        human_readable_to_append = {}
+        if asset_details:
+            human_readable_to_append.update(
+                {'ASSET ID': asset_details.get('uuid'),
+                 'ASSET NAME': asset_details.get('hostname'),
+                 'IPV4 ADDRESS': asset_details.get('ipv4'),
+                 'OPERATING SYSTEM': asset_details.get('operating_system'),
+                 'SYSTEM TYPE': asset_details.get('device_type'),
+                 'DNS NAME (FQDN)': asset_details.get('fqdn')}
+            )
+        if plugin_details:
+            human_readable_to_append.update(
+                {'PLUGIN ID': plugin_details.get('id'),
+                 'PLUGIN NAME': plugin_details.get('name'),
+                 'VULNERABILITY PRIORITY RATING': plugin_details.get("vpr").get("score") if plugin_details.get("vpr") else None,
+                 'CVSSV2 BASE SCORE': plugin_details.get('cvss_base_score'),
+                 'CVE': plugin_details.get('cve'),
+                 'DESCRIPTION': plugin_details.get('description'),
+                 'SOLUTION': plugin_details.get('solution')}
+            )
+        if port_details:
+            human_readable_to_append.update(
+                {'PORT': port_details.get('port'),
+                 'PROTOCOL': port_details.get('protocol')}
+            )
+        human_readable_to_append.update(
+            {'SEVERITY': chunk_details.get('severity'),
+             'FIRST SEEN': chunk_details.get('first_found'),
+             'LAST SEEN': chunk_details.get('last_found')}
+        )
+
+        remove_nulls_from_dictionary(chunk_details)
+        human_readable.append(human_readable_to_append)
+    return CommandResults(
+        outputs_prefix='TenableIO.Vulnerability',
+        outputs=chunks_details_list,
+        raw_response=chunks_details_list,
+        readable_output=tableToMarkdown('Vulnerabilities', human_readable, headers=headers, removeNull=True)
+    )
+
+
+def validate_range(range: Optional[str]) -> tuple[Optional[float], Optional[float]]:
+    """
+    Validates the vprScoreRange argument for export asset command
+    Args:
+        range (str): A str represents a range for example 3-5.
+    Returns:
+        Range if valid else raise DemistoException.
+    """
+    if range:
+        range_without_spaces = range.strip()
+        nums_list = range_without_spaces.split("-")
+        if len(nums_list) < 2:
+            raise DemistoException('Please specify valid vprScoreRange. VPR values range are 0.1-10.0.')
+        elif float(nums_list[0]) > float(nums_list[1]):
+            raise DemistoException('Please specify valid vprScoreRange. VPR values range are 0.1-10.0.')
+        elif float(nums_list[0]) < 0.1 or float(nums_list[1]) > 10.0:
+            raise DemistoException('Please specify valid vprScoreRange. VPR values range are 0.1-10.0.')
+        else:
+            return float(nums_list[0]), float(nums_list[1])
+    return None, None
+
+
+@polling_function(name=demisto.command(), timeout=arg_to_number(demisto.args().get('timeout', 600)),
+                  interval=arg_to_number(demisto.args().get('intervalInSeconds', 10)),
+                  requires_polling_arg=False)
+def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
+    """
+    Polling command to export vulnerabilities.
+    After the first run, progress will be shown through the status QUEUED, PROCESSING, CANCELED, ERROR and FINISHED.
+    Export vulnerabilities command will run till its status is 'FINISHED' and all the data chunks are exoprted.
+
+    Args:
+        args (Dict[str, Any]): Arguments passed down by the CLI to provide in the HTTP request.
+
+    Returns:
+        PollResult: A result to return to the user which will be set as a CommandResults.
+            The result itself will depend on the stage of polling.
+    """
+    export_uuid = demisto.args().get('exportUuid')
+    if export_uuid:
+        demisto.debug(f'export_uuid: {export_uuid}')
+        export_uuid_status_response = export_request_with_export_uuid(export_uuid, 'vulns')
+        status = export_uuid_status_response.get('status')
+        if status == 'FINISHED':
+            chunks_details_list = get_export_chunks_details(export_uuid_status_response, export_uuid, 'vulns')
+            command_results = export_vulnerabilities_build_command_result(chunks_details_list)
+            return PollResult(command_results)
+        elif status == 'PROCESSING' or status == 'QUEUED':
+            return PollResult(
+                response=None,
+                partial_result=CommandResults(
+                    outputs_prefix="TenableIO.Vulnerability",
+                    readable_output="Waiting for export vulnerabilities to finish...",
+                ),
+                continue_to_poll=True,
+                args_for_next_run={"exportUuid": export_uuid, "status": status, **args},
+            )
+        else:
+            return PollResult(
+                response=CommandResults(
+                    outputs_prefix='TenableIO.Vulnerability',
+                    readable_output=f'TenableIO: {status}',
+                ),
+                continue_to_poll=False,
+            )
+    else:
+        return request_uuid_export_vulnerabilities(args)
 
 
 def main():  # pragma: no cover
@@ -578,6 +1133,12 @@ def main():  # pragma: no cover
         demisto.results(pause_scan_command())
     elif demisto.command() == 'tenable-io-resume-scan':
         demisto.results(resume_scan_command())
+    elif demisto.command() == 'tenable-io-get-asset-details':
+        return_results(get_asset_details_command())
+    elif demisto.command() == 'tenable-io-export-assets':
+        return_results(export_assets_command(demisto.args()))
+    elif demisto.command() == 'tenable-io-export-vulnerabilities':
+        return_results(export_vulnerabilities_command(demisto.args()))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

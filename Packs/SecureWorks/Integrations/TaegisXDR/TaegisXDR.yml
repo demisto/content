@@ -59,6 +59,15 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- display: Include Assets in Fetch
+  name: include_assets
+  defaultvalue: "true"
+  type: 8
+  required: false
+  additionalinfo: An error can occur when the API is slow or there are a large numbers
+    of assets being added to a new incident/investigation. Disabling this will fetch
+    incidents without including asset information, allowing time for the investigation
+    creation to be completed.
 script:
   script: ''
   type: python
@@ -66,7 +75,7 @@ script:
   - name: taegis-fetch-alerts
     arguments:
     - name: ids
-      description: A list of alert IDs to return
+      description: A list of alert IDs or string of comma-separated alert IDs to return
       isArray: true
     - name: cql_query
       description: The Taegis CQL query to for searching Alerts
@@ -133,16 +142,22 @@ script:
       predefined:
       - Open
       - Active
+      - Awaiting Action
       - Suspended
       - 'Closed: Authorized Activity'
-      - 'Closed: False Positive alert'
+      - 'Closed: Confirmed Security Incident'
+      - 'Closed: False Positive Alert'
+      - 'Closed: Inconclusive'
       - 'Closed: Informational'
       - 'Closed: Not Vulnerable'
+      - 'Closed: Threat Mitigated'
       description: New status for the investigation
     - name: service_desk_id
       description: An ticket or ID for to an external system for reference
     - name: service_desk_type
       description: The type of service desk id (e.g. XSOAR)
+    - name: assignee_id
+      description: The auth0 ID of a user, in 'auth0|12345' format
     outputs:
     - contextPath: TaegisXDR.InvestigationUpdate
       description: ID of the updated Taegis investigation
@@ -184,7 +199,166 @@ script:
     - contextPath: TaegisXDR.PlaybookExecution
       description: Returns related execution information
     description: Fetch the results of a Taegis playbook instance execution
-  dockerimage: demisto/python3:3.10.5.31928
+  - name: taegis-fetch-comment
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the comment to fetch
+    outputs:
+    - contextPath: TaegisXDR.Comment
+      description: Return the comment
+    description: Fetch comment by comment ID
+  - name: taegis-fetch-comments
+    arguments:
+    - name: parent_id
+      required: true
+      description: The ID of the parent related to the comments
+    - name: parent_type
+      description: The parent type that the comments belong to
+      defaultValue: investigation
+    outputs:
+    - contextPath: TaegisXDR.Comments
+      description: A list of comments to return
+    description: Fetch comments by Parent Type and ID
+  - name: taegis-create-comment
+    arguments:
+    - name: comment
+      required: true
+      description: The comment string to add to the parent
+    - name: parent_id
+      required: true
+      description: The parent that the comment is being added to
+    - name: parent_type
+      description: The parent type that the comment is being added to
+      defaultValue: investigation
+    outputs:
+    - contextPath: TaegisXDR.CommentCreate
+      description: The created comment information
+    description: Create a comment on an investigation
+  - name: taegis-update-comment
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the comment to update
+    - name: comment
+      required: true
+      description: String to update/replace the comment with
+    outputs:
+    - contextPath: TaegisXDR.CommentUpdate
+      description: The comment update results
+    description: Update an existing comment
+  - name: taegis-fetch-users
+    arguments:
+    - name: id
+      description: The auth0 ID, in 'auth0|12345' format
+    - name: email
+      description: The email address to search for
+    - name: status
+      description: Search by user status
+    - name: page
+      description: Page for results
+      defaultValue: "0"
+    - name: page_size
+      description: Results to return per page
+      defaultValue: "10"
+    outputs:
+    - contextPath: TaegisXDR.Users
+      description: The located user(s)
+    description: Fetch a user by ID or email address
+  - name: taegis-archive-investigation
+    arguments:
+    - name: id
+      required: true
+      description: ID of investigation to update
+    outputs:
+    - contextPath: TaegisXDR.ArchivedInvestigation
+      description: The results from archiving an investigation
+    description: Archive an investigation
+  - name: taegis-unarchive-investigation
+    arguments:
+    - name: id
+      required: true
+      description: ID of investigation to update
+    outputs:
+    - contextPath: TaegisXDR.UnarchivedInvestigation
+      description: The results from unarchiving an investigation
+    description: Unarchive an investigation
+  - name: taegis-update-alert-status
+    arguments:
+    - name: ids
+      required: true
+      description: A list of alert IDs or string of comma-separated alert IDs to return
+      isArray: true
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - FALSE_POSITIVE
+      - NOT_ACTIONABLE
+      - OPEN
+      - TRUE_POSITIVE_BENIGN
+      - TRUE_POSITIVE_MALICIOUS
+      description: The status to update the alert with
+    - name: reason
+      description: A simple comment/reason for the status change
+    outputs:
+    - contextPath: TaegisXDR.AlertStatusUpdate
+      description: The result of the alert status update
+    description: Update the status of an alert
+  - name: taegis-fetch-assets
+    arguments:
+    - name: page
+      description: Search results page number
+      defaultValue: "0"
+    - name: page_size
+      description: The number of results per-page
+      defaultValue: "10"
+    - name: endpoint_type
+      description: Filter assets by asset type
+    - name: host_id
+      description: Filter assets by host ID
+    - name: hostname
+      description: Filter assets by hostname
+    - name: investigation_id
+      description: Filter assets by related investigation ID
+    - name: ip_address
+      description: Filter assets by IP address
+    - name: mac_address
+      description: Filter assets by MAC address
+    - name: os_family
+      description: Filter assets by OS family
+    - name: os_version
+      description: Filter assets by OS version
+    - name: sensor_version
+      description: Filter assets by sensor version
+    - name: username
+      description: Filter assets by username
+    outputs:
+    - contextPath: TaegisXDR.Assets
+      description: A list of located assets
+    description: Fetch assets based on search criteria
+  - name: taegis-isolate-asset
+    arguments:
+    - name: id
+      required: true
+      description: Asset ID to isolate
+    - name: reason
+      required: true
+      description: A reason for the isolation
+    outputs:
+    - contextPath: TaegisXDR.AssetIsolation
+      description: Results from the asset isolation
+    description: Isolate a specific asset
+  - name: taegis-fetch-endpoint
+    arguments:
+    - name: id
+      required: true
+      description: The endpoint ID to fetch
+    outputs:
+    - contextPath: TaegisXDR.Endpoint
+      description: Results from fetching the endpoint information
+    description: Fetch endpoint information
+  dockerimage: demisto/python3:3.10.10.51548
   runonce: false
   subtype: python3
   isfetch: true

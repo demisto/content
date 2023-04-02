@@ -1,6 +1,8 @@
 from collections import defaultdict
 from dataclasses import dataclass, fields
+from types import SimpleNamespace
 import enum
+import html
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -25,12 +27,13 @@ import json
 import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator
-
+import re
 import requests
-from urllib.parse import urlparse
+import urllib3
+from urllib.parse import urlparse, quote
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS '''
 URL = ''
@@ -43,6 +46,13 @@ PRE_POST = ''
 OUTPUT_PREFIX = "PANOS."
 UNICODE_FAIL = u'\U0000274c'
 UNICODE_PASS = u'\U00002714\U0000FE0F'
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
+FETCH_DEFAULT_TIME = '1 day'
+MAX_INCIDENTS_TO_FETCH = 100
+FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
+GET_LOG_JOB_ID_MAX_RETRIES = 10
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -77,6 +87,7 @@ SECURITY_RULE_ARGS = {
     'log-setting': 'LogForwarding',
     'tag': 'Tags',
     'profile-setting': 'ProfileSetting',
+    'audit-comment': 'AuditComment'
 }
 
 PAN_OS_ERROR_DICT = {
@@ -183,6 +194,21 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'ransomware'
 }
 
+RULE_FILTERS = ('nat-type', 'action')
+APPILICATION_FILTERS = ('risk', 'category', 'subcategory', 'technology')
+CHARACTERISTICS_LIST=('virus-ident', 
+'file-type-ident', 
+'evasive-behavior', 
+'consume-big-bandwidth', 
+'used-by-malware', 
+'able-to-transfer-file', 
+'has-known-vulnerability', 
+'tunnel-other-application', 
+'prone-to-misuse', 
+'pervasive-use', 
+'data-ident', 
+'file-forward',
+'is-saas')
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
 
@@ -192,6 +218,65 @@ class PAN_OS_Not_Found(Exception):
 
 class InvalidUrlLengthException(Exception):
     pass
+
+
+class PanosResponse():
+
+    class PanosNamespace(SimpleNamespace):
+        """
+        Namespace class for the PanosResponse
+        """
+
+        def __init__(self, ignored_keys: set = None, **kwargs):
+            if not ignored_keys:
+                ignored_keys = set()
+            super().__init__(**{k: v for k, v in kwargs.items() if k not in ignored_keys})
+
+        def __getattr__(self, attr):
+            """
+            If an AttributeError is raised, this method is called, if the attr was not found, Returns None.
+            """
+            return [] if attr == 'entry' else None
+
+    def __init__(self, response: dict, ignored_keys: set = None, illegal_chars: set = None):
+        self.raw = response
+        self.ns = self.to_class(response, ignored_keys=ignored_keys, illegal_chars=illegal_chars)
+
+    def get_nested_key(self, items: str):
+        """
+        Arguments:
+        -------
+        items: string of dotted notation to retrieve
+
+        Returns:
+        -------
+        Dicitonary value of the requested items
+        """
+        return_response = self.raw
+        for item in items.split("."):
+            return_response = return_response.get(item, {})
+        return return_response
+
+    def handle_illegal_chars(self, dictionary: dict, illegal_chars: set = None):
+        if not illegal_chars:
+            return dictionary
+        return {
+            key.replace(char, ''): val for key, val in dictionary.items() for char in illegal_chars
+        }
+
+    def to_class(self, response, ignored_keys: set = None, illegal_chars: set = None) -> PanosNamespace:
+        if not ignored_keys:
+            ignored_keys = set()
+        if not illegal_chars:
+            illegal_chars = set()
+        json_dump = json.dumps(response)
+        return json.loads(
+            json_dump,
+            object_hook=lambda d: self.PanosNamespace(
+                **self.handle_illegal_chars(d, illegal_chars=illegal_chars),
+                ignored_keys=ignored_keys
+            )
+        )
 
 
 def http_request(uri: str, method: str, headers: dict = {},
@@ -289,7 +374,9 @@ def http_request(uri: str, method: str, headers: dict = {},
                 error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
                                   f' The available Device Groups for this instance:'
                                   f' {", ".join(device_group_names)}.')
-                raise PAN_OS_Not_Found(error_message)
+            xpath = params.get('xpath') or body.get('xpath')
+            demisto.debug(f'Object with {xpath=} was not found')
+            raise PAN_OS_Not_Found(error_message)
         return_warning('List not found and might be empty', True)
     if json_result['response']['@code'] not in ['19', '20']:
         # error code non exist in dict and not of success
@@ -340,11 +427,11 @@ def do_pagination(
     page_size: int = DEFAULT_LIMIT_PAGE_SIZE,
     limit: int = DEFAULT_LIMIT_PAGE_SIZE
 ):
-    if page is not None:
+    if isinstance(entries,list) and page is not None:
         if page <= 0:
             raise DemistoException(f'page {page} must be a positive number')
         entries = entries[(page - 1) * page_size:page_size * page]  # do pagination
-    else:
+    elif isinstance(entries,list):
         entries = entries[:limit]
 
     return entries
@@ -363,6 +450,87 @@ def extract_objects_info_by_key(_entry, _key):
     elif isinstance(_entry, list):
         return [item.get(_key) for item in _entry]
     return None
+
+
+def build_body_request_to_edit_pan_os_object(
+    behavior,
+    object_name,
+    element_value,
+    is_listable,
+    xpath='',
+    should_contain_entries=True,
+    is_entry=False,
+    is_empty_tag=False,
+    is_commit_required=True
+):
+    """
+    This function builds up a general body-request (element) to add/remove/replace an existing pan-os object by
+    the requested behavior and a full xpath to the object.
+
+    Args:
+        behavior (str): must be one of add/remove/replace.
+        object_name (str): the name of the object that needs to be updated.
+        element_value (str): the value of the new element.
+        is_listable (bool): whether the object is listable or not, not relevant when behavior == 'replace'.
+        xpath (str): the full xpath to the object that should be edit. not required if behavior == 'replace'
+        should_contain_entries (bool): whether an object should contain at least one entry. True if yes, False if not.
+        is_entry (bool): whether the element should be of the following form:
+            <entry name="{entry_name}"/>
+        is_empty_tag (bool): whether tag should be created completely empty, for example <action/>
+        is_commit_required (bool): whether a commit is required when trying to add pan-os-object.
+
+    Returns:
+        dict: a body request for the new object to update it.
+    """
+
+    if behavior not in {'replace', 'remove', 'add'}:
+        raise ValueError(f'behavior argument must be one of replace/remove/add values')
+
+    if behavior == 'replace':
+        element = prepare_pan_os_objects_body_request(
+            object_name, element_value, is_list=is_listable, is_entry=is_entry, is_empty_tag=is_empty_tag
+        )
+    else:  # add or remove is only for listable objects.
+        current_objects_items = panorama_get_current_element(
+            element_to_change=object_name, xpath=xpath, is_commit_required=is_commit_required
+        )
+        if behavior == 'add':
+            updated_object_items = list((set(current_objects_items)).union(set(argToList(element_value))))
+        else:  # remove
+            updated_object_items = [item for item in current_objects_items if item not in argToList(element_value)]
+            if not updated_object_items and should_contain_entries:
+                raise DemistoException(f'The object: {object_name} must have at least one item.')
+
+        element = prepare_pan_os_objects_body_request(
+            object_name, updated_object_items, is_list=True, is_entry=is_entry, is_empty_tag=is_empty_tag
+        )
+
+    return element
+
+
+def prepare_pan_os_objects_body_request(key, value, is_list=True, is_entry=False, is_empty_tag=False):
+    if is_entry:
+        return {key: ''.join([f'<entry name="{entry}"/>' for entry in argToList(value)])}
+    if is_empty_tag:
+        return {key: f'<{value}/>'}
+    return {key: {'member': argToList(value)}} if is_list else {key: value}
+
+
+def dict_to_xml(_dictionary, contains_xml_chars=False):
+    """
+    Transforms a dict object to an XML string.
+
+    Args:
+        _dictionary (dict): the dict to parse into XML
+        contains_xml_chars (bool): whether dict contains any XML special chars such as < or >
+
+    Returns:
+        str: the dict representation in XML.
+    """
+    xml = re.sub('<\/*xml2json>', '', json2xml({'xml2json': _dictionary}).decode('utf-8'))
+    if contains_xml_chars:
+        return xml.replace('&gt;', '>').replace('&lt;', '<')
+    return xml
 
 
 def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: Optional[bool] = False) -> str:
@@ -537,10 +705,44 @@ def get_pan_os_major_version() -> int:
     return major_version
 
 
+def build_xpath_filter(name_match: str = None, name_contains: str = None, filters: dict = None) -> str:
+    xpath_prefix = ''
+    if name_match:
+        xpath_prefix = f"@name='{name_match}'"
+    if name_contains:
+        xpath_prefix = f"contains(@name,'{name_contains}')"
+    if filters:
+        for key, value in filters.items():
+            if key in RULE_FILTERS or key in APPILICATION_FILTERS:
+                if xpath_prefix:
+                    xpath_prefix += 'and'
+                xpath_prefix += f"({key}='{value}')"
+            if key == 'tags':
+                for tag in value:
+                    if xpath_prefix:
+                        xpath_prefix += 'and'
+                    xpath_prefix += f"(tag/member='{tag}')"
+            if key == 'characteristics':
+                for characteristic in value:
+                    if xpath_prefix:
+                        xpath_prefix += 'and'
+                    xpath_prefix += f"({characteristic}='yes')"
+    return xpath_prefix
+
+
+def filter_rules_by_status(disabled: str, rules: list) -> list:
+    for rule in rules:
+        parse_pan_os_un_committed_data(rule, ['@admin', '@dirtyId', '@time'])
+
+    if disabled.lower() == 'yes':
+        return list(filter(lambda x: x.get('disabled', '').lower() == 'yes', rules))
+    else:
+        return list(filter(lambda x: x.get('disabled', '').lower() != 'yes', rules))
+
+
 ''' FUNCTIONS'''
 
-
-def panorama_test():
+def panorama_test(fetch_params):
     """
     test module
     """
@@ -567,6 +769,13 @@ def panorama_test():
         # Test the topology functionality
         topology = get_topology()
         test_topology_connectivity(topology)
+
+        # Test fetch incidents parameters
+        if fetch_params.get('isFetch'):
+            test_fetch_incidents_parameters(fetch_params)
+
+    except DemistoException as e:
+        raise e
     except Exception as exception_text:
         demisto.debug(f"Failed to create topology; topology commands will not work. {exception_text}")
         pass
@@ -1014,7 +1223,8 @@ def panorama_push_to_device_group_command(args: dict):
                 'push_job_id': job_id,
                 'polling': argToBoolean(args.get('polling', False)),
                 'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
-                'description': description
+                'description': description,
+                'device-group': DEVICE_GROUP
             }
 
         return PollResult(
@@ -1319,7 +1529,7 @@ def panorama_get_address_command(args: dict):
 
 @logger
 def panorama_create_address(address_name: str, fqdn: str = None, ip_netmask: str = None, ip_range: str = None,
-                            description: str = None, tags: list = None):
+                            description: str = None, tags: list = None, ip_wildcard: str = None):
     params = {'action': 'set',
               'type': 'config',
               'xpath': XPATH_OBJECTS + "address/entry[@name='" + address_name + "']",
@@ -1327,6 +1537,7 @@ def panorama_create_address(address_name: str, fqdn: str = None, ip_netmask: str
               'element': (add_argument(fqdn, 'fqdn', False)
                           + add_argument(ip_netmask, 'ip-netmask', False)
                           + add_argument(ip_range, 'ip-range', False)
+                          + add_argument(ip_wildcard, 'ip-wildcard', False)
                           + add_argument(description, 'description', False)
                           + add_argument_list(tags, 'tag', True))
               }
@@ -1349,14 +1560,18 @@ def panorama_create_address_command(args: dict):
     fqdn = args.get('fqdn')
     ip_netmask = args.get('ip_netmask')
     ip_range = args.get('ip_range')
+    ip_wildcard = args.get('ip_wildcard')
 
-    if not fqdn and not ip_netmask and not ip_range:
-        raise Exception('Please specify exactly one of the following: fqdn, ip_netmask, ip_range.')
+    # make sure only one of fqdn/ip_netmask/ip_range/ip_wildcard was provided.
 
-    if (fqdn and ip_netmask) or (fqdn and ip_range) or (ip_netmask and ip_range):
-        raise Exception('Please specify exactly one of the following: fqdn, ip_netmask, ip_range.')
+    if sum(
+        map(bool, [(fqdn is not None), (ip_netmask is not None), (ip_range is not None), (ip_wildcard is not None)])
+    ) != 1:
+        raise DemistoException(
+            f'Please specify exactly one of the following arguments: fqdn, ip_netmask, ip_range, ip_wildcard.'
+        )
 
-    address = panorama_create_address(address_name, fqdn, ip_netmask, ip_range, description, tags)
+    address = panorama_create_address(address_name, fqdn, ip_netmask, ip_range, description, tags, ip_wildcard)
 
     address_output = {'Name': address_name}
     if DEVICE_GROUP:
@@ -1382,6 +1597,42 @@ def panorama_create_address_command(args: dict):
             "Panorama.Addresses(val.Name == obj.Name)": address_output
         }
     })
+
+
+def pan_os_edit_address(name, element_value, element_to_change, is_listable):
+
+    params = {
+        'xpath': f'{XPATH_OBJECTS}address/entry[@name="{name}"]/{element_to_change}',
+        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
+                behavior='replace',
+                object_name=element_to_change,
+                element_value=element_value,
+                is_listable=is_listable,
+            ),
+        ),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_edit_address_command(args):
+    address_name = args.get('name')
+    element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
+
+    raw_response = pan_os_edit_address(
+        name=address_name,
+        element_to_change=element_to_change.replace('_', '-'),
+        element_value=element_value,
+        is_listable=element_to_change == 'tag',
+    )
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Address {address_name} was edited successfully.'
+    )
 
 
 @logger
@@ -1726,6 +1977,11 @@ def panorama_edit_address_group_command(args: dict):
             addresses = list(set(element_to_add + address_group_list))
         else:
             addresses = [item for item in address_group_list if item not in element_to_remove]
+            if not addresses:
+                raise DemistoException(
+                    f'cannot remove {address_group_list} addresses from address group {address_group_name}, '
+                    f'address-group {address_group_name} must have at least one address in its configuration'
+                )
         addresses_param = add_argument_list(addresses, 'member', False)
         addresses_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/static"
 
@@ -2587,8 +2843,11 @@ def panorama_custom_url_category_add_items(custom_url_category_name: str, items:
 
     merged_items = list((set(items)).union(set(custom_url_category_items)))
 
+    # escape URLs with HTML escaping
+    sites = [html.escape(site) for site in merged_items]
+
     result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_,
-                                                                           merged_items, description)
+                                                                           sites, description)
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -2620,8 +2879,12 @@ def panorama_custom_url_category_remove_items(custom_url_category_name: str, ite
         raise Exception('Custom url category does not contain sites or categories.')
 
     subtracted_items = [item for item in custom_url_category_items if item not in items]
+
+    # escape URLs with HTML escaping
+    sites = [html.escape(site) for site in subtracted_items]
+
     result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_,
-                                                                           subtracted_items, description)
+                                                                           sites, description)
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -2702,7 +2965,7 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
                              'not-resolved']
     suspicious_categories = list((set(additional_suspicious)).union(set(predefined_suspicious)))
 
-    predefined_malicious = ['phishing', 'command-and-control', 'malware']
+    predefined_malicious = ['phishing', 'command-and-control', 'malware', 'ransomware']
     malicious_categories = list((set(additional_malicious)).union(set(predefined_malicious)))
 
     dbot_score = 1
@@ -3193,6 +3456,8 @@ def prettify_rule(rule: dict):
         pretty_rule['Tags'] = rule['tag']['member']
     if isinstance(rule.get('log-setting'), dict) and '#text' in rule['log-setting']:
         pretty_rule['LogForwardingProfile'] = rule['log-setting']['#text']
+    if disabled := rule.get('disabled'):
+        pretty_rule['Disabled'] = disabled
 
     return pretty_rule
 
@@ -3230,7 +3495,7 @@ def target_filter(rule: dict, target: str) -> bool:
 
 
 @logger
-def panorama_list_rules(xpath: str, tag: str = None):
+def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, query: str = None):
     params = {
         'action': 'get',
         'type': 'config',
@@ -3238,8 +3503,10 @@ def panorama_list_rules(xpath: str, tag: str = None):
         'key': API_KEY
     }
 
-    if tag:
-        params["xpath"] = f'{params["xpath"]}[( tag/member = \'{tag}\')]'
+    if query:
+        params["xpath"] = f'{params["xpath"]}[{query}]'
+    elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
+        params["xpath"] = f'{params["xpath"]}[{xpath_filter}]'
 
     result = http_request(
         URL,
@@ -3262,9 +3529,18 @@ def panorama_list_rules_command(args: dict):
     else:
         xpath = XPATH_SECURITY_RULES
 
-    tag = args.get('tag')
+    filters = assign_params(
+        tags=argToList(args.get('tag')),
+        action=args.get('action')
+    )
+    name = args.get('rulename')
+    query = args.get('query')
     target = args.get('target')
-    rules = panorama_list_rules(xpath, tag)
+
+    rules = panorama_list_rules(xpath, name, filters, query)
+    if disabled := args.get('disabled'):
+        rules = filter_rules_by_status(disabled, rules)
+
     pretty_rules = prettify_rules(rules, target)
 
     return_results({
@@ -3274,7 +3550,7 @@ def panorama_list_rules_command(args: dict):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Security Rules:', pretty_rules,
                                          ['Name', 'Location', 'Action', 'From', 'To',
-                                          'CustomUrlCategory', 'Service', 'Tags'],
+                                          'CustomUrlCategory', 'Service', 'Tags', 'Disabled'],
                                          removeNull=True),
         'EntryContext': {
             "Panorama.SecurityRule(val.Name == obj.Name)": pretty_rules
@@ -3401,7 +3677,7 @@ def panorama_create_rule_command(args: dict):
 
 
 @logger
-def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
+def panorama_get_current_element(element_to_change: str, xpath: str, is_commit_required: bool = True) -> list:
     """
     Get the current element value from
     """
@@ -3418,14 +3694,25 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
 
     result = response.get('response').get('result')
     current_object = result.get(element_to_change, {})
-    if '@dirtyId' in result or '@dirtyId' in current_object:
-        LOG(f'Found uncommitted item:\n{result}')
-        raise DemistoException('Please commit the instance prior to editing the Security rule.')
+    if is_commit_required:
+        if '@dirtyId' in result or '@dirtyId' in current_object:
+            LOG(f'Found uncommitted item:\n{result}')
+            raise DemistoException('Please commit the instance prior to editing the rule.')
+    else:
+        # remove un-relevant committed data
+        parse_pan_os_un_committed_data(result, ['@admin', '@dirtyId', '@time'])
+
+    current_objects_items = []
 
     if 'list' in current_object:
         current_objects_items = argToList(current_object['list']['member'])
     elif 'member' in current_object:
         current_objects_items = argToList(current_object.get('member'))
+    elif 'entry' in current_object:
+        entries = current_object['entry']
+        if not isinstance(entries, list):
+            entries = [entries]
+        current_objects_items = [entry.get('@name') for entry in entries]
 
     return current_objects_items
 
@@ -3482,6 +3769,20 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
     })
 
 
+def build_audit_comment_params(
+    name: str, audit_comment: str, pre_post: str, policy_type='security'
+) -> dict:
+    """
+    Builds up the params needed to update the audit comment of a policy rule.
+    """
+    _xpath = f"{XPATH_RULEBASE}{pre_post}/{policy_type}/rules/entry[@name='{name}']"
+    return {
+        'type': 'op',
+        'cmd': f"<set><audit-comment><xpath>{_xpath}</xpath><comment>{audit_comment}</comment></audit-comment></set>",
+        'key': API_KEY
+    }
+
+
 @logger
 def panorama_edit_rule_command(args: dict):
     """
@@ -3500,32 +3801,42 @@ def panorama_edit_rule_command(args: dict):
     if behaviour != 'replace':
         panorama_edit_rule_items(rulename, element_to_change, argToList(element_value), behaviour)
     else:
-        params = {
-            'type': 'config',
-            'action': 'edit',
-            'key': API_KEY
-        }
-        if element_to_change in ['action', 'description', 'log-setting']:
-            params['element'] = add_argument_open(element_value, element_to_change, False)
-        elif element_to_change in ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag']:
-            element_value = argToList(element_value)
-            params['element'] = add_argument_list(element_value, element_to_change, True)
-        elif element_to_change == 'target':
-            params['element'] = add_argument_target(element_value, 'target')
-        elif element_to_change == 'profile-setting':
-            params['element'] = add_argument_profile_setting(element_value, 'profile-setting')
-        else:
-            # element_to_change == 'disabled'
-            params['element'] = add_argument_yes_no(element_value, element_to_change)
+        pre_post = args.get('pre_post') or ''
+        if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
+            raise Exception('please provide the pre_post argument when editing a rule in Panorama instance.')
 
-        if DEVICE_GROUP:
-            if not PRE_POST:
-                raise Exception('please provide the pre_post argument when editing a rule in Panorama instance.')
-            else:
-                params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + f'/security/rules/entry[@name=\'{rulename}\']'
+        if args.get('element_to_change') == 'audit-comment':
+            new_audit_comment = args.get('element_value') or ''
+            # to update audit-comment of a security rule, it is required to build a 'cmd' parameter
+            params = build_audit_comment_params(
+                rulename, new_audit_comment, pre_post='rulebase' if VSYS else pre_post
+            )
         else:
-            params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-        params['xpath'] += '/' + element_to_change
+            params = {
+                'type': 'config',
+                'action': 'edit',
+                'key': API_KEY,
+            }
+
+            if element_to_change in ['action', 'description', 'log-setting']:
+                params['element'] = add_argument_open(element_value, element_to_change, False)
+            elif element_to_change in [
+                'source', 'destination', 'application', 'category', 'source-user', 'service', 'tag'
+            ]:
+                element_value = argToList(element_value)
+                params['element'] = add_argument_list(element_value, element_to_change, True)
+            elif element_to_change == 'target':
+                params['element'] = add_argument_target(element_value, 'target')
+            elif element_to_change == 'profile-setting':
+                params['element'] = add_argument_profile_setting(element_value, 'profile-setting')
+            else:
+                params['element'] = add_argument_yes_no(element_value, element_to_change)
+
+            if DEVICE_GROUP:
+                params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + f'/security/rules/entry[@name=\'{rulename}\']'
+            else:
+                params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+            params['xpath'] += '/' + element_to_change
 
         result = http_request(URL, 'POST', body=params)
 
@@ -3833,41 +4144,69 @@ def prettify_applications_arr(applications_arr: Union[List[dict], dict]):
         applications_arr = [applications_arr]
     for i in range(len(applications_arr)):
         application = applications_arr[i]
+        application_characteristics_list=[]
+        for characteristics_name,value in application.items():
+            if characteristics_name in CHARACTERISTICS_LIST and value=='yes':
+                application_characteristics_list.append(str(characteristics_name))
         pretty_application_arr.append({
+            'Category': application.get('category'),
             'SubCategory': application.get('subcategory'),
             'Risk': application.get('risk'),
             'Technology': application.get('technology'),
             'Name': application.get('@name'),
             'Description': application.get('description'),
+            'Characteristics': application_characteristics_list,
             'Id': application.get('@id'),
         })
     return pretty_application_arr
 
 
 @logger
-def panorama_list_applications(predefined: bool) -> Union[List[dict], dict]:
+def panorama_list_applications(args:Dict[str, str], predefined: bool) -> Union[List[dict], dict]:
     major_version = get_pan_os_major_version()
     params = {
         'type': 'config',
         'action': 'get',
         'key': API_KEY
     }
+    filters = assign_params(
+        risk=args.get('risk'),
+        category=args.get('category'),
+        subcategory=args.get('sub_category'),
+        technology=args.get('technology'),
+        characteristics=argToList(args.get('characteristics')),
+    )
+    name_match = args.get('name_match')
+    demisto.debug('name_match',name_match)
+    name_contain = args.get('name_contain')
+    if name_match and name_contain:
+        raise Exception('Please specify only one of name_match/name_contain')
+    xpath_filter = build_xpath_filter(name_match,name_contain,filters)
+    demisto.debug("xpath_filter", xpath_filter)
     if predefined:  # if predefined = true, no need for device group.
         if major_version < 9:
             raise Exception('Listing predefined applications is only available for PAN-OS 9.X and above versions.')
         else:
-            params['xpath'] = '/config/predefined/application'
+                if xpath_filter:
+                    params['xpath'] = f'/config/predefined/application/entry[{xpath_filter}]'
+                else:
+                    params['xpath'] = '/config/predefined/application'
     else:
         # if device-group was provided it will be set in initialize_instance function.
-        params['xpath'] = XPATH_OBJECTS + "application/entry"
-
+        if xpath_filter:
+            params['xpath'] = XPATH_OBJECTS + f"application/entry[{xpath_filter}]"
+        else:
+            params['xpath'] = XPATH_OBJECTS + "application/entry"
+    demisto.debug(params['xpath'])
     result = http_request(
         URL,
         'POST',
         body=params
     )
     applications_api_response = result['response']['result']
-    if predefined:
+    if filters or name_match or name_contain:
+        applications = applications_api_response.get('entry') or []
+    elif predefined:
         applications = applications_api_response.get('application', {}).get('entry') or []
     else:
         applications = applications_api_response.get('entry') or []
@@ -3877,21 +4216,25 @@ def panorama_list_applications(predefined: bool) -> Union[List[dict], dict]:
     return applications
 
 
-def panorama_list_applications_command(predefined: Optional[str] = None):
+def panorama_list_applications_command(args:Dict[str, str]):
     """
     List all applications
     """
-    predefined = predefined == 'true'
-    applications_arr = panorama_list_applications(predefined)
-    applications_arr_output = prettify_applications_arr(applications_arr)
-    headers = ['Id', 'Name', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description']
+    predefined = args.get('predefined') == 'true'
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
+    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
+    applications_arr = panorama_list_applications(args,predefined)
+    entries = do_pagination(applications_arr, page=page, page_size=page_size, limit=limit)
+    applications_arr_output = prettify_applications_arr(entries)
+    headers = ['Id', 'Name', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description', 'Characteristics']
 
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': applications_arr,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Applications', t=applications_arr_output, headers=headers),
+        'HumanReadable': tableToMarkdown('Applications', t=applications_arr_output, headers=headers, removeNull=True),
         'EntryContext': {
             "Panorama.Applications(val.Name == obj.Name)": applications_arr_output
         }
@@ -4266,8 +4609,11 @@ def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: int)
         'type': 'user-id',
         'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register>{entry}'
                f'</register></payload></uid-message>',
-        'key': API_KEY
+        'key': API_KEY,
     }
+    if VSYS:
+        params['vsys'] = VSYS
+
     result = http_request(
         URL,
         'POST',
@@ -4335,8 +4681,11 @@ def panorama_unregister_ip_tag(tag: str, ips: list):
         'type': 'user-id',
         'cmd': '<uid-message><version>2.0</version><type>update</type><payload><unregister>' + entry
                + '</unregister></payload></uid-message>',
-        'key': API_KEY
+        'key': API_KEY,
     }
+    if VSYS:
+        params['vsys'] = VSYS
+
     result = http_request(
         URL,
         'POST',
@@ -4380,8 +4729,10 @@ def panorama_register_user_tag(tag: str, users: List, timeout: Optional[int]):
         'type': 'user-id',
         'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register-user>{entry}'
                f'</register-user></payload></uid-message>',
-        'key': API_KEY
+        'key': API_KEY,
     }
+    if VSYS:
+        params['vsys'] = VSYS
 
     result = http_request(
         URL,
@@ -4441,8 +4792,11 @@ def panorama_unregister_user_tag(tag: str, users: list):
         'type': 'user-id',
         'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><unregister-user>{entry}'
                f'</unregister-user></payload></uid-message>',
-        'key': API_KEY
+        'key': API_KEY,
     }
+    if VSYS:
+        params['vsys'] = VSYS
+
     result = http_request(
         URL,
         'POST',
@@ -4835,12 +5189,17 @@ def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_
     return result
 
 
+@polling_function(
+    name=demisto.command(),
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
+    timeout=arg_to_number(demisto.args().get('timeout', 600))
+)
 def panorama_query_logs_command(args: dict):
     """
     Query logs
     """
     log_type = args.get('log-type')
-    number_of_logs = args.get('number_of_logs')
+    number_of_logs = arg_to_number(args.get('number_of_logs', 100))
     query = args.get('query')
     address_src = args.get('addr-src')
     address_dst = args.get('addr-dst')
@@ -4853,40 +5212,114 @@ def panorama_query_logs_command(args: dict):
     rule = args.get('rule')
     filedigest = args.get('filedigest')
     url = args.get('url')
+    job_id = args.get('query_log_job_id')
+    illegal_chars = {'@', '#'}
+    ignored_keys = {'entry'}
 
-    if query and (address_src or address_dst or zone_src or zone_dst
-                  or time_generated or action or port_dst or rule or url or filedigest):
-        raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
+    if not job_id:
+        if query and (address_src or address_dst or zone_src or zone_dst
+                    or time_generated or action or port_dst or rule or url or filedigest):
+            raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
 
-    result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
-                                 zone_src, zone_dst, time_generated, action,
-                                 port_dst, rule, url, filedigest)
+        result: PanosResponse = PanosResponse(
+            panorama_query_logs(
+                log_type, number_of_logs, query, address_src, address_dst, ip_,
+                zone_src, zone_dst, time_generated, action,
+                port_dst, rule, url, filedigest
+            ),
+            illegal_chars=illegal_chars,
+            ignored_keys=ignored_keys
+        )
+        if result.ns.response.status == 'error':
+            if result.ns.response.result.msg.line:
+                raise Exception(f"Query logs failed. Reason is: {result.ns.response.result.msg.line}")
+            else:
+                raise Exception('Query logs failed.')
+        if not result.ns.response.result.job:
+            raise Exception('Missing JobID in response.')
+        query_logs_output = {
+            'JobID': result.ns.response.result.job,
+            'Status': 'Pending',
+            'LogType': log_type,
+            'Message': result.ns.response.result.msg.line
+        }
 
-    if result['response']['@status'] == 'error':
-        if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            raise Exception(f"Query logs failed. Reason is: {result['response']['msg']['line']}")
-        else:
-            raise Exception('Query logs failed.')
+        command_results = CommandResults(
+            outputs_prefix='Panorama.Monitor',
+            outputs_key_field='JobID',
+            outputs=query_logs_output,
+            readable_output=tableToMarkdown('Query Logs:', query_logs_output, ['JobID', 'Status'], removeNull=True)
+        )
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
-        raise Exception('Missing JobID in response.')
+        poll_result = PollResult(
+            response=command_results,
+            continue_to_poll=True,
+            args_for_next_run={
+                'query_log_job_id': result.ns.response.result.job,
+                'log-type': log_type,
+                'polling': argToBoolean(args.get('polling', 'false')),
+                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
+                'timeout': arg_to_number(args.get('timeout', 120))
+            },
+            partial_result=CommandResults(
+                readable_output=f"Fetching {log_type} logs for job ID {result.ns.response.result.job}...",
+                raw_response=result.raw
+            )
+        )
 
-    query_logs_output = {
-        'JobID': result['response']['result']['job'],
-        'Status': 'Pending',
-        'LogType': log_type,
-        'Message': result['response']['result']['msg']['line']
-    }
+    else:
+        # Only used in subsequent polling executions
 
-    return_results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Query Logs:', query_logs_output, ['JobID', 'Status'], removeNull=True),
-        'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
-    })
+        parsed: PanosResponse = PanosResponse(
+            panorama_get_traffic_logs(job_id),
+            illegal_chars=illegal_chars,
+            ignored_keys=ignored_keys
+        )
+        if parsed.ns.response.status == 'error':
+            if parsed.ns.response.result.msg.line:
+                raise Exception(
+                    f'Query logs failed. Reason is: {parsed.ns.response.result.msg.line}'
+                )
+            else:
+                raise Exception(
+                    f'Query logs failed.'
+                )
 
+        if not parsed.ns.response.result.job.id:
+            raise Exception('Missing JobID status in response.')
+
+        query_logs_output = {
+            'JobID': job_id,
+            'LogType': log_type
+        }
+        readable_output = None
+        if parsed.ns.response.result.job.status.upper() == 'FIN':
+            query_logs_output['Status'] = 'Completed'
+            if parsed.ns.response.result.log.logs.count == '0':
+                readable_output = f'No {log_type} logs matched the query.'
+                query_logs_output['Logs'] = []
+            else:
+                pretty_logs = prettify_logs(parsed.get_nested_key('response.result.log.logs.entry'))
+                query_logs_output['Logs'] = pretty_logs
+                readable_output = tableToMarkdown(
+                    f'Query {log_type} Logs:',
+                    pretty_logs,
+                    ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application', 'Action', 'Rule', 'URLOrFilename'],
+                    removeNull=True
+                )
+
+        poll_result = PollResult(
+            response=CommandResults(
+                outputs_prefix='Panorama.Monitor',
+                outputs_key_field='JobID',
+                outputs=query_logs_output,
+                readable_output=readable_output,
+                raw_response=parsed.raw
+            ),
+            continue_to_poll=parsed.ns.response.result.job.status != 'FIN'
+        )
+
+    return poll_result
 
 def panorama_check_logs_status_command(job_id: str):
     """
@@ -8076,7 +8509,11 @@ class Topology:
                 else:
                     self.ha_active_devices[serial_number] = "STANDALONE"
 
-        self.ha_pair_serials = ha_pair_dict
+        # This is only true if Panorama is in HA mode as well.
+        if self.ha_pair_serials:
+            self.ha_pair_serials = {**self.ha_pair_serials, **ha_pair_dict}
+        else:
+            self.ha_pair_serials = ha_pair_dict
 
     def add_device_object(self, device: Union[PanDevice, Panorama, Firewall]):
         """
@@ -8090,16 +8527,32 @@ class Topology:
             serial_number_or_hostname = device.serial if device.serial else device.hostname
 
             # Check if HA is active and if so, what the system state is.
+            # Only associate Firewalls with the ACTIVE Panorama instance
             panorama_ha_state_result = run_op_command(device, "show high-availability state")
             enabled = panorama_ha_state_result.find("./result/enabled")
             if enabled is not None:
                 if enabled.text == "yes":
-                    # Only associate Firewalls with the active Panorama instance
-                    state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
+                    try:
+                        state = find_text_in_element(panorama_ha_state_result, "./result/local-info/state")
+                    except LookupError:
+                        state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
+
                     if "active" in state:
-                        # TODO: Work out how to get the Panorama peer serial..
-                        self.ha_active_devices[serial_number_or_hostname] = "peer serial not implemented here.."
+                        peer_serial = None
+                        try:
+                            # For panorama, there is no serial stored in the HA output, so we can't get it.
+                            # Instead, we can get the mgmt IP in it's place.
+                            peer_serial = find_text_in_element(panorama_ha_state_result, "./result/peer-info/mgmt-ip")
+                        except LookupError:
+                            peer_serial = None
+
+                        self.ha_active_devices[serial_number_or_hostname] = peer_serial
+                        self.ha_pair_serials[serial_number_or_hostname] = peer_serial
+                        if peer_serial:
+                            self.ha_pair_serials[peer_serial] = serial_number_or_hostname
+
                         self.get_all_child_firewalls(device)
+                        self.panorama_objects[serial_number_or_hostname] = device
                         return
                 else:
                     self.get_all_child_firewalls(device)
@@ -9006,8 +9459,8 @@ class DeviceGroupInformation(ResultData):
     """
     serial: str
     connected: str
-    hostname: str
     last_commit_all_state_sp: str
+    hostname: Optional[str] = ""
     name: str = ""
 
     _output_prefix = OUTPUT_PREFIX + "DeviceGroupOp"
@@ -10430,7 +10883,7 @@ class FirewallCommand:
     @staticmethod
     def get_ha_status(
         topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
-    ) -> List[ShowHAState]:
+    ) -> List[ShowHAState] | ShowHAState:
         """
         Gets the HA status of the device. If HA is not enabled, assumes the device is active.
         :param topology: `Topology` instance.
@@ -10441,8 +10894,9 @@ class FirewallCommand:
         for firewall in topology.all(filter_string=device_filter_str, target=target):
             firewall_host_id: str = resolve_host_id(firewall)
 
-            peer_serial: str = topology.get_peer(firewall_host_id)
-            if not peer_serial:
+            peer_serial: str = topology.get_peer(firewall_host_id) or ''
+            # if this is firewall instance, there is no peer_serial, hence checking this only for Panorama instance.
+            if not peer_serial and DEVICE_GROUP:
                 result.append(ShowHAState(
                     hostid=firewall_host_id,
                     status="HA Not enabled.",
@@ -10451,9 +10905,24 @@ class FirewallCommand:
                 ))
             else:
                 state_information_element = run_op_command(firewall, FirewallCommand.HA_STATE_COMMAND)
-                state = find_text_in_element(state_information_element, "./result/group/local-info/state")
+                # Check both places for state to cover firewalls and panorama
+                try:
+                    state = find_text_in_element(state_information_element, "./result/group/local-info/state")
+                except LookupError as e:
+                    demisto.debug(f'Could not find HA state at ./result/group/local-info/state, error: {e}')
+                    try:
+                        state = find_text_in_element(state_information_element, "./result/local-info/state")
+                    except LookupError as e:  # if the state was not found at all, that means HA is not enabled.
+                        demisto.debug(f'Could not find HA state at ./result/local-info/state, error: {e}')
+                        result.append(ShowHAState(
+                            hostid=firewall_host_id,
+                            status="HA Not enabled.",
+                            active=True,
+                            peer=""
+                        ))
+                        continue
 
-                if state == "active":
+                if "active" in state:
                     result.append(ShowHAState(
                         hostid=firewall_host_id,
                         status=state,
@@ -10658,7 +11127,7 @@ def get_ha_state(
     topology: Topology,
     device_filter_string: Optional[str] = None,
     target: Optional[str] = None
-) -> List[ShowHAState]:
+) -> List[ShowHAState] | ShowHAState:
     """
     Get the HA state and associated details from the given device and any other details.
     :param topology: `Topology` instance !no-auto-argument
@@ -11298,7 +11767,1601 @@ def pan_os_list_templates_command(args):
     )
 
 
-def main():
+def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] = None, filters: dict = None, query: str = None):
+    _xpath = f"{XPATH_RULEBASE}{pre_post}/nat"
+
+    if query:
+        _xpath = f"{_xpath}/rules/entry[{query}]"
+    elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
+        _xpath = f"{_xpath}/rules/entry[{xpath_filter}]"
+
+    if element:
+        _xpath = f"{_xpath}/{element}"
+
+    return _xpath
+
+
+def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_post: Optional[str] = None, filters: dict = None, query: str = None):
+
+    if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    params = {
+        'type': 'config',
+        'action': 'get' if show_uncommited else 'show',
+        'key': API_KEY,
+        # rulebase is for firewall instance.
+        'xpath': build_nat_xpath(name, 'rulebase' if VSYS else pre_post, filters=filters, query=query)  # type: ignore[arg-type]
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def parse_pan_os_list_nat_rules(entries: Union[List, Dict], show_uncommited) -> List[Dict]:
+
+    def parse_source_translation(_entry):
+
+        source_translation_object = _entry.get('source-translation', {})
+
+        for _source_translation_type in ('dynamic-ip', 'dynamic-ip-and-port', 'static-ip'):
+            if _source_translation := source_translation_object.get(_source_translation_type):
+                pretty_context = camelize_string(src_str=_source_translation_type, delim='-')
+                if _source_translation_type == 'dynamic-ip-and-port':
+                    if interface := _source_translation.get('interface-address'):
+                        return {pretty_context: {
+                            'InterfaceAddress': extract_objects_info_by_key(interface, 'interface')}
+                        }
+
+                return {pretty_context: {
+                    'TranslatedAddress': extract_objects_info_by_key(_source_translation, 'translated-address')}
+                }
+        return None
+
+    def parse_destination_translation(_entry):
+        destination_translation_object = {}
+        if destination_translation := _entry.get('destination-translation'):
+            if translated_port := destination_translation.get('translated-port'):
+                destination_translation_object['TranslatedPort'] = translated_port
+            if translated_address := destination_translation.get('translated-address'):
+                destination_translation_object['TranslatedAddress'] = translated_address
+            if dns_rewrite := destination_translation.get('dns-rewrite'):
+                destination_translation_object['DNSRewrite'] = dns_rewrite.get('direction')
+        return destination_translation_object if destination_translation_object else None
+
+    def parse_dynamic_destination_translation(_entry):
+        dynamic_destination_translation_object = {}
+        if destination_translation := _entry.get('dynamic-destination-translation'):
+            if translated_port := destination_translation.get('translated-port'):
+                dynamic_destination_translation_object['TranslatedPort'] = translated_port
+            if translated_address := destination_translation.get('translated-address'):
+                dynamic_destination_translation_object['TranslatedAddress'] = translated_address
+            if distribution := destination_translation.get('distribution'):
+                dynamic_destination_translation_object['DistributionMethod'] = distribution
+        return dynamic_destination_translation_object if dynamic_destination_translation_object else None
+
+    if show_uncommited:
+        for entry in entries:
+            parse_pan_os_un_committed_data(entry, keys_to_remove=['@admin', '@time', '@dirtyId', '@uuid', '@loc'])
+
+    return [
+        {
+            'Name': entry.get('@name'),
+            'Tags': extract_objects_info_by_key(entry, 'tag'),
+            'SourceZone': extract_objects_info_by_key(entry, 'from'),
+            'DestinationZone': extract_objects_info_by_key(entry, 'to'),
+            'SourceAddress': extract_objects_info_by_key(entry, 'source'),
+            'DestinationAddress': extract_objects_info_by_key(entry, 'destination'),
+            'DestinationInterface': extract_objects_info_by_key(entry, 'to-interface'),
+            'Service': extract_objects_info_by_key(entry, 'service'),
+            'Description': extract_objects_info_by_key(entry, 'description'),
+            'Disabled': extract_objects_info_by_key(entry, 'disabled') or 'no',
+            'SourceTranslation': parse_source_translation(entry),
+            'DestinationTranslation': parse_destination_translation(entry),
+            'DynamicDestinationTranslation': parse_dynamic_destination_translation(entry)
+        } for entry in entries
+    ]
+
+
+def pan_os_list_nat_rules_command(args):
+    name = args.get('name')
+    pre_post = args.get('pre_post')
+    show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
+    filters = assign_params(
+        tags=argToList(args.get('tags')),
+        nat_type=args.get('nat_type')
+    )
+    if nat_type := filters.pop('nat_type', None):  # Replace the key name from 'nat_type' to 'nat-type'.
+        filters['nat-type'] = nat_type
+    query = args.get('query')
+
+    raw_response = get_pan_os_nat_rules(name=name, pre_post=pre_post, show_uncommited=show_uncommitted, filters=filters, query=query)
+    result = raw_response.get('response', {}).get('result', {})
+
+    # the 'entry' key could be a single dict as well.
+    entries = dict_safe_get(result, ['nat', 'rules', 'entry'], default_return_value=[]) or result.get('entry')
+    if not isinstance(entries, list):  # when only one nat rule is returned it could be returned as a dict.
+        entries = [entries]
+
+    if disabled := args.get('disabled'):
+        entries = filter_rules_by_status(disabled, entries)
+
+    if not name:
+        # filter the nat-rules by limit - name means we get only a single entry anyway.
+        page = arg_to_number(args.get('page'))
+        page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
+        limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
+        entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
+
+    nat_rules = parse_pan_os_list_nat_rules(entries, show_uncommited=show_uncommitted)
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=nat_rules,
+        readable_output=tableToMarkdown(
+            'Nat Policy Rules:',
+            nat_rules,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+            headers=[
+                'Name', 'Tags', 'SourceZone', 'DestinationZone', 'SourceAddress', 'Disabled',
+                'DestinationAddress', 'DestinationInterface', 'Service', 'Description'
+            ]
+        ),
+        outputs_prefix='Panorama.NAT',
+        outputs_key_field='Name'
+    )
+
+
+def create_nat_rule(args):
+    def _set_up_body_request():
+        def _set_up_destination_translation_body_request():
+            destination_translation_type = args.get('destination_translation_type')
+            if destination_translation_type != 'none':
+                destination_translation_body_request = {}
+                if destination_translated_port := args.get('destination_translated_port'):
+                    destination_translation_body_request['translated-port'] = destination_translated_port
+                if destination_translated_address := args.get('destination_translated_address'):
+                    destination_translation_body_request['translated-address'] = destination_translated_address
+                if destination_translation_type == 'static_ip':
+                    if destination_dns_rewrite_direction := args.get('destination_dns_rewrite_direction'):
+                        destination_translation_body_request['dns-rewrite'] = {
+                            'direction': destination_dns_rewrite_direction
+                        }
+                    return {'destination-translation': destination_translation_body_request}
+                else:  # destination_translation_type == dynamic-ip
+                    if method := args.get('destination_translation_distribution_method'):
+                        destination_translation_body_request['distribution'] = method
+                    return {'dynamic-destination-translation': destination_translation_body_request}
+            return {}
+
+        def _set_up_source_translation_body_request():
+            source_translation_type = args.get('source_translation_type')
+            if source_translation_type != 'none':
+                source_translated_address_type = args.get('source_translated_address_type')
+                if source_translated_address_type == 'translated-address':
+                    source_translated_address = args.get('source_translated_address')
+                    if source_translated_address:
+                        return {
+                            'source-translation': {
+                                source_translation_type: prepare_pan_os_objects_body_request(
+                                    'translated-address',
+                                    source_translated_address,
+                                    is_list=False if source_translation_type == 'static-ip' else True
+                                    # dynamic-ip and dynamic-ip-and-port can be a list of IPs
+                                )
+                            }
+                        }
+                    else:
+                        raise DemistoException(
+                            'source_translated_address must be provided '
+                            'if source_translated_address_type == translated-address'
+                        )
+                else:  # interface-address
+                    source_translated_interface = args.get('source_translated_interface')
+                    if source_translated_interface:
+                        if source_translation_type == 'dynamic-ip-and-port':
+                            return {
+                                'source-translation': {
+                                    'dynamic-ip-and-port': {
+                                        'interface-address': prepare_pan_os_objects_body_request(
+                                            'interface', source_translated_interface, is_list=False
+                                        )
+                                    }
+                                }
+                            }
+                        else:
+                            raise DemistoException(
+                                'interface-address can only be set when source_translation_type == dynamic-ip-and-port'
+                            )
+                    else:
+                        raise DemistoException(
+                            'source_translated_interface must be '
+                            'provided if source_translation_type == interface-address'
+                        )
+            return {}
+
+        def _set_up_original_packet_objects_body_request():
+            _packets_objects_body_request = {}
+            arguments_to_pan_os_paths = {
+                'destination_zone': ('to', True),
+                'source_zone': ('from', True),
+                'source_address': ('source', True),
+                'destination_address': ('destination', True),
+                'tags': ('tag', True),
+                'service': ('service', False),
+                'description': ('description', False),
+                'nat_type': ('nat-type', False),
+                'destination_interface': ('to-interface', False)
+            }
+
+            for argument, (pan_os_object_path, is_listable_arg) in arguments_to_pan_os_paths.items():
+                if argument_value := args.get(argument):
+                    _packets_objects_body_request.update(
+                        prepare_pan_os_objects_body_request(pan_os_object_path, argument_value, is_list=is_listable_arg)
+                    )
+
+            return _packets_objects_body_request
+
+        _body_request = {}
+
+        if negate_destination := args.get('negate_destination'):
+            _body_request['target'] = {
+                'negate': negate_destination
+            }
+
+        _body_request.update(_set_up_source_translation_body_request())
+        _body_request.update(_set_up_destination_translation_body_request())
+        _body_request.update(_set_up_original_packet_objects_body_request())
+
+        return _body_request
+
+    if DEVICE_GROUP and not args.get('pre_post'):
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    params = {
+        'xpath': build_nat_xpath(name=args.get('rulename'), pre_post='rulebase' if VSYS else args.get('pre_post')),
+        'element': dict_to_xml(_set_up_body_request()),
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_create_nat_rule_command(args):
+    rule_name = args.get('rulename')
+    raw_response = create_nat_rule(args)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Nat rule {rule_name} was created successfully.'
+    )
+
+
+def pan_os_delete_nat_rule(rule_name, pre_post):
+    params = {
+        'xpath': build_nat_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post),
+        'action': 'delete',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    if DEVICE_GROUP and not pre_post:
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_delete_nat_rule_command(args):
+    rule_name = args.get('rulename')
+    pre_post = args.get('pre_post')
+    raw_response = pan_os_delete_nat_rule(rule_name, pre_post)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Nat rule {rule_name} was deleted successfully.'
+    )
+
+
+def pan_os_edit_nat_rule(
+    rule_name, pre_post, behavior, element_to_change, element_value, object_name, is_listable=True
+):
+
+    xpath = build_nat_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post, element=element_to_change)
+
+    params = {
+        'xpath': xpath,
+        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                should_contain_entries=True,
+                is_commit_required=False
+            )
+        ),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_edit_nat_rule_command(args):
+    rule_name, pre_post = args.get('rulename'), args.get('pre_post')
+    element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
+    behavior = args.get('behavior')
+
+    if DEVICE_GROUP and not pre_post:
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    un_listable_objects = {
+        'nat_type',
+        'destination_interface',
+        'destination_translation_dynamic_port',
+        'destination_translation_dynamic_ip',
+        'destination_translation_dynamic_distribution_method',
+        'destination_translation_port',
+        'destination_translation_ip',
+        'source_translation_interface',
+        'source_translation_static_ip',
+        'negate_destination',
+        'disabled',
+        'description',
+        'service'
+    }
+
+    if behavior != 'replace' and element_to_change in un_listable_objects:
+        raise ValueError(f'cannot remove/add {element_to_change}, only replace operation is allowed')
+
+    elements_to_change_mapping_pan_os_paths = {
+        'source_zone': ('from', 'from', True),
+        'destination_zone': ('to', 'to', True),
+        'source_address': ('source', 'source', True),
+        'destination_address': ('destination', 'destination', True),
+        'nat_type': ('nat-type', 'nat-type', False),
+        'destination_interface': ('to-interface', 'to-interface', False),
+        'negate_destination': ('target/negate', 'negate', False),
+        'tags': ('tag', 'tag', True),
+        'disabled': ('disabled', 'disabled', False),
+        'service': ('service', 'service', False),
+        'description': ('description', 'description', False),
+        'source_translation_dynamic_ip': (
+            'source-translation/dynamic-ip/translated-address', 'translated-address', True
+        ),
+        'source_translation_static_ip': (
+            'source-translation/static-ip/translated-address', 'translated-address', False
+        ),
+        'source_translation_dynamic_ip_and_port': (
+            'source-translation/dynamic-ip-and-port/translated-address', 'translated-address', True
+        ),
+        'source_translation_interface': (
+            'source-translation/dynamic-ip-and-port/interface-address/interface', 'interface', False
+        ),
+        'destination_translation_dynamic_port': (
+            'dynamic-destination-translation/translated-port', 'translated-port', False
+        ),
+        'destination_translation_dynamic_ip': (
+            'dynamic-destination-translation/translated-address', 'translated-address', False
+        ),
+        'destination_translation_dynamic_distribution_method': (
+            'dynamic-destination-translation/distribution', 'distribution', False
+        ),
+        'destination_translation_port': ('destination-translation/translated-port', 'translated-port', False),
+        'destination_translation_ip': ('destination-translation/translated-address', 'translated-address', False)
+    }
+
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
+
+    raw_response = pan_os_edit_nat_rule(
+        rule_name=rule_name,
+        pre_post=pre_post,
+        behavior=behavior,
+        element_to_change=element_to_change,
+        element_value=element_value,
+        object_name=object_name,
+        is_listable=is_listable
+    )
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Nat rule {rule_name} was edited successfully.'
+    )
+
+
+def build_virtual_routers_xpath(name: Optional[str] = None):
+    network_xpath, _ = set_xpath_network()
+    _xpath = f'{network_xpath}/virtual-router'
+    if name:
+        _xpath = f"{_xpath}/entry[@name='{name}']"
+    return _xpath
+
+
+def pan_os_list_virtual_routers(name: Optional[str], show_uncommitted: bool):
+
+    params = {
+        'type': 'config',
+        'action': 'get' if show_uncommitted else 'show',
+        'key': API_KEY,
+        'xpath': build_virtual_routers_xpath(name)  # type: ignore[arg-type]
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def parse_pan_os_list_virtual_routers(entries, show_uncommitted):
+
+    if show_uncommitted:
+        for entry in entries:
+            parse_pan_os_un_committed_data(entry, ['@admin', '@dirtyId', '@time'])
+
+    human_readable, context = [], []
+
+    for entry in entries:
+        name = entry.get('@name')
+        interface = extract_objects_info_by_key(entry, 'interface')
+        rip = entry.get('protocol', {}).get('rip')
+        ospf = entry.get('protocol', {}).get('ospf')
+        ospf_v3 = entry.get('protocol', {}).get('ospfv3')
+        bgp = entry.get('protocol', {}).get('bgp')
+        multicast = entry.get('multicast')
+
+        human_readable.append(
+            {
+                'Name': name,
+                'Interface': interface,
+                'RIP': extract_objects_info_by_key(rip or {}, 'enable'),
+                'OSPF': extract_objects_info_by_key(ospf or {}, 'enable'),
+                'OSPFv3': extract_objects_info_by_key(ospf_v3 or {}, 'enable'),
+                'BGP': extract_objects_info_by_key(bgp or {}, 'enable'),
+                'Multicast': extract_objects_info_by_key(multicast or {}, 'enable'),
+                'Static Route': extract_objects_info_by_key(
+                    entry.get('routing-table', {}).get('ip', {}).get('static-route', {}).get(
+                        'entry', {}),
+                    '@name'
+                ),
+                'Redistribution Profile': extract_objects_info_by_key(
+                    ((entry.get('protocol') or {}).get('redist-profile') or {}).get('entry', {}), '@name'
+                )
+            }
+        )
+        context.append(
+            {
+                'Name': name,
+                'Interface': interface,
+                'RIP': rip,
+                'OSPF': ospf,
+                'OSPFv3': ospf_v3,
+                'BGP': bgp,
+                'Multicast': multicast,
+                'StaticRoute': entry.get('routing-table'),
+                'RedistributionProfile': entry.get('protocol', {}).get('redist-profile'),
+                'ECMP': entry.get('ecmp')
+            }
+        )
+
+    return human_readable, context
+
+
+def pan_os_list_virtual_routers_command(args):
+    name = args.get('virtual_router')
+    show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
+
+    raw_response = pan_os_list_virtual_routers(name=name, show_uncommitted=show_uncommitted)
+    result = raw_response.get('response', {}).get('result', {})
+
+    entries = dict_safe_get(result, ['virtual-router', 'entry'], default_return_value=result.get('entry'))
+    if not isinstance(entries, list):
+        entries = [entries]
+
+    if not name:
+        # if name was provided, api returns one entry so no need to do limit/pagination
+        page = arg_to_number(args.get('page'))
+        page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
+        limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
+        entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
+
+    table, context = parse_pan_os_list_virtual_routers(entries=entries, show_uncommitted=show_uncommitted)
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=context,
+        readable_output=tableToMarkdown('Virtual Routers:', table, removeNull=True),
+        outputs_prefix='Panorama.VirtualRouter',
+        outputs_key_field='Name'
+    )
+
+
+def build_redistribution_profile_xpath(
+    virtual_router_name: Optional[str], redistribution_profile_name: Optional[str], element: Optional[str] = None
+):
+    _xpath = f"{build_virtual_routers_xpath(virtual_router_name)}/protocol/redist-profile"
+    if redistribution_profile_name:
+        _xpath = f"{_xpath}/entry[@name='{redistribution_profile_name}']"
+    if element:
+        _xpath = f"{_xpath}/{element}"
+    return _xpath
+
+
+def pan_os_list_redistribution_profile(virtual_router_name: Optional[str], redistribution_profile_name: Optional[str]):
+    params = {
+        'type': 'config',
+        'action': 'get',
+        'key': API_KEY,
+        'xpath': build_redistribution_profile_xpath(virtual_router_name, redistribution_profile_name)  # type: ignore[arg-type]
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def parse_pan_os_list_redistribution_profiles(entries):
+
+    def extract_bgp_and_ospf_filters(_entry, _filters_types):
+        if not _entry:
+            return None
+
+        filters_by_types = {
+            camelize_string(src_str=filter_type, delim='-'): extract_objects_info_by_key(_entry, filter_type)
+            for filter_type in _filters_types if _entry.get(filter_type)
+        }
+
+        return filters_by_types if filters_by_types else None
+
+    for entry in entries:  # by default we can get also un-committed redistribution rules objects.
+        parse_pan_os_un_committed_data(entry, ['@admin', '@dirtyId', '@time'])
+
+    return [
+        {
+            'Name': entry.get('@name'),
+            'Priority': extract_objects_info_by_key(entry, 'priority'),
+            'Action': list(entry.get('action', {}).keys())[0] if entry.get('action') else None,
+            'FilterInterface': extract_objects_info_by_key(entry.get('filter', {}), 'interface'),
+            'FilterType': extract_objects_info_by_key(entry.get('filter', {}), 'type'),
+            'FilterDestination': extract_objects_info_by_key(entry.get('filter', {}), 'destination'),
+            'FilterNextHop': extract_objects_info_by_key(entry.get('filter', {}), 'nexthop'),
+            'BGP': extract_bgp_and_ospf_filters(
+                entry.get('filter', {}).get('bgp'), _filters_types=['community', 'extended-community']
+            ),
+            'OSPF': extract_bgp_and_ospf_filters(
+                entry.get('filter', {}).get('ospf'), _filters_types=['path-type', 'area', 'tag']
+            )
+        } for entry in entries
+    ]
+
+
+def pan_os_list_redistribution_profile_command(args):
+    redistribution_profile_name = args.get('name')
+    virtual_router_name = args.get('virtual_router')
+
+    raw_response = pan_os_list_redistribution_profile(virtual_router_name, redistribution_profile_name)
+
+    result = raw_response.get('response', {}).get('result', {})
+    entries = result.get('redist-profile', {}).get('entry') or [result.get('entry')]
+    if not isinstance(entries, list):
+        entries = [entries]
+
+    if not redistribution_profile_name:
+        limit = arg_to_number(args.get('limit')) or 50
+        entries = do_pagination(entries, limit=limit)
+
+    redistribution_profiles = parse_pan_os_list_redistribution_profiles(entries)
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=redistribution_profiles,
+        readable_output=tableToMarkdown(
+            f'Redistribution profiles of virtual router {virtual_router_name}:',
+            redistribution_profiles,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+            headers=['Name', 'Priority', 'Action', 'FilterType', 'FilterDestination', 'FilterNextHop', 'BGP', 'OSPF']
+        ),
+        outputs_prefix='Panorama.RedistributionProfile',
+        outputs_key_field='Name'
+    )
+
+
+def pan_os_create_redistribution_profile(args):
+    def _set_up_body_request():
+        def _set_up_ospf_filter_body_request():
+            _ospf_filter_body_request = {}
+            if filter_ospf_path_type := args.get('filter_ospf_path_type'):
+                _ospf_filter_body_request.update(prepare_pan_os_objects_body_request('path-type', filter_ospf_path_type))
+            if filter_ospf_area := args.get('filter_ospf_area'):
+                _ospf_filter_body_request.update(prepare_pan_os_objects_body_request('area', filter_ospf_area))
+            if filter_ospf_tag := args.get('filter_ospf_tag'):
+                _ospf_filter_body_request.update(prepare_pan_os_objects_body_request('tag', filter_ospf_tag))
+
+            return {'ospf': _ospf_filter_body_request} if _ospf_filter_body_request else {}
+
+        def _set_up_bgp_filter_body_request():
+            _bgp_filter_body_request = {}
+            if filter_bgp_community := args.get('filter_bgp_community'):
+                _bgp_filter_body_request.update(prepare_pan_os_objects_body_request('community', filter_bgp_community))
+            if filter_bgp_extended_community := args.get('filter_bgp_extended_community'):
+                _bgp_filter_body_request.update(
+                    prepare_pan_os_objects_body_request('extended-community', filter_bgp_extended_community)
+                )
+            return {'bgp': _bgp_filter_body_request} if _bgp_filter_body_request else {}
+
+        def _set_up_general_filter_body_request():
+            _general_filters_body_request = {}
+            _arguments_to_pan_os_paths = {
+                'filter_source_type': 'type',
+                'interface': 'interface',
+                'destination': 'destination',
+                'nexthop': 'nexthop'
+            }
+
+            for argument, pan_os_object_path in _arguments_to_pan_os_paths.items():
+                if argument_value := args.get(argument):
+                    _general_filters_body_request.update(prepare_pan_os_objects_body_request(pan_os_object_path, argument_value))
+
+            return _general_filters_body_request
+
+        _body_request = {}
+
+        if priority := args.get('priority'):
+            _body_request['priority'] = priority
+        if action := args.get('action'):
+            _body_request['action'] = f'<{action}/>'
+
+        if {
+            'filter_source_type', 'destination', 'nexthop', 'interface', 'filter_ospf_area', 'filter_ospf_tag',
+            'filter_ospf_path_type', 'filter_bgp_community', 'filter_bgp_extended_community'
+        }.intersection(set(args.keys())):
+            _body_request['filter'] = {}
+            _body_request['filter'].update(_set_up_ospf_filter_body_request())
+            _body_request['filter'].update(_set_up_bgp_filter_body_request())
+            _body_request['filter'].update(_set_up_general_filter_body_request())
+
+        return _body_request
+
+    params = {
+        'xpath': build_redistribution_profile_xpath(
+            virtual_router_name=args.get('virtual_router'), redistribution_profile_name=args.get('name')
+        ),
+        'element': dict_to_xml(_set_up_body_request(), contains_xml_chars=True),
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_create_redistribution_profile_command(args):
+    redistribution_profile_name = args.get('name')
+    raw_response = pan_os_create_redistribution_profile(args)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Redistribution profile {redistribution_profile_name} was created successfully.'
+    )
+
+
+def pan_os_edit_redistribution_profile(
+    virtual_router_name,
+    redistribution_profile_name,
+    element_to_change,
+    element_value,
+    object_name,
+    is_listable,
+    behavior
+):
+
+    xpath = build_redistribution_profile_xpath(
+            virtual_router_name, redistribution_profile_name, element=element_to_change
+        )
+
+    params = {
+        'xpath': xpath,
+        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                should_contain_entries=False,
+                is_commit_required=False
+            )
+        ),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_edit_redistribution_profile_command(args):
+    virtual_router_name, redistribution_profile_name = args.get('virtual_router'), args.get('name')
+    element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
+    behavior = args.get('behavior')
+
+    un_listable_objects = {'priority', 'action'}
+
+    if behavior != 'replace' and element_to_change in un_listable_objects:
+        raise ValueError(f'cannot remove/add {element_to_change}, only replace operation is allowed')
+
+    elements_to_change_mapping_pan_os_paths = {
+        'filter_type': ('filter/type', 'type', True),
+        'filter_destination': ('filter/destination', 'destination', True),
+        'filter_nexthop': ('filter/nexthop', 'nexthop', True),
+        'filter_interface': ('filter/interface', 'interface', True),
+        'priority': ('priority', 'priority', False),
+        'action': ('action', 'action', False),
+        'filter_ospf_area': ('filter/ospf/area', 'area', True),
+        'filter_ospf_tag': ('filter/ospf/tag', 'tag', True),
+        'filter_ospf_path_type': ('filter/ospf/path-type', 'path-type', True),
+        'filter_bgp_community': ('filter/bgp/community', 'community', True),
+        'filter_bgp_extended_community': ('filter/bgp/community', 'extended-community', True)
+    }
+
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
+
+    raw_response = pan_os_edit_redistribution_profile(
+        virtual_router_name=virtual_router_name,
+        redistribution_profile_name=redistribution_profile_name,
+        element_to_change=element_to_change,
+        element_value=element_value,
+        object_name=object_name,
+        is_listable=is_listable,
+        behavior=behavior
+    )
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Redistribution profile {redistribution_profile_name} was edited successfully.'
+    )
+
+
+def pan_os_delete_delete_redistribution_profile(virtual_router, redistribution_profile):
+    params = {
+        'xpath': build_redistribution_profile_xpath(virtual_router, redistribution_profile),
+        'action': 'delete',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_delete_redistribution_profile_command(args):
+    redistribution_profile, virtual_router = args.get('name'), args.get('virtual_router')
+    raw_response = pan_os_delete_delete_redistribution_profile(virtual_router, redistribution_profile)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Redistribution profile {redistribution_profile} was deleted successfully.'
+    )
+
+
+def build_pbf_xpath(name, pre_post, element_to_change=None, filters: dict = None, query: str = None):
+    _xpath = f'{XPATH_RULEBASE}{pre_post}/pbf'
+
+    if query:
+        _xpath = f"{_xpath}/rules/entry[{query}]"
+    elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
+        _xpath = f"{_xpath}/rules/entry[{xpath_filter}]"
+
+    if element_to_change:
+        _xpath = f'{_xpath}/{element_to_change}'
+    return _xpath
+
+
+def pan_os_list_pbf_rules(name, pre_post, show_uncommitted, filters, query):
+
+    if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    params = {
+        'type': 'config',
+        'action': 'get' if show_uncommitted else 'show',
+        'key': API_KEY,
+        # rulebase is for firewall instance.
+        'xpath': build_pbf_xpath(name, 'rulebase' if VSYS else pre_post, filters=filters, query=query)  # type: ignore[arg-type]
+    }
+
+    return http_request(URL, 'GET', params=params)
+
+
+def parse_pan_os_list_pbf_rules(entries, show_uncommitted):
+    if show_uncommitted:
+        for entry in entries:
+            parse_pan_os_un_committed_data(entry, keys_to_remove=['@admin', '@time', '@dirtyId', '@uuid', '@loc'])
+
+    human_readable, context = [], []
+
+    for entry in entries:
+        name = extract_objects_info_by_key(entry, '@name')
+        description = extract_objects_info_by_key(entry, 'description')
+        tags = extract_objects_info_by_key(entry, 'tag')
+        source_zone = extract_objects_info_by_key(entry.get('from', {}), 'zone')
+        source_interface = extract_objects_info_by_key(entry.get('from', {}), 'interface')
+        source_address = extract_objects_info_by_key(entry, 'source')
+        source_user = extract_objects_info_by_key(entry, 'source-user')
+        destination_address = extract_objects_info_by_key(entry, 'destination')
+        disabled = extract_objects_info_by_key(entry, 'disabled')
+
+        human_readable.append(
+            {
+                'Name': name,
+                'Description': description,
+                'Tags': tags,
+                'Source Zone': source_zone,
+                'Source Interface': source_interface,
+                'Source Address': source_address,
+                'Source User': source_user,
+                'Destination Address': destination_address,
+                'Action': list(entry['action'].keys())[0] if entry.get('action') else None,
+                'Disabled': disabled
+            }
+        )
+
+        context.append(
+            {
+                'Name': name,
+                'Description': description,
+                'Tags': tags,
+                'SourceZone': source_zone,
+                'SourceInterface': source_interface,
+                'SourceAddress': source_address,
+                'SourceUser': source_user,
+                'DestinationAddress': destination_address,
+                'Action': entry.get('action'),
+                'EnforceSymmetricReturn': entry.get('enforce-symmetric-return'),
+                'Target': entry.get('target'),
+                'Application': extract_objects_info_by_key(entry, 'application'),
+                'Service': extract_objects_info_by_key(entry, 'service'),
+                'Disabled': disabled
+            }
+        )
+
+    return human_readable, context
+
+
+def pan_os_list_pbf_rules_command(args):
+    name = args.get('rulename')
+    pre_post = args.get('pre_post')
+    show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
+    filters = assign_params(
+        tags=argToList(args.get('tags')),
+    )
+    query = args.get('query')
+
+    raw_response = pan_os_list_pbf_rules(name=name, pre_post=pre_post, show_uncommitted=show_uncommitted, filters=filters, query=query)
+    result = raw_response.get('response', {}).get('result', {})
+
+    # the 'entry' key could be a single dict as well.
+    entries = dict_safe_get(result, ['pbf', 'rules', 'entry'], default_return_value=result.get('entry'))
+    if not isinstance(entries, list):  # when only one nat rule is returned it could be returned as a dict.
+        entries = [entries]
+
+    if not name:
+        # filter the pbf-rules by limit - name means we get only a single entry anyway.
+        page = arg_to_number(args.get('page'))
+        page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
+        limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
+        entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
+
+    if action := args.get('action'):  # Due to API limitations, we need to filter the action manually.
+        entries = list(filter(lambda x: action in x.get('action', {}), entries))
+    if disabled := args.get('disabled'):
+        entries = filter_rules_by_status(disabled, entries)
+
+    table, pbf_rules = parse_pan_os_list_pbf_rules(entries, show_uncommitted=show_uncommitted)
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=pbf_rules,
+        readable_output=tableToMarkdown('Policy Based Forwarding Rules:', table, removeNull=True),
+        outputs_prefix='Panorama.PBF',
+        outputs_key_field='Name'
+    )
+
+
+def pan_os_create_pbf_rule(args):
+    def _set_up_body_request():
+        def _set_up_action_body_request():
+            _action_body_request = {}  # type: ignore[var-annotated]
+            if action := args.get('action'):
+                if action == 'forward':
+                    _action_body_request['action'] = {'forward': {}}
+                    nexthop = args.get('nexthop')
+                    if nexthop != 'none':
+                        nexthop_value = args.get('nexthop_value')
+                        if not nexthop_value:
+                            raise DemistoException('nexthop_value argument must be set when nexthop is not none')
+                        _action_body_request['action']['forward']['nexthop'] = {nexthop: nexthop_value}
+                    if egress_interface := args.get('egress_interface'):
+                        _action_body_request['action']['forward']['egress-interface'] = egress_interface
+                    else:
+                        raise DemistoException(f'egress_interface argument must be set when action == forward')
+                else:
+                    _action_body_request.update(
+                        prepare_pan_os_objects_body_request('action', action, is_empty_tag=True)
+                    )
+            return _action_body_request
+
+        def _set_up_enforce_symmetric_return_body_request():
+            _enforce_symmetric_return_body_request = {}
+            # enforce_symmetric_return = 'yes' or 'no' always
+            enforce_symmetric_return = args.get('enforce_symmetric_return')
+            _enforce_symmetric_return_body_request['enforce-symmetric-return'] = {'enabled': enforce_symmetric_return}
+
+            if enforce_symmetric_return == 'yes' and (nexthop_address_list := args.get('nexthop_address_list')):
+                _enforce_symmetric_return_body_request['enforce-symmetric-return'].update(
+                    prepare_pan_os_objects_body_request('nexthop-address-list', nexthop_address_list, is_entry=True)
+                )
+            return _enforce_symmetric_return_body_request
+
+        def _setup_general_rule_body_request():
+            _general_rule_body_request = {}
+            objects_mapping_pan_os = {
+                'source_address': ('source', True),
+                'destination_address': ('destination', True),
+                'source_user': ('source-user', True),
+                'application': ('application', True),
+                'service': ('service', True),
+                'description': ('description', False),
+                'negate_source': ('negate-source', False),
+                'negate_destination': ('negate-destination', False)
+            }
+
+            for argument, (pan_os_object_path, is_listable) in objects_mapping_pan_os.items():
+                if argument_value := args.get(argument):
+                    _general_rule_body_request.update(
+                        prepare_pan_os_objects_body_request(pan_os_object_path, argument_value, is_list=is_listable)
+                    )
+            return _general_rule_body_request
+
+        _body_request = {}
+        _body_request.update(_set_up_action_body_request())
+        _body_request.update(_set_up_enforce_symmetric_return_body_request())
+        _body_request.update(_setup_general_rule_body_request())
+
+        if source_zone := args.get('source_zone'):
+            _body_request['from'] = prepare_pan_os_objects_body_request('zone', source_zone)
+
+        return _body_request
+
+    if DEVICE_GROUP and not args.get('pre_post'):
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    params = {
+        'xpath': build_pbf_xpath(name=args.get('rulename'), pre_post='rulebase' if VSYS else args.get('pre_post')),
+        'element': dict_to_xml(_set_up_body_request(), contains_xml_chars=True),
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_create_pbf_rule_command(args):
+    rule_name = args.get('rulename')
+    raw_response = pan_os_create_pbf_rule(args)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'PBF rule {rule_name} was created successfully.'
+    )
+
+
+def pan_os_edit_pbf_rule(
+    rule_name, element_value, pre_post, element_to_change, object_name, is_listable, behavior
+):
+    xpath = build_pbf_xpath(
+            name=rule_name, pre_post='rulebase' if VSYS else pre_post, element_to_change=element_to_change
+        )
+
+    params = {
+        'xpath': xpath,
+        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                is_entry=True if object_name == 'nexthop-address-list' else False,
+                is_empty_tag=True if object_name == 'action' else False
+            ),
+            contains_xml_chars=True
+        ),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_edit_pbf_rule_command(args):
+    rule_name, pre_post = args.get('rulename'), args.get('pre_post')
+    element_value, element_to_change = args.get('element_value'), args.get('element_to_change')
+    behavior = args.get('behavior')
+
+    un_listable_objects = {
+        'action_forward_no_pbf', 'action_forward_discard', 'description', 'negate_source', 'negate_destination',
+        'enforce_symmetric_return', 'action_forward_egress_interface', 'action_forward_nexthop_fqdn',
+        'action_forward_nexthop_ip', 'action_forward_no_pbf', 'action_forward_discard', 'disabled'
+    }
+
+    if behavior != 'replace' and element_to_change in un_listable_objects:
+        raise ValueError(f'cannot remove/add {element_to_change}, only replace operation is allowed')
+
+    elements_to_change_mapping_pan_os_paths = {
+        'action_forward_discard': ('action', 'action', False),
+        'action_forward_no_pbf': ('action', 'action', False),
+        'action_forward_nexthop_ip': ('action/forward/nexthop/ip-address', 'ip-address', False),
+        'action_forward_nexthop_fqdn': ('action/forward/nexthop/fqdn', 'fqdn', False),
+        'action_forward_egress_interface': ('action/forward/egress-interface', 'egress-interface', False),
+        'source_zone': ('from/zone', 'zone', True),
+        'enforce_symmetric_return': ('enforce-symmetric-return/enabled', 'enabled', False),
+        'nexthop_address_list': ('enforce-symmetric-return/nexthop-address-list', 'nexthop-address-list', False),
+        'source_address': ('source', 'source', True),
+        'destination_address': ('destination', 'destination_address', True),
+        'source_user': ('source-user', 'source-user', True),
+        'application': ('application', 'application', True),
+        'service': ('service', 'service', True),
+        'description': ('description', 'description', False),
+        'negate_source': ('negate-source', 'negate-source', False),
+        'negate_destination': ('negate-destination', 'negate-destination', False),
+        'disabled': ('disabled', 'disabled', False)
+    }
+
+    if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    if element_to_change == 'action_forward_no_pbf':
+        element_value = 'no-pbf'
+
+    if element_to_change == 'action_forward_discard':
+        element_value = 'discard'
+
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
+
+    raw_response = pan_os_edit_pbf_rule(
+        rule_name=rule_name,
+        pre_post=pre_post,
+        element_to_change=element_to_change,
+        element_value=element_value,
+        object_name=object_name,
+        is_listable=is_listable,
+        behavior=behavior
+    )
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'PBF {rule_name} was edited successfully.'
+    )
+
+
+def pan_os_delete_pbf_rule(rule_name, pre_post):
+    params = {
+        'xpath': build_pbf_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post),
+        'action': 'delete',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    if DEVICE_GROUP and not pre_post:
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_delete_pbf_rule_command(args):
+    rule_name = args.get('rulename')
+    pre_post = args.get('pre_post')
+
+    raw_response = pan_os_delete_pbf_rule(rule_name, pre_post)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'PBF rule {rule_name} was deleted successfully.'
+    )
+
+
+def build_application_groups_xpath(name: Optional[str], element: Optional[str] = None):
+    _xpath = f"{XPATH_OBJECTS}application-group"
+    if name:
+        _xpath = f"{_xpath}/entry[@name='{name}']"
+    if element:
+        _xpath = f"{_xpath}/{element}"
+    return _xpath
+
+
+def pan_os_list_application_groups(name: Optional[str], show_uncommitted: bool):
+    params = {
+        'type': 'config',
+        'action': 'get' if show_uncommitted else 'show',
+        'key': API_KEY,
+        'xpath': build_application_groups_xpath(name)  # type: ignore[arg-type]
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_list_application_groups_command(args):
+    name = args.get('name')
+    show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
+
+    raw_response = pan_os_list_application_groups(name=name, show_uncommitted=show_uncommitted)
+    result = raw_response.get('response', {}).get('result', {})
+
+    entries = result.get('application-group', {}).get('entry') or [result.get('entry')]
+    if not isinstance(entries, list):
+        entries = [entries]
+
+    if not name:
+        # if name was provided, api returns one entry so no need to do limit/pagination
+        page = arg_to_number(args.get('page'))
+        page_size = arg_to_number(args.get('page_size')) or 50
+        limit = arg_to_number(args.get('limit')) or 50
+        entries = do_pagination(entries, page=page, page_size=page_size, limit=limit)
+
+    if show_uncommitted:
+        for entry in entries:
+            parse_pan_os_un_committed_data(entry, keys_to_remove=['@admin', '@time', '@dirtyId'])
+
+    application_groups = []
+    for entry in entries:
+        applications = extract_objects_info_by_key(entry, 'members')
+        if not isinstance(applications, list):
+            applications = [applications]
+        application_groups.append(
+            {
+                'Name': extract_objects_info_by_key(entry, '@name'),
+                'Applications': applications,
+                'Members': len(applications)
+            }
+        )
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=application_groups,
+        readable_output=tableToMarkdown(
+            f'Application groups:',
+            application_groups,
+            removeNull=True
+        ),
+        outputs_prefix='Panorama.ApplicationGroup',
+        outputs_key_field='Name'
+    )
+
+
+def pan_os_create_application_group(application_group_name, applications):
+    params = {
+        'xpath': build_application_groups_xpath(application_group_name),
+        'element': dict_to_xml(prepare_pan_os_objects_body_request('members', applications)),
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_create_application_group_command(args):
+    application_group_name = args.get('name')
+    applications = argToList(args.get('applications'))
+
+    raw_response = pan_os_create_application_group(application_group_name, applications)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'application-group {application_group_name} was created successfully.',
+        outputs={'Name': application_group_name, 'Applications': applications, 'Members': len(applications)},
+        outputs_key_field='Name',
+        outputs_prefix='Panorama.ApplicationGroup',
+    )
+
+
+def pan_os_edit_application_group(name, applications, action):
+    xpath = build_application_groups_xpath(name=name, element='members')
+
+    params = {
+        'xpath': xpath,
+        'element': dict_to_xml(
+            build_body_request_to_edit_pan_os_object(
+                behavior=action, object_name='members',
+                element_value=applications, is_listable=True, xpath=xpath, is_commit_required=False
+            )
+        ),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_edit_application_group_command(args):
+    application_group_name = args.get('name')
+    applications = argToList(args.get('applications'))
+    action = args.get('action')
+
+    raw_response = pan_os_edit_application_group(name=application_group_name, applications=applications, action=action)
+
+    updated_applications = panorama_get_current_element(
+        element_to_change='members',
+        xpath=build_application_groups_xpath(application_group_name, 'members'),
+        is_commit_required=False
+    )
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'application-group {application_group_name} was edited successfully.',
+        outputs={
+            'Name': application_group_name, 'Applications': updated_applications, 'Members': len(updated_applications)
+        },
+        outputs_key_field='Name',
+        outputs_prefix='Panorama.ApplicationGroup',
+    )
+
+
+def pan_os_delete_application_group(name):
+    params = {
+        'xpath': build_application_groups_xpath(name),
+        'action': 'delete',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'POST', params=params)
+
+
+def pan_os_delete_application_group_command(args):
+    application_group_name = args.get('name')
+
+    raw_response = pan_os_delete_application_group(application_group_name)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'application-group {application_group_name} was deleted successfully.'
+    )
+
+""" Fetch Incidents """
+
+
+def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int) -> str:
+    """get the Job ID linked to a particular query.
+
+    Args:
+        log_type (str): query log type
+        query (str): query for the fetch
+        max_fetch (int): maximum number of entries to fetch
+
+    Returns:
+        job_id (str): returns the Job ID associated with the given query
+    """
+    params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, nlogs=max_fetch)
+    response = http_request(URL, 'GET', params=params)
+    return response.get('response', {}).get('result', {}).get('job')
+
+
+def get_query_entries_by_id_request(job_id: str) -> Dict[str, Any]:
+    """get the entries of a particular Job ID.
+
+    Args:
+        job_id (int): ID of a query job
+
+    Returns:
+        Dict[str,Any]: a dictionary of the raw entries linked to the Job ID
+    """
+    params = assign_params(key=API_KEY, type='log', action='get', job_id=job_id)
+    
+    # if the job has not finished, wait for 1 second and try again (until success or max retries)
+    for try_num in range(1, GET_LOG_JOB_ID_MAX_RETRIES + 1):
+        response = http_request(URL, 'GET', params=params)
+        status = response.get('response', {}).get('result', {}).get('job', {}).get('status', '')
+        demisto.debug(f'Job ID {job_id}, response status: {status}')
+        demisto.debug(f'raw response: {response}')
+        if status == 'FIN':
+            return response
+        else:
+            demisto.debug(f'Attempt number: {try_num}. Job not completed, Retrying in 1 second...')
+            time.sleep(1) # due to short job life, saving the unfinished job id's to the context to query in the next fetch cycle is not a valid solution.
+    demisto.debug(f'Maximum attempt number: {try_num} has reached. Job ID {job_id} might be not completed which could result in missing incidents.')
+    return {}
+
+
+def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[Any, Any]]:
+    """get query entries according to a specific query.
+    
+    Args:
+        log_type (str): query log type
+        query (str): query for the fetch
+        max_fetch (int): maximum number of entries to fetch
+
+    Returns:
+        List[Dict[Any,Any]]): a list of raw entries for the the specified query
+    """
+    entries = []
+    # first http request: send request with query, valid response will contain a job id.
+    job_id = get_query_by_job_id_request(log_type, query, max_fetch)
+    demisto.debug(f'{job_id=}')
+
+    # second http request: send request with job id, valid response will contain a dictionary of entries. 
+    query_entries = get_query_entries_by_id_request(job_id)
+
+    # extract all entries from response
+    if result := query_entries.get('response', {}).get('result', {}).get('log', {}).get('logs', {}).get('entry'):
+        if isinstance(result,list):
+            entries.extend(result)
+        elif isinstance(result,dict):
+            entries.append(result)
+        else:
+            raise DemistoException(f'Could not parse fetch results: {result}')
+
+    entries_log_info = {entry.get('seqno',''):entry.get('time_generated') for entry in entries}
+    demisto.debug(f'{log_type} log type: {len(entries)} raw incidents (entries) found.')
+    demisto.debug(f'fetched raw incidents (entries) are (ID:time_generated): {entries_log_info}')
+    return entries
+
+
+def add_time_filter_to_query_parameter(query: str, last_fetch: datetime) -> str:
+    """append time filter parameter to original query parameter.
+
+    Args:
+        query (str): a string representing a query
+        last_fetch (datetime): last fetch time for the specific log type
+
+    Returns:
+        str: a string representing a query with added time filter parameter
+    """
+    if 'time_generated' in query or not last_fetch:
+        raise DemistoException('Query parameter must not contain time_generated filter.')
+    time_generated = f" and (time_generated geq '{last_fetch.strftime(QUERY_DATE_FORMAT)}')"
+    return query + time_generated
+
+
+def add_unique_id_filter_to_query_parameter(query: str, last_id: str) -> str:
+    """append unique id filter parameter to original query parameter.
+    'seqno' is a 64-bit log entry identifier incremented sequentially; each log type has unique number space.
+    by adding this filter which gives us only entries that have larger id, we insure not have duplicates in our request.
+
+    Args:
+        query (str): a string representing a query
+        last_id (str): largest unique log entry id from last fetch (for a specific log type)
+
+    Returns:
+        str: a string representing a query with added time filter parameter
+    """
+    if last_id:
+        last_id_int = arg_to_number(last_id)
+        if isinstance(last_id_int, int):
+            # last_id is can be filtered only by '>=' so we need to add 1 to it.
+            last_id_int += 1
+            unique_id_filter = f" and (seqno geq '{last_id_int}')"
+            return query + unique_id_filter
+        else:
+            return query
+    else:
+        return query
+
+
+def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
+                            max_fetch: int, fetch_start_datetime_dict: Dict[str, datetime], last_id_dict: Dict[str,str]) -> Dict[str, List[Dict[str,Any]]]:
+    """get raw entires of incidents according to provided queries, log types and max_fetch parameters.
+
+    Args:
+        queries_dict (Optional[Dict[str, str]]): chosen log type queries dictionaries
+        max_fetch (int): max incidents per fetch parameter
+        fetch_start_datetime_dict (Dict[str,datetime]): updated last fetch time per log type dictionary
+
+    Returns:
+        Dict[str, List[Dict[str,Any]]]: a dictionary of all fetched raw incidents entries
+    """
+    entries = {}
+    if queries_dict:
+        for log_type, query in queries_dict.items():
+            fetch_start_time = fetch_start_datetime_dict.get(log_type)
+            if fetch_start_time:
+                query = add_time_filter_to_query_parameter(query, fetch_start_time)
+            if id := last_id_dict.get(log_type):
+                query = add_unique_id_filter_to_query_parameter(query, id)
+            entries[log_type] = get_query_entries(log_type, query, max_fetch)
+    return entries
+
+
+def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[str | None ,datetime | None, List[Dict[str, Any]]]:
+    """parses raw incident entries of a specific log type query into basic context incidents.
+    
+    Args:
+        incident_entries (list[dict[str,Any]]): list of dictionaries representing raw incident entries
+
+    Returns:
+        (str | None ,datetime | None, List[Dict[str, Any]]): (updated last fetch time, parsed incident list) tuple
+    """
+    # if no new incidents are available, return empty list of incidents
+    if not incident_entries:
+        return None, None, incident_entries
+
+    # calculate largest last fetch time for each log type query
+    last_fetch_string = max({entry.get('time_generated', '') for entry in incident_entries})
+    new_fetch_datetime = dateparser.parse(last_fetch_string, settings={'TIMEZONE': 'UTC'})
+
+    # calculate largest unique id for each log type query
+    new_largest_id = max({entry.get('seqno', '') for entry in incident_entries})
+
+    # convert incident entries to incident context and filter any empty incidents if exists
+    parsed_incidents: List[Dict[str, Any]] = [incident_entry_to_incident_context(incident_entry) for incident_entry in incident_entries]
+    filtered_parsed_incidents = list(filter(lambda incident: incident, parsed_incidents))
+
+    return new_largest_id, new_fetch_datetime, filtered_parsed_incidents
+
+
+def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[str, Any]:
+    """convert raw incident entry to basic cortex incident format.
+
+    Args:
+        incident_entry (Dict[str, Any]): raw incident entry represented by a dictionary
+
+    Returns:
+        dict[str,any]: context formatted incident entry represented by a dictionary
+    """
+    occurred = incident_entry.get('time_generated', "")
+    occurred_datetime = dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'})
+    incident_context = {}
+    if occurred_datetime:
+        incident_context = {
+            'name': incident_entry.get('seqno'),
+            'occurred': occurred_datetime.strftime(DATE_FORMAT),
+            'rawJSON': json.dumps(incident_entry),
+            'type': incident_entry.get('type')
+        }
+    return incident_context
+
+
+def get_fetch_start_datetime_dict(last_fetch_dict: Dict[str, str],
+                                  first_fetch: str, queries_dict: Optional[Dict[str, str]]) -> Dict[str, datetime]:
+    """calculate fetch start time for each log type query.
+    - if last fetch time already exists for a log type, it will not be changed (only converted to datetime object).
+    - if last fetch time does not exist for the log_type, it will be changed into first_fetch parameter (and converted to datetime object).
+    - example: {'log_name':'2022-12-18T05:58:17'} --> {'log_name': datetime.datetime(2022, 12, 18, 5, 58, 17)}
+
+    Args:
+        last_fetch_dict (Dict[str,str]): last fetch dictionary
+        first_fetch (str): first fetch parameter
+        queries_dict (Optional[Dict[str, str]]): queries per log type dictionary
+
+    Returns:
+        Dict[str,datetime]: log_type:datetime pairs dictionary
+    """
+    fetch_start_datetime_dict = {}
+    first_fetch_parsed = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
+
+    # add new log types to last_fetch_dict
+    if queries_dict:
+        for log_type in queries_dict.keys():
+            if (log_type not in last_fetch_dict) and (log_type != "All"):
+                last_fetch_dict[log_type] = ''
+
+    # update fetch_start_datetime_dict with relevant last fetch time per log type in datetime UTC format
+    # if there is no prior last fetch time available for a log type - it will be set it to first_fetch
+    for log_type, last_fetch in last_fetch_dict.items():
+        if not last_fetch and first_fetch_parsed:
+            fetch_start_datetime_dict[log_type] = first_fetch_parsed
+        else:
+            updated_last_fetch = dateparser.parse(last_fetch, settings={'TIMEZONE': 'UTC'})
+            if updated_last_fetch:
+                fetch_start_datetime_dict[log_type] = updated_last_fetch
+        demisto.debug(
+            f'last fetch for {log_type} log type was at: {last_fetch}, new time to fetch start time is: {fetch_start_datetime_dict[log_type]}.')
+
+    return fetch_start_datetime_dict
+
+
+def log_types_queries_to_dict(params: Dict[str, str]) -> Dict[str, str]:
+    """converts chosen log type queries from parameters to a queries dictionary.
+    Example:
+    for parameters: log_types=['X_log_type'], X_log_type_query='(example query for X_log_type)'
+    the dictionary returned is: {'X_log_type':'(example query for X_log_type)'}
+
+    Args:
+        params (Dict[str, str]): instance configuration parameters 
+
+    Returns:
+        Dict[str, str]: queries per log type dictionary
+    """
+    queries_dict = {}
+    if log_types := params.get('log_types'):
+        # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
+        active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
+        for log_type in active_log_type_queries:
+            log_type_query = params.get(f'{log_type.lower()}_query', "")
+            if log_type_query:
+                queries_dict[log_type.capitalize()] = log_type_query
+
+    return queries_dict
+
+
+def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, Any]]], last_fetch_dict: Dict[str,str], last_id_dict: Dict[str,str]) -> Dict[str,Any]:
+    """for each log type incident entries array, parse the raw incidents into context incidents.
+    if necessary, update the latest fetch time and last ID values in their corresponding dictionaries.
+
+    Args:
+        incident_entries_dict (Dict[str, List[Dict[str, Any]]]): list of dictionaries representing raw incident entries
+        last_fetch_dict (Dict[str,str]): last fetch dictionary
+        last_id_dict (Dict[str,str]): last id dictionary
+
+    Returns:
+        Dict[str,Any]: parsed context incident dictionary
+    """
+    parsed_incident_entries_dict = {}
+    for log_type, incident_entries in incident_entries_dict.items():
+        if incident_entries:
+            updated_last_id, updated_last_fetch, incidents = parse_incident_entries(incident_entries)
+            demisto.debug(f'{log_type} log type: {len(incidents)} parsed incidents returned from parse_incident_entries function.')
+            demisto.debug(f"{log_type} log type: parsed incidents unique ID list: {[incident.get('name','') for incident in incidents]}")
+            parsed_incident_entries_dict[log_type] = incidents
+            if updated_last_fetch:
+                last_fetch_dict[log_type] = str(updated_last_fetch)
+            if updated_last_id:
+                last_id_dict[log_type] = updated_last_id
+            demisto.debug(f'{log_type} log type: incidents parsing has completed with total of {len(incidents)} incidents. Updated last run is: {last_fetch_dict.get(log_type)}. Updated last ID is: {last_id_dict.get(log_type)}')
+            demisto.debug(f'incidents ID list: {[incident.get("name") for incident in incidents]}')
+    return parsed_incident_entries_dict
+
+
+def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dict[str, str]],
+                    max_fetch: int) -> Tuple[Dict[str, str], Dict[str,str], List[Dict[str, list]]]:
+    """run one cycle of fetch incidents.
+
+    Args:
+        last_run (Dict): contains last run information
+        first_fetch (str): first time to fetch from (First fetch timestamp parameter)
+        queries_dict (Optional[Dict[str, str]]): queries per log type dictionary
+        max_fetch (int): max incidents per fetch parameter
+
+    Returns:
+        (Dict[str, str], Dict[str,str], List[Dict[str, list]]): last fetch per log type dictionary, last unique id per log type dictionary, parsed incidents tuple
+    """
+    last_fetch_dict = last_run.get('last_fetch_dict', {})
+    last_id_dict = last_run.get('last_id_dict', {})
+    demisto.debug(f'last fetch time dictionary from previous fetch is: {last_fetch_dict=}.')
+    demisto.debug(f'last id dictionary from previous fetch is: {last_id_dict=}.')
+
+    fetch_start_datetime_dict = get_fetch_start_datetime_dict(last_fetch_dict, first_fetch, queries_dict)
+    demisto.debug(f'updated last fetch per log type: {fetch_start_datetime_dict=}.')
+
+    incident_entries_dict = fetch_incidents_request(queries_dict, max_fetch, fetch_start_datetime_dict, last_id_dict)
+    demisto.debug('raw incident entries fetching has completed.')
+
+    parsed_incident_entries_dict = get_parsed_incident_entries(incident_entries_dict, last_fetch_dict, last_id_dict)
+
+    # flatten incident_entries_dict to a single list of dictionaries representing context entries
+    parsed_incident_entries_list = [incident for incident_list in parsed_incident_entries_dict.values()
+                                    for incident in incident_list]
+
+    return last_fetch_dict, last_id_dict, parsed_incident_entries_list
+
+
+def test_fetch_incidents_parameters(fetch_params):
+    if log_types := fetch_params.get('log_types'):
+        # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
+        active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
+        for log_type in active_log_type_queries:
+            log_type_query = fetch_params.get(f'{log_type.lower()}_query', "")
+            if not log_type_query:
+                raise DemistoException(f"{log_type} Log Type Query parameter is empty. Please enter a valid query.")
+            if 'time_generated' in log_type_query:
+                raise DemistoException(f"{log_type} Log Type Query parameter cannot contain 'time_generated' filter. Please remove it from the query.")
+            if 'seqno' in log_type_query:
+                raise DemistoException(f"{log_type} Log Type Query parameter cannot contain 'seqno' filter. Please remove it from the query.")
+
+    else:
+        raise DemistoException("fetch incidents is checked but no Log Types were selected to fetch from the dropdown menu.")
+
+
+def main(): # pragma: no cover
     try:
         args = demisto.args()
         params = demisto.params()
@@ -11313,7 +13376,19 @@ def main():
         handle_proxy()
 
         if command == 'test-module':
-            panorama_test()
+            panorama_test(params)
+
+        # Fetch incidents
+        elif command == 'fetch-incidents':
+            last_run = demisto.getLastRun()
+            first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
+            max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
+            queries_dict = log_types_queries_to_dict(params)
+
+            last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch)
+
+            demisto.setLastRun({'last_fetch_dict': last_fetch_dict, 'last_id_dict': last_id_dict})
+            demisto.incidents(incident_entries_list)
 
         elif command == 'panorama' or command == 'pan-os':
             panorama_command(args)
@@ -11342,6 +13417,9 @@ def main():
 
         elif command == 'panorama-create-address' or command == 'pan-os-create-address':
             panorama_create_address_command(args)
+
+        elif command == 'pan-os-edit-address':
+            return_results(pan_os_edit_address_command(args))
 
         elif command == 'panorama-delete-address' or command == 'pan-os-delete-address':
             panorama_delete_address_command(args)
@@ -11522,7 +13600,7 @@ def main():
 
         # Logs
         elif command == 'panorama-query-logs' or command == 'pan-os-query-logs':
-            panorama_query_logs_command(args)
+            return_results(panorama_query_logs_command(args))
 
         elif command == 'panorama-check-logs-status' or command == 'pan-os-check-logs-status':
             panorama_check_logs_status_command(args.get('job_id'))
@@ -11539,7 +13617,7 @@ def main():
 
         # Application
         elif command == 'panorama-list-applications' or command == 'pan-os-list-applications':
-            panorama_list_applications_command(args.get('predefined'))
+            panorama_list_applications_command(args)
 
         # Test security policy match
         elif command == 'panorama-security-policy-match' or command == 'pan-os-security-policy-match':
@@ -11948,6 +14026,40 @@ def main():
             return_results(pan_os_get_merged_config(args))
         elif command == 'pan-os-get-running-config':
             return_results(pan_os_get_running_config(args))
+        elif command == 'pan-os-list-nat-rules':
+            return_results(pan_os_list_nat_rules_command(args))
+        elif command == 'pan-os-create-nat-rule':
+            return_results(pan_os_create_nat_rule_command(args))
+        elif command == 'pan-os-delete-nat-rule':
+            return_results(pan_os_delete_nat_rule_command(args))
+        elif command == 'pan-os-edit-nat-rule':
+            return_results(pan_os_edit_nat_rule_command(args))
+        elif command == 'pan-os-list-virtual-routers':
+            return_results(pan_os_list_virtual_routers_command(args))
+        elif command == 'pan-os-list-redistribution-profiles':
+            return_results(pan_os_list_redistribution_profile_command(args))
+        elif command == 'pan-os-create-redistribution-profile':
+            return_results(pan_os_create_redistribution_profile_command(args))
+        elif command == 'pan-os-edit-redistribution-profile':
+            return_results(pan_os_edit_redistribution_profile_command(args))
+        elif command == 'pan-os-delete-redistribution-profile':
+            return_results(pan_os_delete_redistribution_profile_command(args))
+        elif command == 'pan-os-list-pbf-rules':
+            return_results(pan_os_list_pbf_rules_command(args))
+        elif command == 'pan-os-create-pbf-rule':
+            return_results(pan_os_create_pbf_rule_command(args))
+        elif command == 'pan-os-edit-pbf-rule':
+            return_results(pan_os_edit_pbf_rule_command(args))
+        elif command == 'pan-os-delete-pbf-rule':
+            return_results(pan_os_delete_pbf_rule_command(args))
+        elif command == 'pan-os-list-application-groups':
+            return_results(pan_os_list_application_groups_command(args))
+        elif command == 'pan-os-create-application-group':
+            return_results(pan_os_create_application_group_command(args))
+        elif command == 'pan-os-edit-application-group':
+            return_results(pan_os_edit_application_group_command(args))
+        elif command == 'pan-os-delete-application-group':
+            return_results(pan_os_delete_application_group_command(args))
         elif command == 'pan-os-list-templates':
             return_results(pan_os_list_templates_command(args))
         else:

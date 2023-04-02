@@ -1,0 +1,44 @@
+[MODEL: dataset="linux_linux_raw"]
+filter _log_source_file_name in("auth*", "secure")
+| alter current_year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0),
+    //timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0),
+    //timestamp = format_string("%s %s", current_year, timestamp),
+    hostname = to_string(arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+([^\s]+)"), 0)),
+    process_name = to_string(arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\s\S+\s([a-zA-Z]+)"), 0)),
+    pid = to_integer(arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+[^\s]+\s[^\s]+\[(\d+)\]"),0)),
+    event_description = to_string(arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+[^\s]+\s+[^\:]+\:+(.*)"),0)),
+    src_ip = arrayindex(regextract(_raw_log,"\s(\d{1,3}(?:\.\d{1,3}){3})"),0),
+    user_name1 = arrayindex(regextract(_raw_log ,"\[USER\=([^\]]+)\]"),0),
+    user_name2 = arrayindex(regextract(_raw_log ,"for\suser\s(\S+)\sby"),0),
+    command = arrayindex(regextract(_raw_log ,"\[COMMAND\=([^\]]+)\]"),0)
+| alter
+   // _time = parse_timestamp("%Y %b %d %H:%M:%S", timestamp),
+    xdm.source.host.hostname = hostname,
+    xdm.source.process.name = process_name,
+    xdm.source.process.pid = pid,
+    xdm.event.description = event_description,
+    xdm.source.ipv4 = src_ip,
+    xdm.source.user.username = coalesce(user_name1 , user_name2 ),
+    xdm.target.process.command_line = command;
+
+filter _log_source_file_name in("syslog*", "messages")
+| alter current_year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0),
+    timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0)
+| alter timestamp = format_string("%s %s", current_year, timestamp),
+    hostname = to_string(arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+([^\s]+)"), 0)),
+    process_name = to_string(arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\s\S+\s([a-zA-Z\_\-]+)"), 0)),
+    pid = to_integer(arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+[^\s]+\s[^\s]+\[(\d+)\]"),0)),
+    event_description = to_string(arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+[^\s]+\s+[^\:]+\:+(.*)"),0)),
+    src_ip = to_string(arrayindex(regextract(_raw_log,"\s(\d{1,3}(?:\.\d{1,3}){3})"),0)),
+    log_level = arrayindex(regextract(_raw_log ,"\:\s\<([a-zA-Z]+)\>"),0),
+    user_name = arrayindex(regextract(_raw_log ,"\:\s\(([a-zA-Z]+)\)\sCMD"),0),
+    command_line = arrayindex(regextract(_raw_log ,"\)\sCMD\s\(([^\)]+)\)"),0)
+| alter
+   // _time = parse_timestamp("%Y %b %d %H:%M:%S", timestamp),
+    xdm.target.host.hostname = hostname,
+    xdm.target.process.name = process_name,
+    xdm.target.process.pid = to_number(pid),
+    xdm.event.description = event_description,
+    xdm.alert.severity = log_level,
+    xdm.target.user.username = user_name,
+    xdm.target.process.command_line = command_line;

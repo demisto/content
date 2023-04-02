@@ -1,6 +1,9 @@
 import hashlib
+from typing import Tuple
 
 from CommonServerPython import *
+
+CSRF_PARSING_CHARS = 14
 
 
 class Client:
@@ -32,7 +35,8 @@ class Client:
         self.session = requests.Session()
 
     def session_post(self, url: str, json_cmd: dict) -> dict:
-        response = self.session.post(url=url, json=json_cmd, verify=self.verify)
+        response = self.session.post(url=url, json=json_cmd, verify=self.verify,
+                                     headers=self.session_metadata.get("headers"))
         json_response = json.loads(response.text)
         if 'type' in json_response and json_response['type'] == 'exception':
             if 'message' in json_response:
@@ -40,7 +44,14 @@ class Client:
             raise Exception(f'Operation to PAN-OS failed. with: {str(json_response)}')
         return json_response
 
-    def login(self) -> str:
+    @staticmethod
+    def extract_csrf(response_text: str) -> str:
+        # the constant amount of chars until the value we want for the csrf
+        csrf_start = response_text.find('_csrf') + CSRF_PARSING_CHARS
+        csrf_end = response_text.find('"', csrf_start)
+        return response_text[csrf_start:csrf_end]
+
+    def login(self) -> str:  # pragma: no cover
         # This is the data sent to Panorama from the Login screen to complete the login and get a PHPSESSID cookie
         login_data = {
             'prot': 'https:',
@@ -53,18 +64,32 @@ class Client:
             'ok': 'Log In'
         }
         try:
+            headers = {}
+            if LooseVersion(demisto.params().get('version', '8')) >= LooseVersion('10.1.6'):
+                # We do this to get the cookie we need to add to the requests in the new version of PAN-OS
+                response = self.session.get(url=f'{self.session_metadata["base_url"]}/php/login.php?',
+                                            verify=self.verify)
+                csrf = self.extract_csrf(response.text)
+                login_data['_csrf'] = csrf
+                self.session_metadata["cookie"] = f'PHPSESSID={response.cookies.get_dict().get("PHPSESSID")}'
+                headers = {
+                    'Cookie': self.session_metadata["cookie"],
+                }
             # Use a POST command to login to Panorama and create an initial session
-            self.session.post(url=f'{self.session_metadata["base_url"]}/php/login.php?', data=login_data,
-                              verify=self.verify)
+            response = self.session.post(url=f'{self.session_metadata["base_url"]}/php/login.php?', data=login_data,
+                                         verify=self.verify, headers=headers)
+            self.session_metadata["cookie"] = f'PHPSESSID={response.cookies.get_dict().get("PHPSESSID")}'
+            headers['Cookie'] = self.session_metadata["cookie"]
             # Use a GET command to the base URL to get the ServerToken which looks like this:
             #  window.Pan.st.st.st539091 = "8PR8ML4A67PUMD3NU00L3G67M4958B996F61Q97T"
-            response = self.session.post(url=f'{self.session_metadata["base_url"]}/', verify=self.verify)
+            response = self.session.post(url=f'{self.session_metadata["base_url"]}/', verify=self.verify,
+                                         headers=headers)
         except Exception as err:
             raise Exception(f'Failed to login. Please double-check the credentials and the server URL. {str(err)}')
         # Use RegEx to parse the ServerToken string from the JavaScript variable
         match = re.search(r'(?:window\.Pan\.st\.st\.st[0-9]+\s=\s\")(\w+)(?:\")', response.text)
-        # Fix to login validation from version 9
-        if int(demisto.params().get('version', 8)) > 8:
+        # Fix to login validation for version 9
+        if LooseVersion(demisto.params().get('version', '8')) >= LooseVersion('9'):
             if 'window.Pan.staticMOTD' not in response.text:
                 match = None
         # The JavaScript calls the ServerToken a "cookie" so we will use that variable name
@@ -73,7 +98,7 @@ class Client:
             raise Exception('Failed to login. Please double-check the credentials and the server URL.')
         return match.group(1)
 
-    def logout(self):
+    def logout(self):  # pragma: no cover
         self.session.post(url=f'{self.session_metadata["base_url"]}/php/logout.php?', verify=False)
 
     def token_generator(self) -> str:
@@ -81,7 +106,7 @@ class Client:
         The PHP Security Token (Data String) is generated with the TID (counter) and a special session "cookie"
         :return: hash token
         """
-        data_code = f'{self.session_metadata["cookie"]}{str(self.session_metadata["tid"])}'
+        data_code = f'{self.session_metadata["cookie_key"]}{str(self.session_metadata["tid"])}'
         # Use the hashlib library function to calculate the MD5
         data_hash = hashlib.md5(data_code.encode())  # nosec
         data_string = data_hash.hexdigest()  # Convert the hash to a proper hex string
@@ -170,7 +195,7 @@ class Client:
             json_cmd=json_cmd)
 
     def policy_optimizer_get_rules(
-        self, timeframe: str, usage: str, exclude: bool, position: str, rule_type: str
+            self, timeframe: str, usage: str, exclude: bool, position: str, rule_type: str
     ) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
@@ -248,6 +273,22 @@ class Client:
         return self.session_post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/AddressGroup.showDynamicAddressGroup',
             json_cmd=json_cmd)
+
+
+def get_unused_rules_by_position(client: Client, position, exclude, rule_type, usage, timeframe) -> Tuple[Dict, List]:
+    """
+
+    Get unused rules from panorama based on user defined arguments.
+
+    """
+    raw_response = client.policy_optimizer_get_rules(
+        timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type  # type: ignore
+    )
+
+    stats = raw_response.get('result') or {}
+    if (stats.get('@status') or '') == 'error':
+        raise Exception(f'Operation Failed with: {stats}')
+    return raw_response, (stats.get('result') or {}).get('entry') or []
 
 
 def get_policy_optimizer_statistics_command(client: Client) -> CommandResults:
@@ -334,20 +375,21 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     timeframe = args.get('timeframe')
     usage = args.get('usage')
     exclude = argToBoolean(args.get('exclude'))
-    position = args.get('position') or 'post'
+    position = args.get('position')
     rule_type = args.get('rule_type') or 'security'
-
     position = position if client.is_cms_selected else 'main'  # firewall instance only has position main
+    rules = []
 
-    raw_response = client.policy_optimizer_get_rules(
-        timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type  # type: ignore
-    )
+    if position == 'both':
+        post_raw, post_rules = get_unused_rules_by_position(client, 'post', exclude, rule_type, usage, timeframe)
+        pre_raw, pre_rules = get_unused_rules_by_position(client, 'pre', exclude, rule_type, usage, timeframe)
+        raw_response = {'post': post_raw,
+                        'pre': pre_raw}
+        rules.extend(post_rules)
+        rules.extend(pre_rules)
+    else:
+        raw_response, rules = get_unused_rules_by_position(client, position, exclude, rule_type, usage, timeframe)
 
-    stats = raw_response.get('result') or {}
-    if (stats.get('@status') or '') == 'error':
-        raise Exception(f'Operation Failed with: {stats}')
-
-    rules = (stats.get('result') or {}).get('entry') or []
     if rules:
         headers = ['@name', '@uuid', 'action', 'description', 'source', 'destination']
         table = tableToMarkdown(
@@ -379,7 +421,8 @@ def policy_optimizer_app_and_usage_command(client: Client, args: dict) -> Comman
 
     stats = stats['result']
     if '@count' in stats and stats['@count'] == '0':
-        return CommandResults(readable_output=f'Rule with UUID:{rule_uuid} does not use apps.', raw_response=raw_response)
+        return CommandResults(readable_output=f'Rule with UUID:{rule_uuid} does not use apps.',
+                              raw_response=raw_response)
 
     rule_stats = stats['rules']['entry'][0]
 
@@ -416,7 +459,7 @@ def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResul
     )
 
 
-def main():
+def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()
@@ -426,8 +469,12 @@ def main():
         client = Client(url=params.get('server_url'), username=params['credentials']['identifier'],
                         password=params['credentials']['password'], vsys=params.get('vsys'),
                         device_group=params.get('device_group'), verify=not params.get('insecure'), tid=50)
-        client.session_metadata['cookie'] = client.login()  # Login to PAN-OS and return the GUI cookie value
-
+        client.session_metadata['cookie_key'] = client.login()  # Login to PAN-OS and return the GUI cookie value
+        headers = {}
+        if LooseVersion(demisto.params().get('version', '8')) >= LooseVersion('10.1.6'):
+            headers['Cookie'] = client.session_metadata["cookie"]
+            headers['Content-Type'] = 'application/json'
+            client.session_metadata["headers"] = headers
         if command == 'test-module':
             return_results('ok')  # if login was successful, instance configuration is ok.
         elif command == 'pan-os-po-get-stats':

@@ -1,4 +1,7 @@
 category: Endpoint
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Cylance Protect v2
   version: -1
@@ -8,59 +11,69 @@ configuration:
   name: server
   required: true
   type: 0
+  section: Connect
 - display: Application ID
   name: app_id
   required: true
   type: 0
+  section: Connect
 - display: Application Secret
   name: app_secret
   required: true
   type: 4
+  section: Connect
 - display: Tenant API Key
   name: tid
   required: true
   type: 4
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - defaultvalue: "-59"
   display: File Threshold
   name: file_threshold
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
+  section: Collect
+  advanced: true
 description: Manage Endpoints using Cylance protect
 display: Cylance Protect v2
 name: Cylance Protect v2
 script:
   commands:
   - arguments:
-    - description: The page number parameter is optional. When the value is not specified,
-        the default is 1.
+    - description: The page number parameter is optional. When the value is not specified, the default is 1.
       name: pageNumber
-    - description: The page size parameter is optional. When the value is not specified,
-        the default is 10. Max is 200.
+    - description: The page size parameter is optional. When the value is not specified, the default is 10. Max is 200.
       name: pageSize
-    description: Allows a caller to request a page with a list of Console device resources
-      that belongings to a tenant, sorted by registration (created) date in descending
-      order (most recent device registered listed first).
+    description: Allows a caller to request a page with a list of Console device resources that belongings to a tenant, sorted by registration (created) date in descending order (most recent device registered listed first).
     name: cylance-protect-get-devices
     outputs:
     - contextPath: CylanceProtect.Device.AgentVersion
@@ -104,8 +117,7 @@ script:
       description: The device ID
       name: id
       required: true
-    description: Allows a caller to request a specific device resource belonging to
-      a Tenant
+    description: Allows a caller to request a specific device resource belonging to a Tenant
     name: cylance-protect-get-device
     outputs:
     - contextPath: CylanceProtect.Device.AgentVersion
@@ -121,8 +133,7 @@ script:
       description: The date and time (in UTC) when the device record was last modified.
       type: date
     - contextPath: CylanceProtect.Device.DateOffline
-      description: The date and time (in UTC) when the device last communicated with
-        the Console.
+      description: The date and time (in UTC) when the device last communicated with the Console.
       type: date
     - contextPath: CylanceProtect.Device.Hostname
       description: The hostname for the device.
@@ -168,8 +179,7 @@ script:
       description: The hostname (DNS name)
       name: hostname
       required: true
-    description: Allows a caller to request a specific device resource belonging to
-      a Tenant by hostname
+    description: Allows a caller to request a specific device resource belonging to a Tenant by hostname
     name: cylance-protect-get-device-by-hostname
     outputs:
     - contextPath: CylanceProtect.Device.AgentVersion
@@ -200,8 +210,7 @@ script:
       description: The date and time (in UTC) when the device record was last modified.
       type: date
     - contextPath: CylanceProtect.Device.DateOffline
-      description: The date and time (in UTC) when the device last communicated with
-        the Console.
+      description: The date and time (in UTC) when the device last communicated with the Console.
       type: date
     - contextPath: CylanceProtect.Device.IsSafe
       description: If true, there are no outstanding threats.
@@ -254,25 +263,20 @@ script:
     - description: Zones IDs to remove.
       isArray: true
       name: removeZones
-    description: Allows a caller to update a specific Console device resource belonging
-      to a Tenant.
+    description: Allows a caller to update a specific Console device resource belonging to a Tenant.
     name: cylance-protect-update-device
   - arguments:
     - default: true
       description: The device ID.
       name: id
       required: true
-    - description: If the threat score is less than or equal to the threshold, then
-        file will be considered malicious. If the threshold is not specified, the
-        default file threshold that was configured in the instance settings will be
-        used.
+    - description: If the threat score is less than or equal to the threshold, then file will be considered malicious. If the threshold is not specified, the default file threshold that was configured in the instance settings will be used.
       name: threshold
     - description: The page number. If not specified, the default is 1.
       name: pageNumber
     - description: The page size. If not specified, the default is 10.
       name: pageSize
-    description: Allows a caller to request a page with a list of threats found on
-      a specific device.
+    description: Allows a caller to request a page with a list of threats found on a specific device.
     name: cylance-protect-get-device-threats
     outputs:
     - contextPath: File.Classification
@@ -288,9 +292,7 @@ script:
       description: The file path where the threat was found on the device.
       type: string
     - contextPath: File.FileStatus
-      description: The current status of the file on the device. This can be one of
-        the following:Default (0), Quarantined (1), Whitelisted (2), Suspicious (3),
-        FileRemoved (4), Corrupt (5).
+      description: The current status of the file on the device. This can be one of the following:Default (0), Quarantined (1), Whitelisted (2), Suspicious (3), FileRemoved (4), Corrupt (5).
       type: number
     - contextPath: File.Name
       description: The name of the threat.
@@ -322,19 +324,16 @@ script:
   - arguments:
     - description: The page number. If not specified, the default is 1.
       name: pageNumber
-    - description: The page size. If not specified, the default is 10. Maximum is
-        200.
+    - description: The page size. If not specified, the default is 10. Maximum is 200.
       name: pageSize
     description: Allows the caller to get a list of tenant policies.
     name: cylance-protect-get-policies
     outputs:
     - contextPath: CylanceProtect.Policies.DateAdded
-      description: The date and time (in UTC) when the Console policy resource was
-        first created.
+      description: The date and time (in UTC) when the Console policy resource was first created.
       type: string
     - contextPath: CylanceProtect.Policies.DateModified
-      description: The date and time (in UTC) when the Console policy resource was
-        last modified.
+      description: The date and time (in UTC) when the Console policy resource was last modified.
       type: string
     - contextPath: CylanceProtect.Policies.DeviceCount
       description: The number of devices assigned to this policy.
@@ -366,14 +365,11 @@ script:
     description: Creates (adds) a zone to your Console.
     name: cylance-protect-create-zone
   - arguments:
-    - description: The page number parameter is optional. When the value is not specified,
-        the default is 1.
+    - description: The page number parameter is optional. When the value is not specified, the default is 1.
       name: pageNumber
-    - description: The page size parameter is optional. When the value is not specified,
-        the default is 10. Max is 200.
+    - description: The page size parameter is optional. When the value is not specified, the default is 10. Max is 200.
       name: pageSize
-    description: Request zone information for your organization. This will return
-      the top 100 records
+    description: Request zone information for your organization. This will return the top 100 records
     name: cylance-protect-get-zones
     outputs:
     - contextPath: CylanceProtect.Zones.Criticality
@@ -495,8 +491,7 @@ script:
       description: The name of the threat.
       type: string
     - contextPath: File.Running
-      description: Identifies if the threat is executing, or another executable loaded
-        or called it.
+      description: Identifies if the threat is executing, or another executable loaded or called it.
       type: boolean
     - contextPath: File.Safelisted
       description: Identifies if the threat is on the Safe List.
@@ -511,8 +506,7 @@ script:
       description: The threat sub-classification for the threat.
       type: string
     - contextPath: File.UniqueToCylance
-      description: Whether the threat was identified by Cylance, and not by other
-        anti-virus sources.
+      description: Whether the threat was identified by Cylance, and not by other anti-virus sources.
       type: boolean
     - contextPath: DBotScore.Indicator
       description: The tested indicator.
@@ -531,11 +525,9 @@ script:
       description: The SHA256 hash of the threat.
       name: sha256
       required: true
-    - description: The page number parameter is optional. When the value is not specified,
-        the default is 1.
+    - description: The page number parameter is optional. When the value is not specified, the default is 1.
       name: pageNumber
-    - description: The page size parameter is optional. When the value is not specified,
-        the default is 10. Max is 200.
+    - description: The page size parameter is optional. When the value is not specified, the default is 10. Max is 200.
       name: pageSize
     description: Allows a caller to request  a list of devices on a specific threat.
     name: cylance-protect-get-threat-devices
@@ -550,9 +542,7 @@ script:
       description: The agent version installed on the device.
       type: string
     - contextPath: CylanceProtect.Threat.Devices.FileStatus
-      description: Current quarantine status of the file on the device. Default (0),
-        Quarantined (1), Whitelisted (2), Suspicious (3), FileRemoved (4), Corrupt
-        (5).
+      description: Current quarantine status of the file on the device. Default (0), Quarantined (1), Whitelisted (2), Suspicious (3), FileRemoved (4), Corrupt (5).
       type: number
     - contextPath: Endpoint.IPAddress
       description: The list of IP addresses for the device.
@@ -564,8 +554,7 @@ script:
       description: The device name for the device.
       type: string
     - contextPath: CylanceProtect.Threat.Devices.PolicyID
-      description: The unique identifier of the policy assigned to the device. If
-        no policy is assigned, will be null.
+      description: The unique identifier of the policy assigned to the device. If no policy is assigned, will be null.
       type: string
     - contextPath: CylanceProtect.Threat.Devices.State
       description: The state of the device. Can be "Offline" or "Online".
@@ -592,8 +581,7 @@ script:
     description: Produces a CSV threat data report of the indicators.
     name: cylance-protect-get-indicators-report
   - arguments:
-    - description: The page size. If not specified, the default is 10. Maximum is
-        200.
+    - description: The page size. If not specified, the default is 10. Maximum is 200.
       name: pageSize
     - description: The page number. If not specified, the default is 1.
       name: pageNumber
@@ -628,8 +616,7 @@ script:
       description: Identifies if the threat is on the Global Quarantine list.
       type: string
     - contextPath: File.UniqueToCylance
-      description: The threat was identified by Cylance but not by other anti-virus
-        sources.
+      description: The threat was identified by Cylance but not by other anti-virus sources.
       type: string
     - contextPath: File.FileSize
       description: The size of the file.
@@ -654,8 +641,7 @@ script:
       name: threat_id
       required: true
     - auto: PREDEFINED
-      description: The requested status update for the convicted threat. Can be "Quarantine"
-        or "Waive".
+      description: The requested status update for the convicted threat. Can be "Quarantine" or "Waive".
       name: event
       predefined:
       - Quarantine
@@ -664,14 +650,12 @@ script:
     - description: ID of device to be updated
       name: device_id
       required: true
-    description: Updates the status of a convicted threat. Can be "Quarantine" or
-      "Waive".
+    description: Updates the status of a convicted threat. Can be "Quarantine" or "Waive".
     execution: true
     name: cylance-protect-update-device-threats
   - arguments:
     - auto: PREDEFINED
-      description: The type of the list for which to retrieve the ashes. Can be "GlobalQuarantine"
-        or "GlobalSafe".
+      description: The type of the list for which to retrieve the ashes. Can be "GlobalQuarantine" or "GlobalSafe".
       name: listTypeId
       predefined:
       - GlobalQuarantine
@@ -679,8 +663,7 @@ script:
       required: true
     - description: The page number. If not specified, the default is 1.
       name: pageNumber
-    - description: The page size. If not specified, the default is 10. Maximum is
-        200.
+    - description: The page size. If not specified, the default is 10. Maximum is 200.
       name: pageSize
     description: Returns a list of global list resources for a tenant.
     name: cylance-protect-get-list
@@ -704,8 +687,7 @@ script:
       description: The Cylance score assigned to the threat.
       type: number
     - contextPath: File.ListType
-      description: The list type to which the threat belongs. Can be "GlobalQuarantine"
-        or "GlobalSafe".
+      description: The list type to which the threat belongs. Can be "GlobalQuarantine" or "GlobalSafe".
       type: string
     - contextPath: File.MD5
       description: The MD5 hash of the threat.
@@ -791,8 +773,7 @@ script:
       name: sha256
       required: true
     - auto: PREDEFINED
-      description: The list type to which the threat belongs. Can be "GlobalQuarantine"
-        or "GlobalSafe".
+      description: The list type to which the threat belongs. Can be "GlobalQuarantine" or "GlobalSafe".
       name: listType
       predefined:
       - GlobalQuarantine
@@ -803,9 +784,7 @@ script:
       name: reason
     - auto: PREDEFINED
       defaultValue: None
-      description: This field is required only if the list_type value is Global Safe.
-        Can be "Admin Tool", "Commercial Software", "Drivers", "Internal Application",
-        "Operating System", "Security Software", or "None". Default is "None".
+      description: This field is required only if the list_type value is Global Safe. Can be "Admin Tool", "Commercial Software", "Drivers", "Internal Application", "Operating System", "Security Software", or "None". Default is "None".
       name: category
       predefined:
       - Admin Tool
@@ -815,36 +794,30 @@ script:
       - Operating System
       - Security Software
       - None
-    description: Adds a convicted threat for a particular tenant to either the Global
-      Quarantine list or the Global Safe list.
+    description: Adds a convicted threat for a particular tenant to either the Global Quarantine list or the Global Safe list.
     name: cylance-protect-add-hash-to-list
     outputs:
     - contextPath: File.SHA256
       description: The SHA256 hash for the threat.
       type: string
     - contextPath: File.Cylance.ListType
-      description: The list type to which the threat belongs. Can be "GlobalQuarantine"
-        or "GlobalSafe".
+      description: The list type to which the threat belongs. Can be "GlobalQuarantine" or "GlobalSafe".
       type: string
     - contextPath: File.Cylance.Category
-      description: This field is required only if the list_type value is Global Safe.
-        Can be "Admin Tool", "Commercial Software", "Drivers", "Internal Application",
-        "Operating System", "Security Software", or "None".
+      description: This field is required only if the list_type value is Global Safe. Can be "Admin Tool", "Commercial Software", "Drivers", "Internal Application", "Operating System", "Security Software", or "None".
       type: string
   - arguments:
     - description: The SHA256 hash of the threat.
       name: sha256
       required: true
     - auto: PREDEFINED
-      description: The list type to which the threat belongs. Can be "GlobalQuarantine"
-        or "GlobalSafe".
+      description: The list type to which the threat belongs. Can be "GlobalQuarantine" or "GlobalSafe".
       name: listType
       predefined:
       - GlobalSafe
       - GlobalQuarantine
       required: true
-    description: Removes a convicted threat for a particular tenant from either the
-      Global Quarantine list or the Global Safe list.
+    description: Removes a convicted threat for a particular tenant from either the Global Quarantine list or the Global Safe list.
     execution: true
     name: cylance-protect-delete-hash-from-lists
     outputs:
@@ -852,8 +825,7 @@ script:
       description: SHA256 hash of the file.
       type: string
     - contextPath: File.Cylance.ListType
-      description: The list type to which the threat belongs. Can be "GlobalQuarantine"
-        or "GlobalSafe".
+      description: The list type to which the threat belongs. Can be "GlobalQuarantine" or "GlobalSafe".
       type: string
   - arguments:
     - description: The Tenant policy ID to the service endpoint.
@@ -872,14 +844,12 @@ script:
       description: The date and time (in UTC) that the policy was created.
       type: string
   - arguments:
-    - description: The unique identifiers for the devices to be deleted. The maximum
-        number of Device IDs per request is 20.
+    - description: The unique identifiers for the devices to be deleted. The maximum number of Device IDs per request is 20.
       isArray: true
       name: deviceIds
       required: true
     - defaultValue: "20"
-      description: The number of devices to delete per batch. The default is 20, which
-        is also the maximum number of devices that can be deleted per request.
+      description: The number of devices to delete per batch. The default is 20, which is also the maximum number of devices that can be deleted per request.
       name: batch_size
     description: Delete one or more devices from an organization.
     execution: true
@@ -949,8 +919,7 @@ script:
       predefined:
       - Fuzzy
       - Exact
-    description: Create a cylance InstaQuery to search for artifacts in one or multiple
-      zones.
+    description: Create a cylance InstaQuery to search for artifacts in one or multiple zones.
     outputs:
     - contextPath: InstaQuery.New.id
       description: The unique identifier of the created InstaQuery.
@@ -984,7 +953,7 @@ script:
     - contextPath: InstaQuery.List
       description: The list of InstaQuery
       type: string
-  dockerimage: demisto/pyjwt3:1.0.0.29644
+  dockerimage: demisto/pyjwt3:1.0.0.51336
   isfetch: true
   runonce: false
   script: ''

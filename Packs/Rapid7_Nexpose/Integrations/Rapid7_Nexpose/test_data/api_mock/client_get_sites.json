@@ -1,0 +1,54 @@
+[
+    {
+        "assets": 4,
+        "id": 1,
+        "importance": "normal",
+        "lastScanTime": "2021-08-03T14:09:15.321Z",
+        "name": "Test 1",
+        "riskScore": 20407.0,
+        "scanEngine": 3,
+        "scanTemplate": "full-audit-without-web-spider",
+        "type": "static",
+        "vulnerabilities": {
+            "critical": 0,
+            "moderate": 16,
+            "severe": 25,
+            "total": 41
+        }
+    },
+    {
+        "assets": 19,
+        "id": 2,
+        "importance": "normal",
+        "lastScanTime": "2021-06-29T07:06:54.733Z",
+        "name": "Test 2",
+        "riskScore": 215068.0,
+        "scanEngine": 3,
+        "scanTemplate": "full-audit-without-web-spider",
+        "type": "static",
+        "vulnerabilities": {
+            "critical": 139,
+            "moderate": 13,
+            "severe": 307,
+            "total": 459
+        }
+    },
+    {
+        "assets": 11,
+        "description": "This is a test site with test asset",
+        "id": 3,
+        "importance": "very_low",
+        "lastScanTime": "2020-11-26T17:13:54.117Z",
+        "name": "Test 3",
+        "riskScore": 20515.0,
+        "scanEngine": 3,
+        "scanTemplate": "full-audit-without-web-spider",
+        "type": "static",
+        "vulnerabilities": {
+            "critical": 6,
+            "moderate": 4,
+            "severe": 42,
+            "total": 52
+        }
+    }
+]

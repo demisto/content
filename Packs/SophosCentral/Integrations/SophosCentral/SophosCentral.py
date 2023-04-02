@@ -5,7 +5,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 COMMON_BASE_URL = "https://api.central.sophos.com"
 
@@ -1055,6 +1054,672 @@ class Client(BaseClient):
             headers=self.headers,
             url_suffix="endpoint/v1/endpoints/isolation",
             json_data=body,
+        )
+
+    def get_endpoints_group(
+        self,
+        group_id: str
+    ) -> Dict:
+        """
+            Get endpoints in a group
+
+            Args:
+                group_id (str): Endpoint group ID.
+
+            Returns:
+                response (Response): API response from Sophos.
+        """
+
+        url_suffix = f"/endpoint/v1/endpoint-groups/{group_id}/endpoints"
+
+        return self._http_request(
+            method="GET", url_suffix=url_suffix, headers=self.headers
+        )
+
+    def add_endpoints_group(
+        self,
+        group_id: str,
+        ids: List[str]
+    ) -> Dict:
+        """
+            Add endpoints to the group.
+
+            Args:
+                group_id (str): Endpoint group ID.
+                ids(list(str)): Endpoints in the group.
+
+            Returns:
+                response (Response): API response from Sophos.
+        """
+        body = {
+            "ids": ids
+        }
+
+        body = remove_empty_elements(body)
+        url_suffix = f"/endpoint/v1/endpoint-groups/{group_id}/endpoints"
+        return self._http_request(
+            method="POST",
+            headers=self.headers,
+            json_data=body,
+            url_suffix=url_suffix,
+        )
+
+    def remove_endpoints(
+        self,
+        group_id: str,
+        ids: str
+    ) -> Dict:
+        """
+            Remove endpoints from endpoint group.
+
+            Args:
+                ids(str): Endpoints in the group.
+                group_id (str): Endpoint group ID.
+
+            Returns:
+                response (Response): API response from Sophos.
+        """
+
+        params = {
+            "ids": ids
+        }
+
+        params = remove_empty_elements(params)
+
+        url_suffix = f"/endpoint/v1/endpoint-groups/{group_id}/endpoints"
+
+        return self._http_request(
+            method="DELETE",
+            params=params,
+            headers=self.headers,
+            url_suffix=url_suffix
+        )
+
+    def remove_endpoint(
+        self,
+        group_id: str,
+        endpoint_id: str
+    ) -> Dict:
+        """
+            Remove endpoint from endpoint group.
+
+            Args:
+                endpoint_id(str): Endpoints in the group.
+                group_id (str): Endpoint group ID.
+
+            Returns:
+                response (Response): API response from Sophos.
+        """
+
+        url_suffix = f"/endpoint/v1/endpoint-groups/{group_id}/endpoints/{endpoint_id}"
+
+        return self._http_request(
+            method="DELETE",
+            headers=self.headers,
+            url_suffix=url_suffix
+        )
+
+    def get_endpoint_policies(self, policy_type: Optional[str], page_size: Optional[int], page: Optional[int]) -> Dict:
+        """
+        Get all endpoint policy.
+
+        Args:
+            policy_type (Optional[str]): Policy Type.
+            page_size (Optional[int]): Size of the page requested.
+            page (Optional[int]): Number of page to return.
+        Returns:
+            response (Response): API response from Sophos.
+        """
+        url_suffix = "endpoint/v1/policies"
+        params = remove_empty_elements({"pageSize": page_size, "page": page, "pageTotal": True, "policyType": policy_type})
+        return self._http_request(
+            method="GET",
+            headers=self.headers,
+            params=params,
+            url_suffix=url_suffix
+        )
+
+    def get_endpoint_policy(self, policy_id: str) -> Dict:
+        """
+        Get details of Policy by ID.
+
+        Args:
+            policy_id (str): ID of the endpoint policy.
+        Returns:
+            response (Response): API response from Sophos.
+        """
+        url_suffix = f"endpoint/v1/policies/{policy_id}"
+        return self._http_request(
+            method="GET",
+            headers=self.headers,
+            url_suffix=url_suffix
+        )
+
+    def delete_endpoint_policy(self, policy_id: str) -> Dict:
+        """
+        Delete an existing endpoint policy.
+
+        Args:
+            policy_id (str): ID of the endpoint policy to delete.
+
+        Returns:
+            response (Response): API response from Sophos.
+        """
+        url_suffix = f"endpoint/v1/policies/{policy_id}"
+        return self._http_request(
+            method="DELETE", headers=self.headers, url_suffix=url_suffix
+        )
+
+    def clone_endpoint_policy(self, policy_id: str, name: Optional[str]) -> Dict:
+        """
+        Clone an existing endpoint policy.
+
+        Args:
+            policy_id (str): ID of the endpoint policy to clone.
+            name (Optional[str]): Name of the endpoint policy to clone.
+        Returns:
+            response (Response): API response from Sophos.
+        """
+        url_suffix = f"endpoint/v1/policies/{policy_id}/clone"
+        body = {"name": name} if name else {}
+        return self._http_request(
+            method="POST",
+            headers=self.headers,
+            url_suffix=url_suffix,
+            json_data=body,
+        )
+
+    def update_endpoint_policy(self, policy_id: str, priority: str) -> Dict:
+        """
+        Update order priority an endpoint policy.
+
+        Args:
+            policy_id (str): ID of the endpoint policy to update.
+            priority (str): priority of the endpoint policy to update.
+        Returns:
+            response (Response): API response from Sophos.
+        """
+        url_suffix = f"endpoint/v1/policies/{policy_id}"
+        body = {"priority": priority}
+        return self._http_request(
+            method="PATCH",
+            headers=self.headers,
+            url_suffix=url_suffix,
+            json_data=body,
+        )
+
+    def list_usergroups(
+        self,
+        group_ids: Optional[str],
+        search: Optional[str],
+        search_fields: Optional[str],
+        domain: Optional[str],
+        source_type: Optional[str],
+        user_id: Optional[str],
+        page: Optional[int],
+        page_size: Optional[int]
+    ) -> Dict:
+        """
+        List all usergroups.
+
+        Args:
+            group_ids (str) : List of item IDs to match.
+            search (str): Search for items that match the given terms.
+            search_fields (str): Search only within the specified fields.
+                The following values are allowed :- name, description.
+            domain (str): List the items that match the given domain.
+            source_type (str): Types of sources of directory information.
+                The following values are allowed:- custom, activeDirectory, azureActiveDirectory.
+            user_id (str): Search groups associated with the given user ID.
+            page (int): Index of page to retrieve.
+            page_size (int): Max usergroups in a page.
+
+        Returns:
+            response (Response): API response from Sophos.
+        """
+        params = {
+            "ids": group_ids,
+            "search": search,
+            "searchFields": search_fields,
+            "domain": domain,
+            "sourceType": source_type,
+            "userId": user_id,
+            "page": page,
+            "pageSize": page_size,
+            "pageTotal": True,
+        }
+        params = remove_empty_elements(params)
+
+        return self._http_request(
+            method="GET",
+            headers=self.headers,
+            params=params,
+            url_suffix="common/v1/directory/user-groups",
+        )
+
+    def get_usergroup(self, group_id: str) -> Dict:
+        """
+        Get a single usergroup based on ID.
+
+        Args:
+            group_id (str): ID of the usergroup to get.
+
+        Returns:
+            response (Response): API response from Sophos.
+        """
+        return self._http_request(
+            method="GET",
+            headers=self.headers,
+            url_suffix=f"common/v1/directory/user-groups/{group_id}"
+        )
+
+    def create_usergroup(self, group_name: str, description: Optional[str], user_ids: List[str]) -> Dict:
+        """Create a usergroup
+
+        Args:
+            group_name (str): Group name.
+            description (str): Group description.
+            userIds (str): Users in the group.
+        """
+        body = {"name": group_name, "description": description, "userIds": user_ids}
+        return self._http_request(
+            method="POST",
+            headers=self.headers,
+            url_suffix="common/v1/directory/user-groups",
+            json_data=body,
+        )
+
+    def update_usergroup(self, group_id: str, group_name: str, description: Optional[str]) -> Dict:
+        """Update a specific usergroup based on ID.
+
+        Args:
+            group_id (str): Group ID.
+            group_name (str): Group name.
+            description (str): Group description.
+        """
+        body = {"name": group_name, "description": description}
+        return self._http_request(
+            method="PATCH",
+            headers=self.headers,
+            url_suffix=f"common/v1/directory/user-groups/{group_id}",
+            json_data=body,
+        )
+
+    def delete_usergroup(self, group_id: str) -> Dict:
+        """Delete a usergroup with given ID.
+
+        Args:
+            group_id (str): Group ID.
+        """
+        return self._http_request(
+            method="DELETE",
+            headers=self.headers,
+            url_suffix=f"common/v1/directory/user-groups/{group_id}",
+        )
+
+    def get_users_in_usergroup(
+            self, group_id: str,
+            search: Optional[str],
+            search_field: Optional[str],
+            domain: Optional[str],
+            source_type: Optional[str],
+            page: int,
+            page_size: int
+    ) -> Dict:
+        """
+        Add multiple users to the specified group.
+
+        Args:
+            group_id (str): Group ID.
+            search (str): Search for items that match the given terms.
+            search_field(str): Search only within the specified fields.
+            domain(str): List the items that match the given domain.
+            source_type(str): Types of sources of directory information.
+            page (int): Index of page to retrieve.
+            page_size (int): Max users in a page.
+        Returns:
+            response (Response): API response from Sophos.
+        """
+        params = {
+            "searchFields": search_field,
+            "search": search,
+            "domain": domain,
+            "sourceType": source_type,
+            "page": page,
+            "pageSize": page_size,
+            "pageTotal": True
+        }
+
+        url_suffix = f"common/v1/directory/user-groups/{group_id}/users"
+        return self._http_request(
+            method="GET", url_suffix=url_suffix, headers=self.headers, params=remove_empty_elements(params)
+        )
+
+    def add_users_to_usergroup(
+            self, group_id: str, ids: List[str]
+    ) -> Dict:
+        """
+        Add multiple users to the specified group.
+
+        Args:
+            group_id (str): Group ID.
+            ids (list): List of User ID.
+        Returns:
+            response (Response): API response from Sophos.
+        """
+        url_suffix = f"common/v1/directory/user-groups/{group_id}/users"
+        return self._http_request(
+            method="POST", url_suffix=url_suffix, headers=self.headers, json_data={
+                "ids": ids
+            }
+        )
+
+    def delete_user_from_usergroup(
+            self, group_id: str, user_id: str
+    ) -> Dict:
+        """
+        Delete a user from the specified group.
+
+        Args:
+            group_id (str): Group ID.
+            user_id (str): User ID.
+        Returns:
+            response (Response): API response from Sophos.
+        """
+        url_suffix = f"common/v1/directory/user-groups/{group_id}/users/{user_id}"
+        return self._http_request(
+            method="DELETE", url_suffix=url_suffix, headers=self.headers
+        )
+
+    def list_users(
+        self,
+        search: Optional[str],
+        search_fields: Optional[str],
+        group_id: Optional[str],
+        domain: Optional[str],
+        source_type: Optional[str],
+        page_size: Optional[int],
+        page: Optional[int]
+    ) -> Dict:
+        """
+        List all users.
+
+        Args:
+            search (str): Search for items that match the given terms.
+            search_fields (str): Search only within the specified fields.
+                The following values are allowed :- name, description.
+            group_id (str) : Group Id associated with a user.
+            domain (str): List the items that match the given domain.
+            source_type (str): Types of sources of directory information.
+                The following values are allowed:- custom, activeDirectory, azureActiveDirectory.
+            page_size (int) : The size of the page being returned.
+            page (int) : The one indexed page number being returned.
+
+        Returns:
+            response (Response): API response from Sophos.
+        """
+        params = remove_empty_elements(
+            {
+                "search": search,
+                "searchFields": search_fields,
+                "sourceType": source_type,
+                "groupId": group_id,
+                "domain": domain,
+                "pageSize": page_size,
+                "page": page,
+                "pageTotal": True
+            }
+        )
+        url_suffix = "common/v1/directory/users"
+        return self._http_request(
+            method="GET", headers=self.headers, params=params,
+            url_suffix=url_suffix
+        )
+
+    def get_user(
+        self,
+        user_id: str
+    ) -> Dict:
+        """
+        Get a single user based on id.
+
+        Args:
+            user_id (str) : The User's id.
+
+        Returns:
+            response (Response): API response from Sophos.
+        """
+
+        url_suffix = f"common/v1/directory/users/{user_id}"
+        return self._http_request(
+            method="GET", headers=self.headers,
+            url_suffix=url_suffix
+        )
+
+    def add_user(
+        self,
+        first_name: str,
+        last_name: str,
+        email: str,
+        role: Optional[str],
+        exchange_login: Optional[str],
+        group_ids: Optional[list]
+    ) -> dict:
+        """
+        Add a new user.
+
+        Args:
+            first_name (str) : First name of the user.
+            last_name (str) : Last name of the user.
+            email (str) : The User's email.
+            role (str) : Role type of the user
+            exchange_login (str) : User's Exchange login.
+            group_ids (str) : Group Ids the user is currently enrolled in.
+
+        Returns:
+            response (Response): API response from Sophos.
+        """
+        body = {
+            "name": f"{first_name} {last_name}",
+            "firstName": first_name,
+            "lastName": last_name,
+            "email": email,
+            "role": role,
+            "exchangeLogin": exchange_login,
+            "groupIds": group_ids
+        }
+
+        body = remove_empty_elements(body)
+        url_suffix = "common/v1/directory/users"
+        return self._http_request(
+            method="POST",
+            headers=self.headers,
+            json_data=body,
+            url_suffix=url_suffix,
+        )
+
+    def update_user(
+        self,
+        user_id: str,
+        name: Optional[str],
+        first_name: Optional[str],
+        last_name: Optional[str],
+        email: Optional[str],
+        role: Optional[str],
+        exchange_login: Optional[str]
+    ) -> dict:
+        """
+        Update an existing user.
+
+        Args:
+            user_id (str) : The User's id.
+            name(str) : User's full name.
+            first_name (str) : First name of the user.
+            last_name (str) : Last name of the user.
+            email (str) : The User's email.
+            role (str) : Role type of the user
+            exchange_login (str) : User's Exchange login.
+
+        Returns:
+            response (Response): API response from Sophos.
+        """
+        body = {
+            "name": name,
+            "firstName": first_name,
+            "lastName": last_name,
+            "email": email,
+            "role": role,
+            "exchangeLogin": exchange_login,
+        }
+
+        url_suffix = f"common/v1/directory/users/{user_id}"
+        return self._http_request(
+            method="PATCH",
+            headers=self.headers,
+            json_data=remove_empty_elements(body),
+            url_suffix=url_suffix,
+        )
+
+    def delete_user(
+        self,
+        user_id: str,
+    ) -> dict:
+        """
+        Delete an existing user.
+
+        Args:
+
+        Returns:
+            response (Response): API response from Sophos.
+        """
+
+        url_suffix = f"common/v1/directory/users/{user_id}"
+        return self._http_request(
+            method="DELETE",
+            headers=self.headers,
+            url_suffix=url_suffix
+        )
+
+    def get_endpoint_group(self, limit: Optional[int], page: Optional[int]) -> Dict:
+        """
+        List all endpoint group connected to a tenant
+
+        Returns:
+            response (Response): API response from Sophos.
+        """
+        params = remove_empty_elements({"pageSize": limit, "pageTotal": True, "page": page})
+        url_suffix = "endpoint/v1/endpoint-groups"
+        return self._http_request(
+            method="GET", url_suffix=url_suffix, headers=self.headers, params=params
+        )
+
+    def create_group(
+        self,
+        description: Optional[str],
+        type: str,
+        name: str,
+        endpointIds: Optional[List[str]]
+    ) -> Dict:
+        """
+            List all endpoint group connected to a tenant.
+
+            Args:
+                endpointIds(list(str)): Endpoints in the group.:
+                description (str): Group description.
+                name (str): Group name.
+                type (str): Endpoint group types server/computer.
+
+            Returns:
+                response (Response): API response from Sophos.
+        """
+        body = {
+            "description": description,
+            "type": type,
+            "name": name.strip(),
+            "endpointIds": endpointIds
+        }
+
+        body = remove_empty_elements(body)
+        url_suffix = "/endpoint/v1/endpoint-groups"
+        return self._http_request(
+            method="POST",
+            headers=self.headers,
+            json_data=body,
+            url_suffix=url_suffix,
+        )
+
+    def update_group(
+        self,
+        groupId: str,
+        name: Optional[str],
+        description: Optional[str]
+    ) -> Dict:
+        """
+            List all endpoint group connected to a tenant.
+
+            Args:
+                groupId (str): Endpoint group ID.
+                name (str): New group name.
+                description (str) : New group description.
+
+            Returns:
+                response (Response): API response from Sophos.
+        """
+
+        body = {
+            "description": description,
+            "name": name
+        }
+
+        body = remove_empty_elements(body)
+        url_suffix = f"/endpoint/v1/endpoint-groups/{groupId}"
+        return self._http_request(
+            method="PATCH",
+            headers=self.headers,
+            json_data=body,
+            url_suffix=url_suffix
+        )
+
+    def fetch_group(
+        self,
+        groupId: str
+    ) -> Dict:
+        """
+            List all endpoint group connected to a tenant.
+
+            Args:
+                groupId (str): Endpoint group ID.
+
+            Returns:
+                response (Response): API response from Sophos.
+        """
+
+        url_suffix = f"/endpoint/v1/endpoint-groups/{groupId}"
+        return self._http_request(
+            method="GET",
+            headers=self.headers,
+            url_suffix=url_suffix
+        )
+
+    def delete_group(
+        self,
+        groupId: str
+    ) -> Dict:
+        """
+            Delete endpoint group connected to a tenant.
+
+            Args:
+                groupId (str): Endpoint group ID.
+
+            Returns:
+                response (Response): API response from Sophos.
+        """
+
+        url_suffix = f"/endpoint/v1/endpoint-groups/{groupId}"
+        return self._http_request(
+            method="DELETE",
+            headers=self.headers,
+            url_suffix=url_suffix
         )
 
 
@@ -2641,6 +3306,1320 @@ def fetch_incidents(
     return {"last_fetch": next_run_timestamp}, incidents
 
 
+def sophos_central_group_list(
+    client: Client, args: dict
+) -> CommandResults:
+    """
+    List all endpoint groups in the directory.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+    Returns:
+        CommandResults: outputs,readable outputs and raw response for XSOAR.
+    """
+    page_size = arg_to_number(args.get("page_size"))
+    number_of_page = arg_to_number(args.get("page"))
+
+    if page_size is not None:
+        if page_size < 0:
+            raise ValueError(
+                "page_size must be a positive number."
+            )
+
+        if page_size > 1000:
+            raise ValueError(
+                "page_size must be equal or less than 1000."
+            )
+
+    if number_of_page is not None:
+        if number_of_page < 0:
+            raise ValueError(
+                "page must be a positive number."
+            )
+
+    try:
+        results = client.get_endpoint_group(page_size, number_of_page)
+        items = results.get("items", [])
+        pages = results.get("pages", {})
+        records = pages.get("items", 0),
+        current = pages.get("current", 0),
+        total = pages.get("total", 0)
+
+        if number_of_page > total:
+            return CommandResults(
+                readable_output="Page Not Found."
+            )
+
+        table_headers = [
+            "id",
+            "name",
+            "type"
+        ]
+
+        outputs = []
+
+        if items:
+            for item in items:
+                group_data = {
+                    field: item.get(field) for field in table_headers
+                }
+                group_data["count"] = item.get("endpoints", {}).get("itemsCount", 0)
+                outputs.append(group_data)
+
+        table_headers.append("count")
+        name = f"Found {records} records \n Page : {current}/{total} \n Listed {len(outputs)} EndpointGroups:"
+
+        readable_output = tableToMarkdown(
+            name=name,
+            t=outputs,
+            headers=table_headers,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.EndpointGroups",
+            raw_response=results,
+            outputs=items,
+            readable_output=readable_output,
+        )
+    except DemistoException:
+        return CommandResults(
+            readable_output="Unable to fetch the group list."
+        )
+
+
+def sophos_central_group_create(
+    client: Client, args: dict
+) -> CommandResults:
+    """
+    Create a new endpoint group.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    try:
+        results = client.create_group(args.get("description"),
+                                      args.get("type", ""),
+                                      args.get("name", ""),
+                                      argToList(args.get("endpointIds", [])))
+
+        table_headers = ["id", "name", "type"]
+
+        outputs = {key: results.get(key) for key in table_headers}
+
+        readable_output = tableToMarkdown(
+            name="EndpointGroup Created Successfully.",
+            t=outputs,
+            headers=table_headers,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.EndpointGroups",
+            raw_response=results,
+            outputs=results,
+            readable_output=readable_output,
+        )
+    except DemistoException:
+        return CommandResults(
+            readable_output="Unable to create the group."
+        )
+
+
+def sophos_central_group_update(
+    client: Client, args: dict
+):
+    """
+        Update an endpoint group.
+
+        Args:
+            client (Client): Sophos Central API client.
+            args (dict): All command arguments
+
+        Returns:
+            CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    group_id = args.get("groupId", "")
+    try:
+        results = client.update_group(group_id,
+                                      args.get("name", "").strip(),
+                                      args.get("description"))
+
+        table_headers = ["id", "name", "description"]
+
+        outputs = {key: results.get(key) for key in table_headers}
+
+        readable_output = tableToMarkdown(
+            name="EndpointGroup Updated Successfully.",
+            t=outputs,
+            headers=table_headers,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.EndpointGroups",
+            raw_response=results,
+            outputs=results,
+            readable_output=readable_output,
+        )
+    except DemistoException:
+        return CommandResults(
+            readable_output=f"Unable to update the following group: {group_id}."
+        )
+
+
+def sophos_central_group_get(
+    client: Client, args: dict
+):
+    """
+    Fetch an endpoint group.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    group_id = args.get("groupId", "")
+    try:
+        results = client.fetch_group(group_id)
+
+        table_headers = ["type", "name"]
+
+        outputs = {key: results.get(key) for key in table_headers}
+
+        readable_output = tableToMarkdown(
+            name="Fetched EndpointGroup Successfully.",
+            t=outputs,
+            headers=table_headers,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.EndpointGroups",
+            raw_response=results,
+            outputs=results,
+            readable_output=readable_output,
+        )
+    except DemistoException:
+        return CommandResults(
+            readable_output=f"Unable to find the following group: {group_id}."
+        )
+
+
+def sophos_central_group_delete(
+    client: Client, args: dict
+):
+    """
+    Delete an endpoint group.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    results = client.delete_group(args.get("groupId", ""))
+
+    if results.get("deleted"):
+
+        results["id"] = args.get("groupId")
+
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.EndpointGroups",
+            outputs=results,
+            readable_output="EndpointGroup Deleted Successfully.",
+        )
+    else:
+        raise DemistoException("EndpointGroup Deletion Failed, Please Enter valid groupId.")
+
+
+def create_policy_output(
+        item: Dict
+) -> Dict[str, Optional[Any]]:
+    """
+    Create the complete output dictionary for an endpoint policy.
+
+    Args:
+        item (dict): A source dictionary from the API response.
+        table_headers (list(str)): The table headers to be used when creating initial data.
+
+    Returns:
+        object_data (dict(str)): The output dictionary.
+    """
+
+    policy_data = {
+        'id': item.get("id"),
+        'feature': item.get("type"),
+        'settings': item.get("settings", {}),
+        'orderPriority': item.get("priority"),
+        'name': item.get("name"),
+        'enforced': item.get("enabled"),
+        'lastModified': item.get("updatedAt"),
+    }
+
+    if item.get("appliesTo", {}).get("users") and item.get("appliesTo", {}).get("userGroups"):
+        policy_data["typeSingle"] = item.get("appliesTo", {}).get("users")
+        policy_data["typeGroup"] = item.get("appliesTo", {}).get("userGroups")
+
+    if item.get("appliesTo", {}).get("endpoints") and item.get("appliesTo", {}).get("endpointGroups"):
+        policy_data["typeSingle"] = item.get("appliesTo", {}).get("endpoints")
+        policy_data["typeGroup"] = item.get("appliesTo", {}).get("endpointGroups")
+
+    return policy_data
+
+
+def sophos_central_group_membership_get(
+    client: Client, args: dict
+):
+    """
+    Get endpoints in a group.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+
+    group_id = args.get("groupId", "")
+
+    try:
+        result = client.get_endpoints_group(group_id)
+        items = result.get("items", [])
+
+        outputs = []
+
+        table_headers = [
+            "id",
+            "type",
+            "hostname"
+        ]
+
+        if items:
+            for item in items:
+                group_data = {
+                    field: item.get(field) for field in table_headers
+                }
+                outputs.append(group_data)
+
+        readable_output = tableToMarkdown(
+            name=f"Fetched {len(outputs)} Endpoint(s) Successfully.",
+            t=outputs,
+            headers=table_headers,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.EndpointGroups",
+            raw_response=result,
+            outputs=items,
+            readable_output=readable_output,
+        )
+
+    except DemistoException:
+        return CommandResults(
+            readable_output=f"Unable to find the following endpoint of group: {group_id}."
+        )
+
+
+def sophos_central_group_endpoints_add(
+    client: Client, args: dict
+):
+    """
+    Add endpoints to group.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+
+    group_id = args.get("groupId", "")
+
+    try:
+        result = client.add_endpoints_group(group_id, argToList(args.get("endpointIds")))
+        items = result.get("addedEndpoints", [])
+
+        outputs = []
+
+        table_headers = [
+            "id",
+            "hostname"
+        ]
+
+        if items:
+            for item in items:
+                group_data = {
+                    field: item.get(field) for field in table_headers
+                }
+                outputs.append(group_data)
+
+        endpoints = {"endpoints": outputs, "id": group_id}
+
+        readable_output = tableToMarkdown(
+            name=f"{len(outputs)} Endpoint(s) Added Successfully.",
+            t=outputs,
+            headers=table_headers,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.EndpointGroups",
+            raw_response=result,
+            outputs=endpoints,
+            readable_output=readable_output,
+        )
+
+    except DemistoException:
+        return CommandResults(
+            readable_output=f"Unable to add the endpoint to the following group: {group_id}."
+        )
+
+
+def sophos_central_group_endpoints_remove(
+    client: Client,
+    args: dict
+):
+    """
+    Remove endpoints to group.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+
+    group_id = args.get("groupId", "")
+
+    try:
+        result = client.remove_endpoints(group_id, args.get("endpointIds", ""))
+        items = result.get("removedEndpoints", [])
+
+        endpoints = {"endpoints": items, "id": group_id, "removedEndpoints": args.get("endpointIds", "")}
+
+        outputs = []
+
+        table_headers = [
+            "id",
+            "hostname"
+        ]
+
+        if items:
+            for item in items:
+                group_data = {
+                    field: item.get(field) for field in table_headers
+                }
+                outputs.append(group_data)
+        readable_output = tableToMarkdown(
+            name=f"{len(outputs)} EndPoint(s) Removed Successfully.",
+            t=outputs,
+            headers=table_headers,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.EndpointGroups",
+            raw_response=result,
+            outputs=endpoints,
+            readable_output=readable_output,
+        )
+    except DemistoException:
+        return CommandResults(
+            readable_output=f"Unable to remove endpoint(s) from the following group: {group_id}."
+        )
+
+
+def sophos_central_group_endpoint_remove(
+    client: Client,
+    args: dict
+):
+    """
+
+    Remove single endpoint from group.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+
+    group_id = args.get("groupId", "")
+
+    try:
+        result = client.remove_endpoint(group_id, args.get("endpointId", ""))
+
+        if result.get("removed"):
+            readable_output = "Endpoint removed successfully."
+
+            endpoints = {"id": group_id, "removedEndpoint": args.get("endpointId", "")}
+
+            return CommandResults(
+                outputs_key_field="id",
+                outputs_prefix="SophosCentral.EndpointGroups",
+                raw_response=result,
+                outputs=endpoints,
+                readable_output=readable_output,
+            )
+        else:
+            return CommandResults(
+                readable_output="Endpoint Deletion failed, Please Enter valid endpointId."
+            )
+    except DemistoException:
+        return CommandResults(
+            readable_output=f"Unable to remove endpoint from the following group: {group_id}."
+        )
+
+
+def sophos_central_endpoint_policy_search_command(
+        client: Client, args: dict
+) -> CommandResults:
+    """
+    Get all configured policies.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    page_size = arg_to_number(args.get("page_size", 50))
+    number_of_page = arg_to_number(args.get("page", 1))
+
+    if page_size is not None:
+        if page_size < 0:
+            raise ValueError(
+                "page_size must be a positive number"
+            )
+
+        if page_size > 200:
+            raise ValueError(
+                "page_size must be equal or less than 200"
+            )
+
+    if number_of_page is not None:
+        if number_of_page < 0:
+            raise ValueError(
+                "page must be a positive number"
+            )
+
+    result = client.get_endpoint_policies(
+        args.get("policy_type", ""),
+        page_size,
+        number_of_page)
+
+    items = result.get("items", [])
+    pages = result.get("pages", {})
+    table_headers = [
+        "id",
+        "feature",
+        "settings",
+        "orderPriority",
+        "name",
+        "enforced",
+        "typeSingle",
+        "typeGroup",
+        "lastModified"
+    ]
+    outputs = []
+    if items:
+        for item in items:
+            outputs.append(create_policy_output(item))
+
+    total_pages = pages.get('total', 1)
+    if number_of_page > total_pages:
+        return CommandResults(
+            readable_output="Page Not Found.",
+        )
+    readable_output = tableToMarkdown(
+        name=(
+            f"Total Record(s): {pages.get('items', '')} \n"
+            f"### Current page: {number_of_page}/{total_pages}\n"
+            f"### Listed {len(outputs)} Endpoint Policies:"
+        ),
+        t=outputs,
+        headers=table_headers,
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_key_field="id",
+        outputs_prefix="SophosCentral.PolicyAndEnumeration",
+        raw_response=result,
+        outputs=outputs,
+        readable_output=readable_output,
+    )
+
+
+def sophos_central_endpoint_policy_get_command(
+        client: Client, args: dict
+) -> CommandResults:
+    """
+    Get details of Policy by ID.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    result = client.get_endpoint_policy(args.get("policy_id", ""))
+    table_headers = [
+        "id",
+        "feature",
+        "settings",
+        "orderPriority",
+        "name",
+        "enforced",
+        "typeSingle",
+        "typeGroup",
+        "lastModified"
+    ]
+    outputs = create_policy_output(result)
+    readable_output = tableToMarkdown(
+        name=f'{args.get("policy_id", "")} Policy Details:',
+        t=outputs,
+        headers=table_headers,
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_key_field="id",
+        outputs_prefix="SophosCentral.PolicyAndEnumeration",
+        raw_response=result,
+        outputs=outputs,
+        readable_output=readable_output,
+    )
+
+
+def sophos_central_endpoint_policy_search_delete_command(
+        client: Client, args: dict
+) -> CommandResults:
+    """
+    Delete an existing policy.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    result = client.delete_endpoint_policy(args.get("policy_id", ""))
+    readable_output = f'Success deleting endpoint policy: {args.get("policy_id", "")}'
+    outputs = {"deletedPolicyId": args.get("policy_id", "")}
+    if not (result and result.get("deleted")):
+        readable_output = (
+            f'Failed deleting endpoint policy: {args.get("policy_id", "")}.'
+        )
+        outputs = {}
+    return CommandResults(
+        raw_response=result,
+        readable_output=readable_output,
+        outputs=outputs,
+        outputs_prefix="SophosCentral.PolicyAndEnumeration",
+    )
+
+
+def sophos_central_endpoint_policy_clone_command(
+        client: Client, args: dict
+) -> CommandResults:
+    """
+    Clone an existing policy.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    result = client.clone_endpoint_policy(args.get("policy_id", ""), args.get("name", ""))
+    readable_output = f'Success cloning endpoint policy: {result.get("id", "")}.'
+    outputs = {"clonedPolicyId": result.get("id", "")}
+    if not (result and result.get("id")):
+        readable_output = (
+            f'Failed cloning endpoint policy: {args.get("policy_id", "")}.'
+        )
+        outputs = {}
+    return CommandResults(
+        raw_response=result,
+        readable_output=readable_output,
+        outputs=outputs,
+        outputs_prefix="SophosCentral.PolicyAndEnumeration",
+    )
+
+
+def sophos_central_endpoint_policy_reorder_command(
+        client: Client, args: dict
+) -> CommandResults:
+    """
+    Update Priority in existing policy.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    result = client.update_endpoint_policy(args.get("policy_id", ""), args.get("priority", ""))
+    readable_output = f'Success updating endpoint policy: {result.get("id", "")}.'
+    outputs = {"updatedPolicyId": result.get("id", "")}
+    if not result or not result.get("id"):
+        readable_output = (
+            f'Failed updating endpoint policy: {args.get("policy_id", "")}.'
+        )
+        outputs = {}
+    return CommandResults(
+        raw_response=result,
+        readable_output=readable_output,
+        outputs=outputs,
+        outputs_prefix="SophosCentral.PolicyAndEnumeration",
+    )
+
+
+def create_usergroup_output(
+    item: Dict, table_headers: List[str]
+) -> Dict:
+    """
+    Create the complete output dictionary for an usergroup.
+
+    Args:
+        item (dict): A source dictionary from the API response.
+        table_headers (list(str)): The table headers to be used when creating initial data.
+
+    Returns:
+        usergroup_data (dict(str)): The output dictionary.
+    """
+    usergroup_data = {field: item.get(field) for field in table_headers}
+    source = item.get("source")
+    if source:
+        usergroup_data["sourceType"] = source.get("type")
+
+    return usergroup_data
+
+
+def sophos_central_usergroups_get_command(
+    client: Client, args: Dict
+) -> CommandResults:
+    """
+    Get a specific usergroups by ID.
+
+    Args:
+        client (Client):  Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    try:
+        result = client.get_usergroup(args.get("groupId", ""))
+        result.update({
+            'usersItemsCount': result.get('users', {}).get('itemsCount'),
+            'usersTotal': result.get('users', {}).get('total'),
+            'users': result.get('users', {}).get('items', []),
+        })
+        table_headers = ["id", "name", "description", "sourceType"]
+
+        object_data = create_usergroup_output(item=result, table_headers=table_headers)
+        readable_output = tableToMarkdown(
+            name="Found User Groups:",
+            t=object_data,
+            headers=table_headers,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.UserGroups",
+            readable_output=readable_output,
+            outputs=result,
+            raw_response=result,
+        )
+    except DemistoException:
+        return CommandResults(readable_output="Unable to fetch user group.")
+
+
+def sophos_central_usergroups_create_command(
+    client: Client, args: Dict
+) -> CommandResults:
+    """
+    Create a usergroup.
+
+    Args:
+        client (Client):  Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    try:
+        result = client.create_usergroup(
+            args.get("groupName", ""), args.get("description"), argToList(args.get("userIds"))
+        )
+        result.update({
+            'usersItemsCount': result.get('users', {}).get('itemsCount'),
+            'usersTotal': result.get('users', {}).get('total'),
+            'users': result.get('users', {}).get('items', []),
+        })
+        return CommandResults(
+            outputs_key_field="id",
+            outputs=result,
+            outputs_prefix="SophosCentral.UserGroups",
+            readable_output=f"Successfully created a user group with ID: {result.get('id')}.",
+            raw_response=result,
+        )
+    except DemistoException:
+        return CommandResults(readable_output="Unable to create user group.")
+
+
+def sophos_central_usergroups_list_command(
+    client: Client, args: Dict
+) -> CommandResults:
+    """
+    Returns a list of all user groups that match the search criteria (optional).
+
+    Args:
+        client (Client):  Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    allowed_search_fields = ["name", "description"]
+    search_fields = argToList(args.get("searchFields"))
+    for field in search_fields:
+        if field not in allowed_search_fields:
+            raise DemistoException(
+                "Invalid value for searchFields provided. Allowed values are " + ", ".join(allowed_search_fields) + ".")
+    try:
+        page = arg_to_number(args.get("page", "1"))
+        page_size = arg_to_number(args.get("pageSize", "50"))
+
+        if page is None or page < 1:
+            raise ValueError("page should be a positive number.")
+
+        if page_size is None or page_size < 1 or page_size > 100:
+            raise ValueError("pageSize must be between 1 and 100.")
+
+        results = client.list_usergroups(
+            args.get("groupsIds"),
+            args.get("search"),
+            args.get("searchFields"),
+            args.get("domain"),
+            args.get("sourceType"),
+            args.get("userId"),
+            page,
+            page_size,
+        )
+
+        current_page = results.get('pages', {}).get('current', 1)
+        total_pages = results.get('pages', {}).get('total', 1)
+
+        if current_page > total_pages:
+            return CommandResults(readable_output="No page found.")
+
+        items = results.get("items", [])
+        for item in items:
+            item.update({
+                'usersItemsCount': item.get('users', {}).get('itemsCount'),
+                'usersTotal': item.get('users', {}).get('total'),
+                'users': item.get('users', {}).get('items', []),
+            })
+        table_headers = ["id", "name", "description", "sourceType"]
+
+        outputs = []
+        for item in items:
+            outputs.append(create_usergroup_output(item=item, table_headers=table_headers))
+
+        readable_output = tableToMarkdown(
+            name=(
+                f"Total Records: {results.get('pages', {}).get('items', '')}\n"
+                f"Page: {current_page}/{total_pages}\n"
+                f"Listed {len(outputs)} User Groups:"
+            ),
+            t=outputs,
+            headers=table_headers,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.UserGroups",
+            readable_output=readable_output,
+            outputs=items,
+            raw_response=results,
+        )
+    except DemistoException:
+        return CommandResults(readable_output="Unable to list user groups.")
+
+
+def sophos_central_usergroups_update_command(
+    client: Client, args: Dict
+) -> CommandResults:
+    """
+    Update a usergroup.
+
+    Args:
+        client (Client):  Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    try:
+        result = client.update_usergroup(args.get("groupId", ""), args.get("groupName", ""), args.get("description"))
+        result.update({
+            'usersItemsCount': result.get('users', {}).get('itemsCount'),
+            'usersTotal': result.get('users', {}).get('total'),
+            'users': result.get('users', {}).get('items', []),
+        })
+        return CommandResults(
+            outputs_key_field="id",
+            outputs=result,
+            outputs_prefix="SophosCentral.UserGroups",
+            readable_output=f"Successfully updated the user group with ID: {result.get('id')}.",
+            raw_response=result,
+        )
+    except DemistoException:
+        return CommandResults(readable_output=f"Unable to update usergroup with ID: {args.get('groupId')}.")
+
+
+def sophos_central_usergroups_delete_command(
+    client: Client, args: Dict
+) -> CommandResults:
+    """
+    Delete a usergroup.
+
+    Args:
+        client (Client):  Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    try:
+        result = client.delete_usergroup(args.get("groupId", ""))
+        output = {}
+        if result.get("deleted"):
+            output["deletedUserGroupId"] = args.get("groupId", "")
+
+        return CommandResults(
+            outputs=output,
+            outputs_prefix="SophosCentral.DeletedUserGroups",
+            readable_output=f"Successfully deleted the user group with ID: {args.get('groupId')}.",
+            raw_response=result,
+        )
+    except DemistoException:
+        return CommandResults(readable_output=f"Unable to delete usergroup with ID: {args.get('groupId')}.")
+
+
+def sophos_central_usergroups_membership_get(client: Client, args: dict) -> CommandResults:
+    """
+    List all users in a specific group.
+
+    Args:
+        client (Client):  Sophos Central API client.
+        args (dict): All command arguments.
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    group_id = args.get("groupId", "")
+    search = args.get("search")
+    search_field = args.get("searchFields")
+    domain = args.get("domain")
+    source_type = args.get("sourceType")
+    page = arg_to_number(args.get("page", "1"))
+    page_size = arg_to_number(args.get("pageSize", "50"))
+
+    if page is None or page < 1:
+        raise ValueError("page should be a positive number.")
+
+    if page_size is None or page_size < 1 or page_size > 100:
+        raise ValueError("pageSize must be between 1 and 100.")
+
+    allowed_search_fields = ["name", "firstName", "lastName", "email", "exchangeLogin"]
+    search_fields = argToList(search_field)
+    for field in search_fields:
+        if field not in allowed_search_fields:
+            raise DemistoException(
+                "Invalid value for searchFields provided. Allowed values are " + ", ".join(allowed_search_fields) + ".")
+
+    try:
+        result = client.get_users_in_usergroup(group_id, search, search_field, domain, source_type, page, page_size)
+        items = result.get("items", [])
+        current_page = result.get("pages", {}).get("current", 1)
+        total_pages = result.get("pages", {}).get("total", 1)
+
+        if current_page > total_pages:
+            return CommandResults(readable_output="No page found.")
+
+        table_headers = [
+            "id",
+            "name",
+            "email"
+        ]
+        users = []
+        output = {}
+        for item in items:
+            current_object_data = {
+                field: item.get(field) for field in table_headers
+            }
+            users.append(current_object_data)
+        output["id"] = group_id
+        output["users"] = items
+
+        readable_output = tableToMarkdown(
+            name=(
+                f"Total Records: {result.get('pages', {}).get('items', '')}\n"
+                f"Page: {current_page}/{total_pages}\n"
+                f"Listed {len(users)} User(s) in Usergroup:"
+            ), t=users, headers=table_headers, removeNull=True
+        )
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.UserGroups",
+            raw_response=result,
+            outputs=output,
+            readable_output=readable_output,
+        )
+    except DemistoException:
+        return CommandResults(
+            readable_output=f"Unable to get users for the following group: {group_id}."
+        )
+
+
+def sophos_central_usergroups_users_add(client: Client, args: dict) -> CommandResults:
+    """
+    Add multiple users to the specified group.
+
+    Args:
+        client (Client):  Sophos Central API client.
+        args (dict): All command arguments.
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    group_id = args.get("groupId", "")
+    ids = argToList(args.get("userIds", ""))
+    try:
+        result = client.add_users_to_usergroup(group_id, ids)
+        result["id"] = group_id
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.UserGroups",
+            raw_response=result,
+            outputs=result,
+            readable_output="User(s) added to the specified group.",
+        )
+    except DemistoException:
+        return CommandResults(
+            readable_output=f"Unable to add user to the following group: {group_id}."
+        )
+
+
+def sophos_central_usergroups_user_delete(client: Client, args: dict) -> CommandResults:
+    """
+    Delete a user from the specified group.
+
+    Args:
+        client (Client):  Sophos Central API client.
+        args (dict): All command arguments.
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    group_id = args.get("groupId", "")
+    user_id = args.get("userId", "")
+    try:
+        result = client.delete_user_from_usergroup(group_id, user_id)
+        result["id"] = user_id
+        output = {"id": group_id, "removedUser": user_id}
+
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.UserGroups",
+            raw_response=result,
+            outputs=output,
+            readable_output="User removed from group.",
+        )
+    except DemistoException:
+        return CommandResults(
+            readable_output=f"Unable to remove user({user_id}) from the following group: {group_id}."
+        )
+
+
+def sophos_central_users_list_command(
+    client: Client, args: dict
+) -> CommandResults:
+    """
+    List all users for a tenant who meets command arguments.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    allowed_search_fields = ["name", "firstName", "lastName", "email", "exchangeLogin"]
+    search_fields = argToList(args.get("searchFields"))
+    for field in search_fields:
+        if field not in allowed_search_fields:
+            raise DemistoException(
+                "Invalid value for searchFields provided. Allowed values are " + ", ".join(allowed_search_fields) + ".")
+    try:
+        page = arg_to_number(args.get("page", "1"))
+        page_size = arg_to_number(args.get("pageSize", "50"))
+
+        if page is None or page < 1:
+            raise ValueError("page should be a positive number.")
+
+        if page_size is None or page_size < 1 or page_size > 100:
+            raise ValueError("pageSize should be between 1 and 100.")
+
+        results = client.list_users(
+            args.get("search"),
+            args.get("searchFields"),
+            args.get("groupId"),
+            args.get("domain"),
+            args.get("sourceType"),
+            page_size,
+            page
+        )
+
+        current_page = results.get('pages', {}).get('current', 1)
+        total_pages = results.get('pages', {}).get('total', 1)
+
+        if current_page > total_pages:
+            return CommandResults(readable_output="No page found.")
+
+        items = results.get("items")
+        table_headers = [
+            "id", "firstName", "lastName", "email", "exchangeLogin",
+            "groupIds", "groupNames"]
+        outputs = []
+        if items:
+            for item in items:
+                current_object_data = {
+                    field: item.get(field) for field in table_headers if field not in ["groupIds", "groupNames"]}
+                groupIds = []
+                groupNames = []
+                for group_item in item.get("groups").get("items"):
+                    groupIds.append(group_item.get("id"))
+                    groupNames.append(group_item.get("name"))
+                current_object_data["groupIds"] = groupIds
+                current_object_data["groupNames"] = groupNames
+                outputs.append(current_object_data)
+
+        readable_output = tableToMarkdown(
+            name=(
+                f"Total Records: {results.get('pages', {}).get('items', '')}\n"
+                f"Page: {current_page}/{total_pages}\n"
+                f"Listed {len(outputs)} User(s):"
+            ),
+            t=outputs,
+            headers=table_headers,
+            removeNull=True,
+        )
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.Users",
+            raw_response=results,
+            outputs=items,
+            readable_output=readable_output,
+        )
+    except DemistoException:
+        return CommandResults(
+            readable_output="Unable to list users."
+        )
+
+
+def sophos_central_users_get_command(
+    client: Client, args: dict
+) -> CommandResults:
+    """
+    List user of a tenant with userId.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    user_id = args.get("userId", "")
+    try:
+        item = client.get_user(
+            user_id
+        )
+        table_headers = [
+            "id", "firstName", "lastName", "email", "exchangeLogin",
+            "groupIds", "groupNames"
+        ]
+        outputs = []
+        if item:
+            current_object_data = {
+                field: item.get(field) for field in table_headers if field not in ["groupIds", "groupNames"]
+            }
+            groupIds = []
+            groupNames = []
+            for group_item in item.get("groups", {}).get("items", []):
+                groupIds.append(group_item.get("id", ""))
+                groupNames.append(group_item.get("name", ""))
+            current_object_data["groupIds"] = groupIds
+            current_object_data["groupNames"] = groupNames
+            outputs.append(current_object_data)
+        readable_output = tableToMarkdown(
+            name="Found User:",
+            t=outputs,
+            headers=table_headers,
+            removeNull=True,
+        )
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.Users",
+            raw_response=item,
+            outputs=outputs,
+            readable_output=readable_output,
+        )
+    except DemistoException:
+        return CommandResults(
+            readable_output=f"Unable to find the following user with userId:{user_id}."
+        )
+
+
+def sophos_central_users_add_command(
+    client: Client, args: dict
+) -> CommandResults:
+    """
+    Add user for a tenant.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    try:
+        result = client.add_user(
+            args.get("firstName", ""),
+            args.get("lastName", ""),
+            args.get("email", ""),
+            args.get("role", ""),
+            args.get("exchangeLogin", ""),
+            argToList(args.get("groupIds", ""))
+        )
+
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.Users",
+            readable_output="A new User was added to the Directory.",
+            outputs=result,
+            raw_response=result,
+        )
+    except DemistoException:
+        return CommandResults(
+            readable_output="Unable to add user."
+        )
+
+
+def sophos_central_users_update_command(
+    client: Client, args: dict
+) -> CommandResults:
+    """
+    Update an existing user.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    try:
+        result = client.update_user(
+            args.get("userId", ""),
+            args.get("name"),
+            args.get("firstName"),
+            args.get("lastName"),
+            args.get("email"),
+            args.get("role"),
+            args.get("exchangeLogin"),
+        )
+
+        return CommandResults(
+            outputs_key_field="id",
+            outputs_prefix="SophosCentral.Users",
+            readable_output="User updated.",
+            outputs=result,
+            raw_response=result,
+        )
+
+    except DemistoException:
+        return CommandResults(
+            readable_output="Unable to update the user."
+        )
+
+
+def sophos_central_users_delete_command(client: Client, args: dict) -> CommandResults:
+    """
+    Delete an existing user.
+
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    try:
+        result = client.delete_user(
+            args.get("userId", "")
+        )
+        output = {
+            "deletedUserId": args.get("userId", "")
+        }
+        return CommandResults(
+            outputs_prefix="SophosCentral.DeletedUsers",
+            readable_output="User deleted.",
+            outputs=output,
+            raw_response=result,
+        )
+
+    except DemistoException:
+        return CommandResults(
+            readable_output="Unable to delete the user."
+        )
+
+
 def test_module(client: Client) -> str:
     """
     Test the validity of the connection and the.
@@ -2765,6 +4744,33 @@ def main():
         "sophos-central-detected-exploit-get": sophos_central_detected_exploit_get_command,
         "sophos-central-isolate-endpoint": sophos_central_isolate_endpoint_command,
         "sophos-central-deisolate-endpoint": sophos_central_deisolate_endpoint_command,
+        "sophos-central-group-list": sophos_central_group_list,
+        "sophos-central-group-create": sophos_central_group_create,
+        "sophos-central-group-update": sophos_central_group_update,
+        "sophos-central-group-get": sophos_central_group_get,
+        "sophos-central-group-delete": sophos_central_group_delete,
+        "sophos-central-group-membership-get": sophos_central_group_membership_get,
+        "sophos-central-group-endpoints-add": sophos_central_group_endpoints_add,
+        "sophos-central-group-endpoints-remove": sophos_central_group_endpoints_remove,
+        "sophos-central-group-endpoint-remove": sophos_central_group_endpoint_remove,
+        "sophos-central-users-list": sophos_central_users_list_command,
+        "sophos-central-users-get": sophos_central_users_get_command,
+        "sophos-central-users-add": sophos_central_users_add_command,
+        "sophos-central-users-update": sophos_central_users_update_command,
+        "sophos-central-users-delete": sophos_central_users_delete_command,
+        "sophos-central-endpoint-policy-search": sophos_central_endpoint_policy_search_command,
+        "sophos-central-endpoint-policy-get": sophos_central_endpoint_policy_get_command,
+        "sophos-central-endpoint-policy-search-delete": sophos_central_endpoint_policy_search_delete_command,
+        "sophos-central-endpoint-policy-clone": sophos_central_endpoint_policy_clone_command,
+        "sophos-central-endpoint-policy-reorder": sophos_central_endpoint_policy_reorder_command,
+        "sophos-central-usergroups-list": sophos_central_usergroups_list_command,
+        "sophos-central-usergroups-get": sophos_central_usergroups_get_command,
+        "sophos-central-usergroups-create": sophos_central_usergroups_create_command,
+        "sophos-central-usergroups-update": sophos_central_usergroups_update_command,
+        "sophos-central-usergroups-delete": sophos_central_usergroups_delete_command,
+        "sophos-central-usergroups-users-add": sophos_central_usergroups_users_add,
+        "sophos-central-usergroups-user-delete": sophos_central_usergroups_user_delete,
+        "sophos-central-usergroups-membership-get": sophos_central_usergroups_membership_get,
     }
     try:
         bearer_token = retrieve_jwt_token(

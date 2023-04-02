@@ -1,3 +1,4 @@
+# pylint: disable=E9010
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -60,7 +61,7 @@ class Client:
         # Request related attributes
         self.url = url
         self.verify = not insecure
-        self.auth: Optional[tuple] = None
+        self.auth: Optional[tuple[str, str]] = None
         self.headers = self.parse_headers(headers)
 
         if credentials:
@@ -229,6 +230,9 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
         else:
             feeds_results[feed_name], no_update = client.build_iterator(feed, feed_name, **kwargs)
 
+    indicators_values: Set[str] = set()
+    indicators_values_indexes = {}
+
     for service_name, items in feeds_results.items():
         feed_config = client.feed_name_to_config.get(service_name, {})
         indicator_field = str(feed_config.get('indicator') if feed_config.get('indicator') else 'indicator')
@@ -241,6 +245,19 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
         for item in items:
             if isinstance(item, str):
                 item = {indicator_field: item}
+
+            indicator_value = item.get(indicator_field)
+            if indicator_value is None:
+                continue
+            if indicator_value not in indicators_values:
+                indicators_values_indexes[indicator_value] = len(indicators_values)
+                indicators_values.add(indicator_value)
+            else:
+                service = indicators[indicators_values_indexes[indicator_value]].get('rawJSON', {}).get('service', '')
+                if service and service_name not in service.split(','):
+                    service_name += f', {service}'
+                indicators[indicators_values_indexes[indicator_value]]['rawJSON']['service'] = service_name
+                continue
 
             indicators.extend(
                 handle_indicator_function(client, item, feed_config, service_name, indicator_type, indicator_field,

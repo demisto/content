@@ -60,7 +60,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "100"
+      - "104"
     scriptarguments:
       comment:
         complex:
@@ -1077,7 +1077,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "102"
+      - "105"
     scriptarguments:
       hash_list:
         complex:
@@ -1212,7 +1212,7 @@ tasks:
       All:
       - "77"
       IP or Domain:
-      - "102"
+      - "105"
     separatecontext: false
     conditions:
     - label: All
@@ -2416,25 +2416,64 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "100":
-    id: "100"
-    taskid: 68bcdc76-840b-4cf8-8eb6-0092768a87a4
+  "103":
+    id: "103"
+    taskid: fdeae51c-6c98-49db-8798-4b329f69d773
+    type: condition
+    task:
+      id: fdeae51c-6c98-49db-8798-4b329f69d773
+      version: -1
+      name: Is Active Directory Query v2 enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "56"
+      "yes":
+      - "67"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: 498c0285-3241-42c6-861c-01ee8d1e3a11
     type: playbook
     task:
-      id: 68bcdc76-840b-4cf8-8eb6-0092768a87a4
+      id: 498c0285-3241-42c6-861c-01ee8d1e3a11
       version: -1
-      name: Block Indicators - Generic v2
+      name: Block Indicators - Generic v3
       description: |+
         This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
 
-        - Block URL - Generic
-        - Block Account - Generic
-        - Block IP - Generic v2
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
         - Block File - Generic v2
         - Block Email - Generic
         - Block Domain - Generic
 
-      playbookName: Block Indicators - Generic v2
+      playbookName: Block Indicators - Generic v3
       type: playbook
       iscommand: false
       brand: ""
@@ -2442,6 +2481,9 @@ tasks:
       '#none#':
       - "54"
     scriptarguments:
+      AutoBlockIndicators:
+        complex:
+          root: inputs.AutoBlockIndicators
       AutoCommit:
         simple: "No"
       CustomBlockRule:
@@ -2456,6 +2498,8 @@ tasks:
           root: inputs.IP
           transformers:
           - operator: uniq
+      InputEnrichment:
+        simple: "False"
       MD5:
         complex:
           root: inputs.FileHash
@@ -2483,8 +2527,11 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-      URLListName:
-        simple: Demisto Remediation - URL EDL
+          transformers:
+          - operator: uniq
+      UserVerification:
+        complex:
+          root: inputs.UserVerification
       Username:
         complex:
           root: inputs.Username
@@ -2508,25 +2555,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "102":
-    id: "102"
-    taskid: 3a7f262b-bb45-42b4-825f-92e697038488
+  "105":
+    id: "105"
+    taskid: 9a8b65af-921f-47b7-867a-c412a2ffe2a7
     type: playbook
     task:
-      id: 3a7f262b-bb45-42b4-825f-92e697038488
+      id: 9a8b65af-921f-47b7-867a-c412a2ffe2a7
       version: -1
-      name: Block Indicators - Generic v2
+      name: Block Indicators - Generic v3
       description: |+
         This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
 
-        - Block URL - Generic
-        - Block Account - Generic
-        - Block IP - Generic v2
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
         - Block File - Generic v2
         - Block Email - Generic
         - Block Domain - Generic
 
-      playbookName: Block Indicators - Generic v2
+      playbookName: Block Indicators - Generic v3
       type: playbook
       iscommand: false
       brand: ""
@@ -2534,6 +2581,9 @@ tasks:
       '#none#':
       - "54"
     scriptarguments:
+      AutoBlockIndicators:
+        complex:
+          root: inputs.AutoBlockIndicators
       AutoCommit:
         simple: "No"
       CustomBlockRule:
@@ -2571,6 +2621,8 @@ tasks:
               ignorecase: true
           transformers:
           - operator: uniq
+      InputEnrichment:
+        simple: "False"
       MD5:
         complex:
           root: inputs.FileHash
@@ -2613,15 +2665,15 @@ tasks:
               right:
                 value:
                   simple: BlockIndicatorsList
-                iscontext: true
               ignorecase: true
           transformers:
           - operator: uniq
       URL:
         complex:
           root: inputs.URL
-      URLListName:
-        simple: Demisto Remediation - URL EDL
+      UserVerification:
+        complex:
+          root: inputs.UserVerification
       Username:
         complex:
           root: inputs.Username
@@ -2636,45 +2688,6 @@ tasks:
         "position": {
           "x": 740,
           "y": 920
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "103":
-    id: "103"
-    taskid: fdeae51c-6c98-49db-8798-4b329f69d773
-    type: condition
-    task:
-      id: fdeae51c-6c98-49db-8798-4b329f69d773
-      version: -1
-      name: Is Active Directory Query v2 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "56"
-      "yes":
-      - "67"
-    scriptarguments:
-      brandname:
-        simple: Active Directory Query v2
-    results:
-    - brandInstances
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -810,
-          "y": -120
         }
       }
     note: false
@@ -2706,7 +2719,7 @@ view: |-
       "67_90_Manual": 0.42,
       "71_57_No": 0.13,
       "71_72_Manual": 0.62,
-      "76_102_IP or Domain": 0.89,
+      "76_105_IP or Domain": 0.86,
       "76_54_#default#": 0.22,
       "76_77_All": 0.41,
       "79_62_#default#": 0.3,
@@ -2813,8 +2826,26 @@ inputs:
   required: false
   description: The Okta IAM users domain. The domain will be appended to the username. e.g. username@IAMUserDomain.
   playbookInputQuery:
+- key: UserVerification
+  value:
+    simple: "False"
+  required: false
+  description: "Possible values: True/False.\nWhether to provide user verification for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  playbookInputQuery:
+- key: AutoBlockIndicators
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Possible values: True/False.  Default: True.
+    Should the given indicators be automatically blocked, or should the user be given the option to choose?
+
+    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
+    If set to True - the user will be prompted to select which indicators to block.
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.6.0
-marketplaces: ["marketplacev2"]
+marketplaces:
+- marketplacev2

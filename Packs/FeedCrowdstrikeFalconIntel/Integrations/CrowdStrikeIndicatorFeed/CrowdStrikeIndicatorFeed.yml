@@ -20,6 +20,12 @@ configuration:
   name: credentials
   type: 9
   required: true
+- display: The amount of time (in seconds) that a request will wait for a client to
+    establish a connection to a remote machine before a timeout occurs.
+  name: timeout
+  defaultvalue: "10"
+  type: 0
+  required: false
 - additionalinfo: 'The indicator types to fetch. Out-of-the-box indicator types supported
     in XSOAR are: "Account", "Domain", "Email", "File MD5", "File SHA-256", "IP",
     "Registry Key", and "URL". The default is "ALL".'
@@ -181,6 +187,12 @@ script:
       name: offset
       required: false
       secret: false
+    - default: false
+      description: The minimum timestamp to fetch indicators by
+      isArray: false
+      name: last_run
+      required: false
+      secret: false
     deprecated: false
     description: Gets indicators from the CrowdStrike Falcon Intel Feed.
     execution: false
@@ -241,7 +253,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: crowdstrike-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.10.50695
   feed: true
   isfetch: false
   longRunning: false

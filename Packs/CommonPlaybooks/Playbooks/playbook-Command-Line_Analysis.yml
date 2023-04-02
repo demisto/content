@@ -1,7 +1,7 @@
 id: Command-Line Analysis
 version: -1
 name: Command-Line Analysis
-description: "This playbook takes the command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity"
+description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n\nNote: In case you are wishing to run this playbook with a list of command lines, set this playbook to be running in a loop. To do so, navigate to the 'Loop'  and check \"For Each Input\"."
 starttaskid: "0"
 tasks:
   "0":
@@ -17,13 +17,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "33"
+      - "34"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1150,
-          "y": -1200
+          "x": 2530,
+          "y": -1140
         }
       }
     note: false
@@ -52,116 +52,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1150,
-          "y": 130
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: cff18017-7f58-4d68-86b3-612ee9297bfb
-    type: regular
-    task:
-      id: cff18017-7f58-4d68-86b3-612ee9297bfb
-      version: -1
-      name: Enrich indicators
-      description: Enriches indicators from the command line.
-      script: Builtin|||enrichIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      indicatorsValues:
-        complex:
-          root: ExtractedIndicators
-          accessor: IP
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: ExtractedIndicators.URL
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: ExtractedIndicators.Domain
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-      retry-count:
-        simple: "3"
-      retry-interval:
-        simple: "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 740,
-          "y": 600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: c03e8d8d-8661-4743-891f-e6354f342c07
-    type: condition
-    task:
-      id: c03e8d8d-8661-4743-891f-e6354f342c07
-      version: -1
-      name: Found additional indicators?
-      description: Checks if indicators exist in the command line for which to enrich.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "12"
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: ExtractedIndicators
-                filters:
-                - - operator: isNotExists
-                    left:
-                      value:
-                        simple: ExtractedIndicators.Attack_Pattern
-                      iscontext: true
-            iscontext: true
-          right:
-            value: {}
-    view: |-
-      {
-        "position": {
-          "x": 1150,
-          "y": 430
+          "x": 2240,
+          "y": 480
         }
       }
     note: false
@@ -204,8 +96,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": -540
+          "x": 2010,
+          "y": -350
         }
       }
     note: false
@@ -217,10 +109,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d3be2808-0367-4d39-80d5-8526a2abf84f
+    taskid: 7c5def9c-5b0b-4c84-867e-43de7bfe984c
     type: regular
     task:
-      id: d3be2808-0367-4d39-80d5-8526a2abf84f
+      id: 7c5def9c-5b0b-4c84-867e-43de7bfe984c
       version: -1
       name: Decode base64 string
       description: Decodes an input in Base64 format.
@@ -236,12 +128,14 @@ tasks:
         complex:
           root: MatchRegex
           accessor: results
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": -370
+          "x": 1820,
+          "y": -180
         }
       }
     note: false
@@ -253,22 +147,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 9e5742ee-5780-4374-8762-1023b0163f02
+    taskid: 81a7238c-3db0-43d4-89e3-5f4e7da0f2f7
     type: title
     task:
-      id: 9e5742ee-5780-4374-8762-1023b0163f02
+      id: 81a7238c-3db0-43d4-89e3-5f4e7da0f2f7
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1150,
-          "y": 1330
+          "x": 2530,
+          "y": 1300
         }
       }
     note: false
@@ -280,10 +179,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: bedf7a15-c692-464d-8d5f-22206898b99d
+    taskid: 8a4fdd44-5f23-4285-8e9f-3219392329a5
     type: regular
     task:
-      id: bedf7a15-c692-464d-8d5f-22206898b99d
+      id: 8a4fdd44-5f23-4285-8e9f-3219392329a5
       version: -1
       name: Check if base64 string exists in command-line
       description: Extracts regex data from the provided text. The script support groups and looping.
@@ -301,13 +200,13 @@ tasks:
       group:
         simple: "1"
       regex:
-        simple: (?:\s+)((?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4}))
+        simple: (?:^|[ \"'])((?:[A-Za-z0-9+/]{4}){4,}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4}))(?:$|[ \"'])
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": -690
+          "x": 2010,
+          "y": -500
         }
       }
     note: false
@@ -340,7 +239,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1150,
+          "x": 2240,
           "y": 770
         }
       }
@@ -681,10 +580,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 2454d7b3-9568-4007-81ec-c1ef25acbcf3
+    taskid: 4191d8a3-0ed7-4abd-8b4d-a2fe3af03fa4
     type: condition
     task:
-      id: 2454d7b3-9568-4007-81ec-c1ef25acbcf3
+      id: 4191d8a3-0ed7-4abd-8b4d-a2fe3af03fa4
       version: -1
       name: Check for encoded command parameters
       description: Checks for encoded command parameters.
@@ -700,7 +599,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:
@@ -710,7 +609,7 @@ tasks:
             value:
               simple: -EncodedCommand
           ignorecase: true
-        - operator: containsGeneral
+        - operator: containsString
           left:
             value:
               complex:
@@ -720,7 +619,7 @@ tasks:
             value:
               simple: -enc
           ignorecase: true
-        - operator: containsGeneral
+        - operator: containsString
           left:
             value:
               complex:
@@ -730,11 +629,22 @@ tasks:
             value:
               simple: –^e^C^
           ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+            iscontext: true
+          right:
+            value:
+              simple: '-e '
+          ignorecase: true
     view: |-
       {
         "position": {
-          "x": 1150,
-          "y": -860
+          "x": 2240,
+          "y": -670
         }
       }
     note: false
@@ -1175,7 +1085,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "6"
+      - "12"
     scriptarguments:
       text:
         complex:
@@ -1192,8 +1102,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1150,
-          "y": 260
+          "x": 2240,
+          "y": 610
         }
       }
     note: false
@@ -1205,10 +1115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 48fe6db5-28f2-46e8-8ca3-cfbcacaf3de3
+    taskid: 4eb71ce1-0bd1-47e9-8679-293960d28e78
     type: regular
     task:
-      id: 48fe6db5-28f2-46e8-8ca3-cfbcacaf3de3
+      id: 4eb71ce1-0bd1-47e9-8679-293960d28e78
       version: -1
       name: Set decoded commandline
       description: Sets a value in context from the key entered.
@@ -1218,31 +1128,43 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "36"
     scriptarguments:
       append:
-        simple: "false"
+        simple: "true"
       key:
         simple: commandline.decoded
       value:
         complex:
           root: inputs.Commandline
           transformers:
-          - operator: replaceMatch
+          - operator: replace
             args:
-              regex:
-                value:
-                  simple: (?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$
               replaceWith:
                 value:
                   simple: Base64.decoded
+                iscontext: true
+              limit: {}
+              toReplace:
+                value:
+                  simple: MatchRegex.results
+                iscontext: true
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: inputs.Commandline
+                iscontext: true
+              right:
+                value:
+                  simple: Base64.originalValue
                 iscontext: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": -200
+          "x": 1820,
+          "y": -20
         }
       }
     note: false
@@ -1362,10 +1284,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: a390494c-e6e3-4d90-8d4a-9a072dc3bec6
+    taskid: cb6662a9-4a56-48b9-8b2d-e375410b246d
     type: regular
     task:
-      id: a390494c-e6e3-4d90-8d4a-9a072dc3bec6
+      id: cb6662a9-4a56-48b9-8b2d-e375410b246d
       version: -1
       name: 'Set command line verdict '
       description: Sets a value in context from the key entered.
@@ -1385,8 +1307,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": -40
+          "x": 1820,
+          "y": 310
         }
       }
     note: false
@@ -1448,10 +1370,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 8dae2f2c-fb4b-4ae8-83dd-1af6df62e0b7
+    taskid: 118d06f7-1309-4b4b-8b2d-6f56454411d9
     type: regular
     task:
-      id: 8dae2f2c-fb4b-4ae8-83dd-1af6df62e0b7
+      id: 118d06f7-1309-4b4b-8b2d-6f56454411d9
       version: -1
       name: Set command line verdict of foundIndicators
       description: Sets a value in context from the key entered.
@@ -1484,10 +1406,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: c422122e-9adf-4d20-8d37-110ed22f153e
+    taskid: 1bde910b-a975-4fc5-8a0d-e05230b3ecf6
     type: regular
     task:
-      id: c422122e-9adf-4d20-8d37-110ed22f153e
+      id: 1bde910b-a975-4fc5-8a0d-e05230b3ecf6
       version: -1
       name: Set original commandline
       description: Sets a value in context from the key entered.
@@ -1504,12 +1426,95 @@ tasks:
       value:
         complex:
           root: inputs.Commandline
+      append:
+        simple: "true"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1150,
-          "y": -1045
+          "x": 2240,
+          "y": -835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: d02185ac-3059-4ac1-84df-388155f7bfee
+    type: condition
+    task:
+      id: d02185ac-3059-4ac1-84df-388155f7bfee
+      version: -1
+      name: Is there a command line input?
+      description: Is there a command line input?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+      '#default#':
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Commandline
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": -1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 0db44584-e9dc-435f-84d7-36315a8b5020
+    type: regular
+    task:
+      id: 0db44584-e9dc-435f-84d7-36315a8b5020
+      version: -1
+      name: Delete "Decode" Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      key:
+        simple: Base64
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": 150
         }
       }
     note: false
@@ -1530,24 +1535,22 @@ view: |-
       "21_9_#default#": 0.71,
       "22_9_#default#": 0.85,
       "31_9_#default#": 0.9,
-      "6_12_#default#": 0.57,
-      "6_5_yes": 0.31,
       "7_4_#default#": 0.27,
       "7_8_yes": 0.58
     },
     "paper": {
       "dimensions": {
-        "height": 2595,
-        "width": 2120,
+        "height": 2505,
+        "width": 2410,
         "x": 500,
-        "y": -1200
+        "y": -1140
       }
     }
   }
 inputs:
 - key: Commandline
   value: {}
-  required: true
+  required: false
   description: The command line.
   playbookInputQuery:
 outputs:
@@ -1566,6 +1569,24 @@ outputs:
 - contextPath: CommandlineVerdict
   description: The command line verdict
   type: unknown
+- contextPath: IP
+  description: The IP object.
+  type: unknown
+- contextPath: URL
+  description: The URL object.
+  type: uknown
+- contextPath: File
+  description: The file object.
+  type: unknown
+- contextPath: Domain
+  description: The domain object.
+  type: unknown
 tests:
-- No tests (auto formatted)
+  - No tests
 fromversion: 6.0.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
+marketplaces:
+  - xsoar
+  - marketplacev2

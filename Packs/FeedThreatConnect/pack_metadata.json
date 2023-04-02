@@ -2,7 +2,7 @@
     "name": "ThreatConnect Feed",
     "description": "ThreatConnect indicators feed for Cortex XSOAR TIM.",
     "support": "xsoar",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.1.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,7 +10,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Threat Intelligence Management"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

@@ -1,4 +1,6 @@
 category: Network Security
+sectionorder:
+- Connect
 commonfields:
   id: AzureWAF
   version: -1
@@ -7,19 +9,24 @@ configuration:
   display: App ID
   hidden: false
   name: app_id
-  required: true
+  required: false
   type: 0
-- display: Subscription ID
+  section: Connect
+- display: Default Subscription ID
   hidden: false
   name: subscription_id
   required: true
   type: 0
+  additionalinfo: Default subscription ID value can be overridden using subscription_id argument to commands.
+  section: Connect
 - display: Default Resource Group Name
   hidden: false
   name: resource_group_name
   required: true
   type: 0
-- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended) or Device Code Flow.
+  additionalinfo: Default resource group name can be overridden using resource_group_name argument in commands.
+  section: Connect
+- additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
   display: Authentication Type
   name: auth_type
   required: true
@@ -27,21 +34,26 @@ configuration:
   options:
   - Authorization Code
   - Device Code
+  - Azure Managed Identities
   type: 15
+  section: Connect
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
   required: false
   type: 0
+  section: Connect
 - display: Client Secret (for authorization code mode)
   displaypassword: Client Secret (for authorization code mode)
   hiddenusername: true
   name: credentials
   required: false
   type: 9
+  section: Connect
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
   required: false
   type: 0
+  section: Connect
 - display: Authorization code
   displaypassword: Authorization code
   additionalinfo: for user-auth mode - received from the authorization step. see Detailed
@@ -50,6 +62,14 @@ configuration:
   name: auth_code
   required: false
   type: 9
+  section: Connect
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
+  section: Connect
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   hidden: false
@@ -62,14 +82,20 @@ configuration:
   required: false
   type: 15
   additionalinfo: Azure AD endpoint associated with a national cloud.
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: |-
   The Azure WAF (Web Application Firewall) integration provides centralized protection of your web applications from common exploits and vulnerabilities.
   It enables you to control policies that are configured in the Azure Firewall management platform, and allows you to add, delete, or update policies,
@@ -86,9 +112,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the resource group. If not provided, the instance's default resource group name will be used.
-      isArray: false
+      description: Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used.
+      isArray: true
       name: resource_group_name
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID. If not provided, the integration default subscription ID will be used.
+      isArray: false
+      name: subscription_id
       required: false
       secret: false
     - auto: PREDEFINED
@@ -226,6 +258,12 @@ script:
       name: limit
       required: false
       secret: false
+    - default: false
+      description: Comma-separated list of subscription IDs. Will override the default subscription ID.
+      isArray: true
+      name: subscription_id
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves all the WAF policies in a subscription.
     execution: false
@@ -332,9 +370,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the resource group. If not provided, the instance's default resource group name will be used.
-      isArray: false
+      description: Comma-separated list of the names of the resource groups. If not provided, the instance's default resource group name will be used.
+      isArray: true
       name: resource_group_name
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID. If not provided, the integration default subscription ID will be used.
+      isArray: false
+      name: subscription_id
       required: false
       secret: false
     - default: false
@@ -481,8 +525,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the resource group. If not provided, the instance's default resource group name will be used.
+      description: The subscription ID. If not provided, the integration default subscription ID will be used.
       isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of the name of the resource group. If not provided, the instance's default resource group name will be used.
+      isArray: true
       name: resource_group_name
       required: false
       secret: false
@@ -509,7 +559,79 @@ script:
     description: Tests connectivity to the Azure Web Application Firewall.
     execution: false
     name: azure-waf-auth-test
-  dockerimage: demisto/crypto:1.0.0.34720
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: azure-waf-generate-login-url
+    arguments: []
+  - description: Gets all subscriptions for a tenant.
+    deprecated: false
+    execution: false
+    name: azure-waf-subscriptions-list
+    arguments: []
+    outputs:
+    - contextPath: AzureWAF.Subscription.authorizationSource
+      description: Subscription authorization source.
+      type: String
+    - contextPath: AzureWAF.Subscription.displayName
+      description: Subscription display name.
+      type: String
+    - contextPath: AzureWAF.Subscription.id
+      description: Subscription ID with subscriptions prefix.
+      type: String
+    - contextPath: AzureWAF.Subscription.subscriptionId
+      description: Subscription ID.
+      type: String
+    - contextPath: AzureWAF.Subscription.locationPlacementId
+      description: Placement ID of subscription.
+      type: String
+    - contextPath: AzureWAF.Subscription.tenantId
+      description: The tenatnt ID of the subscription.
+      type: String
+  - description: Gets all the resource groups for a subscription.
+    deprecated: false
+    execution: false
+    name: azure-waf-resource-group-list
+    arguments:
+    - default: false
+      description: Comma-separated value list of subscription IDs. If not provided, the integration default subscription ID will be used.
+      isArray: true
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The tag name and value by which to filter the results. For example, tagName=tagValue.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of resource groups to fetch.
+      defaultValue: 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    outputs:
+    - contextPath: AzureWAF.ResourceGroup.id
+      description: Resource group ID.
+      type: String
+    - contextPath: AzureWAF.ResourceGroup.location
+      description: Resource group location.
+      type: String
+    - contextPath: AzureWAF.ResourceGroup.name
+      description: Resource group name.
+      type: String
+    - contextPath: AzureWAF.ResourceGroup.type
+      description: Resource group type.
+      type: String
+    - contextPath: AzureWAF.ResourceGroup.properties
+      description: Resource group properties.
+      type: String
+    - contextPath: AzureWAF.ResourceGroup.tags
+      description: Resource group tags.
+      type: String
+
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false
   longRunning: false

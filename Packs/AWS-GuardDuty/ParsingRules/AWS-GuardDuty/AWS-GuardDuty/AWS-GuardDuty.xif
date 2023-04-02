@@ -1,0 +1,2 @@
+[INGEST:vendor="aws", product="guardduty", target_dataset="aws_guardduty_raw", no_hit=keep]
+alter _time = UpdatedAt;

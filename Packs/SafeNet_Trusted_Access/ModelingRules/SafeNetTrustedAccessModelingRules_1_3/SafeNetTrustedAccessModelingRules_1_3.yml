@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: safenet_trusted_access_modeling_rule
+name: SafeNetTrustedAccess Modeling Rule
+rules: ''
+schema: ''
+tags: safenet

@@ -1,7 +1,7 @@
 id: Process Email - Core
 version: -1
 name: Process Email - Core
-description: Add email details to the relevant context entities and handle the case where original emails are attached.
+description: Deprecated. Use Process Email - Core v2 instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -180,24 +180,6 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      1longtexttest: {}
-      aaaa: {}
-      addLabels: {}
-      adgroupname: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedhosts: {}
-      affectedindividualscontactinformation: {}
-      affectedips: {}
-      alertlevel: {}
-      amarkdownsection: {}
-      anothernumberpleasejusttomakesure: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      arcsightcaseid: {}
-      assetid: {}
-      attach: {}
-      attachamenthash: {}
       attachmentcount:
         complex:
           root: Email
@@ -231,63 +213,8 @@ tasks:
         complex:
           root: Email
           accessor: Attachment.Type
-      awsinstancename: {}
-      backupowner: {}
-      bbb: {}
-      blah: {}
-      bool1: {}
-      bool2: {}
-      booleansummary: {}
-      booleantest: {}
-      boolfield: {}
-      booltest: {}
-      bugtraq: {}
-      campaigntargetcount: {}
-      campaigntargets: {}
-      casenumber: {}
-      ccc: {}
-      ccipaddress: {}
-      city: {}
-      cleanname: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      compliance: {}
-      constvalue: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      customfield: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      date2: {}
-      datepicker: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
       deleteEmptyField:
         simple: "True"
-      department: {}
-      departmentadmin: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectedusers: {}
-      dpoemailaddress: {}
-      dstip: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
       emailbcc:
         complex:
           root: Email
@@ -311,7 +238,6 @@ tasks:
           accessor: HTML
           transformers:
           - operator: Stringify
-      emailbodyhtmlraw: {}
       emailcc:
         complex:
           root: Email
@@ -319,7 +245,6 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
-      emailclassification: {}
       emailclientname:
         complex:
           root: Email
@@ -331,7 +256,6 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
-      emailfromdisplayname: {}
       emailhtml:
         complex:
           root: Email
@@ -356,7 +280,6 @@ tasks:
           accessor: HeadersMap.Message-ID
           transformers:
           - operator: uniq
-      emailreceived: {}
       emailreplyto:
         complex:
           root: Email
@@ -369,7 +292,6 @@ tasks:
           accessor: HeadersMap.Return-Path
           transformers:
           - operator: uniq
-      emailsenderdomain: {}
       emailsenderip:
         complex:
           root: Email
@@ -395,7 +317,6 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
-      emailsubjectlanguage: {}
       emailto:
         complex:
           root: Email
@@ -412,150 +333,6 @@ tasks:
       emailurlclicked:
         complex:
           root: EmailUrlClicked
-      enisacategory: {}
-      escalationdate: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      field1: {}
-      field2: {}
-      field3: {}
-      field4: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      fwlogs: {}
-      gatenumber: {}
-      hash: {}
-      hjhj: {}
-      host: {}
-      hostid: {}
-      hostname: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      htmltypefield: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      infectedhost: {}
-      intelblockcomment: {}
-      intelblockurl: {}
-      internalemail: {}
-      internalusage: {}
-      isthedatasubjecttodpia: {}
-      itaytestfield: {}
-      jiraticketid: {}
-      killchain: {}
-      labels: {}
-      likelyimpact: {}
-      lob: {}
-      longtextone: {}
-      longtexttoo: {}
-      mailbody: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      mdtest: {}
-      measurestomitigate: {}
-      mitigated: {}
-      mttd: {}
-      multilinetext: {}
-      mydate: {}
-      myfield: {}
-      myname: {}
-      myseverity: {}
-      name: {}
-      newmarkdownfield: {}
-      newtextfield: {}
-      noatext: {}
-      numberplease: {}
-      objecttype: {}
-      occurred: {}
-      originalhtml: {}
-      oriwithspace: {}
-      owner: {}
-      phase: {}
-      phishingsender: {}
-      phishingsenderdomain: {}
-      phishingsubtype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      priority: {}
-      qradaroffenceid: {}
-      queues: {}
-      relateddomain: {}
-      relatedincidentssummary: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reportinguser: {}
-      riskmitigationactionrequirements: {}
-      riskscore: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      sectorofaffectedparty: {}
-      selector: {}
-      sender: {}
-      sensitive: {}
-      severity: {}
-      shift: {}
-      shiftnotes: {}
-      signature: {}
-      single: {}
-      single2: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      sourceip: {}
-      sourceip1: {}
-      src: {}
-      srcip: {}
-      srcntdomain: {}
-      srcuser: {}
-      subcat: {}
-      subcategory: {}
-      summary: {}
-      systems: {}
-      targethostname: {}
-      team: {}
-      telefield: {}
-      telephoneno: {}
-      teleselect: {}
-      test: {}
-      test2: {}
-      test111: {}
-      testassociationdumpme: {}
-      testfield: {}
-      testguy: {}
-      testhtml: {}
-      thisismysuperlongfield: {}
-      tier2owner: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      timetomitigate: {}
-      timetotriage: {}
-      tldr: {}
-      tlp: {}
-      tttttt: {}
-      type: {}
-      uniquefiled: {}
-      user: {}
-      useremail: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      vvvv: {}
-      whereisdatahosted: {}
-      xdr: {}
-      zattachmentsgeneric: {}
-      zmaltegoimage: {}
-      zvtfirstseen: {}
-      zvtother: {}
-      zvtvendorcount: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -1209,4 +986,5 @@ outputs:
   type: unknown
 fromversion: 5.0.0
 tests:
-- Phishing - Core - Test - Incident Starter
+- No tests (deprecated)
+deprecated: true

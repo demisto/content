@@ -1,7 +1,7 @@
-id: Detonate URL - CrowdStrike Falcon X
+id: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
 version: -1
-name: Detonate URL - CrowdStrike Falcon X
-description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration.
+name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
+description: Detonate one or more files using the CrowdStrike Falcon Intelligence Sandbox integration.
   This playbook returns relevant reports to the War Room and file reputations to the
   context data.
 starttaskid: "0"
@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 0
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -40,7 +40,7 @@ tasks:
     task:
       id: fc1f205f-4605-402d-805d-57b7d4b4cef7
       version: -1
-      name: Is CrowdStrike Falcon X enabled?
+      name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
       description: |
         Verify that there is a valid instance of CrowdStrike enabled.
       type: condition
@@ -84,8 +84,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 165
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -109,8 +109,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1140
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -125,7 +125,7 @@ tasks:
     task:
       id: 9ab16bf8-de8e-4201-8561-992345b51280
       version: -1
-      name: CrowdStrike Falcon X Get Report
+      name: CrowdStrike Falcon Intelligence Sandbox Get Report
       description: Get a full version of a sandbox report.
       script: CrowdStrike Falcon X|||cs-fx-get-full-report
       type: regular
@@ -141,8 +141,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 935
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -157,7 +157,7 @@ tasks:
     task:
       id: 251b7acf-b9ad-4122-8968-788528be9bc1
       version: -1
-      name: CrowdStrike Falcon X Submit URL
+      name: CrowdStrike Falcon Intelligence Sandbox Submit URL
       description: Submit a URL or FTP for sandbox analysis.
       script: '|||cs-fx-submit-url'
       type: regular
@@ -165,7 +165,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "17"
     scriptarguments:
       action_script: {}
       command_line: {}
@@ -183,8 +183,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 590
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -222,7 +222,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 380
+          "y": 370
         }
       }
     note: false
@@ -281,8 +281,40 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 760
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: fb7377bf-b9ae-443f-86ab-7bb11a490480
+    type: regular
+    task:
+      id: fb7377bf-b9ae-443f-86ab-7bb11a490480
+      version: -1
+      name: Sleep before first polling
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -295,10 +327,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1205,
-        "width": 677.5,
-        "x": 162.5,
-        "y": 0
+        "height": 1260,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -310,13 +342,6 @@ inputs:
       accessor: Data
   required: false
   description: URL to detonate.
-  playbookInputQuery:
-- key: EnvironmentID
-  value:
-    simple: "100"
-  required: false
-  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
-    command.
   playbookInputQuery:
 - key: Interval
   value:

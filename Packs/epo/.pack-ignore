@@ -19,6 +19,9 @@ ignore=BA110
 [file:epoV2_image.png]
 ignore=IM111
 
+[file:Epo_image.png]
+ignore=IM111
+
 [known_words]
 ePO
 resetInheritance

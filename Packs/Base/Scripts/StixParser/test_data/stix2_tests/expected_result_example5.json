@@ -1,0 +1,81 @@
+[
+    {
+        "value": "Online Job Site Trojan",
+        "indicator_type": "Malware",
+        "score": 3,
+        "rawJSON": {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--ae560258-a5cb-4be8-8f05-013d6712295f",
+            "created_by_ref": "identity--7865b6d2-a4af-45c5-b582-afe5ec376c33",
+            "created": "2014-02-20T09:16:08.989Z",
+            "modified": "2014-02-20T09:16:08.989Z",
+            "name": "Online Job Site Trojan",
+            "description": "Trojan that is disguised as the executable file resume.pdf., it also creates a registry key.",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": false
+        },
+        "customFields": {
+            "stixid": "malware--ae560258-a5cb-4be8-8f05-013d6712295f",
+            "firstseenbysource": "2014-02-20T09:16:08.989Z",
+            "modified": "2014-02-20T09:16:08.989Z",
+            "description": "Trojan that is disguised as the executable file resume.pdf., it also creates a registry key.",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": false,
+            "aliases": [],
+            "kill_chain_phases": [],
+            "os_execution_envs": [],
+            "architecture_execution_envs": [],
+            "capabilities": [],
+            "sample_refs": [],
+            "tags": []
+        }
+    },
+    {
+        "value": "c79a326f8411e9488bdc3779753e1e3489aaedea",
+        "score": 0,
+        "rawJSON": {
+            "type": "file",
+            "id": "file--364fe3e5-b1f4-5ba3-b951-ee5983b3538d",
+            "spec_version": "2.1",
+            "hashes": {
+                "MD5": "1717b7fff97d37a1e1a0029d83492de1",
+                "SHA-1": "c79a326f8411e9488bdc3779753e1e3489aaedea"
+            },
+            "size": 83968,
+            "name": "resume.pdf",
+            "value": "c79a326f8411e9488bdc3779753e1e3489aaedea"
+        },
+        "indicator_type": "File",
+        "customFields": {
+            "stixid": "file--364fe3e5-b1f4-5ba3-b951-ee5983b3538d",
+            "associatedfilenames": "resume.pdf",
+            "size": 83968,
+            "path": null,
+            "md5": "1717b7fff97d37a1e1a0029d83492de1",
+            "sha1": "c79a326f8411e9488bdc3779753e1e3489aaedea",
+            "sha256": null
+        }
+    },
+    {
+        "value": "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services\\WSALG2",
+        "score": 0,
+        "rawJSON": {
+            "type": "windows-registry-key",
+            "id": "windows-registry-key--16b80d14-d574-5620-abad-10ff304b1c26",
+            "spec_version": "2.1",
+            "key": "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services\\WSALG2"
+        },
+        "indicator_type": "Registry Key",
+        "customFields": {
+            "stixid": "windows-registry-key--16b80d14-d574-5620-abad-10ff304b1c26",
+            "registryvalue": null,
+            "modified_time": null,
+            "number_of_subkeys": null
+        }
+    }
+]

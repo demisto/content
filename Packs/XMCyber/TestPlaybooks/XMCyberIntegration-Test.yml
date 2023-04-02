@@ -369,7 +369,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: XMCyber.compromisingTechniques.name
+              simple: XMCyber.compromisingTechniques.technique
             iscontext: true
       - - operator: isExists
           left:
@@ -474,7 +474,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: XMCyber.compromisingTechniques.name
+              simple: XMCyber.compromisingTechniques.technique
             iscontext: true
       - - operator: isExists
           left:
@@ -579,7 +579,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: XMCyber.compromisingTechniques.name
+              simple: XMCyber.compromisingTechniques.technique
             iscontext: true
       - - operator: isExists
           left:
@@ -623,3 +623,5 @@ view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width
 inputs: []
 outputs: []
 description: ''
+marketplaces:
+  - xsoar

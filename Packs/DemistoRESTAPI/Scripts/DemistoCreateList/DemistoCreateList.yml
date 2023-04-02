@@ -1,9 +1,7 @@
 commonfields:
   id: DemistoCreateList
-  id_x2: CreateList
   version: -1
 name: DemistoCreateList
-name_x2: CreateList
 script: ''
 type: javascript
 tags:
@@ -22,5 +20,7 @@ dependson:
   must:
   - demisto-api-post
 fromversion: 5.0.0
+marketplaces:
+- xsoar
 tests:
 - no test

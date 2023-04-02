@@ -1655,7 +1655,7 @@ script:
     - contextPath: AnsibleAWX.JobEvents.event_data
       description: Job's raw event data
       type: String
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: false
   longRunning: false

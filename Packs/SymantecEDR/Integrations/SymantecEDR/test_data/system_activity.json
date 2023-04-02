@@ -1,0 +1,48 @@
+{
+    "result": [
+        {
+            "data": {
+                "sepm_server": {
+                    "db_ip_address": "172.16.14.42",
+                    "enabled": true,
+                    "db_type": "MSSQL",
+                    "user_name": "WIN-TFB8L7BI77H\\Administrator",
+                    "status": "healthy",
+                    "sepm_name": "Los Testing",
+                    "db_port": 2638,
+                    "db_name": "sem5"
+                },
+                "search_config": {
+                    "atp_command_id": "cd9335799b53420e98215d8d88e2b167-2018-05-16",
+                    "cmd_type": "edr_search"
+                },
+                "atp_service": {
+                    "action": "start",
+                    "pid": 1798,
+                    "service": "microservice_host"
+                }
+            },
+            "timezone": 0,
+            "atp_node_role": 5,
+            "process": {
+                "pid": 12358
+            },
+            "product_ver": "4.6.8-8",
+            "device_name": "localhost.localdomain",
+            "status_id": 1,
+            "device_time": "2022-12-25T23:09:46.668Z",
+            "feature_name": "TargetedAttackAnalytics",
+            "type_id": 1000,
+            "message": "Successfully sent 0 incident(s) from Targeted Attack Analytics service.",
+            "product_name": "Symantec Endpoint Detection and Response",
+            "log_time": "2022-12-25T23:09:47.361Z",
+            "device_ip": "127.0.0.1",
+            "severity_id": 1,
+            "device_cap": "EDR",
+            "uuid": "397546c0-84a9-11ed-c8ae-000000032de5",
+            "log_name": "atp_system_log-2022-12-25"
+        }
+    ],
+    "next": "MSwyMDIyLTEyLTI1VDIzOjE2OjE0LjMwM1o=",
+    "total": 1188
+}

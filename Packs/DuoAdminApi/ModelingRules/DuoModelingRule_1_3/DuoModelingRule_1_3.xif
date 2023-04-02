@@ -1,0 +1,34 @@
+[MODEL: dataset=duo_duo_raw]
+filter
+    eventtype = "authentication"
+| alter
+    xdm.source.host.hostname = json_extract_scalar(access_device, "$.hostname"),
+    xdm.source.host.ipv4_addresses = arraycreate(json_extract_scalar(access_device, "$.ip")),
+    xdm.source.location.city = json_extract_scalar(access_device, "$.location.city"),
+    xdm.source.location.country = json_extract_scalar(access_device, "$.location.country"),
+    xdm.intermediate.host.os_family = json_extract_scalar(access_device, "$.os"),
+    xdm.intermediate.host.os = json_extract_scalar(access_device, "$.os_version"),
+    xdm.event.type = eventtype,
+    xdm.intermediate.host.fqdn = HOST,
+    xdm.source.user.username = username,
+    xdm.event.outcome_reason = reason,
+    xdm.event.outcome = if(result = "FAILURE", XDM_CONST.OUTCOME_FAILED, result = "SUCCESS", XDM_CONST.OUTCOME_SUCCESS, result = "ERROR", XDM_CONST.OUTCOME_UNKNOWN, result = null, null, to_string(result)),    
+    xdm.source.application.name = integration,
+    xdm.auth.auth_method = factor;
+filter
+    eventtype = "administrator"
+| alter
+    xdm.event.operation = coalesce(action,context),
+    xdm.event.description = description,
+    xdm.target.resource.name = object,
+    xdm.source.user.username = username,
+    xdm.target.user.identifier = phone,
+    xdm.event.type = eventtype,
+    xdm.event.operation_sub_type = type,
+    xdm.intermediate.host.fqdn = HOST,
+    xdm.target.user.upn = json_extract_scalar(description, "$.email"),
+    xdm.auth.auth_method = json_extract_scalar(description, "$.factor"),
+    xdm.source.ipv4 =  json_extract_scalar(description, "$.ip_address"),
+    xdm.target.user.groups  = arraycreate(coalesce(json_extract_scalar(description, "$.role"),"")),
+    xdm.target.user.username = json_extract_scalar(description, "$.email"),
+    xdm.target.resource.type = json_extract_scalar(description, "$.factor");

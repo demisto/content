@@ -1,0 +1,13 @@
+{
+    "results": {
+        "q_type": 0,
+        "id": "5",
+        "host": "1.1.1.3",
+        "action": "allow",
+        "action_val": "1",
+        "ignore-port": "disable",
+        "ignore-port_val": "0",
+        "include-subdomains": "disable",
+        "include-subdomains_val": "0"
+    }
+}

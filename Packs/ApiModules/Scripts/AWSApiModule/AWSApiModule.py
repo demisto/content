@@ -18,6 +18,16 @@ def validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws
         raise DemistoException('Role session name is required when using role ARN.')
 
 
+def extract_session_from_secret(secret_key, session_token):
+    """
+    Extract the session token from the secret_key field.
+    """
+    if secret_key and '@@@' in secret_key and not session_token:
+        return secret_key.split('@@@')[0], secret_key.split('@@@')[1]
+    else:
+        return secret_key, session_token
+
+
 class AWSClient:
 
     def __init__(self, aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
@@ -30,8 +40,7 @@ class AWSClient:
         self.aws_role_session_duration = aws_role_session_duration
         self.aws_role_policy = aws_role_policy
         self.aws_access_key_id = aws_access_key_id
-        self.aws_secret_access_key = aws_secret_access_key
-        self.aws_session_token = aws_session_token
+        self.aws_secret_access_key, self.aws_session_token = extract_session_from_secret(aws_secret_access_key, aws_session_token)
         self.verify_certificate = verify_certificate
 
         proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
@@ -88,11 +97,12 @@ class AWSClient:
         elif self.aws_role_policy is not None:
             kwargs.update({'Policy': self.aws_role_policy})
 
-        if kwargs and not self.aws_access_key_id:  # login with Role ARN
+        demisto.debug('{kwargs}='.format(kwargs=kwargs))
 
+        if kwargs and not self.aws_access_key_id:  # login with Role ARN
             if not self.aws_access_key_id:
                 sts_client = boto3.client('sts', config=self.config, verify=self.verify_certificate,
-                                          region_name=self.aws_default_region)
+                                          region_name=region if region else self.aws_default_region)
                 sts_response = sts_client.assume_role(**kwargs)
                 client = boto3.client(
                     service_name=service,
@@ -103,7 +113,7 @@ class AWSClient:
                     verify=self.verify_certificate,
                     config=self.config
                 )
-        elif self.aws_access_key_id and self.aws_role_arn:  # login with Access Key ID and Role ARN
+        elif self.aws_access_key_id and (role_arn or self.aws_role_arn):  # login with Access Key ID and Role ARN
             sts_client = boto3.client(
                 service_name='sts',
                 aws_access_key_id=self.aws_access_key_id,
@@ -112,25 +122,16 @@ class AWSClient:
                 config=self.config
             )
             kwargs.update({
-                'RoleArn': self.aws_role_arn,
-                'RoleSessionName': self.aws_role_session_name,
+                'RoleArn': role_arn or self.aws_role_arn,
+                'RoleSessionName': role_session_name or self.aws_role_session_name,
             })
             sts_response = sts_client.assume_role(**kwargs)
             client = boto3.client(
                 service_name=service,
-                region_name=self.aws_default_region,
+                region_name=region if region else self.aws_default_region,
                 aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
                 aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
                 aws_session_token=sts_response['Credentials']['SessionToken'],
-                verify=self.verify_certificate,
-                config=self.config
-            )
-        elif self.aws_access_key_id and not self.aws_role_arn:  # login with access key id
-            client = boto3.client(
-                service_name=service,
-                region_name=region if region else self.aws_default_region,
-                aws_access_key_id=self.aws_access_key_id,
-                aws_secret_access_key=self.aws_secret_access_key,
                 verify=self.verify_certificate,
                 config=self.config
             )
@@ -141,6 +142,15 @@ class AWSClient:
                 aws_access_key_id=self.aws_access_key_id,
                 aws_secret_access_key=self.aws_secret_access_key,
                 aws_session_token=self.aws_session_token,
+                verify=self.verify_certificate,
+                config=self.config
+            )
+        elif self.aws_access_key_id and not self.aws_role_arn:  # login with access key id
+            client = boto3.client(
+                service_name=service,
+                region_name=region if region else self.aws_default_region,
+                aws_access_key_id=self.aws_access_key_id,
+                aws_secret_access_key=self.aws_secret_access_key,
                 verify=self.verify_certificate,
                 config=self.config
             )

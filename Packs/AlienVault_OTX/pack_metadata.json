@@ -2,7 +2,7 @@
     "name": "AlienVault OTX",
     "description": "Query Indicators of Compromise in AlienVault OTX.",
     "support": "xsoar",
-    "currentVersion": "1.1.21",
+    "currentVersion": "1.1.32",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,9 +10,7 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Relationship"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

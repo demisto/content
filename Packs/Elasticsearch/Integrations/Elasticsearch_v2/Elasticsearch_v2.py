@@ -1,3 +1,5 @@
+import re
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -9,9 +11,10 @@ import json
 import requests
 import warnings
 from dateutil.parser import parse
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
 
 ELASTIC_SEARCH_CLIENT = demisto.params().get('client_type')
@@ -190,6 +193,9 @@ def results_to_context(index, query, base_page, size, total_dict, response, even
         'timed_out': response.get('timed_out')
     }
 
+    if aggregations := response.get('aggregations'):
+        search_context['aggregations'] = aggregations
+
     hit_headers = []  # type: List
     hit_tables = []
     if total_dict.get('value') > 0:
@@ -205,7 +211,7 @@ def results_to_context(index, query, base_page, size, total_dict, response, even
         hit_headers = ['_id', '_index', '_type', '_score'] + hit_headers
 
     search_context['Results'] = response.get('hits').get('hits')
-    meta_headers = ['Query', 'took', 'timed_out', 'total', 'max_score', 'Server', 'Page', 'Size']
+    meta_headers = ['Query', 'took', 'timed_out', 'total', 'max_score', 'Server', 'Page', 'Size', 'aggregations']
     return search_context, meta_headers, hit_tables, hit_headers
 
 
@@ -244,6 +250,7 @@ def search_command(proxies):
     sort_field = demisto.args().get('sort-field')
     sort_order = demisto.args().get('sort-order')
     query_dsl = demisto.args().get('query_dsl')
+    timestamp_field = demisto.args().get('timestamp_field')
     timestamp_range_start = demisto.args().get('timestamp_range_start')
     timestamp_range_end = demisto.args().get('timestamp_range_end')
 
@@ -253,11 +260,11 @@ def search_command(proxies):
     es = elasticsearch_builder(proxies)
     time_range_dict = None
     if timestamp_range_end or timestamp_range_start:
-        time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end)
+        time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end,
+                                         time_field=timestamp_field)
 
     if query_dsl:
-
-        response = execute_raw_query(es, query_dsl)
+        response = execute_raw_query(es, query_dsl, index, size, base_page)
 
     else:
         que = QueryString(query=query)
@@ -267,7 +274,7 @@ def search_command(proxies):
             search = search.extra(explain=True)
 
         if time_range_dict:
-            search.filter(time_range_dict)
+            search = search.filter(time_range_dict)
 
         if fields is not None:
             fields = fields.split(',')
@@ -297,9 +304,6 @@ def fetch_params_check():
     str_error = []  # type:List
     if (TIME_FIELD == '' or TIME_FIELD is None) and not RAW_QUERY:
         str_error.append("Index time field is not configured.")
-
-    if FETCH_INDEX == '' or FETCH_INDEX is None:
-        str_error.append("Index is not configured.")
 
     if not FETCH_QUERY:
         str_error.append("Query by which to fetch incidents is not configured.")
@@ -569,7 +573,7 @@ def results_to_incidents_datetime(response, last_fetch):
 
     Args:
         response(dict): the raw search results from Elasticsearch.
-        last_fetch(datetime): the date or timestamp of the last fetch before this fetch
+        last_fetch(datetime): the date or timestamp of the last fetch before this fetch or parameter default fetch time
         - this will hold the last date of the incident brought by this fetch.
 
     Returns:
@@ -577,7 +581,7 @@ def results_to_incidents_datetime(response, last_fetch):
         (datetime).The date of the last incident brought by this fetch.
     """
     last_fetch = dateparser.parse(last_fetch)
-    last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
+    last_fetch_timestamp = int(last_fetch.timestamp() * 1000)  # type:ignore[union-attr]
     current_fetch = last_fetch_timestamp
     incidents = []
 
@@ -607,7 +611,7 @@ def results_to_incidents_datetime(response, last_fetch):
 
                 incidents.append(inc)
 
-    return incidents, last_fetch.isoformat()
+    return incidents, last_fetch.isoformat()  # type:ignore[union-attr]
 
 
 def format_to_iso(date_string):
@@ -669,15 +673,20 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
     return {'range': {time_field: range_dict}}
 
 
-def execute_raw_query(es, raw_query):
+def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     try:
         raw_query = json.loads(raw_query)
-    except Exception as e:
+        if raw_query.get('query'):
+            demisto.debug('query provided already has a query field. Sending as is')
+            body = raw_query
+        else:
+            body = {'query': raw_query}
+    except (ValueError, TypeError) as e:
+        body = {'query': raw_query}
         demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
 
-    body = {"query": raw_query}
-    response = es.search(index=FETCH_INDEX, body=body)
-    return response
+    requested_index = index or FETCH_INDEX
+    return es.search(index=requested_index, body=body, size=size, from_=page)
 
 
 def fetch_incidents(proxies):
@@ -727,19 +736,46 @@ def parse_subtree(my_map):
     return res
 
 
+def update_elastic_mapping(res_json, elastic_mapping, key):
+    """
+    A helper function for get_mapping_fields_command, updates the elastic mapping.
+    """
+    my_map = res_json[key]['mappings']['properties']
+    elastic_mapping[key] = {"_id": "doc_id", "_index": key}
+    elastic_mapping[key]["_source"] = parse_subtree(my_map)
+
+
 def get_mapping_fields_command():
     """
     Maps a schema from a given index
     return: Elasticsearch schema structure
     """
     indexes = FETCH_INDEX.split(',')
-    elastic_mapping = {}
+    elastic_mapping = {}  # type:ignore[var-annotated]
     for index in indexes:
-        res = requests.get(SERVER + '/' + index + '/_mapping', auth=(USERNAME, PASSWORD), verify=INSECURE)
-        my_map = res.json()[index]['mappings']['properties']
-        elastic_mapping[index] = {"_id": "doc_id", "_index": index}
-        elastic_mapping[index]["_source"] = parse_subtree(my_map)
-    demisto.results(elastic_mapping)
+        if index == '':
+            res = requests.get(SERVER + '/_mapping', auth=(USERNAME, PASSWORD), verify=INSECURE)
+        else:
+            res = requests.get(SERVER + '/' + index + '/_mapping', auth=(USERNAME, PASSWORD), verify=INSECURE)
+        res_json = res.json()
+
+        # To get mappings for all data streams and indices in a cluster,
+        # use _all or * for <target> or omit the <target> parameter - from Elastic API
+        if index in ['*', '_all', '']:
+            for key in res_json:
+                if 'mappings' in res_json[key] and 'properties' in res_json[key]['mappings']:
+                    update_elastic_mapping(res_json, elastic_mapping, key)
+
+        elif index.endswith('*'):
+            prefix_index = re.compile(index.rstrip('*'))
+            for key in res_json:
+                if prefix_index.match(key):
+                    update_elastic_mapping(res_json, elastic_mapping, key)
+
+        else:
+            update_elastic_mapping(res_json, elastic_mapping, index)
+
+    return elastic_mapping
 
 
 def build_eql_body(query, fields, size, tiebreaker_field, timestamp_field, event_category_field, filter):
@@ -804,7 +840,7 @@ def main():
         elif demisto.command() in ['search', 'es-search']:
             search_command(proxies)
         elif demisto.command() == 'get-mapping-fields':
-            get_mapping_fields_command()
+            return_results(get_mapping_fields_command())
         elif demisto.command() == 'es-eql-search':
             return_results(search_eql_command(demisto.args(), proxies))
     except Exception as e:

@@ -1,6 +1,9 @@
 commonfields:
   id: Awake Security
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: Awake Security
 display: Awake Security
 category: Network Security
@@ -12,47 +15,61 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
+  section: Connect
 - display: Awake Security server address
   name: server
   defaultvalue: https://example.awake.cloud
   type: 0
   required: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: 'Comma-separated list of threat behaviors to generate incidents for, e.g., "Exfiltration: SSL upload from non-browser to notable domain, Lateral Movement: Unix-based PSEXEC, C2: Possible ICMP tunnel"'
   name: threat_behaviors
   defaultvalue: ""
   type: 0
   required: false
+  section: Collect
+  advanced: true
 - display: Period between incident fetch interval (in minutes)
   name: fetch_interval
   defaultvalue: "1"
   type: 0
   required: true
+  section: Collect
+  advanced: true
 - display: Minimum threshold to determine an indicator suspicious in Demisto
   name: suspicious_threshold
   defaultvalue: "33"
   type: 0
   required: true
+  section: Connect
 - display: Minimum threshold to determine an indicator malicious in Demisto
   name: malicious_threshold
   defaultvalue: "66"
   type: 0
   required: true
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -67,6 +84,8 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
+  section: Connect
+  advanced: true
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -77,16 +96,20 @@ configuration:
   - suddenDeath
   required: false
   type: 17
+  section: Connect
+  advanced: true
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   required: false
   type: 1
+  section: Connect
+  advanced: true
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.49934
   commands:
   - name: awake-query-devices
     arguments:

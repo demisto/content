@@ -1,8 +1,9 @@
 {
-    "name": "Volatility",
-    "description": "Volatility pack.",
+    "name": "Volatility (Deprecated)",
+    "description": "Deprecated. Volatility pack.",
     "support": "xsoar",
-    "currentVersion": "1.0.1",
+    "hidden": true,
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,7 +11,7 @@
     "categories": [
         "Forensics & Malware Analysis"
     ],
-    "tags": [],
+    "tags": ["Forensics"],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

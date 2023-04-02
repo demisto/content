@@ -89,7 +89,7 @@ script:
     - contextPath: Cyren.data.status
       description: status of actions performed
       type: string
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   runonce: false
   script: ''
@@ -98,5 +98,5 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-defaultclassifier: Cyren Inbox Security Classifier
+defaultclassifier: 2b2c9b9d-cfb4-46d6-8b0c-55e02bf9f62c
 defaultmapperin: Cyren Inbox Security Mapper

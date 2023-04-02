@@ -1,6 +1,7 @@
 id: Microsoft Defender - ATP - Indicators Test
 version: -1
 name: Microsoft Defender - ATP - Indicators Test
+deprecated: true
 starttaskid: '0'
 tasks:
   '0':

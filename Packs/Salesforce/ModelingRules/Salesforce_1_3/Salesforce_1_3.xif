@@ -1,0 +1,28 @@
+[MODEL: dataset=salesforce_event_audit_raw]
+filter
+    event_type in("RestApi","Api","Sites","VisualForce","Uri")
+| alter
+    //_time = parse_timestamp("%Y%m%d%H%M%S", arrayindex(split(timestamp, "."),0)),
+    xdm.source.ipv4 = client_ip,
+    xdm.event.type = event_type,
+    xdm.source.user.badge_id = organization_id,
+    xdm.network.http.response_code = request_status,
+    xdm.event.duration = to_integer(run_time),
+    xdm.network.session_id = session_key,
+    xdm.network.http.url = uri,
+    xdm.source.user.groups = arraycreate(coalesce(user_type, ""));
+
+filter
+    event_type in("Login","Logout")
+| alter
+    //_time = parse_timestamp("%Y%m%d%H%M%S", arrayindex(split(timestamp, "."),0)),
+    xdm.logon.type = authentication_method_reference,
+    xdm.event.type = event_type,
+    xdm.logon.logon_guid = login_key,
+    xdm.event.description = login_status,
+    xdm.source.user.badge_id = organization_id,
+    xdm.network.session_id = session_key,
+    xdm.source.ipv4 = source_ip,
+    xdm.target.url = uri,
+    xdm.target.user.employee_id = user_id,
+    xdm.target.user.username = user_name;

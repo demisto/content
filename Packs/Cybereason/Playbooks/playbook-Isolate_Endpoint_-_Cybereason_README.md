@@ -1,4 +1,4 @@
-This playbook isolates an endpoint based on the hostname provided.
+This playbook isolates a machine based on the hostname provided.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

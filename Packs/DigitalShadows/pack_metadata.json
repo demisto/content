@@ -2,7 +2,7 @@
     "name": "Digital Shadows SearchLight",
     "description": "Digital Shadows monitors and manages an organization's digital risk across the open, deep, and dark web.",
     "support": "partner",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.7",
     "author": "Digital Shadows",
     "url": "https://www.digitalshadows.com/",
     "email": "info@digitalshadows.com",
@@ -10,23 +10,8 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Dark Web",
-        "Security",
-        "Security Analytics",
-        "Threat Intelligence",
-        "MITRE ATT&CK"
-    ],
-    "useCases": [
-        "Asset Management",
-        "Malware",
-        "Phishing",
-        "Ransomware",
-        "SANS",
-        "Threat Intelligence Management",
-        "Vulnerability Management",
-        "Network Security"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "DigitalShadows",
         "Digital Shadows",
@@ -40,6 +25,8 @@
         "exposed credentials",
         "impersonating domains",
         "vulnerable service",
+        "MITRE ATT&CK",
+        "SANS",
         "threat actors"
     ],
     "githubUser": [

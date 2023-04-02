@@ -7,21 +7,14 @@ import zipfile
 import pytest
 
 import demistomock as demisto
-from CommonServerPython import Common, tableToMarkdown, pascalToSpace
+from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient
-from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command
+from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
+    isolate_endpoint_command
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
 )
-
-
-def test_client_update_incident():
-    with pytest.raises(ValueError, match="Can't provide both assignee_email/assignee_name and unassign_user"):
-        test_client.update_incident(incident_id='1',
-                                    status='new',
-                                    unassign_user="user",
-                                    assigned_user_mail="user")
 
 
 Core_URL = 'https://api.xdrurl.com'
@@ -68,25 +61,6 @@ def return_extra_data_result(*args):
         return {}, {}, {"incident": incident_from_extra_data_command}
 
 
-def test_update_incident(requests_mock):
-    from CoreIRApiModule import update_incident_command, CoreClient
-
-    update_incident_response = load_test_data('./test_data/update_incident.json')
-    requests_mock.post(f'{Core_URL}/public_api/v1/incidents/update_incident/', json=update_incident_response)
-
-    client = CoreClient(
-        base_url=f'{Core_URL}/public_api/v1', headers={}
-    )
-    args = {
-        'incident_id': '1',
-        'status': 'new'
-    }
-    readable_output, outputs, _ = update_incident_command(client, args)
-
-    assert outputs is None
-    assert readable_output == 'Incident 1 has been updated'
-
-
 def test_get_endpoints(requests_mock):
     from CoreIRApiModule import get_endpoints_command, CoreClient
 
@@ -104,7 +78,7 @@ def test_get_endpoints(requests_mock):
 
     res = get_endpoints_command(client, args)
     assert get_endpoints_response.get('reply').get('endpoints') == \
-           res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
+        res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
@@ -851,7 +825,7 @@ def test_endpoint_scan_abort_command_all_endpoints(requests_mock):
     assert scan_expected_tesult == res.outputs
 
 
-def test_get_update_args_unassgning_user():
+def test_get_update_args_unassgning_user(mocker):
     """
     Given:
         -  a dict indicating changed fields (delta) with assigned_user_mail set to "None"
@@ -862,8 +836,10 @@ def test_get_update_args_unassgning_user():
         - update_args have assigned_user_mail and assigned_user_pretty_name set to None and unassign_user set to 'true'
     """
     from CoreIRApiModule import get_update_args
-    delta = {'assigned_user_mail': 'None'}
-    update_args = get_update_args(delta, 1)
+    from CommonServerPython import UpdateRemoteSystemArgs
+    mocker.patch('CoreIRApiModule.handle_outgoing_issue_closure')
+    remote_args = UpdateRemoteSystemArgs({'delta': {'assigned_user_mail': 'None'}})
+    update_args = get_update_args(remote_args)
     assert update_args.get('assigned_user_mail') is None
     assert update_args.get('assigned_user_pretty_name') is None
     assert update_args.get('unassign_user') == 'true'
@@ -872,25 +848,9 @@ def test_get_update_args_unassgning_user():
 def test_get_update_args_close_incident():
     """
     Given:
-        -  a dict indicating changed fields (delta) with a change in owner
-        - the incident status - set to 1 == Active
-    When
-        - running get_update_args
-    Then
-        - update_args assigned_user_mail has the correct associated mail
-    """
-    from CoreIRApiModule import get_update_args
-    delta = {'closeReason': 'Other', "closeNotes": "Not Relevant", 'closingUserId': 'admin'}
-    update_args = get_update_args(delta, 2)
-    assert update_args.get('status') == 'resolved_other'
-    assert update_args.get('resolve_comment') == 'Not Relevant'
-
-
-def test_get_update_args_owner_sync(mocker):
-    """
-    Given:
         -  a dict indicating changed fields (delta) with closeReason set to Other and a closeNotes
         - the incident status - set to 2 == Closed
+        - the current status of the remote incident are 'new'
     When
         - running get_update_args
     Then
@@ -898,11 +858,37 @@ def test_get_update_args_owner_sync(mocker):
         - the resolve_comment is the same as the closeNotes
     """
     from CoreIRApiModule import get_update_args
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({
+        'delta': {'closeReason': 'Other', "closeNotes": "Not Relevant", 'closingUserId': 'admin'},
+        'data': {'status': 'new'},
+        'status': 2}
+    )
+    update_args = get_update_args(remote_args)
+    assert update_args.get('status') == 'resolved_other'
+    assert update_args.get('resolve_comment') == 'Not Relevant'
+
+
+def test_get_update_args_owner_sync(mocker):
+    """
+    Given:
+        -  a dict indicating changed fields (delta) with a change in owner
+        - the incident status - set to 2 == Close
+    When
+        - running get_update_args
+    Then
+        - update_args assigned_user_mail has the correct associated mail
+    """
+    from CoreIRApiModule import get_update_args
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({
+        'delta': {'owner': 'username'},
+        'data': {'status': 'new'}}
+    )
     mocker.patch.object(demisto, 'params', return_value={"sync_owners": True, "mirror_direction": "Incoming"})
     mocker.patch.object(demisto, 'findUser', return_value={"email": "moo@demisto.com", 'username': 'username'})
-    delta = {'owner': 'username'}
 
-    update_args = get_update_args(delta, 1)
+    update_args = get_update_args(remote_args)
 
     assert update_args.get('assigned_user_mail') == 'moo@demisto.com'
 
@@ -2274,36 +2260,6 @@ def test_get_endpoint_properties(endpoint, expected):
     assert status == expected
 
 
-def test_get_update_args_when_getting_close_reason():
-    """
-    Given:
-        - closingUserId from update_remote_system
-    When
-        - An incident in XSOAR was closed with "Duplicate" as a close reason.
-    Then
-        - The status that the incident is getting to be mirrored out is "resolved_duplicate"
-    """
-    from CoreIRApiModule import get_update_args
-    update_args = get_update_args({'closeReason': 'Duplicate', 'closeNote': 'Closed as Duplicate.',
-                                   'closingUserId': 'Admin'}, 2)
-    assert update_args.get('status') == 'resolved_duplicate'
-    assert update_args.get('closeNote') == 'Closed as Duplicate.'
-
-
-def test_get_update_args_when_not_getting_close_reason():
-    """
-    Given:
-        - delta from update_remote_system
-    When
-        - An incident in XSOAR was closed and update_remote_system has occurred.
-    Then
-        - Because There is no change in the "closeReason" value, the status should not change.
-    """
-    from CoreIRApiModule import get_update_args
-    update_args = get_update_args({'someChange': '1234'}, 2)
-    assert update_args.get('status') is None
-
-
 def test_remove_blocklist_files_command(requests_mock):
     """
     Given:
@@ -2735,6 +2691,34 @@ class TestGetAlertByFilter:
                "'to': 2}, 'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RANGE', " \
                "'SEARCH_VALUE': {'from': 1541494601000, 'to': 1541494601000}}]}}}" in request_data_log.call_args[0][0]
 
+    def test_get_alert_by_alert_action_status_filter(self, requests_mock, mocker):
+        """
+        Given:
+            - Core client
+            - Alert with action status of SCANNED
+        When
+            - Running get_alerts_by_filter command with alert_action_status="detected (scanned)"
+        Then
+            - Verify the alert in the output contains alert_action_status and alert_action_status_readable
+            - Ensure request filter contains the alert_action_status as SCANNED
+        """
+        from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
+        api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
+        request_data_log = mocker.patch.object(demisto, 'debug')
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'alert_action_status': 'detected (scanned)'
+        }
+        response = get_alerts_by_filter_command(client, args)
+        assert response.outputs[0].get('internal_id', {}) == 33333
+        assert response.outputs[0].get('alert_action_status', {}) == 'SCANNED'
+        assert response.outputs[0].get('alert_action_status_readable', {}) == 'detected (scanned)'
+        assert "{'SEARCH_FIELD': 'alert_action_status', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': " \
+               "'SCANNED'" in request_data_log.call_args[0][0]
+
     def test_get_alert_by_filter_command_multiple_values_in_same_arg(self, requests_mock, mocker):
         """
         Given:
@@ -3075,3 +3059,108 @@ def test_add_or_remove_tag_endpoint_command(requests_mock, args, expected_filter
             'tag': 'test'
         }
     }
+
+
+excepted_output_1 = {'filters': [{'field': 'endpoint_status',
+                                  'operator': 'IN', 'value': ['connected']}], 'new_alias_name': 'test'}
+excepted_output_2 = {'filters': [{'field': 'endpoint_status',
+                                  'operator': 'IN', 'value': ['connected']}], 'new_alias_name': ""}
+
+
+@pytest.mark.parametrize('input, expected_output', [("test", excepted_output_1),
+                                                    ('""', excepted_output_2)])
+def test_endpoint_alias_change_command__diffrent_alias_new_names(mocker, input, expected_output):
+    """
+    Given:
+    - valid new alias name as string - empty new alias name (due to xsoar limitation,
+    represented by a string of double quote)
+
+    When:
+    - executing the endpoint-alias-change command
+
+    Then:
+    - Makes sure the request body is created correctly.
+
+    """
+    client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
+    mocker_set = mocker.patch.object(client, 'set_endpoints_alias')
+    from CoreIRApiModule import endpoint_alias_change_command
+    endpoint_alias_change_command(client=client, status="connected", new_alias_name=input)
+    assert mocker_set.call_args[1] == expected_output
+
+
+def test_endpoint_alias_change_command__no_filters(mocker):
+    """
+    Given:
+    - command withot endpoint filters
+    when:
+    - executing the endpoint-alias-change command
+    then:
+    - make sure the correct error message wil raise.
+    """
+    client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
+    mocker.patch.object(client, 'set_endpoints_alias')
+    from CoreIRApiModule import endpoint_alias_change_command
+    with pytest.raises(Exception) as e:
+        endpoint_alias_change_command(client=client, new_alias_name='test')
+    assert e.value.message == "Please provide at least one filter."
+
+
+GRACEFULLY_FAILING = [
+    pytest.param(
+        quarantine_files_command,
+        {
+            "endpoint_id_list": "123",
+            "file_path": "C:\\Users\\test\\Desktop\\test_x64.msi",
+            "file_hash": "123",
+        },
+        {
+            "err_msg": "An error occurred while processing XDR public API - No endpoint "
+            "was found "
+            "for creating the requested action",
+            "status_code": 500,
+        },
+        False,
+        id="Success",
+    ),
+    pytest.param(
+        isolate_endpoint_command,
+        {"endpoint_id": "1111"},
+        {"err_msg": "Other error", "status_code": 401},
+        True,
+        id="Failure",
+    ),
+]
+
+
+@pytest.mark.parametrize("command_to_run, args, error, raises", GRACEFULLY_FAILING)
+def test_core_commands_raise_exception(mocker, command_to_run, args, error, raises):
+    """
+    Given:
+    - XDR API error.
+    when:
+    - executing the isolate-endpoint-command and quarantine-files-command command
+    then:
+    - make sure the correct error message wil raise.
+    """
+
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1/", headers={})
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=DemistoException(
+            error.get("err_msg"), res=MockException(error.get("status_code"))
+        ),
+    )
+
+    if raises:
+        with pytest.raises(Exception) as e:
+            command_to_run(client, args)
+            assert "Other error" in str(e)
+    else:
+        assert (command_to_run(client, args).readable_output == "The operation executed is not supported on the given "
+                                                                "machine.")

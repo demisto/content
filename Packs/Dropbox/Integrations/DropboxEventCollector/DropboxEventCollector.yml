@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: DropboxEventsCollector
   version: -1
@@ -8,31 +11,39 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: App key
   displaypassword: App secret
   additionalinfo: The App key and App secret
   name: credentials
   required: true
   type: 9
+  section: Connect
 - defaultvalue: 7 days
   display: First fetch in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_from
   required: false
   type: 0
+  section: Collect
 - defaultvalue: 500
   display: The maximum number of events per fetch.
   additionalinfo: If you're encountering timeouts, consider decreasing this value.
   name: limit
   required: false
   type: 0
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Collect events from Dropbox's logs.
 display: Dropbox Event Collector
 name: DropboxEventsCollector
@@ -89,7 +100,7 @@ script:
     description: Get events.
     execution: false
     name: dropbox-get-events
-  dockerimage: demisto/fastapi:1.0.0.32142
+  dockerimage: demisto/fastapi:1.0.0.50219
   feed: false
   isfetch: false
   longRunning: false
@@ -99,6 +110,8 @@ script:
   subtype: python3
   type: python
   isfetchevents: true
+marketplaces:
+- marketplacev2
 tests:
 - No tests
 fromversion: 6.8.0

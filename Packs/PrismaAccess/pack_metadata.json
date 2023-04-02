@@ -1,17 +1,17 @@
 {
-    "name": "Prisma Access",
-    "description": "Integrate with Palo Alto Networks Prisma Access to query activity and take actions.",
+    "name": "Prisma SASE by Palo Alto Networks",
+    "description": "Integrate with Palo Alto Networks Prisma SASE to query activity and take actions.",
     "support": "xsoar",
-    "currentVersion": "1.0.11",
+    "currentVersion": "2.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-16T22:51:04Z",
     "categories": [
-        "Network Security"
+        "Cloud Services"
     ],
     "tags": [
-        "VPN"
+        "Palo Alto Networks Products"
     ],
     "useCases": [],
     "keywords": [],

@@ -3,3 +3,6 @@ ignore=IN145
 
 [file:CensysV2_image.png]
 ignore=IM111
+
+[file:Censys_image.png]
+ignore=IM111

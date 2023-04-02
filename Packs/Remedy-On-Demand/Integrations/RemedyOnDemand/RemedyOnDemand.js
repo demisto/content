@@ -39,7 +39,6 @@ var filterEmptyFields = function(obj) {
 };
 
 var sendRequest = function(url, token, method, body) {
-
     var res = http(
         url,
         {
@@ -103,42 +102,31 @@ var logout = function(token) {
 };
 
 var convertIncidentToTicket = function(incident) {
-    return {
-        ID: incident['Request ID'],
-        Submitter: incident.Submitter,
-        Status: incident.Status,
-        Description: incident.Description,
-        Source: incident['Reported Source'],
-        Impact: incident.Impact,
-        Urgency: incident.Urgency,
-        Type: incident.Service_Type,
-        Assignee: incident['Assigned To'],
-        Email: incident['Internet E-mail'],
-        Priority: incident.Priority,
-        ServiceType: incident.Service_Type,
-        ModifiedDate: incident['Modified Date']
-    };
+    var incident_filtered = {};
+    if (incident['Assigned To']) { incident_filtered.Assignee = incident['Assigned To']; }
+    if (incident.Description) { incident_filtered.Description = incident.Description; }
+    if (incident['Internet E-mail']) { incident_filtered.Email = incident['Internet E-mail']; }
+    if (incident['Entry ID']) { incident_filtered.EntryID = incident['Entry ID']; }
+    if (incident.Impact) { incident_filtered.Impact = incident.Impact; }
+    if (incident['Incident Number']) { incident_filtered.IncidentNumber = incident['Incident Number']; }
+    if (incident['Modified Date']) { incident_filtered.ModifiedDate = incident['Modified Date']; }
+    if (incident.Priority) { incident_filtered.Priority = incident.Priority; }
+    if (incident['Request ID']) {
+        incident_filtered.ID = incident['Request ID'];
+        incident_filtered.RequestID = incident['Request ID'];
+    }
+    if (incident.Service_Type) {
+        incident_filtered.ServiceType = incident.Service_Type;
+        incident_filtered.Type = incident.Service_Type;
+    }
+    if (incident['Reported Source']) { incident_filtered.Source = incident['Reported Source']; }
+    if (incident.Status) { incident_filtered.Status = incident.Status; }
+    if (incident.Submitter) { incident_filtered.Submitter = incident.Submitter; }
+    if (incident.Urgency) { incident_filtered.Urgency = incident.Urgency; }
+    return incident_filtered;
 };
 
-var createIncident = function(firstName, lastName, description, status, source, serviceType, impact, urgency, customFields) {
-    var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create';
-    var token = login();
-
-    var body = {
-       "values" : {
-           "z1D_Action" : "CREATE",
-     }
-    };
-
-    if (firstName) { body.values['First_Name'] = firstName; }
-    if (lastName) { body.values['Last_Name'] = lastName; }
-    if (description) { body.values['Description'] = description; }
-    if (status) { body.values['Status'] = status; }
-    if (source) { body.values['Reported Source'] = source; }
-    if (serviceType) { body.values['Service_Type'] = serviceType; }
-    if (impact) { body.values['Impact'] = impact; }
-    if (urgency) { body.values['Urgency'] = urgency; }
-
+var updateBodyWithCustomFields = function(body, customFields) {
     if (customFields) {
         var customFieldsArr = customFields.split(',');
         for (var i = 0; i < customFieldsArr.length; i++) {
@@ -148,6 +136,20 @@ var createIncident = function(firstName, lastName, description, status, source, 
             body.values[key] = value;
         }
     }
+    return body;
+};
+
+var createIncident = function(updateObject, customFields) {
+    var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create';
+    var token = login();
+
+    filterEmptyFields(updateObject);
+    var body = {
+       "values" : updateObject
+    };
+    body.values.z1D_Action = 'CREATE';
+    body = updateBodyWithCustomFields(body, customFields);
+
     var res = sendRequest(url, token, "POST", JSON.stringify(body));
     // get created incident
     var incidentUrl = res && res.Headers && res.Headers.Location && res.Headers.Location[0];
@@ -157,10 +159,10 @@ var createIncident = function(firstName, lastName, description, status, source, 
     filterEmptyFields(incident);
 
     var context = {
-        Ticket: convertIncidentToTicket(incident)
+        Ticket: incident
     };
 
-    return createTableEntry("Incident created:",incident, context);
+    return createTableEntry("Incident created:", convertIncidentToTicket(incident), context);
 };
 
 var getIncident = function(id, title) {
@@ -172,15 +174,23 @@ var getIncident = function(id, title) {
     filterEmptyFields(incident);
 
     var context = {
-        'Ticket(val.ID && val.ID == obj.ID)': convertIncidentToTicket(incident)
+        'Ticket(val.ID && val.ID == obj.ID)': incident
     };
-    return createTableEntry(title || "Incident:",incident, context);
+    return createTableEntry(title || "Incident:", convertIncidentToTicket(incident), context);
 };
-var fetchIncidents = function(query, test_module=false) {
+
+var fetchIncidents = function(args, test_module=false) {
     var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/';
-    if(query) {
-        url += '?q=' + encodeURIComponent(query);
+    if (args.query) {
+        url += '?q=' + encodeURIComponent(args.query);
+        if (args.limit && parseInt(args.limit)) {
+            url += '&limit=' + args.limit;
+        }
+        if (args.sort) {
+            url += '&sort=' + encodeURIComponent(args.sort);
+        }
     }
+
     if (test_module) {
         url += '?limit=1&q=Submitter="' + params.credentials.identifier + '"';
     }
@@ -189,15 +199,15 @@ var fetchIncidents = function(query, test_module=false) {
     logout(token);
     var body = JSON.parse(res.Body);
 
-    var incidents = body.entries.map(function(b) { return b.values});
+    var incidents = body.entries.map(function(b) {return b.values});
     incidents.forEach(filterEmptyFields);
     var context = {
-        'Ticket(val.ID && val.ID == obj.ID)': incidents.map(convertIncidentToTicket)
+        'Ticket(val.ID && val.ID == obj.ID)': incidents
     };
-    return createTableEntry("Incidents:",incidents, context);
+    return createTableEntry("Incidents:", incidents.map(convertIncidentToTicket), context);
 };
 
-var updateIncident = function(incID, updateObject) {
+var updateIncident = function(incID, updateObject, customFields) {
     var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/' + incID + '|' + incID;
     var token = login();
 
@@ -205,6 +215,7 @@ var updateIncident = function(incID, updateObject) {
     var body = {
        "values" : updateObject
     };
+    body = updateBodyWithCustomFields(body, customFields);
 
     sendRequest(url, token, "PUT", JSON.stringify(body));
     return getIncident(incID, 'Updated incident:');
@@ -227,7 +238,7 @@ var fetchIncidentsToDemisto = function() {
     var res = sendRequest(url, token);
     logout(token);
     var body = JSON.parse(res.Body);
-    var incidents = []
+    var incidents = [];
     Object.keys(body.entries).forEach(function(key) {
         var incident = body.entries[key].values;
         var requestID = body.entries[key].values['Request ID'];
@@ -242,7 +253,7 @@ var fetchIncidentsToDemisto = function() {
             'rawJSON': JSON.stringify(incident)
         });
     });
-    var now = new Date().toISOString();
+    now = new Date().toISOString();
     logDebug("Last run is set to: " + now);
     setLastRun({value: now});
     return JSON.stringify(incidents);
@@ -250,26 +261,28 @@ var fetchIncidentsToDemisto = function() {
 
 switch (command) {
     case 'test-module':
-        fetchIncidents(query=null, test_module=true);
+        fetchIncidents(args={}, test_module=true);
         return 'ok';
     case 'fetch-incidents':
         return fetchIncidentsToDemisto();
     case 'remedy-incident-create':
         return createIncident(
-            args['first-name'],
-            args['last-name'],
-            args.description,
-            args.status,
-            args.source,
-            args['service-type'],
-            args.impact,
-            args.urgency,
+            {
+                'First_Name': args['first-name'],
+                'Last_Name': args['last-name'],
+                Description: args.description,
+                Status: args.status,
+                'Reported Source': args.source,
+                'Service_Type': args['service-type'],
+                Impact: args.impact,
+                Urgency: args.urgency
+            },
             args['custom-fields']
         );
     case 'remedy-get-incident':
         return getIncident(args.ID);
     case 'remedy-fetch-incidents':
-        return fetchIncidents(args.query);
+        return fetchIncidents(args);
     case 'remedy-incident-update':
         return updateIncident(
             args.ID,
@@ -280,6 +293,7 @@ switch (command) {
                 'Service_Type': args['service-type'],
                 Impact: args.impact,
                 Urgency: args.urgency
-            }
+            },
+            args.custom_fields
         );
 }

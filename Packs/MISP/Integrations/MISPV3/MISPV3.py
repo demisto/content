@@ -1121,20 +1121,28 @@ def add_tag(demisto_args: dict, is_attribute=False):
     uuid = demisto_args.get('uuid')
     tag = demisto_args.get('tag')
     is_local_tag = argToBoolean(demisto_args.get('is_local', False))
+    disable_output = argToBoolean(demisto_args.get('disable_output', False))
     try:
         PYMISP.tag(uuid, tag, local=is_local_tag)  # add the tag
     except PyMISPError:
         raise DemistoException("Adding the required tag was failed. Please make sure the UUID exists.")
     if is_attribute:
-        response = PYMISP.search(uuid=uuid, controller='attributes')
-        human_readable = f'Tag {tag} has been successfully added to attribute {uuid}'
-        return CommandResults(
-            readable_output=human_readable,
-            outputs_prefix='MISP.Attribute',
-            outputs_key_field='ID',
-            outputs=build_attributes_search_response(response),
-            raw_response=response
-        )
+        response = None
+        success_msg = f'Tag {tag} has been successfully added to attribute {uuid}'
+        if not disable_output:
+            response = PYMISP.search(uuid=uuid, controller='attributes')
+            return CommandResults(
+                readable_output=success_msg,
+                outputs_prefix='MISP.Attribute',
+                outputs_key_field='ID',
+                outputs=build_attributes_search_response(response),
+                raw_response=response
+            )
+        else:
+            return CommandResults(
+                readable_output=success_msg,
+                raw_response=success_msg
+            )
 
     # event's uuid
     response = PYMISP.search(uuid=uuid)
@@ -1304,6 +1312,10 @@ def add_email_object(demisto_args: dict):
     entry_id = demisto_args.get('entry_id')
     event_id = demisto_args.get('event_id')
     email_path = demisto.getFilePath(entry_id).get('path')
+    name = demisto.getFilePath(entry_id).get('name', '')
+    if name.endswith(".msg"):
+        raise DemistoException(
+            'misp-add-email-object command does not support *.msg files, please use an *.eml file type instead.')
     obj = EMailObject(email_path)
     return add_object(event_id, obj)
 

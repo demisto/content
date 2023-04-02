@@ -125,15 +125,18 @@ def list_users(args, aws_client):  # pragma: no cover
     paginator = client.get_paginator('list_users')
     for response in paginator.paginate():
         for user in response['Users']:
-            data.append({
+            user_details = {
                 'UserName': user['UserName'],
                 'UserId': user['UserId'],
                 'Arn': user['Arn'],
                 'CreateDate': datetime.strftime(user['CreateDate'], '%Y-%m-%d %H:%M:%S'),
                 'Path': user['Path'],
-            })
+            }
+            if user.get('PasswordLastUsed'):
+                user_details['PasswordLastUsed'] = datetime.strftime(user['PasswordLastUsed'], '%Y-%m-%d %H:%M:%S')
+            data.append(user_details)
     ec = {'AWS.IAM.Users': data}
-    human_readable = tableToMarkdown('AWS IAM Users', data)
+    human_readable = tableToMarkdown('AWS IAM Users', data, removeNull=True)
     return_outputs(human_readable, ec)
 
 
@@ -1221,8 +1224,8 @@ def main():     # pragma: no cover
     aws_role_session_name = params.get('roleSessionName')
     aws_role_session_duration = params.get('sessionDuration')
     aws_role_policy = None
-    aws_access_key_id = params.get('access_key')
-    aws_secret_access_key = params.get('secret_key')
+    aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
+    aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout')
     retries = params.get('retries') or 5

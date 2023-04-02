@@ -1,16 +1,17 @@
 id: Enrichment for Verdict
 version: -1
-marketplaces: ["marketplacev2"]
+marketplaces:
+- marketplacev2
 name: Enrichment for Verdict
 description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then  returns the information needed to establish the alert's verdict.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5ce182a9-e385-4dc9-856e-27c5ee59106b
+    taskid: 9cc1d6e7-7346-438e-84cf-c5384eb9a00a
     type: start
     task:
-      id: 5ce182a9-e385-4dc9-856e-27c5ee59106b
+      id: 9cc1d6e7-7346-438e-84cf-c5384eb9a00a
       version: -1
       name: ""
       iscommand: false
@@ -37,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 3aee0937-266f-4d36-8a61-dd635a29d5ce
+    taskid: cf7fbd3d-5b7f-4b20-8196-e356bc3aaf46
     type: regular
     task:
-      id: 3aee0937-266f-4d36-8a61-dd635a29d5ce
+      id: cf7fbd3d-5b7f-4b20-8196-e356bc3aaf46
       version: -1
       name: 'Check previous alerts '
       description: |-
@@ -48,7 +49,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -77,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: fe58cf5d-a46a-4011-8943-753ddf08eaf0
+    taskid: b3cad615-be42-4953-8f72-010f572ef0fd
     type: condition
     task:
-      id: fe58cf5d-a46a-4011-8943-753ddf08eaf0
+      id: b3cad615-be42-4953-8f72-010f572ef0fd
       version: -1
       name: Were previous alerts closed as false positive?
       description: "Were previous alerts closed as false positive?"
@@ -143,10 +144,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 9581a423-e02e-440c-8979-691f17d45d41
+    taskid: 23d5414c-6989-467d-8f25-135e5cc83841
     type: regular
     task:
-      id: 9581a423-e02e-440c-8979-691f17d45d41
+      id: 23d5414c-6989-467d-8f25-135e5cc83841
       version: -1
       name: Get WildFire report
       description: Retrieves results for a file hash using WildFire.
@@ -173,16 +174,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: e26a72e6-844c-498b-89e2-00d189f6d392
+    taskid: 6825c22c-48d1-4f99-803f-1b6169565f9c
     type: playbook
     task:
-      id: e26a72e6-844c-498b-89e2-00d189f6d392
+      id: 6825c22c-48d1-4f99-803f-1b6169565f9c
       version: -1
       name: File Reputation
       description: "This playbook checks the file reputation and set the verdict as a new context key.\n\nThe verdict is composed by 3 main components:\n\n* VirusTotal detection rate\n* Digital certificate signers\n* NSRL DB\n\nNote: a user can provide a list of trusted signers of his own using the playbook inputs\n "
@@ -226,10 +227,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: c9ed2037-c42e-40a6-8ddc-0f5b5d987851
+    taskid: 5a797f7b-e0f2-46de-85c1-0d2165ce20a9
     type: condition
     task:
-      id: c9ed2037-c42e-40a6-8ddc-0f5b5d987851
+      id: 5a797f7b-e0f2-46de-85c1-0d2165ce20a9
       version: -1
       name: Was the file found as Suspicious?
       description: "Was the file found as suspicious?"
@@ -238,9 +239,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+      - "29"
       "yes":
-      - "25"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -285,10 +286,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 7fa291b2-c819-414f-8aca-c32c27933067
+    taskid: 955d7432-cc8b-45d6-89c9-1ab23df18f9e
     type: condition
     task:
-      id: 7fa291b2-c819-414f-8aca-c32c27933067
+      id: 955d7432-cc8b-45d6-89c9-1ab23df18f9e
       version: -1
       name: Is there a file?
       description: "Is there a file?"
@@ -328,10 +329,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 181d741e-2888-469c-8b74-6cd92a33944d
+    taskid: 0f1e5698-ef4e-4235-8788-8393074064f4
     type: condition
     task:
-      id: 181d741e-2888-469c-8b74-6cd92a33944d
+      id: 0f1e5698-ef4e-4235-8788-8393074064f4
       version: -1
       name: Is there an IP address?
       description: "Is there an IP address?"
@@ -380,10 +381,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 3e01eb38-593d-426d-8b86-59f793ab1131
+    taskid: 1aee9e4c-cf41-4bb4-8a63-960caf6fb8f4
     type: playbook
     task:
-      id: 3e01eb38-593d-426d-8b86-59f793ab1131
+      id: 1aee9e4c-cf41-4bb4-8a63-960caf6fb8f4
       version: -1
       name: IP Enrichment - Generic v2
       description: |-
@@ -436,10 +437,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: fbe1775a-3c4b-480b-8dd6-4aae7acf90ce
+    taskid: 5563f2a4-486e-4f81-8643-177d0e8b5771
     type: condition
     task:
-      id: fbe1775a-3c4b-480b-8dd6-4aae7acf90ce
+      id: 5563f2a4-486e-4f81-8643-177d0e8b5771
       version: -1
       name: Was the IP found as Suspicious?
       description: Was the IP found as suspicious?
@@ -496,10 +497,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 3bd1b935-8d4d-4b78-8cc8-26f1d2991ad9
+    taskid: afcbc012-2435-4010-8296-9371a006f70b
     type: title
     task:
-      id: 3bd1b935-8d4d-4b78-8cc8-26f1d2991ad9
+      id: afcbc012-2435-4010-8296-9371a006f70b
       version: -1
       name: Done
       type: title
@@ -523,10 +524,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 68f6108c-7655-454a-819d-ffcb0efd7b77
+    taskid: 6449a627-0408-4675-84d4-0d982602cfd2
     type: condition
     task:
-      id: 68f6108c-7655-454a-819d-ffcb0efd7b77
+      id: 6449a627-0408-4675-84d4-0d982602cfd2
       version: -1
       name: Is there a URL?
       description: "Is there a URL?"
@@ -564,10 +565,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 9d2786ee-3f56-4a0f-8dbd-3bf0c6c83cdd
+    taskid: c7d07b53-36ad-4c6e-8677-ad4e7af2db77
     type: playbook
     task:
-      id: 9d2786ee-3f56-4a0f-8dbd-3bf0c6c83cdd
+      id: c7d07b53-36ad-4c6e-8677-ad4e7af2db77
       version: -1
       name: URL Enrichment - Generic v2
       description: |-
@@ -614,10 +615,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: fbade813-4985-4b34-8707-4fe1e7cfb9ef
+    taskid: 7836c6c3-382f-4b12-87c7-2c913506c7dc
     type: condition
     task:
-      id: fbade813-4985-4b34-8707-4fe1e7cfb9ef
+      id: 7836c6c3-382f-4b12-87c7-2c913506c7dc
       version: -1
       name: Was the URL found as Suspicious?
       description: Was the URL found as suspicious?
@@ -674,12 +675,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 3cc70d44-9fde-47f1-8953-37a87446c690
+    taskid: cbb20744-6ea2-4151-8575-3bbac0b2962e
     type: regular
     task:
-      id: 3cc70d44-9fde-47f1-8953-37a87446c690
+      id: cbb20744-6ea2-4151-8575-3bbac0b2962e
       version: -1
-      name: Set SuspectedVerdict to Suspicious File
+      name: Set file verdict
       description: Set the SuspectedVerdict key in context to Suspicious File.
       scriptName: Set
       type: regular
@@ -692,7 +693,16 @@ tasks:
       key:
         simple: FileVerdict
       value:
-        simple: Suspicious
+        complex:
+          root: WildFire.Verdicts
+          accessor: VerdictDescription
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Suspicious
     separatecontext: false
     view: |-
       {
@@ -710,10 +720,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 8471b302-5b7d-40e6-80c4-26885685b255
+    taskid: 75caed90-bf85-43b3-86f3-417962547da8
     type: regular
     task:
-      id: 8471b302-5b7d-40e6-80c4-26885685b255
+      id: 75caed90-bf85-43b3-86f3-417962547da8
       version: -1
       name: Set SuspectedVerdict to Suspicious IP
       description: Set the SuspectedVerdict key in context to Suspicious IP.
@@ -746,10 +756,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 62b2bce2-3d36-4404-812b-37c064f6f034
+    taskid: f8752cf3-0514-4ab3-8c9a-3d863f727dc8
     type: regular
     task:
-      id: 62b2bce2-3d36-4404-812b-37c064f6f034
+      id: f8752cf3-0514-4ab3-8c9a-3d863f727dc8
       version: -1
       name: Set SuspectedVerdict to Suspicious URL
       description: Set the SuspectedVerdict key in context to Suspicious URL.
@@ -782,10 +792,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: d5f8721d-a5fc-4830-8ae6-6548554db946
+    taskid: 94003992-1ec4-4053-80cc-3afb14bf2843
     type: regular
     task:
-      id: d5f8721d-a5fc-4830-8ae6-6548554db946
+      id: 94003992-1ec4-4053-80cc-3afb14bf2843
       version: -1
       name: Set PreviousVerdict to Previously closed as False Positive
       description: Set the PreviousVerdict key in context to closed as False Positive.
@@ -820,10 +830,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 17cd03fd-03fc-4304-8b2b-04d8885d18ab
+    taskid: 4ca36cfe-ae11-4c3b-8f9e-92aea2eec70d
     type: title
     task:
-      id: 17cd03fd-03fc-4304-8b2b-04d8885d18ab
+      id: 4ca36cfe-ae11-4c3b-8f9e-92aea2eec70d
       version: -1
       name: Entity Enrichment
       type: title
@@ -854,10 +864,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 1483f669-dfec-4d0e-8fff-b68a199d7bd1
+    taskid: 55674d1e-079e-4675-8d61-14369fe12222
     type: title
     task:
-      id: 1483f669-dfec-4d0e-8fff-b68a199d7bd1
+      id: 55674d1e-079e-4675-8d61-14369fe12222
       version: -1
       name: User Enrichment
       type: title
@@ -884,10 +894,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 078101a2-a404-4b76-8ee4-befd2be1a398
+    taskid: b4647d4e-c996-4f29-8948-f23c392d7733
     type: playbook
     task:
-      id: 078101a2-a404-4b76-8ee4-befd2be1a398
+      id: b4647d4e-c996-4f29-8948-f23c392d7733
       version: -1
       name: Account Enrichment - Generic v2.1
       description: |-
@@ -937,10 +947,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 64ed983b-64ab-43af-890f-d68338894217
+    taskid: 765d45fd-edfa-4084-8e93-ee9b3687c228
     type: regular
     task:
-      id: 64ed983b-64ab-43af-890f-d68338894217
+      id: 765d45fd-edfa-4084-8e93-ee9b3687c228
       version: -1
       name: Get WildFire verdict
       description: Returns a verdict for a hash.
@@ -966,16 +976,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 7a5f5b09-325b-4998-80e2-7c720f73f30b
+    taskid: 30038490-f60a-4a8a-8edd-06bd7af8e182
     type: playbook
     task:
-      id: 7a5f5b09-325b-4998-80e2-7c720f73f30b
+      id: 30038490-f60a-4a8a-8edd-06bd7af8e182
       version: -1
       name: Domain Enrichment - Generic v2
       description: |-
@@ -1015,10 +1025,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 87e1d72a-5291-4da7-8b9b-577fe93a0583
+    taskid: a7f19866-af4a-4e16-899f-5bbfbeae9f65
     type: condition
     task:
-      id: 87e1d72a-5291-4da7-8b9b-577fe93a0583
+      id: a7f19866-af4a-4e16-899f-5bbfbeae9f65
       version: -1
       name: Is there a domain?
       description: "Is there a domain?"
@@ -1058,10 +1068,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: f5fc2c6a-1e8c-47ec-8177-793270e1233e
+    taskid: c90ceb83-b4c8-488f-8c01-d452b2360c9f
     type: condition
     task:
-      id: f5fc2c6a-1e8c-47ec-8177-793270e1233e
+      id: c90ceb83-b4c8-488f-8c01-d452b2360c9f
       version: -1
       name: Was the Domain found as Suspicious?
       description: Was the domain found as suspicious?
@@ -1118,10 +1128,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 56202f0a-3cfd-4940-8a2a-d2ff2fc6d796
+    taskid: 079c1a82-0c4f-4824-8578-8785da3dc423
     type: regular
     task:
-      id: 56202f0a-3cfd-4940-8a2a-d2ff2fc6d796
+      id: 079c1a82-0c4f-4824-8578-8785da3dc423
       version: -1
       name: Set SuspectedVerdict to Suspicious Domain
       description: Set the SuspectedVerdict key in context to Suspicious Domain.
@@ -1154,10 +1164,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 23f12fc7-72e3-4ed1-8e74-cc26f9d04f36
+    taskid: b3f5772e-2d82-4c85-86e5-c49de7849da4
     type: condition
     task:
-      id: 23f12fc7-72e3-4ed1-8e74-cc26f9d04f36
+      id: b3f5772e-2d82-4c85-86e5-c49de7849da4
       version: -1
       name: Is there a user?
       description: "Is there a user?"
@@ -1196,10 +1206,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 669979d0-32ea-4888-831b-ce15e701266e
+    taskid: 20853c95-fc61-47cc-8c64-f5273410917e
     type: title
     task:
-      id: 669979d0-32ea-4888-831b-ce15e701266e
+      id: 20853c95-fc61-47cc-8c64-f5273410917e
       version: -1
       name: Prevalence Check
       type: title
@@ -1226,10 +1236,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 3d6468e3-fea3-4856-8552-1b98ca573603
+    taskid: 13580bdc-aa7d-488b-8c01-91a4511454b8
     type: title
     task:
-      id: 3d6468e3-fea3-4856-8552-1b98ca573603
+      id: 13580bdc-aa7d-488b-8c01-91a4511454b8
       version: -1
       name: Previous Alerts
       type: title
@@ -1256,10 +1266,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 6b1304db-9fb7-4572-8c64-df99a776de46
+    taskid: 13d55c21-5ddb-47d4-8c25-ff3b969e5532
     type: playbook
     task:
-      id: 6b1304db-9fb7-4572-8c64-df99a776de46
+      id: 13d55c21-5ddb-47d4-8c25-ff3b969e5532
       version: -1
       name: 'Get prevalence for IOCs'
       playbookName: 'Get prevalence for IOCs'
@@ -1321,7 +1331,6 @@ system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "16_25_yes": 0.32,
       "17_25_#default#": 0.24,
       "18_19_yes": 0.76,
       "18_25_#default#": 0.19,
@@ -1355,7 +1364,7 @@ inputs:
   playbookInputQuery:
 - key: query
   value:
-    simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+    simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}"
   required: false
   description: |-
     A query for the previous alerts search.

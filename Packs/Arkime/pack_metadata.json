@@ -2,16 +2,20 @@
     "name": "Arkime",
     "description": "Arkime (formerly Moloch) is a large scale, open source, indexed packet capture and search tool.",
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.14",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Forensics"
+    ],
     "useCases": [],
-    "keywords": ["Moloch"],
+    "keywords": [
+        "Moloch"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

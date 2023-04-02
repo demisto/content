@@ -1,0 +1,22 @@
+[{
+    "Alert details": {
+      "Title": "[IGNORE] GO-PRD-DEFENDER-007 Alert-Only PA Sinkhole",
+      "Severity": "Informational",
+      "Category": "Execution",
+      "Source": "Custom detection",
+      "Detection time": "October 8, 2021 2:16 UTC",
+      "Device name": "aaa.xxx.yyy.zzz"
+    }
+  }, {
+    "Alert page": ["View in Microsoft 365 Security Center >"]
+  }, {
+    "Incident page": ["View in Microsoft 365 Security Center >"]
+  }, {
+    "Account information": {
+      "cell0": "",
+      "cell1": "",
+      "cell2": "",
+      "cell3": ""
+    }
+  }
+]

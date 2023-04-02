@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: microsoft_exchange_server_modeling_rule
+name: Microsoft Exchange Server Modeling Rule
+rules: ''
+schema: ''
+tags: microsoft

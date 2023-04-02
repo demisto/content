@@ -28,8 +28,8 @@ This playbook does not use any commands.
 | --- | --- | --- | --- |
 | IoC_IP | An IP address for assessment and enrichment | IP.Address | Optional |
 | IoC_CVE | A CVE for assessment and enrichment | CVE.ID | Optional |
-| IoC_Domain | A domain for assessment and enrichment | Domain.Name.None | Optional |
-| IoC_URL | A URL for assessment and enrichment | URL.Data.None | Optional |
+| IoC_Domain | A domain for assessment and enrichment | Domain.Name | Optional |
+| IoC_URL | A URL for assessment and enrichment | URL.Data | Optional |
 | IoC_MD5 | A MD5 hash for assessment and enrichment | File.MD5 | Optional |
 | IoC_SHA256 | A SHA256 hash for assessment and enrichment | File.SHA256 | Optional |
 | IoC_SHA1 | A SHA1 hash for assessment and enrichment | File.SHA1 | Optional |

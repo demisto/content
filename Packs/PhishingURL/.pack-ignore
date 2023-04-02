@@ -1,4 +1,9 @@
 [file:DBotPredictURLPhishing.yml]
 ignore=SC106
+
 [file:DBotUpdateLogoURLPhishing.yml]
 ignore=SC106
+
+[known_words]
+DBotUpdateLogoURLPhishing
+DBotPredictURLPhishing

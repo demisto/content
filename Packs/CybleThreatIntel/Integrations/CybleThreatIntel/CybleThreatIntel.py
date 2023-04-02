@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-import requests
+import urllib3
 import pytz
 from cabby import create_client
 from urllib.parse import urlparse
@@ -14,7 +14,7 @@ from dateutil import parser
 from typing import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f+00:00"
@@ -238,8 +238,8 @@ def cyble_fetch_taxii(client: Client, args: Dict[str, Any]):
     :return: TAXII feed details
     '''
     try:
-        args['begin'] = str(parser.parse(args.get('begin')).replace(tzinfo=pytz.UTC)) if args.get('begin', None) else None
-        args['end'] = str(parser.parse(args.get('end')).replace(tzinfo=pytz.UTC)) if args.get('end', None) else None
+        args['begin'] = str(parser.parse(args.get('begin', '')).replace(tzinfo=pytz.UTC)) if args.get('begin', None) else None
+        args['end'] = str(parser.parse(args.get('end', '')).replace(tzinfo=pytz.UTC)) if args.get('end', None) else None
     except Exception as e:
         raise ValueError("Invalid date format received, [{}]".format(e))
 
@@ -300,9 +300,9 @@ def validate_input(args: Dict[str, Any]):
 
         try:
             if args.get('begin', None):
-                _start_date = parser.parse(args.get('begin')).replace(tzinfo=pytz.UTC)
+                _start_date = parser.parse(args.get('begin', '')).replace(tzinfo=pytz.UTC)
             if args.get('end', None):
-                _end_date = parser.parse(args.get('end')).replace(tzinfo=pytz.UTC)
+                _end_date = parser.parse(args.get('end', '')).replace(tzinfo=pytz.UTC)
         except Exception as e:
             raise ValueError("Invalid date format received, [{}]".format(e))
 

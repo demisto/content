@@ -1,14 +1,12 @@
 commonfields:
   id: DemistoLogsBundle
-  id_x2: LogsBundle
   version: -1
 name: DemistoLogsBundle
-name_x2: LogsBundle
 script: ''
 type: javascript
 tags:
 - DemistoAPI
-comment: Gets Demisto Log Bundle to war room
+comment: Deprecated. No available replacement.
 enabled: true
 scripttarget: 0
 runonce: false
@@ -18,3 +16,4 @@ dependson:
 fromversion: 5.0.0
 tests:
 - no test
+deprecated: true

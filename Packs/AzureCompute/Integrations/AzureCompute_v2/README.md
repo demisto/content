@@ -536,9 +536,9 @@ Gets the properties of a given network interface.
 #### Human Readable Output
 
 >### Properties of Network Interface "webserver729"
->|Name|ID|MACAddress|NetworkSecurityGroup|NICType|PrivateIPAddresses|
->|---|---|---|---|---|---|
->| webserver729 | /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729 | 00-22-48-1C-73-AF | id: /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkSecurityGroups/webserver-nsg | NA | 10.0.0.4|
+>|Name|ID|MACAddress|NetworkSecurityGroup|NICType|PrivateIPAddresses|AttachedVirtualMachine|
+>|---|---|---|---|---|---|---|
+>| webserver729 | /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729 | 00-22-48-1C-73-AF | id: /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkSecurityGroups/webserver-nsg | NA | 10.0.0.4|sample-webserver|
 
 
 ### azure-vm-get-public-ip-details
@@ -561,19 +561,21 @@ Gets the properties of a given public ip address.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Network.IPConfigurations.PublicIPAddress | String | The public ip address. | 
-| Azure.Network.IPConfigurations.PublicIPAddressFQDN | String | The address FQDN. | 
-| Azure.Network.IPConfigurations.PublicIPAddressAllocationMethod | String | The address allocation methond. | 
-| Azure.Network.IPConfigurations.PublicConfigID | String | The address configuration id. | 
-| Azure.Network.IPConfigurations.ResourceGroup | String | The address resource group. | 
-| Azure.Network.IPConfigurations.PublicIPAddressDomainName | String | The address domain name. | 
-| Azure.Network.IPConfigurations.PublicIPAddressVersion | String | The address version. | 
-| Azure.Network.IPConfigurations.Location | String | The address location. | 
-| Azure.Network.IPConfigurations.PublicConfigName | String | The address config name. | 
-| Azure.Network.IPConfigurations.PublicIPAddressID | String | The address id. | 
+| Azure.Network.IPConfigurations.PublicIPAddress | String | The public ip address. |
+| Azure.Network.IPConfigurations.PublicIPAddressFQDN | String | The address FQDN. |
+| Azure.Network.IPConfigurations.PublicIPAddressAllocationMethod | String | The address allocation method. |
+| Azure.Network.IPConfigurations.PublicConfigID | String | The address configuration id. |
+| Azure.Network.IPConfigurations.ResourceGroup | String | The address resource group. |
+| Azure.Network.IPConfigurations.PublicIPAddressDomainName | String | The address domain name. |
+| Azure.Network.IPConfigurations.PublicIPAddressVersion | String | The address version. |
+| Azure.Network.IPConfigurations.Location | String | The address location. |
+| Azure.Network.IPConfigurations.PublicConfigName | String | The address config name. |
+| Azure.Network.IPConfigurations.PublicIPAddressID | String | The address id. |
 
-#### Command example
+#### Command examples
 ```!azure-vm-get-public-ip-details resource_group=Compute-Labs address_name=webserver-ip```
+
+```!azure-vm-get-public-ip-details address_name=xx.xx.xx.xx```
 #### Context Example
 ```json
 {
@@ -592,6 +594,84 @@ Gets the properties of a given public ip address.
                 "ResourceGroup": "Compute-Labs"
             }
         }
+    }
+}
+```
+
+#### Human Readable Output
+
+### azure-vm-get-all-public-ip-details
+***
+Gets the properties of all public ip address in a subscription.
+
+#### Base Command
+
+`azure-vm-get-all-public-ip-details`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Network.IPConfigurations.PublicIPAddress | String | The public ip address. |
+| Azure.Network.IPConfigurations.PublicIPAddressFQDN | String | The address FQDN. |
+| Azure.Network.IPConfigurations.PublicIPAddressAllocationMethod | String | The address allocation method. |
+| Azure.Network.IPConfigurations.PublicConfigID | String | The address configuration id. |
+| Azure.Network.IPConfigurations.ResourceGroup | String | The address resource group. |
+| Azure.Network.IPConfigurations.PublicIPAddressDomainName | String | The address domain name. |
+| Azure.Network.IPConfigurations.PublicIPAddressVersion | String | The address version. |
+| Azure.Network.IPConfigurations.Location | String | The address location. |
+| Azure.Network.IPConfigurations.PublicConfigName | String | The address config name. |
+| Azure.Network.IPConfigurations.PublicIPAddressID | String | The address id. |
+
+#### Command example
+```!azure-vm-get-all-public-ip-details```
+#### Context Example
+```json
+{
+    "Azure": {
+        "Network": [{
+            "IPConfigurations": {
+                "Location": "eastus",
+                "PublicConfigID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729/ipConfigurations/ipconfig1",
+                "PublicConfigName": "webserver-ip",
+                "PublicIPAddress": "xx.xx.xx.xx",
+                "PublicIPAddressAllocationMethod": "Dynamic",
+                "PublicIPAddressDomainName": "cortexmea-webserver",
+                "PublicIPAddressFQDN": "test.eastus.cloudapp.azure.com",
+                "PublicIPAddressID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/publicIPAddresses/webserver-ip",
+                "PublicIPAddressVersion": "IPv4",
+                "ResourceGroup": "Compute-Labs"
+            }
+        }, {
+            "IPConfigurations": {
+                "Location": "eastus",
+                "PublicConfigID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver145/ipConfigurations/ipconfig2",
+                "PublicConfigName": "webserver-ip2",
+                "PublicIPAddress": "xx.xx.xx.xx",
+                "PublicIPAddressAllocationMethod": "Dynamic",
+                "PublicIPAddressDomainName": "cortexmea-webserver",
+                "PublicIPAddressFQDN": "test.eastus.cloudapp.azure.com",
+                "PublicIPAddressID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/publicIPAddresses/webserver-ip2",
+                "PublicIPAddressVersion": "IPv4",
+                "ResourceGroup": "Compute-Labs"
+            }
+        }, {
+            "IPConfigurations": {
+                "Location": "eastus",
+                "PublicConfigID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Other-Labs/providers/Microsoft.Network/networkInterfaces/webserver832/ipConfigurations/ipconfig3",
+                "PublicConfigName": "webserver-ip3",
+                "PublicIPAddress": "xx.xx.xx.xx",
+                "PublicIPAddressAllocationMethod": "Dynamic",
+                "PublicIPAddressDomainName": "cortexmea-webserver",
+                "PublicIPAddressFQDN": "test.eastus.cloudapp.azure.com",
+                "PublicIPAddressID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Other-Labs/providers/Microsoft.Network/publicIPAddresses/webserver-ip3",
+                "PublicIPAddressVersion": "IPv4",
+                "ResourceGroup": "Compute-Labs"
+            }
+        }]
     }
 }
 ```

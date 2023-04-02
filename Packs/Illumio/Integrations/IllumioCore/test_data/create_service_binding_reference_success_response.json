@@ -1,0 +1,52 @@
+{
+    "href": "/orgs/1/sec_policy/draft/virtual_services/34e91da1-053c-46e6-9fc3-635e5378584d",
+    "created_at": "2021-04-27T06:23:10.927Z",
+    "updated_at": "2021-04-27T06:24:33.687Z",
+    "deleted_at": null,
+    "created_by": {
+        "href": "/users/15"
+    },
+    "updated_by": {
+        "href": "/users/15"
+    },
+    "deleted_by": null,
+    "update_type": null,
+    "name": "Virtual Service 1 2",
+    "description": "Virtual Service to apply on host",
+    "pce_fqdn": null,
+    "service_ports": [
+        {
+            "proto": 6
+        },
+        {
+            "port": 80,
+            "to_port": 443,
+            "proto": 17
+        }
+    ],
+    "labels": [
+        {
+            "href": "/orgs/1/labels/1",
+            "key": "role",
+            "value": "Web"
+        }
+    ],
+    "ip_overrides": [
+        "1.2.3.4"
+    ],
+    "apply_to": "host_only",
+    "caps": [
+        "write",
+        "provision",
+        "delete"
+    ],
+    "service_addresses": [
+        {
+            "ip": "1.1.1.1",
+            "port": 80
+        },
+        {
+            "fqdn": "*.illumio.com"
+        }
+    ]
+}

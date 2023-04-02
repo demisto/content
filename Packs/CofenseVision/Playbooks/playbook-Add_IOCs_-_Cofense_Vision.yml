@@ -1,0 +1,589 @@
+id: Add IOCs - Cofense Vision
+version: -1
+name: Add IOCs - Cofense Vision
+description: Add or update IOCs in Cofense Vision.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: d6976717-ebf8-47a3-8a48-e9fd04c1f737
+    type: start
+    task:
+      id: d6976717-ebf8-47a3-8a48-e9fd04c1f737
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 01903d26-2d38-4c3b-8e36-38fa3ed606b1
+    type: regular
+    task:
+      id: 01903d26-2d38-4c3b-8e36-38fa3ed606b1
+      version: -1
+      name: Set Threat Type Field
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      key:
+        simple: Cofense.IOCDetails.threat_type
+      value:
+        complex:
+          root: inputs.threat_type
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: 'true'
+              defaultValue:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 26011f35-bdd5-4078-82e9-2a387ba691d5
+    type: regular
+    task:
+      id: 26011f35-bdd5-4078-82e9-2a387ba691d5
+      version: -1
+      name: Add IOCs
+      description: Updates one or more IOCs stored in the local IOC repository.
+      script: Cofense Vision|||cofense-iocs-update
+      type: regular
+      iscommand: true
+      brand: Cofense Vision
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      iocs_json:
+        complex:
+          root: Cofense
+          accessor: IOCs
+          transformers:
+          - operator: Stringify
+      source:
+        complex:
+          root: inputs.source
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 838a429e-9069-40af-8d46-5494749439c5
+    type: regular
+    task:
+      id: 838a429e-9069-40af-8d46-5494749439c5
+      version: -1
+      name: Set Threat Value Field
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      key:
+        simple: Cofense.IOCDetails.threat_value
+      value:
+        complex:
+          root: inputs.threat_value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: 'true'
+              defaultValue:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: c100c553-726f-4e94-8d3c-87505d5ba80d
+    type: regular
+    task:
+      id: c100c553-726f-4e94-8d3c-87505d5ba80d
+      version: -1
+      name: Set Threat Level Field
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      key:
+        simple: Cofense.IOCDetails.threat_level
+      value:
+        complex:
+          root: inputs.threat_level
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: 'true'
+              defaultValue:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 2e475903-eeeb-457f-8b36-c6faa6f0f616
+    type: regular
+    task:
+      id: 2e475903-eeeb-457f-8b36-c6faa6f0f616
+      version: -1
+      name: Set Created At Field
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      key:
+        simple: Cofense.IOCDetails.created_at
+      value:
+        complex:
+          root: inputs.created_at
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: 'true'
+              defaultValue:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 9301cc66-4c56-4103-8fc5-43ae6a14ff77
+    type: regular
+    task:
+      id: 9301cc66-4c56-4103-8fc5-43ae6a14ff77
+      version: -1
+      name: Set Updated At Field
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      key:
+        simple: Cofense.IOCDetails.updated_at
+      value:
+        complex:
+          root: inputs.updated_at
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: a48c4171-2943-4d59-8a89-9cf1158c22ee
+    type: regular
+    task:
+      id: a48c4171-2943-4d59-8a89-9cf1158c22ee
+      version: -1
+      name: Set Source Id Field
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      key:
+        simple: Cofense.IOCDetails.source_id
+      value:
+        complex:
+          root: inputs.source_id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: 'true'
+              defaultValue:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 1225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: b9aa5923-2b38-44d0-8d3b-bc8a81fce538
+    type: regular
+    task:
+      id: b9aa5923-2b38-44d0-8d3b-bc8a81fce538
+      version: -1
+      name: Set Requested Expiration Field
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      key:
+        simple: Cofense.IOCDetails.requested_expiration
+      value:
+        complex:
+          root: inputs.requested_expiration
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: 'true'
+              defaultValue:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 2691ed5e-2dbd-4871-87b4-247cd5995a15
+    type: title
+    task:
+      id: 2691ed5e-2dbd-4871-87b4-247cd5995a15
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 73004b56-1b6e-4b93-8dc3-7a9841ce8a27
+    type: regular
+    task:
+      id: 73004b56-1b6e-4b93-8dc3-7a9841ce8a27
+      version: -1
+      name: Get IOC Details
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      key:
+        simple: Cofense.IOCs
+      value:
+        complex:
+          root: Cofense
+          accessor: IOCDetails
+          transformers:
+          - operator: ConvertDictOfListToListOfDict
+            args:
+              key:
+                value:
+                  simple: Cofense.IOCDetails
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 1585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: fd595a46-57d7-4e70-8681-0335f74971e4
+    type: condition
+    task:
+      id: fd595a46-57d7-4e70-8681-0335f74971e4
+      version: -1
+      name: Is Cofense Vision Integration Enable?
+      description: Condition to check if Cofense Vision Integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      yes:
+      - '1'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cofense Vision
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 622.5,
+        "x": -80,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: source
+  value: {}
+  required: true
+  description: |-
+    A single IOC source value, to fetch the IOCs added or modified by that particular source. The value for source can contain uppercase letters, lowercase letters, numbers, and certain special characters ("." , "-" , "_" , "~").
+
+    Example: "Traige-1" or "IOC_Source-2".
+  playbookInputQuery:
+- key: threat_type
+  value: {}
+  required: true
+  description: "Type of the IOC. \n\nSupported values: Domain, MD5, Sender, SHA256, Subject, or URL."
+  playbookInputQuery:
+- key: threat_value
+  value: {}
+  required: true
+  description: The actual value of the IOC match in the email.
+  playbookInputQuery:
+- key: threat_level
+  value: {}
+  required: true
+  description: The severity of the IOC.
+  playbookInputQuery:
+- key: created_at
+  value: {}
+  required: true
+  description: The UTC date and time, the IOC source included the IOC for the first time.
+  playbookInputQuery:
+- key: updated_at
+  value: {}
+  required: false
+  description: The UTC date and time, the IOC source last updated the IOC.
+  playbookInputQuery:
+- key: source_id
+  value: {}
+  required: true
+  description: The unique identifier assigned by the IOC source.
+  playbookInputQuery:
+- key: requested_expiration
+  value: {}
+  required: false
+  description: |-
+    The expected UTC expiration date and time. The IOC repository
+    calculates an expiration date and time for the new IOC by default 14 days after the IOC is delivered to the IOC repository.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

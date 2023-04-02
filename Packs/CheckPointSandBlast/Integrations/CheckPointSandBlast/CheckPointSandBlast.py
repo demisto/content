@@ -75,7 +75,7 @@ class Client(BaseClient):
     """
     VERSION = 'v1'
 
-    def __init__(self, host: str, api_key: str, verify: bool = False, proxy: bool = False):
+    def __init__(self, host: str, api_key: str, reliability: str, verify: bool = False, proxy: bool = False):
         """
         Client constructor, set headers and call super class BaseClient.
 
@@ -93,6 +93,7 @@ class Client(BaseClient):
                 'Authorization': api_key
             }
         )
+        self.reliability = reliability
 
     def query_request(
         self,
@@ -318,13 +319,21 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
                 command_results.append(CommandResults(readable_output=f'File not found: "{file_hash}"\n{message}'))
                 continue
 
+            file_indicator = get_file_indicator(file_hash, hash_type, raw_response, client.reliability)
+            verdict_str = file_indicator.dbot_score.to_readable()
+
+            score_description = {
+                'confidence': dict_safe_get(raw_response, ['response', 'te', 'confidence']),
+                'severity': dict_safe_get(raw_response, ['response', 'te', 'severity']),
+                'signature_name': dict_safe_get(raw_response, ['response', 'av', 'malware_info', 'signature_name'])
+            }
             outputs = remove_empty_elements({
                 'MD5': dict_safe_get(raw_response, ['response', 'md5']),
                 'SHA1': dict_safe_get(raw_response, ['response', 'sha1']),
                 'SHA256': dict_safe_get(raw_response, ['response', 'sha256']),
-                'Malicious': {
+                verdict_str: {
                     'Vendor': 'CheckPointSandBlast',
-                    'Description': dict_safe_get(raw_response, ['response', 'av', 'malware_info']),
+                    'Description': score_description
                 }
             })
             readable_output = tableToMarkdown(
@@ -334,10 +343,9 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
                     'MD5',
                     'SHA1',
                     'SHA256',
-                    'Malicious',
+                    verdict_str,
                 ]
             )
-            file_indicator = get_file_indicator(file_hash, hash_type, raw_response)
 
             command_results.append(CommandResults(
                 readable_output=readable_output,
@@ -837,9 +845,9 @@ def get_dbotscore(response: Dict[str, Any]) -> int:
     te_confidence = dict_safe_get(response, ['response', 'te', 'confidence'])
     te_severity = dict_safe_get(response, ['response', 'te', 'severity'])
     te_combined_verdict = dict_safe_get(response, ['response', 'te', 'combined_verdict'])
-
     if av_confidence == 0 and av_severity == 0 and \
-            te_combined_verdict == 'benign' and te_severity is None and (te_confidence == 1 or te_confidence is None):
+            te_combined_verdict.lower() == 'benign' and (te_severity == 0 or te_severity is None) and \
+            (te_confidence <= 1 or te_confidence is None):
         score = Common.DBotScore.GOOD
 
     elif te_severity == 1:
@@ -851,7 +859,7 @@ def get_dbotscore(response: Dict[str, Any]) -> int:
     return score
 
 
-def get_file_indicator(file_hash: str, hash_type: str, response: Dict[str, Any]) -> Common.File:
+def get_file_indicator(file_hash: str, hash_type: str, response: Dict[str, Any], reliability: str) -> Common.File:
     """
     Returns a file indicator that could potentially be malicious and will be checked for reputation.
 
@@ -859,6 +867,7 @@ def get_file_indicator(file_hash: str, hash_type: str, response: Dict[str, Any])
         file_hash (str): File hash value
         hash_type (str): File hash type.
         response (Dict[str, Any]): Response received from the API request.
+        reliability (str): integration source reliability.
 
     Returns:
         Common.File: File indicator.
@@ -867,7 +876,7 @@ def get_file_indicator(file_hash: str, hash_type: str, response: Dict[str, Any])
         indicator=file_hash,
         indicator_type=DBotScoreType.FILE,
         integration_name='CheckPointSandBlast',
-        reliability=DBotScoreReliability.C,
+        reliability=reliability,
         score=get_dbotscore(response),
     )
 
@@ -970,12 +979,14 @@ def main() -> None:
     host = params['url']
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    reliability = params.get('integrationReliability', 'C - Fairly reliable')
 
     commands = {
         'sandblast-query': query_command,
         'sandblast-upload': setup_upload_polling_command,
         'sandblast-download': download_command,
         'sandblast-quota': quota_command,
+        'file': file_command
     }
 
     demisto.debug(f'Command being called is {command}')
@@ -984,6 +995,7 @@ def main() -> None:
         client = Client(
             host=host,
             api_key=api_key,
+            reliability=reliability,
             verify=verify_certificate,
             proxy=proxy,
         )
