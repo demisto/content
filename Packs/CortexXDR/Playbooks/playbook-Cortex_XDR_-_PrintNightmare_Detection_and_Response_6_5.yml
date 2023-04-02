@@ -310,59 +310,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "16":
-    id: "16"
-    taskid: 94b78179-9f2c-4127-816a-5ce2dc649581
-    type: playbook
-    task:
-      id: 94b78179-9f2c-4127-816a-5ce2dc649581
-      version: -1
-      name: Block IP - Generic v2
-      description: |-
-        This playbook blocks malicious IPs using all integrations that are enabled.
-
-        Supported integrations for this playbook:
-        * Check Point Firewall
-        * Palo Alto Networks Minemeld
-        * Palo Alto Networks PAN-OS
-        * Zscaler
-        * FortiGate
-      playbookName: Block IP - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      AutoCommit:
-        simple: "No"
-      CustomBlockRule:
-        simple: "True"
-      IP:
-        complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          accessor: action_remote_ip
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 960,
-          "y": 1845
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "19":
     id: "19"
     taskid: 28872916-60a6-4ca9-85ce-4236e68214fb
@@ -1139,7 +1086,7 @@ tasks:
       '#default#':
       - "22"
       "yes":
-      - "16"
+      - "82"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1396,6 +1343,60 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 5b309d3a-f683-4fd9-8b3f-d609b4225495
+    type: playbook
+    task:
+      id: 5b309d3a-f683-4fd9-8b3f-d609b4225495
+      version: -1
+      name: Block IP - Generic v3
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: action_remote_ip
+          transformers:
+            - operator: uniq
+      UserVerification:
+        complex:
+          root: inputs.UserVerification
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1409,7 +1410,6 @@ view: |-
       "71_66_yes": 0.47,
       "73_22_#default#": 0.33,
       "73_6_yes": 0.43,
-      "74_16_yes": 0.62,
       "74_22_#default#": 0.12,
       "77_11_#default#": 0.1,
       "77_76_yes": 0.49,
@@ -1451,8 +1451,13 @@ inputs:
   required: false
   description: 'Whether to run indicators auto enrichment automatically '
   playbookInputQuery:
+- key: UserVerification
+  value:
+    simple: "False"
+  required: false
+  description: "Possible values: True/False.\nWhether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
-toversion: 6.4.9
+fromversion: 6.5.0
