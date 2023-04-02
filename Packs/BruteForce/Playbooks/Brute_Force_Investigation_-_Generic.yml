@@ -2248,5 +2248,6 @@ inputs:
   playbookInputQuery:
 outputs: []
 fromversion: 6.0.0
+toversion: 6.4.9
 tests:
 - No test

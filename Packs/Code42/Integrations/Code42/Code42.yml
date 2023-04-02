@@ -50,6 +50,11 @@ configuration:
   defaultvalue: '3'
   required: false
   type: 19
+- name: v2_events
+  display: Use v2 file events
+  required: false
+  defaultvalue: 'false'
+  type: 8
 description: Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
 display: Code42
 name: Code42
@@ -82,7 +87,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Exposure types to search for. Values can be "All", "RemovableMedia", "ApplicationRead", "CloudStorage", "IsPublic", "SharedViaLink", "SharedViaDomain", or "OutsideTrustedDomains". When "All" is specified with other types, other types would be ignored and filter rule for all types would be applied.
+      description: (v1 events only) Exposure types to search for. Values can be "All", "RemovableMedia", "ApplicationRead", "CloudStorage", "IsPublic", "SharedViaLink", "SharedViaDomain", or "OutsideTrustedDomains". When "All" is specified with other types, other types would be ignored and filter rule for all types would be applied.
       isArray: true
       name: exposure
       predefined:
@@ -103,7 +108,7 @@ script:
       name: results
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Searches for file events by JSON query, hash, username, device hostname, exfiltration type, or a combination of parameters. At least one argument must be passed in the command. If a JSON argument is passed, it will be used to the exclusion of other parameters, otherwise parameters will be combined with an AND clause.
     execution: false
     name: code42-securitydata-search
@@ -236,6 +241,78 @@ script:
       type: string
   - arguments:
     - default: false
+      description: Add results to context at 'Code42.FileEvents'. If 'false', the search will only display results as a markdown table.
+      isArray: false
+      name: add-to-context
+      required: false
+      secret: false
+      defaultValue: false
+    - default: false
+      description: Raw JSON file event query to be used for search.
+      isArray: false
+      name: json
+      required: false
+      secret: false
+    - default: false
+      description: The number of file events to return. Defaults to 50.
+      isArray: false
+      name: results
+      required: false
+      secret: false
+      defaultValue: 50
+    - default: false
+      defaultValue: "1"
+      description: Filter results by minimum risk score.
+      isArray: false
+      name: min_risk_score
+      required: false
+      secret: false
+    - default: false
+      description: MD5 or SHA256 hash of the file to search for.
+      isArray: false
+      name: hash
+      required: false
+      secret: false
+    - default: false
+      description: Username to search for.
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
+      description: Hostname to search for.
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for Code42 Incydr File Events
+    execution: false
+    name: code42-file-events-search
+    outputs:
+      - contextPath: Code42.FileEvents.timestamp
+        description: The timestamp when the event occurred.
+        type: date
+      - contextPath: Code42.FileEvents.event
+        description: Summary information about the event, including date observed, event type, and event source.
+      - contextPath: Code42.FileEvents.user
+        description: Details about the user associated with the event (if any).
+      - contextPath: Code42.FileEvents.destination
+        description: Details about the destination target of the event (if any).
+      - contextPath: Code42.FileEvents.process
+        description: Details about the CPU process involved in the event (if any).
+      - contextPath: Code42.FileEvents.risk
+        description: Details overall risk severity for the event and lists all associated risk indicators.
+      - contextPath: Code42.FileEvents.git
+        description: Details about git repository involved in event (if any).
+      - contextPath: Code42.FileEvents.report
+        description: Details about Salesforce reports involved in the event (if any).
+      - contextPath: Code42.FileEvents.file
+        description: Details about file metadata for file involved in the event (if any).
+      - contextPath: Code42.FileEvents.source
+        description: Info about the origin of a file involved in the event (if any).
+  - arguments:
+    - default: false
       description: The alert ID to retrieve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
       isArray: false
       name: id
@@ -352,19 +429,19 @@ script:
       name: results
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: true
-      defaultValue: OPEN
+    - default: true
       description: Filters the results based on specific filters.
       isArray: false
       name: filtertype
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: OPEN
       predefined:
       - EXFILTRATION_30_DAYS
       - EXFILTRATION_24_HOURS
       - OPEN
       - LEAVING_TODAY
-      required: false
-      secret: false
     deprecated: false
     description: Get all employees on the Departing Employee List.
     execution: false
@@ -428,11 +505,13 @@ script:
       description: The username of the High Risk Employee.
       type: Unknown
   - arguments:
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: To filter results by employees who have these risk tags. Comma delimited.
       isArray: false
       name: risktags
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - PERFORMANCE_CONCERNS
       - PERFORMANCE_CONCERNS
@@ -441,8 +520,6 @@ script:
       - ELEVATED_ACCESS_PRIVILEGES
       - FLIGHT_RISK
       - CONTRACT_EMPLOYEE
-      required: false
-      secret: false
     - default: false
       description: The number of items to return.
       isArray: false
@@ -518,11 +595,13 @@ script:
       name: username
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: Comma-delimited risk tags to disassociate from the High Risk Employee.
       isArray: false
       name: risktags
+      required: true
+      secret: false
+      auto: PREDEFINED
       predefined:
       - PERFORMANCE_CONCERNS
       - PERFORMANCE_CONCERNS
@@ -531,8 +610,6 @@ script:
       - ELEVATED_ACCESS_PRIVILEGES
       - FLIGHT_RISK
       - CONTRACT_EMPLOYEE
-      required: true
-      secret: false
     deprecated: false
     description: Disassociates risk tags from the user with the given username.
     execution: false
@@ -770,17 +847,8 @@ script:
     - contextPath: Code42.HighRiskEmployee.Note
       description: Note associated with the High Risk Employee.
       type: string
-  - arguments:
-    - default: false
-      description: Email id of the departing employee.
-      isArray: false
-      name: username
-      required: true
-      secret: false
-    deprecated: false
+  - name: code42-departingemployee-get
     description: Retrieve departing employee details.
-    execution: false
-    name: code42-departingemployee-get
     outputs:
     - contextPath: Code42.DepartingEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
@@ -794,6 +862,15 @@ script:
     - contextPath: Code42.DepartingEmployee.DepartureDate
       description: The departure date for the Departing Employee.
       type: Unknown
+    arguments:
+    - default: false
+      description: Email id of the departing employee.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
   - name: code42-watchlists-list
     description: List all existing watchlists in your environment.
     outputs:
@@ -835,11 +912,11 @@ script:
     description: Remove a user from a watchlist.
     arguments:
     - name: username
-      default: false
-      required: true
       description: Email id of the user to add to Watchlist.
+      required: true
       secret: false
       isArray: false
+      default: false
     - name: watchlist
       default: false
       required: true
@@ -918,7 +995,25 @@ script:
     - contextPath: Code42.UpdatedUserRiskProfiles.Success
       description: If the risk profile update was successful.
       type: boolean
-  dockerimage: demisto/py42:1.0.0.51126
+  - name: code42-file-events-table
+    description: Render Code42 file events from the context as a markdown table
+    arguments:
+    - name: include
+      description: |
+        Select which events to include in the table.
+        - 'incident' only displays the events that originally triggered the Code42 Alert.
+        - 'searches' only displays events that have been added to the context from 'code42-file-events-search' commands.
+        - 'all' will include all events in the table.
+      required: false
+      secret: false
+      isArray: false
+      default: false
+      defaultValue: all
+      predefined:
+      - all
+      - incident
+      - searches
+  dockerimage: demisto/py42:1.0.0.52352
   feed: false
   isfetch: true
   longRunning: false
