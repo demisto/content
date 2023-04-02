@@ -183,3 +183,23 @@ def test_parse_attachment_content():
     response = parse_attachment_content('1234', RAW_ATTACHMENT_CONTENT)
     expected = 'some multiline\nattachment content'
     assert response == expected
+
+
+def test_edit_ticket(mocker):
+    """
+    _summary_
+    """
+    from RTIR import edit_ticket, BASE_URL
+    BASE_URL = 'http://ec2-3-120-218-164.eu-central-1.compute.amazonaws.com'
+    args = {
+        'ticket-id': '123',
+        'subject': 'test',
+        'owner': 'tester',
+        'status': 'in_test',
+        'priority': '1',
+        'final-priority': '3',
+        'customfields': 'field1=value1,field2=value2'
+    }
+    mocker.patch.object(demisto, 'args', return_value=args)
+    response = edit_ticket()
+    assert response == {}

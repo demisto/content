@@ -250,10 +250,8 @@ def create_ticket():
 
 
 def get_ticket_request(ticket_id):
-    suffix_url = 'ticket/{}/show'.format(ticket_id)
-    raw_ticket = http_request('GET', suffix_url)
-
-    return raw_ticket
+    suffix_url = f'ticket/{ticket_id}/show'
+    return http_request('GET', suffix_url)
 
 
 def fix_query_suffix(query):
@@ -477,12 +475,13 @@ def edit_ticket():
 
     customfields = demisto.args().get('customfields')
     if customfields:
+        arguments_given = True
         cf_list = customfields.split(',')
         for cf in cf_list:
             equal_index = cf.index('=')
-            key = 'CF-{}: '.format(cf[:equal_index])
+            key = f'CF-{cf[:equal_index]}'
             value = cf[equal_index + 1:]
-            content = content + key + value + '\n'
+            content = f"{content} {key}: {value} '\n'"
 
     if arguments_given:
         encoded = "content=" + urllib.parse.quote_plus(content.encode('utf-8'))
