@@ -145,6 +145,47 @@ def test_get_collections_function():
     assert result.outputs[0] == {"Name": "first name", "ID": "first id"}
     assert result.outputs[1] == {"Name": "second name", "ID": "second id"}
 
+@pytest.mark.parametrize('response, expected_md_results',
+                         [([{'value': '1.1.1.1', 'type': 'IP'}, {'value': 'google.com', 'type': 'Domain'}],
+                          'Found 2 results:\n|value|type|\n|---|---|\n| 1.1.1.1 | IP |\n| google.com | Domain |\n'),
+                          ([{'value': '1.1.1.1', 'type': 'IP'}, {'value': 'google.com', 'type': 'Domain'},
+                            {'value': '$$DummyIndicator$$',
+                             'relationships': [{'name': 'related-to', 'reverseName': 'related-to',
+                                                'type': 'IndicatorToIndicator', 'entityA': '1.1.1.1',
+                                                'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'google.com',
+                                                'entityBFamily': 'Indicator', 'entityBType': 'Domain',
+                                                'fields': {'lastseenbysource': '2023-03-26T12:45:55.068670Z',
+                                                           'firstseenbysource': '2023-03-26T12:45:55.068662Z'}}]}],
+                          'Found 2 results:\n|value|type|\n|---|---|\n| 1.1.1.1 | IP |\n| google.com | Domain |\n\n\n\nRelations'
+                           ' ships:\n|entityA|entityAFamily|entityAType|entityB|entityBFamily|entityBType|fields|name|'
+                           'reverseName|type|\n|---|---|---|---|---|---|---|---|---|---|\n| 1.1.1.1 | Indicator | IP | '
+                           'google.com | Indicator | Domain | lastseenbysource: 2023-03-26T12:45:55.068670Z<br>'
+                           'firstseenbysource: 2023-03-26T12:45:55.068662Z | related-to | related-to | IndicatorToIndicator |\n')]
+                         )
+def test_get_indicators_command(mocker, response, expected_md_results):
+    """
+    Given:
+    - A mock response
+    - Case 1: response with 2 indicators and no relationship between them.
+    - Case 2: response with 2 indicators and a relationship between them.
+
+    When:
+    - calling test_get_indicators_command
+
+    Then:
+    - Ensure the information was parsed correctly.
+    - Case 1: No relationships section is mentioned in the readable output.
+    - Case 2: Relationships section is mentioned in the readable output,
+    and both the indicators and the relationship are in the outputs section.
+    """
+    mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
+    mock_client.collection_to_fetch = [1]
+    mocker.patch.object(Taxii2FeedClient, "build_iterator", return_value=response)
+    results = get_indicators_command(mock_client)
+    md = results.readable_output
+    outputs = results.outputs
+    assert md == expected_md_results
+    assert outputs == response
 
 class TestHelperFunctions:
     def test_try_parse_integer(self):
