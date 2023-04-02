@@ -149,7 +149,7 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
                 logging.exception(f'Exception trying to get pack {pack_id} dependencies.'
                                   f' Exception: {ex.status}, {ex.body}')
             except Exception:
-                logging.debug(f'An error occurred while parsing of the dependencies error: {str(ex)}')
+                logging.error(f'An error occurred while parsing of the dependencies error: {str(ex)}')
                 raise ex
         except Exception as ex:
             logging.exception(f'Exception trying to get pack {pack_id} dependencies. Exception: {ex}')
