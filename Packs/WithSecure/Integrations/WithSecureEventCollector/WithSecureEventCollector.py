@@ -124,14 +124,16 @@ def parse_events(events: list, last_fetch: str) -> tuple[str, list]:
     last_event_time = last_fetch
     parsed_events: list = []
     for event in events:
-        event['_time'] = parse_date(event.get('clientTimestamp'))
         event_time = date_to_timestamp(parse_date(event.get('serverTimestamp')), DATE_FORMAT)
+        # the event was already fetched
+        if last_fetch_timestamp == event_time:
+            continue
+        event['_time'] = parse_date(event.get('clientTimestamp'))
         if last_event_timestamp < event_time:
             last_event_timestamp = event_time
             last_event_time = event.get('serverTimestamp')
-        # the event was not already fetched
-        if last_fetch_timestamp != event_time:
-            parsed_events.append(event)
+
+        parsed_events.append(event)
 
     return parse_date(last_event_time), parsed_events
 
