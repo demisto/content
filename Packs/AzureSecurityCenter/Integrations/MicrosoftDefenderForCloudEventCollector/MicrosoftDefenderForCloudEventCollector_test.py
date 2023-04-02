@@ -1,5 +1,9 @@
-import demistomock as demisto
-from MicrosoftDefenderForCloudEventCollector import *
+from MicrosoftDefenderForCloudEventCollector import (MsClient,
+                                                     find_next_run,
+                                                     get_events,
+                                                     filter_out_previosly_digested_events,
+                                                     add_time_key_to_events,
+                                                     check_events_were_filtered_out)
 import json
 import pytest
 

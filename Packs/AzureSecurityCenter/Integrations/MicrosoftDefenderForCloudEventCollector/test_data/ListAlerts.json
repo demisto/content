@@ -33,7 +33,7 @@
         "2. If only specific IP addresses should be allowed to access the web app, set IP restrictions (https://docs.microsoft.com/azure/app-service/app-service-ip-restrictions) for it."
       ],
       "extendedProperties": {
-        "sample Source IP Addresses": "00.00.00.00",
+        "sample Source IP Addresses": "0.0.0.0",
         "sample User Agents": "Mozilla/5.0+(Windows+NT+10.0;+Win64;+x64;+rv:48.0)+Gecko/20100101+Firefox/48.0, Mozilla/5.0+(Windows+NT+10.0;+Win64;+x64)+AppleWebKit/537.36+(KHTML,+like+Gecko)+Chrome/63.0.3239.132+Safari/537.36",
         "last Event Time": "12/11/2019 12:34:27 AM",
         "sample Referer": "-",
@@ -136,7 +136,7 @@
         "end Time UTC": "09/08/2022 07:51:17",
         "all vault operations in last 24 hours": "[SecretSet:1, SecretGet:5, Authentication:2, VaultGet:3]",
         "suspicious Operations": "[SecretGet:2, VaultGet:2]",
-        "attacker IP Address": "00.00.00.00",
+        "attacker IP Address": "0.0.0.0",
         "attacker Object ID": "00000000-0000-0000-0000-000000000000",
         "application ID": "00000000-0000-0000-0000-000000000000",
         "result Signature": "OK",
@@ -159,7 +159,7 @@
         },
         {
           "$id": "centralus_8",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -209,7 +209,7 @@
         "end Time UTC": "09/08/2022 07:51:15",
         "all vault operations in last 24 hours": "[AfterAuthentication:1, SecretGet:345545, EventGridGetAllSubscriptions:19, Authentication:169, VaultGet:3]",
         "suspicious Operations": "[SecretGet:64]",
-        "attacker IP Address": "00.00.00.00",
+        "attacker IP Address": "0.0.0.0",
         "attacker Object ID": "00000000-0000-0000-0000-000000000000",
         "application ID": "00000000-0000-0000-0000-000000000000",
         "result Signature": "OK",
@@ -231,7 +231,7 @@
         },
         {
           "$id": "centralus_12",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -281,12 +281,12 @@
         "end Time UTC": "09/08/2022 07:51:13",
         "all vault operations in last 24 hours": "[Authentication:1, SecretGet:3, VaultGet:1, SecretList:5]",
         "suspicious Operations": "[SecretGet:3, SecretList:5]",
-        "attacker IP Address": "00.00.00.00",
+        "attacker IP Address": "0.0.0.0",
         "attacker Object ID": "00000000-0000-0000-0000-000000000000",
         "application ID": "00000000-0000-0000-0000-000000000000",
         "result Signature": "OK",
         "start Time UTC": "09/08/2022 07:51:13",
-        "client Information": "FxVersion/4.8.4075.0 OSName/Windows10Enterprise OSVersion/6.3.18363 Microsoft.Azure.KeyVault.KeyVaultClient/3.0.0.1",
+        "client Information": "FxVersion/4.8.4075.0 OSName/Windows10Enterprise OSVersion/6.3.18363 Microsoft.Azure.KeyVault.KeyVaultClient/0.0.0.0",
         "alert Reasons": "[The application(appid) does not usually access this vault, The application(appid) does not usually come from this IP, The application(appid) does not usually perform a credential list operation followed by a get operation, The application(appid) does not usually perform this operation, The number of applications which accessed this vault is more than usual, The number of users(objid) who accessed this vault is more than usual, The user(objid) does not usually access this vault, The user(objid) does not usually come from this IP, The user(objid) does not usually perform a credential list operation followed by a get operation, The user(objid) does not usually perform this operation, This vault does not usually have a credential list operation followed by a get operation, This vault does not usually have this operation, This vault had more operations than usual, This vault had more types of operations than usual, This vault is not usually accessed from this IP] Note: related application(appid), user(objid), IP and operations are included in appid, objid, callerIpAddress and suspiciousOperations entries, respectively",
         "target": "https://sample.vault.azure.net/secrets/sample"
       },
@@ -304,7 +304,7 @@
         },
         {
           "$id": "centralus_16",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -354,9 +354,9 @@
         "end Time UTC": "09/08/2022 07:51:11",
         "all vault operations in last 24 hours": "[VaultGet:14, CertificateImport:1, CertificateGet:479, VaultPut:4, SecretGet:760, Authentication:3]",
         "suspicious Operations": "[SecretGet:2, VaultPut:4, VaultGet:5, CertificateGet:24]",
-        "attacker IP Address": "00.00.00.00",
+        "attacker IP Address": "0.0.0.0",
         "attacker Object ID": "00000000-0000-0000-0000-000000000000",
-        "client Information": "FxVersion/4.8.4121.0, FxVersion/4.8.4121.0 OSName/Windows10Enterprise OSVersion/6.3.17763 Microsoft.Azure.KeyVault.KeyVaultClient/3.0.0.1",
+        "client Information": "FxVersion/4.8.4121.0, FxVersion/4.8.4121.0 OSName/Windows10Enterprise OSVersion/6.3.17763 Microsoft.Azure.KeyVault.KeyVaultClient/0.0.0.0",
         "result Signature": "OK",
         "application ID": "00000000-0000-0000-0000-000000000000",
         "start Time UTC": "09/08/2022 07:51:11",
@@ -377,7 +377,7 @@
         },
         {
           "$id": "centralus_20",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -427,7 +427,7 @@
         "end Time UTC": "09/08/2022 07:51:09",
         "all vault operations in last 24 hours": "[Authentication:777440, SecretSet:1, SecretGet:777399]",
         "suspicious Operations": "[Authentication:1, SecretGet:1]",
-        "attacker IP Address": "00.00.00.00",
+        "attacker IP Address": "0.0.0.0",
         "attacker Object ID": "00000000-0000-0000-0000-000000000000",
         "result Signature": "Not Found, Unauthorized",
         "start Time UTC": "09/08/2022 07:51:09",
@@ -450,7 +450,7 @@
         },
         {
           "$id": "centralus_24",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -604,7 +604,7 @@
       "extendedProperties": {
         "resourceType": "SQL Database",
         "potential causes": "Brute force attack, penetration testing.",
-        "client IP Address": "00.00.00.00",
+        "client IP Address": "0.0.0.0",
         "client Principal Name": "Sample-account",
         "client Application": "Sample-app",
         "client IP Location": "Boydton, United States",
@@ -631,7 +631,7 @@
       "entities": [
         {
           "$id": "centralus_30",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryName": "United States",
             "city": "Boydton"
@@ -677,7 +677,7 @@
       "extendedProperties": {
         "resourceType": "SQL Database",
         "potential causes": "Penetration testing, malicious activity",
-        "client IP Address": "00.00.00.00",
+        "client IP Address": "0.0.0.0",
         "client Principal Name": "Sample-account",
         "client Application": "Sample-app",
         "client IP Location": "Boydton, United States",
@@ -689,7 +689,7 @@
       "entities": [
         {
           "$id": "centralus_32",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryName": "United States",
             "city": "Boydton"
@@ -736,7 +736,7 @@
         "resourceType": "SQL Database",
         "potential causes": "Defect in application code constructing faulty SQL statements; application code doesn't sanitize user input and was exploited to inject malicious SQL statements.",
         "threat ID": "30",
-        "ip address": "00.00.00.00",
+        "ip address": "0.0.0.0",
         "principal name": "Sample-account",
         "application": "Internet Information Services",
         "database": "Sample-DB",
@@ -750,7 +750,7 @@
         },
         {
           "$id": "centralus_35",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -798,7 +798,7 @@
       "extendedProperties": {
         "resourceType": "SQL Database",
         "potential causes": "Unauthorized access that exploits an opening in the firewall; legitimate access from a new location.",
-        "client IP Address": "00.00.00.00",
+        "client IP Address": "0.0.0.0",
         "alert Id": "00000000-0000-0000-0000-000000000000",
         "client Principal Name": "Sample-account",
         "client Application": "Microsoft SQL Server Management Studio",
@@ -810,7 +810,7 @@
       "entities": [
         {
           "$id": "centralus_37",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryName": "US",
             "city": "New York"
@@ -855,7 +855,7 @@
       ],
       "extendedProperties": {
         "resourceType": "SQL Database",
-        "client IP Address": "00.00.00.00",
+        "client IP Address": "0.0.0.0",
         "client Principal Name": "Sample-account",
         "client Application": "Sample-app",
         "storage Name": "Sample-storage",
@@ -1571,7 +1571,7 @@
       "extendedProperties": {
         "microBurst modules": "Get-AZStorageKeysREST",
         "principalOid": "00000000-0000-0000-0000-000000000000",
-        "ip address": "00.00.00.000",
+        "ip address": "0.0.0.0",
         "username": "Sample user",
         "resourceType": "ARM",
         "killChainIntent": "Collection"
@@ -1673,7 +1673,7 @@
       "extendedProperties": {
         "principal object ID": "00000000-0000-0000-0000-000000000000",
         "principal name": "Sample user",
-        "ip address": "00.00.00.000",
+        "ip address": "0.0.0.0",
         "identity address": "",
         "suspicious command": "powershell.exe -ExecutionPolicy Unrestricted -File sample.ps1",
         "resourceType": "ARM",
@@ -1723,7 +1723,7 @@
       ],
       "extendedProperties": {
         "domainName": "sample.domain",
-        "answers": "00.00.00.00",
+        "answers": "0.0.0.0",
         "resourceType": "AzureDNS",
         "killChainIntent": "Exfiltration"
       },
@@ -1737,7 +1737,7 @@
         },
         {
           "$id": "centralus_87",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -1816,7 +1816,7 @@
       ],
       "extendedProperties": {
         "domainName": "sample.domain",
-        "answers": "00.00.00.00",
+        "answers": "0.0.0.0",
         "resourceType": "AzureDNS",
         "killChainIntent": "Exfiltration"
       },
@@ -1830,7 +1830,7 @@
         },
         {
           "$id": "centralus_92",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -1904,7 +1904,7 @@
       ],
       "extendedProperties": {
         "domainName": "sample.domain",
-        "answers": "00.00.00.00",
+        "answers": "0.0.0.0",
         "resourceType": "AzureDNS",
         "killChainIntent": "Exfiltration"
       },
@@ -1918,7 +1918,7 @@
         },
         {
           "$id": "centralus_97",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -1988,7 +1988,7 @@
       ],
       "extendedProperties": {
         "domainName": "sample.domain",
-        "answers": "00.00.00.00",
+        "answers": "0.0.0.0",
         "resourceType": "AzureDNS",
         "killChainIntent": "Exfiltration"
       },
@@ -2002,7 +2002,7 @@
         },
         {
           "$id": "centralus_101",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -2197,7 +2197,7 @@
       "extendedProperties": {
         "resourceType": "Connected Cluster",
         "username": "sample-user",
-        "ip Address": "00.00.00.00",
+        "ip Address": "0.0.0.0",
         "threat Type": "Proxy",
         "threat Description": "Tor exit node",
         "sample URI": "sample-URI",
@@ -2250,7 +2250,7 @@
         "resourceType": "Connected Cluster",
         "namespace": "sample-namespace",
         "username": "sample-user",
-        "ip Address": "00.00.00.00",
+        "ip Address": "0.0.0.0",
         "status": "200",
         "deleted events": "sample-event1, sample-event2, sample-event3",
         "killChainIntent": "DefenseEvasion"
@@ -2354,7 +2354,7 @@
       "extendedProperties": {
         "resourceType": "Kubernetes Service",
         "namespace": "sample-namespace",
-        "ip address": "00.00.00.00",
+        "ip address": "0.0.0.0",
         "username": "sample-user",
         "configmap name": "coredns-custom",
         "killChainIntent": "LateralMovement"
@@ -2415,7 +2415,7 @@
         "potential causes": "Brute force attack; penetration testing.",
         "client principal name": "Sample-account",
         "alert Id": "00000000-0000-0000-0000-000000000000",
-        "client IP address": "00.00.00.00",
+        "client IP address": "0.0.0.0",
         "client IP location": "san antonio, united states",
         "client application": "Sample-app",
         "successful logins": "1",
@@ -2449,7 +2449,7 @@
         },
         {
           "$id": "centralus_121",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "sample",
             "countryName": "united states",
@@ -2530,7 +2530,7 @@
       "extendedProperties": {
         "resourceType": "SQL Server 2019",
         "potential causes": "Defect in application code constructing faulty SQL statements; application code doesn't sanitize user input and was exploited to inject malicious SQL statements",
-        "client IP address": "00.00.00.00",
+        "client IP address": "0.0.0.0",
         "alert Id": "00000000-0000-0000-0000-000000000000",
         "threat ID": "1",
         "client principal name": "Sample-user",
@@ -2551,7 +2551,7 @@
         },
         {
           "$id": "centralus_127",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "sample",
             "countryName": "united states",
@@ -2631,7 +2631,7 @@
         "investigation steps": "{\"displayValue\":\"How to investigate this alert using logs at your Log Analytics workspace.\",\"kind\":\"Link\",\"value\":\"https:\\/\\/go.microsoft.com\\/fwlink\\/?linkid=2091064\"}",
         "potential causes": "Penetration testing; malicious activity",
         "client principal name": "Sample-user",
-        "client IP address": "00.00.00.00",
+        "client IP address": "0.0.0.0",
         "client application": "Sample-app",
         "client IP location": "Sample",
         "alert Id": "00000000-0000-0000-0000-000000000000",
@@ -2650,7 +2650,7 @@
         },
         {
           "$id": "centralus_133",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "sample",
             "countryName": "united states",
@@ -2734,7 +2734,7 @@
         "potential causes": "An attacker has accessed your database from a potentially suspicious IP; a legitimate user has accessed your database from a potentially suspicious IP.",
         "client principal name": "Sample-user",
         "alert Id": "00000000-0000-0000-0000-000000000000",
-        "client IP address": "00.00.00.00",
+        "client IP address": "0.0.0.0",
         "client IP location": "Sample",
         "client application": "Sample-app",
         "oms workspace ID": "00000000-0000-0000-0000-000000000000",
@@ -2751,7 +2751,7 @@
         },
         {
           "$id": "centralus_139",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "sample",
             "countryName": "united states",
@@ -2854,7 +2854,7 @@
         },
         {
           "$id": "centralus_145",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "type": "ip"
         },
         {
@@ -2980,7 +2980,7 @@
         },
         {
           "$id": "centralus_152",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "type": "ip"
         },
         {
@@ -3059,7 +3059,7 @@
         },
         {
           "$id": "centralus_157",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -3143,7 +3143,7 @@
         },
         {
           "$id": "centralus_161",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -3238,7 +3238,7 @@
         },
         {
           "$id": "centralus_165",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -3324,7 +3324,7 @@
         },
         {
           "$id": "centralus_169",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -3412,7 +3412,7 @@
         },
         {
           "$id": "centralus_173",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -3523,7 +3523,7 @@
         },
         {
           "$id": "centralus_180",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -3609,7 +3609,7 @@
         },
         {
           "$id": "centralus_184",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -3696,7 +3696,7 @@
         },
         {
           "$id": "centralus_188",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -3782,7 +3782,7 @@
         },
         {
           "$id": "centralus_192",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -3867,7 +3867,7 @@
         },
         {
           "$id": "centralus_196",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -3952,7 +3952,7 @@
         },
         {
           "$id": "centralus_200",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -4038,7 +4038,7 @@
         },
         {
           "$id": "centralus_204",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -4124,7 +4124,7 @@
         },
         {
           "$id": "centralus_208",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -4206,7 +4206,7 @@
         },
         {
           "$id": "centralus_212",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -4298,7 +4298,7 @@
         },
         {
           "$id": "centralus_217",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -4392,7 +4392,7 @@
         },
         {
           "$id": "centralus_221",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -4464,13 +4464,13 @@
       ],
       "extendedProperties": {
         "resourceType": "Storage",
-        "url": "https://Sample-Storage.blob.core.windows.net/Sample/Sample.txt",
+        "url": "fake/Sample/Sample.txt",
         "killChainIntent": "Collection"
       },
       "entities": [
         {
           "$id": "centralus_225",
-          "url": "https://Sample-Storage.blob.core.windows.net/Sample/Sample.txt",
+          "url": "fake/Sample/Sample.txt",
           "type": "url"
         },
         {
@@ -4546,7 +4546,7 @@
         },
         {
           "$id": "centralus_229",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -4634,7 +4634,7 @@
         },
         {
           "$id": "centralus_233",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -4727,7 +4727,7 @@
         },
         {
           "$id": "centralus_238",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -4863,7 +4863,7 @@
         },
         {
           "$id": "centralus_244",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -4963,7 +4963,7 @@
         },
         {
           "$id": "centralus_250",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -5066,7 +5066,7 @@
         },
         {
           "$id": "centralus_256",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -5154,7 +5154,7 @@
         },
         {
           "$id": "centralus_260",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -5240,7 +5240,7 @@
         },
         {
           "$id": "centralus_264",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -5325,7 +5325,7 @@
         },
         {
           "$id": "centralus_268",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -5418,7 +5418,7 @@
         },
         {
           "$id": "centralus_273",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -5515,7 +5515,7 @@
         },
         {
           "$id": "centralus_278",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -5601,7 +5601,7 @@
         },
         {
           "$id": "centralus_282",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -5683,7 +5683,7 @@
         },
         {
           "$id": "centralus_286",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -5776,7 +5776,7 @@
         },
         {
           "$id": "centralus_291",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -5871,7 +5871,7 @@
         },
         {
           "$id": "centralus_298",
-          "directory": "https://Sample-Storage.blob.core.windows.net/Sample",
+          "directory": "fake/Sample",
           "name": "Sample-Name",
           "fileHashes": [
             {
@@ -5886,7 +5886,7 @@
           "blobContainer": {
             "$ref": "centralus_297"
           },
-          "url": "https://Sample-Storage.blob.core.windows.net/Sample/Sample.txt",
+          "url": "fake/Sample/Sample.txt",
           "etag": "Sample-Tag",
           "type": "blob"
         },
@@ -5960,7 +5960,7 @@
         },
         {
           "$id": "centralus_303",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -6039,7 +6039,7 @@
         },
         {
           "$id": "centralus_307",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -6114,7 +6114,7 @@
         "investigation steps": "• Verify whether this user is legitimate. Review the credentials used and user's history of actions on this resource and others.\r\n• Search for other alerts on this subscription that might indicate that this is part of a larger attack.\r\n• Inspect the application that is connected to this Azure Cosmos DB account. It may be vulnerable to this fuzzing attack.",
         "potential causes": "• Failed attack attempt, part of an enumeration, reconnaissance or command injection attempt.\r\n• Pen testing.",
         "user agent": "dummyAgent",
-        "client IP address": "00.00.00.00",
+        "client IP address": "0.0.0.0",
         "collection name": "Sample-Collection",
         "database name": "Sample-DataBase",
         "top suspicious queries": "• [1 rows returned] SELECT VALUE [{\"item\": COUNT(1)}]\nFROM root\nWHERE ((root[\"creation_datetime\"] = \"2022-07-06T00:00:00+00:00\") AND (root[\"camera_id\"] IN (\"javascript:alert(_SCAN-@126032-951533-1926@-);\")))\nORDER BY root[\"order\"] ASC, root[\"_ts\"] ASC\r\n• [0 rows returned] SELECT root._rid, [{\"item\": root[\"order\"]}, {\"item\": root[\"_ts\"]}] AS orderByItems, root AS payload\nFROM root\nWHERE ((((root[\"creation_datetime\"] = \"2022-07-06T00:00:00+00:00\") AND (root[\"camera_id\"] IN (\"javascript:alert(_SCAN-@126032-951533-1926@-);\"))) AND (true)) AND IS_DEFINED(root))\nORDER BY root[\"order\"] ASC, root[\"_ts\"] ASC\nOFFSET 0 LIMIT 100",
@@ -6129,7 +6129,7 @@
         },
         {
           "$id": "centralus_311",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -6210,7 +6210,7 @@
         },
         {
           "$id": "centralus_315",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -6289,7 +6289,7 @@
         },
         {
           "$id": "centralus_319",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -6369,7 +6369,7 @@
         },
         {
           "$id": "centralus_323",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -6432,7 +6432,7 @@
       "extendedProperties": {
         "resourceType": "Azure Resource",
         "principal object ID": "00000000-0000-0000-0000-000000000000",
-        "source IP address": "00.00.00.00",
+        "source IP address": "0.0.0.0",
         "killChainIntent": "CredentialAccess"
       },
       "entities": [
@@ -6443,7 +6443,7 @@
         },
         {
           "$id": "centralus_327",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -6519,7 +6519,7 @@
       "extendedProperties": {
         "resourceType": "ARM",
         "investigation steps": "Investigate whether the identity that performed the list-key operations is compromised:\r\n• Contact the Azure Cosmos DB account owner to understand their intentions and actions.\r\n• Look at the authentication method of this user and the actions they performed across the Azure subscription.\r\nUse Azure Activity Logs to locate suspicious activities and review all activities performed by the user.\r\n• If you have diagnostic logs enabled, inspect the actions this identity performed in the Azure Cosmos DB account/s.",
-        "ip address": "00.00.00.00",
+        "ip address": "0.0.0.0",
         "username": "Sample-Username",
         "aad user ID": "00000000-0000-0000-0000-000000000000",
         "killChainIntent": "CredentialAccess"
@@ -6532,7 +6532,7 @@
         },
         {
           "$id": "centralus_331",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -6594,7 +6594,7 @@
       ],
       "compromisedEntity": "kubernetes",
       "alertDisplayName": "Network communication with a malicious machine detected",
-      "description": "Network traffic analysis indicates that your machine (IP 138.91.251.226) has communicated with what is possibly a Command and Control center. When the compromised resource is a load balancer or an application gateway, the suspected activity might indicate that one or more of the resources in the backend pool (of the load balancer or application gateway) has communicated with what is possibly a Command and Control center.",
+      "description": "Network traffic analysis indicates that your machine (IP 0.0.0.0) has communicated with what is possibly a Command and Control center. When the compromised resource is a load balancer or an application gateway, the suspected activity might indicate that one or more of the resources in the backend pool (of the load balancer or application gateway) has communicated with what is possibly a Command and Control center.",
       "remediationSteps": [
         "When the compromised resource is a load balancer or an application gateway, you may want to trace which resources behind it generated the suspicious traffic:",
         "1. Find the suspicious machines, by reviewing the load balancer / application gateway backend pools.",
@@ -6607,7 +6607,7 @@
         "d. Check for traces in other log sources (if they exist) such as: firewall logs, activity logs, WAF and more...",
         "3. Run the following remediation steps for each machine which might have been compromised by the suspicious activity:",
         "a. Escalate the alert to the information security team.",
-        "b. Add 99.83.154.118 to NSG block list for 24 hours (See https://azure.microsoft.com/en-us/documentation/articles/virtual-networks-nsg/)",
+        "b. Add 0.0.0.0 to NSG block list for 24 hours (See https://azure.microsoft.com/en-us/documentation/articles/virtual-networks-nsg/)",
         "c. Make sure the machine is completely updated and has an updated anti-malware installed.",
         "d. Run a full Anti-Virus scan and verify that the threat was removed.",
         "e. Install and run Microsoft’s Malicious Software Removal Tool. (See https://www.microsoft.com/en-us/download/malicious-software-removal-tool-details.aspx)",
@@ -6615,8 +6615,8 @@
         "g. Run Process Explorer and try to identify unknown running processes. (See https://technet.microsoft.com/en-us/sysinternals/bb896653.aspx)"
       ],
       "extendedProperties": {
-        "attacker IP": "99.83.154.118",
-        "victim IP": "138.91.251.226",
+        "attacker IP": "0.0.0.0",
+        "victim IP": "0.0.0.0",
         "victim Port": "80",
         "attacker Port": "50997",
         "resourceType": "Networking",
@@ -6625,7 +6625,7 @@
       "entities": [
         {
           "$id": "centralus_334",
-          "address": "99.83.154.118",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -6649,7 +6649,7 @@
         },
         {
           "$id": "centralus_335",
-          "address": "138.91.251.226",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
