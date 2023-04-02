@@ -36,7 +36,7 @@ MAX_RECORDS_PER_PAGE = 300
 ''' CLIENT CLASS '''
 
 
-class Client(BaseClient):
+class Client(BaseClient):  # pragma: no cover # based on Zoom pack
     """ A client class that implements logic to authenticate with Zoom application. """
 
     def __init__(
