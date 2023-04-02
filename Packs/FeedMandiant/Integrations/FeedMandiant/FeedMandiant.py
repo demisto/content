@@ -188,7 +188,6 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
         params = {'start_epoch': int(start_date.timestamp()), 'limit': limit}  # type:ignore
 
     new_indicators_list = client.get_indicators(indicator_type, params=params)
-
     if indicator_type != 'Indicators': \
             # new to old
         new_indicators_list.sort(key=lambda x: arg_to_datetime(x.get('last_updated')), reverse=True)  # type:ignore
@@ -214,9 +213,7 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
     """
     last_run_dict = demisto.getLastRun()
     indicators_list = last_run_dict.get(f'{indicator_type}List', [])
-    demisto.debug(f"this is the last run object: {last_run_dict.get(f'{indicator_type}Last', first_fetch)}")
     if len(indicators_list) < limit:
-        demisto.info(f'In first condition, limit is: {limit} and type is: {indicator_type}')
         last_run = last_run_dict.get(f'{indicator_type}Last', first_fetch)
         new_indicators_list = get_new_indicators(client, last_run, indicator_type, limit)
         indicators_list += new_indicators_list
@@ -225,7 +222,6 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
         new_indicators_list = indicators_list[:limit]
         last_run_dict[indicator_type + 'List'] = indicators_list[limit:]
         date_key = 'last_seen' if indicator_type == 'Indicators' else 'last_updated'
-        demisto.info(f'setting the following value into last_run_dict: {new_indicators_list[-1][date_key]}')
         last_run_dict[indicator_type + 'Last'] = new_indicators_list[-1][date_key]
 
         if update_context:
