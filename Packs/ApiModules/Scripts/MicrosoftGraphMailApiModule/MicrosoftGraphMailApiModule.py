@@ -12,8 +12,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
     """
     ITEM_ATTACHMENT = '#microsoft.graph.itemAttachment'
     FILE_ATTACHMENT = '#microsoft.graph.fileAttachment'
-    # CONTEXT_DRAFT_PATH = 'MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)'
-    # CONTEXT_SENT_EMAIL_PATH = 'MicrosoftGraph.Email'
     # maximum attachment size to be sent through the api, files larger must be uploaded via upload session
     MAX_ATTACHMENT_SIZE = 3145728  # 3mb = 3145728 bytes
 
