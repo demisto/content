@@ -19,4 +19,5 @@ This pack includes the RunZero integration and RunZeroEventCollector integration
 <~XSIAM>
 ### RunZeroEventCollector integration for XSIAM:
 - Fetches RunZero events.
+- Fetches RunZero2 events2.
 </~XSIAM>

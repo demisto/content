@@ -527,15 +527,15 @@ class TestCollector(ABC):
                     not allow_incompatible_marketplace:
                 collect_only_to_upload = True
 
-            if reason == CollectionReason.README_FILE_CHANGED:
-                collect_only_to_upload = True
-
             # sometimes, we want to install or upload packs that are not compatible (e.g. pack belongs to both marketplaces)
             # because they have content that IS compatible.
             # But still need to avoid collecting packs that belongs to one marketplace when collecting to the other marketplace.
             if (not allow_incompatible_marketplace or (allow_incompatible_marketplace and not is_xsoar_and_xsiam_pack)) \
                     and not collect_only_to_upload:
                 raise
+        finally:
+            if reason == CollectionReason.README_FILE_CHANGED:
+                collect_only_to_upload = True
 
         version_range = content_item_range \
             if pack_metadata.version_range.is_default \
