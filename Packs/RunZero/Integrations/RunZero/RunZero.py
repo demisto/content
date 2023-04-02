@@ -26,7 +26,7 @@ class Client(BaseClient):
     """
 
     def asset_search(self, params: dict = None):
-        url_suffix = '/org/assets'
+        url_suffix = '/org/assets/to/assets/dust/to/dust'
         return self._http_request(method='GET',
                                   url_suffix=url_suffix,
                                   params=params,
