@@ -363,7 +363,7 @@ class Client(BaseClient):
             return self.http_request('GET', 'v1/orgwhitelist/', params=params)
         return self.http_request('GET', 'v1/orgwhitelist/', params=params, resp_type='text')
 
-    def create_whitelist_entry_with_file_request(self, file_path: str) -> dict:
+    def create_whitelist_entry_with_file_request(self, file_data: dict) -> dict:
         """ Creates a whitelist entries in ThreatStream according to file data.
         Args:
             file_path (str): The path of the file.
@@ -371,7 +371,7 @@ class Client(BaseClient):
             A response object in a form of a dictionary.
         """
         return self.http_request('POST', 'v1/orgwhitelist/upload/', params={'remove_existing': 'false'},
-                                 files={'file': open(file_path, 'rb')})
+                                 files=file_data)
 
     def create_whitelist_entry_without_file_request(self, whitelist: list) -> dict:
         """ Creates a whitelist entries in ThreatStream according to arguments data.
@@ -1392,7 +1392,8 @@ def create_whitelist_entry_command(client: Client, entry_id: str = None, cidr: s
     if entry_id:
         get_file_path_res = demisto.getFilePath(entry_id)
         file_path = get_file_path_res["path"]
-        res = client.create_whitelist_entry_with_file_request(file_path)
+        file_data = {'file': open(file_path, 'rb')}
+        res = client.create_whitelist_entry_with_file_request(file_data)
         if res.get('success'):
             return CommandResults(readable_output=res.get('message'),
                                   raw_response=res)
@@ -2157,16 +2158,12 @@ def get_model_list(client: Client, model, limit="50", page=None, page_size=None)
         Possible values for model are : actor, campaign, incident, signature, ttp, vulnerability, tipreport
     """
     # if limit=0 don't put to context
-    if (page and not page_size) or (not page and page_size):
-        raise DemistoException('Please specify page and page_size arguments')
-    elif page and page_size:
-        page_int: int = arg_to_number(page) or 1
-        page_size_int: int = arg_to_number(page_size) or 50
-        offset = (page_int * page_size_int) - (page_size_int)
-        params = dict(offset=offset, limit=page_size, skip_intelligence="true", skip_associations="true", order_by='-created_ts')
-    else:
-        params = dict(limit=limit, skip_intelligence="true", skip_associations="true", order_by='-created_ts')
-    model_list = client.http_request("GET", F"v1/{model.replace(' ', '')}/", params=params).get('objects', None)
+    params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
+    params.update(dict(skip_intelligence="true", skip_associations="true", order_by='-created_ts'))
+    url = F"v1/{model}/"
+    if model == 'attack pattern':
+        url = F"v1/{model.replace(' ', '')}/"
+    model_list = client.http_request("GET", url, params=params).get('objects', None)
 
     if not model_list:
         return f'No Threat Model {model.title()} found.'
@@ -2222,7 +2219,10 @@ def get_iocs_by_model(client: Client, model, id, limit="20", page=None, page_siz
     """
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
     model_type = model.title()
-    response = client.http_request("GET", F"v1/{model.replace(' ', '')}/{id}/intelligence/", params=params, resp_type='response')
+    url = F"v1/{model}/{id}/intelligence/"
+    if model == 'attack pattern':
+        url = F"v1/{model.replace(' ', '')}/{id}/intelligence/"
+    response = client.http_request("GET", url, params=params, resp_type='response')
 
     if response.status_code == 404:
         return f'No indicators found for Threat Model {model_type} with id {id}'
@@ -2439,13 +2439,12 @@ def get_indicators(client: Client, **kwargs):
     page_size = kwargs.get('page_size')
     offset = kwargs['offset'] = 0
     limit = kwargs['limit'] = int(kwargs.get('limit', 20))
-    if (not page and page_size) or (page and not page_size):
-        raise DemistoException('Please specify page and page_size')
-    elif page:
-        page_int: int = arg_to_number(page) or 1
-        page_size_int: int = arg_to_number(page_size) or 50
-        offset = kwargs['offset'] = (page_int * page_size_int) - (page_size_int)
-        limit = kwargs['limit'] = page_size_int
+    params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
+    kwargs.update(params)
+    if 'page' in kwargs:
+        kwargs.pop('page')
+    if 'page_size' in kwargs:
+        kwargs.pop('page_size')
     url = "v2/intelligence/"
     if 'query' in kwargs:
         url += f"?q={kwargs.pop('query')}"
