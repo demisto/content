@@ -1,8 +1,8 @@
 {
     "name": "Imperva Incapsula",
-    "description": "Uses incapsula to manage sites and IPs",
+    "description": "Uses Incapsula to manage sites and IPs",
     "support": "xsoar",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

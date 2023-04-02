@@ -1,0 +1,6 @@
+[file:PrismaAccessEgressIPFeed.yml]
+ignore=BA124
+
+[file:PrismaAccess.yml]
+ignore=BA124
+
