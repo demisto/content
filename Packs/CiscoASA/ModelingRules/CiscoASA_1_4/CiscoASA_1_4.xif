@@ -39,6 +39,7 @@ filter latest_1  ~= "from\s\d+\.\d+\.\d+\.\d+\/\d+\s*to\s*\d+\.\d+\.\d+\.\d+\/\d
     xdm.target.zone = dst_interface,
     xdm.target.user.username = dst_username,
     xdm.event.outcome_reason = action,
+    xdm.observer.name = host_ip,
     xdm.source.host.ipv4_addresses = arraycreate(host_ip),
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
@@ -52,10 +53,15 @@ filter latest_1  ~= "from\s\d+\.\d+\.\d+\.\d+\/\d+\s*to\s*\d+\.\d+\.\d+\.\d+\/\d
     //<source_interface>:<source_ip>/<source_port> (<mapped_source_ip>/<mapped_source_port>)(<source_username>) to <dest_interface>:<dest_ip>:<dest_port> (<mapped_dst_ip>/<mapped_dst_port>) (<dst_username>)
     latest_1 ~= "\w+\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s\(\d+\.\d+\.\d+\.\d+\/\d+\)\([^\)]+\)\sto\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s\(\d+\.\d+\.\d+\.\d+\/\d+\)"
 | alter action = arrayindex(regextract(latest_1,"\%ASA\-[session]*\-*\d\-\d+\:\s([A-Za-z\s]+)\s"),0)
-| alter src_ip = if(action contains "Built inbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s[o|O]utside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*"),0),
+| alter
+    event_id = to_integer(arrayindex(regextract(latest_1 , "ASA\-[session]*\-*\d\-(\d+)\:"),0)),
+    severity = arrayindex(regextract(latest_1, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
+    message = arrayindex(regextract(latest_1, "\%ASA\-[session]*\-*\d\-\d+[\:|\s\-]+\s(.*)"),0),
+    host_ip = arrayindex(regextract(latest_1 ,"\d{2}\:\d{2}\:\d{2}Z*\s(\d+\.\d+\.\d+\.\d+)\s"),0),
+    src_ip = if(action contains "Built inbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s[o|O]utside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*"),0),
     action contains "Built outbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\sinside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
     arrayindex(regextract(latest_1 ,"[for|from]{3,4}\s[\w\-\_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0)),
-    source_port3 = if(action contains "Built inbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s[o|O]utside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
+    source_port = if(action contains "Built inbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s[o|O]utside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
     action contains "Built outbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\sinside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),arrayindex(regextract(latest_1 ,"[for|from]{3,4}\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0)),
     dest_ip = if(action contains "Built inbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s[i|I]nside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),action contains "Built outbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\soutside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
     arrayindex(regextract(latest_1 ,"to\s[\w\-\_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0)),
@@ -65,6 +71,54 @@ filter latest_1  ~= "from\s\d+\.\d+\.\d+\.\d+\/\d+\s*to\s*\d+\.\d+\.\d+\.\d+\/\d
     source_interface = if(action contains "Built inbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s([o|O]utside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0), action contains "Built outbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s([i|I]nside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),arrayindex(regextract(latest_1 ,"[for|from]{3,4}\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0)),
     dest_interface = if(action contains "Built inbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s([i|I]nside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0), action contains "Built outbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s([o|O]utside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),arrayindex(regextract(latest_1 ,"to\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0)),
     source_username = if(action contains "Built inbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s[o|O]utside\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\(([^\)]+)\)"),0), action contains "Built outbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s[i|I]nside\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\s\(([^\)]+)\)"),0),arrayindex(regextract(latest_1 ,"[for|from]{3,4}\s[\w+\_\-]+\:\d+\.\d+\.\d+\.\d+\/\d+\(*[^\)]*\)*\s*\(([^\)]+)\)"),0)),
-    dst_username = if(action contains "Built inbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s[i|I]nside\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\s\(([^\)]+)\)"),0), action contains "Built outbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s[o|O]utside\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\(([^\)]+)\)"),0),arrayindex(regextract(latest_1 ,"to\s[\w+\_\-]+\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\s\(([^\)]+)\)"),0))
+    dst_username1 = if(action contains "Built inbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s[i|I]nside\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\s\(([^\)]+)\)"),0), action contains "Built outbound",arrayindex(regextract(latest_1 ,"[for|to]{2,3}\s[o|O]utside\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\(([^\)]+)\)"),0),arrayindex(regextract(latest_1 ,"to\s[\w+\_\-]+\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\s\(([^\)]+)\)"),0)),
+    dst_username2 = arrayindex(regextract(latest_1 ,",\suser\s([\w\_\-]+)\s"),0),
+    bytes1 = arrayindex(regextract(latest_1  ,"\d{2}\:\d{2}\sbytes\s(\d+)"),0),
+    bytes2 = arrayindex(regextract(latest_1  ,"label\slength\s(\d+)\sbytes\sexceeds"),0),
+    protocol1 = arrayindex(regextract(latest_1 ,"\d+\-\d+\:\s*[A-Za-z]*\s+[A-Z]*[a-z]+\s+([A-Z]+)\s+"),0),
+    protocol2 = arrayindex(regextract(latest_1 ,"\d+\-\d+\:\s([A-Z]{3,})\s"),0),
+    protocol3 = uppercase(arrayindex(regextract(latest_1 ,"\d+-\d+:\s([a-z]+)\sflow\sfrom"),0)),
+    protocol4 = arrayindex(regextract(latest_1 ,"for\s([A-Z]{3,})\sfrom"),0),
+    //
+    icmp_code1 = arrayindex(regextract(latest_1 ,"for\sfaddr\s\d+\.\d+\.\d+\.\d+\/(\d+)\("),0),
+    icmp_code2 = arrayindex(regextract(latest_1 ,"ICMP\scode\s(\d+)\,"),0),
+    icmp_type = arrayindex(regextract(latest_1 ,"ICMP\stype\s(\d+)"),0),
+    connection_id = arrayindex(regextract(latest_1 ,"connection\s(\d+)\sfor"),0),
+    filename = arrayindex(regextract(latest_1,",\suser\s\S+\s\S+\sfile\s(\S+)"),0)
 | alter source_username = if(source_username ~= "\d+\.\d+\.\d+\.\d+",null,source_username ),
-    dst_username = if(dst_username ~= "\d+\.\d+\.\d+\.\d+",null,dst_username )
+    dst_username1 = if(dst_username1 ~= "\d+\.\d+\.\d+\.\d+",null,dst_username1 )
+// duration
+| alter duration_string = arrayindex(regextract(latest_1 ,"[D|d]uration\:*\s+([a-z0-9\:]+)[\s|\,]"),0)
+| alter duration_split = split(duration_string ,":")
+// duration parts
+| alter duration_part_0 = arrayindex(duration_split,0),
+    duration_part_1 = arrayindex(duration_split,1),
+    duration_part_2 = arrayindex(duration_split,2)
+| alter duration_part_0_millis = if(duration_part_0 contains "h", multiply( to_number(arrayindex(regextract(duration_part_0 ,"\d+"),0)),3600000),duration_part_0 contains "m", multiply( to_number(arrayindex(regextract(duration_part_0 ,"\d+"),0)),60000) ,duration_part_0 contains "s", multiply( to_number(arrayindex(regextract(duration_part_0 ,"\d+"),0)),1000),duration_part_0 ~= "\d+" and duration_part_0 != "0", multiply(to_number(duration_part_0),3600000) ,0),
+    duration_part_1_millis = if(duration_part_1 contains "h", multiply( to_number(arrayindex(regextract(duration_part_1 ,"\d+"),0)),3600000),duration_part_1 contains "m", multiply( to_number(arrayindex(regextract(duration_part_1 ,"\d+"),0)),60000) ,duration_part_1 contains "s", multiply( to_number(arrayindex(regextract(duration_part_1 ,"\d+"),0)),1000) ,duration_part_1 ~= "\d+" and duration_part_1 != "0", multiply(to_number(duration_part_1),60000),0),
+    duration_part_2_millis = if(duration_part_2 contains "h", multiply( to_number(arrayindex(regextract(duration_part_2 ,"\d+"),0)),3600000),duration_part_2 contains "m", multiply( to_number(arrayindex(regextract(duration_part_2 ,"\d+"),0)),60000) ,duration_part_2 contains "s", multiply( to_number(arrayindex(regextract(duration_part_2 ,"\d+"),0)),1000) ,duration_part_2 ~= "\d+" and duration_part_2 != "0", multiply(to_number(duration_part_2),1000),0)
+| alter duration = add(add(duration_part_0_millis , duration_part_1_millis ),duration_part_2_millis)
+| alter bytes = coalesce(bytes1 , bytes2 ),
+    icmp_code = coalesce(icmp_code1, icmp_code2),
+    protocol = coalesce(protocol1, protocol2, protocol3, protocol4),
+    dst_username = coalesce(dst_username1, dst_username2)
+//
+| alter
+    xdm.event.original_event_type = to_string(event_id),
+    xdm.event.description = message,
+    xdm.alert.severity = severity,
+    xdm.source.ipv4 = src_ip,
+    xdm.source.port = to_number(source_port),
+    xdm.source.zone = source_interface,
+    xdm.source.sent_bytes = to_number(bytes ),
+    xdm.target.ipv4 = dest_ip,
+    xdm.target.port = to_number(dest_port),
+    xdm.target.zone = dest_interface,
+    xdm.target.user.username = dst_username ,
+    xdm.network.icmp.code = to_number(icmp_code),
+    xdm.network.icmp.type = to_number(icmp_type),
+    xdm.event.outcome_reason = action,
+    xdm.event.duration = to_number(duration),
+    xdm.observer.name = host_ip,
+    xdm.source.host.ipv4_addresses = arraycreate(host_ip),
+    xdm.event.is_completed = if(action contains "Teardown",true, false);
