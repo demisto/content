@@ -4,8 +4,8 @@ This playbook blocks malicious indicators using all integrations that are enable
 - Block Account - Generic v2
 - Block IP - Generic v3
 - Block File - Generic v2
-- Block Email - Generic
-- Block Domain - Generic
+- Block Email - Generic v2
+- Block Domain - Generic v2
 
 
 
@@ -15,12 +15,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Block IP - Generic v3
-* Block URL - Generic v2
-* Block Account - Generic v2
-* Block Email - Generic
 * Block File - Generic v2
-* Block Domain - Generic
+* Block Account - Generic v2
+* Block Email - Generic v2
+* Block URL - Generic v2
+* Block IP - Generic v3
+* Block Domain - Generic v2
 
 ### Integrations
 
