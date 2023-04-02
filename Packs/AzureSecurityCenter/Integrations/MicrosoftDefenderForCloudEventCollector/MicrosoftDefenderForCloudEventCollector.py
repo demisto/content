@@ -7,7 +7,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-VENDOR = 'micrsoft'
+VENDOR = 'microsoft'
 PRODUCT = 'defender_for_cloud'
 API_VERSION = '2022-01-01'
 DEFAULT_LIMIT = 50
