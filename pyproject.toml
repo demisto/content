@@ -7,7 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
-pandas = "^1.5.2"
+defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
 demisto-sdk = "1.11.0"
