@@ -16,11 +16,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Isolate Endpoint
-* Threat Hunting - Generic
-* Endpoint Enrichment - Generic v2.1
 * Account Enrichment - Generic v2.1
-* Block IP - Generic v2
+* Endpoint Enrichment - Generic v2.1
+* Cortex XDR - Isolate Endpoint
+* Block IP - Generic v3
+* Threat Hunting - Generic
 
 ### Integrations
 
@@ -33,8 +33,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * ad-disable-account
-* xdr-get-incident-extra-data
 * enrichIndicators
+* xdr-get-incident-extra-data
 
 ## Playbook Inputs
 
@@ -46,6 +46,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | DisableAccountAutomatically | Whether to disable the account automatically  | True | Optional |
 | BlockIPAutomatically | Whether to block the IP Address automatically  | True | Optional |
 | EnrichAutomatically | Whether to run indicators auto enrichment automatically  | True | Optional |
+| UserVerification | Possible values: True/False.<br/>Whether to provide user verification for blocking IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
 
 ## Playbook Outputs
 
@@ -56,4 +57,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex XDR - PrintNightmare Detection and Response](../doc_files/Cortex_XDR_-_PrintNightmare_Detection_and_Response.png)
+![Cortex XDR - PrintNightmare Detection and Response](../doc_files/Cortex_XDR_-_PrintNightmare_Detection_and_Response_6_5.png)
