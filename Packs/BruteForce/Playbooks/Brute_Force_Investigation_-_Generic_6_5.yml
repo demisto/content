@@ -1,7 +1,7 @@
-id: Brute Force Investigation - Generic - SANS
+id: Brute Force Investigation - Generic
 version: -1
-name: Brute Force Investigation - Generic - SANS
-description: "This playbook investigates a \"Brute Force\" incident by gathering user and IP information, and calculating the incident severity based on the gathered information and information received from the user. It then performs remediation.\nThis is done based on the phases for handling an incident as they are described in the SANS Institute â€˜Incident Handlerâ€™s Handbookâ€™ by Patrick Kral.\n\nhttps://www.sans.org/reading-room/whitepapers/incident/incident-handlers-handbook-33901\n\nThe playbook handles the following use-cases:\n\n* Brute Force IP Detected - A detection of source IPs that are exceeding a high threshold of rejected and/or invalid logins. \n* Brute Force Increase Percentage - A detection of large increase percentages in various brute force statistics over different periods of time.\n* Brute Force Potentially Compromised Accounts - A detection of accounts that have shown high amount of failed logins with one successful login.\n\nUsed Sub-playbooks:\n- IP Enrichment - Generic v2\n- Account Enrichment - Generic v2.1\n- Calculate Severity - Critical Assets v2\n- Isolate Endpoint - Generic\n- Block Indicators - Generic v2\n- SANS - Lessons Learned\n\n***Disclaimer: This playbook does not ensure compliance to SANS regulations."
+name: Brute Force Investigation - Generic
+description: "This playbook investigates a \"Brute Force\" incident by gathering user and IP information, calculating the incident severity based on the gathered information and information received from the user, and performs remediation.\n\nThe playbook handles the following use-cases:\n\n* Brute Force IP Detected - A detection of source IPs that are exceeding a high threshold of rejected and/or invalid logins. \n* Brute Force Increase Percentage - A detection of large increase percentages in various brute force statistics over different periods of time.\n* Brute Force Potentially Compromised Accounts - A detection of accounts that have shown high amount of failed logins with one successful login.\n\nUsed Sub-playbooks:\n- IP Enrichment - Generic v2\n- Account Enrichment - Generic v2.1\n- Calculate Severity - Critical Assets v2\n- Isolate Endpoint - Generic v2\n- Block Indicators - Generic v3\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -18,13 +18,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "61"
+      - "13"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 377.5,
-          "y": -1185
+          "y": -555
         }
       }
     note: false
@@ -53,7 +53,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 180
+          "y": 450
         }
       }
     note: false
@@ -125,13 +125,13 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: a6c6ce8d-c7aa-4252-8cb3-51969ab9a40d
+    taskid: 281138fb-9d8d-4a28-80e4-cdbe5d207dbd
     type: condition
     task:
-      id: a6c6ce8d-c7aa-4252-8cb3-51969ab9a40d
+      id: 281138fb-9d8d-4a28-80e4-cdbe5d207dbd
       version: -1
       name: Should the password be reset?
-      description: Answer `yes` if password should be reset. Also checks if Active Directory Query v2 is enabled.
+      description: Answer `yes` if password should be reset. Also checks if the Active Directory integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -183,7 +183,7 @@ tasks:
       {
         "position": {
           "x": -100,
-          "y": 890
+          "y": 1160
         }
       }
     note: false
@@ -218,7 +218,7 @@ tasks:
       {
         "position": {
           "x": -420,
-          "y": 1060
+          "y": 1330
         }
       }
     note: false
@@ -275,7 +275,7 @@ tasks:
       {
         "position": {
           "x": -420,
-          "y": 1250
+          "y": 1520
         }
       }
     note: false
@@ -313,7 +313,7 @@ tasks:
       {
         "position": {
           "x": -100,
-          "y": 6935
+          "y": 5965
         }
       }
     note: false
@@ -345,7 +345,7 @@ tasks:
       {
         "position": {
           "x": -100,
-          "y": 690
+          "y": 960
         }
       }
     note: false
@@ -383,7 +383,7 @@ tasks:
       {
         "position": {
           "x": 150,
-          "y": -520
+          "y": -250
         }
       }
     note: false
@@ -412,7 +412,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": -665
+          "y": -395
         }
       }
     note: false
@@ -475,7 +475,7 @@ tasks:
       {
         "position": {
           "x": 620,
-          "y": -520
+          "y": -250
         }
       }
     note: false
@@ -503,7 +503,7 @@ tasks:
       {
         "position": {
           "x": 645,
-          "y": 5095
+          "y": 4655
         }
       }
     note: false
@@ -548,7 +548,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 360
+          "y": 630
         }
       }
     note: false
@@ -558,55 +558,32 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 16f2fdb2-16dc-4ab7-8a1c-7bbce9cad2da
-    type: title
+    taskid: 95b14a0e-e7c9-433d-81fe-40fe579345ca
+    type: regular
     task:
-      id: 16f2fdb2-16dc-4ab7-8a1c-7bbce9cad2da
+      id: 95b14a0e-e7c9-433d-81fe-40fe579345ca
       version: -1
-      name: Lessons Learned
+      name: Generate investigation summary report
       description: |-
-        A script to generate investigation summary report in an automated way.
-        Can be used in the post-processing flow as well.
-      type: title
+        A script to generate the investigation summary report in an automated way.
+        The script can be used in the post-processing flow as well.
+      scriptName: GenerateInvestigationSummaryReport
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "69"
+      - "50"
+    scriptarguments:
+      incidentId: {}
+      name: {}
+      type: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -100,
-          "y": 6030
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "18":
-    id: "18"
-    taskid: 53bfefd7-13b2-45a0-8a5e-0507a8cd6db5
-    type: title
-    task:
-      id: 53bfefd7-13b2-45a0-8a5e-0507a8cd6db5
-      version: -1
-      name: Containment
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "63"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 645,
-          "y": 1960
+          "y": 5590
         }
       }
     note: false
@@ -616,10 +593,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 88be23ac-6010-43bd-809c-82f56d83b20f
+    taskid: 6e30a8f5-4bf0-434e-89f2-f128b4f58a38
     type: regular
     task:
-      id: 88be23ac-6010-43bd-809c-82f56d83b20f
+      id: 6e30a8f5-4bf0-434e-89f2-f128b4f58a38
       version: -1
       name: Active Directory - expire password
       description: Expires the password of an Active Directory user.
@@ -640,8 +617,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 365,
-          "y": 2840
+          "x": 305,
+          "y": 3000
         }
       }
     note: false
@@ -655,10 +632,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 652af55c-a6c7-4538-8c70-0c3e309f77ca
+    taskid: ab3a5708-b978-440e-84ae-07b488280685
     type: regular
     task:
-      id: 652af55c-a6c7-4538-8c70-0c3e309f77ca
+      id: ab3a5708-b978-440e-84ae-07b488280685
       version: -1
       name: Active Directory - disable account
       description: Disables an Active Directory user account.
@@ -668,7 +645,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "64"
+      - "29"
     scriptarguments:
       base-dn: {}
       username:
@@ -678,8 +655,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 365,
-          "y": 3020
+          "x": 305,
+          "y": 3190
         }
       }
     note: false
@@ -708,7 +685,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "72"
+      - "61"
     scriptarguments:
       Endpoint_id:
         complex:
@@ -723,7 +700,7 @@ tasks:
       {
         "position": {
           "x": 370,
-          "y": 2440
+          "y": 2400
         }
       }
     note: false
@@ -745,13 +722,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+      - "63"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 645,
-          "y": 3630
+          "y": 3410
         }
       }
     note: false
@@ -863,34 +840,6 @@ tasks:
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
-  "31":
-    id: "31"
-    taskid: e14ad9c1-c5aa-4bb1-8047-85e75b8ac8de
-    type: title
-    task:
-      id: e14ad9c1-c5aa-4bb1-8047-85e75b8ac8de
-      version: -1
-      name: Eradication
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "66"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 645,
-          "y": 3820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "32":
     id: "32"
     taskid: 192cbf41-d000-4661-890d-70190ffc7222
@@ -907,7 +856,7 @@ tasks:
       '#default#':
       - "33"
       "yes":
-      - "71"
+      - "64"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -972,7 +921,7 @@ tasks:
       {
         "position": {
           "x": 645,
-          "y": 4150
+          "y": 3770
         }
       }
     note: false
@@ -994,13 +943,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "67"
+      - "15"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 645,
-          "y": 4740
+          "y": 4500
         }
       }
     note: false
@@ -1024,13 +973,13 @@ tasks:
       "No":
       - "36"
       "Yes":
-      - "73"
+      - "66"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 645,
-          "y": 5290
+          "y": 4840
         }
       }
     note: false
@@ -1063,8 +1012,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1230,
-          "y": 5660
+          "x": 1250,
+          "y": 5230
         }
       }
     note: false
@@ -1092,7 +1041,7 @@ tasks:
       {
         "position": {
           "x": 645,
-          "y": 5860
+          "y": 5420
         }
       }
     note: false
@@ -1117,7 +1066,7 @@ tasks:
       {
         "position": {
           "x": -100,
-          "y": 7120
+          "y": 6150
         }
       }
     note: false
@@ -1145,7 +1094,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 1635
+          "y": 1905
         }
       }
     note: false
@@ -1155,12 +1104,12 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 6a85df27-543c-4fc3-882d-c455546080a6
+    taskid: 59e25872-bbc1-4ed5-8903-e1be00f2b18f
     type: title
     task:
-      id: 6a85df27-543c-4fc3-882d-c455546080a6
+      id: 59e25872-bbc1-4ed5-8903-e1be00f2b18f
       version: -1
-      name: Investigation
+      name: Enrich Incident Data
       type: title
       iscommand: false
       brand: ""
@@ -1173,7 +1122,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": -165
+          "y": 105
         }
       }
     note: false
@@ -1197,7 +1146,7 @@ tasks:
       '#default#':
       - "44"
       "yes":
-      - "18"
+      - "56"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1218,7 +1167,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 1790
+          "y": 2060
         }
       }
     note: false
@@ -1245,8 +1194,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 1960
+          "x": 1220,
+          "y": 2230
         }
       }
     note: false
@@ -1256,10 +1205,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 666eabcf-cf52-4081-8cf3-8d62cb16e9a9
+    taskid: df5386ff-2364-46c1-885f-54d6d6742b3b
     type: condition
     task:
-      id: 666eabcf-cf52-4081-8cf3-8d62cb16e9a9
+      id: df5386ff-2364-46c1-885f-54d6d6742b3b
       version: -1
       name: Was there a successful login?
       description: ""
@@ -1307,7 +1256,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 900
+          "y": 1170
         }
       }
     note: false
@@ -1341,7 +1290,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 710
+          "y": 980
         }
       }
     note: false
@@ -1369,7 +1318,7 @@ tasks:
       {
         "position": {
           "x": -100,
-          "y": 6750
+          "y": 5780
         }
       }
     note: false
@@ -1435,7 +1384,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 530
+          "y": 800
         }
       }
     note: false
@@ -1480,7 +1429,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": -20
+          "y": 250
         }
       }
     note: false
@@ -1508,7 +1457,7 @@ tasks:
       {
         "position": {
           "x": -100,
-          "y": 530
+          "y": 800
         }
       }
     note: false
@@ -1548,7 +1497,7 @@ tasks:
       {
         "position": {
           "x": 1150,
-          "y": 1460
+          "y": 1730
         }
       }
     note: false
@@ -1570,14 +1519,14 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "72"
+      - "65"
       "yes":
       - "22"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsString
+      - - operator: isEqualString
           left:
             value:
               complex:
@@ -1593,7 +1542,7 @@ tasks:
       {
         "position": {
           "x": 645,
-          "y": 2270
+          "y": 2230
         }
       }
     note: false
@@ -1623,7 +1572,7 @@ tasks:
       {
         "position": {
           "x": 1630,
-          "y": 1070
+          "y": 1340
         }
       }
     note: false
@@ -1631,23 +1580,358 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "58":
-    id: "58"
-    taskid: 0cdb9cb7-05ec-4376-8748-a7179ff2dbea
-    type: playbook
+  "59":
+    id: "59"
+    taskid: 48cdf688-1ef8-4558-8c5e-d72a068e9f2b
+    type: regular
     task:
-      id: 0cdb9cb7-05ec-4376-8748-a7179ff2dbea
+      id: 48cdf688-1ef8-4558-8c5e-d72a068e9f2b
       version: -1
-      name: Block Indicators - Generic v2
-      playbookName: Block Indicators - Generic v2
-      type: playbook
+      name: Set Incident
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      accountgroups:
+        complex:
+          root: ActiveDirectory
+          accessor: Users.memberOf
+      emailaddress:
+        complex:
+          root: ActiveDirectory
+          accessor: Users.mail
+      samaccountname:
+        complex:
+          root: ActiveDirectory
+          accessor: Users.sAMAccountName
+      useraccountcontrol:
+        complex:
+          root: ActiveDirectory
+          accessor: Users.userAccountControl
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: e3815d94-afa6-4c6c-8d32-d1aff297e699
+    type: condition
+    task:
+      id: e3815d94-afa6-4c6c-8d32-d1aff297e699
+      version: -1
+      name: Can incident severity be raised?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: incident.severity
+            iscontext: true
+          right:
+            value:
+              simple: "4"
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: c0624918-e90e-4dd5-8191-553ef55bcfb0
+    type: regular
+    task:
+      id: c0624918-e90e-4dd5-8191-553ef55bcfb0
+      version: -1
+      name: Set incident
+      description: Sets the incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      isolated:
+        simple: Isolated destination endpoint.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: b01b3fb9-ca53-4c0e-8041-d17506dcb603
+    type: regular
+    task:
+      id: b01b3fb9-ca53-4c0e-8041-d17506dcb603
+      version: -1
+      name: Set incident
+      description: Sets the incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      blockedaction:
+        simple: Blocked malicious indicators found in the investigation.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 4330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: aaee53ea-9162-4493-8f67-4c7b8c4fde4c
+    type: title
+    task:
+      id: aaee53ea-9162-4493-8f67-4c7b8c4fde4c
+      version: -1
+      name: Block Indicators
+      type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 645,
+          "y": 3610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: 7b169fb1-35d3-472c-844a-badd1e08b7a4
+    type: condition
+    task:
+      id: 7b169fb1-35d3-472c-844a-badd1e08b7a4
+      version: -1
+      name: Block IOCs?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
       - "33"
+      "yes":
+      - "67"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 3940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: f33ba29c-7e35-47ce-8a29-6794be8978bb
+    type: condition
+    task:
+      id: f33ba29c-7e35-47ce-8a29-6794be8978bb
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks whether the Active Directory Query v2 integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 645,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: dcacd020-fcc9-4b08-8534-522f0986a4e4
+    type: condition
+    task:
+      id: dcacd020-fcc9-4b08-8534-522f0986a4e4
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks whether the Active Directory Query v2 integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 5050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: e1366173-0ac1-43b5-8140-0973ee76f7e3
+    type: playbook
+    task:
+      id: e1366173-0ac1-43b5-8140-0973ee76f7e3
+      version: -1
+      name: Block Indicators - Generic v3
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic v2
+        - Block Domain - Generic v2
+
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
     scriptarguments:
+      AutoBlockIndicators:
+        complex:
+          root: inputs.AutoBlockIndicators
       AutoCommit:
         complex:
           root: inputs.AutoCommit
@@ -1692,12 +1976,13 @@ tasks:
                 value:
                   simple: IOCs found in investigation.Answers.3
                 iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.src
+                iscontext: true
           - operator: uniq
-      IPBlacklistMiner: {}
-      IPListName:
-        complex:
-          root: inputs.IPListName
-      LogForwarding: {}
       MD5:
         complex:
           root: File
@@ -1766,10 +2051,9 @@ tasks:
                 value:
                   simple: IOCs found in investigation.Answers.4
                 iscontext: true
-      URLBlacklistMiner: {}
-      URLListName:
+      UserVerification:
         complex:
-          root: inputs.URLListName
+          root: inputs.UserVerification
       Username:
         complex:
           root: DBotScore
@@ -1804,16 +2088,17 @@ tasks:
         complex:
           root: inputs.type
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 0
+      max: 100
     view: |-
       {
         "position": {
-          "x": 330,
-          "y": 4570
+          "x": 350,
+          "y": 4150
         }
       }
     note: false
@@ -1821,589 +2106,33 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "59":
-    id: "59"
-    taskid: 48cdf688-1ef8-4558-8c5e-d72a068e9f2b
-    type: regular
-    task:
-      id: 48cdf688-1ef8-4558-8c5e-d72a068e9f2b
-      version: -1
-      name: Set Incident
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "42"
-    scriptarguments:
-      accountgroups:
-        complex:
-          root: ActiveDirectory
-          accessor: Users.memberOf
-      emailaddress:
-        complex:
-          root: ActiveDirectory
-          accessor: Users.mail
-      samaccountname:
-        complex:
-          root: ActiveDirectory
-          accessor: Users.sAMAccountName
-      useraccountcontrol:
-        complex:
-          root: ActiveDirectory
-          accessor: Users.userAccountControl
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": -350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "60":
-    id: "60"
-    taskid: e3815d94-afa6-4c6c-8d32-d1aff297e699
-    type: condition
-    task:
-      id: e3815d94-afa6-4c6c-8d32-d1aff297e699
-      version: -1
-      name: Can incident severity be raised?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "41"
-      "yes":
-      - "54"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              simple: incident.severity
-            iscontext: true
-          right:
-            value:
-              simple: "4"
-    view: |-
-      {
-        "position": {
-          "x": 1150,
-          "y": 1260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "61":
-    id: "61"
-    taskid: c176b3e6-9f16-415a-84fe-3582d080afb2
-    type: title
-    task:
-      id: c176b3e6-9f16-415a-84fe-3582d080afb2
-      version: -1
-      name: Identification
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "62"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": -1020
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "62":
-    id: "62"
-    taskid: 4ba51448-709e-43c9-88dc-21b6012b0a72
-    type: regular
-    task:
-      id: 4ba51448-709e-43c9-88dc-21b6012b0a72
-      version: -1
-      name: Set SANS stage to Identification
-      description: Sets the SANS stage to Identification.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      isolated:
-        simple: Isolated destination endpoint.
-      sansstage:
-        simple: Identification
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": -860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "63":
-    id: "63"
-    taskid: fcf8e153-90a9-4f5a-879d-355d3df04eb3
-    type: regular
-    task:
-      id: fcf8e153-90a9-4f5a-879d-355d3df04eb3
-      version: -1
-      name: Set SANS stage to Containment
-      description: Set SANS stage to Containment
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "56"
-    scriptarguments:
-      sansstage:
-        simple: Containment
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 645,
-          "y": 2100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "64":
-    id: "64"
-    taskid: 8271bae3-120a-4620-8a69-1b5e5bbeea97
-    type: regular
-    task:
-      id: 8271bae3-120a-4620-8a69-1b5e5bbeea97
-      version: -1
-      name: Generate investigation summary report
-      description: |-
-        A script to generate the investigation summary report in an automated way.
-        The report can be used in the post-processing flow as well.
-      scriptName: GenerateInvestigationSummaryReport
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "65"
-    scriptarguments:
-      incidentId: {}
-      name: {}
-      type: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 645,
-          "y": 3270
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "65":
-    id: "65"
-    taskid: e2fc0319-5d9b-467f-899f-008899c65549
-    type: regular
-    task:
-      id: e2fc0319-5d9b-467f-899f-008899c65549
-      version: -1
-      name: Manual - system backup
-      description: ""
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "29"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 645,
-          "y": 3450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "66":
-    id: "66"
-    taskid: 0a25ea0d-af5d-4c26-8e55-a3d9cb653f16
-    type: regular
-    task:
-      id: 0a25ea0d-af5d-4c26-8e55-a3d9cb653f16
-      version: -1
-      name: Set SANS stage to Eradication
-      description: Set SANS stage to Eradication.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "32"
-    scriptarguments:
-      sansstage:
-        simple: Eradication
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 645,
-          "y": 3970
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "67":
-    id: "67"
-    taskid: 069d98a1-fbc9-4c05-80a1-e40897784288
-    type: regular
-    task:
-      id: 069d98a1-fbc9-4c05-80a1-e40897784288
-      version: -1
-      name: Set SANS stage to Recovery
-      description: Set SANS stage to Recovery.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      sansstage:
-        simple: Recovery
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 645,
-          "y": 4910
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "68":
-    id: "68"
-    taskid: 526f3b03-df26-479f-8690-51c7c35f272b
-    type: regular
-    task:
-      id: 526f3b03-df26-479f-8690-51c7c35f272b
-      version: -1
-      name: Generate investigation summary report
-      description: |-
-        A script to generate the investigation summary report in an automated way.
-        The report can be used in the post-processing flow as well.
-      scriptName: GenerateInvestigationSummaryReport
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "50"
-    scriptarguments:
-      incidentId: {}
-      name: {}
-      type: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -100,
-          "y": 6570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "69":
-    id: "69"
-    taskid: 23d6a993-26a0-437c-8e2e-98fd7a98eba3
-    type: regular
-    task:
-      id: 23d6a993-26a0-437c-8e2e-98fd7a98eba3
-      version: -1
-      name: Set SANS stage to Lessons Learned
-      description: Set SANS stage to Lessons Learned.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "70"
-    scriptarguments:
-      sansstage:
-        simple: Lessons Learned
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -100,
-          "y": 6180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "70":
-    id: "70"
-    taskid: 9c5fcc46-a866-4db1-86d5-41ae5e0a3254
-    type: playbook
-    task:
-      id: 9c5fcc46-a866-4db1-86d5-41ae5e0a3254
-      version: -1
-      name: SANS - Lessons Learned
-      playbookName: SANS - Lessons Learned
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "68"
-    scriptarguments:
-      DataCollection:
-        complex:
-          root: inputs.DataCollection
-      Email:
-        complex:
-          root: inputs.Email
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": -100,
-          "y": 6370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "71":
-    id: "71"
-    taskid: f3465b30-8164-4b22-80d8-395892c92a9c
-    type: condition
-    task:
-      id: f3465b30-8164-4b22-80d8-395892c92a9c
-      version: -1
-      name: Block IOCs?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "33"
-      "yes":
-      - "58"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 330,
-          "y": 4320
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "72":
-    id: "72"
-    taskid: fa8d3291-be53-4f18-8636-84b807db1564
-    type: condition
-    task:
-      id: fa8d3291-be53-4f18-8636-84b807db1564
-      version: -1
-      name: Is Active Directory enabled?
-      description: Checks whether the Active Directory Query v2 integration is enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "64"
-      "yes":
-      - "19"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Active Directory Query v2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 645,
-          "y": 2630
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "73":
-    id: "73"
-    taskid: 9f3767c8-2d9c-4136-8d0a-0f2f49b24670
-    type: condition
-    task:
-      id: 9f3767c8-2d9c-4136-8d0a-0f2f49b24670
-      version: -1
-      name: Is Active Directory enabled?
-      description: Checks whether the Active Directory Query v2 integration is enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "36"
-      "yes":
-      - "35"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Active Directory Query v2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1000,
-          "y": 5475
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "16_51_#default#": 0.44,
       "16_53_yes": 0.47,
-      "32_33_#default#": 0.27,
+      "32_33_#default#": 0.32,
       "34_36_No": 0.51,
-      "34_73_Yes": 0.33,
       "46_41_no": 0.33,
       "46_60_yes": 0.53,
       "52_2_yes": 0.59,
       "56_22_yes": 0.59,
       "57_41_no": 0.19,
-      "6_17_#default#": 0.1,
-      "71_58_yes": 0.55,
-      "72_19_yes": 0.55,
-      "73_35_yes": 0.76,
-      "73_36_#default#": 0.21
+      "64_67_yes": 0.59,
+      "65_29_#default#": 0.2,
+      "66_35_yes": 0.7,
+      "66_36_#default#": 0.22,
+      "6_17_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 8370,
+        "height": 6770,
         "width": 2430,
         "x": -420,
-        "y": -1185
+        "y": -555
       }
     }
   }
@@ -2415,6 +2144,14 @@ inputs:
       accessor: username
   required: true
   description: Username of the user who is suspected of the activity.
+  playbookInputQuery:
+- key: src
+  value:
+    complex:
+      root: incident
+      accessor: src
+  required: true
+  description: Source endpoint that triggered the incident.
   playbookInputQuery:
 - key: traps_endpoint_id
   value:
@@ -2428,18 +2165,18 @@ inputs:
   value:
     simple: "10"
   required: false
-  description: The threshold for number of logins, from which the investigation and remediation will start automatically without waiting for the user's reply. Default is 10.
+  description: The threshold for number of logins, from which the investigation and remediation will start automatically without waiting for the user"s reply. Default is 10.
   playbookInputQuery:
 - key: severity_threshold
   value:
     simple: "4"
   required: false
-  description: "The threshold for the severity value from which an automatic remediation takes place. \nSpecify the severity number (default is Critical):\n0 - Unknown\n0.5 - Informational\n1 - Low\n2 - Medium\n3 - High\n4 - Critical"
+  description: 'The threshold for the severity value from which an automatic remediation takes place. Specify the severity number (default is Critical): 0 - Unknown, 0.5 - Informational. 1 - Low, 2 - Medium, 3 - High, 4 - Critical'
   playbookInputQuery:
 - key: internal_range
   value: {}
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: ''172.16.0.0/12,10.0.0.0/8,192.168.0.0/16'' (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
   playbookInputQuery:
 - key: critical_users
   value: {}
@@ -2472,14 +2209,6 @@ inputs:
     This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
     Specify the Static Address Group name for IP handling.
   playbookInputQuery:
-- key: IPListName
-  value:
-    simple: "Demisto Remediation - IP EDL"
-  required: false
-  description: |-
-    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.
-    Specify the EDL name for IP handling.
-  playbookInputQuery:
 - key: DAG
   value: {}
   required: false
@@ -2494,16 +2223,9 @@ inputs:
     This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
     Specify the Static Address Group name for IP handling.
   playbookInputQuery:
-- key: URLListName
-  value:
-    simple: Demisto Remediation - URL EDL
-  required: false
-  description: |-
-    URL list from the instance context with which to override the remote file.
-  playbookInputQuery:
 - key: CustomURLCategory
   value:
-    simple: Demisto Remediation - Malicious URLs
+    simple: XSOAR Remediation - Malicious URLs
   required: false
   description: Custom URL Category name.
   playbookInputQuery:
@@ -2530,19 +2252,24 @@ inputs:
     * The IP address of the web server on which the files are stored.
     * The web server IP address is configured in the integration instance.
   playbookInputQuery:
-- key: DataCollection
-  value: {}
+- key: UserVerification
+  value:
+    simple: "False"
+  required: false
+  description: "Possible values: True/False. \nWhether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  playbookInputQuery:
+- key: AutoBlockIndicators
+  value:
+    simple: "True"
   required: false
   description: |-
-    Use a data collection task to answer lessons learned questions based on SANS. Specify 'True' to automatically send the communication task, and 'False'  to prevent it.
-  playbookInputQuery:
-- key: Email
-  value: {}
-  required: false
-  description: Email address to which to send the questions.
+    Possible values: True/False.  Default: True.
+    Should the given indicators be automatically blocked, or should the user be given the option to choose?
+
+    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
+    If set to True - the user will be prompted to select which indicators to block.
   playbookInputQuery:
 outputs: []
-fromversion: 6.0.0
-toversion: 6.4.9
+fromversion: 6.5.0
 tests:
 - No test
