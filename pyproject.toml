@@ -17,7 +17,7 @@ pre-commit = "^2.20.0"
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
 flake8 = "^4.0.1"
-xxxx
+
 [tool.poetry.group.testing.dependencies]
 pytest = "^7.1.2"
 requests-mock = "^1.9.3"
