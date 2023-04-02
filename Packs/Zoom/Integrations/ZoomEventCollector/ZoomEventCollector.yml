@@ -8,7 +8,7 @@ commonfields:
 configuration:
 - display: Server URL (e.g., 'https://api.zoom.us/v2/')
   name: url
-  required: false
+  required: true
   type: 0
   defaultvalue: "https://api.zoom.us/v2/"
   section: Connect
@@ -26,7 +26,7 @@ configuration:
 - defaultvalue: 3 days
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days) - within the last six months
   name: first_fetch
-  required: true
+  required: false
   type: 0
   section: Collect
 - display: Trust any certificate (not secure)
