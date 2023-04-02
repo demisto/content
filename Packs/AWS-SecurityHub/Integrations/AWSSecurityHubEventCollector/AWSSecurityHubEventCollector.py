@@ -16,6 +16,37 @@ TIME_FIELD = 'CreatedAt'
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_FIRST_FETCH = '3 days'
 DEFAULT_MAX_RESULTS = 1000
+API_MAX_PAGE_SIZE = 100  # The API only allows a maximum of 100 results per request. Using more raises an error.
+
+
+def generate_last_run(events: list[dict]) -> dict:
+    """
+    Generate the last run object using events data.
+
+    Args:
+        events (list[dict]): List of events to generate the last run object from.
+
+    Note:
+        Since the time filters seem to be equal or greater than (which results in duplicate from the last run),
+        we add findings that are equal to 'last_finding_update_time' and filter them out in the next fetch.
+
+
+    Returns:
+        dict: Last run object.
+    """
+    ignore_list: list[str] = []
+    last_update_date = events[-1].get(TIME_FIELD)
+
+    for event in events:
+        event['_time'] = event[TIME_FIELD]
+
+        if event[TIME_FIELD] == last_update_date:
+            ignore_list.append(event['Id'])
+
+    return {
+        'last_update_date': last_update_date,
+        'last_update_date_finding_ids': ignore_list,
+    }
 
 
 def get_events(client: boto3.client, start_time: dt.datetime | None = None,
@@ -51,9 +82,7 @@ def get_events(client: boto3.client, start_time: dt.datetime | None = None,
         }]
 
     if id_ignore_list:
-        ignore_filters = []
-        for event_id in id_ignore_list:
-            ignore_filters.append({'Value': event_id, 'Comparison': 'NOT_EQUALS'})
+        ignore_filters = [{'Value': event_id, 'Comparison': 'NOT_EQUALS'} for event_id in id_ignore_list]
 
         filters['Id'] = ignore_filters
 
@@ -65,12 +94,11 @@ def get_events(client: boto3.client, start_time: dt.datetime | None = None,
     count = 0
 
     while True:
-        # The API only allows a maximum of 100 results per request. Using more raises an error.
-        if limit and limit - count < 100:
+        if limit and limit - count < API_MAX_PAGE_SIZE:
             kwargs['MaxResults'] = limit - count
 
         else:
-            kwargs['MaxResults'] = 100
+            kwargs['MaxResults'] = API_MAX_PAGE_SIZE
 
         response = client.get_findings(**kwargs)
         result = response.get('Findings', [])
@@ -116,25 +144,10 @@ def fetch_events(client: boto3.client, last_run: dict,
         error = e
 
     # --- Set next_run data ---
-    # Since the time filters seem to be equal or greater than (which results in duplicate from the last run),
-    # we add findings that are equal to 'last_finding_update_time' and filter them out in the next fetch.
     if events:
-        last_update_date = events[-1].get(TIME_FIELD)
-        demisto.info(f'Fetched {len(events)} findings.\nUpdate time of last finding: {last_update_date}.')
-
-        ignore_list: list[str] = []
-        last_update_date = events[-1].get(TIME_FIELD)
-
-        for event in events:
-            event['_time'] = event[TIME_FIELD]
-
-            if event[TIME_FIELD] == last_update_date:
-                ignore_list.append(event['Id'])
-
-        next_run = {
-            'last_update_date': last_update_date,
-            'last_update_date_finding_ids': ignore_list,
-        }
+        demisto.info(f'Fetched {len(events)} findings.')
+        next_run = generate_last_run(events)
+        demisto.info(f'Last run data updated to: {next_run}.')
 
     else:
         demisto.info('No new findings were found.')
@@ -187,14 +200,14 @@ def main():
     timeout = params.get('timeout')
     retries = params.get('retries', 5)
 
-    limit: int = arg_to_number(params.get('max_fetch', DEFAULT_MAX_RESULTS))  # type: ignore
+    limit = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_RESULTS
 
     # How much time before the first fetch to retrieve events
-    first_fetch_time: dt.datetime = arg_to_datetime(
+    first_fetch_time = arg_to_datetime(
         arg=params.get('first_fetch', DEFAULT_FIRST_FETCH),
         arg_name='First fetch time',
         required=True
-    )   # type: ignore
+    )
 
     try:
         validate_params(
@@ -235,7 +248,7 @@ def main():
 
         elif command == 'aws-securityhub-get-events':
             should_push_events = argToBoolean(args.get('should_push_events', False))
-            command_limit: int = arg_to_number(args.get('limit', limit))  # type: ignore
+            command_limit = arg_to_number(args.get('limit')) or limit
             return_results(
                 get_events_command(client=client, should_push_events=should_push_events, limit=command_limit))
 
