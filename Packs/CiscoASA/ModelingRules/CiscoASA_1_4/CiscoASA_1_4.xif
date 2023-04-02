@@ -54,7 +54,8 @@ alter
     bytes3  = arrayindex(regextract(_raw_log ,"packet\s([0-9]+)\sbytes"),0),
     bytes4  = arrayindex(regextract(_raw_log ,"size\s\=\s([0-9]+)\sbytes"),0),
     bytes5 = arrayindex(regextract(_raw_log ,"\,\sBytes\:\s([0-9]+)"),0)
-| alter sent_bytes = to_integer(coalesce(bytes1 , bytes2 , bytes3 , bytes4,bytes5 ))
+| alter sent_bytes = to_integer(coalesce(bytes1 , bytes2 , bytes3 , bytes4,bytes5 )),
+    icmp_code = arrayindex(regextract(_raw_log ,"for\sfaddr\s\d+\.\d+\.\d+\.\d+\/(\d+)\("),0)
 // ------------------------------ create source/dest ip/port/interface part ---------------------------------
 //option 1
 // <source_ip>/<source_port> to <dest_ip>/<dest_port>
@@ -66,28 +67,30 @@ alter
 //option 2
 // from|for <source_interface>:<source_ip>/<source_port> to <dest_interface>:<dest_ip>:<dest_port>
 | alter
-    source_ip2 = arrayindex(regextract(_raw_log,"\w+\s*[a-zA-Z0-9-_]+\:\s*(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\/*\d*\s*to\s*"),0),
-    source_port2 = arrayindex(regextract(_raw_log,"\w+\s*[a-zA-Z0-9-_]+\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)\s*to\s*"),0),
-    dest_ip2 = arrayindex(regextract(_raw_log,"[^\)]\sto\s*[a-zA-Z0-9-_]+\:(\d+\.\d+\.\d+\.\d+)\/*[a-zA-Z0-9]+"),0), // same on option 2,3,4
-    dest_port2 = arrayindex(regextract(_raw_log,"[^\)]\sto\s*[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/+([a-zA-Z0-9]+)"),0),// same on option 2,3,4
-    source_interface2 = arrayindex(regextract(_raw_log,"([a-zA-Z0-9-_]+)\:\s*\d+\.\d+\.\d+\.\d+\/\d+\s*to"),0),
-    dest_interface2 = arrayindex(regextract(_raw_log,"\d+\s*to\s*([a-zA-Z0-9-_]+)\:\d+\.\d+\.\d+\.\d+\/+[a-zA-Z0-9]+"),0)// same on option 2,3,4
+    source_ip2 = arrayindex(regextract(_raw_log,"\w+\s*[a-zA-Z0-9-_]+\:\s*(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\/*\d*\(*[^\)]*\)*\s*to\s*"),0),
+    source_port2 = arrayindex(regextract(_raw_log,"\w+\s*[a-zA-Z0-9-_]+\:\s*\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/*(\d*)\(*[^\)]*\)*\s*to\s*"),0),
+    source_user_name2 = arrayindex(regextract(_raw_log,"\w+\s*[a-zA-Z0-9-_]+\:\s*\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d+\(([^\)]+)\)\sto\s"),0),
+    dest_ip2 = arrayindex(regextract(_raw_log,"[\d+|\)]\sto\s*[a-zA-Z0-9-_]+\:(\d+\.\d+\.\d+\.\d+)\/*[\w0-9]+"),0),
+    dest_port2 = arrayindex(regextract(_raw_log,"[\d+|\)]\sto\s*[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/*([\w0-9]+)"),0),
+    source_interface2 = arrayindex(regextract(_raw_log,"\w+\s*([a-zA-Z0-9-_]+)\:\s*\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/*\d*\(*[^\)]*\)*\s*to\s*"),0),
+    dest_interface2 = arrayindex(regextract(_raw_log,"[\d+|\)]\sto\s*([a-zA-Z0-9-_]+)\:\d+\.\d+\.\d+\.\d+\/*[\w0-9]+"),0)
 //option 3
 // for <interface>:<source_ip>/<source_port> (<mapped_ip>/<mapped_port>) to <dest_ip>/<dest_port>
-// dest_ip, dest_port, dest_interface on option 3 is the same as option 2,4,5
 | alter
-    source_ip3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*"),0),
+    source_ip3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[o|O]utside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*"),0),
     action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
     arrayindex(regextract(_raw_log ,"for\s[\w\-\_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+\s+to"),0)),
-    source_port3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
+    source_port3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[o|O]utside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
     action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),arrayindex(regextract(_raw_log ,"for\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)\s+to"),0)),
-    dest_ip3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s"),0),action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s"),0),
+    dest_ip3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[i|I]nside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s"),0),action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s"),0),
     arrayindex(regextract(_raw_log ,"to\s[\w\-\_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0)),
-dest_port3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:\d+\.\d+\.\d+\.\d+\/(\d+)\s"),0),
+dest_port3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[i|I]nside\:\d+\.\d+\.\d+\.\d+\/(\d+)\s"),0),
     action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:\d+\.\d+\.\d+\.\d+\/(\d+)\s"),0),
     arrayindex(regextract(_raw_log ,"to\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0)),
-    source_interface3 = if(action contains "Built inbound","outside", action contains "Built outbound","inside",null),
-    dest_interface3 = if(action contains "Built inbound","inside", action contains "Built outbound","outside",null)
+    source_interface3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s([o|O]utside)\:\d+\.\d+\.\d+\.\d+\/\d+\s*"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s([i|I]nside)\:\d+\.\d+\.\d+\.\d+\/\d+\s*"),0),null),
+    dest_interface3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s([i|I]nside)\:\d+\.\d+\.\d+\.\d+\/\d+\s*"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s([o|O]utside)\:\d+\.\d+\.\d+\.\d+\/\d+\s*"),0),null),
+    source_user_name3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[o|O]utside\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\(([^\)]+)\)"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[i|I]nside\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\s\(([^\)]+)\)"),0),null),
+    dest_user_name3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[i|I]nside\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\s\(([^\)]+)\)"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[o|O]utside\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\(([^\)]+)\)"),0),null)
 //option 4
 //from <source_ip>/<source_port> to <interface>:<source_ip>/<source_port>
 | alter
@@ -112,7 +115,8 @@ dest_port3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,
     source_ip7 = arrayindex(regextract(_raw_log,"src\s*(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
     source_port7 = arrayindex(regextract(_raw_log,"src\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
     dest_ip7 = arrayindex(regextract(_raw_log,"dst\s*(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
-    dest_port7 = arrayindex(regextract(_raw_log,"dst\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0)
+    dest_port7 = arrayindex(regextract(_raw_log,"dst\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
+    src_user_name7 = arrayindex(regextract(_raw_log,"icmp\ssrc\s[O|o]utside\:\d+\.\d+\.\d+\.\d+\(([^\)]+)\)"),0)
 // option 8
 // from <source_ip> to <dest_ip>
 | alter source_ip8 = arrayindex(regextract(_raw_log ,"\sfrom\s(\d+\.\d+\.\d+\.\d+)\sto\s\d+\.\d+\.\d+\.\d+\s"),0)
@@ -145,9 +149,13 @@ dest_port3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,
     dest_ip14 = arrayindex(regextract(_raw_log ,"dst\s[\w\-\_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
     dest_port14 = arrayindex(regextract(_raw_log ,"dst\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
     dest_interface14 = arrayindex(regextract(_raw_log ,"dst\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0)
+// option 15
+// faddr <source_ip>/<icmp_type>(<source_user_name>)
+| alter source_ip15 = arrayindex(regextract(_raw_log ,"for\sfaddr\s(\d+\.\d+\.\d+\.\d+)\/\d\([^\)]+\)"),0),
+    source_user_name15 = arrayindex(regextract(_raw_log ,"for faddr \d+\.\d+\.\d+\.\d+\/\d+\(([^\)]+)\)"),0)
 // merge the fields
 | alter
-    source_ip = coalesce(source_ip1, source_ip2, source_ip3, source_ip4, source_ip5, source_ip6, source_ip7, source_ip8, source_ip9, source_ip10, source_ip11, source_ip12, source_ip13,source_ip14),
+    source_ip = coalesce(source_ip1, source_ip2, source_ip3, source_ip4, source_ip5, source_ip6, source_ip7, source_ip8, source_ip9, source_ip10, source_ip11, source_ip12, source_ip13,source_ip14,source_ip15),
     source_port = coalesce(source_port1, source_port2, source_port3, source_port4, source_port5, source_port7, source_port14),
     source_interface = coalesce(source_interface2, source_interface3,source_interface14),
     dest_ip = coalesce(dest_ip1, dest_ip2, dest_ip3, dest_ip5, dest_ip6, dest_ip7, dest_ip8, dest_ip9, dest_ip10, dest_ip11, dest_ip12, dest_ip13,dest_ip14),
@@ -166,7 +174,9 @@ dest_port3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,
     xdm.target.ipv4 = dest_ip,
     xdm.target.port = to_number(dest_port),
     xdm.target.zone = dest_interface,
-    xdm.source.user.username = user_name,
+    xdm.source.user.username = coalesce(user_name, source_user_name2, source_user_name3, src_user_name7, source_user_name15),
+    xdm.target.user.username = dest_user_name3,
+    xdm.network.icmp.code = to_number(icmp_code),
     xdm.event.outcome_reason = action,
     xdm.event.duration = to_number(duration),
     xdm.observer.name = hostname,
