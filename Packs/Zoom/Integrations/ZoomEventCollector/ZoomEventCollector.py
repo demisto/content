@@ -168,7 +168,7 @@ class Client(BaseClient):
                 params['next_page_token'] = next_page_token
                 if start_date.month == end_date.month:
                     first_page = False
-            demisto.debug(f'Sending HTTP request to {BASE_URL}/report/{log_type} with params: {params}')
+            demisto.debug(f'Sending HTTP request to /report/{log_type} with params: {params}')
             response = self.error_handled_http_request(
                 method='GET',
                 url_suffix=f'report/{log_type}',
