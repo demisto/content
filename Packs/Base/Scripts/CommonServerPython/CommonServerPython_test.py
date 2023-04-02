@@ -1794,7 +1794,7 @@ class TestCommandResults:
     def test_outputs_with_period_outputs_prefix(self):
         """
         Given
-        - outputs as a period.
+        - outputs prefix as a period.
 
         When
         - Returns results.
