@@ -8,7 +8,27 @@ alter xdm.alert.description = details,
     xdm.target.cloud.provider = cloud_provider,
     xdm.alert.subcategory = category,
     xdm.source.user.user_type = if(cloud_account_type = "Regular", XDM_CONST.USER_TYPE_REGULAR, to_string(cloud_account_type)),
-    xdm.event.type = type_string;
+    xdm.event.type = type_string,
+    mitre_category = json_extract_scalar(data, "$.mitre_category")
+| alter xdm.alert.mitre_tactics = arraycreate(if(mitre_category="initial access", XDM_CONST.MITRE_TACTIC_INITIAL_ACCESS
+    ,mitre_category="execution",XDM_CONST.MITRE_TACTIC_EXECUTION
+    ,mitre_category="persistence",XDM_CONST.MITRE_TACTIC_PERSISTENCE
+    ,mitre_category="privilege escalation",XDM_CONST.MITRE_TACTIC_PRIVILEGE_ESCALATION
+    ,mitre_category="defense evasion",XDM_CONST.MITRE_TACTIC_DEFENSE_EVASION
+    ,mitre_category="credential Access",XDM_CONST.MITRE_TACTIC_CREDENTIAL_ACCESS
+    ,mitre_category="discovery", XDM_CONST.MITRE_TACTIC_DISCOVERY
+    ,mitre_category="lateral movement",XDM_CONST.MITRE_TACTIC_LATERAL_MOVEMENT
+    ,mitre_category="collection", XDM_CONST.MITRE_TACTIC_COLLECTION
+    ,mitre_category="exfiltration", XDM_CONST.MITRE_TACTIC_EXFILTRATION
+    ,mitre_category="impact",XDM_CONST.MITRE_TACTIC_IMPACT ,to_string(mitre_category))),
+    mitre_technique = json_extract_scalar(data, "$.mitre_technique.0")
+| alter xdm.alert.mitre_techniques = regextract(mitre_technique , "\(([^\)]+)\)"),
+    xdm.source.user.identifier = arrayindex(regextract(account_name , "\(([^\)]+)\)"), 0),
+    xdm.target.cloud.region = json_extract_scalar(model, "$.data.Inventory.Region"),
+    userType = cloud_account_type
+| alter xdm.source.user.user_type = if(userType = "Regular", XDM_CONST.USER_TYPE_REGULAR, to_string(userType)),
+    str_duration = arrayindex(regextract(json_extract_scalar(model, "$.data.GcpPubSubSubscription.MessageRetentionDuration"), "\d+"), 0)
+| alter xdm.event.duration = to_number(multiply(to_number(str_duration), 1000));
 
 filter cloud_provider = "gcp"
 | alter xdm.network.tls.server_certificate.issuer = json_extract_scalar(model, "$.data.GcpCertificate.IssuerName"),

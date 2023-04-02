@@ -31,17 +31,14 @@ class Client(BaseClient):
             Returns:
                 A dictionary with the alerts details.
         """
-        params = {}
+        params = {
+            'limit': max_fetch,
+            'dsl_filter': "{\n\"filter\":\n[\n{\n\"field\": \"state.created_at\",\n\"range\": {\n\""
+                          "gt\": \"" + last_fetch + "\"\n}\n}\n],\n\"sort\":\n[\n{\"field\":"
+                                                    "\"state.created_at\",\n\"order\":\"asc\"\n}\n]}"
+        }
         if next_page_token:
             params['next_page_token'] = next_page_token
-            comparative_word = "gte"
-        else:
-            comparative_word = "gt"
-        params['dsl_filter'] = "{\n\"filter\":\n[\n{\n\"field\": \"state.created_at\",\n\"range\": {\n\"" + \
-                               comparative_word + "\": \"" + last_fetch + "\"\n}\n}\n],\n\"sort\":\n[\n{\"field\":" \
-                                                                          "\"state.created_at\",\n\"order\":\"asc" \
-                                                                          "\"\n}\n]}"
-        params['limit'] = str(max_fetch)
 
         demisto.info(f'In get_alerts request {params=}')
         return self._http_request(method='GET', url_suffix='/query/alerts', params=params)
@@ -148,7 +145,6 @@ def main() -> None:
             return_results(test_module(client, last_fetch))
         elif command in ('fetch-events', 'orca-security-get-events'):
             alerts, next_page_token = get_alerts(client, max_fetch, last_fetch, next_page_token)
-            # alerts = add_time_key_to_alerts(alerts)
 
             if command == 'fetch-events':
                 should_push_events = True
@@ -158,7 +154,6 @@ def main() -> None:
                 if next_page_token:
                     current_last_run['lastRun'] = last_fetch
                 else:
-                    # current_last_run['lastRun'] = alerts[-1].get('_time') or last_fetch
                     last_updated = arg_to_datetime(arg=alerts[-1].get('state', {}).get('created_at')) if alerts else None
                     current_last_run['lastRun'] = last_updated.strftime(DATE_FORMAT) if last_updated else last_fetch
 
@@ -175,6 +170,7 @@ def main() -> None:
                 ))
 
             if should_push_events:
+                alerts = add_time_key_to_alerts(alerts)
                 demisto.debug(f'before send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}')
                 send_events_to_xsiam(alerts, VENDOR, PRODUCT)
                 demisto.debug(f'after send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}')
