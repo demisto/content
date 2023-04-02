@@ -13,7 +13,7 @@ This integration was integrated and tested with version xx of Microsoft Defender
     | ID |  | True |
     | Token |  | True |
     | Key |  | True |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | Subscription ID to use |  | True |
     | Trust any certificate (not secure) |  | False |
@@ -23,7 +23,6 @@ This integration was integrated and tested with version xx of Microsoft Defender
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ms-defender-for-cloud-get-events
@@ -39,15 +38,15 @@ Lists alerts for the subscription according to the specified filters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to True to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of results to return. | Optional | 
+| should_push_events | Set this argument to True to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum number of results to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftDefenderForCloud.Alert.AlertDisplayName | string | The display name of the alert. | 
-| MicrosoftDefenderForCloud.Alert.CompromisedEntity | string | The entity on which the incident occurred. | 
-| MicrosoftDefenderForCloud.Alert.DetectedTimeUtc | date | The time the vendor detected the incident. | 
-| MicrosoftDefenderForCloud.Alert.ReportedSeverity | string | The estimated severity of this alert. | 
-| MicrosoftDefenderForCloud.Alert.ID | string | The alert ID. | 
+| MicrosoftDefenderForCloud.Alert.AlertDisplayName | string | The display name of the alert. |
+| MicrosoftDefenderForCloud.Alert.CompromisedEntity | string | The entity on which the incident occurred. |
+| MicrosoftDefenderForCloud.Alert.DetectedTimeUtc | date | The time the vendor detected the incident. |
+| MicrosoftDefenderForCloud.Alert.ReportedSeverity | string | The estimated severity of this alert. |
+| MicrosoftDefenderForCloud.Alert.ID | string | The alert ID. |
