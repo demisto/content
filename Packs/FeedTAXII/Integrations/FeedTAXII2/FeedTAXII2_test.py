@@ -145,6 +145,7 @@ def test_get_collections_function():
     assert result.outputs[0] == {"Name": "first name", "ID": "first id"}
     assert result.outputs[1] == {"Name": "second name", "ID": "second id"}
 
+
 @pytest.mark.parametrize('response, expected_md_results',
                          [([{'value': '1.1.1.1', 'type': 'IP'}, {'value': 'google.com', 'type': 'Domain'}],
                           'Found 2 results:\n|value|type|\n|---|---|\n| 1.1.1.1 | IP |\n| google.com | Domain |\n'),
@@ -186,6 +187,7 @@ def test_get_indicators_command(mocker, response, expected_md_results):
     outputs = results.outputs
     assert md == expected_md_results
     assert outputs == response
+
 
 class TestHelperFunctions:
     def test_try_parse_integer(self):
