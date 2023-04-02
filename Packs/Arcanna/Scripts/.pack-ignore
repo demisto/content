@@ -1,0 +1,6 @@
+[file:ArcannaFeedbackPostProcessingScript.yml]
+ignore=BA124
+
+[file:PrepareArcannaRawJson.yml]
+ignore=BA124
+

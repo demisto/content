@@ -743,14 +743,19 @@ class Client(BaseClient):
                 raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
 
             if 'error' in json_res:
-                message = json_res.get('error', {}).get('message')
-                details = json_res.get('error', {}).get('detail')
-                if message == 'No Record found':
-                    return {'result': []}  # Return an empty results array
+                error = json_res.get('error', {})
                 if res.status_code == 401:
                     demisto.debug(f'Got status code 401 - {json_res}. Retrying ...')
                 else:
-                    raise Exception(f'ServiceNow Error: {message}, details: {details}')
+                    if isinstance(error, dict):
+                        message = json_res.get('error', {}).get('message')
+                        details = json_res.get('error', {}).get('detail')
+                        if message == 'No Record found':
+                            return {'result': []}  # Return an empty results array
+                        else:
+                            raise Exception(f'ServiceNow Error: {message}, details: {details}')
+                    else:
+                        raise Exception(f'ServiceNow Error: {error}')
 
             if res.status_code < 200 or res.status_code >= 300:
                 if res.status_code != 401 or num_of_tries == (max_retries - 1):
