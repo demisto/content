@@ -52,6 +52,7 @@ QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 FETCH_DEFAULT_TIME = '1 day'
 MAX_INCIDENTS_TO_FETCH = 100
 FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
+GET_LOG_JOB_ID_MAX_RETRIES = 10
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -13055,7 +13056,20 @@ def get_query_entries_by_id_request(job_id: str) -> Dict[str, Any]:
         Dict[str,Any]: a dictionary of the raw entries linked to the Job ID
     """
     params = assign_params(key=API_KEY, type='log', action='get', job_id=job_id)
-    return http_request(URL, 'GET', params=params)
+    
+    # if the job has not finished, wait for 1 second and try again (until success or max retries)
+    for try_num in range(1, GET_LOG_JOB_ID_MAX_RETRIES + 1):
+        response = http_request(URL, 'GET', params=params)
+        status = response.get('response', {}).get('result', {}).get('job', {}).get('status', '')
+        demisto.debug(f'Job ID {job_id}, response status: {status}')
+        demisto.debug(f'raw response: {response}')
+        if status == 'FIN':
+            return response
+        else:
+            demisto.debug(f'Attempt number: {try_num}. Job not completed, Retrying in 1 second...')
+            time.sleep(1) # due to short job life, saving the unfinished job id's to the context to query in the next fetch cycle is not a valid solution.
+    demisto.debug(f'Maximum attempt number: {try_num} has reached. Job ID {job_id} might be not completed which could result in missing incidents.')
+    return {}
 
 
 def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[Any, Any]]:
@@ -13074,7 +13088,7 @@ def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[An
     job_id = get_query_by_job_id_request(log_type, query, max_fetch)
     demisto.debug(f'{job_id=}')
 
-    # second http request: send request with job id, valid response will contain a dictionary of entries.
+    # second http request: send request with job id, valid response will contain a dictionary of entries. 
     query_entries = get_query_entries_by_id_request(job_id)
 
     # extract all entries from response

@@ -236,6 +236,20 @@ def iterable_to_str(iterable: Iterable, delimiter: str = '\n') -> str:
     return str_res
 
 
+def log_iocs_file_data(formatted_indicators: str, max_length: int = 100) -> None:
+    """Prints a debug log of the first `max_length` characters in the formatted indicators data.
+
+    Args:
+        formatted_indicators (str): The IOCs formatted data.
+        max_length (int, optional): max # of chars to print. Defaults to 100.
+    """
+    if formatted_indicators:
+        truncated_data = formatted_indicators[:max_length]
+        demisto.debug(f"Formatted IOC data (first {max_length} characters):\n{truncated_data}")
+    else:
+        demisto.debug("No data from IOC search.")
+
+
 def create_new_edl(request_args: RequestArguments) -> str:
     """
     Gets indicators from XSOAR server using IndicatorsSearcher and formats them
@@ -252,6 +266,7 @@ def create_new_edl(request_args: RequestArguments) -> str:
         size=PAGE_SIZE,
         limit=limit
     )
+    demisto.debug(f"Creating a new EDL file in {request_args.out_format} format")
     formatted_indicators = ''
     if request_args.out_format == FORMAT_TEXT:
         if request_args.drop_invalids or request_args.collapse_ips != "Don't Collapse":
@@ -274,6 +289,7 @@ def create_new_edl(request_args: RequestArguments) -> str:
         new_iocs_file.seek(0)
         formatted_indicators = new_iocs_file.read()
     new_iocs_file.close()
+    log_iocs_file_data(formatted_indicators)
     return formatted_indicators
 
 
@@ -337,6 +353,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
     except Exception as e:
         demisto.error(f'Error parsing the following indicator: {ioc.get("value")}\n{e}')
 
+    demisto.debug(f"Completed IOC search & format, found {ioc_counter} IOCs.")
     if request_args.out_format == FORMAT_JSON:
         f.write(']')
     elif request_args.out_format == FORMAT_PROXYSG:
@@ -755,6 +772,7 @@ def get_edl_on_demand():
             file.write(edl)
         set_integration_context(ctx)
     else:
+        demisto.debug("Reading EDL data from cache")
         with open(EDL_ON_DEMAND_CACHE_PATH, 'r') as file:
             edl = file.read()
     return edl
@@ -1110,4 +1128,5 @@ def main():
 from NGINXApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
+    register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
