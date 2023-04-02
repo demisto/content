@@ -35,7 +35,7 @@ class MsClient:
         params = {'api-version': API_VERSION}
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
-    def get_event_list(self, last_run) -> list:
+    def get_event_list(self, last_run: dict) -> list:
         """Listing alerts
         Args:
             last_run (str): last run
@@ -45,7 +45,9 @@ class MsClient:
         cmd_url = "/providers/Microsoft.Security/alerts"
         params = {'api-version': API_VERSION}
         events: list = []
-        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params, scope="https://management.azure.com/.default", resource=Resources.management_azure)
+        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params,
+                                               scope="https://management.azure.com/.default",
+                                               resource=Resources.management_azure)
         curr_events = response.get("value", [])
 
         curr_filtered_events = filter_out_previosly_digested_events(curr_events, last_run)
@@ -67,6 +69,13 @@ class MsClient:
 
 
 def filter_out_previosly_digested_events(events: list, last_run: dict) -> list:
+    """
+    Args:
+        - events (list): The events list response from the API
+        - last_run (dict): The last run dict
+    Returns:
+        (list): A list with all the duplicates from lastrun filtered out
+    """
     if not last_run:
         return events
     events = [event for event in events if event.get('properties', {}).get(
@@ -75,7 +84,14 @@ def filter_out_previosly_digested_events(events: list, last_run: dict) -> list:
     return events
 
 
-def check_events_were_filtered_out(events, filtered_events):
+def check_events_were_filtered_out(events: list, filtered_events: list) -> bool:
+    """
+    Args:
+        - events (list): The events list response from the API
+        - filtered_events (list): The filtered event list (no dups)
+    Returns:
+        (bool): Whether events were filtered out
+    """
     return len(events) > len(filtered_events)
 
 
@@ -83,20 +99,19 @@ def test_module(client: MsClient):
     """
        Performs basic GET request to check if the API is reachable and authentication is successful.
        Returns ok if successful.
-       """
+    """
     evetns_res = client.get_event_list_basic()
     if 'value' in evetns_res:
         demisto.results('ok')
 
 
-def get_events(client: MsClient, last_run: str, limit: int):
+def get_events(client: MsClient, last_run: dict, limit: int) -> tuple:
     """
      Args:
-            client (MsClient): The microsoft client.
-            last_run (str): The last run.
-            args (dict) : The demisto args.
+        client (MsClient): The microsoft client.
+        last_run (dict): The last run object.
     Returns:
-        The raw events and a CommandResults object.
+        (tuple): (events_list, CommandResults)
     """
     events_list = client.get_event_list(last_run)
 
@@ -153,7 +168,7 @@ def find_next_run(events_list: list, last_run: dict) -> dict:
     return {'last_run': next_run, 'dup_digested_time_id': id_same_next_run_list}
 
 
-def fetch_events(client: MsClient, last_run: str) -> list:
+def fetch_events(client: MsClient, last_run: dict) -> list:
     """
     Args:
         client (MsClient): The microsoft client.
@@ -163,7 +178,6 @@ def fetch_events(client: MsClient, last_run: str) -> list:
     """
     events = client.get_event_list(last_run)
     demisto.info(f'Fetched {len(events)} events.')
-    # Save the next_run as a dict with the last_fetch key to be stored
     return events
 
 
@@ -178,9 +192,6 @@ def add_time_key_to_events(events: list) -> list:
     for event in events:
         event["_time"] = event.get("properties").get('timeGeneratedUtc')
     return events
-
-
-''' MAIN FUNCTION '''
 
 
 def main() -> None:
