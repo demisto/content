@@ -86,8 +86,8 @@ configuration:
   type: 4
   section: Connect
   advanced: true
-description: Rapid detection of malicious behavior can make all the difference in the response to a security event. This pack includes configurations to combine the world-class threat detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing security teams to investigate and manage security events before they have time to escalate.
-display: Darktrace
+description: Deprecated. Use DarktraceMBs, DarktraceAIA, DarktraceAdmin instead.
+display: Darktrace (Deprecated)
 name: Darktrace
 script:
   commands:
@@ -523,3 +523,6 @@ script:
   subtype: python3
   type: python
 fromversion: 6.0.0
+deprecated: true
+tests:
+- No tests (auto formatted)

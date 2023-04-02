@@ -1,0 +1,6 @@
+[file:ShowCampaignUniqueRecipients.yml]
+ignore=BA124
+
+[file:GetCampaignIncidentsInfo.yml]
+ignore=BA124
+
