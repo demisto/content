@@ -1180,7 +1180,7 @@ async def translate_create(message: str, user_name: str, user_email: str, demist
     created_incident = None
     data = ''
     user_demisto_id = ''
-    request_fields = {'ReporterEmail': user_email}
+    request_fields = {'ReporterEmail': user_email, 'Message': message}
     incidents = []
     if demisto_user:
         user_demisto_id = demisto_user.get('id', '')
@@ -1279,8 +1279,6 @@ def is_bot_message(data: dict) -> bool:
     if subtype == 'bot_message' or message_bot_id or event.get('bot_id', None):
         return True
     elif event.get('subtype') == 'bot_message':
-        return True
-    elif not data.get('user', {}).get('id') and not data.get('envelope_id'):
         return True
     else:
         return False
