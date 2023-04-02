@@ -37,7 +37,8 @@ class AWSClient:
         self.aws_default_region = aws_default_region
         self.aws_role_arn = aws_role_arn
         self.aws_role_session_name = aws_role_session_name
-        self.aws_role_session_duration = aws_role_session_duration
+        # handle cases where aws_role_session_duration can be also empty string
+        self.aws_role_session_duration = aws_role_session_duration if aws_role_session_duration else None
         self.aws_role_policy = aws_role_policy
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key, self.aws_session_token = extract_session_from_secret(aws_secret_access_key, aws_session_token)
