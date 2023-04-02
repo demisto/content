@@ -313,7 +313,7 @@ script:
     execution: false
     name: ms-management-activity-generate-login-url
     arguments: []
-  dockerimage: demisto/pyjwt3:1.0.0.49643
+  dockerimage: demisto/pyjwt3:1.0.0.52548
   feed: false
   isfetch: true
   longRunning: false
