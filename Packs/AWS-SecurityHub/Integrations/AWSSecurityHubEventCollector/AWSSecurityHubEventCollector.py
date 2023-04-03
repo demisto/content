@@ -50,8 +50,8 @@ def generate_last_run(events: list[dict]) -> dict:
 
 
 def get_events(client: boto3.client, start_time: dt.datetime | None = None,
-               end_time: dt.datetime | None = None,
-               id_ignore_list: list[str] | None = None, limit: int = 0) -> Iterator[list[dict]]:
+               end_time: dt.datetime | None = None, id_ignore_list: list[str] | None = None,
+               page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> Iterator[list[dict]]:
     """
     Fetch events from AWS Security Hub.
 
@@ -59,9 +59,10 @@ def get_events(client: boto3.client, start_time: dt.datetime | None = None,
         client (boto3.client): Boto3 client to use.
         start_time (datetime | None, optional): Start time to fetch events from. Required if end_time is set.
         end_time (datetime | None, optional): Time to fetch events until. Defaults to current time.
-        limit (int): Maximum number of events to fetch. Defaults to 0 (no limit).
         id_ignore_list (list[str] | None, optional): List of finding IDs to not include in the results.
             Defaults to None.
+        page_size (int, optional): Number of results to fetch per request. Defaults to API_MAX_PAGE_SIZE.
+        limit (int, optional): Maximum number of results to fetch. Defaults to 0.
 
     Yields:
         tuple[list, CommandResults]: A tuple containing the events and the CommandResults object.
@@ -94,11 +95,11 @@ def get_events(client: boto3.client, start_time: dt.datetime | None = None,
     count = 0
 
     while True:
-        if limit and limit - count < API_MAX_PAGE_SIZE:
+        if limit and limit - count < page_size:
             kwargs['MaxResults'] = limit - count
 
         else:
-            kwargs['MaxResults'] = API_MAX_PAGE_SIZE
+            kwargs['MaxResults'] = page_size
 
         response = client.get_findings(**kwargs)
         result = response.get('Findings', [])
@@ -112,8 +113,8 @@ def get_events(client: boto3.client, start_time: dt.datetime | None = None,
             break
 
 
-def fetch_events(client: boto3.client, last_run: dict,
-                 first_fetch_time: dt.datetime | None, limit: int = 0) -> tuple[list[dict], Exception | None]:
+def fetch_events(client: boto3.client, last_run: dict, first_fetch_time: dt.datetime | None,
+                 page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> tuple[list[dict], Exception | None]:
     """
     Fetch events from AWS Security Hub and send them to XSIAM.
 
@@ -121,7 +122,8 @@ def fetch_events(client: boto3.client, last_run: dict,
         client (boto3.client): Boto3 client to use.
         last_run (dict): Dict containing the last fetched event creation time.
         first_fetch_time (datetime | None, optional): In case of first fetch, fetch events from this datetime.
-        limit (int): Maximum number of events to fetch. Defaults to 0 (no limit).
+        page_size (int, optional): Number of results to fetch per request. Defaults to API_MAX_PAGE_SIZE.
+        limit (int, optional): Maximum number of events to fetch. Defaults to 0 (no limit).
     """
     if last_run.get('last_update_date'):
         start_time = parse_date_string(last_run['last_update_date'])
@@ -135,8 +137,8 @@ def fetch_events(client: boto3.client, last_run: dict,
     error = None
 
     try:
-        for events_batch in get_events(client=client, start_time=start_time,
-                                       id_ignore_list=id_ignore_list, limit=limit):
+        for events_batch in get_events(client=client, start_time=start_time, id_ignore_list=id_ignore_list,
+                                       page_size=page_size, limit=limit):
             events.extend(events_batch)
 
     except Exception as e:
@@ -144,7 +146,7 @@ def fetch_events(client: boto3.client, last_run: dict,
         error = e
 
     # --- Set next_run data ---
-    if events:
+    if events:  # TODO: Check what happens if first call fails
         demisto.info(f'Fetched {len(events)} findings.')
         next_run = generate_last_run(events)
         demisto.info(f'Last run data updated to: {next_run}.')
@@ -159,19 +161,24 @@ def fetch_events(client: boto3.client, last_run: dict,
     return events, error
 
 
-def get_events_command(client: boto3.client, should_push_events: bool = False, limit: int = 0) -> CommandResults:
+def get_events_command(client: boto3.client, should_push_events: bool,
+                       page_size: int, limit: int = 0) -> CommandResults:
     """
     Fetch events from AWS Security Hub.
 
     Args:
         client (boto3.client): Boto3 client to use.
-        should_push_events (bool, optional): Whether to push events to XSIAM. Defaults to False.
+        should_push_events (bool): Whether to push events to XSIAM.
+        page_size (int, optional): Number of results to fetch per request. Defaults to API_MAX_PAGE_SIZE.
         limit (int, optional): Maximum number of events to fetch. Defaults to 0 (no limit).
 
     Returns:
         CommandResults: CommandResults object containing the events.
     """
-    events = get_events(client=client, limit=limit)
+    events = []
+
+    for events_batch in get_events(client=client, page_size=page_size, limit=limit):
+        events.extend(events_batch)
 
     if should_push_events:
         send_events_to_xsiam(
@@ -201,6 +208,9 @@ def main():
     retries = params.get('retries', 5)
 
     limit = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_RESULTS
+
+    if limit <= 0:
+        raise ValueError("Max fetch value cannot be lower than 1.")
 
     # How much time before the first fetch to retrieve events
     first_fetch_time = arg_to_datetime(
@@ -248,9 +258,21 @@ def main():
 
         elif command == 'aws-securityhub-get-events':
             should_push_events = argToBoolean(args.get('should_push_events', False))
-            command_limit = arg_to_number(args.get('limit')) or limit
+            page_size = arg_to_number(args.get('page_size', API_MAX_PAGE_SIZE))
+
+            if page_size is None or page_size > 100:
+                raise ValueError('Page size cannot be larger than 100 (not supported by the API).')
+
+            limit = arg_to_number(args.get('limit')) or 1
+
+            if limit is None or limit <= 0:
+                raise ValueError("Max fetch value cannot be lower than 1.")
+
             return_results(
-                get_events_command(client=client, should_push_events=should_push_events, limit=command_limit))
+                get_events_command(client=client,
+                                   should_push_events=should_push_events,
+                                   page_size=page_size,
+                                   limit=limit))
 
         elif command == 'fetch-events':
             events, error = fetch_events(
