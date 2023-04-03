@@ -6,11 +6,12 @@ display: FireEye ETP
 category: Network Security
 description: 'FireEye Email Threat Prevention (ETP Cloud) is a cloud-based platform that protects against advanced email attacks.'
 configuration:
-- display: 'Server URL. Valid values: https://etp.us.fireeye.com, https://etp.eu.fireeye.com, https://etp.us.fireeyegov.com '
+- display: 'Server URL'
   name: server
   defaultvalue: https://etp.us.fireeye.com
   type: 0
   required: true
+  additionalinfo: "Valid values: https://etp.us.fireeye.com, https://etp.eu.fireeye.com, https://etp.us.fireeyegov.com"
 - display: API key
   name: api_key
   defaultvalue: ""
@@ -32,11 +33,25 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: Messages status. All messages with the status specified will be imported as incidents.
+- display: Alerts statuses to import
+  additionalinfo: All alerts with a status specified here will be imported as incidents.
   name: message_status
   defaultvalue: delivered (retroactive)
-  type: 0
+  type: 16
   required: false
+  options:
+  - accepted
+  - deleted
+  - delivered
+  - delivered (retroactive)
+  - dropped
+  - dropped oob
+  - dropped (oob retroactive)
+  - permanent failure
+  - processing
+  - quarantined
+  - rejected
+  - temporary failure
 script:
   script: '-'
   type: python
@@ -282,7 +297,7 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.39276
+  dockerimage: demisto/python3:3.10.10.48392
 tests:
 - No Test
 

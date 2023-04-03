@@ -483,7 +483,7 @@ script:
     - contextPath: Armis.Device.visibility
       description: The visibility of the device.
       type: String
-  dockerimage: demisto/python3:3.10.8.39276
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true
   longRunning: false
@@ -494,6 +494,6 @@ script:
   type: python
 tests:
 - Armis-Test
-defaultmapperin: Armis_mapper-incoming
-defaultclassifier: classifier-armis-alerts
+defaultmapperin: Armis - Incoming Mapper
+defaultclassifier: Armis - Classifier
 fromversion: 5.0.0

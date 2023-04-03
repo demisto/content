@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: SafewalkManagement
 display: Safewalk Management
-category: Authentication
+category: Authentication & Identity Management
 description: Safewalk server integration
 configuration:
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
@@ -61,8 +61,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
 - name: feedReliability
   display: Source Reliability
   type: 15
@@ -96,9 +95,7 @@ configuration:
   display: Bypass exclusion list
   type: 8
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - name: feedTags
   display: Tags
   required: false
@@ -113,8 +110,7 @@ configuration:
   - WHITE
   required: false
   type: 15
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 script:
   commands:
   - name: safewalk-get-transactionlog
@@ -1055,7 +1051,7 @@ script:
     - name: new-group-name
       description: New user group.
     description: Update user group
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   feed: false
   runonce: false

@@ -4,6 +4,7 @@ from FormatURL import *
 
 TEST_URL_HTTP = 'http://www.test.com'
 TEST_URL_HTTPS = 'https://www.test.com'
+TEST_URL_INNER_HXXP = 'http://www.testhxxp.com'
 
 NOT_FORMAT_TO_FORMAT = [  # Start of http:/ replacements.
     ('http:/www.test.com', TEST_URL_HTTP),
@@ -21,11 +22,15 @@ NOT_FORMAT_TO_FORMAT = [  # Start of http:/ replacements.
     ('hxxps:/www.test.com', TEST_URL_HTTPS),
     ('hXXp:/www.test.com', TEST_URL_HTTP),
     ('hXXps:/www.test.com', TEST_URL_HTTPS),
+    ('hxxp:/www.testhxxp.com', 'http://www.testhxxp.com'),
+    ('hXxp:/www.testhxxp.com', 'http://www.testhxxp.com'),
+
 
     ('hxxp:\\www.test.com', TEST_URL_HTTP),
     ('hxxps:\\www.test.com', TEST_URL_HTTPS),
     ('hXXp:\\www.test.com', TEST_URL_HTTP),
     ('hXXps:\\www.test.com', TEST_URL_HTTPS),
+    ('hxxps:/www.testhxxp.com', 'https://www.testhxxp.com'),
 
     ('hxxp:\\\\www.test.com', TEST_URL_HTTP),
     ('hxxps:\\\\www.test.com', TEST_URL_HTTPS),
@@ -39,7 +44,9 @@ NOT_FORMAT_TO_FORMAT = [  # Start of http:/ replacements.
     ('meow:\\\\www.test.com', TEST_URL_HTTP),
     ('meows:\\\\www.test.com', TEST_URL_HTTPS),
     ('meow:\\www.test.com', TEST_URL_HTTP),
+    ('meow:\\www.meow.com', 'http://www.meow.com'),
     ('meows:\\www.test.com', TEST_URL_HTTPS),
+    ('meows:\\www.meow.com', 'https://www.meow.com'),
     # end of meow/s replacements.
 
     # Start of Sanity test, no replacement should be done.
@@ -69,6 +76,9 @@ ATP_REDIRECTS = [
     ('https://na01.safelinks.protection.outlook.com/?url=https%3A//urldefense.com/v3/__'
      'https%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__%3BKw%21-612Flbf0JvQ3kNJkRi5Jg&',
      'https://google.com:443/search?q=a*test&gs=ps'),
+    ('https://na01.safelinks.protection.outlook.com/?url=https%3A//urldefense.com/v3/__'
+     'hxxps%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__%3BKw%21-612Flbf0JvQ3kNJkRi5Jg&',
+     'https://google.com:443/search?q=a*test&gs=ps')
 ]
 
 PROOF_POINT_REDIRECTS = [
@@ -139,6 +149,7 @@ FORMAT_PATH = [
     ('https://test.co.uk/test.html', 'https://test.co.uk/test.html'),  # disable-secrets-detection
     ('www.test.com/check', 'www.test.com/check'),  # disable-secrets-detection
     ('https://test.test/Test\\"', 'https://test.test/Test'),  # disable-secrets-detection
+    ('https://www.test.com/a\\', 'https://www.test.com/a'),  # disable-secrets-detection
 ]
 
 FORMAT_QUERY = [
@@ -168,6 +179,9 @@ FORMAT_NON_ASCII = [
     ('https://testö.com/test.html', 'https://testö.com/test.html'),
     ('www.testö.com/test.aspx', 'www.testö.com/test.aspx'),
     ('https://www.teöst.com/', 'https://www.teöst.com/'),
+    ('https://www.test.se/Auth/?&rUrl=https://test.com/wp–images/amclimore@test.com',  # disable-secrets-detection
+     'https://www.test.se/Auth/?&rUrl=https://test.com/wp–images/amclimore@test.com'),  # disable-secrets-detection
+    ('test.com/#/?q=(1,2)', "test.com/#/?q=(1,2)"),  # disable-secrets-detection
 ]
 
 FORMAT_PUNYCODE = [
@@ -176,8 +190,10 @@ FORMAT_PUNYCODE = [
 ]
 
 FORMAT_HEX = [
-    ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz !"#$%&'),
-    ('foo.bar/baz%20%21%22%23%24%25%26', 'foo.bar/baz !"#$%&'),
+    ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz%20%21%22%23%24%25%26'),
+    ('foo.bar/baz%20%21%22%23%24%25%26', 'foo.bar/baz%20%21%22%23%24%25%26'),
+    ('https://foo.com/?key=foo%26bar', 'https://foo.com/?key=foo%26bar'),    # disable-secrets-detection
+    ('https%3A//foo.com/?key=foo%26bar', 'https://foo.com/?key=foo&bar'),    # disable-secrets-detection
 ]
 
 FAILS = [

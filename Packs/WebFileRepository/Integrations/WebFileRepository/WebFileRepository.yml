@@ -181,7 +181,7 @@ script:
   - arguments: []
     description: Reset the repository data
     name: wfr-reset
-  dockerimage: demisto/bottle:1.0.0.47087
+  dockerimage: demisto/bottle:1.0.0.51001
   longRunning: true
   longRunningPort: true
   resetContext: true

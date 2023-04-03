@@ -2625,6 +2625,9 @@ def main():  # pragma: no cover
         connection_args['splunkToken'] = password
         auth_token = password
     else:
+        if '@_basic' in username:
+            username = username.split('@_basic')[0]
+            connection_args['basic'] = True
         connection_args['username'] = username
         connection_args['password'] = password
         connection_args['autologin'] = True

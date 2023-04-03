@@ -1,4 +1,7 @@
 category: Endpoint
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Cortex XDR - IR
   version: -1
@@ -8,10 +11,12 @@ configuration:
   required: false
   defaultvalue: 'true'
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -22,77 +27,99 @@ configuration:
   - Both
   required: false
   type: 15
-- display: Server URL (copy URL from XDR - click ? to see more info.)
+  section: Collect
+- display: Server URL (copy URL from XDR)
   name: url
   required: true
   type: 0
+  section: Connect
 - displaypassword: API Key ID
   name: apikey_id_creds
   type: 9
   required: false
   hiddenusername: true
   display: ''
+  section: Connect
 - displaypassword: API Key
   name: apikey_creds
   type: 9
   required: false
   hiddenusername: true
   display: ''
+  section: Connect
 - display: API Key ID
   name: apikey_id
   required: false
   type: 4
   hidden: true
+  section: Connect
 - display: API Key
   name: apikey
   required: false
   type: 4
   hidden: true
+  section: Connect
 - additionalinfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
   name: timeout
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
   defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - display: Only fetch starred incidents
   name: starred
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - additionalinfo: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Fetches only starred incidents within the specified time range.
   defaultvalue: 3 days
   display: Starred incidents fetch window
   name: starred_incidents_fetch_window
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   required: false
   type: 0
+  section: Collect
 - additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR.
   display: Sync Incident Owners
   name: sync_owners
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Prevent Only Mode
   name: prevent_only
   required: false
   type: 8
   additionalinfo: Whether the XDR tenant Mode is prevent only
+  section: Connect
+  advanced: true
 - additionalinfo: 'The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched.'
   display: Incident Statuses to Fetch
   name: status
@@ -107,6 +134,8 @@ configuration:
   - resolved_auto
   required: false
   type: 16
+  section: Collect
+  advanced: true
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
 name: Cortex XDR - IR
@@ -488,6 +517,9 @@ script:
       type: String
     - contextPath: Endpoint.Hostname
       description: The hostname that is mapped to this endpoint.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The agent ID of the endpoint.
       type: String
     - contextPath: File.Path
       description: The path where the file is located.
@@ -920,6 +952,102 @@ script:
     - contextPath: Endpoint.Vendor
       description: The integration name of the endpoint vendor.
       type: String
+  - arguments:
+      - description: The status of the endpoint to use as a filter.
+        name: status
+        auto: PREDEFINED
+        predefined:
+          - connected
+          - disconnected
+      - description: A comma-separated list of endpoint IDs to use as a filter.
+        isArray: true
+        name: endpoint_id_list
+      - description: |-
+          A comma-separated list of distribution package names or installation package names to use as a filter.
+          Example: dist_name1,dist_name2
+        isArray: true
+        name: dist_name
+      - description: |-
+          A comma-separated list of IP addresses to use as a filter.
+          Example: 8.8.8.8,1.1.1.1
+        isArray: true
+        name: ip_list
+      - description: A comma-separated list of group names to which the agent belongs to use as a filter.
+        isArray: true
+        name: group_name
+      - description: The endpoint platform to use as a filter.
+        isArray: true
+        name: platform
+        auto: PREDEFINED
+        predefined:
+          - windows
+          - linux
+          - macos
+          - android
+      - description: |-
+          A comma-separated list of alias names to use as a filter.
+          Examples: alias_name1,alias_name2
+        isArray: true
+        name: alias_name
+      - auto: PREDEFINED
+        description: Specifies whether the endpoint was isolated or unisolated to use as a filter.
+        name: isolate
+        predefined:
+          - isolated
+          - unisolated
+      - description: A comma-separated list of hostnames to use as a filter.
+        isArray: true
+        name: hostname
+      - description: |-
+          All the agents that were first seen after {first_seen_gte} to use as a filter.
+          Supported values:
+          1579039377301 (time in milliseconds)
+          "3 days" (relative date)
+          "2019-10-21T23:45:00" (date)
+        name: first_seen_gte
+      - description: |-
+          All the agents that were first seen before {first_seen_lte} to use as a filter.
+          Supported values:
+          1579039377301 (time in milliseconds)
+          "3 days" (relative date)
+          "2019-10-21T23:45:00" (date)
+        name: first_seen_lte
+      - description: |-
+          All the agents that were last seen after {last_seen_gte} to use as a filter.
+          Supported values:
+          1579039377301 (time in milliseconds)
+          "3 days" (relative date)
+          "2019-10-21T23:45:00" (date)
+        name: last_seen_gte
+      - description: |-
+          All the agents that were last seen before {last_seen_lte} to use as a filter.
+          Supported values:
+          1579039377301 (time in milliseconds)
+          "3 days" (relative date)
+          "2019-10-21T23:45:00" (date)
+        name: last_seen_lte
+      - name: username
+        description: The usernames to use as a filter. Accepts a single user, or comma-separated list of usernames.
+        isArray: true
+      - name: new_alias_name
+        required: true
+        description: |-
+          The alias name to change to.
+          Note: If you send an empty field, (e.g new_alias_name=\"\") the current alias name is deleted.
+      - name: scan_status
+        description: The scan status of the endpoint to use as a filter.
+        auto: PREDEFINED
+        predefined:
+          - none
+          - pending
+          - in_progress
+          - canceled
+          - aborted
+          - pending_cancellation
+          - success
+          - error
+    description: Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported).
+    name: xdr-endpoint-alias-change
   - description: Gets a list of all the agent versions to use for creating a distribution list.
     name: xdr-get-distribution-versions
     outputs:
@@ -3166,7 +3294,7 @@ script:
       type: Number
     arguments: []
     description: Provides information about the tenant.
-  dockerimage: demisto/python3:3.10.9.46807
+  dockerimage: demisto/python3:3.10.10.49934
   isfetch: true
   runonce: false
   script: ''

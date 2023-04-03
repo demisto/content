@@ -135,6 +135,24 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
+                        "i": "GRA Anomaly Display",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": null,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Anomaly Updates",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 1,
+                        "query": "GRAAnomaliesDisplay",
+                        "queryType": "script"
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
                         "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
                         "maxH": null,
                         "maxW": 1,
@@ -159,16 +177,15 @@
                         "moved": false,
                         "name": "Evidence",
                         "static": false,
-                        "type": "evidence",
                         "w": 1,
                         "x": 2,
-                        "y": 2
+                        "y": 2,
+                        "type": "evidence"
                     },
                     {
                         "displayType": "CARD",
                         "h": 2,
                         "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                        "isVisible": true,
                         "items": [
                             {
                                 "endCol": 2,
@@ -198,12 +215,11 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 2
+                        "y": 2,
+                        "isVisible": true
                     },
                     {
-                        "displayType": "ROW",
                         "h": 2,
-                        "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "caseinfoid-07dab470-0fba-11ec-82a4-8da638163409",
                         "items": [
@@ -228,7 +244,9 @@
                         "static": false,
                         "w": 3,
                         "x": 1,
-                        "y": 3
+                        "y": 3,
+                        "displayType": "ROW",
+                        "hideItemTitleOnlyOne": true
                     },
                     {
                         "h": 2,
@@ -782,5 +800,7 @@
     "name": "GRACaseLayout",
     "system": false,
     "version": -1,
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

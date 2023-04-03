@@ -335,7 +335,11 @@ script:
     description: Deletes a specified saved search in the Log Analytics workspace.
     execution: false
     name: azure-log-analytics-delete-saved-search
-  dockerimage: demisto/crypto:1.0.0.47970
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: azure-log-analytics-generate-login-url
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false
   longRunning: false

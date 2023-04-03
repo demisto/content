@@ -553,5 +553,3 @@ tests:
 - No tests
 fromversion: 6.5.0
 deprecated: true
-marketplaces:
-  - marketplacev2

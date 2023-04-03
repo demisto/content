@@ -1,0 +1,11 @@
+{
+    "result": [
+        {
+            "id": "1",
+            "target_type": "url",
+            "target_value": "https://twitter.com/",
+            "comment": "Allow List for API testing"
+        }
+    ],
+    "next": "d2hpdGVsaXN0OzZjYWFmZmQ4LWI2NWQtNGNlZS04NzE3LWIwOGMxYTRiMTgzMDsyOw=="
+}

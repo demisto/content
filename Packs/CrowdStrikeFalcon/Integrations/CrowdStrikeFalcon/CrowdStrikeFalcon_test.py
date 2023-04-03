@@ -1,6 +1,7 @@
 import pytest
 import os
 import json
+from urllib.parse import unquote
 
 from _pytest.python_api import raises
 
@@ -3227,7 +3228,7 @@ def test_search_device_command(requests_mock):
             assert context[key] == [endpoint_context]
 
 
-def test_get_endpint_command(requests_mock, mocker):
+def test_get_endpoint_command(requests_mock, mocker):
     """
     Test get_endpint_command with a successful id
     Given
@@ -3268,7 +3269,7 @@ def test_get_endpint_command(requests_mock, mocker):
         status_code=200,
     )
 
-    requests_mock.get(
+    query_mocker = requests_mock.get(
         f'{SERVER_URL}/devices/queries/devices/v1',
         json=response,
         status_code=200,
@@ -3279,12 +3280,14 @@ def test_get_endpint_command(requests_mock, mocker):
         status_code=200,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'id': 'dentifier_numbe'})
+    mocker.patch.object(demisto, 'args', return_value={'id': 'dentifier_numbe', 'hostname': 'host1,host2'})
 
     outputs = get_endpoint_command()
     result = outputs[0].to_context()
     context = result.get('EntryContext')
 
+    assert unquote(query_mocker.last_request.query) == "filter=device_id:'dentifier_numbe'," \
+                                                       "hostname:['host1'],hostname:['host2']"
     assert context['Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'] == [endpoint_context]
 
 
@@ -3375,6 +3378,24 @@ def test_resolve_incident_invalid(status):
     from CrowdStrikeFalcon import resolve_incident_command
     with pytest.raises(DemistoException):
         resolve_incident_command(['test'], status)
+
+
+def test_update_incident_comment(requests_mock):
+    """
+    Test Update incident comment
+    Given
+     - Comment
+    When
+     - Calling update incident comment command
+    Then
+     - Update incident comment
+     """
+    from CrowdStrikeFalcon import update_incident_comment_command
+    m = requests_mock.post(
+        f'{SERVER_URL}/incidents/entities/incident-actions/v1',
+        json={})
+    update_incident_comment_command(['test'], 'comment')
+    assert m.last_request.json()['action_parameters'][0]['value'] == 'comment'
 
 
 def test_list_host_group_members(requests_mock):

@@ -617,9 +617,9 @@ def get_items_from_mailbox(account, item_ids):     # pragma: no cover
         item_ids = [item_ids]
     items = map(lambda x: Item(item_id=x), item_ids)
     result = list(account.fetch(ids=items))
-    result = [x for x in result if not isinstance(x, ErrorItemNotFound)]
+    result = [x for x in result if not (isinstance(x, ErrorItemNotFound) or isinstance(x, ErrorInvalidIdMalformed))]
     if len(result) != len(item_ids):
-        raise Exception("One or more items were not found. Check the input item ids")
+        raise Exception("One or more items were not found/malformed. Check the input item ids")
     if exchangelib.__version__ != "1.12.0":  # Docker BC
         for item in result:
             item.folder = Folder(account=account)
@@ -691,6 +691,74 @@ class MarkAsJunk(EWSAccountService):
         junk.append(items_list)
 
         return junk
+
+
+def send_email_to_mailbox(account, to, subject, body, bcc, cc, reply_to, html_body=None, attachments=None,
+                          raw_message=None, from_address=None):     # pragma: no cover
+    """
+    Send an email to a mailbox.
+
+    Args:
+        account (Account): account from which to send an email.
+        to (list[str]): a list of emails to send an email.
+        subject (str): subject of the mail.
+        body (str): body of the email.
+        reply_to (list[str]): list of emails of which to reply to from the sent email.
+        bcc (list[str]): list of email addresses for the 'bcc' field.
+        cc (list[str]): list of email addresses for the 'cc' field.
+        html_body (str): HTML formatted content (body) of the email to be sent. This argument
+            overrides the "body" argument.
+        attachments (list[str]): list of names of attachments to send.
+        raw_message (str): Raw email message from MimeContent type.
+        from_address (str): the email address from which to reply.
+    """
+    if not attachments:
+        attachments = []
+    message_body = HTMLBody(html_body) if html_body else body
+    m = Message(
+        account=account,
+        mime_content=raw_message.encode('UTF-8') if raw_message else None,
+        folder=account.sent,
+        cc_recipients=cc,
+        bcc_recipients=bcc,
+        subject=subject,
+        body=message_body,
+        to_recipients=to,
+        reply_to=reply_to,
+        author=from_address
+    )
+    if account.protocol.version.build <= EXCHANGE_2010_SP2:
+        m.save()
+        for attachment in attachments:
+            m.attach(attachment)
+        m.send()
+    else:
+        for attachment in attachments:
+            m.attach(attachment)
+        m.send_and_save()
+    return m
+
+
+def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
+                                attachments=None):      # pragma: no cover
+    if attachments is None:
+        attachments = []
+    item_to_reply_to = account.inbox.get(id=in_reply_to)
+    if isinstance(item_to_reply_to, ErrorItemNotFound):
+        raise Exception(item_to_reply_to)
+
+    subject = subject or item_to_reply_to.subject
+    message_body = HTMLBody(html_body) if html_body else body
+    reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
+                                          bcc_recipients=bcc)
+    reply = reply.save(account.drafts)
+    m = account.inbox.get(id=reply.id)
+
+    for attachment in attachments:
+        m.attach(attachment)
+    m.send()
+
+    return m
 
 
 class GetSearchableMailboxes(EWSService):
@@ -867,7 +935,7 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
     else:
         entry = get_searchable_mailboxes(protocol)
         mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in x.keys()]
-        mailbox_ids = map(lambda x: x[MAILBOX_ID], mailboxes)
+        mailbox_ids = map(lambda x: x[MAILBOX_ID], mailboxes)  # type: ignore
 
     try:
         search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
@@ -1613,7 +1681,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
                                 headers=ITEMS_RESULTS_HEADERS if selected_all_fields else None)
 
 
-def get_out_of_office_state(target_mailbox=None):
+def get_out_of_office_state(target_mailbox=None):   # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     oof = account.oof_settings
     oof_dict = {
@@ -1687,7 +1755,7 @@ def get_contacts(limit, target_mailbox=None):     # pragma: no cover
 
     for contact in account.contacts.all()[:int(limit)]:  # pylint: disable=E1101
         contacts.append(parse_contact(contact))
-    return get_entry_for_object('Email contacts for %s' % target_mailbox,
+    return get_entry_for_object('Email contacts for %s' % target_mailbox or ACCOUNT_EMAIL,
                                 'Account.Email(val.Address == obj.originMailbox).EwsContacts',
                                 contacts)
 
@@ -2066,6 +2134,130 @@ def get_item_as_eml(item_id, target_mailbox=None):     # pragma: no cover
         return file_result
 
 
+def collect_manual_attachments(manual_attach_obj):      # pragma: no cover
+    attachments = []
+    for attachment in manual_attach_obj:
+        res = demisto.getFilePath(os.path.basename(attachment['RealFileName']))
+
+        file_path = res["path"]
+        with open(file_path, 'rb') as f:
+            attachments.append(FileAttachment(content=f.read(), name=attachment['FileName']))
+
+    return attachments
+
+
+def process_attachments(attach_cids="", attach_ids="", attach_names="", manual_attach_obj=None):      # pragma: no cover
+    if manual_attach_obj is None:
+        manual_attach_obj = []
+    file_entries_for_attachments = []  # type: list
+    attachments_names = []  # type: list
+
+    if attach_ids:
+        file_entries_for_attachments = attach_ids if isinstance(attach_ids, list) else attach_ids.split(",")
+        if attach_names:
+            attachments_names = attach_names if isinstance(attach_names, list) else attach_names.split(",")
+        else:
+            for att_id in file_entries_for_attachments:
+                att_name = demisto.getFilePath(att_id)['name']
+                if isinstance(att_name, list):
+                    att_name = att_name[0]
+                attachments_names.append(att_name)
+        if len(file_entries_for_attachments) != len(attachments_names):
+            raise Exception("attachIDs and attachNames lists should be the same length")
+
+    attachments = collect_manual_attachments(manual_attach_obj)
+
+    if attach_cids:
+        file_entries_for_attachments_inline = attach_cids if isinstance(attach_cids, list) else attach_cids.split(",")
+        for att_id_inline in file_entries_for_attachments_inline:
+            try:
+                file_info = demisto.getFilePath(att_id_inline)
+            except Exception as ex:
+                demisto.info("EWS error from getFilePath: {}".format(ex))
+                raise Exception("entry %s does not contain a file" % att_id_inline)
+            att_name_inline = file_info["name"]
+            with open(file_info["path"], 'rb') as f:
+                attachments.append(FileAttachment(content=f.read(), name=att_name_inline, is_inline=True,
+                                                  content_id=att_name_inline))
+
+    for i in range(0, len(file_entries_for_attachments)):
+        entry_id = file_entries_for_attachments[i]
+        attachment_name = attachments_names[i]
+        try:
+            res = demisto.getFilePath(entry_id)
+        except Exception as ex:
+            raise Exception("entry {} does not contain a file: {}".format(entry_id, str(ex)))
+        file_path = res["path"]
+        with open(file_path, 'rb') as f:
+            attachments.append(FileAttachment(content=f.read(), name=attachment_name))
+    return attachments, attachments_names
+
+
+def get_none_empty_addresses(addresses_ls):
+    return [adress for adress in addresses_ls if adress]
+
+
+def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
+               attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None, from_mailbox=None,
+               raw_message=None, from_address=None):
+    if not manualAttachObj:
+        manualAttachObj = []
+    account = get_account(from_mailbox or ACCOUNT_EMAIL)
+    bcc = get_none_empty_addresses(argToList(bcc))
+    cc = get_none_empty_addresses(argToList(cc))
+    to = get_none_empty_addresses(argToList(to))
+    subject = subject[:252] + '...' if len(subject) > 255 else subject
+
+    attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
+
+    send_email_to_mailbox(
+        account=account, to=to, subject=subject, body=body, bcc=bcc, cc=cc, reply_to=replyTo,
+        html_body=htmlBody, attachments=attachments, raw_message=raw_message, from_address=from_address
+    )
+    result_object = {
+        'from': account.primary_smtp_address,
+        'to': to,
+        'subject': subject,
+        'attachments': attachments_names
+    }
+
+    return {
+        'Type': entryTypes['note'],
+        'Contents': result_object,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Sent email', result_object),
+    }
+
+
+def reply_email(to, inReplyTo, body="", subject="", bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",
+                attachNames="", from_mailbox=None, manualAttachObj=None):     # pragma: no cover
+    account = get_account(from_mailbox or ACCOUNT_EMAIL)
+    bcc = bcc.split(",") if bcc else None
+    cc = cc.split(",") if cc else None
+    to = to.split(",") if to else None
+    manualAttachObj = manualAttachObj if manualAttachObj is not None else []
+    subject = subject[:252] + '...' if len(subject) > 255 else subject
+
+    attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
+
+    send_email_reply_to_mailbox(account, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments)
+    result_object = {
+        'from': account.primary_smtp_address,
+        'to': to,
+        'subject': subject,
+        'attachments': attachments_names
+    }
+
+    return {
+        'Type': entryTypes['note'],
+        'Contents': result_object,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Sent email', result_object),
+    }
+
+
 def test_module():     # pragma: no cover
     try:
         global IS_TEST_MODULE
@@ -2168,6 +2360,10 @@ def sub_main():     # pragma: no cover
             encode_and_submit_results(mark_item_as_read(**args))
         elif demisto.command() == 'ews-get-items-as-eml':
             encode_and_submit_results(get_item_as_eml(**args))
+        elif demisto.command() == 'send-mail':
+            encode_and_submit_results(send_email(**args))
+        elif demisto.command() == 'reply-mail':
+            encode_and_submit_results(reply_email(**args))
 
     except Exception as e:
         import time
@@ -2290,5 +2486,5 @@ def main():     # pragma: no cover
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins"):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

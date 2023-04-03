@@ -12,6 +12,7 @@ from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 import dateparser
 import test_data.fetch_incidents_input as fetch_incidents_input
+import test_data.mock_rules as mock_rules
 from freezegun import freeze_time
 
 integration_firewall_params = {
@@ -139,6 +140,24 @@ def test_add_argument_target():
     response = add_argument_target('foo', 'bar')
     expected = '<bar><devices><entry name=\"foo\"/></devices></bar>'
     assert response == expected
+
+
+@pytest.mark.parametrize('disabled, rules_file, expected_results_file',
+                         [
+                             ('yes', 'test_data/filter_rules_sample.json',
+                              'test_data/filter_rules_expected_result.json'),
+                         ])
+def test_filter_rules_by_status(disabled: str, rules_file: str, expected_results_file: str):
+    from Panorama import filter_rules_by_status
+
+    with open(rules_file, 'r') as f:
+        rules = json.loads(f.read())
+
+    with open(expected_results_file, 'r') as f:
+        expected_result = json.loads(f.read())
+
+    result = filter_rules_by_status(disabled, rules)
+    assert result == expected_result
 
 
 def test_prettify_addresses_arr():
@@ -1007,7 +1026,7 @@ class TestPanoramaListApplicationsCommand:
         mocker.patch('Panorama.get_pan_os_major_version', return_value=panorama_version)
 
         res = mocker.patch('demistomock.results')
-        panorama_list_applications_command(predefined='false')
+        panorama_list_applications_command({'predefined': 'false'})
 
         assert res.call_args.args[0]['Contents'] == {
             '@name': 'test-playbook-app', '@loc': 'Lab-Devices', 'subcategory': 'infrastructure',
@@ -3948,13 +3967,13 @@ class TestPanOSListNatRulesCommand:
                 'Name': 'test', 'Tags': 'test tag', 'SourceZone': '1.1.1.1', 'DestinationZone': '1.1.1.1',
                 'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
                 'Service': 'any', 'Description': None, 'SourceTranslation': None, 'DynamicDestinationTranslation': None,
-                'DestinationTranslation': None
+                'DestinationTranslation': None, 'Disabled': 'yes'
             },
             {
                 'Name': 'test-2', 'Tags': None, 'SourceZone': '2.2.2.2', 'DestinationZone': '2.2.2.2',
                 'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
                 'Service': 'any', 'Description': None, 'SourceTranslation': None, 'DynamicDestinationTranslation': None,
-                'DestinationTranslation': None
+                'DestinationTranslation': None, 'Disabled': 'no'
             }
         ]
 
@@ -5041,19 +5060,19 @@ class TestPanOSListPBFRulesCommand:
                     }
                 },
                 'EnforceSymmetricReturn': {'nexthop-address-list': {'entry': {'@name': '1.1.1.1'}}, 'enabled': 'yes'},
-                'Target': {'negate': 'no'}, 'Application': '3pc', 'Service': 'application-default'
+                'Target': {'negate': 'no'}, 'Application': '3pc', 'Service': 'application-default', 'Disabled': None
             },
             {
                 'Name': 'test2', 'Description': None, 'Tags': None, 'SourceZone': ['1.1.1.1', '2.2.2.2'],
                 'SourceInterface': None, 'SourceAddress': 'any', 'SourceUser': 'any', 'DestinationAddress': 'any',
                 'Action': {'no-pbf': {}}, 'EnforceSymmetricReturn': {'enabled': 'no'}, 'Target': {'negate': 'no'},
-                'Application': 'any', 'Service': 'any'
+                'Application': 'any', 'Service': 'any', 'Disabled': "yes"
             },
             {
                 'Name': 'test3', 'Description': None, 'Tags': None, 'SourceZone': None, 'SourceInterface': 'a2',
                 'SourceAddress': 'any', 'SourceUser': 'any', 'DestinationAddress': 'any',
                 'Action': {'discard': {}}, 'EnforceSymmetricReturn': {'enabled': 'no'}, 'Target': {'negate': 'no'},
-                'Application': 'any', 'Service': 'any'
+                'Application': 'any', 'Service': 'any', 'Disabled': "no"
             }
         ]
 
@@ -5110,8 +5129,8 @@ class TestPanOSListPBFRulesCommand:
         expected_context = [
             {
                 'Name': 'test', 'Description': 'this is a test description', 'Tags': ['test tag', 'dag_test_tag'],
-                'SourceZone': '1.1.1.1', 'SourceInterface': None, 'SourceAddress': '1.1.1.1', 'SourceUser': 'pre-logon',
-                'DestinationAddress': '1.1.1.1',
+                'SourceZone': '1.1.1.1', 'SourceInterface': None, 'Disabled': None, 'SourceAddress': '1.1.1.1',
+                'SourceUser': 'pre-logon', 'DestinationAddress': '1.1.1.1',
                 'Action': {
                     'forward': {
                         'nexthop': {'ip-address': '2.2.2.2'},
@@ -5991,6 +6010,60 @@ def test_pan_os_delete_application_group_command_main_flow(mocker, args, params,
 
 
 @pytest.mark.parametrize(
+    'args, params, expected_url_params',
+    [
+        pytest.param(
+            {
+                'IPs': '2.2.2.2', 'tag': 'test'
+            },
+            integration_firewall_params,
+            {'type': 'user-id',
+             'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register><entry ip="2.2.2.2" '
+                    'persistent="1"><tag><member>test</member></tag></entry></register></payload></uid-message>',
+             'key': 'thisisabogusAPIKEY!',
+             'vsys': 'vsys1'}
+        ),
+        pytest.param(
+            {
+                'IPs': '2.2.2.2', 'tag': 'test'
+            },
+            integration_panorama_params,
+            {'type': 'user-id',
+             'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register><entry ip="2.2.2.2" '
+                    'persistent="1"><tag><member>test</member></tag></entry></register></payload></uid-message>',
+             'key': 'thisisabogusAPIKEY!'}
+        )
+    ]
+)
+def test_pan_os_register_ip_tag_command_main_flow(mocker, args, params, expected_url_params):
+    """
+    Given:
+     - Panorama instance with IP tag to register (without vsys).
+     - Firewall instance with IP tag to register (with vsys).
+
+    When:
+     - running the pan-os-register-ip-tag through the main flow.
+
+    Then:
+     - make sure the params and the request is correct for both panorama/firewall.
+    """
+    from Panorama import main
+
+    mock_request = mocker.patch(
+        "Panorama.http_request",
+        return_value={'response': {'@status': 'success', 'result': {'uid-response': {'version': '2.0',
+                                                                                     'payload': {'register': None}}}}}
+    )
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='pan-os-register-ip-tag')
+
+    main()
+    assert mock_request.call_args.kwargs['body'] == expected_url_params
+
+
+@pytest.mark.parametrize(
     'args', [
         {'ip_netmask': '1', 'ip_range': '2', 'fqdn': '3', 'ip_wildcard': '4', 'name': 'test'},
         {'ip_netmask': '1', 'ip_range': '2', 'fqdn': '3', 'name': 'test'},
@@ -6141,6 +6214,28 @@ class TestFetchIncidentsHelperFunctions:
         from Panorama import get_parsed_incident_entries
         mocker.patch('Panorama.parse_incident_entries', return_value=fetch_incidents_input.one_incident_result)
         assert get_parsed_incident_entries(incident_entries_dict, last_fetch_dict, last_id_dict) == expected_result
+
+    @patch("Panorama.GET_LOG_JOB_ID_MAX_RETRIES", 1)
+    @pytest.mark.parametrize('response, debug_msg, expected_result',
+                             fetch_incidents_input.get_query_entries_by_id_request_args)
+    def test_get_query_entries_by_id_request(self, mocker, response, debug_msg, expected_result):
+        """
+        Given:
+            - A valid Panorama job id.
+
+        When:
+            1. The Panorama job has already finished.
+            2. The Panorama job is still running (not finished).
+
+        Then:
+            1. Verify the command output is the returned response, and the debug message is called with 'FIN' status.
+            2. Retry to query the job status in 1 second, and return empty dict if max retries exceeded.
+         """
+        from Panorama import get_query_entries_by_id_request
+        mocker.patch('Panorama.http_request', return_value=response)
+        debug = mocker.patch('demistomock.debug')
+        assert get_query_entries_by_id_request('000') == expected_result
+        assert debug.called_with(debug_msg)
 
 
 class TestFetchIncidentsFlows:
@@ -6380,3 +6475,11 @@ class TestFetchIncidentsFlows:
         assert last_id_dict.get('X_log_type', '') == '000000002'
         assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01 13:00:00'
         assert last_id_dict.get('Y_log_type', '') == '000000002'
+
+
+@pytest.mark.parametrize('name_match, name_contain, filters, expected_result',
+                         mock_rules.get_mock_rules_and_application)
+def test_build_xpath_filter(name_match, name_contain, filters, expected_result):
+    from Panorama import build_xpath_filter
+    mock_result = build_xpath_filter(name_match, name_contain, filters)
+    assert mock_result == expected_result

@@ -2,7 +2,7 @@ beta: false
 sectionOrder:
 - Connect
 - Collect
-category: Messaging
+category: Messaging and Conferencing
 commonfields:
   id: SlackV3
   version: -1
@@ -52,10 +52,10 @@ configuration:
   - incidentReminderSLA
   - taskCompleted
   - incidentStatusChanged
-  - externalFormSubmit
   - failedFetchIncidents
   section: Collect
   advanced: true
+  additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
 - defaultvalue: Unclassified
   display: Type of incidents created in Slack
   name: incidentType
@@ -630,7 +630,7 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
-  dockerimage: demisto/slackv3:1.0.0.45719
+  dockerimage: demisto/slackv3:1.0.0.52396
   feed: false
   isfetch: false
   longRunning: true

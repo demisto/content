@@ -11,15 +11,13 @@ log(params.credentials.identifier)
 log(params.credentials.password)
 log("$$$$$$$1")
 
-
-
-if (params.auth_id || (params.credentials && params.credentials.identifier)) {
+if (params.auth_id || (params.credentials && params.creds_apikey.identifier)) {
     if (!serverURL.endsWith('/xsoar')){
         serverURL = serverURL + '/xsoar'
     }
 }
 
-var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://storage.googleapis.com/marketplace-dist/content/packs/'
+var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://marketplace.xsoar.paloaltonetworks.com/'
 
 getTenantAccountName = function () {
     // example: for 'https://account-testing-ysdkvou:443/acc_Test' will return 'acc_Test'
@@ -142,7 +140,7 @@ var sendRequest = function(method, uri, body, raw) {
     }
     else if (params.auth_method == 'Advanced') {
         if (!auth_id) {
-            throw 'Core REST APIs - please choose "Standard Authentication method" or provide the Auth ID.';
+            throw 'Core REST APIs - please choose "Standard Authentication method" or provide the API Key ID.';
         }
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json')
     }

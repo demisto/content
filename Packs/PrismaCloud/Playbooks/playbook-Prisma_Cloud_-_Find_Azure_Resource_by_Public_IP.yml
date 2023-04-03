@@ -112,12 +112,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search Azure VM instances in Prisma Cloud
       id: 747967fa-f4f0-4afb-8d24-bfe451752cfd
       iscommand: true
       name: Search in Azure Compute
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 747967fa-f4f0-4afb-8d24-bfe451752cfd
@@ -137,8 +137,8 @@ tasks:
             iscontext: true
             value:
               complex:
-                accessor: Asset
-                root: Redlock
+                accessor: Config
+                root: PrismaCloud
           operator: isNotEmpty
       label: "yes"
     id: "11"
@@ -181,8 +181,8 @@ tasks:
     scriptarguments:
       assets:
         complex:
-          accessor: Asset
-          root: Redlock
+          accessor: Config
+          root: PrismaCloud
       fields: {}
     separatecontext: false
     skipunavailable: false
@@ -275,7 +275,7 @@ tasks:
                     operator: isEqualString
                     right:
                       value:
-                        simple: RedLock
+                        simple: PrismaCloud v2
                 - - left:
                       iscontext: true
                       value:
@@ -398,12 +398,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search Azure VM instances in Prisma Cloud
       id: c6f7f040-449a-4734-8dce-733b84e70c14
       iscommand: true
       name: Search in Azure Public IP
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: c6f7f040-449a-4734-8dce-733b84e70c14
@@ -459,12 +459,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search Azure VM instances in Prisma Cloud
       id: 9da485c0-2441-424e-87e6-10ec95671e6e
       iscommand: true
       name: Search in Azure App Service
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 9da485c0-2441-424e-87e6-10ec95671e6e

@@ -114,6 +114,10 @@ def test_module():
     if not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) > 0:
         return_error(
             "When 'Types of Notifications to Send' is populated, a dedicated channel is required.")
+    if not BOT_TOKEN.startswith("xoxb"):
+        return_error("Invalid Bot Token.")
+    if not APP_TOKEN.startswith("xapp"):
+        return_error("Invalid App Token.")
     elif not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) == 0:
         CLIENT.auth_test()  # type: ignore
     else:
@@ -991,7 +995,7 @@ def extract_entitlement(entitlement: str, text: str) -> Tuple[str, str, str, str
 class SlackLogger(IntegrationLogger):
     def __init__(self):
         super().__init__()
-        self.level = logging.DEBUG
+        self.level = logging.INFO
 
     def info(self, message):
         text = self.encode(message)
@@ -1009,6 +1013,12 @@ class SlackLogger(IntegrationLogger):
         text = self.encode(message)
         self.messages.append(text)
 
+    def set_logging_level(self, debug: bool = True):
+        if debug:
+            self.level = logging.DEBUG
+        else:
+            self.level = logging.INFO
+
 
 SlackLog = SlackLogger()
 
@@ -1018,6 +1028,7 @@ async def slack_loop():
         exception_await_seconds = 1
         while True:
             SlackLog.set_buffering(state=True)
+            SlackLog.set_logging_level(debug=EXTENSIVE_LOGGING)
             client = SocketModeClient(
                 app_token=APP_TOKEN,
                 web_client=ASYNC_CLIENT,
@@ -1238,9 +1249,9 @@ def is_bot_message(data: dict) -> bool:
     event: dict = data.get('event', {})
     if subtype == 'bot_message' or message_bot_id or event.get('bot_id', None):
         return True
-    elif data.get('event', {}).get('subtype') == 'bot_message':
+    elif event.get('subtype') == 'bot_message':
         return True
-    elif data.get('event', {}).get('bot_id', '') == BOT_ID:
+    elif not data.get('user', {}).get('id') and not data.get('envelope_id'):
         return True
     else:
         return False
@@ -1275,12 +1286,20 @@ def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
         return ''
 
 
-async def process_entitlement_reply(entitlement_reply: str, user_id: str, action_text: str, channel: str, message_ts: str):
+async def process_entitlement_reply(
+    entitlement_reply: str,
+    user_id: str,
+    action_text: str,
+    response_url: str | None = None,
+    channel: str | None = None,
+    message_ts: str | None = None
+):
     """
     Triggered when an entitlement reply is found, this function will update the original message with the reply message.
     :param entitlement_reply: str: The text to update the asking question with.
     :param user_id: str: ID of the user who answered the entitlement
     :param action_text: str: The text attached to the button, used for string replacement.
+    :param response_url: str: The response URL to use for the update.
     :param channel: str: The channel ID of where the question exists.
     :param message_ts: str: The timestamp of the message. Acts as a unique ID.
     :return: None
@@ -1289,13 +1308,16 @@ async def process_entitlement_reply(entitlement_reply: str, user_id: str, action
         entitlement_reply = entitlement_reply.replace('{user}', f'<@{user_id}>')
     if '{response}' in entitlement_reply and action_text:
         entitlement_reply = entitlement_reply.replace('{response}', str(action_text))
-    await send_slack_request_async(client=ASYNC_CLIENT, method='chat.update',
-                                   body={
-                                       'channel': channel,
-                                       'ts': message_ts,
-                                       'text': entitlement_reply,
-                                       'blocks': []
-                                   })
+    if response_url:
+        requests.post(response_url, json={'text': entitlement_reply, 'replace_original': True})
+    else:
+        await send_slack_request_async(client=ASYNC_CLIENT, method='chat.update',
+                                       body={
+                                           'channel': channel,
+                                           'ts': message_ts,
+                                           'text': entitlement_reply,
+                                           'blocks': []
+                                       })
 
 
 def is_dm(channel: str) -> bool:
@@ -1446,6 +1468,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         message_ts = message.get('ts', '')
         actions = data.get('actions', [])
         state = data.get('state', {})
+        response_url = data.get('response_url', '')
         quick_check_payload = json.dumps(data)
 
         # Check if the message is from a bot so we can quit processing ASAP
@@ -1503,7 +1526,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                         err_message = f'Error submitting context command to server. Check your API Key: {err}'
                         demisto.updateModuleHealth(err_message)
             if entitlement_reply:
-                await process_entitlement_reply(entitlement_reply, user_id, action_text, channel, message_ts)
+                await process_entitlement_reply(entitlement_reply, user_id, action_text, response_url=response_url)
                 reset_listener_health()
                 return
 
@@ -1535,7 +1558,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             user = await get_user_details(user_id=user_id)
             entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
             if entitlement_reply:
-                await process_entitlement_reply(entitlement_reply, user_id, action_text, channel, message_ts)
+                await process_entitlement_reply(entitlement_reply, user_id, action_text, channel=channel, message_ts=message_ts)
                 reset_listener_health()
                 return
 
@@ -2534,7 +2557,7 @@ def long_running_main():
     Starts the long running thread.
     """
     try:
-        asyncio.run(start_listening(), debug=True)
+        asyncio.run(start_listening(), debug=EXTENSIVE_LOGGING)
     except Exception as e:
         demisto.error(f"The Loop has failed to run {str(e)}")
     finally:
@@ -2581,7 +2604,7 @@ def init_globals(command_name: str = ''):
     MAX_LIMIT_TIME = int(demisto.params().get('max_limit_time', '60'))
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
     ENABLE_DM = demisto.params().get('enable_dm', True)
-    DEFAULT_PERMITTED_NOTIFICATION_TYPES = ['externalAskSubmit']
+    DEFAULT_PERMITTED_NOTIFICATION_TYPES = ['externalAskSubmit', 'externalFormSubmit']
     CUSTOM_PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
     PERMITTED_NOTIFICATION_TYPES = DEFAULT_PERMITTED_NOTIFICATION_TYPES + CUSTOM_PERMITTED_NOTIFICATION_TYPES
     MIRRORING_ENABLED = demisto.params().get('mirroring', True)

@@ -12,8 +12,7 @@ from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
-    DEFAULT_MARKETPLACE_WHEN_MISSING,
-    DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
+    DEFAULT_MARKETPLACE_WHEN_MISSING, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
     SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
     ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES, XSIAM_COMPONENT_FILES)
@@ -50,7 +49,7 @@ class CollectionReason(str, Enum):
     TEST_PLAYBOOK_CHANGED = 'test playbook changed'
     MAPPER_CHANGED = 'mapper file changed, configured as incoming_mapper_id in test conf'
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
-    DEFAULT_REPUTATION_TESTS = 'default reputation tests'
+    DEFAULT_REPUTATION_TESTS = 'Indicator type file changed, running reputation tests from conf.json[\'reputation_tests\']'
     ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
     PACK_TEST_DEPENDS_ON = 'a test depends on this pack'
     NON_XSOAR_SUPPORTED = 'support level is not xsoar: collecting the pack, not collecting tests'
@@ -788,7 +787,7 @@ class BranchTestCollector(TestCollector):
                 if pack_to_collect := self._collect_pack(pack_id=pack_id,
                                                          reason=CollectionReason.FILES_REMOVED_FROM_PACK,
                                                          reason_description='',
-                                                         allow_incompatible_marketplace=True):
+                                                         ):
                     collected.append(pack_to_collect)
             except NothingToCollectException as e:
                 logger.info(e.message)
@@ -989,7 +988,7 @@ class BranchTestCollector(TestCollector):
             return self._collect_yml(path)
 
         elif file_type == FileType.REPUTATION:
-            tests = DEFAULT_REPUTATION_TESTS
+            tests = self.conf['reputation_tests']
             reason = CollectionReason.DEFAULT_REPUTATION_TESTS
 
         elif file_type in {FileType.MAPPER, FileType.CLASSIFIER}:

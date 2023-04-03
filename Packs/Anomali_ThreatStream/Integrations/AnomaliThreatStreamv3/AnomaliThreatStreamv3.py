@@ -985,6 +985,10 @@ def import_ioc_without_approval(client: Client, file_id, classification, confide
         tags = argToList(tags)
     if trustedcircles:
         trustedcircles = argToList(trustedcircles)
+    if confidence:
+        confidence = int(confidence)
+    if source_confidence_weight:
+        source_confidence_weight = int(source_confidence_weight)
     try:
         # entry id of uploaded file to war room
         file_info = demisto.getFilePath(file_id)
@@ -994,7 +998,8 @@ def import_ioc_without_approval(client: Client, file_id, classification, confide
         raise DemistoException(f'{THREAT_STREAM} - Entry {file_id} does not contain a valid json file.')
     except Exception:
         raise DemistoException(f'{THREAT_STREAM} - Entry {file_id} does not contain a file.')
-    ioc_to_import.update({'meta': assign_params(
+    meta = ioc_to_import.get('meta', {})
+    meta |= assign_params(
         classification=classification,
         confidence=confidence,
         allow_unresolved=argToBoolean(allow_unresolved),
@@ -1003,8 +1008,9 @@ def import_ioc_without_approval(client: Client, file_id, classification, confide
         severity=severity,
         tags=tags,
         trustedcircles=trustedcircles
-    )})
+    )
 
+    ioc_to_import.update({"meta": meta})
     client.http_request("PATCH", "v1/intelligence/", json=ioc_to_import, resp_type='text')
     return "The data was imported successfully."
 

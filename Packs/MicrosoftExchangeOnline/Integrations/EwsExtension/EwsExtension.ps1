@@ -66,7 +66,7 @@ function CreateNewSession {
         "AllowRedirection"  = $true
         "SessionOption"     = $session_options
     }
-    $session = New-PSSession @sessions_params -WarningAction:SilentlyContinue
+    $session = New-PSSession @sessions_params -WarningAction:SilentlyContinue -ShowBanner:$false
 
     if (!$session) {
         throw "Fail - establishing session to $url"
