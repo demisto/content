@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 from datetime import timedelta
 import dateparser
 
-
+''' CONSTANTS '''
 
 OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 # The token’s time to live is 1 hour,
