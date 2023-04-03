@@ -13,7 +13,7 @@ from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
     DEFAULT_MARKETPLACE_WHEN_MISSING, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
-    ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
+    ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK, ONLY_UPLOAD_PACK_FILE_TYPES,
     SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
     ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES, XSIAM_COMPONENT_FILES)
 from Tests.scripts.collect_tests.exceptions import (
@@ -61,6 +61,7 @@ class CollectionReason(str, Enum):
     MODELING_RULE_NIGHTLY = 'nightly testing of modeling rules'
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
     XSIAM_COMPONENT_CHANGED = 'xsiam component was changed'
+    README_FILE_CHANGED = 'readme file was changed'
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
@@ -532,6 +533,10 @@ class TestCollector(ABC):
                     and not collect_only_to_upload:
                 raise
 
+        # If changes are done to README files. Upload only.
+        if reason == CollectionReason.README_FILE_CHANGED:
+            collect_only_to_upload = True
+
         version_range = content_item_range \
             if pack_metadata.version_range.is_default \
             else (pack_metadata.version_range | content_item_range)
@@ -963,6 +968,15 @@ class BranchTestCollector(TestCollector):
                     reason_description=reason_description,
                     content_item_range=content_item.version_range if content_item else None
                 )
+
+        if file_type in ONLY_UPLOAD_PACK_FILE_TYPES:
+            return self._collect_pack(
+                pack_id=pack_id,
+                reason=CollectionReason.README_FILE_CHANGED,
+                reason_description=reason_description,
+                content_item_range=content_item.version_range if content_item else None
+            )
+
         if content_item:
             try:
                 '''
