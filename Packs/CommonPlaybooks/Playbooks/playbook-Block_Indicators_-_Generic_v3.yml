@@ -10,8 +10,8 @@ description: |+
   - Block Account - Generic v2
   - Block IP - Generic v3
   - Block File - Generic v2
-  - Block Email - Generic
-  - Block Domain - Generic
+  - Block Email - Generic v2
+  - Block Domain - Generic v2
 
 starttaskid: "0"
 tasks:
@@ -91,11 +91,11 @@ tasks:
     nexttasks:
       '#none#':
       - "10"
-      - "11"
-      - "12"
       - "13"
       - "17"
       - "18"
+      - "25"
+      - "24"
     separatecontext: false
     view: |-
       {
@@ -186,156 +186,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "11":
-    id: "11"
-    taskid: dc515274-066d-4d6a-81ec-198ff5c818f8
-    type: playbook
-    task:
-      id: dc515274-066d-4d6a-81ec-198ff5c818f8
-      version: -1
-      name: Block Email - Generic
-      description: This playbook will block emails at your mail relay integration.
-      playbookName: Block Email - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      EmailToBlock:
-        complex:
-          root: inputs.AutoBlockIndicators
-          transformers:
-          - operator: If-Then-Else
-            args:
-              condition:
-                value:
-                  simple: lhs==rhs
-              conditionB: {}
-              conditionInBetween: {}
-              else:
-                value:
-                  simple: Which indicators would you like to block?.Answers.4
-                iscontext: true
-              equals: {}
-              lhs:
-                value:
-                  simple: inputs.AutoBlockIndicators
-                iscontext: true
-              lhsB: {}
-              options: {}
-              optionsB: {}
-              rhs:
-                value:
-                  simple: "True"
-              rhsB: {}
-              then:
-                value:
-                  simple: inputs.EmailToBlock
-                iscontext: true
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "12":
-    id: "12"
-    taskid: cb167974-0620-4c01-80f2-8e62d9446256
-    type: playbook
-    task:
-      id: cb167974-0620-4c01-80f2-8e62d9446256
-      version: -1
-      name: Block Domain - Generic
-      description: |-
-        This playbook blocks malicious Domains using all integrations that are enabled.
-
-        Supported integrations for this playbook:
-        * Zscaler
-        * Symantec Messaging Gateway
-        * FireEye EX
-        * Trend Micro Apex One
-        * Proofpoint Threat Response
-      playbookName: Block Domain - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      Domain:
-        complex:
-          root: inputs.AutoBlockIndicators
-          transformers:
-          - operator: If-Then-Else
-            args:
-              condition:
-                value:
-                  simple: lhs==rhs
-              conditionB: {}
-              conditionInBetween: {}
-              else:
-                value:
-                  simple: Which indicators would you like to block?.Answers.5
-                iscontext: true
-              equals: {}
-              lhs:
-                value:
-                  simple: inputs.AutoBlockIndicators
-                iscontext: true
-              lhsB: {}
-              options: {}
-              optionsB: {}
-              rhs:
-                value:
-                  simple: "True"
-              rhsB: {}
-              then:
-                value:
-                  simple: inputs.DomainToBlock
-                iscontext: true
-      DomainBlackListID:
-        complex:
-          root: inputs.DomainBlackListID
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "13":
     id: "13"
     taskid: 53c7faa6-ec4b-46c0-8322-71972e65dad0
@@ -442,7 +292,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -596,7 +446,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -685,14 +535,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
+          "x": 50,
           "y": 340
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1118,6 +968,147 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 8be5d5f6-b142-415a-8669-90965b645964
+    type: playbook
+    task:
+      id: 8be5d5f6-b142-415a-8669-90965b645964
+      version: -1
+      name: Block Domain - Generic v2
+      playbookName: Block Domain - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.AutoBlockIndicators
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: Which indicators would you like to block?.Answers.5
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.AutoBlockIndicators
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "True"
+              rhsB: {}
+              then:
+                value:
+                  simple: inputs.DomainToBlock
+                iscontext: true
+      DomainBlackListID:
+        complex:
+          root: inputs.DomainBlackListID
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: eb042e15-af15-4142-8fa9-f05d0d283499
+    type: playbook
+    task:
+      id: eb042e15-af15-4142-8fa9-f05d0d283499
+      version: -1
+      name: Block Email - Generic v2
+      playbookName: Block Email - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      EmailToBlock:
+        complex:
+          root: inputs.AutoBlockIndicators
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: Which indicators would you like to block?.Answers.4
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.AutoBlockIndicators
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "True"
+              rhsB: {}
+              then:
+                value:
+                  simple: inputs.EmailToBlock
+                iscontext: true
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
