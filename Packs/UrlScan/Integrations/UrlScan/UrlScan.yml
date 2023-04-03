@@ -413,6 +413,9 @@ script:
     - contextPath: URL.Tags
       description: Tags that are associated with the URL.
       type: String
+    - contextPath: URL.ResultPage
+      description: Page in the URLScan UI displaying the scan result.
+      type: String
     polling: true
   - arguments:
     - description: The UUID of the URL for which to search the transaction list.
