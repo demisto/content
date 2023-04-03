@@ -57,7 +57,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If true, the command will create events, otherwise it will only display them.
+      description: Set this argument to True in order to create events, otherwise the command will only display them. Default is False.
       isArray: false
       name: should_push_events
       predefined:
@@ -65,7 +65,7 @@ script:
       - 'false'
       required: true
     deprecated: false
-    description: Gets events from Oracle Cloud Infrastructure.
+    description: Manual command to fetch and display events.
     execution: false
     name: oracle-cloud-infrastructure-get-events
   dockerimage: demisto/oci:1.0.0.51831
