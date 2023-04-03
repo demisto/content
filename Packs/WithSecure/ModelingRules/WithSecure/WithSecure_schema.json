@@ -1,13 +1,5 @@
 {
     "with_secure_endpoint_protection_raw": {
-        "_raw_log": {
-            "type": "string",
-            "is_array": false
-        },
-        "proto": {
-            "type": "string",
-            "is_array": false
-        },
         "details": {
             "type": "string",
             "is_array": false
