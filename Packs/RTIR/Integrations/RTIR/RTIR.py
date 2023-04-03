@@ -477,9 +477,9 @@ def edit_ticket():
         cf_list = customfields.split(',')
         for cf in cf_list:
             equal_index = cf.index('=')
-            key = f'CF-{cf[:equal_index]}'
+            key = 'CF-{}: '.format(cf[:equal_index])
             value = cf[equal_index + 1:]
-            content = f"{content} {key}: {value} '\n'"
+            content = content + key + value + '\n'
 
     if arguments_given:
         encoded = "content=" + urllib.parse.quote_plus(content.encode('utf-8'))
