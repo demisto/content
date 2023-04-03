@@ -15,13 +15,9 @@ This pack includes the RunZero integration and RunZeroEventCollector integration
 - Add or edit comment on an asset or service.
 - Add tags to an asset or service.
 - Remove tags from assets or services.
-- Fetches RunZero events.
-- Fetches RunZero2 events2.
-- Fetches RunZero2 events3.
 
 <~XSIAM>
 ### RunZeroEventCollector integration for XSIAM:
 - Fetches RunZero events.
 - Fetches RunZero2 events2.
-- Fetches RunZero2 events3.
 </~XSIAM>
