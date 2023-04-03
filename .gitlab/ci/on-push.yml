@@ -285,14 +285,14 @@ mpv2-prepare-testing-bucket:
     - job-done
     - exit $EXIT_CODE
 
-xsoar_server_6_5:
+xsoar_server_6_9:
   extends: .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
-    INSTANCE_ROLE: "Server 6.5"
+    INSTANCE_ROLE: "Server 6.9"
 
 xsoar_server_6_6:
   extends: .test_content_on_xsoar_server_instances_base
