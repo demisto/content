@@ -215,3 +215,6 @@ filter latest_1  ~= "from\s\d+\.\d+\.\d+\.\d+\/\d+\s*to\s*\d+\.\d+\.\d+\.\d+\/\d
     xdm.event.outcome_reason = action,
     xdm.observer.name = host_ip ,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
+
+//src <source_ip>/<source_port> dst <dest_ip>/<dest_port>
+| filter _raw_log  ~= "src\s\d+\.\d+\.\d+\.\d+\/\d+\sdst\s\d+\.\d+\.\d+\.\d+\/\d+"
