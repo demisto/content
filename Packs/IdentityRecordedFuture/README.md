@@ -20,3 +20,6 @@ All the playbooks are meant to be used as sub-playbooks to get Identities data.
 
 * Recorded Future External Usecase Playbook
 * Recorded Future Workforce Usecase Playbook
+* Recorded Future Identity - Create Incident (sub)
+* Recorded Future Identity - Lookup Identities (parent)
+* Recorded Future Identity - Identity Found (incident)

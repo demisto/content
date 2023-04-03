@@ -39,4 +39,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Identity - Create Incident (subplaybook)](../doc_files/create_incident_playbook.png)
+![Identity - Create Incident (subplaybook)](../doc_files/Recorded_Future_Identity_-_Create_Incident_(sub).png)

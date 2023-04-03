@@ -42,4 +42,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Identity - Identity Found (incident)](../doc_files/identity_found_playbook.png)
+![Identity - Identity Found (incident)](../doc_files/Recorded_Future_Identity_-_Identity_Found_(incident).png)

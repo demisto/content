@@ -1,6 +1,8 @@
-id: Identity - Lookup Identities (parent)
+id: Recorded Future Identity - Lookup Identities (parent)
 version: -1
-name: Identity - Lookup Identities (parent)
+name: Recorded Future Identity - Lookup Identities (parent)
+description: This playbook was developed as a template to look up exposed identities
+  and generate incidents if they exist; it can be used within a job.
 starttaskid: "0"
 tasks:
   "0":
@@ -259,7 +261,7 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.8.0
+fromversion: 6.5.0
+sourceplaybookid: Recorded Future Identity - Lookup Identities (parent)
 tests:
 - No tests (auto formatted)
-description: ''

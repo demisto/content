@@ -1,7 +1,7 @@
-id: 'Identity - Identity Found (incident)'
+id: 'Recorded Future Identity - Identity Found (incident)'
 version: -1
-name: 'Identity - Identity Found (incident)'
-description: 'Identity playbook for Incident when the Identity has been found in Recorded Future Identity Dataset.'
+name: 'Recorded Future Identity - Identity Found (incident)'
+description: This playbook was developed as a template response when an Identity has been found and a Recorded Future Identity Incident has been created.
 starttaskid: "0"
 tasks:
   "0":
@@ -48,7 +48,7 @@ tasks:
       brand: Recorded Future Identity
     nexttasks:
       '#none#':
-      - "5"
+      - "16"
     scriptarguments:
       identities:
         simple: ${incident.accountname}
@@ -90,8 +90,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 360
+          "x": 265,
+          "y": 545
         }
       }
     note: false
@@ -121,7 +121,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -200,7 +200,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -234,7 +234,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -265,7 +265,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -295,7 +295,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -325,7 +325,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -404,7 +404,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -434,7 +434,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -468,7 +468,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -489,13 +489,82 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1770
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 803577b8-ce99-4b4c-8d40-dee7ccae084a
+    type: condition
+    task:
+      id: 803577b8-ce99-4b4c-8d40-dee7ccae084a
+      version: -1
+      name: Is Active Directory integration available
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "17"
+      "yes":
+      - "5"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 6f5f0c11-1483-42f4-8980-8743fd05d068
+    type: regular
+    task:
+      id: 6f5f0c11-1483-42f4-8980-8743fd05d068
+      version: -1
+      name: Review account
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
         }
       }
     note: false
@@ -510,20 +579,16 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1785,
+        "height": 1960,
         "width": 1240,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs:
-- key: ExposedIdentity
-  value: {}
-  required: false
-  description: ""
-  playbookInputQuery:
+inputs: []
 outputs: []
-fromversion: 6.8.0
+sourceplaybookid: Recorded Future Identity - Identity Found (incident)
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

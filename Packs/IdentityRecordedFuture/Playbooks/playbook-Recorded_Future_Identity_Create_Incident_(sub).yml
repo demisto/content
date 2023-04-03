@@ -1,8 +1,11 @@
-id: Identity - Create Incident (sub)
+id: Recorded Future Identity - Create Incident (sub)
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Identity - Create Incident (sub)
+name: Recorded Future Identity - Create Incident (sub)
+description: This playbook was developed as a sub-playbook to generate incidents for
+  each exposed identity found in the Recorded Future Identity - Lookup Identities
+  (parent) playbook.x§
 starttaskid: "0"
 tasks:
   "0":
@@ -216,7 +219,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -233,15 +235,15 @@ inputs:
 - key: ExposedIdentity
   value: {}
   required: true
-  description: ""
+  description: The exposed identity found. \nEx. username or email from 'recordedfuture-identity-search' command
   playbookInputQuery:
 - key: Domain
   value: {}
   required: false
-  description: ""
+  description: The domain found with the exposed identity.
   playbookInputQuery:
 outputs: []
-fromversion: 6.8.0
+sourceplaybookid: Recorded Future Identity - Create Incident (sub)
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
-description: ''
