@@ -55,7 +55,15 @@ poetry check
 echo "Installing dependencies..."
 if [ -n "$CI" ]; then
     echo "Detected CI env. Running extra requiements"
-    poetry install --with ci
+    for _ in {1..3}; do
+        poetry install --with ci && s=0 && break || s=$?
+        echo "Sleeping for 10 seconds before retrying"
+        sleep 10
+    done
+    if [ $s -ne 0 ]; then
+        echo "Failed to install dependencies after 3 tries"
+        exit 1
+    fi
 else
     echo "Detected local env."
     poetry install
