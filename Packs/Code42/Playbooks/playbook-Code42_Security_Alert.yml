@@ -2,7 +2,7 @@ id: Code42 Security Alert
 version: -1
 fromversion: "6.8.0"
 name: Code42 Security Alert
-description: 'Retrieves Incydr alert details, assigns the alert to an analyst, and gathers employee and supervisor data from Active Directory, if applicable. Note: this playbook should be used when the Code42 Incydr integration is set to "Fetch Incidents".'
+description: 'Retrieves Incydr alert details, assigns the alert to an analyst, and gathers employee and supervisor data from Active Directory, if applicable. Note: this playbook can be used as an alternate default to "Code42 Exfiltration Playbook" when the Code42 Incydr integration is set to "Fetch Incidents".'
 tags:
 - Code42 Incydr
 starttaskid: "0"
