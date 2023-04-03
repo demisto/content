@@ -38,10 +38,12 @@ def __line__():
     return cf.f_back.f_lineno  # type: ignore[union-attr]
 
 
-# 42 - The line offset from the beggining of the file.
+# 43 - The line offset from the beginning of the file.
 _MODULES_LINE_MAPPING = {
     'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
 }
+
+XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -2629,7 +2631,12 @@ def xml2json(xmlstring, options={}, strip_ns=1, strip=1):
        :return: The converted JSON
        :rtype: ``dict`` or ``list``
     """
-    elem = ET.fromstring(xmlstring)
+    try:
+        import defusedxml.ElementTree as defused_ET
+        elem = defused_ET.fromstring(xmlstring)
+    except ImportError:
+        demisto.debug('defused_ET is not supported, using ET instead.')
+        elem = ET.fromstring(xmlstring)
     return elem2json(elem, options, strip_ns=strip_ns, strip=strip)
 
 
@@ -7255,6 +7262,31 @@ def append_metrics(execution_metrics, results):
     return results
 
 
+def convert_dict_values_bytes_to_str(input_dict):  # type: ignore
+    """
+    Converts byte dict values to str
+    :type input_dict: ``dict``
+    :param input_dict: dict to converts its values.
+
+    :return: dict contains str instead of bytes.
+    :rtype: ``dict``
+    """
+    output_dict = {}
+    for key, value in input_dict.items():
+        if isinstance(value, dict):
+            output_dict[key] = convert_dict_values_bytes_to_str(value)
+        elif isinstance(value, bytes):
+            output_dict[key] = value.decode()
+        elif isinstance(value, list):
+            output_dict[key] = [
+                convert_dict_values_bytes_to_str(item) if isinstance(item, dict)
+                else item.decode() if isinstance(item, bytes) else item
+                for item in value]
+        else:
+            output_dict[key] = value
+    return output_dict
+
+
 class CommandRunner:
     """
     Class for executing multiple commands and save the results of each command.
@@ -10801,7 +10833,9 @@ def xsiam_api_call_with_retries(
     zipped_data,
     headers,
     num_of_attempts,
-    events_error_handler=None
+    events_error_handler=None,
+    error_msg='',
+    is_json_response=False
 ):
     """
     Send the fetched events into the XDR data-collector private api.
@@ -10817,6 +10851,9 @@ def xsiam_api_call_with_retries(
 
     :type headers: ``dict``
     :param headers: headers for the request
+    
+    :type error_msg: ``str``
+    :param error_msg: The error message prefix in case of an error.
 
     :type num_of_attempts: ``int``
     :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes).
@@ -10824,8 +10861,8 @@ def xsiam_api_call_with_retries(
     :type events_error_handler: ``callable``
     :param events_error_handler: error handler function
 
-    :return: Response object
-    :rtype: ``requests.Response``
+    :return: Response object or DemistoException
+    :rtype: ``requests.Response`` or ``DemistoException``
     """
     # retry mechanism in case there is a rate limit (429) from xsiam.
     status_code = None
@@ -10850,8 +10887,39 @@ def xsiam_api_call_with_retries(
         if status_code == 429:
             time.sleep(1)
         attempt_num += 1
-
+    if is_json_response and response:
+        response = response.json()
+        if response.get('error', '').lower() != 'false':
+            raise DemistoException(error_msg + response.get('error'))
     return response
+
+
+def split_data_to_chunks(data, target_chunk_size):
+    """
+    Splits a string of data into chunks of an approximately specified size.
+    The actual size can be lower.
+
+    :type data: ``list`` or a ``string``
+    :param data: A list of data or a string delimited with \n  to split to chunks.
+    :type target_chunk_size: ``int``
+    :param target_chunk_size: The maximum size of each chunk.
+
+    :return: : An iterable of lists where each list contains events with approx size of chunk size.
+    :rtype: ``collections.Iterable[list]``
+    """
+    chunk = []  # type: ignore[var-annotated]
+    chunk_size = 0
+    if isinstance(data, str):
+        data = data.split('\n')
+    for data_part in data:
+        if chunk_size >= target_chunk_size:
+            yield chunk
+            chunk = []
+            chunk_size = 0
+        chunk.append(data_part)
+        chunk_size += sys.getsizeof(data_part)
+    if chunk_size != 0:
+        yield chunk
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3):
@@ -10959,16 +11027,17 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
 
-    zipped_data = gzip.compress(data.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
     client = BaseClient(base_url=xsiam_url)
-
-    raw_response = xsiam_api_call_with_retries(
-        client, xsiam_url, zipped_data, headers, num_of_attempts, events_error_handler
-    ).json()
-
-    if raw_response.get('error').lower() != 'false':
-        raise DemistoException(header_msg + raw_response.get('error'))
-
+    data_chunks = split_data_to_chunks(data, XSIAM_EVENT_CHUNK_SIZE)
+    amount_of_events = 0
+    for data_chunk in data_chunks:
+        amount_of_events += len(data_chunk)
+        data_chunk = '\n'.join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
+        xsiam_api_call_with_retries(client=client, events_error_handler=events_error_handler,
+                                    error_msg=header_msg, headers=headers,
+                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
+                                    zipped_data=zipped_data, is_json_response=True)
     demisto.updateModuleHealth({'eventsPulled': amount_of_events})
 
 

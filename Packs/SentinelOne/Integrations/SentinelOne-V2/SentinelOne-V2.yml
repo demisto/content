@@ -92,6 +92,23 @@ configuration:
     defaultvalue: "1"
     type: 19
     additionalinfo: null
+  - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne).'
+    defaultvalue: None
+    display: Incident Mirroring Direction
+    name: mirror_direction
+    options:
+    - None
+    - Incoming
+    - Outgoing
+    - Incoming And Outgoing
+    required: false
+    type: 15
+  - additionalinfo: When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR.
+    defaultvalue: 'false'
+    display: Close Mirrored XSOAR Incident
+    name: close_xsoar_incident
+    required: false
+    type: 8
 description: Use the SentinelOne integration to send requests to your management
   server and get responses with data pulled from agents or from the management
   database.
@@ -2298,13 +2315,86 @@ script:
         - contextPath: SentinelOne.RemoveItemFromWhitelist.item
           description: Item removed fom whitelist.
           type: String
+    - arguments:
+        - name: account_ids
+          required: true
+          description: A comma-separated list of account IDs.
+          isArray: true
+        - name: output_destination
+          required: true
+          auto: PREDEFINED
+          predefined:
+          - DataSetCloud
+          - Local
+          - None
+          - SentinelCloud
+          description: 'Output destination. Possible values: DataSetCloud/Local/None/SentinelCloud.'
+        - name: task_description
+          required: true
+          description: Task description.
+        - name: script_id
+          required: true
+          description: Script ID.
+        - name: output_directory
+          required: true
+          description: Output directory
+        - name: agent_ids
+          required: true
+          description: A comma-separated list of agent IDs on which the script should run.
+          isArray: true
+      outputs:
+        - contextPath: SentinelOne.RunRemoteScript.pendingExecutionId
+          description: ID of the created pending execution. Present only if pending flag is true.
+          type: string
+        - contextPath: SentinelOne.RunRemoteScript.pending
+          description: Flag indicating if the requested script execution requires approval and is created as a pending execution.
+          type: boolean
+        - contextPath: SentinelOne.RunRemoteScript.affected
+          description: Number of entities affected by the requested operation.
+          type: number
+        - contextPath: SentinelOne.RunRemoteScript.parentTaskId
+          description: The parent task ID of the script execution task. Null in case of pending execution.
+          type: string
+      description: Run a remote script that was uploaded to the SentinelOne Script Library.
+      name: sentinelone-run-remote-script
+    - arguments: []
+      description: Returns the list of fields for an incident type.
+      name: get-mapping-fields
+    - arguments: []
+      description: Pushes local changes to the remote system.
+      name: update-remote-system
+    - arguments:
+      - description: The ticket ID.
+        name: id
+        required: true
+      - description: Retrieve entries that were created after lastUpdate.
+        name: lastUpdate
+        required: true
+      description: Get remote data from a remote incident. This method does not update
+        the current incident, and should be used for debugging purposes.
+      name: get-remote-data
+    - arguments:
+      - description: Retrieve entries that were created after lastUpdate.
+        name: last_update
+        required: false
+      description: Gets the list of incidents that were modified since the last update
+        time. Note that this method is here for debugging purposes. The get-modified-remote-data
+        command is used as part of a Mirroring feature, which is available from version
+        6.1.
+      name: get-modified-remote-data 
   dockerimage: demisto/python3:3.10.10.50695
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
   script: ""
   type: python
   subtype: python3
 tests:
-  - SentinelOne V2.1 - Test
-  - SentinelOne V2.0 - Test
+- SentinelOne V2.1 - Test
+- SentinelOne V2.0 - Test
 fromversion: 5.0.0
+defaultclassifier: SentinelOne Classifier
+defaultmapperin: SentinelOne Incoming Mapper
+defaultmapperout: SentinelOne - Outgoing Mapper
