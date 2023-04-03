@@ -522,7 +522,6 @@ class TestCollector(ABC):
             # collect only to upload if:
             # 1. collecting for marketplacev2 and pack is XSOAR & XSIAM - we want it to be uploaded but not installed
             # 2. allow_incompatible_marketplace=False, if True, then should be also to install
-            # 3. If changes are done to README files. Upload only.
             if self.marketplace == MarketplaceVersions.MarketplaceV2 and is_xsoar_and_xsiam_pack and \
                     not allow_incompatible_marketplace:
                 collect_only_to_upload = True
@@ -534,6 +533,7 @@ class TestCollector(ABC):
                     and not collect_only_to_upload:
                 raise
         finally:
+            # If changes are done to README files. Upload only.
             if reason == CollectionReason.README_FILE_CHANGED:
                 collect_only_to_upload = True
 
