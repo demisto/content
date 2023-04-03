@@ -1850,7 +1850,7 @@ def get_alert_profiles_command(client, args):
     Returns:
         CommandResults: command-results object.
     """
-    project = args.get("project", None)
+    project = args.get("project")
     response = client.get_alert_profiles_request(project)
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.AlertProfiles',
@@ -1917,7 +1917,7 @@ def get_backups_command(client, args):
     Returns:
         CommandResults: command-results object.
     """
-    project = args.get("project", None)
+    project = args.get("project")
     response = client.get_backups_request(project)
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.Backups',
