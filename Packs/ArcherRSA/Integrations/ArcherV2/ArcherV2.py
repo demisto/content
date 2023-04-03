@@ -2,10 +2,10 @@ from datetime import timezone
 from typing import Dict, Tuple, Union
 
 import dateparser
+import json
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
-
 
 ''' IMPORTS '''
 
@@ -47,98 +47,118 @@ def parser(date_str, date_formats=None, languages=None, locales=None, region=Non
 
 
 def get_token_soap_request(user, password, instance, domain=None):
-
     if domain:
-        return_xml = '<?xml version="1.0" encoding="utf-8"?>' + \
-            '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
-            '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-            '    <soap:Body>' + \
-            '        <CreateDomainUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
-            f'            <userName>{user}</userName>' + \
-            f'            <instanceName>{instance}</instanceName>' + \
-            f'            <password>{password}</password>' + \
-            f'            <usersDomain>{domain}</usersDomain>' + \
-            '        </CreateDomainUserSessionFromInstance>' + \
-            '    </soap:Body>' + \
-            '</soap:Envelope>'
+        # Create the root element
+        root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance",
+                                            "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                            "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+        # Create the soap:Body element
+        body = ET.SubElement(root, "soap:Body")
+        # Create the CreateUserSessionFromInstance element
+        create_user_session = ET.SubElement(body, "CreateDomainUserSessionFromInstance",
+                                            {"xmlns": "http://archer-tech.com/webservices/"})
+        # Add the userName, instanceName, and password elements
+        ET.SubElement(create_user_session, "userName").text = user
+        ET.SubElement(create_user_session, "instanceName").text = instance
+        ET.SubElement(create_user_session, "password").text = password
+        ET.SubElement(create_user_session, "usersDomain").text = domain
     else:
-        return_xml = '<?xml version="1.0" encoding="utf-8"?>' + \
-            '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
-            '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-            '    <soap:Body>' + \
-            '        <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
-            f'            <userName>{user}</userName>' + \
-            f'            <instanceName>{instance}</instanceName>' + \
-            f'            <password>{password}</password>' + \
-            '        </CreateUserSessionFromInstance>' + \
-            '    </soap:Body>' + \
-            '</soap:Envelope>'
-    return return_xml
+        # Create the root element
+        root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                                            "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                            "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+        # Create the soap:Body element
+        body = ET.SubElement(root, "soap:Body")
+        # Create the CreateUserSessionFromInstance element
+        create_user_session = ET.SubElement(body, "CreateUserSessionFromInstance",
+                                            {"xmlns": "http://archer-tech.com/webservices/"})
+        # Add the userName, instanceName, and password elements
+        ET.SubElement(create_user_session, "userName").text = user
+        ET.SubElement(create_user_session, "instanceName").text = instance
+        ET.SubElement(create_user_session, "password").text = password
+
+    return ET.tostring(root)
 
 
 def terminate_session_soap_request(token):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
-           ' xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <TerminateSession xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           '        </TerminateSession>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+    # Create the root element
+    root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                                        "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                        "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+    # Create the soap:Body element
+    body = ET.SubElement(root, "soap:Body")
+    # Create the TerminateSession element
+    terminate_session = ET.SubElement(body, "TerminateSession", {"xmlns": "http://archer-tech.com/webservices/"})
+    # Add the sessionToken element
+    ET.SubElement(terminate_session, "sessionToken").text = token
+
+    return ET.tostring(root)
 
 
 def get_reports_soap_request(token):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
-           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <GetReports xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           '        </GetReports>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+    root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                                        "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                        "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+    # Create the soap:Body element
+    body = ET.SubElement(root, "soap:Body")
+    # Create the GetReports element
+    get_reports = ET.SubElement(body, "GetReports", {"xmlns": "http://archer-tech.com/webservices/"})
+    # Add the sessionToken element
+    ET.SubElement(get_reports, "sessionToken").text = token
+    return ET.tostring(root)
 
 
 def get_statistic_search_report_soap_request(token, report_guid, max_results):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
-           ' xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <ExecuteStatisticSearchByReport xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           f'            <reportIdOrGuid>{report_guid}</reportIdOrGuid>' + \
-           f'            <pageNumber>{max_results}</pageNumber>' + \
-           '        </ExecuteStatisticSearchByReport>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+    # Create the root element
+    root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                                        "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                        "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+    # Create the soap:Body element
+    body = ET.SubElement(root, "soap:Body")
+    # Create the ExecuteStatisticSearchByReport element
+    execute_statistic_search = ET.SubElement(body, "ExecuteStatisticSearchByReport",
+                                             {"xmlns": "http://archer-tech.com/webservices/"})
+    # Add the sessionToken, reportIdOrGuid and pageNumber elements
+    ET.SubElement(execute_statistic_search, "sessionToken").text = token
+    ET.SubElement(execute_statistic_search, "reportIdOrGuid").text = report_guid
+    ET.SubElement(execute_statistic_search, "pageNumber").text = str(max_results)
+
+    return ET.tostring(root)
 
 
 def get_search_options_soap_request(token, report_guid):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
-           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <GetSearchOptionsByGuid xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           f'            <searchReportGuid>{report_guid}</searchReportGuid>' + \
-           '        </GetSearchOptionsByGuid>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+    # Create the root element
+    root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                                        "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                        "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+    # Create the soap:Body element
+    body = ET.SubElement(root, "soap:Body")
+    # Create the GetSearchOptionsByGuid element
+    get_search_options_by_grid = ET.SubElement(body, "GetSearchOptionsByGuid",
+                                               {"xmlns": "http://archer-tech.com/webservices/"})
+    # Add the sessionToken and searchReportGuid elements
+    ET.SubElement(get_search_options_by_grid, "sessionToken").text = token
+    ET.SubElement(get_search_options_by_grid, "searchReportGuid").text = report_guid
+
+    return ET.tostring(root)
 
 
 def search_records_by_report_soap_request(token, report_guid):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
-           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <SearchRecordsByReport xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           f'            <reportIdOrGuid>{report_guid}</reportIdOrGuid>' + \
-           '            <pageNumber>1</pageNumber>' + \
-           '        </SearchRecordsByReport>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+    # Create the root element
+    root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                                        "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                        "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+    # Create the soap:Body element
+    body = ET.SubElement(root, "soap:Body")
+    # Create the SearchRecordsByReport element
+    search_records_by_report = ET.SubElement(body, "SearchRecordsByReport",
+                                             {"xmlns": "http://archer-tech.com/webservices/"})
+    # Add the sessionToken, reportIdOrGuid and pageNumber elements
+    ET.SubElement(search_records_by_report, "sessionToken").text = token
+    ET.SubElement(search_records_by_report, "reportIdOrGuid").text = report_guid
+    ET.SubElement(search_records_by_report, "pageNumber").text = '1'
+
+    return ET.tostring(root)
 
 
 def search_records_soap_request(
@@ -146,6 +166,7 @@ def search_records_soap_request(
         field_to_search_by_id='', numeric_operator='', max_results=10, level_id='',
         sort_type: str = 'Ascending'
 ):
+    # CDATA is not supported in Element Tree, therefore keeping original structure.
     request_body = '<?xml version="1.0" encoding="UTF-8"?>' + \
                    '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" ' \
                    'xmlns:xsd="http://www.w3.org/2001/XMLSchema"' \
@@ -400,7 +421,7 @@ class Client(BaseClient):
 
         return level_data
 
-    def get_record(self, app_id, record_id):
+    def get_record(self, app_id, record_id, depth):
         res = self.do_request('GET', f'{API_ENDPOINT}/core/content/{record_id}')
 
         if not isinstance(res, dict):
@@ -426,7 +447,7 @@ class Client(BaseClient):
                     field_value = field.get('IpAddressBytes')
                 # when field type is Values List
                 elif field_type == 4 and field.get('Value') and field['Value'].get('ValuesListIds'):
-                    list_data = self.get_field_value_list(_id)
+                    list_data = self.get_field_value_list(_id, depth)
                     list_ids = field['Value']['ValuesListIds']
                     list_ids = list(filter(lambda x: x['Id'] in list_ids, list_data['ValuesList']))
                     field_value = list(map(lambda x: x['Name'], list_ids))
@@ -509,7 +530,7 @@ class Client(BaseClient):
             if field_name in fields_to_display:
                 fields_xml += f'<DisplayField name="{field_name}">{field}</DisplayField>'
             if (field_to_search and field_name.lower() == field_to_search.lower()) or \
-               (field_to_search_by_id and field_name.lower() == field_to_search_by_id.lower()):
+                    (field_to_search_by_id and field_name.lower() == field_to_search_by_id.lower()):
                 search_field_name = field_name
                 search_field_id = field
 
@@ -563,7 +584,18 @@ class Client(BaseClient):
                 records.append({'record': record, 'raw': item})
         return records
 
-    def get_field_value_list(self, field_id):
+    def get_field_value_list_helper(self, child, values_list, depth, parent='root'):
+        values_list.append({'Id': child['Data']['Id'],
+                            'Name': child['Data']['Name'],
+                            'IsSelectable': child['Data']['IsSelectable'],
+                            'Parent': parent,
+                            'Depth': child.get('Depth')})
+        depth -= 1
+        if depth > -1:
+            for grandchild in child.get('Children', []):
+                self.get_field_value_list_helper(grandchild, values_list, depth, child['Data']['Name'])
+
+    def get_field_value_list(self, field_id, depth=0):
         cache = get_integration_context()
 
         if cache['fieldValueList'].get(field_id):
@@ -583,11 +615,9 @@ class Client(BaseClient):
             list_id = res['RequestedObject']['RelatedValuesListId']
             values_list_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}')
             if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
-                values_list = []
-                for value in values_list_res['RequestedObject'].get('Children'):
-                    values_list.append({'Id': value['Data']['Id'],
-                                        'Name': value['Data']['Name'],
-                                        'IsSelectable': value['Data']['IsSelectable']})
+                values_list: List[Dict[str, Any]] = []
+                for value in values_list_res['RequestedObject'].get('Children', ()):
+                    self.get_field_value_list_helper(value, values_list, depth)
                 field_data = {'FieldId': field_id, 'ValuesList': values_list}
 
                 cache['fieldValueList'][field_id] = field_data
@@ -658,7 +688,7 @@ def extract_from_xml(xml, path):
     return xml
 
 
-def generate_field_contents(client, fields_values, level_fields):
+def generate_field_contents(client, fields_values, level_fields, depth):
     if fields_values and not isinstance(fields_values, dict):
         demisto.debug(f"fields values are: {fields_values}")
         fields_values = re.sub(r'\\(?!")', r'\\\\', fields_values)
@@ -678,7 +708,8 @@ def generate_field_contents(client, fields_values, level_fields):
                 break
 
         if field_data:
-            field_key, field_value = generate_field_value(client, field_name, field_data, fields_values[field_name])
+            field_key, field_value = generate_field_value(client, field_name, field_data, fields_values[field_name],
+                                                          depth)
 
             field_content[_id] = {'Type': field_data['Type'],
                                   field_key: field_value,
@@ -686,13 +717,13 @@ def generate_field_contents(client, fields_values, level_fields):
     return field_content
 
 
-def generate_field_value(client, field_name, field_data, field_val):
+def generate_field_value(client, field_name, field_data, field_val, depth):
     field_type = field_data['Type']
 
     # when field type is Values List, call get_field_value_list method to get the value ID
     # for example: {"Type":["Switch"], fieldname:[value1, value2]}
     if field_type == 4:
-        field_data = client.get_field_value_list(field_data['FieldId'])
+        field_data = client.get_field_value_list(field_data['FieldId'], depth)
         list_ids = []
         if not isinstance(field_val, list):
             field_val = [field_val]
@@ -885,7 +916,8 @@ def get_record_command(client: Client, args: Dict[str, str]):
     record_id = args.get('contentId')
     app_id = args.get('applicationId')
 
-    record, res, errors = client.get_record(app_id, record_id)
+    depth = arg_to_number(args.get('depth', '0'))
+    record, res, errors = client.get_record(app_id, record_id, depth)
     if errors:
         return_error(errors)
 
@@ -902,8 +934,8 @@ def create_record_command(client: Client, args: Dict[str, str]):
     fields_values = args.get('fieldsToValues')
     level_id = args.get('levelId')
     level_data = client.get_level_by_app_id(app_id, level_id)
-
-    field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
+    depth = arg_to_number(args.get('depth', '0'))
+    field_contents = generate_field_contents(client, fields_values, level_data['mapping'], depth)
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
 
@@ -934,8 +966,8 @@ def update_record_command(client: Client, args: Dict[str, str]):
     fields_values = args.get('fieldsToValues')
     level_id = args.get('levelId')
     level_data = client.get_level_by_app_id(app_id, level_id)
-
-    field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
+    depth = arg_to_number(args.get('depth', '0'))
+    field_contents = generate_field_contents(client, fields_values, level_data['mapping'], depth)
 
     body = {'Content': {'Id': record_id, 'LevelId': level_data['level'], 'FieldContents': field_contents}}
     res = client.do_request('Put', f'{API_ENDPOINT}/core/content', data=body)
@@ -986,7 +1018,8 @@ def reset_cache_command(client: Client, args: Dict[str, str]):
 
 def get_value_list_command(client: Client, args: Dict[str, str]):
     field_id = args.get('fieldID')
-    field_data = client.get_field_value_list(field_id)
+    depth = arg_to_number(args.get('depth', '0'))
+    field_data = client.get_field_value_list(field_id, depth)
 
     markdown = tableToMarkdown(f'Value list for field {field_id}', field_data['ValuesList'])
 
@@ -1131,8 +1164,9 @@ def search_records_command(client: Client, args: Dict[str, str]):
 
     if full_data:
         records_full = []
+        depth = arg_to_number(args.get('depth', '0'))
         for rec in records:
-            record_item, _, errors = client.get_record(app_id, rec['Id'])
+            record_item, _, errors = client.get_record(app_id, rec['Id'], depth)
             if not errors:
                 records_full.append(record_item)
         records = records_full

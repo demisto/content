@@ -1,4 +1,4 @@
-Set a value built by a template in context under the key you entered.
+Returns a string concatenated with given prefix & suffix which supports DT expressions.
 
 ## Script Data
 ---
@@ -6,22 +6,22 @@ Set a value built by a template in context under the key you entered.
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Tags | Utility |
+| Tags | transformer, general, string |
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
 ---
 
-| **Argument Name** | **Description**                                                                                                                          |
-| --- |------------------------------------------------------------------------------------------------------------------------------------------|
-| key | The key to set. Can be a full path such as "Key.ID". If using append=true can also use a DT selector such as "Data\(val.ID == obj.ID\)". |
-| template | The template text which can include DT expressions such as $\{value\}.                                                                   |
-| append | If false, the context key will be overwritten. If set to true, the script will be appended to the existing context key.                  |
-| stringify | Whether to save the argument as a string. The default value is "noop".                                                                   |
-| force | Whether to force the creation of the context. The default value is "false".                                                              |
-| context | The context data that overwrites the XSOAR context.                                                                                      |
-| variable_markers | The pair of start and end markers to bracket a variable name.                                                                            |
-| keep_symbol_to_null | Set to true to not replace a value if the variable is null, otherwise false.                                                             |
+| **Argument Name** | **Description** |
+| --- | --- |
+| value | The text to be concatenated with prefix &amp;amp; suffix  |
+| prefix | A prefix to concat to the start of the argument |
+| suffix | A prefix to concat to the end of the argument |
+| ctx_data | Context Data: Input . \(single dot\) on \`From previous tasks\` to enable to extract the context data. |
+| ctx_inputs | \`inputs\` context: Input 'inputs' \(no quotation\) on \`From previous tasks\` to enable $\{inputs.\} expression in DT. |
+| ctx_inc | \`demisto\` context: Input 'incident' \(no quotation\) on \`From previous tasks\` to enable $\{incident.\} expression in DT. |
+| variable_markers | The pair of start and end markers to bracket a variable name |
+| keep_symbol_to_null | Set to true not to replace a value if the variable is null, otherwise false. |
 
 ## Outputs
 ---
@@ -29,159 +29,202 @@ There are no outputs for this script.
 
 ## Getting Started
 ---
-The script builds a text from a template text which includes variables such as:
-This is a test message for ${user_name}.
-
-The template will be formatted to `This is a test message for John Doe.` by replacing variable parameters.
-
-By default, a variable name starts with `${` and ends with `}` . You can change the start marker and end marker by specifying the `variable_markers` parameter.
+The transformer concatenates prefix and suffix which supports DT expressions to the string.
 
 ## Examples
 ---
 
-### Replace variables in a text based on the context data.
+### Build an email address from a user ID by appending a domain
 
-#### Command
-```
-!SetWithTemplate key=out template=${lists.Template}
-```
-
-#### Lists Library
-Template:
-```
-My name is ${first_name} ${last_name}.
-```
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | jdoe | |
+| prefix | | |
+| suffix | @${domain} | |
+| ctx_data | . | Make sure that **From previous tasks** is selected |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | | |
+| keep_symbol_to_null | | |
 
 #### Context Data
 ```
 {
-  "first_name": "John",
-  "last_name": "Doe"
+  "domain": "paloaltonetworks.com"
 }
 ```
 
 #### Output
 ```
+jdoe@paloaltonetworks.com
+```
+
+---
+
+### Build an email address by adding a user ID to the domain
+
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | paloaltonetworks.com | |
+| prefix | ${userid}@| |
+| suffix | | |
+| ctx_data | . | Make sure that **From previous tasks** is selected |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | | |
+| keep_symbol_to_null | | |
+
+#### Context Data
+```
 {
-  "out": "My name is John Doe."
+  "userid": "jdoe"
 }
+```
+
+#### Output
+```
+jdoe@paloaltonetworks.com
 ```
 
 ---
 
 ### Change the variable start and end marker to the windows command shell style such as %name%.
 
-#### Command
-```
-!SetWithTemplate key=out template=${lists.Template} variable_markers=%,%
-```
-
-#### Lists Library
-Template:
-```
-My name is %first_name% %last_name%.
-```
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | paloaltonetworks.com | |
+| prefix | %userid%@| |
+| suffix | | |
+| ctx_data | . | Make sure that **From previous tasks** is selected |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | %,% | |
+| keep_symbol_to_null | | |
 
 #### Context Data
 ```
 {
-  "first_name": "John",
-  "last_name": "Doe"
+  "userid": "jdoe"
 }
 ```
 
 #### Output
 ```
-{
-  "out": "My name is John Doe."
-}
+jdoe@paloaltonetworks.com
 ```
 
 ---
 
 ### Change the variable start and end marker to the UNIX shell style such as $name.
 
-#### Command
-```
-!SetWithTemplate key=out template=${lists.Template} variable_markers=$
-```
-
-#### Lists Library
-Template:
-```
-My name is $first_name $last_name.
-```
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | paloaltonetworks.com | |
+| prefix | $userid@| |
+| suffix | | |
+| ctx_data | . | Make sure that **From previous tasks** is selected |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | $ | |
+| keep_symbol_to_null | | |
 
 #### Context Data
 ```
 {
-  "first_name": "John",
-  "last_name": "Doe"
+  "userid": "jdoe"
 }
 ```
 
 #### Output
 ```
-{
-  "out": "My name is John Doe."
-}
+jdoe@paloaltonetworks.com
 ```
 
 ---
 
 ### Keep variable names if they are missing in the context.
 
-#### Command
-```
-!SetWithTemplate key=out template=${lists.Template} keep_symbol_to_null=true
-```
-
-#### Lists Library
-Template:
-```
-My name is ${first_name} ${last_name}.
-```
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | paloaltonetworks.com | |
+| prefix | ${userid}@| |
+| suffix | | |
+| ctx_data | . | Make sure that **From previous tasks** is selected |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | | |
+| keep_symbol_to_null | true | |
 
 #### Context Data
 ```
 {
-  "first_name": "John"
 }
 ```
 
 #### Output
 ```
-{
-  "out": "My name is John ${last_name}."
-}
+${userid}@paloaltonetworks.com
 ```
 
 ---
 
 ### Use DTs to build variables.
 
-#### Command
-```
-!SetWithTemplate key=out template=${lists.Template}
-```
-
-#### Lists Library
-Template:
-```
-My name is ${first_name=val.toUpperCase()} ${last_name=val.toUpperCase()}.
-```
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | paloaltonetworks.com | |
+| prefix | ${userid=val.toUpperCase()}@ | |
+| suffix | | |
+| ctx_data | . | Make sure that **From previous tasks** is selected |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | | |
+| keep_symbol_to_null | | |
 
 #### Context Data
 ```
 {
-  "first_name": "John",
-  "last_name": "Doe"
+  "userid": "jdoe"
 }
 ```
 
 #### Output
 ```
+JDOE@paloaltonetworks.com
+```
+
+---
+
+### Use nested DTs to build variables.
+
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | John Doe | |
+| prefix | Hello, | |
+| suffix | . ${message-${messageID}} | |
+| ctx_data | . | Make sure that **From previous tasks** is selected |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | | |
+| keep_symbol_to_null | | |
+
+#### Context Data
+```
 {
-  "out": "My name is JOHN DOE."
+  "message-1": "This is a test message.",
+  "messageID": 1
 }
 ```
+
+#### Output
+```
+Hello, John Doe. This is a test message.
+```
+

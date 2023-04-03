@@ -1,8 +1,8 @@
-id: FalconX Detonate and Analyze File
+id: CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File
 version: -1
 fromversion: 6.5.0
-name: FalconX Detonate and Analyze File
-description: This playbook uploads, detonates, and analyzes files for the Falcon Intelligence Sandbox.
+name: CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File
+description: This playbook uploads, detonates, and analyzes files for the CrowdStrike Falcon Intelligence Sandbox.
 starttaskid: "0"
 tasks:
   "0":

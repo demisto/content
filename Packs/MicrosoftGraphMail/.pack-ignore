@@ -7,6 +7,15 @@ ignore=auto-test
 [file:README.md]
 ignore=RM106
 
+[file:MicrosoftGraphListener.yml]
+ignore=IN126,DS107,IN145,IN124
+
+[file:classifier-mapper-incomming-MicrosoftGraphListener.json]
+ignore=BA101
+
+[file:classifier-MicrosoftGraphListener.json]
+ignore=BA101,BA114
+
 [known_words]
 msgraph
 MB

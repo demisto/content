@@ -1202,7 +1202,7 @@ class ExtFilter:
                 return self.filter_values(root, optype, conds, path)
 
             conds = {optype: self.parse_conds_json(conds)}
-            if isinstance(root, dict):
+            if isinstance(root, (dict, list)):
                 return self.filter_with_expressions(root, conds, path, inlist)
             else:
                 return None

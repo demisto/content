@@ -1,0 +1,2502 @@
+id: 3CXDesktopApp Supply Chain Attack
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: 3CXDesktopApp Supply Chain Attack
+description: "### 3CXDesktopApp Supply Chain Attack\n\n#### Executive Summary \nOn March 29, 2023, CrowdStrike [released a blog](https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/) discussing a supply chain attack involving a software-based phone application called [3CXDesktopApp](https://www.3cx.com/). \n\nAs of March 30, the 3CXDesktopApp installer hosted on the developer’s website will install the application with two malicious libraries included. The malicious libraries will ultimately run shellcode to load a backdoor on the system that allows actors to install additional malware on the victim machine.\n\nBetween March 9-30, 2023, we observed activity at 127 Cortex XDR customers that involved the 3CXDesktopApp process attempting to run shellcode, which was blocked by the XDR Agent’s In-process Shellcode Protection Module. Due to blocking the shellcode, we were unable to obtain the secondary payload used in this attack, so we cannot determine its capabilities or any post-exploitation activities carried out by the threat actor.\n\n#### Affected Products \nAccording to 3CX’s announcement, the supply chain attack involved 3CX’s Electron Windows App shipped in Update 7, version numbers 18.12.407 & 18.12.416 and Electron Mac App version numbers 18.11.1213, 18.12.402, 18.12.407 & 18.12.416.\n\n#### Playbook Flow\n\n**This playbook should be triggered manually or can be configured as a job.** \nPlease create a new incident and choose the 3CXDesktopApp Supply Chain Attack playbook and Rapid Breach Response incident type.\n\n**The playbook includes the following tasks:**\n\n**Hunting:**\n- Cortex XDR\n    - XQL hunting queries\n- Advanced SIEM queries\n    - Splunk\n    - QRadar\n    - Elasticsearch\n    - Azure Log Analytics\n- Indicators hunting\n\n**References:**\n\n[Threat Brief: 3CXDesktopApp Supply Chain Attack](https://unit42.paloaltonetworks.com/3cxdesktopapp-supply-chain-attack/)\n\n[CrowdStrike Falcon Platform Detects and Prevents Active Intrusion Campaign Targeting 3CXDesktopApp Customers](https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/)\n\nNote: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bd42e131-7786-4323-8b35-24d1dad54c7d
+    type: start
+    task:
+      id: bd42e131-7786-4323-8b35-24d1dad54c7d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7a739880-3046-4242-8d50-c13a52fcb7f0
+    type: title
+    task:
+      id: 7a739880-3046-4242-8d50-c13a52fcb7f0
+      version: -1
+      name: Collect Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+      - "63"
+      - "116"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 81273ba7-088d-4dd2-8154-c24327adede2
+    type: regular
+    task:
+      id: 81273ba7-088d-4dd2-8154-c24327adede2
+      version: -1
+      name: Collect IoCs from Huntress
+      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
+      scriptName: ParseHTMLIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      exclude_indicators:
+        complex:
+          root: inputs.excludeIndicators
+          transformers:
+          - operator: split
+            args:
+              delimiter: {}
+      url:
+        simple: https://www.huntress.com/blog/3cx-voip-software-compromise-supply-chain-threats
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: e33c3871-8a14-47bc-8922-592c99eb9159
+    type: title
+    task:
+      id: e33c3871-8a14-47bc-8922-592c99eb9159
+      version: -1
+      name: Download Signatures
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+      - "64"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 40011fe0-8d28-404c-869e-ddb6911289b5
+    type: regular
+    task:
+      id: 40011fe0-8d28-404c-869e-ddb6911289b5
+      version: -1
+      name: Download Yara rules
+      description: |-
+        This file contains multiple Yara rules provided by Neo23x0.
+
+        Reference: [gen_mal_3cx_compromise_mar23.yar](https://github.com/Neo23x0/signature-base/blob/master/yara/gen_mal_3cx_compromise_mar23.yar)
+      tags:
+      - Yara
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      filename:
+        simple: gen_mal_3cx_compromise_mar23.yar
+      method:
+        simple: GET
+      save_as_file:
+        simple: "yes"
+      unsecure:
+        simple: "True"
+      url:
+        simple: https://raw.githubusercontent.com/Neo23x0/signature-base/master/yara/gen_mal_3cx_compromise_mar23.yar
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 66bb994c-44c0-475f-8179-9a6ab13ab92b
+    type: regular
+    task:
+      id: 66bb994c-44c0-475f-8179-9a6ab13ab92b
+      version: -1
+      name: Collect IoCs from CrowdStrike
+      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
+      scriptName: ParseHTMLIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      exclude_indicators:
+        complex:
+          root: inputs.excludeIndicators
+          transformers:
+          - operator: split
+            args:
+              delimiter: {}
+      url:
+        simple: https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1460,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 27b0b13e-a8d9-4d0e-8739-6e87a368f5d2
+    type: regular
+    task:
+      id: 27b0b13e-a8d9-4d0e-8739-6e87a368f5d2
+      version: -1
+      name: Download Sigma rules
+      description: |-
+        This file contains a Sigma rule provided by Nasreddine Bencherchali (Nextron Systems).
+
+        Reference: [proxy_malware_3cx_compromise.yml](https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_malware_3cx_compromise.yml)
+      tags:
+      - Sigma
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      filename:
+        simple: proxy_malware_3cx_compromise.yml
+      method:
+        simple: GET
+      save_as_file:
+        simple: "yes"
+      unsecure:
+        simple: "True"
+      url:
+        simple: https://raw.githubusercontent.com/SigmaHQ/sigma/master/rules/web/proxy_generic/proxy_malware_3cx_compromise.yml
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 41af828e-a83b-4b9a-8793-517c05854519
+    type: title
+    task:
+      id: 41af828e-a83b-4b9a-8793-517c05854519
+      version: -1
+      name: Extract Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: d7d1d2de-4aaa-4c45-84eb-3e1e500d536f
+    type: regular
+    task:
+      id: d7d1d2de-4aaa-4c45-84eb-3e1e500d536f
+      version: -1
+      name: Extract indicators from collected data
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      text:
+        complex:
+          root: http.parsedBlog
+          accessor: indicators
+    reputationcalc: 2
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: cab58a1f-5075-4bc7-82a1-a8def34ce9c0
+    type: title
+    task:
+      id: cab58a1f-5075-4bc7-82a1-a8def34ce9c0
+      version: -1
+      name: Tag and Link Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "69"
+      - "71"
+      - "73"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 97144d02-d95b-4606-8180-97d944df3cbf
+    type: regular
+    task:
+      id: 97144d02-d95b-4606-8180-97d944df3cbf
+      version: -1
+      name: Link indicators to incident
+      description: commands.local.cmd.associate.indicators
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: incident
+          accessor: id
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators.IP
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ExtractedIndicators.IP
+                iscontext: true
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.URL
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 1d4b0b5d-716b-4c83-884b-ed0a3211041b
+    type: regular
+    task:
+      id: 1d4b0b5d-716b-4c83-884b-ed0a3211041b
+      version: -1
+      name: Tag File indicators
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
+      tags:
+        simple: CVE-2022-41040, CVE-2022-41082, MSDT, ProxyNotShell
+      type:
+        simple: File
+      value:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 501e8edb-63c7-4ef3-87a1-ae78d4b8e1c4
+    type: regular
+    task:
+      id: 501e8edb-63c7-4ef3-87a1-ae78d4b8e1c4
+      version: -1
+      name: Tag Domain indicators
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
+      tags:
+        simple: CVE-2022-41040, CVE-2022-41082, MSDT, ProxyNotShell
+      type:
+        simple: Domain
+      value:
+        complex:
+          root: ExtractedIndicators.Domain
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 03ed06e2-1b38-4eb2-8982-ebecbcc43efa
+    type: regular
+    task:
+      id: 03ed06e2-1b38-4eb2-8982-ebecbcc43efa
+      version: -1
+      name: Tag URL indicators
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
+      tags:
+        simple: CVE-2022-41040, CVE-2022-41082, MSDT, ProxyNotShell
+      type:
+        simple: URL
+      value:
+        complex:
+          root: ExtractedIndicators.URL
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ExtractedIndicators.URL
+                iscontext: true
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 5021f922-3bd8-4e2d-820c-b9b7ee4f2c1f
+    type: title
+    task:
+      id: 5021f922-3bd8-4e2d-820c-b9b7ee4f2c1f
+      version: -1
+      name: Set Rapid Breach Response Layout
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 8df4e3f1-453e-4e21-85a5-4b02c8c8c88b
+    type: playbook
+    task:
+      id: 8df4e3f1-453e-4e21-85a5-4b02c8c8c88b
+      version: -1
+      name: Rapid Breach Response - Set Incident Info
+      description: This playbook is responsible for setting up the Rapid Breach Response Incident Info tab in the layout.
+      playbookName: Rapid Breach Response - Set Incident Info
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      SourceOfIndicators:
+        complex:
+          root: http.parsedBlog
+          accessor: sourceLink
+      countTotalIndicators:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.IP
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.URL
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.CVE
+                iscontext: true
+          - operator: uniq
+          - operator: count
+      playbookDescription:
+        complex:
+          root: inputs.PlaybookDescription
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 1747b717-c5b2-4b2e-893c-5d1cdd839f16
+    type: title
+    task:
+      id: 1747b717-c5b2-4b2e-893c-5d1cdd839f16
+      version: -1
+      name: Threat Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "78"
+      - "87"
+      - "106"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 0797cd0f-b85e-4f89-8228-4fd412575173
+    type: title
+    task:
+      id: 0797cd0f-b85e-4f89-8228-4fd412575173
+      version: -1
+      name: SIEM Advanced Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "79"
+      - "80"
+      - "81"
+      - "82"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 4bffb960-6ecb-4602-8b6b-4462a6ffac6e
+    type: condition
+    task:
+      id: 4bffb960-6ecb-4602-8b6b-4462a6ffac6e
+      version: -1
+      name: Is Splunk Enabled?
+      description: Check if Splunk instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "Yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SplunkPy
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2230,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 06090e45-e8ab-4722-8e22-c034b5e695a8
+    type: condition
+    task:
+      id: 06090e45-e8ab-4722-8e22-c034b5e695a8
+      version: -1
+      name: Is QRadar Enabled?
+      description: Check if Splunk instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "Yes":
+      - "93"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar_v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 5a344921-23d9-42f6-8f15-104b0b6ea2d8
+    type: condition
+    task:
+      id: 5a344921-23d9-42f6-8f15-104b0b6ea2d8
+      version: -1
+      name: Is Elasticsearch Enabled?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "Yes":
+      - "100"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Elasticsearch
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2760,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 05efd393-b744-4350-8604-33a4ffd13cce
+    type: condition
+    task:
+      id: 05efd393-b744-4350-8604-33a4ffd13cce
+      version: -1
+      name: Is Azure Log Analytics Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "91"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Azure Log Analytics
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 552701ee-0498-4669-865d-bcccdf602eb9
+    type: regular
+    task:
+      id: 552701ee-0498-4669-865d-bcccdf602eb9
+      version: -1
+      name: Potential Suspicious Child Process Of 3CXDesktopApp
+      description: '[Detects potential suspicious child processes of ''3CXDesktopApp.exe''. Which could be related to the 3CXDesktopApp supply chain compromise](https://tdm.socprime.com/tdm/info/G04XEhJwTxGq/#intelligence_view)'
+      script: '|||azure-log-analytics-execute-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "92"
+    scriptarguments:
+      query:
+        simple: SecurityEvent | where EventID == 4688 | where (ParentProcessName endswith @'3CXDesktopApp.exe' and (NewProcessName endswith @'reg.exe' or NewProcessName endswith @'cmd.exe' or NewProcessName endswith @'cscript.exe' or NewProcessName endswith @'mshta.exe' or NewProcessName endswith @'powershell.exe' or NewProcessName endswith @'pwsh.exe' or NewProcessName endswith @'regsvr32.exe' or NewProcessName endswith @'rundll32.exe' or NewProcessName endswith @'wscript.exe'))
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: daaca42f-7c53-4e08-8c0e-10d5af8b069a
+    type: regular
+    task:
+      id: daaca42f-7c53-4e08-8c0e-10d5af8b069a
+      version: -1
+      name: Potential 3CX 3CXDesktopApp Compromise Beaconing Activity
+      description: '[Detects potential beaconing activity to domains related to 3CX 3CXDesktopApp compromise](https://tdm.socprime.com/tdm/info/DHiiboeVo3yr#intelligence_view)'
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      earliest_time:
+        complex:
+          root: inputs.SplunkEarliestTime
+      latest_time:
+        complex:
+          root: inputs.SplunkLatestTime
+      query:
+        simple: index=* (akamaicontainer.com* OR akamaitechcloudservices.com OR azuredeploystore.com OR azureonlinecloud.com OR azureonlinestorage.com OR dunamistrd.com OR glcloudservice.com OR journalide.org OR msedgepackageinfo.com OR msstorageazure.com OR msstorageboxes.com OR officeaddons.com OR officestoragebox.com OR pbxcloudeservices.com OR pbxphonenetwork.com OR pbxsources.com OR qwepoi123098.com OR sbmsa.wiki OR sourceslabs.com OR visualstudiofactory.com OR zacharryblogs.com)
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2230,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: cd874c56-f8c2-435d-80f2-d7680801e950
+    type: playbook
+    task:
+      id: cd874c56-f8c2-435d-80f2-d7680801e950
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        simple: SELECT UTF8(payload) FROM events WHERE LOGSOURCETYPENAME(devicetype)='Microsoft Windows Security Event Log' AND "ParentImage" ILIKE '%3CXDesktopApp.exe' AND ("Image" ILIKE '%reg.exe' OR "Image" ILIKE '%cmd.exe' OR "Image" ILIKE '%cscript.exe' OR "Image" ILIKE '%mshta.exe' OR "Image" ILIKE '%powershell.exe' OR "Image" ILIKE '%pwsh.exe' OR "Image" ILIKE '%regsvr32.exe' OR "Image" ILIKE '%rundll32.exe' OR "Image" ILIKE '%wscript.exe')
+      timeout:
+        simple: "600"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 37778a85-d027-4fb7-834c-dc171f7d6fdd
+    type: title
+    task:
+      id: 37778a85-d027-4fb7-834c-dc171f7d6fdd
+      version: -1
+      name: Cortex XDR - XQL Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "89"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: fc63f40a-2fe3-4734-89f6-f0474080c7df
+    type: regular
+    task:
+      id: fc63f40a-2fe3-4734-89f6-f0474080c7df
+      version: -1
+      name: Detect execution of 3cx application "3CXDesktopApp.exe"
+      description: '#### Detect execution of 3cx application "3CXDesktopApp.exe"'
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      query:
+        simple: "config case_sensitive = false\n| dataset = xdr_data\n| filter event_type = PROCESS and action_process_signature_vendor contains \"3cx\" and action_process_image_name = \"3CXDesktopApp.exe\"\n| fields agent_hostname, action_process_image_name, action_process_signature_vendor \n| dedup agent_hostname, action_process_image_name, action_process_signature_vendor"
+      query_name:
+        simple: Detect execution of 3cx application "3CXDesktopApp.exe"
+      time_frame:
+        complex:
+          root: inputs.XQLTimeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: a32241ca-d1be-4689-88e4-35fed08e8214
+    type: condition
+    task:
+      id: a32241ca-d1be-4689-88e4-35fed08e8214
+      version: -1
+      name: Is Cortex XDR XQL Query Engine Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "88"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - XQL Query Engine
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 1b4a09c9-db99-42a7-8c5a-1b611124e9bc
+    type: regular
+    task:
+      id: 1b4a09c9-db99-42a7-8c5a-1b611124e9bc
+      version: -1
+      name: Detect network connections to known c2 domains
+      description: '#### Detect network connections to known c2 domains'
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      query:
+        simple: "dataset = xdr_data | filter\ndst_action_external_hostname ~=\".*akamaicontainer.com|.*akamaitechcloudservices.com|.*azuredeploystore.com|.*azureonlinecloud.com|.*azureonlinestorage.com|.*dunamistrd.com|.*glcloudservice.com|.*journalide.org|.*msedgepackageinfo.com|.*msstorageazure.com|.*msstorageboxes.com|.*officeaddons.com|.*officestoragebox.com|.*pbxcloudeservices.com|.*pbxphonenetwork.com|.*pbxsources.com|.*qwepoi123098.com|.*sbmsa.wiki|.*sourceslabs.com|.*visualstudiofactory.com|.*zacharryblogs.com\" OR\ndns_query_name ~=\".*akamaicontainer.com|.*akamaitechcloudservices.com|.*azuredeploystore.com|.*azureonlinecloud.com|.*azureonlinestorage.com|.*dunamistrd.com|.*glcloudservice.com|.*journalide.org|.*msedgepackageinfo.com|.*msstorageazure.com|.*msstorageboxes.com|.*officeaddons.com|.*officestoragebox.com|.*pbxcloudeservices.com|.*pbxphonenetwork.com|.*pbxsources.com|.*qwepoi123098.com|.*sbmsa.wiki|.*sourceslabs.com|.*visualstudiofactory.com|.*zacharryblogs.com\" OR\naction_external_hostname ~=\".*akamaicontainer.com|.*akamaitechcloudservices.com|.*azuredeploystore.com|.*azureonlinecloud.com|.*azureonlinestorage.com|.*dunamistrd.com|.*glcloudservice.com|.*journalide.org|.*msedgepackageinfo.com|.*msstorageazure.com|.*msstorageboxes.com|.*officeaddons.com|.*officestoragebox.com|.*pbxcloudeservices.com|.*pbxphonenetwork.com|.*pbxsources.com|.*qwepoi123098.com|.*sbmsa.wiki|.*sourceslabs.com|.*visualstudiofactory.com|.*zacharryblogs.com\" \n| fields agent_hostname, agent_version,causality_actor_process_image_path, actor_process_image_path, action_file_path, action_file_sha256, action_module_path,action_module_sha256,dst_action_external_hostname, dns_query_name,action_external_hostname, action_remote_ip, event_id"
+      query_name:
+        simple: Detect network connections to known c2 domains
+      time_frame:
+        complex:
+          root: inputs.XQLTimeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 83461a00-d95c-4b51-8d7e-541abe535041
+    type: regular
+    task:
+      id: 83461a00-d95c-4b51-8d7e-541abe535041
+      version: -1
+      name: Potential 3CX 3CXDesktopApp Compromise Beaconing Activity
+      description: '[Detects potential beaconing activity to domains related to 3CX 3CXDesktopApp compromise](https://tdm.socprime.com/tdm/info/DHiiboeVo3yr#intelligence_view)'
+      script: '|||azure-log-analytics-execute-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      query:
+        simple: |-
+          SecurityEvent | where any(domain in dynamic(["akamaicontainer.com", "akamaitechcloudservices.com", "azuredeploystore.com", "azureonlinecloud.com", "azureonlinestorage.com", "dunamistrd.com", "glcloudservice.com", "journalide.org", "msedgepackageinfo.com", "msstorageazure.com", "msstorageboxes.com", "officeaddons.com", "officestoragebox.com", "pbxcloudeservices.com", "pbxphonenetwork.com", "pbxsources.com", "qwepoi123098.com", "sbmsa.wiki", "sourceslabs.com", "visualstudiofactory.com", "zacharryblogs.com"]))
+          | where status == "200"
+          | summarize count() by clientip
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: a3e17397-2c27-4d51-8b66-368410038b7d
+    type: regular
+    task:
+      id: a3e17397-2c27-4d51-8b66-368410038b7d
+      version: -1
+      name: Potential Compromised 3CXDesktopApp Activity
+      description: '[Detects execution of known compromised version of 3CXDesktopApp](https://tdm.socprime.com/tdm/info/ChBkV5ohpMgh/#intelligence_view)'
+      script: '|||azure-log-analytics-execute-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      query:
+        simple: SecurityEvent | where EventID == 1 | where (((OriginalFileName =~ @'3CXDesktopApp.exe' or NewProcessName endswith @'\3CXDesktopApp.exe' or Product =~ @'3CX Desktop App') and (FileVersion contains @'18.12.407' or FileVersion contains @'18.12.416')) or ((FileHash contains @'SHA256=DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC' or FileHash contains @'SHA256=FAD482DED2E25CE9E1DD3D3ECC3227AF714BDFBBDE04347DBC1B21D6A3670405' or FileHash contains @'SHA256=AA124A4B4DF12B34E74EE7F6C683B2EBEC4CE9A8EDCF9BE345823B4FDCF5D868' or FileHash contains @'SHA256=59E1EDF4D82FAE4978E97512B0331B7EB21DD4B838B850BA46794D9C7A2C0983' or FileHash contains @'SHA1=6285FFB5F98D35CD98E78D48B63A05AF6E4E4DEA' or FileHash contains @'SHA1=8433A94AEDB6380AC8D4610AF643FB0E5220C5CB' or FileHash contains @'SHA1=BEA77D1E59CF18DCE22AD9A2FAD52948FD7A9EFA' or FileHash contains @'SHA1=BFECB8CE89A312D2EF4AFC64A63847AE11C6F69E') or sha256 in~ (@'DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC', @'FAD482DED2E25CE9E1DD3D3ECC3227AF714BDFBBDE04347DBC1B21D6A3670405', @'AA124A4B4DF12B34E74EE7F6C683B2EBEC4CE9A8EDCF9BE345823B4FDCF5D868', @'59E1EDF4D82FAE4978E97512B0331B7EB21DD4B838B850BA46794D9C7A2C0983') or sha1 in~ (@'6285FFB5F98D35CD98E78D48B63A05AF6E4E4DEA', @'8433A94AEDB6380AC8D4610AF643FB0E5220C5CB', @'BEA77D1E59CF18DCE22AD9A2FAD52948FD7A9EFA', @'BFECB8CE89A312D2EF4AFC64A63847AE11C6F69E')))
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: a51a793e-8de1-4d83-8058-043bf015a535
+    type: playbook
+    task:
+      id: a51a793e-8de1-4d83-8058-043bf015a535
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        simple: SELECT UTF8(payload) FROM events WHERE LOGSOURCETYPENAME(devicetype)='Microsoft Windows Security Event Log' AND (UTF8(payload) ILIKE '%akamaicontainer.com%' OR UTF8(payload) ILIKE '%akamaitechcloudservices.com%' OR UTF8(payload) ILIKE '%azuredeploystore.com%' OR UTF8(payload) ILIKE '%azureonlinecloud.com%' OR UTF8(payload) ILIKE '%azureonlinestorage.com%' OR UTF8(payload) ILIKE '%dunamistrd.com%' OR UTF8(payload) ILIKE '%glcloudservice.com%' OR UTF8(payload) ILIKE '%journalide.org%' OR UTF8(payload) ILIKE '%msedgepackageinfo.com%' OR UTF8(payload) ILIKE '%msstorageazure.com%' OR UTF8(payload) ILIKE '%msstorageboxes.com%' OR UTF8(payload) ILIKE '%officeaddons.com%' OR UTF8(payload) ILIKE '%officestoragebox.com%' OR UTF8(payload) ILIKE '%pbxcloudeservices.com%' OR UTF8(payload) ILIKE '%pbxphonenetwork.com%' OR UTF8(payload) ILIKE '%pbxsources.com%' OR UTF8(payload) ILIKE '%qwepoi123098.com%' OR UTF8(payload) ILIKE '%sbmsa.wiki%' OR UTF8(payload) ILIKE '%sourceslabs.com%' OR UTF8(payload) ILIKE '%visualstudiofactory.com%' OR UTF8(payload) ILIKE '%zacharryblogs.com%')
+      timeout:
+        simple: "600"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: e33081de-a83a-4589-8fd9-eae76bab15b2
+    type: playbook
+    task:
+      id: e33081de-a83a-4589-8fd9-eae76bab15b2
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        simple: SELECT UTF8(payload) FROM events WHERE LOGSOURCETYPENAME(devicetype)='Microsoft Windows Security Event Log' AND (((UTF8(payload) ILIKE '%3CXDesktopApp.exe%' OR "Image" ILIKE '%\3CXDesktopApp.exe' OR UTF8(payload) ILIKE '%3CX Desktop App%') AND (UTF8(payload) ILIKE '%18.12.407%' OR UTF8(payload) ILIKE '%18.12.416%')) OR (("File Hash" ILIKE '%SHA256=DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC%' OR "File Hash" ILIKE '%SHA256=FAD482DED2E25CE9E1DD3D3ECC3227AF714BDFBBDE04347DBC1B21D6A3670405%' OR "File Hash" ILIKE '%SHA256=AA124A4B4DF12B34E74EE7F6C683B2EBEC4CE9A8EDCF9BE345823B4FDCF5D868%' OR "File Hash" ILIKE '%SHA256=59E1EDF4D82FAE4978E97512B0331B7EB21DD4B838B850BA46794D9C7A2C0983%' OR "File Hash" ILIKE '%SHA1=6285FFB5F98D35CD98E78D48B63A05AF6E4E4DEA%' OR "File Hash" ILIKE '%SHA1=8433A94AEDB6380AC8D4610AF643FB0E5220C5CB%' OR "File Hash" ILIKE '%SHA1=BEA77D1E59CF18DCE22AD9A2FAD52948FD7A9EFA%' OR "File Hash" ILIKE '%SHA1=BFECB8CE89A312D2EF4AFC64A63847AE11C6F69E%') OR ("SHA256 Hash" = 'DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC' OR "SHA256 Hash" = 'FAD482DED2E25CE9E1DD3D3ECC3227AF714BDFBBDE04347DBC1B21D6A3670405' OR "SHA256 Hash" = 'AA124A4B4DF12B34E74EE7F6C683B2EBEC4CE9A8EDCF9BE345823B4FDCF5D868' OR "SHA256 Hash" = '59E1EDF4D82FAE4978E97512B0331B7EB21DD4B838B850BA46794D9C7A2C0983') OR ("SHA1 Hash" = '6285FFB5F98D35CD98E78D48B63A05AF6E4E4DEA' OR "SHA1 Hash" = '8433A94AEDB6380AC8D4610AF643FB0E5220C5CB' OR "SHA1 Hash" = 'BEA77D1E59CF18DCE22AD9A2FAD52948FD7A9EFA' OR "SHA1 Hash" = 'BFECB8CE89A312D2EF4AFC64A63847AE11C6F69E')))
+      timeout:
+        simple: "600"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: fcb5499b-60e1-47b5-8633-0fe9350cc796
+    type: regular
+    task:
+      id: fcb5499b-60e1-47b5-8633-0fe9350cc796
+      version: -1
+      name: Potential Compromised 3CXDesktopApp Activity
+      description: '[Detects execution of known compromised version of 3CXDesktopApp](https://tdm.socprime.com/tdm/info/ChBkV5ohpMgh/#intelligence_view)'
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      earliest_time:
+        complex:
+          root: inputs.SplunkEarliestTime
+      latest_time:
+        complex:
+          root: inputs.SplunkLatestTime
+      query:
+        simple: index=* source="WinEventLog:*" AND (((OriginalFileName="3CXDesktopApp.exe" OR Image="*\\3CXDesktopApp.exe" OR Product="3CX Desktop App") AND (FileVersion="*18.12.407*" OR FileVersion="*18.12.416*")) OR ((Hashes="*SHA256=DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC*" OR Hashes="*SHA256=FAD482DED2E25CE9E1DD3D3ECC3227AF714BDFBBDE04347DBC1B21D6A3670405*" OR Hashes="*SHA256=AA124A4B4DF12B34E74EE7F6C683B2EBEC4CE9A8EDCF9BE345823B4FDCF5D868*" OR Hashes="*SHA256=59E1EDF4D82FAE4978E97512B0331B7EB21DD4B838B850BA46794D9C7A2C0983*" OR Hashes="*SHA1=6285FFB5F98D35CD98E78D48B63A05AF6E4E4DEA*" OR Hashes="*SHA1=8433A94AEDB6380AC8D4610AF643FB0E5220C5CB*" OR Hashes="*SHA1=BEA77D1E59CF18DCE22AD9A2FAD52948FD7A9EFA*" OR Hashes="*SHA1=BFECB8CE89A312D2EF4AFC64A63847AE11C6F69E*") OR (sha256="DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC" OR sha256="FAD482DED2E25CE9E1DD3D3ECC3227AF714BDFBBDE04347DBC1B21D6A3670405" OR sha256="AA124A4B4DF12B34E74EE7F6C683B2EBEC4CE9A8EDCF9BE345823B4FDCF5D868" OR sha256="59E1EDF4D82FAE4978E97512B0331B7EB21DD4B838B850BA46794D9C7A2C0983") OR (sha1="6285FFB5F98D35CD98E78D48B63A05AF6E4E4DEA" OR sha1="8433A94AEDB6380AC8D4610AF643FB0E5220C5CB" OR sha1="BEA77D1E59CF18DCE22AD9A2FAD52948FD7A9EFA" OR sha1="BFECB8CE89A312D2EF4AFC64A63847AE11C6F69E")))
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2230,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: b4a7f094-058a-4fd9-837c-9b42848b6c75
+    type: regular
+    task:
+      id: b4a7f094-058a-4fd9-837c-9b42848b6c75
+      version: -1
+      name: Potential Suspicious Child Process Of 3CXDesktopApp
+      description: '[Detects potential suspicious child processes of ''3CXDesktopApp.exe''. Which could be related to the 3CXDesktopApp supply chain compromise](https://tdm.socprime.com/tdm/info/G04XEhJwTxGq/#intelligence_view)'
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      earliest_time:
+        complex:
+          root: inputs.SplunkEarliestTime
+      latest_time:
+        complex:
+          root: inputs.SplunkLatestTime
+      query:
+        simple: index=* source="WinEventLog:*" AND (ParentImage="*3CXDesktopApp.exe" AND (Image="*reg.exe" OR Image="*cmd.exe" OR Image="*cscript.exe" OR Image="*mshta.exe" OR Image="*powershell.exe" OR Image="*pwsh.exe" OR Image="*regsvr32.exe" OR Image="*rundll32.exe" OR Image="*wscript.exe"))
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2230,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 2e422d24-1f89-482b-8a68-a09747677458
+    type: regular
+    task:
+      id: 2e422d24-1f89-482b-8a68-a09747677458
+      version: -1
+      name: Potential Suspicious Child Process Of 3CXDesktopApp
+      description: '[Detects potential suspicious child processes of ''3CXDesktopApp.exe''. Which could be related to the 3CXDesktopApp supply chain compromise](https://tdm.socprime.com/tdm/info/G04XEhJwTxGq/#intelligence_view)'
+      script: '|||es-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      index:
+        complex:
+          root: inputs.elasticSearchIndex
+      query:
+        simple: (process.parent.executable.text:*3CXDesktopApp.exe AND process.executable.text:(*reg.exe OR *cmd.exe OR *cscript.exe OR *mshta.exe OR *powershell.exe OR *pwsh.exe OR *regsvr32.exe OR *rundll32.exe OR *wscript.exe))
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2760,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: a21cd45c-2f4d-4c02-800a-60a9f2173a76
+    type: regular
+    task:
+      id: a21cd45c-2f4d-4c02-800a-60a9f2173a76
+      version: -1
+      name: Potential Compromised 3CXDesktopApp Activity
+      description: '[Detects execution of known compromised version of 3CXDesktopApp](https://tdm.socprime.com/tdm/info/ChBkV5ohpMgh/#intelligence_view)'
+      script: '|||es-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      index:
+        complex:
+          root: inputs.elasticSearchIndex
+      query:
+        simple: (((((winlog.event_data.OriginalFileName:"3CXDesktopApp.exe") OR (process.executable.text:*\\3CXDesktopApp.exe) OR (Product:"3CX Desktop App")) AND FileVersion:(*18.12.407* OR *18.12.416*))) OR (((winlog.event_data.Hashes:(*SHA256\=DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC* OR *SHA256\=FAD482DED2E25CE9E1DD3D3ECC3227AF714BDFBBDE04347DBC1B21D6A3670405* OR *SHA256\=AA124A4B4DF12B34E74EE7F6C683B2EBEC4CE9A8EDCF9BE345823B4FDCF5D868* OR *SHA256\=59E1EDF4D82FAE4978E97512B0331B7EB21DD4B838B850BA46794D9C7A2C0983* OR *SHA1\=6285FFB5F98D35CD98E78D48B63A05AF6E4E4DEA* OR *SHA1\=8433A94AEDB6380AC8D4610AF643FB0E5220C5CB* OR *SHA1\=BEA77D1E59CF18DCE22AD9A2FAD52948FD7A9EFA* OR *SHA1\=BFECB8CE89A312D2EF4AFC64A63847AE11C6F69E*)) OR (sha256:("DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC" OR "FAD482DED2E25CE9E1DD3D3ECC3227AF714BDFBBDE04347DBC1B21D6A3670405" OR "AA124A4B4DF12B34E74EE7F6C683B2EBEC4CE9A8EDCF9BE345823B4FDCF5D868" OR "59E1EDF4D82FAE4978E97512B0331B7EB21DD4B838B850BA46794D9C7A2C0983")) OR (sha1:("6285FFB5F98D35CD98E78D48B63A05AF6E4E4DEA" OR "8433A94AEDB6380AC8D4610AF643FB0E5220C5CB" OR "BEA77D1E59CF18DCE22AD9A2FAD52948FD7A9EFA" OR "BFECB8CE89A312D2EF4AFC64A63847AE11C6F69E")))))
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2760,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 5f84da3e-b4b6-41c1-8c50-5a5fce44316b
+    type: regular
+    task:
+      id: 5f84da3e-b4b6-41c1-8c50-5a5fce44316b
+      version: -1
+      name: Potential 3CX 3CXDesktopApp Compromise Beaconing Activity
+      description: '[Detects potential beaconing activity to domains related to 3CX 3CXDesktopApp compromise](https://tdm.socprime.com/tdm/info/DHiiboeVo3yr#intelligence_view)'
+      script: '|||es-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "98"
+    scriptarguments:
+      index:
+        complex:
+          root: inputs.elasticSearchIndex
+      query:
+        simple: ((url.domain:("akamaicontainer.com" OR "akamaitechcloudservices.com" OR "azuredeploystore.com" OR "azureonlinecloud.com" OR "azureonlinestorage.com" OR "dunamistrd.com" OR "glcloudservice.com" OR "journalide.org" OR "msedgepackageinfo.com" OR "msstorageazure.com" OR "msstorageboxes.com" OR "officeaddons.com" OR "officestoragebox.com" OR "pbxcloudeservices.com" OR "pbxphonenetwork.com" OR "pbxsources.com" OR "qwepoi123098.com" OR "sbmsa.wiki" OR "sourceslabs.com" OR "visualstudiofactory.com" OR "zacharryblogs.com")) OR (destination.domain:("akamaicontainer.com" OR "akamaitechcloudservices.com" OR "azuredeploystore.com" OR "azureonlinecloud.com" OR "azureonlinestorage.com" OR "dunamistrd.com" OR "glcloudservice.com" OR "journalide.org" OR "msedgepackageinfo.com" OR "msstorageazure.com" OR "msstorageboxes.com" OR "officeaddons.com" OR "officestoragebox.com" OR "pbxcloudeservices.com" OR "pbxphonenetwork.com" OR "pbxsources.com" OR "qwepoi123098.com" OR "sbmsa.wiki" OR "sourceslabs.com" OR "visualstudiofactory.com" OR "zacharryblogs.com")))
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2760,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: 1753fcd0-4575-47dd-8bb9-af1376dc7557
+    type: playbook
+    task:
+      id: 1753fcd0-4575-47dd-8bb9-af1376dc7557
+      version: -1
+      name: Threat Hunting - Generic
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      playbookName: Threat Hunting - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      QRadarTimeFrame:
+        complex:
+          root: inputs.QRadarTimeRange
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+      SplunkEarliestTime:
+        complex:
+          root: inputs.SplunkEarliestTime
+      SplunkLatestTime:
+        complex:
+          root: inputs.SplunkLatestTime
+      URLDomain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: URL.Data
+                iscontext: true
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: d32087eb-8dac-429e-82ee-cb2005791d06
+    type: condition
+    task:
+      id: d32087eb-8dac-429e-82ee-cb2005791d06
+      version: -1
+      name: Should block indicators automatically?
+      description: Checks whether to block the indicators automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "104"
+      "yes":
+      - "103"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.autoBlockIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: 3e43d76b-8399-4d25-8bda-380c28e5d566
+    type: playbook
+    task:
+      id: 3e43d76b-8399-4d25-8bda-380c28e5d566
+      version: -1
+      name: Block Indicators - Generic v3
+      description: |+
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic
+        - Block Domain - Generic
+
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "112"
+    scriptarguments:
+      AutoBlockIndicators:
+        simple: "True"
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      FilesToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      MD5:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block Indicators playbook - ${incident.id}
+      SHA256:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      UserVerification:
+        simple: "True"
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 2960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: 9934f4cd-ec95-4154-8227-ae73058d836e
+    type: regular
+    task:
+      id: 9934f4cd-ec95-4154-8227-ae73058d836e
+      version: -1
+      name: Handle indicators manually
+      description: Manual task for indicators handling.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "112"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 2960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: 3c43cf41-33ff-4992-8d11-1b5a1c98be1a
+    type: title
+    task:
+      id: 3c43cf41-33ff-4992-8d11-1b5a1c98be1a
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "102"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 3eaac537-0a17-4338-89e3-55e4ba3cc280
+    type: title
+    task:
+      id: 3eaac537-0a17-4338-89e3-55e4ba3cc280
+      version: -1
+      name: Indicators Hunting
+      description: Whether to continue with the investigation or close it.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "101"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: fdc10066-8cf8-47d3-8877-eca077a896f8
+    type: regular
+    task:
+      id: fdc10066-8cf8-47d3-8877-eca077a896f8
+      version: -1
+      name: Investigate further
+      description: Continue with the investigation manually.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "111"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 3770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: f35c3cc2-d68b-4477-8657-3897d6364533
+    type: title
+    task:
+      id: f35c3cc2-d68b-4477-8657-3897d6364533
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 4130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: adad6a9c-bbc8-417c-8be8-d5519008e2e2
+    type: condition
+    task:
+      id: adad6a9c-bbc8-417c-8be8-d5519008e2e2
+      version: -1
+      name: Should continue with the investigation?
+      description: Whether to continue with the investigation or close it.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "111"
+      "Yes":
+      - "107"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: c8be60db-d67c-4ec2-8d30-34175bda035f
+    type: title
+    task:
+      id: c8be60db-d67c-4ec2-8d30-34175bda035f
+      version: -1
+      name: Resolution
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "109"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: ce9479b5-d142-4d5a-86de-217bb200a038
+    type: regular
+    task:
+      id: ce9479b5-d142-4d5a-86de-217bb200a038
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "108"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: f41989a1-e79d-4f8e-8428-a9162bbff369
+    type: title
+    task:
+      id: f41989a1-e79d-4f8e-8428-a9162bbff369
+      version: -1
+      name: Mitigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "114"
+      - "115"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: 0b580eb5-3e06-48e8-82e1-3ed00400a8d9
+    type: regular
+    task:
+      id: 0b580eb5-3e06-48e8-82e1-3ed00400a8d9
+      version: -1
+      name: Deploy Yara rules
+      description: |
+        The Yara rules file is ready to be used in the incident War Room, you can also find it by filtering for '**Yara**' tag.
+
+        File name: gen_mal_3cx_compromise_mar23.yar
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "110"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: 4f6a08d0-39e0-4f74-8444-e348ea75a431
+    type: regular
+    task:
+      id: 4f6a08d0-39e0-4f74-8444-e348ea75a431
+      version: -1
+      name: Deploy Sigma rules
+      description: |
+        The Sigma rules file is ready to be used in the incident War Room, you can also find it by filtering for '**Sigma**' tag.
+
+        File name: proxy_malware_3cx_compromise.yml
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "110"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: e2696891-41c4-43fb-88b3-c8e923405463
+    type: regular
+    task:
+      id: e2696891-41c4-43fb-88b3-c8e923405463
+      version: -1
+      name: Collect IoCs from Unit42
+      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
+      scriptName: ParseHTMLIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      exclude_indicators:
+        complex:
+          root: inputs.excludeIndicators
+          transformers:
+          - operator: split
+            args:
+              delimiter: {}
+      url:
+        simple: https://unit42.paloaltonetworks.com/3cxdesktopapp-supply-chain-attack/
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "79_105_#default#": 0.1,
+      "79_84_Yes": 0.43,
+      "80_105_#default#": 0.12,
+      "80_93_Yes": 0.6,
+      "81_100_Yes": 0.38,
+      "81_105_#default#": 0.1,
+      "82_105_#default#": 0.18,
+      "82_91_yes": 0.44,
+      "89_105_#default#": 0.24,
+      "89_88_yes": 0.46
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4175,
+        "width": 3350,
+        "x": -210,
+        "y": 20
+      }
+    }
+  }
+inputs:
+- key: PlaybookDescription
+  value:
+    simple: "### 3CXDesktopApp Supply Chain Attack\n\n#### Executive Summary \nOn March 29, 2023, CrowdStrike [released a blog](https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/) discussing a supply chain attack involving a software-based phone application called [3CXDesktopApp](https://www.3cx.com/). \n\nAs of March 30, the 3CXDesktopApp installer hosted on the developer’s website will install the application with two malicious libraries included. The malicious libraries will ultimately run shellcode to load a backdoor on the system that allows actors to install additional malware on the victim machine.\n\nBetween March 9-30, 2023, we observed activity at 127 Cortex XDR customers that involved the 3CXDesktopApp process attempting to run shellcode, which was blocked by the XDR Agent’s In-process Shellcode Protection Module. Due to blocking the shellcode, we were unable to obtain the secondary payload used in this attack, so we cannot determine its capabilities or any post-exploitation activities carried out by the threat actor.\n\n#### Affected Products \nAccording to 3CX’s announcement, the supply chain attack involved 3CX’s Electron Windows App shipped in Update 7, version numbers 18.12.407 & 18.12.416 and Electron Mac App version numbers 18.11.1213, 18.12.402, 18.12.407 & 18.12.416.\n\n**This playbook should be triggered manually or can be configured as a job.** \nPlease create a new incident and choose the 3CXDesktopApp Supply Chain Attack playbook and Rapid Breach Response incident type.\n\n**The playbook includes the following tasks:**\n\n**Hunting:**\n- Cortex XDR\n    - XQL hunting queries\n- Advanced SIEM queries\n    - Splunk\n    - QRadar\n    - Elasticsearch\n    - Azure Log Analytics\n- Indicators hunting\n\n**References:**\n\n[CrowdStrike Falcon Platform Detects and Prevents Active Intrusion Campaign Targeting 3CXDesktopApp Customers](https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/)\n\nNote: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve."
+  required: false
+  description: The playbook description to be used in the Rapid Breach Response - Set Incident Info sub-playbook.
+  playbookInputQuery:
+- key: autoBlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: Whether to block the indicators automatically.
+  playbookInputQuery:
+- key: QRadarTimeRange
+  value:
+    simple: LAST 7 DAYS
+  required: false
+  description: The time range to search for indicators in the Threat Hunting -  Generic playbook.
+  playbookInputQuery:
+- key: SplunkEarliestTime
+  value:
+    simple: -7d@d
+  required: false
+  description: The earliest time to search for indicators in the Threat Hunting -  Generic playbook.
+  playbookInputQuery:
+- key: SplunkLatestTime
+  value:
+    simple: now
+  required: false
+  description: The latest time to search for indicators in the Threat Hunting -  Generic playbook.
+  playbookInputQuery:
+- key: XQLTimeRange
+  value:
+    simple: 7 days ago
+  required: false
+  description: The time range for the Cortex XDR XQL query.
+  playbookInputQuery:
+- key: excludeIndicators
+  value:
+    simple: raw[.]githubusercontent[.]com,www[.]3cx[.]com,github[.]com
+  required: false
+  description: List of indicators to exclude.
+  playbookInputQuery:
+- key: elasticSearchIndex
+  value: {}
+  required: false
+  description: The index to search over using elastic query.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

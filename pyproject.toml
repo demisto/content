@@ -7,9 +7,10 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
+defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "c6213ce7f4fe4f92a249de9cf425e6c59d2c6fb6"}
+demisto-sdk = "1.11.0"
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
@@ -28,6 +29,73 @@ mock-open = "^1.4.0"
 [tool.poetry.group.typing.dependencies]
 types-python-dateutil = "^2.8.19.3"
 
+# This is the python dependencies from the py3-native docker image.
+# See https://github.com/demisto/dockerfiles/blob/master/docker/py3-native/pyproject.toml
+[tool.poetry.group.native]
+optional = true
+
+[tool.poetry.group.native.dependencies]
+opensearch_dsl = "*"
+aiohttp = "*"
+python-magic = "*"
+pan-os-python = "*"
+pdf2image = "*"
+bs4 = "*"
+lxml = "*"
+chardet = "*"
+six = "*"
+pygments = "*"
+numpy = "*"
+scikit-learn = "*"
+nltk = "*"
+pandas = "*"
+urllib3 = "*"
+python-docx = "*"
+enum34 = "*"
+pypdf2 = "*"
+pikepdf = "*"
+boto3 = "*"
+msal = "*"
+cryptography = "*"
+tzlocal = "*"
+defusedxml = "*"
+isodate = "*"
+future = "*"
+idna = "*"
+pycparser = "*"
+cffi = "*"
+asn1crypto = "*"
+certifi = "*"
+cached-property = "*"
+phrases-case = "*"
+pyvirtualdisplay = "*"
+parse-emails = "*"
+slack-sdk = {extras = ["optional"], version = "*"}
+pyjwt = {extras = ["crypto"],version = "*"}
+google-api-python-client = "*"
+exchangelib = "*"
+requests-oauthlib = "*"
+oauthlib = "*"
+requests-ntlm = "*"
+oauth2client = "*"
+dill = "*"
+eli5 = "*"
+packaging = "*"
+rtfde = "*"
+webdriver-manager = "*"
+selenium = "*"
+cymruwhois = "*"
+simplejson = "*"
+networkx = "*"
+slackclient = "*"
+dpkt = "*"
+aiodns = "*"
+pysocks = "^1.7.0"  # must be 1.7.0 or above, cause 1.6.8 doesn't work on python 3.10
+jbxapi = "*"
+python-whois = "*"
+ipwhois = "*"
+edgegrid-python = "*"
+tldextract = "*"
 
 [tool.poetry.group.ci]
 optional = true

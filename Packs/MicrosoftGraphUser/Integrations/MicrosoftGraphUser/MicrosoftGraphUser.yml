@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Microsoft Graph User
   version: -1
@@ -8,25 +11,31 @@ configuration:
   name: host
   required: true
   type: 0
+  section: Connect
 - name: creds_auth_id
   type: 9
   displaypassword: ID (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
+  section: Connect
 - name: creds_tenant_id
   type: 9
   displaypassword: Token (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
+  section: Connect
 - name: creds_enc_key
   type: 9
   displaypassword: Key (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
+  section: Connect
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
   type: 4
   hidden: true
+  section: Connect
 - display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   type: 4
+  section: Connect
   hidden: true
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
@@ -37,10 +46,13 @@ configuration:
   name: creds_certificate
   type: 9
   displaypassword: Private Key
+  section: Connect
 - display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  section: Connect
+  advanced: true
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   hidden: true
 - display: Private Key
@@ -49,14 +61,18 @@ configuration:
   type: 14
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
+  section: Connect
 - display: Use a self-deployed Azure application
   name: self_deployed
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Application redirect URI (for Authorization Code flow mode)
   name: redirect_uri
   required: false
   type: 0
+  section: Connect
 - name: creds_auth_code
   type: 9
   displaypassword: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions)
@@ -66,21 +82,41 @@ configuration:
   required: false
   type: 4
   hidden: true
+  section: Connect
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+  section: Connect
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
+  section: Connect
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Suppress Errors for Non Found Users
   name: handle_error
   required: false
   defaultvalue: 'true'
   type: 8
+  section: Collect
+  advanced: true
 description: Unified gateway to security insights - all from a unified Microsoft Graph User API.
 display: Azure Active Directory Users
 name: Microsoft Graph User
@@ -131,11 +167,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: User fields to update (in JSON format).
+      description: "User fields to update (in a key=value format. Example: displayName=John"
       isArray: false
       name: updated_fields
       required: true
       secret: false
+    - default: false
+      description: "Delimiter to use for passing multiple fields to the 'updated_fields' argument. Example using ',' as a delimiter: displayName=John,givenName=John,surname=Doe"
+      defaultValue: ','
+      isArray: false
+      name: updated_fields_delimiter
+      required: false
     deprecated: false
     description: |-
       Updates the properties of a user object.
@@ -438,6 +480,12 @@ script:
       name: next_page
       required: false
       secret: false
+    - default: false
+      description: 'Filter to be plugged directly into the API. For more information about the Filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http.'
+      isArray: false
+      name: filter
+      required: false
+      secret: false
     deprecated: false
     description: |-
       Retrieves a list of user objects.
@@ -678,7 +726,11 @@ script:
       Permission: Directory.AccessAsUser.All(Delegated)
     execution: false
     name: msgraph-user-session-revoke
-  dockerimage: demisto/crypto:1.0.0.42817
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: msgraph-user-generate-login-url
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false
   longRunning: false

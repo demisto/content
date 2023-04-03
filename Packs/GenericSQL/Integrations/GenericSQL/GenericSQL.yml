@@ -24,20 +24,65 @@ configuration:
   name: port
   required: false
   type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch by
+  name: fetch_parameters
+  required: false
+  type: 15
+  defaultvalue: ID and timestamp
+  hidden: false
+  options:
+  - Unique timestamp
+  - Unique ascending ID
+  - ID and timestamp
+- display: Fetch events query
+  name: query
+  required: false
+  type: 0
+  additionalinfo: The Generic SQL query/procedure.
+- display: Fetch Column
+  name: column_name
+  required: false
+  type: 0
+  additionalinfo: Enter the exact column's name to fetch (ID column or timestamp column).
+- display: ID Column name - in case of fetching by 'ID and timestamp'
+  name: id_column
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident Name
+  additionalinfo: Enter the exact column's incident name (if empty - it's the Fetch Column).
+  hidden: false
+  name: incident_name
+  required: false
+  type: 0
 - display: Database Name
   hidden: false
   name: dbname
   required: false
   type: 0
-- display: Username
-  name: credentials
-  required: true
-  type: 9
 - display: 'Connection Arguments (ex: arg1=val1&arg2=val2)'
   hidden: false
   name: connect_parameters
   required: false
   type: 0
+- defaultvalue: '50'
+  display: Fetch Limit (Default / Max - 50, Recommended less than 50)
+  name: max_fetch
+  required: false
+  type: 0
+- display: First fetch timestamp or First fetch ID
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
 - display: Use an SSL connection
   hidden: false
   name: ssl_connect
@@ -48,6 +93,10 @@ configuration:
   name: use_pool
   required: false
   type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 - display: Connection Pool Time to Live (seconds)
   additionalinfo: After this time the connection pool will be refreshed
   defaultvalue: 600
@@ -55,6 +104,10 @@ configuration:
   name: pool_ttl
   required: false
   type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 description: 'Use the Generic SQL integration to run SQL queries on the following databases: MySQL, PostgreSQL, Microsoft SQL Server, and Oracle.'
 display: Generic SQL
 name: Generic SQL
@@ -171,9 +224,9 @@ script:
     description: Running a sql query
     execution: false
     name: sql-command
-  dockerimage: demisto/genericsql:1.1.0.41601
+  dockerimage: demisto/genericsql:1.1.0.49333
   feed: false
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
@@ -183,3 +236,4 @@ script:
 fromversion: 5.0.0
 tests:
 - generic-sql
+defaultclassifier: GenericSQL Classifier

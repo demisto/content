@@ -502,13 +502,20 @@ def fetch_incidents(client, last_run, is_test=False):
         if len(vulns) == max_fetch:
             # get the last date
             last_date = vulns[-1]['detected_date']
+            if last_date and isinstance(last_date, list):
+                last_date = last_date[0]
+
             offset = 0
             done = False
             while not done:
                 offset += max_fetch
                 others = client.list_vulns(stime, offset, pagelength=max_fetch)
                 for vuln in others:
-                    if vuln['detected_date'] == last_date:
+                    detected_date = vuln['detected_date']
+                    if detected_date and isinstance(detected_date, list):
+                        detected_date = detected_date[0]
+
+                    if detected_date == last_date:
                         vulns.append(vuln)
                     else:
                         done = True
@@ -517,8 +524,12 @@ def fetch_incidents(client, last_run, is_test=False):
                     break
 
         for vuln in vulns:
+            detected_date = vuln['detected_date']
+            if detected_date and isinstance(detected_date, list):
+                detected_date = detected_date[0]
+
             vuln_date_epoch = datetime.strptime(
-                vuln['detected_date'], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc).timestamp()
+                detected_date, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc).timestamp()
             vuln_name_encoded = vuln['vulnerability_name'].replace(' ', '+')
             incident = {
                 'name': vuln['name'],

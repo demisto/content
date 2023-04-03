@@ -2055,7 +2055,7 @@ script:
     - description: The endpoint hostname.
       name: hostname
       secret: false
-    description: Returns information about an endpoint.
+    description: Returns information about an endpoint, does not support regex.
     name: endpoint
     outputs:
     - contextPath: Endpoint.Hostname
@@ -2340,6 +2340,10 @@ script:
       isArray: true
       name: multiple_indicators_json
       required: true
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+      defaultValue: "180"
+      type: unknown
     description: Uploads a batch of indicators.
     name: cs-falcon-batch-upload-custom-ioc
     outputs:
@@ -2892,7 +2896,17 @@ script:
     - contextPath: CrowdStrike.VulnerabilityHost.cve.id
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
-  dockerimage: demisto/python3:3.10.9.42476
+  - arguments:
+    - description: A comma-separated list of incident IDs.
+      isArray: true
+      name: ids
+      required: true
+    - description: A comment added to the CrowdStrike incident.
+      name: comment
+      required: true
+    description: Updates CrowdStrike Incident with the comment.
+    name: cs-falcon-update-incident-comment
+  dockerimage: demisto/python3:3.10.10.51930
   isfetch: true
   ismappable: true
   isremotesyncin: true

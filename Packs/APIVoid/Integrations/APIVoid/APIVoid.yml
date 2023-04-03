@@ -1,6 +1,9 @@
 commonfields:
   id: APIVoid
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: APIVoid
 display: APIVoid
 category: Data Enrichment & Threat Intelligence
@@ -11,30 +14,36 @@ configuration:
   required: false
   displaypassword: API KEY
   hiddenusername: true
+  section: Connect
 - display: API KEY
   name: apikey
   defaultvalue: ''
   type: 4
   required: false
   hidden: true
+  section: Connect
+  advanced: true
 - display: Good Reputation (Percentage)
   name: good
   defaultvalue: '10'
   type: 0
   required: true
   additionalinfo: If the percentage of detections is BELOW this value, the indicator is considered GOOD
+  section: Collect
 - display: Suspicious Reputation (Percentage)
   name: suspicious
   defaultvalue: '30'
   type: 0
   required: true
   additionalinfo: If the percentage of detections is ABOVE this value, the indicator is considered SUSPICIOUS
+  section: Collect
 - display: Bad Reputation (Percentage)
   name: bad
   defaultvalue: '60'
   type: 0
   required: true
   additionalinfo: If the percentage of detections is ABOVE this value, the indicator is considered BAD
+  section: Collect
 - display: Malicious
   name: malicious
   type: 15
@@ -44,14 +53,19 @@ configuration:
   - suspicious
   - bad
   additionalinfo: Consider the indicator malicious if either "suspicious" or "bad"
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - defaultvalue: C - Fairly reliable
   name: integrationReliability
   display: 'Source Reliability'
@@ -66,6 +80,7 @@ configuration:
   required: false
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
+  section: Collect
 - defaultvalue: 'indicatorType'
   name: feedExpirationPolicy
   display: ''
@@ -76,11 +91,15 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  section: Collect
+  advanced: true
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   required: false
   type: 1
+  section: Collect
+  advanced: true
 script:
   script: ''
   type: python
@@ -1620,7 +1639,7 @@ script:
       description: ''
       type: boolean
     description: A smart API that accurately checks a website's trustworthiness.
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.10.49934
   runonce: false
   subtype: python3
 fromversion: 5.0.0

@@ -2,7 +2,11 @@
 ignore=PB114,PB115
 
 [file:PrismaAccess.yml]
-ignore=IN145
+ignore=IN145,BA124
 
 [file:PrismaAccessEgressIPFeed.yml]
-ignore=IN145,IN124
+ignore=IN145,IN124,BA124
+
+[known_words]
+sase
+

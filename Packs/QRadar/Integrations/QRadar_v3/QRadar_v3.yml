@@ -74,7 +74,7 @@ configuration:
   defaultvalue: '20'
   section: Collect
   advanced: true
-- display: Query to fetch offenses. Configuring "status=OPEN" won't mirror closed offenses to the Cortex XSOAR platform.
+- display: Query to fetch offenses.
   name: query
   required: false
   type: 0
@@ -105,7 +105,8 @@ configuration:
 - additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev.
   defaultvalue: 'No Mirroring'
   display: Mirroring Options
-  hidden: false
+  hidden:
+    - marketplacev2
   name: mirror_options
   required: false
   type: 15
@@ -121,7 +122,8 @@ configuration:
   name: close_incident
   required: false
   type: 8
-  hidden: false
+  hidden:
+    - marketplacev2
   section: Collect
   advanced: true
 - additionalinfo: Maximum number of incoming incidents to mirror each time.
@@ -132,6 +134,8 @@ configuration:
   defaultvalue: '100'
   section: Collect
   advanced: true
+  hidden:
+    - marketplacev2
 - display: Advanced Parameters
   name: adv_params
   type: 12
@@ -2926,7 +2930,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: false
   isremotesyncin: true

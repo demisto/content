@@ -63,7 +63,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.10.50695
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -1551,6 +1551,93 @@ script:
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.registryImagesCount
       description: RegistryImagesCount is the total impacted registry images count.
       type: integer
+  - name: prisma-cloud-compute-get-waas-policies
+    arguments: []
+    description: "Get the Waas Container Policies from Defend >> WAAS >> Containers"
+    outputs:
+    - contextPath: PrismaCloudCompute.Policies.Name
+      description: The Policy Name.
+      type: String
+    - contextPath: PrismaCloudCompute.Policies.WaasPolicy.ATP
+      description: The WaaS policy state for Advanced Threat Protection.
+      type: String
+    - contextPath: PrismaCloudCompute.Policies.WaasPolicy.AttackToolsAndVulnScanners
+      description: The WaaS policy state for Attack Tools and Vulnerability Scanners.
+      type: String
+    - contextPath: PrismaCloudCompute.Policies.WaasPolicy.CodeInjection
+      description: The WaaS policy state for Code Injection.
+      type: String
+    - contextPath: PrismaCloudCompute.Policies.WaasPolicy.CrossSiteScriptingXSS
+      description: The WaaS policy state for Cross Site Scripting.
+      type: String
+    - contextPath: PrismaCloudCompute.Policies.WaasPolicy.DetectInformationLeakage
+      description: The WaaS policy state for Detected Information Leakage.
+      type: String
+    - contextPath: PrismaCloudCompute.Policies.WaasPolicy.LocalFileInclusion
+      description: The WaaS policy state for Local File Inclusion.
+      type: String
+    - contextPath: PrismaCloudCompute.Policies.WaasPolicy.MalformedHTTPRequest
+      description: The WaaS policy state for Malformed HTTP Requests.
+      type: String
+    - contextPath: PrismaCloudCompute.Policies.WaasPolicy.OSCommandInjetion
+      description: The WaaS policy state for OS Command injection.
+      type: String
+    - contextPath: PrismaCloudCompute.Policies.WaasPolicy.SQLInjection
+      description: The WaaS policy state for SQL injection.
+      type: String
+    - contextPath: PrismaCloudCompute.Policies.WaasPolicy.Shellshock
+      description: The WaaS policy state for Shellshock.
+      type: String
+  - name: prisma-cloud-compute-update-waas-policies
+    arguments:
+    - name: policy
+      required: true
+      description: The complete policy object.  Can be obtained from prisma-cloud-compute-get-waas-policies raw-response=true extend-context=PCC=. command
+    - name: attack_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sqli
+      - xss
+      - cmdi
+      - codeInjection
+      - lfi
+      - attackTools
+      - shellshock
+      - malformedReq
+      - advancedProtectionEffect
+      - intelGathering
+      description: The specific policy to update
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ban
+      - prevent
+      - alert
+      - allow
+      - disable
+      - reCAPTCHA
+      description: The new policy action for the attack type
+    - name: rule_name
+      required: true
+      description: The rule name for the WaaS policy settings
+    description: Update the Waas Policy for containers
+  - name: prisma-cloud-compute-get-audit-firewall-container-alerts
+    arguments:
+    - name: ImageName
+      required: true
+      description: The image name to get the alerts for
+    - name: FromDays
+      description: The Number of days back to look
+    - name: audit_type
+      required: true
+      description: The type of audit alert to retrieve
+    - name: limit
+      required: false
+      description: The limit of the number of alerts to return
+    description: Get the audits for the firewall container policies
+    outputs: []
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0

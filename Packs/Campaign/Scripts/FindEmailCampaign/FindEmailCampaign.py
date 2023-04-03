@@ -320,7 +320,7 @@ def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keyw
     cv = CountVectorizer(stop_words=list(stopwords.words('english')))
     body_arr = cv.fit_transform(corpus).toarray()
     subject_arr = cv.transform(sent_tokenize(subject)).toarray()
-    word_list = cv.get_feature_names()
+    word_list = cv.get_feature_names_out()
     count_list = body_arr.sum(axis=0) + subject_arr.sum(axis=0) * subject_weight
     duplicate_sentences = [i for i, arr in enumerate(body_arr) if
                            any(cosine_sim(arr, arr2) > DUPLICATE_SENTENCE_THRESHOLD

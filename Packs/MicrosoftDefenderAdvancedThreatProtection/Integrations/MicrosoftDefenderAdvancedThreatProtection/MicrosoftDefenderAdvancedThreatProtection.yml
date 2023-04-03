@@ -57,6 +57,7 @@ configuration:
   options:
   - Authorization Code
   - Client Credentials
+  - Azure Managed Identities
   type: 15
   section: Connect
   advanced: true
@@ -75,6 +76,13 @@ configuration:
   type: 9
   section: Connect
   advanced: true
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
+  section: Connect
 - name: Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -6673,7 +6681,11 @@ script:
       description: Troubleshooting information.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.42817
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: microsoft-atp-generate-login-url
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: true
   longRunning: false
@@ -6685,4 +6697,7 @@ script:
 defaultmapperin: Microsoft Defender For Endpoint Mapper
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Microsoft Defender Advanced Threat Protection - Test
+- Microsoft Defender Advanced Threat Protection - Test dev
+- Microsoft Defender Advanced Threat Protection - Test self deployed
+- Microsoft Defender Advanced Threat Protection - Test prod

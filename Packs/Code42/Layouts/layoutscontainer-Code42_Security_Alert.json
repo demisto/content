@@ -323,32 +323,22 @@
                         "y": 2
                     },
                     {
-                        "displayType": "ROW",
-                        "h": 3,
+                        "h": 4,
                         "hideName": false,
-                        "i": "caseinfoid-d0b3fb00-5985-11ea-b904-997d555669cb",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "code42fileevents",
-                                "height": 110,
-                                "id": "d857da20-5985-11ea-b904-997d555669cb",
-                                "index": 0,
-                                "listId": "caseinfoid-d0b3fb00-5985-11ea-b904-997d555669cb",
-                                "startCol": 0
-                            }
-                        ],
+                        "i": "caseinfoid-4d213890-c1a9-11ed-b653-c9a02e7020fb",
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "File Events",
                         "static": false,
                         "w": 3,
                         "x": 0,
                         "y": 6,
-                        "description": "Up to 25 file event details from the alert will be populated here, if an Alert has more than 25 events, investigate further in the Code42 Console."
+                        "description": "Up to 25 file event details from the alert will be populated here, if an Alert has more than 25 events, investigate further in the Code42 Console.",
+                        "query": "Code42FileEventsToMarkdownTable",
+                        "queryType": "script",
+                        "type": "dynamic"
                     }
                 ],
                 "type": "custom"
@@ -380,5 +370,8 @@
             }
         ]
     },
+    "marketplaces": [
+        "xsoar"
+    ],
     "description": ""
 }

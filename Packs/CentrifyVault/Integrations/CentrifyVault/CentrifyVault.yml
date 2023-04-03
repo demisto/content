@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: Centrify Vault
   version: -1
@@ -39,21 +39,16 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: Type of holder where the secret is located. Values can be Folder
-        or Set. Please make sure to provide value in the "holderName" argument.
+      description: Type of holder where the secret is located. Values can be Folder or Set. Please make sure to provide value in the "holderName" argument.
       name: holderType
       predefined:
       - Folder
       - Set
-    - description: 'Name of the holder (Folder/Set) where the secret is available.
-        Please choose "Folder" or "Set" in the "holderType" argument. Ex: XSOAR, XSOAR/SUB_FOLDER'
+    - description: 'Name of the holder (Folder/Set) where the secret is available. Please choose "Folder" or "Set" in the "holderType" argument. Ex: XSOAR, XSOAR/SUB_FOLDER'
       name: holderName
     - description: 'Secret name which has the secret. Ex: client*, client_secret'
       name: secretName
-    description: 'Retrieves the secret from centrify vault based on folder name, set
-      name or secret name. If folder name is not provided, all the secrets in the
-      parent folder will be fetched recursively. You can filter based on the secret
-      name and folder separately as well as combined. '
+    description: 'Retrieves the secret from centrify vault based on folder name, set name or secret name. If folder name is not provided, all the secrets in the parent folder will be fetched recursively. You can filter based on the secret name and folder separately as well as combined. '
     name: centrify-retrieve-secrets
     outputs:
     - contextPath: Centrify.Secrets.FolderName
@@ -100,8 +95,7 @@ script:
       description: ID of the Secret retrieved
       type: string
   - arguments:
-    - description: Name of the folder to be created. This will be subfolder if "parentFolderName"
-        is provided.
+    - description: Name of the folder to be created. This will be subfolder if "parentFolderName" is provided.
       name: folderName
       required: true
     - description: 'Name of the parent folder. Please note this is case sensitive. '
@@ -125,15 +119,13 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: Type of holder where the secret will be created. Values can be
-        Folder or Set. Please make sure to provide value in the "holderName" argument.
+      description: Type of holder where the secret will be created. Values can be Folder or Set. Please make sure to provide value in the "holderName" argument.
       name: holderType
       predefined:
       - Folder
       - Set
       required: true
-    - description: 'Name of the holder (Folder/Set) where the secret needs to be created.  Please
-        choose "Folder" or "Set" in the "holderType" argument. Ex: XSOAR, XSOAR/SUB_FOLDER '
+    - description: 'Name of the holder (Folder/Set) where the secret needs to be created.  Please choose "Folder" or "Set" in the "holderType" argument. Ex: XSOAR, XSOAR/SUB_FOLDER '
       name: holderName
       required: true
     - description: Name of the secret to be created
@@ -154,8 +146,7 @@ script:
     name: centrify-create-secret
     outputs:
     - contextPath: Centrify.Secrets.holderType
-      description: Type of the location where secret is created. It can be folder
-        or set.
+      description: Type of the location where secret is created. It can be folder or set.
       type: string
     - contextPath: Centrify.Secrets.SecretName
       description: Name of the secret created
@@ -219,8 +210,7 @@ script:
       description: Complete directory of the folder
       type: string
   - arguments:
-    - description: Name of the folder to be deleted. Please provide parent foldername
-        in the argument "parentFolderName" if you are deleting a subfolder.
+    - description: Name of the folder to be deleted. Please provide parent foldername in the argument "parentFolderName" if you are deleting a subfolder.
       name: folderName
       required: true
     - description: Name of the parent folder
@@ -231,32 +221,23 @@ script:
     - description: Name of the secret to be deleted
       name: secretName
       required: true
-    - description: 'Name of the folder from where the secret should be deleted. If
-        the secret is in subfolder, then provide parent folder followed by "/" and
-        subfolder name. Ex: XSOAR/Demisto'
+    - description: 'Name of the folder from where the secret should be deleted. If the secret is in subfolder, then provide parent folder followed by "/" and subfolder name. Ex: XSOAR/Demisto'
       name: folderName
     - auto: PREDEFINED
-      description: '"Yes" if you want to delete all the secrets having same name in
-        all the subfolders recursively. "No" if you want do not want to delete the
-        secret in the subfolders.'
+      description: '"Yes" if you want to delete all the secrets having same name in all the subfolders recursively. "No" if you want do not want to delete the secret in the subfolders.'
       name: recursiveDelete
       predefined:
       - "Yes"
       - "No"
       required: true
     - auto: PREDEFINED
-      description: '"Yes" if you want to delete the secret having the provided secretname
-        as a part of the Secret. "No" if you want to delete the secret with the exact
-        name match. Ex: Demisto* will delete all secrets like Demisto_1, Demisto_pwd,
-        Demisto. '
+      description: '"Yes" if you want to delete the secret having the provided secretname as a part of the Secret. "No" if you want to delete the secret with the exact name match. Ex: Demisto* will delete all secrets like Demisto_1, Demisto_pwd, Demisto. '
       name: matchPartOfSecret
       predefined:
       - "Yes"
       - "No"
       required: true
-    description: 'Delete Secret from the Centrify Vault. Please note:  Enabling "recursiveDelete"
-      to "Yes" will delete all secrets if there multiple secrets with same name in
-      subfolders.'
+    description: 'Delete Secret from the Centrify Vault. Please note:  Enabling "recursiveDelete" to "Yes" will delete all secrets if there multiple secrets with same name in subfolders.'
     name: centrify-delete-secret
   - arguments:
     - description: ID of the Secret to be deleted
@@ -271,8 +252,7 @@ script:
     - description: ID of the secret which needs to be moved to the set
       name: secretId
       required: true
-    description: Adds/Moves a secret to a set for the provided secretID. Use "centrify-retrieve-secrets"
-      to fetch secret ID's.
+    description: Adds/Moves a secret to a set for the provided secretID. Use "centrify-retrieve-secrets" to fetch secret ID's.
     name: centrify-add-secret-to-set
   - arguments: []
     description: Fetches the details of all sets in the Centrify Vault
@@ -293,7 +273,7 @@ script:
       required: true
     description: Delete set from the Centrify Vault
     name: centrify-delete-set
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.49934
   runonce: false
   script: ''
   subtype: python3

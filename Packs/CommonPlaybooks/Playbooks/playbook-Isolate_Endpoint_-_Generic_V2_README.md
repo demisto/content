@@ -1,16 +1,16 @@
-This playbook isolates a given endpoint using various endpoint product integrations.  
+This playbook isolates a given endpoint using various endpoint product integrations.
 Make sure to provide valid playbook inputs for the integration you are using.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Microsoft Defender For Endpoint - Isolate Endpoint
-* Isolate Endpoint - Cybereason
-* Crowdstrike Falcon - Isolate Endpoint
-* Cortex XDR - Isolate Endpoint
 * Block Endpoint - Carbon Black Response V2
 * FireEye HX - Isolate Endpoint
+* Cortex XDR - Isolate Endpoint
+* Crowdstrike Falcon - Isolate Endpoint
+* Isolate Endpoint - Cybereason
+* Microsoft Defender For Endpoint - Isolate Endpoint
 
 ### Integrations
 This playbook does not use any integrations.
@@ -27,7 +27,6 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Endpoint_hostname | The host name of the endpoint to isolate. |  | Optional |
-| ManualHunting.DetectedHosts | Hosts that were detected as infected during the manual hunting. |  | Optional |
 | Endpoint_ip | The IP of the endpoint to isolate. |  | Optional |
 | Endpoint_id | The ID of the endpoint to isolate. |  | Optional |
 

@@ -1,0 +1,25 @@
+{
+    "name": "Example Demo",
+    "type": "paid",
+    "domains": [
+        "example.com"
+    ],
+    "admins": [
+        {
+            "id": 79233950,
+            "first_name": "Don",
+            "last_name": "Juan",
+            "email": "don.juan@example.com"
+        },
+        {
+            "id": 79233951,
+            "first_name": "Cindy",
+            "last_name": "Juan",
+            "email": "cindy.juan@example.com"
+        }
+    ],
+    "subscription_level": "Diamond",
+    "subscription_end_date": null,
+    "number_of_seats": 1200,
+    "current_risk_score": null
+}

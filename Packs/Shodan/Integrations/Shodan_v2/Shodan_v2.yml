@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Shodan_v2
   version: -1
@@ -8,24 +11,31 @@ configuration:
   type: 9
   displaypassword: API Key
   hiddenusername: true
+  section: Connect
 - display: API Key
   name: api_key
   required: false
   type: 4
   hidden: true
+  section: Connect
 - display: Base url to Shodan API
   name: api_url
   required: true
   type: 0
   defaultvalue: https://api.shodan.io
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - defaultvalue: A - Completely reliable
   name: integrationReliability
   display: 'Source Reliability'
@@ -40,6 +50,7 @@ configuration:
   required: false
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
+  section: Collect
 - defaultvalue: 'indicatorType'
   name: feedExpirationPolicy
   display: ''
@@ -50,11 +61,15 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  section: Collect
+  advanced: true
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   required: false
   type: 1
+  section: Collect
+  advanced: true
 description: A search engine used for searching Internet-connected devices
 display: Shodan v2
 name: Shodan_v2
@@ -433,7 +448,7 @@ script:
     description: Resumes receiving notifications for network alerts that are set off by the specified triggers.
     execution: false
     name: shodan-network-alert-remove-service-from-whitelist
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: false
   longRunning: false

@@ -1,852 +1,2856 @@
+category: Network Security
 commonfields:
   id: ExtraHop v2
   version: -1
-name: ExtraHop v2
-display: ExtraHop Reveal(x) v2
-category: Network Security
-description: Network detection and response. Complete visibility of network communications at enterprise scale, real-time threat detections backed by machine learning, and guided investigation workflows that simplify response.
 configuration:
-- display: URL
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- additionalinfo: Select if the instance connects to an ExtraHop Reveal(x) 360 system.
+    Leave unselected if connecting to ExtraHop Reveal(x) Enterprise. Default value
+    is false.
+  display: On Cloud
+  hidden: false
+  name: on_cloud
+  required: false
+  type: 8
+- additionalinfo: The URL of the ExtraHop system this instance will connect to.
+  display: URL
   name: url
-  defaultvalue: ""
+  required: true
   type: 0
-  required: true
-- display: API Key
+- additionalinfo: The API key required for authentication if connecting to ExtraHop
+    Reveal(x) Enterprise.
+  display: API Key
   name: apikey
-  defaultvalue: ""
+  required: false
   type: 4
-  required: true
-- display: Trust any certificate (not secure)
+- additionalinfo: The client ID generated on your ExtraHop system that is required
+    for authentication if connecting to ExtraHop Reveal(x) 360.
+  display: Client ID
+  hidden: false
+  name: client_id
+  required: false
+  type: 0
+- additionalinfo: The client secret generated on your ExtraHop system that is required
+    for authentication if connecting to ExtraHop Reveal(x) 360.
+  display: Client Secret
+  hidden: false
+  name: client_secret
+  required: false
+  type: 4
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
-  type: 8
   required: false
+  type: 8
+- additionalinfo: |-
+    The UTC date or relative timestamp from where to start fetching incidents.
+
+    Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
+
+    For example: 10 minutes, 5 hours, 8 days, 2 weeks, 8 months, 2021-12-31, 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+  defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: '200'
+  display: How many incidents to fetch each time
+  hidden: true
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: |-
+    Applies a filter to the list of detections or metrics based on a JSON-specific query.
+
+    Example for detections:
+    {
+      "category": "sec",
+      "risk_score_min": 51
+    }
+
+    For a complete reference to the Extrahop detections  filter fields , please refer to the ExtraHop REST API documentation at
+    https://docs.extrahop.com/current/rest-api-guide/
+  display: Advanced Filter
+  hidden: false
+  name: advanced_filter
+  required: false
+  type: 12
+description: ExtraHop Reveal(x) for Cortex XSOAR is a network detection and response
+  solution that provides complete visibility of network communications at enterprise
+  scale, real-time threat detections backed by machine learning, and guided investigation
+  workflows that simplify response.
+display: ExtraHop Reveal(x)
+name: ExtraHop v2
 script:
-  script: ''
-  type: python
-  subtype: python3
   commands:
-  - name: extrahop-get-alerts
-    deprecated: true
-    arguments: []
+  - deprecated: false
+    description: Get all devices on the advanced analysis watchlist in ExtraHop Reveal(x).
+    execution: false
+    name: extrahop-watchlist-get
     outputs:
-    - contextPath: Extrahop.Alert.Operator
-      description: The logical operator applied when comparing the value of the operand field to alert conditions.
+    - contextPath: ExtraHop.Device.Macaddr
+      description: The MAC address of the device.
       type: String
-    - contextPath: Extrahop.Alert.FieldName
-      description: The name of the monitored metric.
+    - contextPath: ExtraHop.Device.DeviceClass
+      description: The class of this device.
       type: String
-    - contextPath: Extrahop.Alert.NotifySnmp
-      description: 'Indicates whether to send an SNMP trap when an alert is generated. '
+    - contextPath: ExtraHop.Device.UserModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: ExtraHop.Device.AutoRole
+      description: The role automatically detected by the ExtraHop system.
+      type: String
+    - contextPath: ExtraHop.Device.ParentId
+      description: The ID of the parent device.
+      type: Number
+    - contextPath: ExtraHop.Device.Vendor
+      description: The device vendor.
+      type: String
+    - contextPath: ExtraHop.Device.Analysis
+      description: The level of analysis received by the device.
+      type: string
+    - contextPath: ExtraHop.Device.DiscoveryId
+      description: The UUID for this device.
+      type: String
+    - contextPath: ExtraHop.Device.DefaultName
+      description: The default name for this device.
+      type: String
+    - contextPath: ExtraHop.Device.DisplayName
+      description: The display name of device.
+      type: String
+    - contextPath: ExtraHop.Device.OnWatchlist
+      description: Whether the device is on the advanced analysis watch list.
       type: Boolean
-    - contextPath: Extrahop.Alert.Operand
-      description: The value to compare against alert conditions.
-      type: String
-    - contextPath: Extrahop.Alert.IntervalLength
-      description: The length of the alert interval, expressed in seconds.
+    - contextPath: ExtraHop.Device.ModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: Number
-    - contextPath: Extrahop.Alert.Author
-      description: 'The name of the user that created the alert. '
-      type: String
-    - contextPath: Extrahop.Alert.Name
-      description: The unique, friendly name for the alert.
-      type: String
-    - contextPath: Extrahop.Alert.FieldName2
-      description: The second monitored metric when applying a ratio.
-      type: String
-    - contextPath: Extrahop.Alert.RefireInterval
-      description: The time interval in which alert conditions are monitored, expressed in seconds.
-      type: Number
-    - contextPath: Extrahop.Alert.ModTime
-      description: 'The time of the most recent update, expressed in milliseconds since the epoch. '
-      type: Number
-    - contextPath: Extrahop.Alert.Units
-      description: The interval in which to evaluate the alert condition.
-      type: String
-    - contextPath: Extrahop.Alert.ApplyAll
-      description: Indicates whether the alert is assigned to all available data sources.
+    - contextPath: ExtraHop.Device.IsL3
+      description: Indicates whether the device is a layer 3 device.
       type: Boolean
-    - contextPath: Extrahop.Alert.Type
-      description: The type of alert.
+    - contextPath: ExtraHop.Device.Role
+      description: The role of the device.
       type: String
-    - contextPath: Extrahop.Alert.FieldOp
-      description: The type of comparison between the "field_name" and "field_name2" fields when applying a ratio.
-      type: String
-    - contextPath: Extrahop.Alert.Id
-      description: The unique identifier for the alert.
+    - contextPath: ExtraHop.Device.DiscoverTime
+      description: The time that the device was discovered.
       type: Number
-    - contextPath: Extrahop.Alert.Disabled
-      description: Indicates whether the alert is disabled.
-      type: Boolean
-    - contextPath: Extrahop.Alert.Description
-      description: An optional description for the alert.
-      type: String
-    - contextPath: Extrahop.Alert.Severity
-      description: The severity level of the alert.
+    - contextPath: ExtraHop.Device.Id
+      description: The ID of the device.
       type: Number
-    - contextPath: Extrahop.Alert.StatName
-      description: The statistic name for the alert.
+    - contextPath: ExtraHop.Device.Ipaddr4
+      description: The IPv4 address for this device.
       type: String
-    description: Get all alert rules from Reveal(x).
-  - name: extrahop-get-alert-rules
-    arguments: []
-    outputs:
-    - contextPath: Extrahop.Alert.Operator
-      description: The logical operator applied when comparing the value of the operand field to alert conditions.
-      type: String
-    - contextPath: Extrahop.Alert.FieldName
-      description: The name of the monitored metric.
-      type: String
-    - contextPath: Extrahop.Alert.NotifySnmp
-      description: 'Indicates whether to send an SNMP trap when an alert is generated. '
-      type: Boolean
-    - contextPath: Extrahop.Alert.Operand
-      description: The value to compare against alert conditions.
-      type: String
-    - contextPath: Extrahop.Alert.IntervalLength
-      description: The length of the alert interval, expressed in seconds.
+    - contextPath: ExtraHop.Device.Vlanid
+      description: The unique identifier for the VLAN associated with this device.
       type: Number
-    - contextPath: Extrahop.Alert.Author
-      description: 'The name of the user that created the alert. '
-      type: String
-    - contextPath: Extrahop.Alert.Name
-      description: The unique, friendly name for the alert.
-      type: String
-    - contextPath: Extrahop.Alert.FieldName2
-      description: The second monitored metric when applying a ratio.
-      type: String
-    - contextPath: Extrahop.Alert.RefireInterval
-      description: The time interval in which alert conditions are monitored, expressed in seconds.
-      type: Number
-    - contextPath: Extrahop.Alert.ModTime
-      description: 'The time of the most recent update, expressed in milliseconds since the epoch. '
-      type: Number
-    - contextPath: Extrahop.Alert.Units
-      description: The interval in which to evaluate the alert condition.
-      type: String
-    - contextPath: Extrahop.Alert.ApplyAll
-      description: Indicates whether the alert is assigned to all available data sources.
-      type: Boolean
-    - contextPath: Extrahop.Alert.Type
-      description: The type of alert.
-      type: String
-    - contextPath: Extrahop.Alert.FieldOp
-      description: The type of comparison between the "field_name" and "field_name2" fields when applying a ratio.
-      type: String
-    - contextPath: Extrahop.Alert.Id
-      description: The unique identifier for the alert.
-      type: Number
-    - contextPath: Extrahop.Alert.Disabled
-      description: Indicates whether the alert is disabled.
-      type: Boolean
-    - contextPath: Extrahop.Alert.Description
-      description: An optional description for the alert.
-      type: String
-    - contextPath: Extrahop.Alert.Severity
-      description: The severity level of the alert.
-      type: Number
-    - contextPath: Extrahop.Alert.StatName
-      description: The statistic name for the alert.
-      type: String
-    description: Get all alert rules from Reveal(x).
-  - name: extrahop-query-records
-    arguments:
-    - name: query_from
+    - contextPath: ExtraHop.Device.Ipaddr6
+      description: The IPv6 address of the device.
+      type: string
+    - contextPath: ExtraHop.Device.NodeId
+      description: The Node ID of the Discover appliance.
+      type: number
+    - contextPath: ExtraHop.Device.Description
+      description: A user customizable description of the device.
+      type: string
+    - contextPath: ExtraHop.Device.DnsName
+      description: The DNS name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.DhcpName
+      description: The DHCP name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.CdpName
+      description: The Cisco Discovery Protocol name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.NetbiosName
+      description: The NetBIOS name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.Url
+      description: Link to the device details page in ExtraHop.
+      type: string
+  - arguments:
+    - default: false
+      description: The IP address or ExtraHop API ID of the source device to get peer
+        devices.
+      isArray: false
+      name: ip_or_id
       required: true
-      description: 'The beginning timestamp of the time range the query will search, expressed in milliseconds since the epoch. A negative value specifies that the search will begin with records created at a time in the past relative to the current time. For example, specify -10m to begin the search with records created 10 minutes before the time of the request. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      secret: false
+    - default: false
       defaultValue: -30m
-    - name: query_until
-      description: 'The ending timestamp of the time range the query will search, expressed in milliseconds since the epoch. A 0 value specifies that the search will end with records created at the time of the request. A negative value specifies that the search will end with records created at a time in the past relative to the current time. For example, specify -5m to end the search with records created 5 minutes before the time of the request. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
-    - name: limit
-      description: The maximum number of entries to return.
-      defaultValue: "20"
-    - name: offset
-      description: The number of records to skip in the query results.
-    - name: field1
-      auto: PREDEFINED
+      description: 'The beginning timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A negative value is evaluated relative
+        to the current time. The default unit for a negative value is milliseconds,
+        but other units can be specified with one of the following unit suffixes:
+        ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: query_from
+      required: false
+      secret: false
+    - default: false
+      description: 'The ending timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. 0 indicates the time of the request.
+        A negative value is evaluated relative to the current time. The default unit
+        for a negative value is milliseconds, but other units can be specified with
+        one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: query_until
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: any
+      description: The role of the peer device in relation to the origin device.
+      isArray: false
+      name: peer_role
       predefined:
-      - .any
-      - .ipaddr
-      - .port
-      - accessTime
-      - ackCode
-      - ackId
-      - adminQueue
-      - age
-      - alertCode
-      - alertLevel
-      - answer
-      - answers
-      - appName
-      - application
-      - args
-      - authDomain
-      - authMethod
-      - authResult
-      - authType
-      - authenticator
-      - bindDN
-      - bytes
-      - cName
-      - cNameType
-      - cNames
-      - cRealm
-      - callId
-      - certificateFingerprint
-      - certificateIsSelfSigned
-      - certificateIssuer
-      - certificateKeySize
-      - certificateNotAfter
-      - certificateNotBefore
-      - certificateSignatureAlgorithm
-      - certificateSubject
-      - certificateSubjectAlternativeNames
-      - channel
-      - cipherSuite
+      - any
       - client
-      - clientAddr
-      - clientBuild
-      - clientBytes
-      - clientCGPMsgCount
-      - clientCertificateRequested
-      - clientCipherAlgorithm
-      - clientCompressionAlgorithm
-      - clientImplementation
-      - clientL2Bytes
-      - clientLatency
-      - clientMacAlgorithm
-      - clientMachine
-      - clientMsgCount
-      - clientName
-      - clientPkts
-      - clientPort
-      - clientPrincipalName
-      - clientRTO
-      - clientReqDelay
-      - clientType
-      - clientVersion
-      - clientZeroWnd
-      - collection
-      - command
-      - contentType
-      - conversationId
-      - cookie
-      - correlationId
-      - cwd
-      - dataSize
-      - database
-      - deltaBytes
-      - deltaPkts
-      - desktopHeight
-      - desktopWidth
-      - destination
-      - dn
-      - domain
-      - drops
-      - dscpName
-      - dstQueueMgr
-      - dups
-      - duration
-      - egressInterface
-      - error
-      - errorDetail
-      - expiration
-      - first
-      - flowId
-      - format
-      - frameCutDuration
-      - frameSendDuration
-      - from
-      - functionId
-      - functionName
-      - fwdReqClientAddr
-      - fwdReqHost
-      - fwdReqIsEncrypted
-      - fwdReqServerName
-      - fwdReqServerPort
-      - gwAddr
-      - handshakeTime
-      - hasSDP
-      - hassh
-      - hasshServer
-      - heartbeatPayloadLength
-      - heartbeatType
-      - hitCount
-      - hopLimit
-      - host
-      - htype
-      - ingressInterface
-      - interface
-      - isAborted
-      - isAuthoritative
-      - isBinaryProtocol
-      - isCheckingDisabled
-      - isCleanShutdown
-      - isClientDiskRead
-      - isClientDiskWrite
-      - isCommandCreate
-      - isCommandDelete
-      - isCommandFileInfo
-      - isCommandLock
-      - isCommandRead
-      - isCommandRename
-      - isCommandWrite
-      - isCompressed
-      - isEncrypted
-      - isNoReply
-      - isPipelined
-      - isRecursionAvailable
-      - isRecursionDesired
-      - isRenegotiate
-      - isReqAborted
-      - isReqTimeout
-      - isReqTruncated
-      - isRspAborted
-      - isRspChunked
-      - isRspCompressed
-      - isRspImplicit
-      - isRspTruncated
-      - isSQLi
-      - isSharedSession
-      - isSubOperation
-      - isWeakCipherSuite
-      - isXSS
-      - ja3Hash
-      - ja3sHash
-      - jitter
-      - kexAlgorithm
-      - keyboardLayout
-      - l2Bytes
-      - l7proto
-      - label
-      - last
-      - launchParams
-      - loadTime
-      - loginTime
-      - method
-      - missCount
-      - mos
-      - msgClass
-      - msgCode
-      - msgFormat
-      - msgId
-      - msgLength
-      - msgSize
-      - msgText
-      - msgType
-      - network
-      - networkAddr
-      - networkLatency
-      - nextHop
-      - nextHopMTU
-      - notAfter
-      - offeredAddr
-      - offset
-      - opcode
-      - operation
-      - option
-      - origin
-      - outOfOrder
-      - path
-      - payloadType
-      - payloadTypeId
-      - persistent
-      - pkts
-      - pointer
-      - printerName
-      - priority
-      - procedure
-      - processingTime
-      - program
-      - proto
-      - protocol
-      - putAppName
-      - qname
-      - qtype
-      - query
-      - queue
-      - queueMgr
-      - rFactor
-      - realm
-      - receiver
-      - receiverAddr
-      - receiverAsn
-      - receiverBytes
-      - receiverIsBroker
-      - receiverL2Bytes
-      - receiverPkts
-      - receiverPort
-      - receiverPrefixLength
-      - receiverRTO
-      - receiverZeroWnd
-      - recipient
-      - recipientList
-      - redeliveryCount
-      - referer
-      - renameDirChanged
-      - replyTo
-      - reqBytes
-      - reqKey
-      - reqL2Bytes
-      - reqPdu
-      - reqPkts
-      - reqRTO
-      - reqSize
-      - reqTimeToLastByte
-      - reqTransferTime
-      - requestedColorDepth
-      - requestedProtocols
-      - resolvedQueue
-      - resolvedQueueMgr
-      - resource
-      - responseQueue
-      - roundTripTime
-      - rspBytes
-      - rspL2Bytes
-      - rspPdu
-      - rspPkts
-      - rspRTO
-      - rspSize
-      - rspTimeToFirstByte
-      - rspTimeToFirstHeader
-      - rspTimeToFirstPayload
-      - rspTimeToLastByte
-      - rspTransferTime
-      - rspVersion
-      - rto
-      - sNameType
-      - sNames
-      - saslMechanism
-      - searchFilter
-      - searchScope
-      - selectedProtocol
-      - sender
-      - senderAddr
-      - senderAsn
-      - senderBytes
-      - senderIsBroker
-      - senderL2Bytes
-      - senderPkts
-      - senderPort
-      - senderPrefixLength
-      - senderRTO
-      - senderZeroWnd
-      - seqNum
       - server
-      - serverAddr
-      - serverBytes
-      - serverCGPMsgCount
-      - serverCipherAlgorithm
-      - serverCompressionAlgorithm
-      - serverImplementation
-      - serverL2Bytes
-      - serverMacAlgorithm
-      - serverMsgCount
-      - serverPkts
-      - serverPort
-      - serverPrincipalName
-      - serverRTO
-      - serverVersion
-      - serverZeroWnd
-      - share
-      - source
-      - sqli
-      - srcQueueMgr
-      - ssrc
-      - statement
-      - status
-      - statusCode
-      - statusText
-      - table
-      - target
-      - tcpFlags
-      - thinkTime
-      - tickChannel
-      - ticketHash
-      - till
-      - title
-      - to
-      - totalMsgLength
-      - transferBytes
-      - txId
-      - type
-      - unitId
-      - uri
-      - user
-      - userAgent
-      - vbucket
-      - version
-      - vlan
-      - vxlanVNI
-      - warning
-      - xss
-      description: The name of the field in the record to be filtered. The query compares field1 to value1 and applies the compare method specified by the operator1 parameter. If the specified field name is ".any", the union of all field values will be searched. If the specified field name is ".ipaddr" or ".port", the client, server, sender, and receiver roles are included in the search.
-    - name: operator1
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: any
+      description: A filter to only return peers that the source device has communicated
+        with over this protocol. If no value is set, the object includes any protocol.
+      isArray: false
+      name: protocol
+      predefined:
+      - any
+      - AAA
+      - ActiveMQ
+      - AJP
+      - amf
+      - CIFS
+      - DB
+      - DHCP
+      - DICOM
+      - DNS
+      - FIX
+      - FTP
+      - HL7
+      - HTTP
+      - IBMMQ
+      - ICA
+      - IKE/ISAKMP
+      - IMAP
+      - IPFIX
+      - IPsec NAT-T
+      - IRC
+      - iSCSI
+      - Kerberos
+      - L2TP
+      - LDAP
+      - lync-compress
+      - memcache
+      - Modbus
+      - MongoDB
+      - MSMQ
+      - MSN
+      - MSRPC
+      - NetFlow
+      - NFS
+      - NTP
+      - OpenVPN
+      - PCoIP
+      - Perforce
+      - POP3
+      - RDP
+      - Redis
+      - RFB
+      - RTCP
+      - RTP
+      - sFlow
+      - SIP
+      - SMPP
+      - SMTP
+      - SNMP
+      - SSH
+      - SSL
+      - Syslog
+      - TCP
+      - telnet
+      - UDP
+      - WebSocket
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all peers for a device from ExtraHop Reveal(x).
+    execution: false
+    name: extrahop-peers-get
+    outputs:
+    - contextPath: ExtraHop.Device.Macaddr
+      description: The MAC address of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DeviceClass
+      description: The class of this device.
+      type: String
+    - contextPath: ExtraHop.Device.UserModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: ExtraHop.Device.AutoRole
+      description: The role automatically detected by the ExtraHop system.
+      type: String
+    - contextPath: ExtraHop.Device.ParentId
+      description: The ID of the parent device.
+      type: Number
+    - contextPath: ExtraHop.Device.Vendor
+      description: The device vendor.
+      type: String
+    - contextPath: ExtraHop.Device.Analysis
+      description: The level of analysis received by the device.
+      type: string
+    - contextPath: ExtraHop.Device.DiscoveryId
+      description: The UUID of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DefaultName
+      description: The default name for this device.
+      type: String
+    - contextPath: ExtraHop.Device.DisplayName
+      description: The display name of device.
+      type: String
+    - contextPath: ExtraHop.Device.OnWatchlist
+      description: Whether the device is on the advanced analysis watch list.
+      type: Boolean
+    - contextPath: ExtraHop.Device.ModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: ExtraHop.Device.IsL3
+      description: Indicates whether the device is a layer 3 device.
+      type: Boolean
+    - contextPath: ExtraHop.Device.Role
+      description: The role of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DiscoverTime
+      description: The time that the device was discovered.
+      type: Number
+    - contextPath: ExtraHop.Device.Id
+      description: The ID of the device.
+      type: Number
+    - contextPath: ExtraHop.Device.Ipaddr4
+      description: The IPv4 address for this device.
+      type: String
+    - contextPath: ExtraHop.Device.Vlanid
+      description: The unique identifier for the VLAN associated with this device.
+      type: Number
+    - contextPath: ExtraHop.Device.Ipaddr6
+      description: The IPv6 address of the device.
+      type: string
+    - contextPath: ExtraHop.Device.NodeId
+      description: The node ID of the sensor associated with this device.
+      type: number
+    - contextPath: ExtraHop.Device.Description
+      description: A user customizable description of the device.
+      type: string
+    - contextPath: ExtraHop.Device.DnsName
+      description: The DNS name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.DhcpName
+      description: The DHCP name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.CdpName
+      description: The Cisco Discovery Protocol name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.NetbiosName
+      description: The NetBIOS name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.Url
+      description: Link to the device details page in ExtraHop Reveal(x).
+      type: string
+  - arguments:
+    - default: false
+      description: The name of the device. This searches for matches on all ExtraHop
+        name fields (DHCP, DNS, NetBIOS, Cisco Discovery Protocol, etc).
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The IP address of the device.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: The MAC address of the device.
+      isArray: false
+      name: mac
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The role of the device.
+      isArray: false
+      name: role
+      predefined:
+      - db_server
+      - dhcp_server
+      - dns_server
+      - file_server
+      - firewall
+      - gateway
+      - http_server
+      - domain_controller
+      - web_proxy
+      - load_balancer
+      - pc
+      - medical_device
+      - mobile_device
+      - printer
+      - scanner
+      - custom
+      - voip_phone
+      - other
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The OS of the device.
+      isArray: false
+      name: software
+      predefined:
+      - android
+      - apple_ios
+      - arista_eos
+      - cisco_ios
+      - cisco_nx-os
+      - chrome_os
+      - linux
+      - mac_os
+      - windows
+      - windows_server
+      - windows_server_2008
+      - windows_server_2008_r2
+      - windows_server_2012
+      - windows_server_2012_r2
+      - windows_server_2016
+      - windows_vista
+      - windows_7
+      - windows_8
+      - windows_8.1
+      - windows_10
+      required: false
+      secret: false
+    - default: false
+      description: A tag present on the device.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The vendor of the device, based on MAC address via OUI lookup.
+      isArray: false
+      name: vendor
+      predefined:
+      - alcatel-lucent
+      - apple
+      - arista
+      - asus
+      - brother
+      - canon
+      - cisco
+      - cisco-linksys
+      - citrix
+      - dell
+      - dellemc
+      - d-link
+      - emc
+      - f5
+      - google
+      - hp
+      - htc
+      - huawei
+      - ibm
+      - juniper
+      - kyocera
+      - microsoft
+      - netapp
+      - netgear
+      - nokia
+      - nortel
+      - oracle
+      - paloalto
+      - samsung
+      - 3com
+      - toshiba
+      - virtualbox
+      - vmware
+      - zte
+      required: false
+      secret: false
+    - default: false
+      description: 'The time that device was first seen by ExtraHop, expressed in
+        milliseconds since the epoch. A negative value is evaluated relative to the
+        current time. The default unit for a negative value is milliseconds, but other
+        units can be specified with the following unit suffixes: ms, s, m, h, d, w,
+        M, y. For example, to look one day back enter -1d or -24h. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: discover_time
+      required: false
+      secret: false
+    - default: false
+      description: The VLAN ID of the Virtual LAN that the device is on.
+      isArray: false
+      name: vlan
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The activity of the device.
+      isArray: false
+      name: activity
+      predefined:
+      - aaa_client
+      - aaa_server
+      - ajp_client
+      - ajp_server
+      - amf_client
+      - amf_server
+      - cifs_client
+      - cifs_server
+      - db_client
+      - db_server
+      - dhcp_client
+      - dhcp_server
+      - dicom_client
+      - dicom_server
+      - dns_client
+      - dns_server
+      - fix_client
+      - fix_server
+      - ftp_client
+      - ftp_server
+      - hl7_client
+      - hl7_server
+      - http_client
+      - http_server
+      - ibmmq_client
+      - ibmmq_server
+      - ica_client
+      - ica_server
+      - icmp
+      - iscsi_client
+      - iscsi_server
+      - kerberos_client
+      - kerberos_server
+      - ldap_client
+      - ldap_server
+      - llmnr_client
+      - llmnr_server
+      - memcache_client
+      - memcache_server
+      - modbus_client
+      - modbus_server
+      - mongo_client
+      - mongo_server
+      - msmq
+      - nbns_client
+      - nbns_server
+      - nfs_client
+      - nfs_server
+      - pcoip_client
+      - pcoip_server
+      - pop3_client
+      - pop3_server
+      - rdp_client
+      - rdp_server
+      - redis_client
+      - redis_server
+      - rfb_client
+      - rfb_server
+      - rpc_client
+      - rpc_server
+      - rtcp
+      - rtp
+      - scanner
+      - sip_client
+      - sip_server
+      - smpp_client
+      - smpp_server
+      - smtp_client
+      - smtp_server
+      - ssh_client
+      - ssh_server
+      - ssl_client
+      - ssl_server
+      - tcp
+      - telnet_client
+      - telnet_server
+      - udp
+      - websocket_client
+      - websocket_server
+      - wsman_client
+      - wsman_server
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '='
+      description: The compare method applied when matching the fields against their
+        values. For example, to find devices with names that begin with 'SEA1' (set
+        name=SEA1, operator=startswith)
+      isArray: false
+      name: operator
       predefined:
       - '>'
-      - <
-      - <=
+      - '<'
+      - '<='
       - '>='
       - '='
       - '!='
       - startswith
       - exists
       - not_exists
-      description: The compare method applied when matching value1 against the field1 contents.
-      defaultValue: '='
-    - name: value1
-      description: The value that the query attempts to match. The query compares this value to the contents of the field1 parameter and applies the compare method specified by the operator1 parameter.
-    - name: field2
-      auto: PREDEFINED
-      predefined:
-      - .any
-      - .ipaddr
-      - .port
-      - accessTime
-      - ackCode
-      - ackId
-      - adminQueue
-      - age
-      - alertCode
-      - alertLevel
-      - answer
-      - answers
-      - appName
-      - application
-      - args
-      - authDomain
-      - authMethod
-      - authResult
-      - authType
-      - authenticator
-      - bindDN
-      - bytes
-      - cName
-      - cNameType
-      - cNames
-      - cRealm
-      - callId
-      - certificateFingerprint
-      - certificateIsSelfSigned
-      - certificateIssuer
-      - certificateKeySize
-      - certificateNotAfter
-      - certificateNotBefore
-      - certificateSignatureAlgorithm
-      - certificateSubject
-      - certificateSubjectAlternativeNames
-      - channel
-      - cipherSuite
-      - client
-      - clientAddr
-      - clientBuild
-      - clientBytes
-      - clientCGPMsgCount
-      - clientCertificateRequested
-      - clientCipherAlgorithm
-      - clientCompressionAlgorithm
-      - clientImplementation
-      - clientL2Bytes
-      - clientLatency
-      - clientMacAlgorithm
-      - clientMachine
-      - clientMsgCount
-      - clientName
-      - clientPkts
-      - clientPort
-      - clientPrincipalName
-      - clientRTO
-      - clientReqDelay
-      - clientType
-      - clientVersion
-      - clientZeroWnd
-      - collection
-      - command
-      - contentType
-      - conversationId
-      - cookie
-      - correlationId
-      - cwd
-      - dataSize
-      - database
-      - deltaBytes
-      - deltaPkts
-      - desktopHeight
-      - desktopWidth
-      - destination
-      - dn
-      - domain
-      - drops
-      - dscpName
-      - dstQueueMgr
-      - dups
-      - duration
-      - egressInterface
-      - error
-      - errorDetail
-      - expiration
-      - first
-      - flowId
-      - format
-      - frameCutDuration
-      - frameSendDuration
-      - from
-      - functionId
-      - functionName
-      - fwdReqClientAddr
-      - fwdReqHost
-      - fwdReqIsEncrypted
-      - fwdReqServerName
-      - fwdReqServerPort
-      - gwAddr
-      - handshakeTime
-      - hasSDP
-      - hassh
-      - hasshServer
-      - heartbeatPayloadLength
-      - heartbeatType
-      - hitCount
-      - hopLimit
-      - host
-      - htype
-      - ingressInterface
-      - interface
-      - isAborted
-      - isAuthoritative
-      - isBinaryProtocol
-      - isCheckingDisabled
-      - isCleanShutdown
-      - isClientDiskRead
-      - isClientDiskWrite
-      - isCommandCreate
-      - isCommandDelete
-      - isCommandFileInfo
-      - isCommandLock
-      - isCommandRead
-      - isCommandRename
-      - isCommandWrite
-      - isCompressed
-      - isEncrypted
-      - isNoReply
-      - isPipelined
-      - isRecursionAvailable
-      - isRecursionDesired
-      - isRenegotiate
-      - isReqAborted
-      - isReqTimeout
-      - isReqTruncated
-      - isRspAborted
-      - isRspChunked
-      - isRspCompressed
-      - isRspImplicit
-      - isRspTruncated
-      - isSQLi
-      - isSharedSession
-      - isSubOperation
-      - isWeakCipherSuite
-      - isXSS
-      - ja3Hash
-      - ja3sHash
-      - jitter
-      - kexAlgorithm
-      - keyboardLayout
-      - l2Bytes
-      - l7proto
-      - label
-      - last
-      - launchParams
-      - loadTime
-      - loginTime
-      - method
-      - missCount
-      - mos
-      - msgClass
-      - msgCode
-      - msgFormat
-      - msgId
-      - msgLength
-      - msgSize
-      - msgText
-      - msgType
-      - network
-      - networkAddr
-      - networkLatency
-      - nextHop
-      - nextHopMTU
-      - notAfter
-      - offeredAddr
-      - offset
-      - opcode
-      - operation
-      - option
-      - origin
-      - outOfOrder
-      - path
-      - payloadType
-      - payloadTypeId
-      - persistent
-      - pkts
-      - pointer
-      - printerName
-      - priority
-      - procedure
-      - processingTime
-      - program
-      - proto
-      - protocol
-      - putAppName
-      - qname
-      - qtype
-      - query
-      - queue
-      - queueMgr
-      - rFactor
-      - realm
-      - receiver
-      - receiverAddr
-      - receiverAsn
-      - receiverBytes
-      - receiverIsBroker
-      - receiverL2Bytes
-      - receiverPkts
-      - receiverPort
-      - receiverPrefixLength
-      - receiverRTO
-      - receiverZeroWnd
-      - recipient
-      - recipientList
-      - redeliveryCount
-      - referer
-      - renameDirChanged
-      - replyTo
-      - reqBytes
-      - reqKey
-      - reqL2Bytes
-      - reqPdu
-      - reqPkts
-      - reqRTO
-      - reqSize
-      - reqTimeToLastByte
-      - reqTransferTime
-      - requestedColorDepth
-      - requestedProtocols
-      - resolvedQueue
-      - resolvedQueueMgr
-      - resource
-      - responseQueue
-      - roundTripTime
-      - rspBytes
-      - rspL2Bytes
-      - rspPdu
-      - rspPkts
-      - rspRTO
-      - rspSize
-      - rspTimeToFirstByte
-      - rspTimeToFirstHeader
-      - rspTimeToFirstPayload
-      - rspTimeToLastByte
-      - rspTransferTime
-      - rspVersion
-      - rto
-      - sNameType
-      - sNames
-      - saslMechanism
-      - searchFilter
-      - searchScope
-      - selectedProtocol
-      - sender
-      - senderAddr
-      - senderAsn
-      - senderBytes
-      - senderIsBroker
-      - senderL2Bytes
-      - senderPkts
-      - senderPort
-      - senderPrefixLength
-      - senderRTO
-      - senderZeroWnd
-      - seqNum
-      - server
-      - serverAddr
-      - serverBytes
-      - serverCGPMsgCount
-      - serverCipherAlgorithm
-      - serverCompressionAlgorithm
-      - serverImplementation
-      - serverL2Bytes
-      - serverMacAlgorithm
-      - serverMsgCount
-      - serverPkts
-      - serverPort
-      - serverPrincipalName
-      - serverRTO
-      - serverVersion
-      - serverZeroWnd
-      - share
-      - source
-      - sqli
-      - srcQueueMgr
-      - ssrc
-      - statement
-      - status
-      - statusCode
-      - statusText
-      - table
-      - target
-      - tcpFlags
-      - thinkTime
-      - tickChannel
-      - ticketHash
-      - till
-      - title
-      - to
-      - totalMsgLength
-      - transferBytes
-      - txId
-      - type
-      - unitId
-      - uri
-      - user
-      - userAgent
-      - vbucket
-      - version
-      - vlan
-      - vxlanVNI
-      - warning
-      - xss
-      description: The name of the field in the record to be filtered. The query compares field2 to value2 and applies the compare method specified by the operator2 parameter. If the specified field name is ".any", the union of all field values will be searched. If the specified field name is ".ipaddr" or ".port", the client, server, sender, and receiver roles are included in the search.
-    - name: operator2
-      auto: PREDEFINED
-      predefined:
-      - '>'
-      - <
-      - <=
-      - '>='
-      - '='
-      - '!='
-      - startswith
-      - exists
-      - not_exists
-      description: The compare method applied when matching value2 against the field2 contents.
-      defaultValue: '='
-    - name: value2
-      description: The value that the query attempts to match. The query compares this value to the contents of the field2 parameter and applies the compare method specified by the operator2 parameter.
-    - name: match_type
-      auto: PREDEFINED
+      - '~'
+      - '!~'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: and
+      description: The match operator to use when chaining the search fields together.
+        For example, to find all HTTP servers running Windows on the network (set
+        match_type=and, role=http_server, software=windows).
+      isArray: false
+      name: match_type
       predefined:
       - and
       - or
       - not
-      description: The match operator to use when chaining the search fields of 1 and 2 together. For example, to find HTTP records with status code 500 or a processing time greater than 100ms (set match_type=or, field1=statusCode, operator1==, value1=500, field2=processingTime, operator2=> value2=100, types=http).
+      required: false
+      secret: false
+    - default: false
+      description: 'The beginning timestamp for the request. Return only devices active
+        after this time. Time is expressed in milliseconds since the epoch. 0 indicates
+        the time of the request. A negative value is evaluated relative to the current
+        time. The default unit for a negative value is milliseconds, but other units
+        can be specified with one of the following unit suffixes: ms, s, m, h, d,
+        w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: active_from
+      required: false
+      secret: false
+    - default: false
+      description: 'The ending timestamp for the request. Return only devices active
+        before this time. Time is expressed in milliseconds since the epoch. 0 indicates
+        the time of the request. A negative value is evaluated relative to the current
+        time. The default unit for a negative value is milliseconds, but other units
+        can be specified with one of the following unit suffixes: ms, s, m, h, d,
+        w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: active_until
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of devices to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Only returns layer 3 devices by filtering out any layer 2 parent
+        devices.
+      isArray: false
+      name: l3_only
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for devices in ExtraHop Reveal(x).
+    execution: false
+    name: extrahop-devices-search
+    outputs:
+    - contextPath: ExtraHop.Device.Macaddr
+      description: The MAC address of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DeviceClass
+      description: The class of the device.
+      type: String
+    - contextPath: ExtraHop.Device.UserModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: ExtraHop.Device.AutoRole
+      description: The role automatically detected by the ExtraHop.
+      type: String
+    - contextPath: ExtraHop.Device.ParentId
+      description: The ID of the parent device.
+      type: Number
+    - contextPath: ExtraHop.Device.Vendor
+      description: The device vendor.
+      type: String
+    - contextPath: ExtraHop.Device.Analysis
+      description: The level of analysis received by the device.
+      type: string
+    - contextPath: ExtraHop.Device.DiscoveryId
+      description: The UUID of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DefaultName
+      description: The default name of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DisplayName
+      description: The display name of device.
+      type: String
+    - contextPath: ExtraHop.Device.OnWatchlist
+      description: Whether the device is on the advanced analysis watch list.
+      type: Boolean
+    - contextPath: ExtraHop.Device.ModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: ExtraHop.Device.IsL3
+      description: Indicates whether the device is a layer 3 device.
+      type: Boolean
+    - contextPath: ExtraHop.Device.Role
+      description: The role of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DiscoverTime
+      description: The time that the device was discovered.
+      type: Number
+    - contextPath: ExtraHop.Device.Id
+      description: The ID of the device.
+      type: Number
+    - contextPath: ExtraHop.Device.Ipaddr4
+      description: The IPv4 address of the device.
+      type: String
+    - contextPath: ExtraHop.Device.Vlanid
+      description: The ID of the VLAN associated with the device.
+      type: Number
+    - contextPath: ExtraHop.Device.Ipaddr6
+      description: The IPv6 address of the device.
+      type: String
+    - contextPath: ExtraHop.Device.NodeId
+      description: The node ID of the sensor associated with the device..
+      type: Number
+    - contextPath: ExtraHop.Device.Description
+      description: A user customizable description of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DnsName
+      description: The DNS name associated with the device.
+      type: String
+    - contextPath: ExtraHop.Device.DhcpName
+      description: The DHCP name associated with the device.
+      type: String
+    - contextPath: ExtraHop.Device.CdpName
+      description: The Cisco Discovery Protocol name associated with the device.
+      type: String
+    - contextPath: ExtraHop.Device.NetbiosName
+      description: The NetBIOS name associated with the device.
+      type: String
+    - contextPath: ExtraHop.Device.Url
+      description: Link to the device details page in ExtraHop Reveal(x).
+      type: String
+  - arguments:
+    - default: false
+      description: The IP address or ExtraHop API ID of the device to get all active
+        network protocols.
+      isArray: false
+      name: ip_or_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: -30m
+      description: 'The beginning timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A negative value is evaluated relative
+        to the current time. The default unit for a negative value is milliseconds,
+        but other units can be specified with one of the following unit suffixes:
+        ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: query_from
+      required: false
+      secret: false
+    - default: false
+      description: 'The ending timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. 0 indicates the time of the request.
+        A negative value is evaluated relative to the current time. The default unit
+        for a negative value is milliseconds, but other units can be specified with
+        one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: query_until
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all active network protocols for a device from ExtraHop Reveal(x).
+    execution: false
+    name: extrahop-protocols-get
+    outputs:
+    - contextPath: ExtraHop.Device.Macaddr
+      description: The MAC address of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DeviceClass
+      description: The class of the device.
+      type: String
+    - contextPath: ExtraHop.Device.UserModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: ExtraHop.Device.AutoRole
+      description: The role automatically detected by the ExtraHop system.
+      type: String
+    - contextPath: ExtraHop.Device.ParentId
+      description: The ID of the parent device.
+      type: Number
+    - contextPath: ExtraHop.Device.Vendor
+      description: The device vendor.
+      type: String
+    - contextPath: ExtraHop.Device.Analysis
+      description: The level of analysis received by the device.
+      type: String
+    - contextPath: ExtraHop.Device.DiscoveryId
+      description: The UUID of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DefaultName
+      description: The default name of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DisplayName
+      description: The display name of device.
+      type: String
+    - contextPath: ExtraHop.Device.OnWatchlist
+      description: Whether the device is on the advanced analysis watch list.
+      type: Boolean
+    - contextPath: ExtraHop.Device.ModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: ExtraHop.Device.IsL3
+      description: Indicates whether the device is a layer 3 device.
+      type: Boolean
+    - contextPath: ExtraHop.Device.Role
+      description: The role of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DiscoverTime
+      description: The time that the device was discovered.
+      type: Number
+    - contextPath: ExtraHop.Device.Id
+      description: The ID of the device.
+      type: Number
+    - contextPath: ExtraHop.Device.Ipaddr4
+      description: The IPv4 address of the device.
+      type: String
+    - contextPath: ExtraHop.Device.Vlanid
+      description: The ID of the VLAN associated with the device.
+      type: Number
+    - contextPath: ExtraHop.Device.Ipaddr6
+      description: The IPv6 address of the device.
+      type: String
+    - contextPath: ExtraHop.Device.NodeId
+      description: The node ID of the sensor associated with the device..
+      type: Number
+    - contextPath: ExtraHop.Device.Description
+      description: A user customizable description of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DnsName
+      description: The DNS name associated with the device.
+      type: String
+    - contextPath: ExtraHop.Device.DhcpName
+      description: The DHCP name associated with the device.
+      type: String
+    - contextPath: ExtraHop.Device.CdpName
+      description: The Cisco Discovery Protocol name associated with the device.
+      type: String
+    - contextPath: ExtraHop.Device.NetbiosName
+      description: The NetBIOS name associated with the device.
+      type: String
+    - contextPath: ExtraHop.Device.Url
+      description: Link to the device details page in ExtraHop Reveal(x).
+      type: String
+    - contextPath: ExtraHop.Device.ClientProtocols
+      description: The list of protocols the peer device is communicating on as a
+        client.
+      type: String
+    - contextPath: ExtraHop.Device.ServerProtocols
+      description: The list of protocols the peer device is communicating on as a
+        server.
+      type: String
+  - arguments:
+    - default: false
+      description: The IP address or ExtraHop API ID of the source device to get an
+        activity map.
+      isArray: false
+      name: ip_or_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 30 minutes
+      description: The time interval of the live activity map, expressed as the "Last"
+        30 minutes. For example, specify a value of 30 minutes to get an activity
+        map showing the time range of the last 30 minutes. This field is ignored if
+        from_time and until_time are provided.
+      isArray: false
+      name: time_interval
+      predefined:
+      - 30 minutes
+      - 6 hours
+      - 1 day
+      - 1 week
+      required: false
+      secret: false
+    - default: false
+      description: The beginning timestamp of a fixed time range the activity map
+        will display, expressed in seconds since the epoch.
+      isArray: false
+      name: from_time
+      required: false
+      secret: false
+    - default: false
+      description: The ending timestamp of a fixed time range the activity map will
+        display, expressed in seconds since the epoch.
+      isArray: false
+      name: until_time
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: any
+      description: The role of the peer devices in relation to the source device.
+        For example, specifying a peer_role of client will show All Clients communicating
+        with the source device. Additionally specifying a protocol of HTTP will result
+        in further filtering and only showing HTTP Clients communicating with the
+        source device.
+      isArray: false
+      name: peer_role
+      predefined:
+      - any
+      - client
+      - server
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: any
+      description: The protocol over which the source device is communicating. For
+        example, specifying a protocol of HTTP show only HTTP Clients and HTTP Servers
+        communicating with the source device. Additionally specifying a peer_role
+        of client will result in further filtering and only showing HTTP Clients communicating
+        with the source device.
+      isArray: false
+      name: protocol
+      predefined:
+      - any
+      - AAA
+      - ActiveMQ
+      - AJP
+      - amf
+      - CIFS
+      - DB
+      - DHCP
+      - DICOM
+      - DNS
+      - FIX
+      - FTP
+      - HL7
+      - HTTP
+      - IBMMQ
+      - ICA
+      - IKE/ISAKMP
+      - IMAP
+      - IPFIX
+      - IPsec NAT-T
+      - IRC
+      - iSCSI
+      - Kerberos
+      - L2TP
+      - LDAP
+      - lync-compress
+      - memcache
+      - Modbus
+      - MongoDB
+      - MSMQ
+      - MSN
+      - MSRPC
+      - NetFlow
+      - NFS
+      - NTP
+      - OpenVPN
+      - PCoIP
+      - Perforce
+      - POP3
+      - RDP
+      - Redis
+      - RFB
+      - RTCP
+      - RTP
+      - sFlow
+      - SIP
+      - SMPP
+      - SMTP
+      - SNMP
+      - SSH
+      - SSL
+      - Syslog
+      - TCP
+      - telnet
+      - UDP
+      - WebSocket
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a link to a live activity map in ExtraHop Reveal(x).
+    execution: false
+    name: extrahop-activity-map-get
+    outputs:
+    - contextPath: ExtraHop.ActivityMap.url
+      description: The link to a visual activity map in ExtraHop.
+      type: String
+  - deprecated: false
+    description: Get all alert rules from ExtraHop Reveal(x).
+    execution: false
+    name: extrahop-alert-rules-get
+    outputs:
+    - contextPath: ExtraHop.Alert.Operator
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions.
+      type: String
+    - contextPath: ExtraHop.Alert.FieldName
+      description: The name of the monitored metric.
+      type: String
+    - contextPath: ExtraHop.Alert.NotifySnmp
+      description: Indicates whether to send an SNMP trap when an alert is generated.
+      type: Boolean
+    - contextPath: ExtraHop.Alert.Operand
+      description: The value to compare against alert conditions.
+      type: String
+    - contextPath: ExtraHop.Alert.IntervalLength
+      description: The length of the alert interval, expressed in seconds.
+      type: Number
+    - contextPath: ExtraHop.Alert.Author
+      description: The name of the user that created the alert.
+      type: String
+    - contextPath: ExtraHop.Alert.Name
+      description: The unique, friendly name for the alert.
+      type: String
+    - contextPath: ExtraHop.Alert.FieldName2
+      description: The second monitored metric when applying a ratio.
+      type: String
+    - contextPath: ExtraHop.Alert.RefireInterval
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
+      type: Number
+    - contextPath: ExtraHop.Alert.ModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: ExtraHop.Alert.Units
+      description: The interval in which to evaluate the alert condition.
+      type: String
+    - contextPath: ExtraHop.Alert.ApplyAll
+      description: Indicates whether the alert is assigned to all available data sources.
+      type: Boolean
+    - contextPath: ExtraHop.Alert.Type
+      description: The type of alert.
+      type: String
+    - contextPath: ExtraHop.Alert.FieldOp
+      description: The type of comparison between the "field_name" and "field_name2"
+        fields when applying a ratio.
+      type: String
+    - contextPath: ExtraHop.Alert.Id
+      description: The unique identifier for the alert.
+      type: Number
+    - contextPath: ExtraHop.Alert.Disabled
+      description: Indicates whether the alert is disabled.
+      type: Boolean
+    - contextPath: ExtraHop.Alert.Description
+      description: An optional description for the alert.
+      type: String
+    - contextPath: ExtraHop.Alert.Severity
+      description: The severity level of the alert.
+      type: Number
+    - contextPath: ExtraHop.Alert.StatName
+      description: The statistic name for the alert.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: pcap
+      description: The output format. A pcap file, A keylog.txt file that can be loaded
+        in wireshark to decode ssl packets, or a zip file containing both a packets.pcap
+        and keylog.txt.
+      isArray: false
+      name: output
+      predefined:
+      - pcap
+      - keylog_txt
+      - zip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 10MB
+      description: The maximum number of bytes to return.
+      isArray: false
+      name: limit_bytes
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 5m
+      description: The maximum amount of time to run the packet search. The default
+        unit is milliseconds, but other units can be specified with a unit suffix.
+      isArray: false
+      name: limit_search_duration
+      required: false
+      secret: false
+    - default: false
+      defaultValue: -10m
+      description: 'The beginning timestamp of the time range the search will include,
+        expressed in milliseconds since the epoch. A negative value specifies that
+        the search will begin with packets captured at a time in the past relative
+        to the current time. For example, specify -10m to begin the search with packets
+        captured 10 minutes before the time of the request. The default unit for a
+        negative value is milliseconds, but other units can be specified with one
+        of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: query_from
+      required: false
+      secret: false
+    - default: false
+      description: 'The ending timestamp of the time range the search will include,
+        expressed in milliseconds since the epoch. A 0 value specifies that the search
+        will end with packets captured at the time of the search. A negative value
+        specifies that the search will end with packets captured at a time in the
+        past relative to the current time. For example, specify -5m to end the search
+        with packets captured 5 minutes before the time of the request. The default
+        unit for a negative value is milliseconds, but other units can be specified
+        with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: query_until
+      required: false
+      secret: false
+    - default: false
+      description: The Berkeley Packet Filter (BPF) syntax for the packet search.
+      isArray: false
+      name: bpf
+      required: false
+      secret: false
+    - default: false
+      description: Returns packets sent to or received by the specified IP address.
+      isArray: false
+      name: ip1
+      required: false
+      secret: false
+    - default: false
+      description: Returns packets sent from or received on the specified port.
+      isArray: false
+      name: port1
+      required: false
+      secret: false
+    - default: false
+      description: Returns packets sent to or received by the specified IP address.
+      isArray: false
+      name: ip2
+      required: false
+      secret: false
+    - default: false
+      description: Returns packets sent from or received on the specified port.
+      isArray: false
+      name: port2
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for specific packets in ExtraHop Reveal(x).
+    execution: false
+    name: extrahop-packets-search
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+  - arguments:
+    - default: false
+      description: The case-sensitive value of the tag.
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    - default: false
+      description: The list of IP addresses or ExtraHop API IDs of the devices to
+        tag, comma separated.
+      isArray: true
+      name: add
+      required: false
+      secret: false
+    - default: false
+      description: The list of IP addresses or ExtraHop API IDs of the devices to
+        remove the tag from, comma separated.
+      isArray: true
+      name: remove
+      required: false
+      secret: false
+    deprecated: false
+    description: Add or remove a tag from devices in ExtraHop Reveal(x).
+    execution: false
+    name: extrahop-devices-tag
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether the alert is assigned to all available data sources.
+      isArray: false
+      name: apply_all
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether the alert is disabled.
+      isArray: false
+      name: disabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - default: false
+      description: The name of the monitored metric. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: field_name
+      required: false
+      secret: false
+    - default: false
+      description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
+      isArray: false
+      name: field_name2
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
+      isArray: false
+      name: field_op
+      predefined:
+      - /
+      - 'null'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: '30'
+      description: The length of the alert interval, expressed in seconds. Only applicable
+        to threshold alerts.
+      isArray: false
+      name: interval_length
+      predefined:
+      - '30'
+      - '60'
+      - '120'
+      - '300'
+      - '600'
+      - '900'
+      - '1200'
+      - '1800'
+      required: false
+      secret: false
+    - default: false
+      description: The unique, friendly name for the alert.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether to send an SNMP trap when an alert is generated.
+      isArray: false
+      name: notify_snmp
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts.
+      isArray: false
+      name: object_type
+      predefined:
+      - application
+      - device
+      required: false
+      secret: false
+    - default: false
+      description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: operand
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
+      isArray: false
+      name: operator
+      predefined:
+      - ==
+      - '>'
+      - <
+      - '>='
+      - <=
+      required: false
+      secret: false
+    - default: false
+      description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
+      isArray: false
+      name: param
+      required: false
+      secret: false
+    - default: false
+      description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
+      isArray: false
+      name: param2
+      required: false
+      secret: false
+    - default: false
+      description: The list of monitored protocols. Only applicable to detection alerts.
+      isArray: true
+      name: protocols
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
+      isArray: false
+      name: refire_interval
+      predefined:
+      - '300'
+      - '600'
+      - '900'
+      - '1800'
+      - '3600'
+      - '7200'
+      - '14400'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps.
+      isArray: false
+      name: severity
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      required: true
+      secret: false
+    - default: false
+      description: The statistic name for the alert. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: stat_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of alert.
+      isArray: false
+      name: type
+      predefined:
+      - detection
+      - threshold
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The interval in which to evaluate the alert condition. Only applicable
+        to threshold alerts.
+      isArray: false
+      name: units
+      predefined:
+      - none
+      - period
+      - 1 sec
+      - 1 min
+      - 1 hr
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new alert rule in ExtraHop Reveal(x).
+    execution: false
+    name: extrahop-alert-rule-create
+  - arguments:
+    - default: false
+      description: The ID of the Cortex XSOAR incident to track.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the ExtraHop Reveal(x) detection to track.
+      isArray: false
+      name: detection_id
+      required: true
+      secret: false
+    - default: false
+      description: Owner of the incident.
+      isArray: false
+      name: incident_owner
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status of the incident.
+      isArray: false
+      name: incident_status
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      required: false
+      secret: false
+    - default: false
+      description: Reason the incident was closed.
+      isArray: false
+      name: incident_close_reason
+      required: false
+      secret: false
+    deprecated: false
+    description: Link an ExtraHop Reveal(x) detection to a Cortex XSOAR incident.
+    execution: false
+    name: extrahop-ticket-track
+    outputs:
+    - contextPath: ExtraHop.TicketId
+      description: Cortex XSOAR incident ID successfully tracked to the ExtraHop Reveal(x)
+        detection.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The unique identifier for the alert.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether the alert is assigned to all available data sources.
+      isArray: false
+      name: apply_all
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether the alert is disabled.
+      isArray: false
+      name: disabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - default: false
+      description: The name of the monitored metric. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: field_name
+      required: false
+      secret: false
+    - default: false
+      description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
+      isArray: false
+      name: field_name2
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
+      isArray: false
+      name: field_op
+      predefined:
+      - /
+      - 'null'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: '30'
+      description: The length of the alert interval, expressed in seconds. Only applicable
+        to threshold alerts.
+      isArray: false
+      name: interval_length
+      predefined:
+      - '30'
+      - '60'
+      - '120'
+      - '300'
+      - '600'
+      - '900'
+      - '1200'
+      - '1800'
+      required: false
+      secret: false
+    - default: false
+      description: The unique, friendly name for the alert.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether to send an SNMP trap when an alert is generated.
+      isArray: false
+      name: notify_snmp
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts.
+      isArray: false
+      name: object_type
+      predefined:
+      - application
+      - device
+      required: false
+      secret: false
+    - default: false
+      description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: operand
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
+      isArray: false
+      name: operator
+      predefined:
+      - ==
+      - '>'
+      - <
+      - '>='
+      - <=
+      required: false
+      secret: false
+    - default: false
+      description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
+      isArray: false
+      name: param
+      required: false
+      secret: false
+    - default: false
+      description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
+      isArray: false
+      name: param2
+      required: false
+      secret: false
+    - default: false
+      description: The list of monitored protocols. Only applicable to detection alerts.
+      isArray: true
+      name: protocols
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
+      isArray: false
+      name: refire_interval
+      predefined:
+      - '300'
+      - '600'
+      - '900'
+      - '1800'
+      - '3600'
+      - '7200'
+      - '14400'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps.
+      isArray: false
+      name: severity
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      required: true
+      secret: false
+    - default: false
+      description: The statistic name for the alert. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: stat_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of alert.
+      isArray: false
+      name: type
+      predefined:
+      - detection
+      - threshold
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The interval in which to evaluate the alert condition. Only applicable
+        to threshold alerts.
+      isArray: false
+      name: units
+      predefined:
+      - none
+      - period
+      - 1 sec
+      - 1 min
+      - 1 hr
+      required: false
+      secret: false
+    deprecated: false
+    description: Modify an alert rule in ExtraHop Reveal(x).
+    execution: false
+    name: extrahop-alert-rule-edit
+  - arguments:
+    - default: false
+      description: The list of IP addresses or ExtraHop API IDs of the devices to
+        add, comma separated.
+      isArray: true
+      name: add
+      required: false
+      secret: false
+    - default: false
+      description: The list of IP addresses or ExtraHop API IDs of the devices to
+        remove, comma separated.
+      isArray: true
+      name: remove
+      required: false
+      secret: false
+    deprecated: false
+    description: Add or remove devices from the advanced analysis watchlist in ExtraHop
+      Reveal(x).
+    execution: false
+    name: extrahop-watchlist-edit
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        The aggregation period for metrics.
+        Supported values: "auto", "1sec", "30sec", "5min", "1hr", "24hr"
+      isArray: false
+      name: cycle
+      predefined:
+      - auto
+      - 1sec
+      - 30sec
+      - 5min
+      - 1hr
+      - 24hr
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        The beginning timestamp for the request. Return only metrics collected after this time. Time is expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with a unit suffix.
+        For example, to request devices active in the last 30 minutes, specify the following parameter value: "-30m"
+      isArray: false
+      name: from_time
+      required: true
+      secret: false
+    - default: false
+      description: The group of metrics that are searchable in the metric catalog.
+      isArray: false
+      name: metric_category
+      required: true
+      secret: false
+    - default: false
+      description: The list of numeric values that represent unique identifiers. Unique
+        identifiers can be retrieved through the /networks, /devices, /applications,
+        /vlans, /devicegroups, /activitygroups, and /appliances resources. For system
+        health metrics, specify the ID of the sensor or console and set the object_type
+        parameter to "system".
+      isArray: true
+      name: object_ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Indicates the object type of unique identifiers specified in the object_ids property.
+        Supported values: "network", "device", "application", "vlan", "device_group", "system"
+      isArray: false
+      name: object_type
+      predefined:
+      - network
+      - device
+      - application
+      - vlan
+      - device_group
+      - system
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        The ending timestamp for the request. Return only metrics collected before this time. Time is expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with a unit suffix.
+        For example, to request devices active in the last 30 minutes, specify the following parameter value: "-30m"
+      isArray: false
+      name: until_time
+      required: true
+      secret: false
+    - default: false
+      description: "An array of metric specification objects. \nRefer to the ExtraHop\
+        \ REST API Guide at https://docs.extrahop.com/current/rest-api-guide/"
+      isArray: false
+      name: metric_specs
+      required: true
+      secret: false
+    deprecated: false
+    description: Get metrics for specified objects from ExtraHop Reveal(x).
+    execution: false
+    name: extrahop-metrics-list
+    outputs:
+    - contextPath: ExtraHop.Metrics.cycle
+      description: The aggregation period for metrics.
+      type: String
+    - contextPath: ExtraHop.Metrics.node_id
+      description: Node ID of the sensor associated with the object.
+      type: Number
+    - contextPath: ExtraHop.Metrics.clock
+      description: The current time.
+      type: Number
+    - contextPath: ExtraHop.Metrics.from
+      description: The beginning time from which metrics were collected.
+      type: Number
+    - contextPath: ExtraHop.Metrics.until
+      description: The ending time that metrics were collected.
+      type: Number
+    - contextPath: ExtraHop.Metrics.stats.oid
+      description: The ID of the object.
+      type: Number
+    - contextPath: ExtraHop.Metrics.stats.time
+      description: The time for which metrics were collected
+      type: Number
+    - contextPath: ExtraHop.Metrics.stats.duration
+      description: The duration that metrics were collected.
+      type: Number
+    - contextPath: ExtraHop.Metrics.stats.values
+      description: The count value of the metrics that were collected.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: |-
+        Detection-specific filters.
+        For eg:
+        filter={
+                "category": "sec",
+                "risk_score_min": 51
+            }
+
+        Refer to the ExtraHop REST API guide at https://docs.extrahop.com/current/rest-api-guide/
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Returns detections that occurred after the specified date, expressed in milliseconds since the epoch. Detections that started before the specified date are returned if the detection was ongoing at that time.
+
+        For eg:
+        from=1673508360001
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '200'
+      description: |-
+        Returns no more than the specified number of detections.
+
+        For eg:
+        limit=10
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The number of detections to skip for pagination.
+
+        For eg:
+        offset=100
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: "Sorts returned detections by the specified fields. \nComma separated\
+        \ \"field\" \"direction\" is the accepted format.\nBy default, detections\
+        \ are sorted by most recent update time and then id in ascending order.\n\n\
+        For eg:\nsort=\"end_time asc,id desc\""
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Return detections that ended before the specified date, expressed in milliseconds since the epoch.
+
+        For eg:
+        until=1673509360001
+      isArray: false
+      name: until
+      required: false
+      secret: false
+    - default: false
+      description: "Return detections that were modified on or after the specified\
+        \ date, expressed in milliseconds since the epoch.\n\nFor eg: 1675416916102 "
+      isArray: false
+      name: mod_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Get detections from ExtraHop Reveal(x).
+    execution: false
+    name: extrahop-detections-list
+    outputs:
+    - contextPath: ExtraHop.Detections.id
+      description: The unique detection ID of the detection.
+      type: Number
+    - contextPath: ExtraHop.Detections.start_time
+      description: The timestamp when the detection was identified.
+      type: Number
+    - contextPath: ExtraHop.Detections.mod_time
+      description: The timestamp when the detection was last modified.
+      type: Number
+    - contextPath: ExtraHop.Detections.end_time
+      description: The timestamp when the detection was completed.
+      type: Number
+    - contextPath: ExtraHop.Detections.title
+      description: The title of the detection.
+      type: String
+    - contextPath: ExtraHop.Detections.description
+      description: The description of the event for which the detection was created.
+      type: String
+    - contextPath: ExtraHop.Detections.categories
+      description: The categories associated with the detection.
+      type: Unknown
+    - contextPath: ExtraHop.Detections.risk_score
+      description: The risk level of the event.
+      type: Number
+    - contextPath: ExtraHop.Detections.type
+      description: The detection type.
+      type: String
+    - contextPath: ExtraHop.Detections.properties
+      description: The detection properties.
+      type: Unknown
+    - contextPath: ExtraHop.Detections.participants
+      description: The participants involved in the event.
+      type: Unknown
+    - contextPath: ExtraHop.Detections.ticket_id
+      description: The unique ticket ID for the detection that is being tracked.
+      type: String
+    - contextPath: ExtraHop.Detections.assignee
+      description: The user assigned to the detection.
+      type: String
+    - contextPath: ExtraHop.Detections.status
+      description: The status of the detection.
+      type: String
+    - contextPath: ExtraHop.Detections.resolution
+      description: The resolution state of the detection.
+      type: String
+    - contextPath: ExtraHop.Detections.mitre_tactics
+      description: The MITRE tactics associated with the attack.
+      type: Unknown
+    - contextPath: ExtraHop.Detections.mitre_techniques
+      description: The MITRE techniques associated with the attack.
+      type: Unknown
+    - contextPath: ExtraHop.Detections.appliance_id
+      description: The unique identifier of the sensor on which the attack was detected.
+      type: Number
+    - contextPath: ExtraHop.Detections.is_user_created
+      description: Indicates whether the detection is user-created.
+      type: Boolean
+  - deprecated: true
+    description: Use extrahop-alert-rules-get instead. Get all alert rules from Reveal(x).
+    execution: false
+    name: extrahop-get-alerts
+    outputs:
+    - contextPath: Extrahop.Alert.Operator
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions.
+      type: String
+    - contextPath: Extrahop.Alert.FieldName
+      description: The name of the monitored metric.
+      type: String
+    - contextPath: Extrahop.Alert.NotifySnmp
+      description: 'Indicates whether to send an SNMP trap when an alert is generated. '
+      type: Boolean
+    - contextPath: Extrahop.Alert.Operand
+      description: The value to compare against alert conditions.
+      type: String
+    - contextPath: Extrahop.Alert.IntervalLength
+      description: The length of the alert interval, expressed in seconds.
+      type: Number
+    - contextPath: Extrahop.Alert.Author
+      description: 'The name of the user that created the alert. '
+      type: String
+    - contextPath: Extrahop.Alert.Name
+      description: The unique, friendly name for the alert.
+      type: String
+    - contextPath: Extrahop.Alert.FieldName2
+      description: The second monitored metric when applying a ratio.
+      type: String
+    - contextPath: Extrahop.Alert.RefireInterval
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
+      type: Number
+    - contextPath: Extrahop.Alert.ModTime
+      description: 'The time of the most recent update, expressed in milliseconds
+        since the epoch. '
+      type: Number
+    - contextPath: Extrahop.Alert.Units
+      description: The interval in which to evaluate the alert condition.
+      type: String
+    - contextPath: Extrahop.Alert.ApplyAll
+      description: Indicates whether the alert is assigned to all available data sources.
+      type: Boolean
+    - contextPath: Extrahop.Alert.Type
+      description: The type of alert.
+      type: String
+    - contextPath: Extrahop.Alert.FieldOp
+      description: The type of comparison between the "field_name" and "field_name2"
+        fields when applying a ratio.
+      type: String
+    - contextPath: Extrahop.Alert.Id
+      description: The unique identifier for the alert.
+      type: Number
+    - contextPath: Extrahop.Alert.Disabled
+      description: Indicates whether the alert is disabled.
+      type: Boolean
+    - contextPath: Extrahop.Alert.Description
+      description: An optional description for the alert.
+      type: String
+    - contextPath: Extrahop.Alert.Severity
+      description: The severity level of the alert.
+      type: Number
+    - contextPath: Extrahop.Alert.StatName
+      description: The statistic name for the alert.
+      type: String
+  - deprecated: true
+    description: Use extrahop-alert-rules-get instead. Get all alert rules from Reveal(x).
+    execution: false
+    name: extrahop-get-alert-rules
+    outputs:
+    - contextPath: Extrahop.Alert.Operator
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions.
+      type: String
+    - contextPath: Extrahop.Alert.FieldName
+      description: The name of the monitored metric.
+      type: String
+    - contextPath: Extrahop.Alert.NotifySnmp
+      description: 'Indicates whether to send an SNMP trap when an alert is generated. '
+      type: Boolean
+    - contextPath: Extrahop.Alert.Operand
+      description: The value to compare against alert conditions.
+      type: String
+    - contextPath: Extrahop.Alert.IntervalLength
+      description: The length of the alert interval, expressed in seconds.
+      type: Number
+    - contextPath: Extrahop.Alert.Author
+      description: 'The name of the user that created the alert. '
+      type: String
+    - contextPath: Extrahop.Alert.Name
+      description: The unique, friendly name for the alert.
+      type: String
+    - contextPath: Extrahop.Alert.FieldName2
+      description: The second monitored metric when applying a ratio.
+      type: String
+    - contextPath: Extrahop.Alert.RefireInterval
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
+      type: Number
+    - contextPath: Extrahop.Alert.ModTime
+      description: 'The time of the most recent update, expressed in milliseconds
+        since the epoch. '
+      type: Number
+    - contextPath: Extrahop.Alert.Units
+      description: The interval in which to evaluate the alert condition.
+      type: String
+    - contextPath: Extrahop.Alert.ApplyAll
+      description: Indicates whether the alert is assigned to all available data sources.
+      type: Boolean
+    - contextPath: Extrahop.Alert.Type
+      description: The type of alert.
+      type: String
+    - contextPath: Extrahop.Alert.FieldOp
+      description: The type of comparison between the "field_name" and "field_name2"
+        fields when applying a ratio.
+      type: String
+    - contextPath: Extrahop.Alert.Id
+      description: The unique identifier for the alert.
+      type: Number
+    - contextPath: Extrahop.Alert.Disabled
+      description: Indicates whether the alert is disabled.
+      type: Boolean
+    - contextPath: Extrahop.Alert.Description
+      description: An optional description for the alert.
+      type: String
+    - contextPath: Extrahop.Alert.Severity
+      description: The severity level of the alert.
+      type: Number
+    - contextPath: Extrahop.Alert.StatName
+      description: The statistic name for the alert.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: -30m
+      description: 'The beginning timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A negative value specifies that
+        the search will begin with records created at a time in the past relative
+        to the current time. For example, specify -10m to begin the search with records
+        created 10 minutes before the time of the request. The default unit for a
+        negative value is milliseconds, but other units can be specified with one
+        of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: query_from
+      required: true
+      secret: false
+    - default: false
+      description: 'The ending timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A 0 value specifies that the search
+        will end with records created at the time of the request. A negative value
+        specifies that the search will end with records created at a time in the past
+        relative to the current time. For example, specify -5m to end the search with
+        records created 5 minutes before the time of the request. The default unit
+        for a negative value is milliseconds, but other units can be specified with
+        one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: query_until
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: The maximum number of entries to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The number of records to skip in the query results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The name of the field in the record to be filtered. The query compares
+        field1 to value1 and applies the compare method specified by the operator1
+        parameter. If the specified field name is ".any", the union of all field values
+        will be searched. If the specified field name is ".ipaddr" or ".port", the
+        client, server, sender, and receiver roles are included in the search.
+      isArray: false
+      name: field1
+      predefined:
+      - .any
+      - .ipaddr
+      - .port
+      - accessTime
+      - ackCode
+      - ackId
+      - adminQueue
+      - age
+      - alertCode
+      - alertLevel
+      - answer
+      - answers
+      - appName
+      - application
+      - args
+      - authDomain
+      - authMethod
+      - authResult
+      - authType
+      - authenticator
+      - bindDN
+      - bytes
+      - cName
+      - cNameType
+      - cNames
+      - cRealm
+      - callId
+      - certificateFingerprint
+      - certificateIsSelfSigned
+      - certificateIssuer
+      - certificateKeySize
+      - certificateNotAfter
+      - certificateNotBefore
+      - certificateSignatureAlgorithm
+      - certificateSubject
+      - certificateSubjectAlternativeNames
+      - channel
+      - cipherSuite
+      - client
+      - clientAddr
+      - clientBuild
+      - clientBytes
+      - clientCGPMsgCount
+      - clientCertificateRequested
+      - clientCipherAlgorithm
+      - clientCompressionAlgorithm
+      - clientImplementation
+      - clientL2Bytes
+      - clientLatency
+      - clientMacAlgorithm
+      - clientMachine
+      - clientMsgCount
+      - clientName
+      - clientPkts
+      - clientPort
+      - clientPrincipalName
+      - clientRTO
+      - clientReqDelay
+      - clientType
+      - clientVersion
+      - clientZeroWnd
+      - collection
+      - command
+      - contentType
+      - conversationId
+      - cookie
+      - correlationId
+      - cwd
+      - dataSize
+      - database
+      - deltaBytes
+      - deltaPkts
+      - desktopHeight
+      - desktopWidth
+      - destination
+      - dn
+      - domain
+      - drops
+      - dscpName
+      - dstQueueMgr
+      - dups
+      - duration
+      - egressInterface
+      - error
+      - errorDetail
+      - expiration
+      - first
+      - flowId
+      - format
+      - frameCutDuration
+      - frameSendDuration
+      - from
+      - functionId
+      - functionName
+      - fwdReqClientAddr
+      - fwdReqHost
+      - fwdReqIsEncrypted
+      - fwdReqServerName
+      - fwdReqServerPort
+      - gwAddr
+      - handshakeTime
+      - hasSDP
+      - hassh
+      - hasshServer
+      - heartbeatPayloadLength
+      - heartbeatType
+      - hitCount
+      - hopLimit
+      - host
+      - htype
+      - ingressInterface
+      - interface
+      - isAborted
+      - isAuthoritative
+      - isBinaryProtocol
+      - isCheckingDisabled
+      - isCleanShutdown
+      - isClientDiskRead
+      - isClientDiskWrite
+      - isCommandCreate
+      - isCommandDelete
+      - isCommandFileInfo
+      - isCommandLock
+      - isCommandRead
+      - isCommandRename
+      - isCommandWrite
+      - isCompressed
+      - isEncrypted
+      - isNoReply
+      - isPipelined
+      - isRecursionAvailable
+      - isRecursionDesired
+      - isRenegotiate
+      - isReqAborted
+      - isReqTimeout
+      - isReqTruncated
+      - isRspAborted
+      - isRspChunked
+      - isRspCompressed
+      - isRspImplicit
+      - isRspTruncated
+      - isSQLi
+      - isSharedSession
+      - isSubOperation
+      - isWeakCipherSuite
+      - isXSS
+      - ja3Hash
+      - ja3sHash
+      - jitter
+      - kexAlgorithm
+      - keyboardLayout
+      - l2Bytes
+      - l7proto
+      - label
+      - last
+      - launchParams
+      - loadTime
+      - loginTime
+      - method
+      - missCount
+      - mos
+      - msgClass
+      - msgCode
+      - msgFormat
+      - msgId
+      - msgLength
+      - msgSize
+      - msgText
+      - msgType
+      - network
+      - networkAddr
+      - networkLatency
+      - nextHop
+      - nextHopMTU
+      - notAfter
+      - offeredAddr
+      - offset
+      - opcode
+      - operation
+      - option
+      - origin
+      - outOfOrder
+      - path
+      - payloadType
+      - payloadTypeId
+      - persistent
+      - pkts
+      - pointer
+      - printerName
+      - priority
+      - procedure
+      - processingTime
+      - program
+      - proto
+      - protocol
+      - putAppName
+      - qname
+      - qtype
+      - query
+      - queue
+      - queueMgr
+      - rFactor
+      - realm
+      - receiver
+      - receiverAddr
+      - receiverAsn
+      - receiverBytes
+      - receiverIsBroker
+      - receiverL2Bytes
+      - receiverPkts
+      - receiverPort
+      - receiverPrefixLength
+      - receiverRTO
+      - receiverZeroWnd
+      - recipient
+      - recipientList
+      - redeliveryCount
+      - referer
+      - renameDirChanged
+      - replyTo
+      - reqBytes
+      - reqKey
+      - reqL2Bytes
+      - reqPdu
+      - reqPkts
+      - reqRTO
+      - reqSize
+      - reqTimeToLastByte
+      - reqTransferTime
+      - requestedColorDepth
+      - requestedProtocols
+      - resolvedQueue
+      - resolvedQueueMgr
+      - resource
+      - responseQueue
+      - roundTripTime
+      - rspBytes
+      - rspL2Bytes
+      - rspPdu
+      - rspPkts
+      - rspRTO
+      - rspSize
+      - rspTimeToFirstByte
+      - rspTimeToFirstHeader
+      - rspTimeToFirstPayload
+      - rspTimeToLastByte
+      - rspTransferTime
+      - rspVersion
+      - rto
+      - sNameType
+      - sNames
+      - saslMechanism
+      - searchFilter
+      - searchScope
+      - selectedProtocol
+      - sender
+      - senderAddr
+      - senderAsn
+      - senderBytes
+      - senderIsBroker
+      - senderL2Bytes
+      - senderPkts
+      - senderPort
+      - senderPrefixLength
+      - senderRTO
+      - senderZeroWnd
+      - seqNum
+      - server
+      - serverAddr
+      - serverBytes
+      - serverCGPMsgCount
+      - serverCipherAlgorithm
+      - serverCompressionAlgorithm
+      - serverImplementation
+      - serverL2Bytes
+      - serverMacAlgorithm
+      - serverMsgCount
+      - serverPkts
+      - serverPort
+      - serverPrincipalName
+      - serverRTO
+      - serverVersion
+      - serverZeroWnd
+      - share
+      - source
+      - sqli
+      - srcQueueMgr
+      - ssrc
+      - statement
+      - status
+      - statusCode
+      - statusText
+      - table
+      - target
+      - tcpFlags
+      - thinkTime
+      - tickChannel
+      - ticketHash
+      - till
+      - title
+      - to
+      - totalMsgLength
+      - transferBytes
+      - txId
+      - type
+      - unitId
+      - uri
+      - user
+      - userAgent
+      - vbucket
+      - version
+      - vlan
+      - vxlanVNI
+      - warning
+      - xss
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: "="
+      description: The compare method applied when matching value1 against the field1
+        contents.
+      isArray: false
+      name: operator1
+      predefined:
+      - '>'
+      - "<"
+      - <=
+      - '>='
+      - "="
+      - '!='
+      - startswith
+      - exists
+      - not_exists
+      required: false
+      secret: false
+    - default: false
+      description: The value that the query attempts to match. The query compares
+        this value to the contents of the field1 parameter and applies the compare
+        method specified by the operator1 parameter.
+      isArray: false
+      name: value1
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The name of the field in the record to be filtered. The query compares
+        field2 to value2 and applies the compare method specified by the operator2
+        parameter. If the specified field name is ".any", the union of all field values
+        will be searched. If the specified field name is ".ipaddr" or ".port", the
+        client, server, sender, and receiver roles are included in the search.
+      isArray: false
+      name: field2
+      predefined:
+      - .any
+      - .ipaddr
+      - .port
+      - accessTime
+      - ackCode
+      - ackId
+      - adminQueue
+      - age
+      - alertCode
+      - alertLevel
+      - answer
+      - answers
+      - appName
+      - application
+      - args
+      - authDomain
+      - authMethod
+      - authResult
+      - authType
+      - authenticator
+      - bindDN
+      - bytes
+      - cName
+      - cNameType
+      - cNames
+      - cRealm
+      - callId
+      - certificateFingerprint
+      - certificateIsSelfSigned
+      - certificateIssuer
+      - certificateKeySize
+      - certificateNotAfter
+      - certificateNotBefore
+      - certificateSignatureAlgorithm
+      - certificateSubject
+      - certificateSubjectAlternativeNames
+      - channel
+      - cipherSuite
+      - client
+      - clientAddr
+      - clientBuild
+      - clientBytes
+      - clientCGPMsgCount
+      - clientCertificateRequested
+      - clientCipherAlgorithm
+      - clientCompressionAlgorithm
+      - clientImplementation
+      - clientL2Bytes
+      - clientLatency
+      - clientMacAlgorithm
+      - clientMachine
+      - clientMsgCount
+      - clientName
+      - clientPkts
+      - clientPort
+      - clientPrincipalName
+      - clientRTO
+      - clientReqDelay
+      - clientType
+      - clientVersion
+      - clientZeroWnd
+      - collection
+      - command
+      - contentType
+      - conversationId
+      - cookie
+      - correlationId
+      - cwd
+      - dataSize
+      - database
+      - deltaBytes
+      - deltaPkts
+      - desktopHeight
+      - desktopWidth
+      - destination
+      - dn
+      - domain
+      - drops
+      - dscpName
+      - dstQueueMgr
+      - dups
+      - duration
+      - egressInterface
+      - error
+      - errorDetail
+      - expiration
+      - first
+      - flowId
+      - format
+      - frameCutDuration
+      - frameSendDuration
+      - from
+      - functionId
+      - functionName
+      - fwdReqClientAddr
+      - fwdReqHost
+      - fwdReqIsEncrypted
+      - fwdReqServerName
+      - fwdReqServerPort
+      - gwAddr
+      - handshakeTime
+      - hasSDP
+      - hassh
+      - hasshServer
+      - heartbeatPayloadLength
+      - heartbeatType
+      - hitCount
+      - hopLimit
+      - host
+      - htype
+      - ingressInterface
+      - interface
+      - isAborted
+      - isAuthoritative
+      - isBinaryProtocol
+      - isCheckingDisabled
+      - isCleanShutdown
+      - isClientDiskRead
+      - isClientDiskWrite
+      - isCommandCreate
+      - isCommandDelete
+      - isCommandFileInfo
+      - isCommandLock
+      - isCommandRead
+      - isCommandRename
+      - isCommandWrite
+      - isCompressed
+      - isEncrypted
+      - isNoReply
+      - isPipelined
+      - isRecursionAvailable
+      - isRecursionDesired
+      - isRenegotiate
+      - isReqAborted
+      - isReqTimeout
+      - isReqTruncated
+      - isRspAborted
+      - isRspChunked
+      - isRspCompressed
+      - isRspImplicit
+      - isRspTruncated
+      - isSQLi
+      - isSharedSession
+      - isSubOperation
+      - isWeakCipherSuite
+      - isXSS
+      - ja3Hash
+      - ja3sHash
+      - jitter
+      - kexAlgorithm
+      - keyboardLayout
+      - l2Bytes
+      - l7proto
+      - label
+      - last
+      - launchParams
+      - loadTime
+      - loginTime
+      - method
+      - missCount
+      - mos
+      - msgClass
+      - msgCode
+      - msgFormat
+      - msgId
+      - msgLength
+      - msgSize
+      - msgText
+      - msgType
+      - network
+      - networkAddr
+      - networkLatency
+      - nextHop
+      - nextHopMTU
+      - notAfter
+      - offeredAddr
+      - offset
+      - opcode
+      - operation
+      - option
+      - origin
+      - outOfOrder
+      - path
+      - payloadType
+      - payloadTypeId
+      - persistent
+      - pkts
+      - pointer
+      - printerName
+      - priority
+      - procedure
+      - processingTime
+      - program
+      - proto
+      - protocol
+      - putAppName
+      - qname
+      - qtype
+      - query
+      - queue
+      - queueMgr
+      - rFactor
+      - realm
+      - receiver
+      - receiverAddr
+      - receiverAsn
+      - receiverBytes
+      - receiverIsBroker
+      - receiverL2Bytes
+      - receiverPkts
+      - receiverPort
+      - receiverPrefixLength
+      - receiverRTO
+      - receiverZeroWnd
+      - recipient
+      - recipientList
+      - redeliveryCount
+      - referer
+      - renameDirChanged
+      - replyTo
+      - reqBytes
+      - reqKey
+      - reqL2Bytes
+      - reqPdu
+      - reqPkts
+      - reqRTO
+      - reqSize
+      - reqTimeToLastByte
+      - reqTransferTime
+      - requestedColorDepth
+      - requestedProtocols
+      - resolvedQueue
+      - resolvedQueueMgr
+      - resource
+      - responseQueue
+      - roundTripTime
+      - rspBytes
+      - rspL2Bytes
+      - rspPdu
+      - rspPkts
+      - rspRTO
+      - rspSize
+      - rspTimeToFirstByte
+      - rspTimeToFirstHeader
+      - rspTimeToFirstPayload
+      - rspTimeToLastByte
+      - rspTransferTime
+      - rspVersion
+      - rto
+      - sNameType
+      - sNames
+      - saslMechanism
+      - searchFilter
+      - searchScope
+      - selectedProtocol
+      - sender
+      - senderAddr
+      - senderAsn
+      - senderBytes
+      - senderIsBroker
+      - senderL2Bytes
+      - senderPkts
+      - senderPort
+      - senderPrefixLength
+      - senderRTO
+      - senderZeroWnd
+      - seqNum
+      - server
+      - serverAddr
+      - serverBytes
+      - serverCGPMsgCount
+      - serverCipherAlgorithm
+      - serverCompressionAlgorithm
+      - serverImplementation
+      - serverL2Bytes
+      - serverMacAlgorithm
+      - serverMsgCount
+      - serverPkts
+      - serverPort
+      - serverPrincipalName
+      - serverRTO
+      - serverVersion
+      - serverZeroWnd
+      - share
+      - source
+      - sqli
+      - srcQueueMgr
+      - ssrc
+      - statement
+      - status
+      - statusCode
+      - statusText
+      - table
+      - target
+      - tcpFlags
+      - thinkTime
+      - tickChannel
+      - ticketHash
+      - till
+      - title
+      - to
+      - totalMsgLength
+      - transferBytes
+      - txId
+      - type
+      - unitId
+      - uri
+      - user
+      - userAgent
+      - vbucket
+      - version
+      - vlan
+      - vxlanVNI
+      - warning
+      - xss
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: "="
+      description: The compare method applied when matching value2 against the field2
+        contents.
+      isArray: false
+      name: operator2
+      predefined:
+      - '>'
+      - "<"
+      - "<="
+      - '>='
+      - "="
+      - '!='
+      - startswith
+      - exists
+      - not_exists
+      required: false
+      secret: false
+    - default: false
+      description: The value that the query attempts to match. The query compares
+        this value to the contents of the field2 parameter and applies the compare
+        method specified by the operator2 parameter.
+      isArray: false
+      name: value2
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: and
-    - name: types
-      auto: PREDEFINED
+      description: The match operator to use when chaining the search fields of 1
+        and 2 together. For example, to find HTTP records with status code 500 or
+        a processing time greater than 100ms (set match_type=or, field1=statusCode,
+        operator1==, value1=500, field2=processingTime, operator2=> value2=100, types=http).
+      isArray: false
+      name: match_type
+      predefined:
+      - and
+      - or
+      - not
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A list of one or more record formats for the query to filter on,
+        comma separated. The query returns only records that match the specified formats.
+      isArray: true
+      name: types
       predefined:
       - aaa_request
       - aaa_response
@@ -911,8 +2915,12 @@ script:
       - ssl_heartbeat
       - ssl_open
       - telnet
-      description: A list of one or more record formats for the query to filter on, comma separated. The query returns only records that match the specified formats.
-      isArray: true
+      required: false
+      secret: false
+    deprecated: true
+    description: No available replacement. Query records from Reveal(x).
+    execution: false
+    name: extrahop-query-records
     outputs:
     - contextPath: ExtraHop.Record.Type
       description: The record format.
@@ -1898,17 +3906,31 @@ script:
     - contextPath: ExtraHop.Record.Source.xss
       description: Potential XSS
       type: String
-    description: Query records from Reveal(x).
-  - name: extrahop-device-search
-    arguments:
-    - name: name
-      description: The name of the device. This searches for matches on all ExtraHop name fields (DHCP, DNS, NetBIOS, Cisco Discovery Protocol, etc).
-    - name: ip
+  - arguments:
+    - default: false
+      description: The name of the device. This searches for matches on all ExtraHop
+        name fields (DHCP, DNS, NetBIOS, Cisco Discovery Protocol, etc).
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
       description: The IP address of the device.
-    - name: mac
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
       description: The MAC address of the device.
-    - name: role
-      auto: PREDEFINED
+      isArray: false
+      name: mac
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The role of the device.
+      isArray: false
+      name: role
       predefined:
       - db_server
       - dhcp_server
@@ -1928,9 +3950,13 @@ script:
       - custom
       - voip_phone
       - other
-      description: The role of the device.
-    - name: software
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The OS of the device.
+      isArray: false
+      name: software
       predefined:
       - android
       - apple_ios
@@ -1952,11 +3978,19 @@ script:
       - windows_8
       - windows_8.1
       - windows_10
-      description: The OS of the device.
-    - name: tag
+      required: false
+      secret: false
+    - default: false
       description: 'A tag present on the device. '
-    - name: vendor
-      auto: PREDEFINED
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The vendor of the device, based on MAC address via OUI lookup.
+      isArray: false
+      name: vendor
       predefined:
       - alcatel-lucent
       - apple
@@ -1992,13 +4026,30 @@ script:
       - virtualbox
       - vmware
       - zte
-      description: The vendor of the device, based on MAC address via OUI lookup.
-    - name: discover_time
-      description: 'The time that device was first seen by ExtraHop, expressed in milliseconds since the epoch. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with the following unit suffixes: ms, s, m, h, d, w, M, y. For example, to look one day back enter -1d or -24h. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
-    - name: vlan
+      required: false
+      secret: false
+    - default: false
+      description: 'The time that device was first seen by ExtraHop, expressed in
+        milliseconds since the epoch. A negative value is evaluated relative to the
+        current time. The default unit for a negative value is milliseconds, but other
+        units can be specified with the following unit suffixes: ms, s, m, h, d, w,
+        M, y. For example, to look one day back enter -1d or -24h. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: discover_time
+      required: false
+      secret: false
+    - default: false
       description: The VLAN ID of the Virtual LAN that the device is on.
-    - name: activity
-      auto: PREDEFINED
+      isArray: false
+      name: vlan
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The activity of the device.
+      isArray: false
+      name: activity
       predefined:
       - aaa_client
       - aaa_server
@@ -2081,45 +4132,91 @@ script:
       - websocket_server
       - wsman_client
       - wsman_server
-      description: The activity of the device.
-    - name: operator
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: "="
+      description: The compare method applied when matching the fields against their
+        values. For example, to find devices with names that begin with 'SEA1' (set
+        name=SEA1, operator=startswith)
+      isArray: false
+      name: operator
       predefined:
       - '>'
-      - <
-      - <=
+      - '<'
+      - '<='
       - '>='
-      - '='
+      - "="
       - '!='
       - startswith
       - exists
       - not_exists
-      - "~"
+      - '~'
       - '!~'
-      description: The compare method applied when matching the fields against their values. For example, to find devices with names that begin with 'SEA1' (set name=SEA1, operator=startswith)
-      defaultValue: '='
-    - name: match_type
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: and
+      description: The match operator to use when chaining the search fields together.
+        For example, to find all HTTP servers running Windows on the network (set
+        match_type=and, role=http_server, software=windows).
+      isArray: false
+      name: match_type
       predefined:
       - and
       - or
       - not
-      description: The match operator to use when chaining the search fields together. For example, to find all HTTP servers running Windows on the network (set match_type=and, role=http_server, software=windows).
-      defaultValue: and
-    - name: active_from
-      description: 'The beginning timestamp for the request. Return only devices active after this time. Time is expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
-    - name: active_until
-      description: 'The ending timestamp for the request. Return only devices active before this time. Time is expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
-    - name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'The beginning timestamp for the request. Return only devices active
+        after this time. Time is expressed in milliseconds since the epoch. 0 indicates
+        the time of the request. A negative value is evaluated relative to the current
+        time. The default unit for a negative value is milliseconds, but other units
+        can be specified with one of the following unit suffixes: ms, s, m, h, d,
+        w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: active_from
+      required: false
+      secret: false
+    - default: false
+      description: 'The ending timestamp for the request. Return only devices active
+        before this time. Time is expressed in milliseconds since the epoch. 0 indicates
+        the time of the request. A negative value is evaluated relative to the current
+        time. The default unit for a negative value is milliseconds, but other units
+        can be specified with one of the following unit suffixes: ms, s, m, h, d,
+        w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: active_until
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
       description: The maximum number of devices to return.
-      defaultValue: "10"
-    - name: l3_only
-      auto: PREDEFINED
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Only returns layer 3 devices by filtering out any layer 2 parent
+        devices.
+      isArray: false
+      name: l3_only
       predefined:
-      - "true"
-      - "false"
-      description: Only returns layer 3 devices by filtering out any layer 2 parent devices.
-      defaultValue: "true"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: true
+    description: Use extrahop-devices-search instead. Search for devices in Reveal(x).
+    execution: false
+    name: extrahop-device-search
     outputs:
     - contextPath: ExtraHop.Device.Macaddr
       description: The MAC Address of the device.
@@ -2128,7 +4225,8 @@ script:
       description: The class of the device.
       type: String
     - contextPath: ExtraHop.Device.UserModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: Number
     - contextPath: ExtraHop.Device.AutoRole
       description: The role automatically detected by the ExtraHop.
@@ -2155,7 +4253,8 @@ script:
       description: Whether the device is on the advanced analysis allow list.
       type: Boolean
     - contextPath: ExtraHop.Device.ModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: Number
     - contextPath: ExtraHop.Device.IsL3
       description: Indicates whether the device is a Layer 3 device.
@@ -2199,18 +4298,31 @@ script:
     - contextPath: ExtraHop.Device.Url
       description: Link to the device details page in ExtraHop.
       type: string
-    description: Search for devices in Reveal(x).
-  - name: extrahop-edit-watchlist
-    arguments:
-    - name: add
-      description: The list of IP Addresses or ExtraHop API IDs of the devices to add, comma separated.
+  - arguments:
+    - default: false
+      description: The list of IP Addresses or ExtraHop API IDs of the devices to
+        add, comma separated.
       isArray: true
-    - name: remove
-      description: The list of IP Addresses or ExtraHop API IDs of the devices to remove, comma separated.
+      name: add
+      required: false
+      secret: false
+    - default: false
+      description: The list of IP Addresses or ExtraHop API IDs of the devices to
+        remove, comma separated.
       isArray: true
-    description: Add or remove devices from the watchlist in Reveal(x).
-  - name: extrahop-get-watchlist
-    arguments: []
+      name: remove
+      required: false
+      secret: false
+    deprecated: true
+    description: Use extrahop-watchlist-edit instead. Add or remove devices from the
+      watchlist in Reveal(x).
+    execution: false
+    name: extrahop-edit-watchlist
+  - deprecated: true
+    description: Use extrahop-watchlist-get instead. Get all devices on the watchlist
+      in Reveal(x).
+    execution: false
+    name: extrahop-get-watchlist
     outputs:
     - contextPath: Extrahop.Device.Macaddr
       description: The MAC Address of the device.
@@ -2219,7 +4331,8 @@ script:
       description: 'The class of this device. '
       type: String
     - contextPath: Extrahop.Device.UserModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: Number
     - contextPath: Extrahop.Device.AutoRole
       description: 'The role automatically detected by the ExtraHop. '
@@ -2246,7 +4359,8 @@ script:
       description: Whether the device is on the advanced analysis allow list.
       type: Boolean
     - contextPath: Extrahop.Device.ModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: Number
     - contextPath: Extrahop.Device.IsL3
       description: Indicates whether the device is a Layer 3 device.
@@ -2290,496 +4404,898 @@ script:
     - contextPath: ExtraHop.Device.Url
       description: Link to the device details page in ExtraHop.
       type: string
-    description: Get all devices on the watchlist in Reveal(x).
-  - name: extrahop-create-alert
-    deprecated: true
-    arguments:
-    - name: apply_all
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+  - arguments:
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether the alert is assigned to all available data sources.
-    - name: disabled
-      required: true
-      auto: PREDEFINED
+      isArray: false
+      name: apply_all
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether the alert is disabled.
-    - name: name
+      isArray: false
+      name: disabled
+      predefined:
+      - 'true'
+      - 'false'
       required: true
+      secret: false
+    - default: false
       description: The unique, friendly name for the alert.
-    - name: notify_snmp
+      isArray: false
+      name: name
       required: true
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether to send an SNMP trap when an alert is generated.
-    - name: refire_interval
-      required: true
-      auto: PREDEFINED
+      isArray: false
+      name: notify_snmp
       predefined:
-      - "300"
-      - "600"
-      - "900"
-      - "1800"
-      - "3600"
-      - "7200"
-      - "14400"
-      description: 'The time interval in which alert conditions are monitored, expressed in seconds. '
-    - name: severity
+      - 'true'
+      - 'false'
       required: true
-      description: 'The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3, 4, 5, 6, 7'
-    - name: type
-      required: true
-      auto: PREDEFINED
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The time interval in which alert conditions are monitored, expressed
+        in seconds. '
+      isArray: false
+      name: refire_interval
       predefined:
-      - detection
-      - threshold
+      - '300'
+      - '600'
+      - '900'
+      - '1800'
+      - '3600'
+      - '7200'
+      - '14400'
+      required: true
+      secret: false
+    - default: false
+      description: 'The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3,
+        4, 5, 6, 7'
+      isArray: false
+      name: severity
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: 'The type of alert. '
-    - name: object_type
-      auto: PREDEFINED
-      predefined:
-      - application
-      - device
-      description: 'The type of metric source monitored by the alert configuration. Only applicable to detection alerts. '
-    - name: protocols
-      description: The list of monitored protocols. Only applicable to detection alerts.
-    - name: field_name
-      description: The name of the monitored metric. Only applicable to threshold alerts.
-    - name: field_name2
-      description: The second monitored metric when applying a ratio. Only applicable to threshold alerts.
-    - name: stat_name
-      description: The statistic name for the alert. Only applicable to threshold alerts.
-    - name: units
-      auto: PREDEFINED
-      predefined:
-      - none
-      - period
-      - 1 sec
-      - 1 min
-      - 1 hr
-      description: "The interval in which to evaluate the alert condition. Only applicable to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\", \"1 min\", \"1 hr\""
-    - name: interval_length
-      auto: PREDEFINED
-      predefined:
-      - "30"
-      - "60"
-      - "120"
-      - "300"
-      - "600"
-      - "900"
-      - "1200"
-      - "1800"
-      description: "The length of the alert interval, expressed in seconds. Only applicable to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200, 1800"
-      defaultValue: "30"
-    - name: operand
-      description: The value to compare against alert conditions. The compare method is specified by the value of the operator field. Only applicable to threshold alerts.
-    - name: operator
-      auto: PREDEFINED
-      predefined:
-      - ==
-      - '>'
-      - <
-      - '>='
-      - <=
-      description: The logical operator applied when comparing the value of the operand field to alert conditions. Only applicable to threshold alerts.
-    - name: field_op
-      auto: PREDEFINED
-      predefined:
-      - /
-      - "null"
-      description: The type of comparison between the field_name and field_name2 fields when applying a ratio. Only applicable to threshold alerts.
-    - name: param
-      description: The first alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
-    - name: param2
-      description: The second alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
-    description: Create a new alert rule in Reveal(x).
-  - name: extrahop-create-alert-rule
-    arguments:
-    - name: apply_all
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: Indicates whether the alert is assigned to all available data sources.
-    - name: disabled
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: Indicates whether the alert is disabled.
-    - name: name
-      required: true
-      description: The unique, friendly name for the alert.
-    - name: notify_snmp
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: Indicates whether to send an SNMP trap when an alert is generated.
-    - name: refire_interval
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "300"
-      - "600"
-      - "900"
-      - "1800"
-      - "3600"
-      - "7200"
-      - "14400"
-      description: 'The time interval in which alert conditions are monitored, expressed in seconds. '
-    - name: severity
-      required: true
-      description: 'The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3, 4, 5, 6, 7'
-    - name: type
-      required: true
-      auto: PREDEFINED
+      isArray: false
+      name: type
       predefined:
       - detection
       - threshold
-      description: 'The type of alert. '
-    - name: object_type
-      auto: PREDEFINED
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts. '
+      isArray: false
+      name: object_type
       predefined:
       - application
       - device
-      description: 'The type of metric source monitored by the alert configuration. Only applicable to detection alerts. '
-    - name: protocols
+      required: false
+      secret: false
+    - default: false
       description: The list of monitored protocols. Only applicable to detection alerts.
-    - name: field_name
-      description: The name of the monitored metric. Only applicable to threshold alerts.
-    - name: field_name2
-      description: The second monitored metric when applying a ratio. Only applicable to threshold alerts.
-    - name: stat_name
-      description: The statistic name for the alert. Only applicable to threshold alerts.
-    - name: units
-      auto: PREDEFINED
+      isArray: false
+      name: protocols
+      required: false
+      secret: false
+    - default: false
+      description: The name of the monitored metric. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: field_name
+      required: false
+      secret: false
+    - default: false
+      description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
+      isArray: false
+      name: field_name2
+      required: false
+      secret: false
+    - default: false
+      description: The statistic name for the alert. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: stat_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "The interval in which to evaluate the alert condition. Only applicable\
+        \ to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\"\
+        , \"1 min\", \"1 hr\""
+      isArray: false
+      name: units
       predefined:
       - none
       - period
       - 1 sec
       - 1 min
       - 1 hr
-      description: "The interval in which to evaluate the alert condition. Only applicable to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\", \"1 min\", \"1 hr\""
-    - name: interval_length
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '30'
+      description: "The length of the alert interval, expressed in seconds. Only applicable\
+        \ to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200,\
+        \ 1800"
+      isArray: false
+      name: interval_length
       predefined:
-      - "30"
-      - "60"
-      - "120"
-      - "300"
-      - "600"
-      - "900"
-      - "1200"
-      - "1800"
-      description: "The length of the alert interval, expressed in seconds. Only applicable to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200, 1800"
-      defaultValue: "30"
-    - name: operand
-      description: The value to compare against alert conditions. The compare method is specified by the value of the operator field. Only applicable to threshold alerts.
-    - name: operator
-      auto: PREDEFINED
+      - '30'
+      - '60'
+      - '120'
+      - '300'
+      - '600'
+      - '900'
+      - '1200'
+      - '1800'
+      required: false
+      secret: false
+    - default: false
+      description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: operand
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
+      isArray: false
+      name: operator
       predefined:
       - ==
       - '>'
       - <
       - '>='
       - <=
-      description: The logical operator applied when comparing the value of the operand field to alert conditions. Only applicable to threshold alerts.
-    - name: field_op
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
+      isArray: false
+      name: field_op
       predefined:
       - /
-      - "null"
-      description: The type of comparison between the field_name and field_name2 fields when applying a ratio. Only applicable to threshold alerts.
-    - name: param
-      description: The first alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
-    - name: param2
-      description: The second alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
-    description: Create a new alert rule in Reveal(x).
-  - name: extrahop-edit-alert
+      - 'null'
+      required: false
+      secret: false
+    - default: false
+      description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
+      isArray: false
+      name: param
+      required: false
+      secret: false
+    - default: false
+      description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
+      isArray: false
+      name: param2
+      required: false
+      secret: false
     deprecated: true
-    arguments:
-    - name: alert_id
-      required: true
-      description: The unique identifier for the alert.
-    - name: apply_all
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    description: Use extrahop-alert-rule-create instead. Create a new alert rule in
+      Reveal(x).
+    execution: false
+    name: extrahop-create-alert
+  - arguments:
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether the alert is assigned to all available data sources.
-    - name: disabled
-      required: true
-      auto: PREDEFINED
+      isArray: false
+      name: apply_all
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether the alert is disabled.
-    - name: name
-      required: true
-      description: The unique, friendly name for the alert.
-    - name: notify_snmp
-      required: true
-      auto: PREDEFINED
+      isArray: false
+      name: disabled
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - default: false
+      description: The unique, friendly name for the alert.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether to send an SNMP trap when an alert is generated.
-    - name: field_name
-      description: The name of the monitored metric. Only applicable to threshold alerts.
-    - name: stat_name
-      description: The statistic name for the alert. Only applicable to threshold alerts.
-    - name: units
-      auto: PREDEFINED
+      isArray: false
+      name: notify_snmp
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The time interval in which alert conditions are monitored, expressed
+        in seconds. '
+      isArray: false
+      name: refire_interval
+      predefined:
+      - '300'
+      - '600'
+      - '900'
+      - '1800'
+      - '3600'
+      - '7200'
+      - '14400'
+      required: true
+      secret: false
+    - default: false
+      description: 'The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3,
+        4, 5, 6, 7'
+      isArray: false
+      name: severity
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of alert. '
+      isArray: false
+      name: type
+      predefined:
+      - detection
+      - threshold
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts. '
+      isArray: false
+      name: object_type
+      predefined:
+      - application
+      - device
+      required: false
+      secret: false
+    - default: false
+      description: The list of monitored protocols. Only applicable to detection alerts.
+      isArray: false
+      name: protocols
+      required: false
+      secret: false
+    - default: false
+      description: The name of the monitored metric. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: field_name
+      required: false
+      secret: false
+    - default: false
+      description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
+      isArray: false
+      name: field_name2
+      required: false
+      secret: false
+    - default: false
+      description: The statistic name for the alert. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: stat_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "The interval in which to evaluate the alert condition. Only applicable\
+        \ to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\"\
+        , \"1 min\", \"1 hr\""
+      isArray: false
+      name: units
       predefined:
       - none
       - period
       - 1 sec
       - 1 min
       - 1 hr
-      description: The interval in which to evaluate the alert condition. Only applicable to threshold alerts.
-    - name: interval_length
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '30'
+      description: "The length of the alert interval, expressed in seconds. Only applicable\
+        \ to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200,\
+        \ 1800"
+      isArray: false
+      name: interval_length
       predefined:
-      - "30"
-      - "60"
-      - "120"
-      - "300"
-      - "600"
-      - "900"
-      - "1200"
-      - "1800"
-      description: The length of the alert interval, expressed in seconds. Only applicable to threshold alerts.
-    - name: operand
-      description: The value to compare against alert conditions. The compare method is specified by the value of the operator field. Only applicable to threshold alerts.
-    - name: refire_interval
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "300"
-      - "600"
-      - "900"
-      - "1800"
-      - "3600"
-      - "7200"
-      - "14400"
-      description: The time interval in which alert conditions are monitored, expressed in seconds.
-    - name: severity
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "0"
-      - "1"
-      - "2"
-      - "3"
-      - "4"
-      - "5"
-      - "6"
-      - "7"
-      description: The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps.
-    - name: type
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - detection
-      - threshold
-      description: The type of alert.
-    - name: object_type
-      auto: PREDEFINED
-      predefined:
-      - application
-      - device
-      description: The type of metric source monitored by the alert configuration. Only applicable to detection alerts.
-    - name: protocols
-      description: The list of monitored protocols. Only applicable to detection alerts.
-    - name: operator
-      auto: PREDEFINED
+      - '30'
+      - '60'
+      - '120'
+      - '300'
+      - '600'
+      - '900'
+      - '1200'
+      - '1800'
+      required: false
+      secret: false
+    - default: false
+      description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: operand
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
+      isArray: false
+      name: operator
       predefined:
       - ==
       - '>'
       - <
       - '>='
       - <=
-      description: The logical operator applied when comparing the value of the operand field to alert conditions. Only applicable to threshold alerts.
-    - name: field_name2
-      description: The second monitored metric when applying a ratio. Only applicable to threshold alerts.
-    - name: field_op
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
+      isArray: false
+      name: field_op
       predefined:
       - /
-      - "null"
-      description: The type of comparison between the field_name and field_name2 fields when applying a ratio. Only applicable to threshold alerts.
-    - name: param
-      description: The first alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
-    - name: param2
-      description: The second alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
-    description: Modify an alert rule in Reveal(x).
-  - name: extrahop-edit-alert-rule
-    arguments:
-    - name: alert_id
-      required: true
+      - 'null'
+      required: false
+      secret: false
+    - default: false
+      description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
+      isArray: false
+      name: param
+      required: false
+      secret: false
+    - default: false
+      description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
+      isArray: false
+      name: param2
+      required: false
+      secret: false
+    deprecated: true
+    description: Use extrahop-alert-rule-create instead. Create a new alert rule in
+      Reveal(x).
+    execution: false
+    name: extrahop-create-alert-rule
+  - arguments:
+    - default: false
       description: The unique identifier for the alert.
-    - name: apply_all
+      isArray: false
+      name: alert_id
       required: true
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether the alert is assigned to all available data sources.
-    - name: disabled
-      required: true
-      auto: PREDEFINED
+      isArray: false
+      name: apply_all
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether the alert is disabled.
-    - name: name
-      required: true
-      description: The unique, friendly name for the alert.
-    - name: notify_snmp
-      required: true
-      auto: PREDEFINED
+      isArray: false
+      name: disabled
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - default: false
+      description: The unique, friendly name for the alert.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether to send an SNMP trap when an alert is generated.
-    - name: field_name
-      description: The name of the monitored metric. Only applicable to threshold alerts.
-    - name: stat_name
-      description: The statistic name for the alert. Only applicable to threshold alerts.
-    - name: units
-      auto: PREDEFINED
+      isArray: false
+      name: notify_snmp
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - default: false
+      description: The name of the monitored metric. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: field_name
+      required: false
+      secret: false
+    - default: false
+      description: The statistic name for the alert. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: stat_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The interval in which to evaluate the alert condition. Only applicable
+        to threshold alerts.
+      isArray: false
+      name: units
       predefined:
       - none
       - period
       - 1 sec
       - 1 min
       - 1 hr
-      description: The interval in which to evaluate the alert condition. Only applicable to threshold alerts.
-    - name: interval_length
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The length of the alert interval, expressed in seconds. Only applicable
+        to threshold alerts.
+      isArray: false
+      name: interval_length
       predefined:
-      - "30"
-      - "60"
-      - "120"
-      - "300"
-      - "600"
-      - "900"
-      - "1200"
-      - "1800"
-      description: The length of the alert interval, expressed in seconds. Only applicable to threshold alerts.
-    - name: operand
-      description: The value to compare against alert conditions. The compare method is specified by the value of the operator field. Only applicable to threshold alerts.
-    - name: refire_interval
-      required: true
-      auto: PREDEFINED
+      - '30'
+      - '60'
+      - '120'
+      - '300'
+      - '600'
+      - '900'
+      - '1200'
+      - '1800'
+      required: false
+      secret: false
+    - default: false
+      description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: operand
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
+      isArray: false
+      name: refire_interval
       predefined:
-      - "300"
-      - "600"
-      - "900"
-      - "1800"
-      - "3600"
-      - "7200"
-      - "14400"
-      description: The time interval in which alert conditions are monitored, expressed in seconds.
-    - name: severity
+      - '300'
+      - '600'
+      - '900'
+      - '1800'
+      - '3600'
+      - '7200'
+      - '14400'
       required: true
-      auto: PREDEFINED
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps.
+      isArray: false
+      name: severity
       predefined:
-      - "0"
-      - "1"
-      - "2"
-      - "3"
-      - "4"
-      - "5"
-      - "6"
-      - "7"
-      description: The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps.
-    - name: type
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
       required: true
-      auto: PREDEFINED
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of alert.
+      isArray: false
+      name: type
       predefined:
       - detection
       - threshold
-      description: The type of alert.
-    - name: object_type
-      auto: PREDEFINED
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts.
+      isArray: false
+      name: object_type
       predefined:
       - application
       - device
-      description: The type of metric source monitored by the alert configuration. Only applicable to detection alerts.
-    - name: protocols
+      required: false
+      secret: false
+    - default: false
       description: The list of monitored protocols. Only applicable to detection alerts.
-    - name: operator
-      auto: PREDEFINED
+      isArray: false
+      name: protocols
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
+      isArray: false
+      name: operator
       predefined:
       - ==
       - '>'
       - <
       - '>='
       - <=
-      description: The logical operator applied when comparing the value of the operand field to alert conditions. Only applicable to threshold alerts.
-    - name: field_name2
-      description: The second monitored metric when applying a ratio. Only applicable to threshold alerts.
-    - name: field_op
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - default: false
+      description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
+      isArray: false
+      name: field_name2
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
+      isArray: false
+      name: field_op
       predefined:
       - /
-      - "null"
-      description: The type of comparison between the field_name and field_name2 fields when applying a ratio. Only applicable to threshold alerts.
-    - name: param
-      description: The first alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
-    - name: param2
-      description: The second alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
-    description: Modify an alert rule in Reveal(x).
-  - name: extrahop-track-ticket
-    arguments:
-    - name: incident_id
+      - 'null'
+      required: false
+      secret: false
+    - default: false
+      description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
+      isArray: false
+      name: param
+      required: false
+      secret: false
+    - default: false
+      description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
+      isArray: false
+      name: param2
+      required: false
+      secret: false
+    deprecated: true
+    description: Use extrahop-alert-rule-edit instead. Modify an alert rule in Reveal(x).
+    execution: false
+    name: extrahop-edit-alert
+  - arguments:
+    - default: false
+      description: The unique identifier for the alert.
+      isArray: false
+      name: alert_id
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether the alert is assigned to all available data sources.
+      isArray: false
+      name: apply_all
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether the alert is disabled.
+      isArray: false
+      name: disabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - default: false
+      description: The unique, friendly name for the alert.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether to send an SNMP trap when an alert is generated.
+      isArray: false
+      name: notify_snmp
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - default: false
+      description: The name of the monitored metric. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: field_name
+      required: false
+      secret: false
+    - default: false
+      description: The statistic name for the alert. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: stat_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The interval in which to evaluate the alert condition. Only applicable
+        to threshold alerts.
+      isArray: false
+      name: units
+      predefined:
+      - none
+      - period
+      - 1 sec
+      - 1 min
+      - 1 hr
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The length of the alert interval, expressed in seconds. Only applicable
+        to threshold alerts.
+      isArray: false
+      name: interval_length
+      predefined:
+      - '30'
+      - '60'
+      - '120'
+      - '300'
+      - '600'
+      - '900'
+      - '1200'
+      - '1800'
+      required: false
+      secret: false
+    - default: false
+      description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
+      isArray: false
+      name: operand
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
+      isArray: false
+      name: refire_interval
+      predefined:
+      - '300'
+      - '600'
+      - '900'
+      - '1800'
+      - '3600'
+      - '7200'
+      - '14400'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps.
+      isArray: false
+      name: severity
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of alert.
+      isArray: false
+      name: type
+      predefined:
+      - detection
+      - threshold
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts.
+      isArray: false
+      name: object_type
+      predefined:
+      - application
+      - device
+      required: false
+      secret: false
+    - default: false
+      description: The list of monitored protocols. Only applicable to detection alerts.
+      isArray: false
+      name: protocols
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
+      isArray: false
+      name: operator
+      predefined:
+      - ==
+      - '>'
+      - <
+      - '>='
+      - <=
+      required: false
+      secret: false
+    - default: false
+      description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
+      isArray: false
+      name: field_name2
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
+      isArray: false
+      name: field_op
+      predefined:
+      - /
+      - 'null'
+      required: false
+      secret: false
+    - default: false
+      description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
+      isArray: false
+      name: param
+      required: false
+      secret: false
+    - default: false
+      description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
+      isArray: false
+      name: param2
+      required: false
+      secret: false
+    deprecated: true
+    description: Use extrahop-alert-rule-edit instead. Modify an alert rule in Reveal(x).
+    execution: false
+    name: extrahop-edit-alert-rule
+  - arguments:
+    - default: false
       description: The ID of the Demisto Incident to ticket track.
-    - name: detection_id
+      isArray: false
+      name: incident_id
       required: true
+      secret: false
+    - default: false
       description: The ID of the ExtraHop Detection to ticket track.
-    - name: incident_owner
+      isArray: false
+      name: detection_id
+      required: true
+      secret: false
+    - default: false
       description: Owner of the incident.
-    - name: incident_status
+      isArray: false
+      name: incident_owner
+      required: false
+      secret: false
+    - default: false
       description: Status of the incident
-    - name: incident_close_reason
+      isArray: false
+      name: incident_status
+      required: false
+      secret: false
+    - default: false
       description: Reason the incident was closed
+      isArray: false
+      name: incident_close_reason
+      required: false
+      secret: false
+    deprecated: true
+    description: Use extrahop-ticket-track instead. Link a Reveal(x) detection to
+      a Demisto Investigation.
+    execution: false
+    name: extrahop-track-ticket
     outputs:
     - contextPath: ExtraHop.TicketId
       description: Demisto Incident ID successfully tracked to ExtraHop Detection
       type: string
-    description: Link a Reveal(x) detection to a Demisto Investigation.
-  - name: extrahop-get-peers
-    arguments:
-    - name: ip_or_id
+  - arguments:
+    - default: false
+      description: The IP Address or ExtraHop API ID of the source device to get peer
+        devices.
+      isArray: false
+      name: ip_or_id
       required: true
-      description: The IP Address or ExtraHop API ID of the source device to get peer devices.
-    - name: query_from
-      description: 'The beginning timestamp of the time range the query will search, expressed in milliseconds since the epoch. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      secret: false
+    - default: false
       defaultValue: -30m
-    - name: query_until
-      description: 'The ending timestamp of the time range the query will search, expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
-    - name: peer_role
-      auto: PREDEFINED
+      description: 'The beginning timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A negative value is evaluated relative
+        to the current time. The default unit for a negative value is milliseconds,
+        but other units can be specified with one of the following unit suffixes:
+        ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: query_from
+      required: false
+      secret: false
+    - default: false
+      description: 'The ending timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. 0 indicates the time of the request.
+        A negative value is evaluated relative to the current time. The default unit
+        for a negative value is milliseconds, but other units can be specified with
+        one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: query_until
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: any
+      description: The role of the peer device in relation to the origin device.
+      isArray: false
+      name: peer_role
       predefined:
       - any
       - client
       - server
-      description: The role of the peer device in relation to the origin device.
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: any
-    - name: protocol
-      auto: PREDEFINED
+      description: A filter to only return peers that the source device has communicated
+        with over this protocol. If no value is set, the object includes any protocol.
+      isArray: false
+      name: protocol
       predefined:
       - any
       - AAA
@@ -2837,8 +5353,12 @@ script:
       - telnet
       - UDP
       - WebSocket
-      description: A filter to only return peers that the source device has communicated with over this protocol. If no value is set, the object includes any protocol.
-      defaultValue: any
+      required: false
+      secret: false
+    deprecated: true
+    description: Use extrahop-peers-get instead. Get all peers for a device from Reveal(x).
+    execution: false
+    name: extrahop-get-peers
     outputs:
     - contextPath: ExtraHop.Device.Macaddr
       description: The MAC Address of the device.
@@ -2847,7 +5367,8 @@ script:
       description: The class of the device.
       type: string
     - contextPath: ExtraHop.Device.UserModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: number
     - contextPath: ExtraHop.Device.AutoRole
       description: The role automatically detected by the ExtraHop.
@@ -2874,7 +5395,8 @@ script:
       description: Whether the device is on the advanced analysis allow list.
       type: boolean
     - contextPath: ExtraHop.Device.ModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: number
     - contextPath: ExtraHop.Device.IsL3
       description: Indicates whether the device is a Layer 3 device.
@@ -2924,17 +5446,42 @@ script:
     - contextPath: ExtraHop.Device.ServerProtocols
       description: The list of protocols the peer device is communicating as a server.
       type: string
-    description: Get all peers for a device from Reveal(x).
-  - name: extrahop-get-protocols
-    arguments:
-    - name: ip_or_id
+  - arguments:
+    - default: false
+      description: The IP Address or ExtraHop API ID of the device to get all active
+        network protocols.
+      isArray: false
+      name: ip_or_id
       required: true
-      description: The IP Address or ExtraHop API ID of the device to get all active network protocols.
-    - name: query_from
-      description: 'The beginning timestamp of the time range the query will search, expressed in milliseconds since the epoch. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      secret: false
+    - default: false
       defaultValue: -30m
-    - name: query_until
-      description: 'The ending timestamp of the time range the query will search, expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      description: 'The beginning timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A negative value is evaluated relative
+        to the current time. The default unit for a negative value is milliseconds,
+        but other units can be specified with one of the following unit suffixes:
+        ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: query_from
+      required: false
+      secret: false
+    - default: false
+      description: 'The ending timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. 0 indicates the time of the request.
+        A negative value is evaluated relative to the current time. The default unit
+        for a negative value is milliseconds, but other units can be specified with
+        one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: query_until
+      required: false
+      secret: false
+    deprecated: true
+    description: Use extrahop-protocols-get instead. Get all active network protocols
+      for a device from Reveal(x).
+    execution: false
+    name: extrahop-get-protocols
     outputs:
     - contextPath: ExtraHop.Device.Macaddr
       description: The MAC Address of the device.
@@ -2943,7 +5490,8 @@ script:
       description: The class of the device.
       type: string
     - contextPath: ExtraHop.Device.UserModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: number
     - contextPath: ExtraHop.Device.AutoRole
       description: The role automatically detected by the ExtraHop.
@@ -2970,7 +5518,8 @@ script:
       description: Whether the device is on the advanced analysis allow list.
       type: boolean
     - contextPath: ExtraHop.Device.ModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: number
     - contextPath: ExtraHop.Device.IsL3
       description: Indicates whether the device is a Layer 3 device.
@@ -3020,46 +5569,96 @@ script:
     - contextPath: ExtraHop.Device.ServerProtocols
       description: The list of protocols the peer device is communicating as a server.
       type: string
-    description: Get all active network protocols for a device from Reveal(x).
-  - name: extrahop-tag-devices
-    arguments:
-    - name: tag
+  - arguments:
+    - default: false
       description: The case-sensitive value of the tag.
-    - name: add
-      description: The list of IP Addresses or ExtraHop API IDs of the devices to tag, comma separated.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    - default: false
+      description: The list of IP Addresses or ExtraHop API IDs of the devices to
+        tag, comma separated.
       isArray: true
-    - name: remove
-      description: The list of IP Addresses or ExtraHop API IDs of the devices to remove the tag from, comma separated.
+      name: add
+      required: false
+      secret: false
+    - default: false
+      description: The list of IP Addresses or ExtraHop API IDs of the devices to
+        remove the tag from, comma separated.
       isArray: true
-    description: Add or remove a tag from devices in Reveal(x).
-  - name: extrahop-get-activity-map
-    arguments:
-    - name: ip_or_id
+      name: remove
+      required: false
+      secret: false
+    deprecated: true
+    description: Use extrahop-devices-tag instead. Add or remove a tag from devices
+      in Reveal(x).
+    execution: false
+    name: extrahop-tag-devices
+  - arguments:
+    - default: false
+      description: The IP Address or ExtraHop API ID of the source device to get an
+        activity map.
+      isArray: false
+      name: ip_or_id
       required: true
-      description: The IP Address or ExtraHop API ID of the source device to get an activity map.
-    - name: time_interval
-      auto: PREDEFINED
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 30 minutes
+      description: The time interval of the live activity map, expressed as the "Last"
+        30 minutes. For example, specify a value of 30 minutes to get an activity
+        map showing the time range of the last 30 minutes. This field is ignored if
+        from_time and until_time are provided.
+      isArray: false
+      name: time_interval
       predefined:
       - 30 minutes
       - 6 hours
       - 1 day
       - 1 week
-      description: The time interval of the live activity map, expressed as the "Last" 30 minutes. For example, specify a value of 30 minutes to get an activity map showing the time range of the last 30 minutes. This field is ignored if from_time and until_time are provided.
-      defaultValue: 30 minutes
-    - name: from_time
-      description: The beginning timestamp of a fixed time range the activity map will display, expressed in seconds since the epoch.
-    - name: until_time
-      description: The ending timestamp of a fixed time range the activity map will display, expressed in seconds since the epoch.
-    - name: peer_role
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - default: false
+      description: The beginning timestamp of a fixed time range the activity map
+        will display, expressed in seconds since the epoch.
+      isArray: false
+      name: from_time
+      required: false
+      secret: false
+    - default: false
+      description: The ending timestamp of a fixed time range the activity map will
+        display, expressed in seconds since the epoch.
+      isArray: false
+      name: until_time
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: any
+      description: The role of the peer devices in relation to the source device.
+        For example, specifying a peer_role of client will show All Clients communicating
+        with the source device. Additionally specifying a protocol of HTTP will result
+        in further filtering and only showing HTTP Clients communicating with the
+        source device.
+      isArray: false
+      name: peer_role
       predefined:
       - any
       - client
       - server
-      description: The role of the peer devices in relation to the source device. For example, specifying a peer_role of client will show All Clients communicating with the source device. Additionally specifying a protocol of HTTP will result in further filtering and only showing HTTP Clients communicating with the source device.
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: any
-    - name: protocol
-      auto: PREDEFINED
+      description: The protocol over which the source device is communicating. For
+        example, specifying a protocol of HTTP show only HTTP Clients and HTTP Servers
+        communicating with the source device. Additionally specifying a peer_role
+        of client will result in further filtering and only showing HTTP Clients communicating
+        with the source device.
+      isArray: false
+      name: protocol
       predefined:
       - any
       - AAA
@@ -3117,48 +5716,119 @@ script:
       - telnet
       - UDP
       - WebSocket
-      description: The protocol over which the source device is communicating. For example, specifying a protocol of HTTP show only HTTP Clients and HTTP Servers communicating with the source device. Additionally specifying a peer_role of client will result in further filtering and only showing HTTP Clients communicating with the source device.
-      defaultValue: any
+      required: false
+      secret: false
+    deprecated: true
+    description: Use extrahop-activity-map-get instead. Get a link to a live activity
+      map in Reveal(x).
+    execution: false
+    name: extrahop-get-activity-map
     outputs:
     - contextPath: ExtraHop.ActivityMap
       description: The link to a visual activity map in ExtraHop.
       type: string
-    description: Get a link to a live activity map in Reveal(x).
-  - name: extrahop-search-packets
-    arguments:
-    - name: output
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: pcap
+      description: The output format. A pcap file, A keylog.txt file that can be loaded
+        in wireshark to decode ssl packets, or a zip file containing both a packets.pcap
+        and keylog.txt.
+      isArray: false
+      name: output
       predefined:
       - pcap
       - keylog_txt
       - zip
-      description: The output format. A pcap file, A keylog.txt file that can be loaded in wireshark to decode ssl packets, or a zip file containing both a packets.pcap and keylog.txt.
-      defaultValue: pcap
-    - name: limit_bytes
-      description: The maximum number of bytes to return.
+      required: false
+      secret: false
+    - default: false
       defaultValue: 10MB
-    - name: limit_search_duration
-      description: The maximum amount of time to run the packet search. The default unit is milliseconds, but other units can be specified with a unit suffix.
+      description: The maximum number of bytes to return.
+      isArray: false
+      name: limit_bytes
+      required: false
+      secret: false
+    - default: false
       defaultValue: 5m
-    - name: query_from
-      required: true
-      description: 'The beginning timestamp of the time range the search will include, expressed in milliseconds since the epoch. A negative value specifies that the search will begin with packets captured at a time in the past relative to the current time. For example, specify -10m to begin the search with packets captured 10 minutes before the time of the request. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      description: The maximum amount of time to run the packet search. The default
+        unit is milliseconds, but other units can be specified with a unit suffix.
+      isArray: false
+      name: limit_search_duration
+      required: false
+      secret: false
+    - default: false
       defaultValue: -10m
-    - name: query_until
-      description: 'The ending timestamp of the time range the search will include, expressed in milliseconds since the epoch. A 0 value specifies that the search will end with packets captured at the time of the search. A negative value specifies that the search will end with packets captured at a time in the past relative to the current time. For example, specify -5m to end the search with packets captured 5 minutes before the time of the request. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
-    - name: bpf
+      description: 'The beginning timestamp of the time range the search will include,
+        expressed in milliseconds since the epoch. A negative value specifies that
+        the search will begin with packets captured at a time in the past relative
+        to the current time. For example, specify -10m to begin the search with packets
+        captured 10 minutes before the time of the request. The default unit for a
+        negative value is milliseconds, but other units can be specified with one
+        of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: query_from
+      required: true
+      secret: false
+    - default: false
+      description: 'The ending timestamp of the time range the search will include,
+        expressed in milliseconds since the epoch. A 0 value specifies that the search
+        will end with packets captured at the time of the search. A negative value
+        specifies that the search will end with packets captured at a time in the
+        past relative to the current time. For example, specify -5m to end the search
+        with packets captured 5 minutes before the time of the request. The default
+        unit for a negative value is milliseconds, but other units can be specified
+        with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      isArray: false
+      name: query_until
+      required: false
+      secret: false
+    - default: false
       description: The Berkeley Packet Filter (BPF) syntax for the packet search.
-    - name: ip1
+      isArray: false
+      name: bpf
+      required: false
+      secret: false
+    - default: false
       description: Returns packets sent to or received by the specified IP address.
-    - name: port1
+      isArray: false
+      name: ip1
+      required: false
+      secret: false
+    - default: false
       description: Returns packets sent from or received on the specified port.
-    - name: ip2
+      isArray: false
+      name: port1
+      required: false
+      secret: false
+    - default: false
       description: Returns packets sent to or received by the specified IP address.
-    - name: port2
+      isArray: false
+      name: ip2
+      required: false
+      secret: false
+    - default: false
       description: Returns packets sent from or received on the specified port.
-    description: Search for specific packets in Reveal(x).
-  dockerimage: demisto/python3:3.9.8.24399
+      isArray: false
+      name: port2
+      required: false
+      secret: false
+    deprecated: true
+    description: Use extrahop-packets-search instead. Search for specific packets
+      in Reveal(x).
+    execution: false
+    name: extrahop-search-packets
+  dockerimage: demisto/python3:3.10.10.49934
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
+  script: '-'
+  subtype: python3
+  type: python
 tests:
 - ExtraHop_v2-Test
-fromversion: 5.0.0
+fromversion: 6.5.0

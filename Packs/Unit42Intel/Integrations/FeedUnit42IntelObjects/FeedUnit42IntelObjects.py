@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
+DEFAULT_YEAR = datetime(1970, 1, 1)
 AF_TAGS_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 TAG_CLASS_TO_DEMISTO_TYPE = {
@@ -286,6 +286,19 @@ def get_tag_groups_names(tag_groups: list) -> list:
     return results
 
 
+def validate_created_time_from_refs(created_time: str) -> str:
+    """
+    Validate that created_time is a valid date time and convert it to server timestamp format.
+    Args:
+        created_time: The publication created time.
+    Returns:
+        Formatted timestamp publication object.
+    """
+    if parsed_date_time := dateparser.parse(created_time, settings={'RELATIVE_BASE': DEFAULT_YEAR}):
+        return datetime.strftime(parsed_date_time, DATE_FORMAT)
+    return ''
+
+
 def create_publications(refs: list) -> list:
     """
     Creates the publications list of the indicator
@@ -300,7 +313,7 @@ def create_publications(refs: list) -> list:
         for ref in refs:
             url = ref.get('url', '')
             source = ref.get('source', '')
-            time_stamp = ref.get('created', '')
+            time_stamp = validate_created_time_from_refs(ref.get('created', ''))
             title = ref.get('title', '')
             publications.append({'link': url, 'title': title, 'source': source, 'timestamp': time_stamp})
     return publications

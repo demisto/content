@@ -2,27 +2,15 @@
     "name": "Varonis Data Security Platform",
     "description": "Streamline alerts, events and related forensic information from Varonis Data Security Platform",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Varonis",
-    "url": "",
-    "email": "dcohen@varonis.com",
+    "url": "https://www.varonis.com/support",
+    "email": "",
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [
-        "Alerts",
-        "Forensics",
-        "Malware"
-    ],
-    "useCases": [
-        "Breach Notification",
-        "Compliance",
-        "Hunting",
-        "Impossible Traveler",
-        "Malware",
-        "Phishing",
-        "Ransomware"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Data governance",
         "Classification",
@@ -38,7 +26,7 @@
         "marketplacev2"
     ],
     "devEmail": [
-        "dcohen@varonis.com",
+        "vkorenkov@varonis.com",
         "vdobrotskyi@varonis.com"
     ],
     "githubUser": [

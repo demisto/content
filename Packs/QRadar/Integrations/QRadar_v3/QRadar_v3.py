@@ -2834,7 +2834,12 @@ def qradar_reference_set_value_delete_command(client: Client, args: Dict) -> Com
         value = get_time_parameter(original_value, epoch_format=True)
 
     # if this call fails, raise an error and stop command execution
-    response = client.reference_set_value_delete(ref_name, value)
+    try:
+        response = client.reference_set_value_delete(ref_name, value)
+    except DemistoException as e:
+        response = str(e)
+        if f"Set {ref_name} does not contain value {value}" not in response:
+            raise e
     human_readable = f'### value: {original_value} of reference: {ref_name} was deleted successfully'
 
     return CommandResults(
@@ -3555,8 +3560,8 @@ def add_modified_remote_offenses(client: Client,
 
         new_context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queries})
         new_context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: finished_offenses_queue})
-        new_context_data.update({LAST_MIRROR_KEY: current_last_update})
 
+    new_context_data.update({LAST_MIRROR_KEY: current_last_update})
     print_context_data_stats(new_context_data, "Get Modified Remote Data - After update")
     safely_update_context_data(
         new_context_data, version, offense_ids=changed_ids_ctx, should_update_last_mirror=True
@@ -3616,7 +3621,6 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     remote_args = GetModifiedRemoteDataArgs(args)
     highest_fetched_id = ctx.get(LAST_FETCH_KEY, 0)
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
-    user_query = params.get('query', '')
     fetch_mode = params.get('fetch_mode', '')
     range_ = f'items=0-{limit - 1}'
     last_update_time = ctx.get(LAST_MIRROR_KEY, 0)
@@ -3624,9 +3628,8 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
         last_update_time = remote_args.last_update
     last_update = get_time_parameter(last_update_time, epoch_format=True)
     # if this call fails, raise an error and stop command execution
-    user_query = update_user_query(user_query)
     offenses = client.offenses_list(range_=range_,
-                                    filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}{user_query}',
+                                    filter_=f'id <= {highest_fetched_id} AND ((status!=closed AND last_persisted_time >= {last_update}) OR (status=closed AND close_time > {last_update}))',  # noqa: E501
                                     sort='+last_persisted_time',
                                     fields='id,start_time,event_count,last_persisted_time')
     new_modified_records_ids = {str(offense.get('id')) for offense in offenses if 'id' in offense}

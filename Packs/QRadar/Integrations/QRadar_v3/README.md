@@ -16,7 +16,7 @@ This integration was integrated and tested with API versions 10.1-14.0 on QRadar
     | Fetch mode |  | True |
     | Retry events fetch | Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than `event_count`. Default number of tries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_TRIES. e.g EVENTS_SEARCH_TRIES=5. | False |
     | Number of offenses to pull per API call (max 50) |  | False |
-    | Query to fetch offenses. Configuring "status=OPEN" won't mirror closed offenses to the Cortex XSOAR platform.| Define a query to determine which offenses to fetch. E.g., "severity >= 4 AND id > 5". Filtering by status in the query may result in unexpected behavior when changing an incident's status.| False |
+    | Query to fetch offenses. | Define a query to determine which offenses to fetch. E.g., "severity >= 4 AND id > 5". Filtering by status in the query may result in unexpected behavior when changing an incident's status.| False |
     | First fetch time | how long to look back while fetching incidents on the first fetch \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
     | Incidents Enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
     | Incidents Enrichment | IP enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |

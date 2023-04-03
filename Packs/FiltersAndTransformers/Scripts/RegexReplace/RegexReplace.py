@@ -41,7 +41,7 @@ def main():
             flags |= re.DOTALL
 
         Main(input_text=args['value'],
-             output_format=args.get('output_format', ''),
+             output_format=args.get('output_format') or '',
              regex=args['regex'],
              action_dt=args.get('action_dt'),
              regex_flags=flags).run()

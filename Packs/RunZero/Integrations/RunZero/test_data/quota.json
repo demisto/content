@@ -1,0 +1,17 @@
+{
+    "id": "e77602e0-3fb8-4734-aef9-fbc6fdcb0fa8",
+    "client_id": "e77602e0-3fb8-4734-aef9-fbc6fdcb0fa8",
+    "organization_id": "e77602e0-3fb8-4734-aef9-fbc6fdcb0fa8",
+    "created_at": 1576300370,
+    "created_by": "user@example.com",
+    "comment": "API key used for Splunk integration",
+    "last_used_at": 0,
+    "last_used_ip": "127.0.0.1",
+    "last_used_ua": "curl/7.44.1",
+    "counter": 1,
+    "usage_today": 100,
+    "usage_limit": 10000,
+    "token": "CTXXXXXXXXXXXXX",
+    "inactive": "true",
+    "type": "org"
+  }

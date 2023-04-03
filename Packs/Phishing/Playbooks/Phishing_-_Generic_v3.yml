@@ -201,6 +201,8 @@ tasks:
         complex:
           root: incident
           accessor: reporteremailaddress
+      using:
+        simple: ${inputs.SendMailInstance}
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -246,7 +248,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "3"
     continueonerrortype: ""
     view: |-
       {
@@ -293,6 +295,8 @@ tasks:
         complex:
           root: incident
           accessor: reporteremailaddress
+      using:
+        simple: ${inputs.SendMailInstance}
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1193,6 +1197,9 @@ tasks:
           accessor: Headers
           transformers:
           - operator: uniq
+      original_authentication_header:
+        complex:
+          root: inputs.OriginalAuthenticationHeader
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1658,6 +1665,15 @@ tasks:
                 value:
                   simple: incident.reporteremailaddress
                 iscontext: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Account.Email.Address
+                iscontext: true
+              right:
+                value:
+                  simple: ListenerMailbox
+                iscontext: true
           transformers:
           - operator: uniq
       Hostname:
@@ -1859,7 +1875,8 @@ tasks:
       version: -1
       name: Detect & Manage Phishing Campaigns
       description: |-
-        This playbook is used to find, create and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to do the following:
+        This playbook is part of the Phishing Campaign content pack.
+        It is used to find, create, and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to do the following:
         1. Find and link related incidents to the same phishing attack (a phishing campaign).
         2. Search for an existing Phishing Campaign incident, or create a new incident for the linked Phishing incidents.
         3. Link all detected phishing incidents to the Phishing Campaign incident that was found or that was created previously.
@@ -2120,6 +2137,8 @@ tasks:
         complex:
           root: incident
           accessor: reporteremailaddress
+      using:
+        simple: ${inputs.SendMailInstance}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2230,6 +2249,8 @@ tasks:
         complex:
           root: incident
           accessor: reporteremailaddress
+      using:
+        simple: ${inputs.SendMailInstance}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3242,8 +3263,22 @@ inputs:
     The mailbox which is being used to fetch phishing incidents. This mailbox would be excluded in the "Phishing - Indicators Hunting" playbook.
     In case the value of this input is empty, the value of the "Email To" incident field will be automatically used as the listener mailbox.
   playbookInputQuery:
+- key: SendMailInstance
+  value: {}
+  required: false
+  description: The name of the instance to be used when executing the "send-mail"
+    command in the playbook. In case it will be empty, all available instances will
+    be used (default).
+  playbookInputQuery:
+- key: OriginalAuthenticationHeader
+  value: {}
+  required: false
+  description: |-
+    This input will be used as the "original_authentication_header" argument in the "CheckEmailAuthenticity" script under the "Authenticate email" task.
+    The header that holds the original Authentication-Results header value. This can be used when an intermediate server changes the original email and holds the original header value in a different header. Note - Use this only if you trust the server creating this header.
+  playbookInputQuery:
 outputs: []
 tests:
-- Phishing v3 - Get Original Email + Search & Delete - Test
-- Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
+- No tests (auto formatted)
 fromversion: 6.1.0
+toversion: 6.4.9

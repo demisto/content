@@ -11,7 +11,9 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
     | **Parameter** | **Required** |
     | --- | --- |
     | Storage account name | True |
-    | Account SAS Token | True |
+    | Account SAS Token | False |
+    | Use Azure Managed Identities | False |
+    | Azure Managed Identities Client ID | False |   
     | Use system proxy settings | False |
     | Trust any certificate (not secure) | False |
 
@@ -587,3 +589,24 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Blob xsoar.txt properties successfully updated.
+
+### azure-storage-container-blob-property-get
+***
+Retrieve Blob properties.
+
+
+#### Base Command
+
+`azure-storage-container-sas-create`
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                        | **Required** |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| container_name | The name of the Blob Container.                                                                                                                                                                                                                                                        | Required | 
+| expiry_time | Expiry time for sas token(hours).                                                                                                                                                                                                                                                      | Required | 
+| signed_resources | specifies which resources are accessible via the shared access signature. Options available c(container), b(blob), bv(blob version),bs(blob snapshot),d(directory)                                                                                                                     | Required | 
+| signed_permissions | The permissions that are associated with the shared access signature. The user is restricted to operations that are allowed by the permissions. Possible permission: r = Read, a=access, c=create, w=write. Also must follow the  this order "racwdxltmeop"Example: r,c,a,w,rac, racw. | Required | 
+| signed_ip | specifies a public IP address or a range of public IP addresses from which to accept requests.                                                                                                                                                                                         | Required |
+
+#### Command Example
+```!azure-storage-container-sas-create expiry_time="1" signed_resources="test signed_permissions="test signed_ip="127.0.0.1"```

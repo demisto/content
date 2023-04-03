@@ -1,16 +1,25 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
+from http import HTTPStatus
 import urllib3
 import requests
-from typing import Any, Dict
+from typing import Any, Callable, Dict, cast
 import urllib.parse
 import time
 import json
 import hmac
 import hashlib
 import base64
+import uuid
+
+
+def is_valid_uuid(uuid_string):
+    try:
+        uuid.UUID(uuid_string)
+        return True
+    except ValueError:
+        return False
 
 # register_module_line("CTIX v3", "start", __line__())
 # Uncomment while development=
@@ -31,6 +40,7 @@ domain_regex = (
     "|html)$)(?:[a-z¡-\uffff-]{2,63}|xn--[a-z0-9]{1,59})(?<!-)\\.?$"
     "|localhost)"
 )
+
 tag_colors = {
     "blue": "#0068FA",
     "purple": "#5236E2",
@@ -140,6 +150,7 @@ class Client(BaseClient):
         """
         kwargs = self.add_common_params(kwargs)
         full_url = full_url + "?" + urllib.parse.urlencode(kwargs)
+
         headers = {"content-type": "application/json"}
         resp = requests.get(
             full_url,
@@ -155,9 +166,12 @@ class Client(BaseClient):
             response = {"data": resp.json(), "status": status_code}
             return response
         except requests.exceptions.HTTPError:
-            return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
+            if status_code == HTTPStatus.NOT_FOUND:
+                return_error("Your CTIX version does not support this command.")
+            else:
+                return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
-    def post_http_request(self, full_url: str, payload: dict, params):
+    def post_http_request(self, full_url: str, payload: dict, params: dict):
         """
         POST HTTP Request
 
@@ -175,7 +189,7 @@ class Client(BaseClient):
             proxies=self.proxies,
             json=payload,
             headers=headers,
-            timeout=5,
+            timeout=15,
         )
         status_code = resp.status_code
         try:
@@ -183,6 +197,72 @@ class Client(BaseClient):
             response = {"data": resp.json(), "status": status_code}
             return response
         except requests.exceptions.HTTPError:
+            if status_code == HTTPStatus.NOT_FOUND:
+                return_error("Your CTIX version does not support this command.")
+            else:
+                return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
+
+    def put_http_request(self, full_url: str, payload: dict, params: dict):
+        """
+        PUT HTTP Request
+
+        :param str full_url: URL to be called
+        :param dict payload: Request body, defaults to None
+        :raises DemistoException: If Any error is found will be raised on XSOAR
+        :return dict: Response object
+        """
+        headers = {"content-type": "application/json"}
+        params = self.add_common_params(params)
+        full_url = full_url + "?" + urllib.parse.urlencode(params)
+        resp = requests.put(
+            full_url,
+            verify=self.verify,
+            proxies=self.proxies,
+            json=payload,
+            headers=headers,
+            timeout=15,
+        )
+        status_code = resp.status_code
+        try:
+            resp.raise_for_status()  # Raising an exception for non-200 status codeg
+            response = {"data": resp.json(), "status": status_code}
+            return response
+        except requests.exceptions.HTTPError:
+            if status_code == HTTPStatus.NOT_FOUND:
+                return_error("Your CTIX version does not support this command.")
+            else:
+                return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
+
+    def delete_http_request(self, full_url: str, payload: dict = None, **kwargs):
+        """
+        DELETE HTTP Request
+
+        :param str full_url: URL to be called
+        :param dict payload: Request body, defaults to None
+        :raises DemistoException: If Any error is found will be raised on XSOAR
+        :return dict: Response object
+        """
+        kwargs = self.add_common_params(kwargs)
+        full_url = full_url + "?" + urllib.parse.urlencode(kwargs)
+        headers = {"content-type": "application/json"}
+        resp = requests.delete(
+            full_url,
+            verify=self.verify,
+            proxies=self.proxies,
+            timeout=5,
+            headers=headers,
+            json=payload,
+        )
+        status_code = resp.status_code
+        try:
+            resp.raise_for_status()  # Raising an exception for non-200 status code
+            response = {"data": resp.json(), "status": status_code}
+            return response
+        except requests.exceptions.HTTPError:
+            if status_code == HTTPStatus.BAD_REQUEST:
+                response = {"data": {}, "status": status_code}
+                return response
+
             return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
     def test_auth(self):
@@ -330,7 +410,7 @@ class Client(BaseClient):
         params["page_size"] = page_size
         return self.get_http_request(client_url, **params)
 
-    def add_indicator_as_false_positive(self, object_ids: list[str], object_type: str):
+    def add_indicator_as_false_positive(self, object_ids: List[str], object_type: str):
         """
         Add Indicator as False Positive
 
@@ -344,7 +424,7 @@ class Client(BaseClient):
 
         return self.post_http_request(client_url, payload, {})
 
-    def add_ioc_to_manual_review(self, object_ids: list[str], object_type: str):
+    def add_ioc_to_manual_review(self, object_ids: List[str], object_type: str):
         """
         Add IOC to Manual Review
 
@@ -567,6 +647,28 @@ class Client(BaseClient):
         client_url = self.base_url + url_suffix
         return self.post_http_request(client_url, payload, params)
 
+    def bulk_lookup_and_create_data(self, object_names, source, collection, page_size):
+        url_suffix = "ingestion/threat-data/bulk-lookup-and-create/"
+        client_url = self.base_url + url_suffix
+        params = {"create": "true", "page_size": page_size}
+
+        payload = {
+            "ioc_values": object_names,
+            "metadata": {
+                "tlp": "AMBER",
+                "confidence": 100,
+                "tags": []
+            },
+            "source": {
+                "source_name": source
+            },
+            "collection": {
+                "collection_name": collection
+            }
+        }
+
+        return self.post_http_request(client_url, payload, params)
+
 
 """ HELPER FUNCTIONS """
 
@@ -609,7 +711,7 @@ def iter_dbot_score(
     table_name: str,
     output_prefix: str,
     outputs_key_field: str,
-    reliability: str = None
+    reliability: str = None,
 ):
     final_data = []
     for value in data:
@@ -618,11 +720,11 @@ def iter_dbot_score(
             score = to_dbot_score(value.get(score_key, 0))
             if indicator_type == "ip":
                 dbot_score = Common.DBotScore(
-                    indicator=value.get("id"),
+                    indicator=value.get("name"),
                     indicator_type=DBotScoreType.IP,
                     integration_name="CTIX",
                     score=score,
-                    reliability=reliability
+                    reliability=reliability,
                 )
                 ip_standard_context = Common.IP(
                     ip=value.get("name"), asn=value.get("asn"), dbot_score=dbot_score
@@ -641,11 +743,11 @@ def iter_dbot_score(
                 )
             elif indicator_type == "file":
                 dbot_score = Common.DBotScore(
-                    indicator=value.get("id"),
+                    indicator=value.get("name"),
                     indicator_type=DBotScoreType.FILE,
                     integration_name="CTIX",
                     score=score,
-                    reliability=reliability
+                    reliability=reliability,
                 )
                 file_standard_context = Common.File(
                     name=value.get("name"), dbot_score=dbot_score
@@ -675,11 +777,11 @@ def iter_dbot_score(
                 )
             elif indicator_type == "domain":
                 dbot_score = Common.DBotScore(
-                    indicator=value.get("id"),
+                    indicator=value.get("name"),
                     indicator_type=DBotScoreType.DOMAIN,
                     integration_name="CTIX",
                     score=score,
-                    reliability=reliability
+                    reliability=reliability,
                 )
                 domain_standard_context = Common.Domain(
                     domain=value.get("name"), dbot_score=dbot_score
@@ -698,11 +800,11 @@ def iter_dbot_score(
                 )
             elif indicator_type == "email":
                 dbot_score = Common.DBotScore(
-                    indicator=value.get("id"),
+                    indicator=value.get("name"),
                     indicator_type=DBotScoreType.EMAIL,
                     integration_name="CTIX",
                     score=score,
-                    reliability=reliability
+                    reliability=reliability,
                 )
                 email_standard_context = Common.Domain(
                     domain=value.get("name"), dbot_score=dbot_score
@@ -721,11 +823,11 @@ def iter_dbot_score(
                 )
             elif indicator_type == "url":
                 dbot_score = Common.DBotScore(
-                    indicator=value.get("id"),
+                    indicator=value.get("name"),
                     indicator_type=DBotScoreType.URL,
                     integration_name="CTIX",
                     score=score,
-                    reliability=reliability
+                    reliability=reliability,
                 )
                 url_standard_context = Common.URL(
                     url=value.get("name"), dbot_score=dbot_score
@@ -972,7 +1074,7 @@ def get_threat_data_command(
             "Threat Data",
             "CTIX.ThreatData",
             "id",
-            reliability
+            reliability,
         )
         return result
 
@@ -1094,9 +1196,7 @@ def add_indicator_as_false_positive_command(
         return results
 
 
-def add_ioc_manual_review_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def add_ioc_manual_review_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Add IOC for Manual Review Command
 
@@ -1238,7 +1338,7 @@ def saved_result_set_command(client: Client, args: Dict[str, Any]) -> CommandRes
             "Saved Result Set",
             "CTIX.SavedResultSet",
             "id",
-            reliability
+            reliability,
         )
         return results
 
@@ -1309,9 +1409,7 @@ def search_for_tag_command(client: Client, args: Dict[str, Any]) -> CommandResul
         return results
 
 
-def get_indicator_details_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def get_indicator_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Get Indicator Details Command
 
@@ -1374,9 +1472,7 @@ def get_indicator_tags_command(client: Client, args: Dict[str, Any]) -> CommandR
         return results
 
 
-def get_indicator_relations_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def get_indicator_relations_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Get Indicator Relations Command
 
@@ -1407,9 +1503,7 @@ def get_indicator_relations_command(
         return results
 
 
-def get_indicator_observations_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def get_indicator_observations_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Get Indicator Observations Command
 
@@ -1446,9 +1540,7 @@ def get_indicator_observations_command(
         return results
 
 
-def get_conversion_feed_source_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def get_conversion_feed_source_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Get Conversion Feed Source Command
 
@@ -1493,7 +1585,6 @@ def get_lookup_threat_data_command(
 ) -> List[CommandResults]:
     """
     Get Lookup Threat Data Command
-
     :Description Get Lookup Threat Data
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
@@ -1523,6 +1614,59 @@ def get_lookup_threat_data_command(
             reliability
         )
         return results
+
+
+def get_create_threat_data_command(
+    client: Client, args: Dict[str, Any]
+) -> List[CommandResults]:
+    """
+    Get or Create Threat Data Command
+
+    :Description Gets Threat Data or creates it if it does not exist
+    :param Dict[str, str] args: Paramters to be send to in request
+    :return CommandResults: XSOAR based result
+    """
+    object_names = argToList(args.get("object_names"))
+    source = args.get("source", "XSOAR")
+    collection = args.get("collection", "Intel")
+    page_size = args.get("page_size", 10)
+    reliability = args.get("reliability")
+    created_after_lookup_results = []
+    invalid_values_results = []
+
+    response = client.bulk_lookup_and_create_data(object_names, source, collection, page_size).get("data", {})
+    results = response.get("found_iocs", {}).get("results", [])
+    created_after_lookup = response["values_not_found"]["valid_iocs"]
+    invalid_values = response["values_not_found"]["invalid_values"]
+
+    if created_after_lookup:
+        created_after_lookup_results.append(CommandResults(
+            readable_output=tableToMarkdown("Not Found: Created", created_after_lookup, headers=['Name'], removeNull=True),
+            outputs_prefix="CTIX.ThreatDataGetCreate.NotFoundCreated",
+            outputs=created_after_lookup,
+        ))
+
+    if invalid_values:
+        invalid_values_results.append([CommandResults(
+            readable_output=tableToMarkdown("Not Found: Invalid", invalid_values, headers=['Name'], removeNull=True),
+            outputs_prefix="CTIX.ThreatDataGetCreate.NotFoundInvalid",
+            outputs=invalid_values,
+        )])
+
+    if isinstance(results, CommandResults):
+        return [results]
+    else:
+        results = iter_dbot_score(
+            results,
+            "confidence_score",
+            "ioc_type",
+            "Lookup Data",
+            "CTIX.ThreatDataGetCreate.Found",
+            "id",
+            reliability,
+        )
+
+        return results + created_after_lookup_results + invalid_values_results
 
 
 def domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
@@ -1557,20 +1701,248 @@ def file(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return get_lookup_threat_data_command(client, args)
 
 
+def get_all_notes(client: Client, args: Dict[str, Any]) -> CommandResults:
+    page = args["page"]
+    page = check_for_empty_variable(page, 1)
+    page_size = args["page_size"]
+    page_size = check_for_empty_variable(page_size, 10)
+    response = {}
+    object_id = args.get("object_id", "")
+    params = {
+        "page": page,
+        "page_size": page_size,
+    }
+
+    if object_id:
+        if not is_valid_uuid(object_id):
+            return_error("Error: The object ID that was provided is not valid.")
+        else:
+            params['object_id'] = object_id
+
+    client_url = client.base_url + "ingestion/notes/"
+    response = client.get_http_request(client_url, **params)
+    notes_list = response.get("data", {}).get("results", [])
+    notes_list = no_result_found(notes_list)
+
+    if isinstance(notes_list, CommandResults):
+        return notes_list
+    else:
+        return CommandResults(
+            readable_output=tableToMarkdown("Note Data", notes_list, removeNull=True),
+            outputs_prefix="CTIX.Note",
+            outputs_key_field="id",
+            outputs=notes_list,
+        )
+
+
+def get_note_details(client: Client, args: Dict[str, Any]) -> CommandResults:
+    id = args["id"]
+    client_url = client.base_url + f"ingestion/notes/{id}/"
+    response = client.get_http_request(client_url)
+
+    if response['status'] == HTTPStatus.BAD_REQUEST:
+        return_error(
+            "Error: Note details could not be retrieved because a note with the provided ID could not be found."
+        )
+
+    note_detail = response.get("data", {})
+    note_detail = no_result_found(note_detail)
+
+    if isinstance(note_detail, CommandResults):
+        return note_detail
+    else:
+        return CommandResults(
+            readable_output=tableToMarkdown("Note Detail Data", note_detail, removeNull=True),
+            outputs_prefix="CTIX.Note",
+            outputs_key_field="id",
+            outputs=note_detail,
+        )
+
+
+def create_note(client: Client, args: Dict[str, Any]) -> CommandResults:
+    text = args['text']
+    client_url = client.base_url + "ingestion/notes/"
+    object_id = args.get('object_id', None)
+    object_id = check_for_empty_variable(object_id, None)
+    object_type = args.get('object_type', None)
+    object_type = check_for_empty_variable(object_type, None)
+
+    if object_id and not is_valid_uuid(object_id):
+        return_error("Error: The `object_id` that was provided is not valid.")
+    elif object_id and not object_type:
+        return_error("Error: `object_type` must be set as well if `object_id` is provided.")
+    elif object_type and not object_id:
+        return_error("Error: `object_id` must be set as well if `object_type` is provided.")
+
+    payload = {
+        "text": text,
+        "type": "notes",
+        "meta_data": {
+            "component": "notes"
+        }
+    }
+
+    if object_id:
+        payload["meta_data"]["component"] = "threatdata"
+        payload["meta_data"]["object_id"] = object_id
+        payload["meta_data"]["type"] = object_type
+        payload["object_id"] = object_id
+        payload["type"] = "threatdata"
+
+    response = client.post_http_request(client_url, payload=payload, params={})
+    resp = response.get("data", {})
+    resp = no_result_found(resp)
+
+    if isinstance(resp, CommandResults):
+        return resp
+    else:
+        return CommandResults(
+            readable_output=tableToMarkdown("Created Note Data", resp, removeNull=True),
+            outputs_prefix="CTIX.Note",
+            outputs_key_field="id",
+            outputs=resp,
+        )
+
+
+def update_note(client: Client, args: Dict[str, Any]) -> CommandResults:
+    id = args['id']
+    text = args.get("text", None)
+    client_url = client.base_url + f"ingestion/notes/{id}/"
+    object_id = args.get('object_id', None)
+    object_id = check_for_empty_variable(object_id, None)
+    object_type = args.get('object_type', None)
+    object_type = check_for_empty_variable(object_type, None)
+
+    if object_id and not is_valid_uuid(object_id):
+        return_error("Error: The `object_id` that was provided is not valid.")
+    elif object_id and not object_type:
+        return_error("Error: `object_type` must be set as well if `object_id` is provided.")
+    elif object_type and not object_id:
+        return_error("Error: `object_id` must be set as well if `object_type` is provided.")
+
+    payload = {}
+
+    if text:
+        payload['text'] = text
+
+    if object_id:
+        payload["meta_data"] = {}
+        payload["meta_data"]["component"] = "threatdata"
+        payload["meta_data"]["object_id"] = object_id
+        payload["meta_data"]["type"] = object_type
+        payload["object_id"] = object_id
+        payload["type"] = "threatdata"
+
+    if not payload:
+        return CommandResults(readable_output="Finished processing. No values to update.")
+
+    response = client.put_http_request(client_url, payload=payload, params={})
+
+    if response['status'] == HTTPStatus.BAD_REQUEST:
+        return_error("Error: The note could not be updated because a note with the provided ID could not be found.")
+
+    resp = response.get("data", {})
+    resp = no_result_found(resp)
+
+    if isinstance(resp, CommandResults):
+        return resp
+    else:
+        return CommandResults(
+            readable_output=tableToMarkdown("Updated Note Data", resp, removeNull=True),
+            outputs_prefix="CTIX.Note",
+            outputs_key_field="id",
+            outputs=resp,
+        )
+
+
+def delete_note(client: Client, args: Dict[str, Any]) -> CommandResults:
+    id = args['id']
+    client_url = client.base_url + f"ingestion/notes/{id}/"
+    response = client.delete_http_request(client_url)
+
+    if response['status'] == HTTPStatus.BAD_REQUEST:
+        return_error("Error: The note could not be deleted because a note with the provided ID could not be found.")
+
+    resp = response.get("data", {})
+    resp = no_result_found(resp)
+
+    if isinstance(resp, CommandResults):
+        return resp
+    else:
+        return CommandResults(
+            readable_output=tableToMarkdown("Deleted Note Data", resp, removeNull=True),
+            outputs_prefix="CTIX.Note",
+            outputs_key_field="details",
+            outputs=resp,
+        )
+
+
+def make_request(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    type = args['type']
+    body = json.loads(args.get('body', "{}"))
+    params = json.loads(args.get('params', "{}"))
+    client_url = client.base_url + args['endpoint']
+    response = {}
+
+    if type == "GET":
+        response = client.get_http_request(client_url, body, **params)
+    elif type == "POST":
+        response = client.post_http_request(client_url, body, params)
+    elif type == "PUT":
+        response = client.put_http_request(client_url, body, params)
+    elif type == "DELETE":
+        response = client.delete_http_request(client_url, body, **params)
+
+    resp = response.get("data", {})
+
+    if "results" in resp:
+        resp = resp["results"]
+
+    resp = no_result_found(resp)
+
+    if isinstance(resp, CommandResults):
+        return [resp]
+    else:
+        if isinstance(resp, list):
+            results = []
+            for item in resp:
+                results.append(
+                    CommandResults(
+                        readable_output=tableToMarkdown("HTTP Response Data", item, removeNull=True),
+                        outputs_prefix=f"CTIX.Request.{type}.{args['endpoint']}",
+                        outputs=item,
+                    )
+                )
+            return results
+        else:
+            return [
+                CommandResults(
+                    readable_output=tableToMarkdown("HTTP Response Data", resp, removeNull=True),
+                    outputs_prefix=f"CTIX.Request.{type}.{args['endpoint']}",
+                    outputs=resp,
+                )
+            ]
+
+
 def main() -> None:
     params = demisto.params()
+    args = demisto.args()
     base_url = params.get("base_url")
     access_id = params.get("access_id")
     secret_key = params.get("secret_key")
     verify = not params.get("insecure", False)
-    reliability = params.get('integrationReliability', DBotScoreReliability.C)
+    reliability = params.get("integrationReliability", DBotScoreReliability.C)
 
     if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
+            reliability
+        )
     else:
-        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+        raise Exception(
+            "Please provide a valid value for the Source Reliability parameter."
+        )
 
-    demisto.args()['reliability'] = reliability
+    args["reliability"] = reliability
     proxies = handle_proxy(proxy_param_name="proxy")
     demisto.debug(f"Command being called is {demisto.command()}")
 
@@ -1583,76 +1955,48 @@ def main() -> None:
             proxies=proxies,
         )
 
-        if demisto.command() == "test-module":
-            test_module(client)
-        elif demisto.command() == "ctix-create-tag":
-            return_results(create_tag_command(client, demisto.args()))
-        elif demisto.command() == "ctix-get-tags":
-            return_results(get_tags_command(client, demisto.args()))
-        elif demisto.command() == "ctix-delete-tag":
-            return_results(delete_tag_command(client, demisto.args()))
-        elif demisto.command() == "ctix-allowed-iocs":
-            return_results(whitelist_iocs_command(client, demisto.args()))
-        elif demisto.command() == "ctix-get-allowed-iocs":
-            return_results(get_whitelist_iocs_command(client, demisto.args()))
-        elif demisto.command() == "ctix-remove-allowed-ioc":
-            return_results(remove_whitelisted_ioc_command(client, demisto.args()))
-        elif demisto.command() == "ctix-get-threat-data":
-            return_results(get_threat_data_command(client, demisto.args()))
-        elif demisto.command() == "ctix-get-saved-searches":
-            return_results(get_saved_searches_command(client, demisto.args()))
-        elif demisto.command() == "ctix-get-server-collections":
-            return_results(get_server_collections_command(client, demisto.args()))
-        elif demisto.command() == "ctix-get-actions":
-            return_results(get_actions_command(client, demisto.args()))
-        elif demisto.command() == "ctix-ioc-manual-review":
-            return_results(add_ioc_manual_review_command(client, demisto.args()))
-        elif demisto.command() == "ctix-deprecate-ioc":
-            return_results(deprecate_ioc_command(client, demisto.args()))
-        elif demisto.command() == "ctix-add-analyst-tlp":
-            return_results(add_analyst_tlp_command(client, demisto.args()))
-        elif demisto.command() == "ctix-add-analyst-score":
-            return_results(add_analyst_score_command(client, demisto.args()))
-        elif demisto.command() == "ctix-saved-result-set":
-            return_results(saved_result_set_command(client, demisto.args()))
-        elif demisto.command() == "ctix-add-tag-indicator":
-            return_results(
-                tag_indicator_updation_command(
-                    client, demisto.args(), "add_tag_indicator"
-                )
-            )
-        elif demisto.command() == "ctix-remove-tag-from-indicator":
-            return_results(
-                tag_indicator_updation_command(
-                    client, demisto.args(), "remove_tag_from_indicator"
-                )
-            )
-        elif demisto.command() == "ctix-search-for-tag":
-            return_results(search_for_tag_command(client, demisto.args()))
-        elif demisto.command() == "ctix-get-indicator-details":
-            return_results(get_indicator_details_command(client, demisto.args()))
-        elif demisto.command() == "ctix-get-indicator-tags":
-            return_results(get_indicator_tags_command(client, demisto.args()))
-        elif demisto.command() == "ctix-get-indicator-relations":
-            return_results(get_indicator_relations_command(client, demisto.args()))
-        elif demisto.command() == "ctix-get-indicator-observations":
-            return_results(get_indicator_observations_command(client, demisto.args()))
-        elif demisto.command() == "ctix-get-conversion-feed-source":
-            return_results(get_conversion_feed_source_command(client, demisto.args()))
-        elif demisto.command() == "ctix-get-lookup-threat-data":
-            return_results(get_lookup_threat_data_command(client, demisto.args()))
-        elif demisto.command() == "domain":
-            return_results(domain(client, demisto.args()))
-        elif demisto.command() == "url":
-            return_results(url(client, demisto.args()))
-        elif demisto.command() == "ip":
-            return_results(ip(client, demisto.args()))
-        elif demisto.command() == "file":
-            return_results(file(client, demisto.args()))
-        elif demisto.command() == "ctix-add-indicator-as-false-positive":
-            return_results(
-                add_indicator_as_false_positive_command(client, demisto.args())
-            )
+        CMD_TO_FUNC = {
+            "test-module": (test_module, (client,)),
+            "ctix-create-tag": (create_tag_command, (client, args)),
+            "ctix-get-tags": (get_tags_command, (client, args)),
+            "ctix-delete-tag": (delete_tag_command, (client, args)),
+            "ctix-allowed-iocs": (whitelist_iocs_command, (client, args)),
+            "ctix-get-allowed-iocs": (get_whitelist_iocs_command, (client, args)),
+            "ctix-remove-allowed-ioc": (remove_whitelisted_ioc_command, (client, args)),
+            "ctix-get-threat-data": (get_threat_data_command, (client, args)),
+            "ctix-get-saved-searches": (get_saved_searches_command, (client, args)),
+            "ctix-get-server-collections": (get_server_collections_command, (client, args)),
+            "ctix-get-actions": (get_actions_command, (client, args)),
+            "ctix-ioc-manual-review": (add_ioc_manual_review_command, (client, args)),
+            "ctix-deprecate-ioc": (deprecate_ioc_command, (client, args)),
+            "ctix-add-analyst-tlp": (add_analyst_tlp_command, (client, args)),
+            "ctix-add-analyst-score": (add_analyst_score_command, (client, args)),
+            "ctix-saved-result-set": (saved_result_set_command, (client, args)),
+            "ctix-add-tag-indicator": (tag_indicator_updation_command, (client, args, "add_tag_indicator")),
+            "ctix-remove-tag-from-indicator": (tag_indicator_updation_command, (client, args, "remove_tag_from_indicator")),
+            "ctix-search-for-tag": (search_for_tag_command, (client, args)),
+            "ctix-get-indicator-details": (get_indicator_details_command, (client, args)),
+            "ctix-get-indicator-tags": (get_indicator_tags_command, (client, args)),
+            "ctix-get-indicator-relations": (get_indicator_relations_command, (client, args)),
+            "ctix-get-indicator-observations": (get_indicator_observations_command, (client, args)),
+            "ctix-get-conversion-feed-source": (get_conversion_feed_source_command, (client, args)),
+            "ctix-get-lookup-threat-data": (get_lookup_threat_data_command, (client, args)),
+            "ctix-get-create-threat-data": (get_create_threat_data_command, (client, args)),
+            "ctix-add-indicator-as-false-positive": (add_indicator_as_false_positive_command, (client, args)),
+            "domain": (domain, (client, args)),
+            "url": (url, (client, args)),
+            "ip": (ip, (client, args)),
+            "file": (file, (client, args)),
+            "ctix-get-all-notes": (get_all_notes, (client, args)),
+            "ctix-get-note-details": (get_note_details, (client, args)),
+            "ctix-create-note": (create_note, (client, args)),
+            "ctix-update-note": (update_note, (client, args)),
+            "ctix-delete-note": (delete_note, (client, args)),
+            "ctix-make-request": (make_request, (client, args)),
+        }
+
+        func, params = CMD_TO_FUNC[demisto.command()]
+        return_results(cast(Callable, func)(*params))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

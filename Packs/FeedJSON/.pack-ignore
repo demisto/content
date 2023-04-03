@@ -1,0 +1,8 @@
+[known_words]
+jsonfeedapimodule
+pylint
+linter
+
+[file:FeedJSON.yml]
+ignore=BA124
+

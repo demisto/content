@@ -1,0 +1,36 @@
+{
+    "results": [
+        {
+            "seq": 1,
+            "_id": 1,
+            "q_type": 0,
+            "id": "2",
+            "content-routing-policy-name": "bnvb",
+            "content-routing-policy-name_val": "1302",
+            "profile-inherit": "enable",
+            "profile-inherit_val": "1",
+            "web-protection-profile": "",
+            "web-protection-profile_val": "0",
+            "is-default": "no",
+            "is-default_val": "0",
+            "status": "enable",
+            "status_val": "1"
+        },
+        {
+            "seq": 2,
+            "_id": 2,
+            "q_type": 0,
+            "id": "1",
+            "content-routing-policy-name": "1234",
+            "content-routing-policy-name_val": "1364",
+            "profile-inherit": "disable",
+            "profile-inherit_val": "0",
+            "web-protection-profile": "",
+            "web-protection-profile_val": "0",
+            "is-default": "no",
+            "is-default_val": "0",
+            "status": "enable",
+            "status_val": "1"
+        }
+    ]
+}

@@ -1,4 +1,7 @@
 category: Utilities
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Microsoft Graph API
   version: -1
@@ -6,34 +9,62 @@ configuration:
 - defaultvalue: 8922dd2d-7539-4711-b839-374f86083959
   display: Application ID
   name: app_id
-  required: true
+  required: false
   type: 0
+  section: Connect
 - displaypassword: Application Secret (Required for using self deployed Azure app)
   name: credentials
   required: false
   type: 9
   hiddenusername: true
+  section: Connect
 - display: Tenant ID (Required for using self deployed Azure app)
   name: tenant_id
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Certificate Thumbprint
   name: creds_certificate
   required: false
   type: 9
   displaypassword: Private Key
+  section: Connect
+  advanced: true
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
   hidden: true
+  section: Connect
+  advanced: true
 - display: Private Key
   hidden: true
   name: private_key
   required: false
   type: 14
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  section: Connect
+  advanced: true
+- additionalinfo: Relevant only if the integration is running on Azure VM. 
+    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
+    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
+    For additional information, see the Help tab.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
+  section: Connect
+  advanced: true
 - additionalinfo: Azure AD endpoint associated with a national cloud.
   defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
@@ -46,6 +77,7 @@ configuration:
   - https://login.microsoftonline.us
   - https://login.microsoftonline.de
   - https://login.chinacloudapi.cn
+  section: Connect
 - display: Scope (Required for using Cortex XSOAR Azure app)
   name: scope
   required: false
@@ -53,19 +85,27 @@ configuration:
   additionalinfo: A space-separated list of scopes that you want to consent to.
   defaultvalue: User.Read
   hidden: false
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Application Secret (Deprecated)
   name: app_secret
   required: false
   type: 4
   hidden: true
+  section: Connect
+  advanced: true
 description: Use the Microsoft Graph API integration to interact with Microsoft APIs that do not have dedicated integrations in Cortex XSOAR, for example, Mail Single-User, etc.
 display: Microsoft Graph API
 name: Microsoft Graph API
@@ -142,7 +182,7 @@ script:
     description: Tests connectivity to Microsoft when using Cortex XSOAR Azure app.
     execution: false
     name: msgraph-api-test
-  dockerimage: demisto/crypto:1.0.0.42817
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false
   longRunning: false

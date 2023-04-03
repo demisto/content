@@ -1262,10 +1262,14 @@ script:
   - name: vt-passive-dns-data
     description: Returns passive DNS records by indicator.
     arguments:
-    - name: ip
-      required: true
+    - name: id
+      required: false
       default: true
+      description: IP or domain for which to get its DNS data.
+    - name: ip
       description: IP for which to get its DNS data.
+    - name: domain
+      description: Domain for which to get its DNS data.
     - name: limit
       description: Maximum number of results to fetch.
       defaultValue: 10
@@ -1417,7 +1421,7 @@ script:
       type: String
 
   runonce: false
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.9.45313
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test

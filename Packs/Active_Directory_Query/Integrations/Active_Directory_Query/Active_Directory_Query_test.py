@@ -746,3 +746,63 @@ def test_get_ssl_version(ssl_version, expected_ssl_version):
     from Active_Directory_Query import get_ssl_version
     ssl_version_value = get_ssl_version(ssl_version)
     assert ssl_version_value == expected_ssl_version
+
+
+def test_search_users_empty_userAccountControl(mocker):
+    """
+    Given:
+        The 'userAccountControl' attribute was returned empty
+    When:
+        Run the 'ad-get-user' command
+    Then:
+        The result returns without raise IndexError: list index out of range
+    """
+
+    import Active_Directory_Query
+
+    class EntryMocker:
+        def entry_to_json(self):
+            return '{"attributes": {"displayName": [], "mail": [], "manager": [], "memberOf": ["memberOf"], ' \
+                   '"name": ["Guest"], "sAMAccountName": ["Guest"], "userAccountControl": []}, "dn": "test_dn"}'
+
+    class ConnectionMocker:
+        entries = [EntryMocker()]
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': b'<cookie>'}}}}
+
+        def search(self, *args, **kwargs):
+            time.sleep(1)
+            return
+
+    expected_results = {'ContentsFormat': 'json',
+                        'Type': 1,
+                        'Contents': [{'attributes': {'displayName': [], 'mail': [], 'manager': [],
+                                                     'memberOf': ['memberOf'], 'name': ['Guest'],
+                                                     'sAMAccountName': ['Guest'],
+                                                     'userAccountControl': []}, 'dn': 'test_dn'}],
+                        'ReadableContentsFormat': 'markdown',
+                        'HumanReadable': '### Active Directory - Get Users\n|displayName|dn|mail|manager|memberOf|name'
+                                         '|sAMAccountName|userAccountControl|\n|---|---|---|---|---|---|---|---|\n|  |'
+                                         ' test_dn |  |  | memberOf | Guest | Guest |  |\n',
+                        'EntryContext': {'ActiveDirectory.Users(obj.dn == val.dn)': [{'dn': 'test_dn',
+                                                                                      'displayName': [], 'mail': [],
+                                                                                      'manager': [],
+                                                                                      'memberOf': ['memberOf'],
+                                                                                      'name': ['Guest'],
+                                                                                      'sAMAccountName': ['Guest'],
+                                                                                      'userAccountControl': []}],
+                                         'Account(obj.ID == val.ID)': [{'Type': 'AD', 'ID': 'test_dn', 'Email': [],
+                                                                        'Username': ['Guest'], 'DisplayName': [],
+                                                                        'Managr': [], 'Manager': [],
+                                                                        'Groups': ['memberOf']}],
+                                         'ActiveDirectory(true)':
+                                             {'UsersPageCookie': base64.b64encode(b'<cookie>').decode('utf-8')}}}
+
+    expected_results = f'demisto results: {json.dumps(expected_results, indent=4, sort_keys=True)}'
+
+    mocker.patch.object(demisto, 'args', return_value={'page-size': '1'})
+
+    Active_Directory_Query.conn = ConnectionMocker()
+
+    with patch('logging.Logger.info') as mock:
+        Active_Directory_Query.search_users('dc', 1)
+        mock.assert_called_with(expected_results)

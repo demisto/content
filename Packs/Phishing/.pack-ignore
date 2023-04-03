@@ -19,6 +19,18 @@ ignore=BA101,BA110
 [file:Process_Email_-_Generic_v2.yml]
 ignore=PB118
 
+[file:Process_Email_-_Core_v2.yml]
+ignore=PB118
+
+[file:Phishing_-_Generic_v3.yml]
+ignore=PB106
+
+[file:Phishing_-_Generic_v3_6_5.yml]
+ignore=PB106
+
+[file:Phishing_-_Generic_v3_README.md]
+ignore=RM106
+
 [file:incidentfield-Email_Return_Path.json]
 ignore=IF107
 
@@ -145,7 +157,14 @@ ignore=IF116
 [file:Process_Email_-_Generic_v2_README.md]
 ignore=RM106
 
+[file:README.md]
+ignore=RM106
+
 [known_words]
 CheckEmailAuthenticity
 DeleteReportedEmail
 GetBrandDeleteReportedEmail
+CommonTypes
+
+[file:LinkToPhishingCampaign.yml]
+ignore=BA124

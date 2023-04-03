@@ -104,7 +104,7 @@ def get_dispatch_workflows_ids(github_token: str, branch: str) -> List[int]:
     try:
         workflows = json.loads(res.content)
     except ValueError:
-        logging.error('Enable to parse private repo workflows response')
+        logging.error('Unable to parse private repo workflows response')
         sys.exit(1)
 
     workflows = workflows.get('workflow_runs', [])
@@ -187,7 +187,7 @@ def main():
             sys.exit(0)
 
         else:
-            logging.critical('Could not found the private repo workflow')
+            logging.critical('Could not find the private repo workflow')
             sys.exit(1)
 
     else:

@@ -37,15 +37,15 @@ description: |-
 
   External resources:
 
-  [Malware Protection Flow](https://docs.paloaltonetworks.com/traps/4-2/traps-endpoint-security-manager-admin/malware-protection/malware-protection-flow)
+  [Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: a7406ab9-8ead-462b-8edb-b1a42c1ee926
+    taskid: b83fd3f5-7f61-43c0-88e8-6075d17650dc
     type: start
     task:
-      id: a7406ab9-8ead-462b-8edb-b1a42c1ee926
+      id: b83fd3f5-7f61-43c0-88e8-6075d17650dc
       version: -1
       name: ''
       iscommand: false
@@ -59,7 +59,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": -900
+          "y": -1280
         }
       }
     note: false
@@ -69,14 +69,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
-    taskid: 762b80b1-46c9-4791-883d-9a23a20a373a
+  "2":
+    id: "2"
+    taskid: c91fc254-410b-425e-87b2-c69a28f65349
     type: condition
     task:
-      id: 762b80b1-46c9-4791-883d-9a23a20a373a
+      id: c91fc254-410b-425e-87b2-c69a28f65349
       version: -1
-      name: Continue by Verdict
+      name: Verdict by FileVerdict AND Prevalence
       description: Checks the verdict returned by the 'Enrichment for Verdict' playbook.
       type: condition
       iscommand: false
@@ -99,6 +99,25 @@ tasks:
             value:
               simple: Suspicious
           ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: FileVerdict
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Core.AnalyticsPrevalence.Hash
+                accessor: value
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+          ignorecase: true
     view: |-
       {
         "position": {
@@ -113,12 +132,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '3':
     id: '3'
-    taskid: 95780e0a-e062-42ef-8023-633fd90a32ca
+    taskid: b3b9a73a-24d7-4008-8646-07fa816ad9d5
     type: title
     task:
-      id: 95780e0a-e062-42ef-8023-633fd90a32ca
+      id: b3b9a73a-24d7-4008-8646-07fa816ad9d5
       version: -1
       name: Analysis
       type: title
@@ -133,7 +153,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": -765
+          "y": -1140
         }
       }
     note: false
@@ -143,12 +163,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '6':
     id: '6'
-    taskid: 7fc9ca7d-ee00-4e76-83e3-1d1ccb61e008
+    taskid: d6e52022-e411-45b0-8b80-a79e9e7afa71
     type: condition
     task:
-      id: 7fc9ca7d-ee00-4e76-83e3-1d1ccb61e008
+      id: d6e52022-e411-45b0-8b80-a79e9e7afa71
       version: -1
       name: 'Was the action prevented? '
       description: Checks if the file execution was prevented.
@@ -189,12 +210,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '14':
     id: '14'
-    taskid: db8e53a5-0c3e-4096-805f-404bcd7a0b48
+    taskid: c2495b22-ee9c-48c6-8f2f-6fc37c1bac1d
     type: condition
     task:
-      id: db8e53a5-0c3e-4096-805f-404bcd7a0b48
+      id: c2495b22-ee9c-48c6-8f2f-6fc37c1bac1d
       version: -1
       name: Check WF alert verdict
       description: Checks the WildFire verdict.
@@ -253,12 +275,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '33':
     id: '33'
-    taskid: 365fa7b4-058c-4ff7-834a-0dcc4009fc42
+    taskid: 6b6f4826-2aa2-456a-8587-93f122f1c99e
     type: title
     task:
-      id: 365fa7b4-058c-4ff7-834a-0dcc4009fc42
+      id: 6b6f4826-2aa2-456a-8587-93f122f1c99e
       version: -1
       name: Handle FP
       type: title
@@ -283,12 +306,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '34':
     id: '34'
-    taskid: 1f7b5164-cccd-4e9f-8b63-0e7c79448c20
+    taskid: f74d27e4-3546-40ce-8aee-0c1c2047fc61
     type: condition
     task:
-      id: 1f7b5164-cccd-4e9f-8b63-0e7c79448c20
+      id: f74d27e4-3546-40ce-8aee-0c1c2047fc61
       version: -1
       name: Manual review - was it your security vendor?
       description: |+
@@ -320,12 +344,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '35':
     id: '35'
-    taskid: 3bb94a23-82c4-4c00-84fa-0228b084583b
+    taskid: 29c59ae5-63a9-494e-86a9-d98e85aeec7c
     type: title
     task:
-      id: 3bb94a23-82c4-4c00-84fa-0228b084583b
+      id: 29c59ae5-63a9-494e-86a9-d98e85aeec7c
       version: -1
       name: WildFire Verdict
       type: title
@@ -350,12 +375,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '39':
     id: '39'
-    taskid: 920e8ad9-ccf9-4b82-8375-b17b2c26eb42
+    taskid: 91b3c33e-25e4-42d5-83f9-b9cbe172e16d
     type: title
     task:
-      id: 920e8ad9-ccf9-4b82-8375-b17b2c26eb42
+      id: 91b3c33e-25e4-42d5-83f9-b9cbe172e16d
       version: -1
       name: Investigate
       type: title
@@ -380,12 +406,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '41':
     id: '41'
-    taskid: ed0d81e9-adf9-41d1-84db-9087868cd0cf
+    taskid: 076a0a10-7b8f-4584-859c-11b39ea83664
     type: title
     task:
-      id: ed0d81e9-adf9-41d1-84db-9087868cd0cf
+      id: 076a0a10-7b8f-4584-859c-11b39ea83664
       version: -1
       name: Remediation
       type: title
@@ -411,12 +438,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '44':
     id: '44'
-    taskid: 1131ba86-e2f3-4e90-8ab5-7281c5630145
+    taskid: f9946ed1-7266-408f-8bde-147e9d09581d
     type: condition
     task:
-      id: 1131ba86-e2f3-4e90-8ab5-7281c5630145
+      id: f9946ed1-7266-408f-8bde-147e9d09581d
       version: -1
       name: Found relevant information?
       description: Checks if other alerts were found on the endpoint.
@@ -454,12 +482,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '45':
     id: '45'
-    taskid: 13ddb69e-6c8a-4a92-83e6-d77d652fd625
+    taskid: 767a19fc-c96e-4b33-8053-889e45256edf
     type: regular
     task:
-      id: 13ddb69e-6c8a-4a92-83e6-d77d652fd625
+      id: 767a19fc-c96e-4b33-8053-889e45256edf
       version: -1
       name: Close alert
       description: commands.local.cmd.close.inv
@@ -485,12 +514,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '46':
     id: '46'
-    taskid: a3c1d4d1-3242-47cd-81aa-28d10f0bd155
+    taskid: d5a05362-eb31-403f-84b9-493f500d455f
     type: condition
     task:
-      id: a3c1d4d1-3242-47cd-81aa-28d10f0bd155
+      id: d5a05362-eb31-403f-84b9-493f500d455f
       version: -1
       name: Restore affected endpoint?
       description: Whether to execute the Recovery Plan playbook.
@@ -530,12 +560,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '47':
     id: '47'
-    taskid: b8a41bf5-ad48-43c0-8a8b-67ccfa036bb0
+    taskid: 858764a5-e107-4b04-894f-245053dd10a6
     type: condition
     task:
-      id: b8a41bf5-ad48-43c0-8a8b-67ccfa036bb0
+      id: 858764a5-e107-4b04-894f-245053dd10a6
       version: -1
       name: Close alert automatically?
       description: Whether to close the alert automatically.
@@ -575,12 +606,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '48':
     id: '48'
-    taskid: 8deecef6-2dcc-4135-8f36-540935d5020f
+    taskid: da1d7739-25a2-416b-8c41-98d80f898913
     type: regular
     task:
-      id: 8deecef6-2dcc-4135-8f36-540935d5020f
+      id: da1d7739-25a2-416b-8c41-98d80f898913
       version: -1
       name: Continue with the incident investigation
       description: Continue manually with the alert investigation.
@@ -605,12 +637,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '50':
     id: '50'
-    taskid: 82f5864b-14de-428e-87c0-d04ff9ec40e4
+    taskid: 41e96b8f-fa0a-436e-8ca4-a1b526352653
     type: title
     task:
-      id: 82f5864b-14de-428e-87c0-d04ff9ec40e4
+      id: 41e96b8f-fa0a-436e-8ca4-a1b526352653
       version: -1
       name: Recovery
       type: title
@@ -635,12 +668,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '51':
     id: '51'
-    taskid: 7b89c9aa-8804-472e-8013-09dc91fd2901
+    taskid: 909bbeff-e2db-4c81-81ac-90cb08c5a6e1
     type: title
     task:
-      id: 7b89c9aa-8804-472e-8013-09dc91fd2901
+      id: 909bbeff-e2db-4c81-81ac-90cb08c5a6e1
       version: -1
       name: Done
       type: title
@@ -662,12 +696,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '54':
     id: '54'
-    taskid: 5ef91412-e2ac-46b3-8558-107fe4093b00
+    taskid: a5190e8c-7ec7-4605-8789-496a8195a02f
     type: title
     task:
-      id: 5ef91412-e2ac-46b3-8558-107fe4093b00
+      id: a5190e8c-7ec7-4605-8789-496a8195a02f
       version: -1
       name: Pre-Investigation Containment
       type: title
@@ -692,12 +727,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '55':
     id: '55'
-    taskid: 2f9b0888-8966-46ed-856d-129f2e692d53
+    taskid: 9e5a149b-b6f9-4aea-8305-61a13d898878
     type: condition
     task:
-      id: 2f9b0888-8966-46ed-856d-129f2e692d53
+      id: 9e5a149b-b6f9-4aea-8305-61a13d898878
       version: -1
       name: Check hash execution timestamp
       description: Checks for the hash execution timestamp.
@@ -739,12 +775,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '57':
     id: '57'
-    taskid: 65d493b5-8684-407f-8654-7443c95a6a15
+    taskid: feccfedf-58d9-41c1-8810-f3a9187230de
     type: regular
     task:
-      id: 65d493b5-8684-407f-8654-7443c95a6a15
+      id: feccfedf-58d9-41c1-8810-f3a9187230de
       version: -1
       name: Get time for the last day
       description: |
@@ -776,12 +813,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '58':
     id: '58'
-    taskid: d0251c23-0d6f-43e5-813d-aeab89008b32
+    taskid: ce2f012d-f8f2-4125-8af7-04c1072ac4de
     type: condition
     task:
-      id: d0251c23-0d6f-43e5-813d-aeab89008b32
+      id: ce2f012d-f8f2-4125-8af7-04c1072ac4de
       version: -1
       name: Is auto-containment set to true?
       description: Checks the AutoContainment input.
@@ -822,12 +860,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '59':
     id: '59'
-    taskid: 70e962f2-78c7-4e6d-8516-75f2eed67764
+    taskid: fbf6583d-dc19-4d34-84cd-2655d7e6aa29
     type: regular
     task:
-      id: 70e962f2-78c7-4e6d-8516-75f2eed67764
+      id: fbf6583d-dc19-4d34-84cd-2655d7e6aa29
       version: -1
       name: Retrieve the suspected file
       description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
@@ -845,8 +884,7 @@ tasks:
           accessor: agentid
       windows_file_paths:
         complex:
-          root: alert
-          accessor: initiatorpath
+          root: inputs.Path
     separatecontext: false
     view: |-
       {
@@ -862,12 +900,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '60':
     id: '60'
-    taskid: f8d13237-59bf-4980-8168-dc1c9a253f21
+    taskid: 91d762cb-ae2c-42b9-817b-beba202a674c
     type: regular
     task:
-      id: f8d13237-59bf-4980-8168-dc1c9a253f21
+      id: 91d762cb-ae2c-42b9-817b-beba202a674c
       version: -1
       name: Get retrieved file
       description: View the file retrieved by the core-retrieve-files command according to the action ID. Before running this command, you can use the core-action-status-get command to check if this action completed successfully.
@@ -898,12 +937,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '61':
-    id: '61'
-    taskid: 5014f36a-3191-46f7-8caa-40f5ee33d4fd
+  "61":
+    id: "61"
+    taskid: 109f06df-2f1f-4c89-8b00-e84b143cf481
     type: playbook
     task:
-      id: 5014f36a-3191-46f7-8caa-40f5ee33d4fd
+      id: 109f06df-2f1f-4c89-8b00-e84b143cf481
       version: -1
       name: Enrichment for Verdict
       playbookName: Enrichment for Verdict
@@ -913,22 +952,7 @@ tasks:
       description: 'This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert''s verdict.'
     nexttasks:
       '#none#':
-      - '2'
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": -640
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+      - "79"
     scriptarguments:
       CloseReason:
         simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
@@ -938,8 +962,7 @@ tasks:
           accessor: domainname
       FileSHA256:
         complex:
-          root: alert
-          accessor: initiatorsha256
+          root: inputs.SHA256
       IP:
         complex:
           root: alert
@@ -953,20 +976,37 @@ tasks:
           root: alert
           accessor: username
       query:
-        simple: (initiatorsha256:${alert.initiatorsha256.[0]} or hostip:${alert.hostip.[0]}) and sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}"
+        complex:
+          root: inputs.Query
       threshold:
         simple: "5"
+    separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
       max: 100
-  '62':
-    id: '62'
-    taskid: e5dad5e0-215d-4537-8912-86a93f3c5bef
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": -1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 00ca705e-0d89-43f9-8176-fea4dc6eaea5
     type: playbook
     task:
-      id: e5dad5e0-215d-4537-8912-86a93f3c5bef
+      id: 00ca705e-0d89-43f9-8176-fea4dc6eaea5
       version: -1
       name: Containment Plan
       description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1000,61 +1040,20 @@ tasks:
         simple: 'True'
       FileHash:
         complex:
-          root: alert
-          filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: alert.initiatorpath
-                iscontext: true
-              right:
-                value:
-                  simple: c:\windows\explorer.exe
-              ignorecase: true
-          accessor: initiatorsha256
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: alert.targetprocesssha256
-                iscontext: true
+          root: inputs.ShouldManualReviewFP
       FilePath:
         complex:
-          root: alert.initiatorpath
-          filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: alert.initiatorpath
-                iscontext: true
-              right:
-                value:
-                  simple: c:\windows\explorer.exe
-              ignorecase: true
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: alert.targetprocesscmd
-                iscontext: true
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: \"
-              replaceWith: {}
+          root: inputs.Path
       FileRemediation:
         simple: Quarantine
       HostContainment:
         simple: 'True'
       IAMUserDomain:
-        simple: '@demisto.com'
+        simple: ''
       UserContainment:
-        simple: 'True'
+        simple: "True"
+      UserVerification:
+        simple: "False"
       Username:
         complex:
           root: alert
@@ -1081,12 +1080,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '63':
-    id: '63'
-    taskid: fb368c9f-ccb4-40e1-8010-f664993677ab
+  "63":
+    id: "63"
+    taskid: 461f2351-9e50-443b-8486-795bc963d33c
     type: playbook
     task:
-      id: fb368c9f-ccb4-40e1-8010-f664993677ab
+      id: 461f2351-9e50-443b-8486-795bc963d33c
       version: -1
       name: Endpoint Investigation Plan
       description: "This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:\n* Pre-defined MITRE tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1146,12 +1145,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '64':
-    id: '64'
-    taskid: d544afa6-3c28-4fb9-8320-5554953744de
+  "64":
+    id: "64"
+    taskid: f232d4e1-9457-469a-805a-2064f2f0c30e
     type: playbook
     task:
-      id: d544afa6-3c28-4fb9-8320-5554953744de
+      id: f232d4e1-9457-469a-805a-2064f2f0c30e
       version: -1
       name: Containment Plan
       description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1185,40 +1184,73 @@ tasks:
         simple: 'True'
       FileHash:
         complex:
-          root: foundIncidents.CustomFields
-          filters:
-          - - operator: isNotEqualString
-              left:
+          root: alert
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
                 value:
-                  simple: foundIncidents.CustomFields.initiatorpath
+                  simple: lhs!=rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorsha256
                 iscontext: true
-              right:
+              equals: {}
+              lhs:
                 value:
-                  simple: c:\windows\explorer.exe
-              ignorecase: true
-          accessor: initiatorsha256
+                  simple: alert.filesha256
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: foundIncidents.CustomFields.filesha256
+                iscontext: true
+          - operator: uniq
       FilePath:
         complex:
-          root: foundIncidents.CustomFields.initiatorpath
-          filters:
-          - - operator: isNotEqualString
-              left:
+          root: alert
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs!=rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
                 value:
                   simple: foundIncidents.CustomFields.initiatorpath
                 iscontext: true
-              right:
+              equals: {}
+              lhs:
                 value:
-                  simple: c:\windows\explorer.exe
-              ignorecase: true
+                  simple: alert.filesha256
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: foundIncidents.CustomFields.filepath
+                iscontext: true
+          - operator: uniq
       FileRemediation:
         complex:
           root: inputs.FileRemediation
       HostContainment:
-        simple: 'True'
-      IAMUserDomain:
-        simple: '@demisto.com'
+        simple: "True"
       UserContainment:
-        simple: 'True'
+        simple: "True"
+      UserVerification:
+        simple: "False"
       Username:
         complex:
           root: foundIncidents.CustomFields
@@ -1243,12 +1275,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '65':
-    id: '65'
-    taskid: 6c369ff0-b57f-4227-873a-60a44c0579d1
+  "65":
+    id: "65"
+    taskid: d59aca07-8dd0-410e-8c3f-a971980653cf
     type: playbook
     task:
-      id: 6c369ff0-b57f-4227-873a-60a44c0579d1
+      id: d59aca07-8dd0-410e-8c3f-a971980653cf
       version: -1
       name: Eradication Plan
       description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following tasks:\n* Reset user password\n* Delete file\n* Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1269,8 +1301,33 @@ tasks:
           accessor: agentid
       FilePath:
         complex:
-          root: foundIncidents.CustomFields
-          accessor: initiatorpath
+          root: alert
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs!=rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: alert.filesha256
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: foundIncidents.CustomFields.filepath
+                iscontext: true
       FileRemediation:
         complex:
           root: inputs.FileRemediation
@@ -1298,12 +1355,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '66':
-    id: '66'
-    taskid: 4d3c47d4-9f51-47a2-8876-bb57e5d504d7
+  "66":
+    id: "66"
+    taskid: 32acfe19-fb1e-43f7-8302-9f695f5173cb
     type: playbook
     task:
-      id: 4d3c47d4-9f51-47a2-8876-bb57e5d504d7
+      id: 32acfe19-fb1e-43f7-8302-9f695f5173cb
       version: -1
       name: Recovery Plan
       description: |-
@@ -1322,8 +1379,7 @@ tasks:
     scriptarguments:
       FileHash:
         complex:
-          root: alert
-          accessor: initiatorsha256
+          root: inputs.SHA256
       endpointID:
         complex:
           root: alert
@@ -1352,12 +1408,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '67':
-    id: '67'
-    taskid: 84962fd2-6212-4fc0-8018-63b0c08b2e4f
+  "67":
+    id: "67"
+    taskid: 58f335fb-7b1f-4de2-83e6-5c80421dbdc5
     type: playbook
     task:
-      id: 84962fd2-6212-4fc0-8018-63b0c08b2e4f
+      id: 58f335fb-7b1f-4de2-83e6-5c80421dbdc5
       version: -1
       name: Handle False Positive Alerts
       playbookName: Handle False Positive Alerts
@@ -1373,11 +1429,13 @@ tasks:
     scriptarguments:
       FileSHA256:
         complex:
-          root: alert
-          accessor: initiatorsha256
+          root: inputs.SHA256
       ShouldCloseAutomatically:
         complex:
           root: inputs.AutoCloseAlert
+      ShouldHandleFPautomatically:
+        complex:
+          root: inputs.ShouldManualReviewFP
       alertName:
         complex:
           root: alert
@@ -1390,9 +1448,6 @@ tasks:
         complex:
           root: alert
           accessor: username
-      ShouldHandleFPautomatically:
-        complex:
-          root: inputs.ShouldManualReviewFP
     separatecontext: true
     loop:
       iscommand: false
@@ -1413,12 +1468,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '68':
     id: '68'
-    taskid: 126ffda6-c72f-486a-8068-5d58dbd6f642
+    taskid: b36fe43f-fee9-49e5-8258-396a1cfb1c0a
     type: regular
     task:
-      id: 126ffda6-c72f-486a-8068-5d58dbd6f642
+      id: b36fe43f-fee9-49e5-8258-396a1cfb1c0a
       version: -1
       name: |
         Extract retrieved file
@@ -1448,12 +1504,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '69':
     id: '69'
-    taskid: e0bd8f50-3e7e-4ea0-8cbf-ce066d06ae08
+    taskid: cfc113e8-2775-4153-8dec-d3f91a312a58
     type: playbook
     task:
-      id: e0bd8f50-3e7e-4ea0-8cbf-ce066d06ae08
+      id: cfc113e8-2775-4153-8dec-d3f91a312a58
       version: -1
       name: Wildfire Detonate and Analyze File
       description: |
@@ -1531,12 +1588,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '70':
     id: '70'
-    taskid: 4bdcb352-0176-4423-897b-abac5ffcc221
+    taskid: 39171c50-dc44-42ee-8862-eaf3ae8cf3b4
     type: condition
     task:
-      id: 4bdcb352-0176-4423-897b-abac5ffcc221
+      id: 39171c50-dc44-42ee-8862-eaf3ae8cf3b4
       version: -1
       name: Check WildFire alert verdict
       description: Checks the WildFire verdict received.
@@ -1576,12 +1634,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '71':
     id: '71'
-    taskid: 383805c3-25cf-4f01-865f-6b7187669557
+    taskid: 252e5f23-9b93-4179-8c69-103b23f11bbc
     type: regular
     task:
-      id: 383805c3-25cf-4f01-865f-6b7187669557
+      id: 252e5f23-9b93-4179-8c69-103b23f11bbc
       version: -1
       name: Flip verdict request to keep WF updated
       description: Reports to WildFire about incorrect hash verdict through Cortex.
@@ -1616,12 +1675,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "75":
     id: "75"
-    taskid: a953691c-5334-47a3-821f-304f8ed1fbfd
+    taskid: 16d66dde-d441-4612-8e15-f3e4838624c4
     type: condition
     task:
-      id: a953691c-5334-47a3-821f-304f8ed1fbfd
+      id: 16d66dde-d441-4612-8e15-f3e4838624c4
       version: -1
       name: Is manual review required?
       description: Checks whether the playbook should wait for manual review.
@@ -1661,12 +1721,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "76":
     id: "76"
-    taskid: a6fde59e-ee3e-40c4-8ba6-722934ef8be0
+    taskid: 2f158f72-bc3f-4136-8861-eb07a692ce06
     type: title
     task:
-      id: a6fde59e-ee3e-40c4-8ba6-722934ef8be0
+      id: 2f158f72-bc3f-4136-8861-eb07a692ce06
       version: -1
       name: Flip WildFire Verdict
       type: title
@@ -1691,12 +1752,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "77":
     id: "77"
-    taskid: 078887a5-4228-44f2-89d5-aa95c2bcb770
+    taskid: 825db812-8d09-472e-8829-f2808842eb05
     type: regular
     task:
-      id: 078887a5-4228-44f2-89d5-aa95c2bcb770
+      id: 825db812-8d09-472e-8829-f2808842eb05
       version: -1
       name: Check for existing WF report
       description: Retrieves results for a file hash using WildFire.
@@ -1710,8 +1772,7 @@ tasks:
     scriptarguments:
       sha256:
         complex:
-          root: alert
-          accessor: initiatorsha256
+          root: inputs.SHA256
     separatecontext: false
     view: |-
       {
@@ -1727,12 +1788,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "78":
     id: "78"
-    taskid: 37332a6e-db70-4828-82b0-7be714a388dd
+    taskid: 922f67bb-ea36-4ade-8dfb-89e824d86b5e
     type: condition
     task:
-      id: 37332a6e-db70-4828-82b0-7be714a388dd
+      id: 922f67bb-ea36-4ade-8dfb-89e824d86b5e
       version: -1
       name: Should detonate file?
       description: "Do we have a WildFire report or should we detonate the file?"
@@ -1772,6 +1834,85 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "79":
+    id: "79"
+    taskid: c07b312c-3605-4fc3-84e4-5f0de4dec751
+    type: title
+    task:
+      id: c07b312c-3605-4fc3-84e4-5f0de4dec751
+      version: -1
+      name: Continue by Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "80"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": -830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 8ac754b3-8eb9-4480-8804-df4cf57620fa
+    type: condition
+    task:
+      id: 8ac754b3-8eb9-4480-8804-df4cf57620fa
+      version: -1
+      name: Verdict by DbotScore
+      description: "Check if DbotScore equals 3 (Malicious)"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      True Positive:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: True Positive
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": -680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1790,14 +1931,15 @@ view: |-
       "70_71_Benign": 0.63,
       "75_67_#default#": 0.67,
       "78_39_no": 0.14,
-      "78_59_#default#": 0.72
+      "78_59_#default#": 0.72,
+      "80_6_True Positive": 0.57
     },
     "paper": {
       "dimensions": {
-        "height": 5235,
+        "height": 5615,
         "width": 1710,
         "x": 430,
-        "y": -900
+        "y": -1280
       }
     }
   }
@@ -1860,7 +2002,67 @@ inputs:
   required: false
   description: Whether to ask for a manual review before false positive handling. Should be True or False
   playbookInputQuery:
+- key: SHA256
+  value:
+    complex:
+      root: alert
+      transformers:
+      - operator: DT
+        args:
+          dt:
+            value:
+              simple: .=pickvalue(val);function pickvalue(x){if(x.filesha256){return x.filesha256} else {return x.initiatorsha256}}
+  required: false
+  description: The SHA256 hash of the file to respond to. Decided by the DT expression wether it's the initiator or the target file SHA256.
+  playbookInputQuery:
+- key: Path
+  value:
+    complex:
+      root: alert
+      transformers:
+      - operator: DT
+        args:
+          dt:
+            value:
+              simple: .=pickvalue(val);function pickvalue(x){if(x.filepath){return x.filepath} else {return x.initiatorpath}}
+  required: false
+  description: The path of the file to respond to. Decided by the DT expression wether it's the initiator or the target file path.
+  playbookInputQuery:
+- key: Query
+  value:
+    complex:
+      root: alert
+      transformers:
+      - operator: If-Then-Else
+        args:
+          condition:
+            value:
+              simple: lhs!=rhs
+          conditionB: {}
+          conditionInBetween: {}
+          else:
+            value:
+              simple: ${alert= '(initiatorsha256:"' + val.initiatorsha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+          equals: {}
+          lhs:
+            value:
+              simple: alert.filesha256
+            iscontext: true
+          lhsB: {}
+          options: {}
+          optionsB: {}
+          rhs: {}
+          rhsB: {}
+          then:
+            value:
+              simple: ${alert= '(filesha256:"' + val.filesha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+  required: false
+  description: The query for searching previous alerts based on the file we want to respond to. Decided by the If-Then-Else expression wether it's the initiator or the target file.
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.6.0
+marketplaces:
+  - marketplacev2
+

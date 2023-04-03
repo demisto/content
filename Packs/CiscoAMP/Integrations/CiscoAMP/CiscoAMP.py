@@ -1,5 +1,13 @@
 """
-CiscoAMP (Advanced Malware Protection) API Integration for Cortex XSOAR (aka Demisto).
+██████  ███████ ██████  ██████  ███████  ██████  █████  ████████ ███████ ██████
+██   ██ ██      ██   ██ ██   ██ ██      ██      ██   ██    ██    ██      ██   ██
+██   ██ █████   ██████  ██████  █████   ██      ███████    ██    █████   ██   ██
+██   ██ ██      ██      ██   ██ ██      ██      ██   ██    ██    ██      ██   ██
+██████  ███████ ██      ██   ██ ███████  ██████ ██   ██    ██    ███████ ██████
+
+THIS INTEGRATION/PACK IS DEPRECATED - USE THE AMPv2 INTEGRATION FROM THE AMP PACK RATHER THAN CiscoAMP.
+The AMP pack is maintained and receives bug fixes, while the CiscoAMP pack is not.
+
 """
 import copy
 import math

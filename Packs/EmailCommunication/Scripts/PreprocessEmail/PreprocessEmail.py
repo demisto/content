@@ -149,16 +149,23 @@ def get_incident_by_query(query):
     query_time = get_query_window()
 
     query_from_date = str(parse_date_range(query_time)[0])
-
-    res = demisto.executeCommand("GetIncidentsByQuery",
-                                 {"query": query, "fromDate": query_from_date, "timeField": "modified",
-                                  "populateFields": "id,status,type,emailsubject"})[0]
+    query += f' modified:>="{query_from_date}"'
+    res = demisto.executeCommand("getIncidents",
+                                 {"query": query, "populateFields": "id,status,type,emailsubject"})[0]
 
     if is_error(res):
-        return_results(ERROR_TEMPLATE.format('GetIncidentsByQuery', res['Contents']))
-        raise DemistoException(ERROR_TEMPLATE.format('GetIncidentsByQuery', res['Contents']))
+        return_results(ERROR_TEMPLATE.format('getIncidents', res['Contents']))
+        raise DemistoException(ERROR_TEMPLATE.format('getIncidents', res['Contents']))
 
-    incidents_details = json.loads(res['Contents'])
+    incidents_details = res['Contents']['data']
+    if incidents_details is None:
+        demisto.debug(f'incident was not found. query: {query}')
+        return []
+
+    for inc in incidents_details:
+        if inc.get('CustomFields'):
+            inc['emailsubject'] = inc.get('CustomFields', {}).get('emailsubject')
+
     return incidents_details
 
 
@@ -239,7 +246,11 @@ def update_latest_message_field(incident_id, item_id):
         item_id (str): The email reply ID.
     """
     try:
-        demisto.executeCommand('setIncident', {'id': incident_id, 'customFields': {'emaillatestmessage': item_id}})
+        demisto.debug(f'update latest message field. incident_id: {incident_id}')
+        res = demisto.executeCommand('setIncident', {'id': incident_id, 'customFields': {'emaillatestmessage': item_id}})
+        if is_error(res):
+            demisto.error(f'Failed to setIncident. Reason: {get_error(res)}')
+            raise DemistoException(f'Failed to setIncident. Reason: {get_error(res)}')
     except Exception:
         demisto.debug(f'SetIncident Failed.'
                       f'"emaillatestmessage" field was not updated with {item_id} value for incident: {incident_id}')
@@ -257,11 +268,11 @@ def get_email_related_incident_id(email_related_incident_code, email_original_su
 
     for incident in incidents_details:
         if email_original_subject in incident.get('emailsubject', ''):
-            return incident.get('id')
+            return str(incident.get('id'))
         else:
             # If 'emailsubject' doesn't match, check 'EmailThreads' context entries
             try:
-                incident_context = demisto.executeCommand("getContext", {"id": incident.get('id')})
+                incident_context = demisto.executeCommand("getContext", {"id": str(incident.get('id'))})
                 incident_email_threads = dict_safe_get(incident_context[0], ['Contents', 'context', 'EmailThreads'])
             except Exception as e:
                 demisto.error(f'Exception while retrieving thread context: {e}')
@@ -272,7 +283,7 @@ def get_email_related_incident_id(email_related_incident_code, email_original_su
                 search_result = next((i for i, item in enumerate(incident_email_threads) if
                                       email_original_subject in item["EmailSubject"]), None)
                 if search_result is not None:
-                    return incident.get('id')
+                    return str(incident.get('id'))
 
 
 def get_unique_code():

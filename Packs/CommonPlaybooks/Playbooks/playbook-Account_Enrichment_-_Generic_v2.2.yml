@@ -733,14 +733,25 @@ tasks:
     scriptarguments:
       user-profile:
         complex:
-          root: inputs.Username
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
+          root: inputs.Domain
+          filters:
+          - - operator: isNotEmpty
+              left:
                 value:
                   simple: inputs.Domain
+                iscontext: true
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.Username
+                iscontext: true
+              suffix:
                 iscontext: true
           - operator: uniq
           - operator: concat

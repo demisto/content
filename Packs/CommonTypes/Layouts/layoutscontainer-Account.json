@@ -4,6 +4,7 @@
     "name": "Account Indicator",
     "version": -1,
     "fromVersion": "6.0.0",
+    "toVersion": "6.9.9",
     "indicatorsDetails": {
         "tabs": [
             {

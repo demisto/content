@@ -3,6 +3,7 @@ import demistomock as demisto  # noqa: F401
 import jwt
 from CommonServerPython import *  # noqa: F401
 from datetime import timedelta
+from traceback import format_exc
 
 import dateparser
 
@@ -38,6 +39,10 @@ MEETING_TYPE_NUM_MAPPING = {
     "Instant": 1,
     "Scheduled": 2,
     "Recurring meeting with fixed time": 8
+}
+FILE_TYPE_MAPPING = {
+    'MP4': 'Video',
+    'M4A': 'Audio'
 }
 # ERRORS
 INVALID_CREDENTIALS = 'Invalid credentials. Verify that your credentials are valid.'
@@ -147,7 +152,7 @@ class Client(BaseClient):
 
     def error_handled_http_request(self, method, url_suffix='', full_url=None, headers=None,
                                    auth=None, json_data=None, params=None,
-                                   return_empty_response: bool = False, resp_type: str = 'json'):
+                                   return_empty_response: bool = False, resp_type: str = 'json', stream: bool = False):
 
         # all future functions should call this function instead of the original _http_request.
         # This is needed because the OAuth token may not behave consistently,
@@ -156,15 +161,17 @@ class Client(BaseClient):
         try:
             return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
                                          auth=auth, json_data=json_data, params=params,
-                                         return_empty_response=return_empty_response, resp_type=resp_type)
+                                         return_empty_response=return_empty_response, resp_type=resp_type, stream=stream)
         except DemistoException as e:
             if ('Invalid access token' in e.message
                     or "Access token is expired." in e.message):
                 self.access_token = self.generate_oauth_token()
                 headers = {'authorization': f'Bearer {self.access_token}'}
-            return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
-                                         auth=auth, json_data=json_data, params=params,
-                                         return_empty_response=return_empty_response, resp_type=resp_type)
+                return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                             auth=auth, json_data=json_data, params=params,
+                                             return_empty_response=return_empty_response, resp_type=resp_type, stream=stream)
+            else:
+                raise DemistoException(e.message)
 
     def zoom_create_user(self, user_type_num: int, email: str, first_name: str, last_name: str):
         return self.error_handled_http_request(
@@ -235,6 +242,17 @@ class Client(BaseClient):
                 'page_size': page_size,
                 'page_number': page_number
             })
+
+    def zoom_fetch_recording(self, method: str, url_suffix: str = None, full_url: str = None,
+                             stream: bool = False, resp_type: str = 'json'):
+        return self.error_handled_http_request(
+            method=method,
+            full_url=full_url,
+            url_suffix=url_suffix,
+            resp_type=resp_type,
+            stream=stream,
+            headers={'authorization': f'Bearer {self.access_token}'},
+        )
 
 
 '''HELPER FUNCTIONS'''
@@ -582,52 +600,63 @@ def zoom_create_meeting_command(client, **args) -> CommandResults:
     )
 
 
-def zoom_fetch_recording_command():
-    # this is the original code with no changes at all.
-    # this part will be removed in the future
-    # waiting for a paid account
-    def get_jwt(apiKey, apiSecret):
-        """
-        Encode the JWT token given the api ket and secret
-        """
-        tt = datetime.now()
-        expire_time = int(tt.strftime('%s')) + 5000
-        payload = {
-            'iss': apiKey,
-            'exp': expire_time
-        }
-        encoded = jwt.encode(payload, apiSecret, algorithm='HS256')
-        return encoded
-    URL = 'https://api.zoom.us/v2/'
-    ACCESS_TOKEN = get_jwt(demisto.getParam('apiKey'), demisto.getParam('apiSecret'))
-    PARAMS = {'access_token': ACCESS_TOKEN}
-    HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-    USE_SSL = not demisto.params().get('insecure', False)
-    meeting = demisto.getArg('meeting_id')
-    res = requests.get(URL + 'meetings/%s/recordings' % meeting, headers=HEADERS, params=PARAMS, verify=USE_SSL)
-    if res.status_code == requests.codes.ok:
-        data = res.json()
-        recording_files = data['recording_files']
-        for file in recording_files:
-            download_url = file['download_url']
-            r = requests.get(download_url, stream=True)
-            if r.status_code < 200 or r.status_code > 299:
-                return_error('Unable to download recording for meeting %s: [%d] - %s' % (meeting, r.status_code, r.text))
+def zoom_fetch_recording_command(client: Client, **args):
+    # preprocessing
+    results = []
+    meeting_id = args.get('meeting_id')
+    delete_after = argToBoolean(args.get('delete_after'))
+    client = client
 
-            filename = 'recording_%s_%s.mp4' % (meeting, file['id'])
+    data = client.zoom_fetch_recording(
+        method='GET',
+        url_suffix=f'meetings/{meeting_id}/recordings'
+    )
+    recording_files = data.get('recording_files')
+    # Getting the audio and video files which are contained in every recording.
+    for file in recording_files:
+        download_url = file.get('download_url')
+        try:
+            # download the file
+            demisto.debug(f"Trying to download the files of meeting {meeting_id}")
+            record = client.zoom_fetch_recording(
+                method='GET',
+                full_url=download_url,
+                resp_type='response',
+                stream=True
+            )
+            file_type = file.get('file_type')
+            file_type_as_literal = FILE_TYPE_MAPPING.get(file_type)
+            # save the file
+            filename = f'recording_{meeting_id}_{file.get("id")}.{file_type}'
             with open(filename, 'wb') as f:
-                r.raw.decode_content = True
-                shutil.copyfileobj(r.raw, f)
+                # Saving the content of the file locally.
+                record.raw.decode_content = True
+                shutil.copyfileobj(record.raw, f)
 
-            demisto.results(file_result_existing_file(filename))
-            rf = requests.delete(URL + 'meetings/%s/recordings/%s' % (meeting, file['id']), headers=HEADERS,
-                                 params=PARAMS, verify=USE_SSL)
-            if rf.status_code == 204:
-                demisto.results('File ' + filename + ' was moved to trash.')
-            else:
-                demisto.results('Failed to delete file ' + filename + '.')
-    else:
-        return_error('Download of recording failed: [%d] - %s' % (res.status_code, res.text))
+            results.append(file_result_existing_file(filename))
+            results.append(CommandResults(
+                readable_output=f"The {file_type_as_literal} file {filename} was downloaded successfully"))
+
+            if delete_after:
+                try:
+                    # delete the file from the cloud
+                    demisto.debug(f"Trying to delete the file {filename}")
+                    client.zoom_fetch_recording(
+                        method='DELETE',
+                        url_suffix=f'meetings/{meeting_id}/recordings/{file["id"]}',
+                        resp_type='response'
+                    )
+                    results.append(CommandResults(
+                        readable_output=f"The {file_type_as_literal} file {filename} was successfully removed from the cloud."))
+                except DemistoException as e:
+                    results.append(CommandResults(
+                        readable_output=f"Failed to delete file {filename}. {e}"))
+
+        except DemistoException as e:
+            raise DemistoException(
+                f'Unable to download recording for meeting {meeting_id}: {e}')
+
+    return results
 
 
 def zoom_meeting_get_command(client, **args) -> CommandResults:
@@ -761,7 +790,7 @@ def main():  # pragma: no cover
         elif command == 'zoom-delete-user':
             results = zoom_delete_user_command(client, **args)
         elif command == 'zoom-fetch-recording':
-            zoom_fetch_recording_command()
+            results = zoom_fetch_recording_command(client, **args)
         elif command == 'zoom-list-users':
             results = zoom_list_users_command(client, **args)
         else:
@@ -770,7 +799,8 @@ def main():  # pragma: no cover
 
     except DemistoException as e:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Error: {str(e)}')
+        demisto.error(format_exc())
+        return_error(f'Failed to execute {command} command. Error: {str(e)}.')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

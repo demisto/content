@@ -1,0 +1,1472 @@
+id: Cortex Data Lake - Indicators Hunting
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Cortex Data Lake - Indicators Hunting
+description: |-
+  The playbook facilitates threat hunting and detection of IOCs within Cortex Data Lake logs. The playbook and sub-playbooks query Cortex Data Lake for files, traffic, HTTP requests, and execution flows indicators.
+
+  Note that multiple search values should be separated by commas only (without spaces or any special characters).
+
+  Supported IOCs for this playbook:
+  - SHA256
+  - IP Addresses
+  - Geolocation
+  - URLDomain
+  - Port Number
+  - File Name
+  - File Type
+  - URI
+  - Application
+
+  Separate searches are conducted for each type of indicator in the playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: efd174b1-c3ae-48ce-8d14-52e397954612
+    type: start
+    task:
+      id: efd174b1-c3ae-48ce-8d14-52e397954612
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "175"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2680,
+          "y": -590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 976127c6-414a-4e5d-8a03-12da0fcbcb58
+    type: condition
+    task:
+      id: 976127c6-414a-4e5d-8a03-12da0fcbcb58
+      version: -1
+      name: Any URLs or domains to hunt for?
+      description: Checks whether any URLs or domains are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "303"
+      "yes":
+      - "315"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URLDomain
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2430,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "175":
+    id: "175"
+    taskid: 2071167e-93f8-4e92-8335-e8a77940958f
+    type: condition
+    task:
+      id: 2071167e-93f8-4e92-8335-e8a77940958f
+      version: -1
+      name: Is Cortex Data Lake enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "257"
+      "yes":
+      - "317"
+      - "319"
+      - "322"
+      - "323"
+    scriptarguments:
+      brandname:
+        simple: Cortex Data Lake
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2680,
+          "y": -460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "202":
+    id: "202"
+    taskid: 510e902c-d0bb-4654-86a4-0002d0e00c5e
+    type: condition
+    task:
+      id: 510e902c-d0bb-4654-86a4-0002d0e00c5e
+      version: -1
+      name: Any application to hunt for?
+      description: Checks whether any application names are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "285"
+      "yes":
+      - "318"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Application
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1780,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "218":
+    id: "218"
+    taskid: 2a4e3170-fbb6-4b48-8697-cc833a768211
+    type: regular
+    task:
+      id: 2a4e3170-fbb6-4b48-8697-cc833a768211
+      version: -1
+      name: Query Cortex Data Lake - URL Logs
+      description: Searches the Cortex Data Lake URL log table.
+      script: Cortex Data Lake|||cdl-query-url-logs
+      type: regular
+      iscommand: true
+      brand: Cortex Data Lake
+    nexttasks:
+      '#none#':
+      - "302"
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.FirewallAction
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.FirewallAction
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          accessor: end_time
+      fields:
+        simple: all
+      limit:
+        complex:
+          root: inputs.limit
+      rule_matched:
+        complex:
+          root: inputs.rule_matched
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.rule_matched
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+      url:
+        complex:
+          root: inputs.URI
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2200,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "257":
+    id: "257"
+    taskid: c8d89928-54f0-43b4-85a0-c129afe5c8ad
+    type: title
+    task:
+      id: c8d89928-54f0-43b4-85a0-c129afe5c8ad
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2680,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "267":
+    id: "267"
+    taskid: 9c31600a-aa41-499b-81ed-348ece2e75ab
+    type: title
+    task:
+      id: 9c31600a-aa41-499b-81ed-348ece2e75ab
+      version: -1
+      name: Application Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1780,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "269":
+    id: "269"
+    taskid: 3f6bb2e8-3de3-4703-828c-7c8df7c9163b
+    type: title
+    task:
+      id: 3f6bb2e8-3de3-4703-828c-7c8df7c9163b
+      version: -1
+      name: URI Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2430,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "273":
+    id: "273"
+    taskid: 01cc515d-43c1-4cd3-80fa-0cede7490986
+    type: regular
+    task:
+      id: 01cc515d-43c1-4cd3-80fa-0cede7490986
+      version: -1
+      name: Query Cortex Data Lake - File Data Logs
+      description: Searches the Cortex firewall.file_data table.
+      script: Cortex Data Lake|||cdl-query-file-data
+      type: regular
+      iscommand: true
+      brand: Cortex Data Lake
+    nexttasks:
+      '#none#':
+      - "283"
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.FirewallAction
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.FirewallAction
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      app:
+        complex:
+          root: inputs.Application
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      limit:
+        complex:
+          root: inputs.limit
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1550,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "283":
+    id: "283"
+    taskid: 2620417a-46aa-4e60-8f64-1898b40cab26
+    type: regular
+    task:
+      id: 2620417a-46aa-4e60-8f64-1898b40cab26
+      version: -1
+      name: Save Matching Results - File Data Logs
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "285"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: CDL.HuntingResults
+      value:
+        complex:
+          root: CDL.Logging.File
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: CDL.Logging.File.App
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1550,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "285":
+    id: "285"
+    taskid: a31b62aa-351d-41ab-8ac6-c1814673aff2
+    type: title
+    task:
+      id: a31b62aa-351d-41ab-8ac6-c1814673aff2
+      version: -1
+      name: Application Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "257"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1780,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "302":
+    id: "302"
+    taskid: e812659c-85ba-4a77-8945-70f533832c79
+    type: regular
+    task:
+      id: e812659c-85ba-4a77-8945-70f533832c79
+      version: -1
+      name: Save Matching Results - URL Logs
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "303"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: CDL.HuntingResults
+      value:
+        complex:
+          root: CDL.Logging.URL
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: CDL.Logging.URL.Uri
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: CDL.Logging.URL.Url
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2200,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "303":
+    id: "303"
+    taskid: 2638f008-b18c-444e-8c96-e1071c02fda1
+    type: title
+    task:
+      id: 2638f008-b18c-444e-8c96-e1071c02fda1
+      version: -1
+      name: URLDomain Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "257"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2430,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "315":
+    id: "315"
+    taskid: 04668200-6846-4c9a-8a77-efd98608fb6c
+    type: title
+    task:
+      id: 04668200-6846-4c9a-8a77-efd98608fb6c
+      version: -1
+      name: Search URI
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "218"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2200,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "317":
+    id: "317"
+    taskid: ddb8a1f3-0487-469b-881b-f56bfb245934
+    type: title
+    task:
+      id: ddb8a1f3-0487-469b-881b-f56bfb245934
+      version: -1
+      name: Execution Flow Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "267"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1780,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "318":
+    id: "318"
+    taskid: 27f0109d-8d18-4b77-8bff-450a535828a7
+    type: title
+    task:
+      id: 27f0109d-8d18-4b77-8bff-450a535828a7
+      version: -1
+      name: Search Application
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "273"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1550,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "319":
+    id: "319"
+    taskid: 4ea03e15-da1b-4232-8f57-9b2c2407f32f
+    type: title
+    task:
+      id: 4ea03e15-da1b-4232-8f57-9b2c2407f32f
+      version: -1
+      name: HTTP Requests Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "269"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2430,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "320":
+    id: "320"
+    taskid: fcecdf9b-842e-475a-8b9b-e0f5615b275d
+    type: playbook
+    task:
+      id: fcecdf9b-842e-475a-8b9b-e0f5615b275d
+      version: -1
+      name: Cortex Data Lake - File Indicators Hunting
+      description: |-
+        This playbook queries Cortex Data Lake (CDL) for file indicators, including SHA256 hashes, file names, and file types.
+
+        Note that multiple search values should be separated by commas only (without spaces or any special characters).
+      playbookName: Cortex Data Lake - File Indicators Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "257"
+    scriptarguments:
+      FileType:
+        complex:
+          root: inputs.FileType
+      Filename:
+        complex:
+          root: inputs.Filename
+      FirewallAction:
+        complex:
+          root: inputs.FirewallAction
+      SHA256:
+        complex:
+          root: inputs.SHA256
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      fields:
+        complex:
+          root: inputs.fields
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.fields
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      limit:
+        complex:
+          root: inputs.limit
+      rule_matched:
+        complex:
+          root: inputs.rule_matched
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.rule_matched
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -2930,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "321":
+    id: "321"
+    taskid: c7d3a37b-0bb0-4a2a-82dc-9b9631347776
+    type: playbook
+    task:
+      id: c7d3a37b-0bb0-4a2a-82dc-9b9631347776
+      version: -1
+      name: Cortex Data Lake - Traffic Indicators Hunting
+      description: |
+        This playbook queries Cortex Data Lake (CDL) for traffic indicators, including IP addresses, geolocations, URLs, domains, and ports.
+
+        Note that multiple search values should be separated by commas only (without spaces or any special characters).
+      playbookName: Cortex Data Lake - Traffic Indicators Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "257"
+    scriptarguments:
+      FirewallAction:
+        complex:
+          root: inputs.FirewallAction
+      Geolocation:
+        complex:
+          root: inputs.Geolocation
+      IPAddresses:
+        complex:
+          root: inputs.IPAddresses
+      PortNumber:
+        complex:
+          root: inputs.PortNumber
+      URLDomain:
+        complex:
+          root: inputs.URLDomain
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      fields:
+        complex:
+          root: inputs.fields
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.fields
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      limit:
+        complex:
+          root: inputs.limit
+      rule_matched:
+        complex:
+          root: inputs.rule_matched
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.rule_matched
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -3370,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "322":
+    id: "322"
+    taskid: e079016f-d688-4e94-8b63-1f714a8efe39
+    type: title
+    task:
+      id: e079016f-d688-4e94-8b63-1f714a8efe39
+      version: -1
+      name: File Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "320"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2930,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "323":
+    id: "323"
+    taskid: 9d9b2449-c9af-4b2d-8baf-eab029b5f3e6
+    type: title
+    task:
+      id: 9d9b2449-c9af-4b2d-8baf-eab029b5f3e6
+      version: -1
+      name: Traffic Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "321"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3370,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "175_257_#default#": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1395,
+        "width": 2200,
+        "x": -3370,
+        "y": -590
+      }
+    }
+  }
+inputs:
+- key: IPAddresses
+  value: {}
+  required: false
+  description: |-
+    A single or multiple IP addresses to search for within Cortex Data Lake. Used for both source and destination IP addresses.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: URLDomain
+  value: {}
+  required: false
+  description: |-
+    Single or multiple URLs and/or domains to search for  within Cortex Data Lake.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: Geolocation
+  value: {}
+  required: false
+  description: |-
+    A single or multiple country names or codes to search for  within Cortex Data Lake. Used for both source and destination geolocations.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: PortNumber
+  value: {}
+  required: false
+  description: |-
+    A single or multiple IP addresses to search for within Cortex Data Lake. Used for both source and destination ports.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: SHA256
+  value: {}
+  required: false
+  description: |-
+    A single or multiple SHA256 file hashes to search for within Cortex Data Lake.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: Filename
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file names to search for within Cortex Data Lake.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: FileType
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file types to search for within Cortex Data Lake.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: Application
+  value: {}
+  required: false
+  description: |-
+    Single or multiple application names or codes to search for within Cortex Data Lake.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: URI
+  value: {}
+  required: false
+  description: |-
+    A single or multiple URIs to search for within Cortex Data Lake.
+    By default, a 'LIKE' search is used.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: start_time
+  value: {}
+  required: false
+  description: |-
+    Specify the query start time at which to perform a search within Cortex Data Lake.
+
+    For example, start_time="2018-04-26 00:00:00"
+  playbookInputQuery:
+- key: end_time
+  value: {}
+  required: false
+  description: |-
+    Specify the query end time at which to perform a search within Cortex Data Lake.
+
+    For example, end_time="2018-04-26 00:00:00"
+  playbookInputQuery:
+- key: time_range
+  value: {}
+  required: false
+  description: |-
+    An alternative to the 'start_time' and 'end_time' inputs that indicates the timeframe for the search, e.g. 1 week, 1 day, 30 minutes.
+
+    When the time_range input is specified, the 'start_time' and 'end_time' inputs should not be used.
+  playbookInputQuery:
+- key: limit
+  value: {}
+  required: false
+  description: "The maximum number of logs to return. \nDefault is 10."
+  playbookInputQuery:
+- key: fields
+  value: {}
+  required: false
+  description: "Select the fields you wish to be included in the query results. \nSelection can be \"all\" (same as *) or a comma-separated list of specific fields in the table.\n\nSeparate multiple search values by commas only (without spaces or any special characters)."
+  playbookInputQuery:
+- key: FirewallAction
+  value: {}
+  required: false
+  description: |-
+    Filter network traffic logs that should be retrieved from Cortex Data Lake based on firewall action.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: rule_matched
+  value: {}
+  required: false
+  description: |-
+    Filter network traffic logs to be retrieved from Cortex Data Lake based on security policy rule names that the network traffic matches.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+outputs:
+- contextPath: CDL.HuntingResults
+  description: Event log objects and fields that were retrieved from Cortex Data Lake (CDL).
+  type: string
+- contextPath: CDL.HuntingResults.TimeGenerated
+  description: Time when the log was generated on the firewall's data plane.
+  type: number
+- contextPath: CDL.HuntingResults.LogTime
+  description: Time the log was received in Cortex Data Lake.
+  type: number
+- contextPath: CDL.HuntingResults.IngestionTime
+  description: Ingestion time of the log.
+  type: number
+- contextPath: CDL.HuntingResults.App
+  description: The application associated with the network traffic.
+  type: string
+- contextPath: CDL.HuntingResults.AppCategory
+  description: Identifies the high-level family of the application.
+  type: string
+- contextPath: CDL.HuntingResults.RiskOfApp
+  description: Indicates how risky the application is from a network security perspective.
+  type: string
+- contextPath: CDL.HuntingResults.CharacteristicOfApp
+  description: Identifies the behavioral characteristic of the application associated with the network traffic.
+  type: string
+- contextPath: CDL.HuntingResults.SessionID
+  description: Identifies the firewall's internal identifier for a specific network session.
+  type: string
+- contextPath: CDL.HuntingResults.Action
+  description: Identifies the action that the firewall took for the network traffic.
+  type: string
+- contextPath: CDL.HuntingResults.Protocol
+  description: The IP protocol associated with the session.
+  type: string
+- contextPath: CDL.HuntingResults.RefererProtocol
+  description: The protocol used in the HTTP Referer header field.
+  type: string
+- contextPath: CDL.HuntingResults.DestinationPort
+  description: The network traffic's destination port. If this value is 0, then the app is using its standard port.
+  type: number
+- contextPath: CDL.HuntingResults.SourcePort
+  description: The source port utilized by the session.
+  type: number
+- contextPath: CDL.HuntingResults.RefererPort
+  description: The port used in the HTTP Referer header field.
+  type: number
+- contextPath: CDL.HuntingResults.DestinationIP
+  description: The original destination IP address.
+  type: string
+- contextPath: CDL.HuntingResults.SourceIP
+  description: The original source IP address.
+  type: string
+- contextPath: CDL.HuntingResults.Users
+  description: Source/Destination user. If neither is available, source_ip is used.
+  type: string
+- contextPath: CDL.HuntingResults.SrcUser
+  description: The username that initiated the network traffic.
+  type: string
+- contextPath: CDL.HuntingResults.SrcUserInfo
+  description: The information for the initiated user.
+  type: string
+- contextPath: CDL.HuntingResults.DstUser
+  description: The username to which the network traffic was destined.
+  type: string
+- contextPath: CDL.HuntingResults.DstUserInfo
+  description: The destination user information.
+  type: string
+- contextPath: CDL.HuntingResults.UserAgent
+  description: |-
+    The web browser that the user
+    used to access the URL.
+  type: string
+- contextPath: CDL.HuntingResults.IsPhishing
+  description: Indicates whether enterprise credentials were submitted by an end user.
+  type: string
+- contextPath: CDL.HuntingResults.SourceLocation
+  description: The source country or internal region for private addresses.
+  type: string
+- contextPath: CDL.HuntingResults.DestinationLocation
+  description: The destination country or internal region for private addresses.
+  type: string
+- contextPath: CDL.HuntingResults.RuleMatched
+  description: The unique identifier for the security policy rule that the network traffic matched.
+  type: string
+- contextPath: CDL.HuntingResults.ThreatName
+  description: The name of the detected threat.
+  type: string
+- contextPath: CDL.HuntingResults.LogSourceName
+  description: The name of the source of the log.
+  type: string
+- contextPath: CDL.HuntingResults.Direction
+  description: Indicates the direction of the attack.
+  type: string
+- contextPath: CDL.HuntingResults.DirectionOfAttack
+  description: Indicates the direction of the attack.
+  type: string
+- contextPath: CDL.HuntingResults.FileName
+  description: The name of the file that is blocked.
+  type: string
+- contextPath: CDL.HuntingResults.FileSHA256
+  description: The binary hash (SHA256) of the file.
+  type: string
+- contextPath: CDL.HuntingResults.FileType
+  description: Palo Alto Networks textual identifier for the threat.
+  type: string
+- contextPath: CDL.HuntingResults.Url
+  description: The name of the internet domain that was visited in this session.
+  type: string
+- contextPath: CDL.HuntingResults.Uri
+  description: The address of the URI.
+  type: string
+- contextPath: CDL.HuntingResults.RefererURL
+  description: The URL used in the HTTP Referer header field.
+  type: string
+- contextPath: CDL.HuntingResults.RefererFQDN
+  description: |-
+    The full domain name used in the HTTP Referer
+    header field.
+  type: string
+- contextPath: CDL.HuntingResults.URLCategory
+  description: The URL category.
+  type: string
+- contextPath: CDL.HuntingResults.URLDomain
+  description: The name of the internet domain that was visited in this session.
+  type: string
+- contextPath: CDL.HuntingResults.IsUrlDenied
+  description: Indicates whether the session was denied due to a URL filtering rule.
+  type: string
+- contextPath: CDL.HuntingResults.SourceDeviceHost
+  description: Hostname of the device from which the session originated.
+  type: string
+- contextPath: CDL.HuntingResults.DestDeviceHost
+  description: Hostname of the device session destination.
+  type: string
+- contextPath: CDL.HuntingResults.ContentType
+  description: The content type of the HTTP response data.
+  type: string
+- contextPath: CDL.HuntingResults.HTTPMethod
+  description: |-
+    The HTTP Method used
+    in the web request
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

@@ -35,18 +35,12 @@ In the self-deployed mode you can authenticate, by using one of the following fl
 ### Authentication Code flow
 
 ---
-1. Copy the following URL and replace `CLIENT_ID` and `REDIRECT_URI` with your own client ID and redirect URI:
-   ```https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&resource=https://management.core.windows.net&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI```
-2. Enter the link.
-   
-   You will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. You are automatically redirected to a link with the following structure:
-   
-   ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
-1. Copy the `AUTH_CODE` (without the `“code=”` prefix, and the `session_state` parameter) and paste it in your instance configuration under the **Authorization code** parameter. 
-2. Enter your client ID in the **ID\Client ID** parameter (credentials username). 
-3. Enter your client secret in the **password** parameter (credentials password).
-4. Enter your tenant ID in the **Token** parameter.
-5. Enter your redirect URI in the **Redirect URI** parameter.
+1. Enter your client ID in the **ID\Client ID** parameter (credentials username). 
+2. Enter your client secret in the **password** parameter (credentials password).
+3. Enter your tenant ID in the **Token** parameter.
+4. Enter your redirect URI in the **Redirect URI** parameter.
+5. Save the integration settings.
+6. Run the `!azure-log-analytics-generate-login-url` command in the War Room and follow the instruction.
 ### Authorize Cortex XSOAR for Azure Log Analytics (Client-Credentials Configuration)
 
 ---
@@ -76,6 +70,8 @@ To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resou
 | credentials - password | Key\Client secret \(received from the authorization step - see Detailed Instructions \(?\) section\) | False |
 | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
 | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+| Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
 | self_deployed | Use a self-deployed Azure application. | False |
 | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
 | redirect_uri | Application redirect URI \(for self-deployed mode\) | False |
@@ -87,7 +83,7 @@ To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resou
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+1. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -313,3 +309,33 @@ There is no context output for this command.
 
 #### Human Readable Output
 ```✅ Success!```
+
+
+### azure-log-analytics-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`azure-log-analytics-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```azure-log-analytics-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `“code=”` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
+
+

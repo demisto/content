@@ -3,6 +3,7 @@ import io
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
+from pydantic import parse_obj_as  # noqa: F401
 
 
 DEMISTO_PARAMS = {

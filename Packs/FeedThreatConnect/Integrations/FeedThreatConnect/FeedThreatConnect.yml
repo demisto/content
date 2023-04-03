@@ -281,7 +281,7 @@ script:
     description: Gets available indicators owners.
     execution: false
     name: tc-get-owners
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.10.49934
   feed: true
   isfetch: false
   longRunning: false

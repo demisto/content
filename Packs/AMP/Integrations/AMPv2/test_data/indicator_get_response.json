@@ -1,0 +1,40 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        }
+    },
+    "data": {
+        "name": "data_name",
+        "description": "data_description",
+        "guid": "data_guid",
+        "severity": "data_severity",
+        "mitre": {
+            "tactics": [
+                {
+                    "external_id": "data_mitre_tactics[0]_external_id",
+                    "name": "data_mitre_tactics[0]_name",
+                    "mitre_url": "data_mitre_tactics[0]_mitre_url"
+                }
+            ],
+            "techniques": [
+                {
+                    "external_id": "data_mitre_techniques[0]_external_id",
+                    "name": "data_mitre_techniques[0]_name",
+                    "mitre_url": "data_mitre_techniques[0]_mitre_url"
+                },
+                {
+                    "external_id": "data_mitre_techniques[1]_external_id",
+                    "name": "data_mitre_techniques[1]_name",
+                    "mitre_url": "data_mitre_techniques[1]_mitre_url"
+                }
+            ]
+        },
+        "observed_compromises": {
+            "unresolved": "data_observed_compromises_unresolved",
+            "in_progress": "data_observed_compromises_in_progress",
+            "resolved": "data_observed_compromises_resolved"
+        }
+    }
+}

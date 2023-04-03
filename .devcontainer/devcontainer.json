@@ -1,3 +1,4 @@
+// Development container for Content. Poetry hash 1.11.0
 {
 	"name": "XSOAR Content",
 	"build": {
@@ -73,8 +74,15 @@
 				"ms-python.black-formatter",
 				"LittleFoxTeam.vscode-python-test-adapter"
 			]
-	}
-},
+		},
+		"codespaces": {
+			"repositories": {
+				"demisto/demisto-sdk": {
+					"permissions": "write-all"
+				}
+			}
+		}
+	},
 // this is commented out until VSCode will fix self signed certificate issues
 // "features": {
 // 	"ghcr.io/devcontainers/features/docker-in-docker:1": {

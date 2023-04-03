@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: AbuseIPDB
   version: -1
@@ -8,16 +11,19 @@ configuration:
   name: server
   required: true
   type: 0
+  section: Connect
 - name: credentials
   required: false
   type: 9
   displaypassword: API Key (v2)
   hiddenusername: true
+  section: Connect
 - display: API Key (v2)
   name: apikey
   required: false
   type: 4
   hidden: true
+  section: Connect
 - defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
   name: integrationReliability
@@ -32,28 +38,39 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
+  section: Collect
 - defaultvalue: '80'
   display: Minimum score threshold
   name: threshold
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Maximum reports age (in days)
   name: days
   required: false
   type: 0
   defaultvalue: '30'
+  section: Collect
+  advanced: true
 - display: Disregard quota errors
   name: disregard_quota
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Central repository to report and identify IP addresses that have been associated with malicious activity online. Check the Detailed Information section for more information on how to configure the integration.
 display: AbuseIPDB
 name: AbuseIPDB
@@ -257,7 +274,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.10.49934
 fromversion: 5.0.0
 tests:
 - AbuseIPDB Test

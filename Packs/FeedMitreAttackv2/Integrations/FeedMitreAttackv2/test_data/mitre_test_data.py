@@ -52,11 +52,11 @@ ATTACK_PATTERN = {
         'publications': [{'link': "https://en.wikipedia.org/wiki/Server_Message_Block",
                           'title': "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
                           'source': 'Wikipedia SMB',
-                          'timestamp': '2016, June 12'},
+                          'timestamp': '2016-06-12T00:00:00'},
                          {'link': "https://technet.microsoft.com/en-us/library/cc787851.aspx",
                           'title': 'Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.',
                           "source": 'TechNet RPC',
-                          'timestamp': '2003, March 28'}],
+                          'timestamp': '2003-03-28T00:00:00'}],
         'tags': ['T1047'],
         'tlp': ''
     },
@@ -72,12 +72,12 @@ ATTACK_PATTERN = {
                                                  'title': 'Wikipedia. (2016, June 12). Server '
                                                           'Message Block. Retrieved June 12, '
                                                           '2016.',
-                                                'timestamp': '2016, June 12'},
+                                                'timestamp': '2016-06-12T00:00:00'},
                                                 {'link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
                                                  'source': 'TechNet RPC',
                                                  'title': 'Microsoft. (2003, March 28). What Is '
                                                           'RPC?. Retrieved June 12, 2016.',
-                                                'timestamp': '2003, March 28'}],
+                                                'timestamp': '2003-03-28T00:00:00'}],
                                'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
                                'tags': ['T1047'],
                                'tlp': ''},
@@ -169,11 +169,11 @@ STIX_ATTACK_PATTERN = {
         'publications': [{'link': "https://en.wikipedia.org/wiki/Server_Message_Block",
                           'title': "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
                           'source': 'Wikipedia SMB',
-                          'timestamp': '2016, June 12'},
+                          'timestamp': '2016-06-12T00:00:00'},
                          {'link': "https://technet.microsoft.com/en-us/library/cc787851.aspx",
                           'title': 'Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.',
                           "source": 'TechNet RPC',
-                          'timestamp': '2003, March 28'}],
+                          'timestamp': '2003-03-28T00:00:00'}],
         'tags': ['T1047'],
         'tlp': ''
     }
@@ -352,7 +352,7 @@ MALWARE = {
                         'source': 'Symantec Wiarp May 2012',
                         'title': 'Zhou, R. (2012, May 15). Backdoor.Wiarp. '
                                  'Retrieved February 22, 2018.',
-                        'timestamp': '2012, May 15'}],
+                        'timestamp': '2012-05-15T00:00:00'}],
                    'stixid': 'malware--039814a0-88de-46c5-a4fb-b293db21880a',
                    'tags': ['S0206', 'malware'],
                    'tlp': ''},
@@ -369,7 +369,7 @@ MALWARE = {
                                    'title': 'Zhou, R. (2012, May 15). '
                                             'Backdoor.Wiarp. Retrieved February '
                                             '22, 2018.',
-                                   'timestamp': '2012, May 15'}],
+                                   'timestamp': '2012-05-15T00:00:00'}],
                                'stixid': 'malware--039814a0-88de-46c5-a4fb-b293db21880a',
                                'tags': ['S0206', 'malware'],
                                'tlp': ''},
@@ -441,7 +441,7 @@ STIX_MALWARE = {
                         'source': 'Symantec Wiarp May 2012',
                         'title': 'Zhou, R. (2012, May 15). Backdoor.Wiarp. '
                                  'Retrieved February 22, 2018.',
-                        'timestamp': '2012, May 15'}],
+                        'timestamp': '2012-05-15T00:00:00'}],
                    'stixid': 'malware--039814a0-88de-46c5-a4fb-b293db21880a',
                    'tags': ['S0206', 'malware'],
                    'tlp': ''}
@@ -726,10 +726,137 @@ CAMPAIGN = {
         'tags': ['C0016'],
         "description": "[Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) was a long-standing persistent cyber espionage campaign that targeted multiple industries in Japan, South Korea, the United States, Europe, and several Southeast Asian countries. By 2015, the [Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) threat actors shifted from government and defense-related intelligence targets to Japanese companies or Japanese subdivisions of larger foreign organizations supporting Japan's critical infrastructure, including electricity generation, oil and natural gas, finance, transportation, and construction.(Citation: Cylance Dust Storm)\n\n[Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) threat actors also began to use Android backdoors in their operations by 2015, with all identified victims at the time residing in Japan or South Korea.(Citation: Cylance Dust Storm)",
         'publications': [{'link': "https://s7d2.scene7.com/is/content/cylance/prod/cylance-web/en-us/resources/knowledge-center/resource-library/reports/Op_Dust_Storm_Report.pdf",
-                          'title': 'Gross, J. (2016, February 23). Operation Dust Storm. Retrieved December 22, 2021.',                         
+                          'title': 'Gross, J. (2016, February 23). Operation Dust Storm. Retrieved December 22, 2021.',
                           'source': 'Cylance Dust Storm',
-                          'timestamp': '2016, February 23'}],
+                          'timestamp': '2016-02-23T00:00:00'}],
         "aliases": ["Operation Dust Storm"],
         'tlp': 'WHITE'
     }
 }
+
+ATTACK_PATTERNS = [
+    {
+        "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"],
+        "type": "attack-pattern",
+        "id": "attack-pattern--a11bb2c5-0c4b-4611-8297-d1b8b55e40b6",
+        "created": "2022-03-04T18:56:38.844Z",
+        "external_references": [
+            {
+                "source_name": "mitre-attack",
+                "external_id": "T1111.001",
+                "url": "https://attack.mitre.org/techniques/T1111/001"
+            },
+            {
+                "source_name": "Something Jan 2021",
+                "url": "https://www.something.com/content/file.pdf",
+                "description": "Something. (2021, January).  Retrieved February 14, 2022."
+            },
+            {
+                "source_name": "Bucket",
+                "url": "https://test.org",
+                "description": "Info. (2019, February 26). Retrieved March 4, 2022."
+            }
+        ],
+        "description": "Adversaries may iteratively probe infrastructure using brute-forcing and crawling techniques. ",
+        "modified": "2022-04-15T19:10:23.838Z",
+        "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+        "name": "Wordlist Scanning",
+        "kill_chain_phases": [{
+            "kill_chain_name": "mitre-attack",
+            "phase_name": "reconnaissance"
+        }],
+        "x_mitre_platforms": ["PRE"],
+        "x_mitre_domains": ["enterprise-attack"],
+        "x_mitre_contributors": [
+            "Jan Petrov, Citi",
+            "Elvis Veliz, Citi",
+            "Richard Julian, Citi"
+        ],
+        "x_mitre_version": "1.0",
+        "x_mitre_detection": "Monitor for suspicious network traffic that could be indicative of scanning.",
+        "x_mitre_data_sources": ["Network Traffic: Network Traffic Content"],
+        "x_mitre_attack_spec_version": "2.1.0",
+        "x_mitre_modified_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5"
+    },
+    {
+        "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"],
+        "id": "attack-pattern--4e6620ac-c30c-4f6d-918e-fa20cae7c1ce",
+        "type": "attack-pattern",
+        "created": "2020-10-02T16:53:16.526Z",
+        "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+        "external_references": [
+            {
+                "source_name": "mitre-attack",
+                "external_id": "T1111",
+                "url": "https://attack.mitre.org/techniques/T1111"
+            },
+            {
+                "source_name": "Scan",
+                "url": "https://test.org",
+                "description": "Test. (2012). Retrieved October 20, 2020."
+            }
+        ],
+        "modified": "2022-03-08T20:58:13.661Z",
+        "name": "Active Scanning",
+        "description": "Adversaries may execute active reconnaissance scans to gather information.",
+        "kill_chain_phases": [{
+            "kill_chain_name": "mitre-attack",
+            "phase_name": "reconnaissance"
+        }],
+        "x_mitre_platforms": ["PRE"],
+        "x_mitre_domains": ["enterprise-attack"],
+        "x_mitre_detection": "Monitor for suspicious network traffic that could be indicative of scanning.",
+        "x_mitre_version": "1.0",
+        "x_mitre_modified_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+        "x_mitre_data_sources": [
+            "Network Traffic: Network Traffic Flow",
+            "Network Traffic: Network Traffic Content"
+        ],
+    },
+    {
+        "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"],
+        "id": "attack-pattern--19da6e1c-71ab-4c2f-886d-d620d09d3b5a",
+        "type": "attack-pattern",
+        "created": "2020-01-30T13:58:14.373Z",
+        "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+        "external_references": [
+            {
+                "source_name": "mitre-attack",
+                "external_id": "T1234",
+                "url": "https://attack.mitre.org/techniques/T1234"
+            }
+        ],
+        "modified": "2022-03-21T19:01:25.043Z",
+        "name": "Abuse Elevation Control Mechanism",
+        "description": "Adversaries may circumvent mechanisms designed to control elevate privileges to gain permissions.",
+        "kill_chain_phases": [
+            {
+                "kill_chain_name": "mitre-attack",
+                "phase_name": "privilege-escalation"
+            },
+            {
+                "kill_chain_name": "mitre-attack",
+                "phase_name": "defense-evasion"
+            }
+        ],
+        "x_mitre_platforms": [
+            "Linux",
+            "macOS",
+            "Windows"
+        ],
+        "x_mitre_domains": ["enterprise-attack"],
+        "x_mitre_detection": "Monitor the file system for files that have the setuid or setgid bits set.",
+        "x_mitre_version": "1.0",
+        "x_mitre_modified_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+        "x_mitre_data_sources": [
+            "Command: Command Execution",
+            "File: File Modification",
+            "Windows Registry: Windows Registry Key Modification",
+            "Process: Process Metadata",
+            "Process: Process Creation",
+            "Process: OS API Execution",
+            "File: File Metadata"
+        ],
+        "x_mitre_permissions_required": ["Administrator", "User"],
+    },
+]

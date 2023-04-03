@@ -1,9 +1,9 @@
 {
     "name": "Darktrace",
-    "description": "Populates Darktrace Model Breaches in Cortex XSOAR, allowing for cross-platform automated investigation and response.",
+    "description": "Populates Darktrace Model Breaches and AI Analyst Events in Cortex XSOAR, allowing for cross-platform automated investigation and response.",
     "support": "partner",
-    "currentVersion": "1.0.12",
-    "fromVersion": "6.0.0",
+    "currentVersion": "2.0.0",
+    "fromVersion": "5.0.0",
     "author": "Darktrace",
     "githubUser": "",
     "url": "https://customerportal.darktrace.com",
@@ -12,7 +12,14 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Breach",
+        "Compliance",
+        "Attack",
+        "Alerts",
+        "Malware",
+        "Network"
+    ],
     "useCases": [],
     "keywords": [
         "Darktrace"

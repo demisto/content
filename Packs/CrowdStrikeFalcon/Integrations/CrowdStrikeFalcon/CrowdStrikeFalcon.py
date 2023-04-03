@@ -216,7 +216,7 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 
 def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
-                 get_token_flag=True, no_json=False, json=None, status_code=None):
+                 get_token_flag=True, no_json=False, json=None, status_code=None, timeout=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -251,6 +251,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         :type status_code: ``int``
         :param: status_code: The request codes to accept as OK.
 
+        :type timeout: ``float``
+        :param: timeout: The timeout for the request.
+
         :return: Returns the http request response json
         :rtype: ``dict``
     """
@@ -268,6 +271,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             headers=headers,
             files=files,
             json=json,
+            timeout=timeout,
         )
     except requests.exceptions.RequestException as e:
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
@@ -299,7 +303,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 reason=reason
             )
             # try to create a new token
-            if res.status_code == 403 and get_token_flag:
+            if res.status_code in (401, 403) and get_token_flag:
                 LOG(err_msg)
                 token = get_token(new_token=True)
                 headers['Authorization'] = 'Bearer {}'.format(token)
@@ -315,6 +319,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     get_token_flag=False,
                     status_code=status_code,
                     no_json=no_json,
+                    timeout=timeout,
                 )
             elif safe:
                 return None
@@ -1429,11 +1434,14 @@ def get_proccesses_ran_on(ioc_type, value, device_id):
     return http_request('GET', '/indicators/queries/processes/v1', payload)
 
 
-def search_device(filter_operator='AND'):
+def search_device(filter_operator='AND', exact_hostname: bool = False):
     """
         Searches for devices using the argument provided by the command execution. Returns empty
         result if no device was found
+
         :param: filter_operator: the operator that should be used between filters, default is 'AND'
+        :param: exact_hostname: Whether to return exact hostname
+
         :return: Search device response json
     """
     args = demisto.args()
@@ -1457,7 +1465,10 @@ def search_device(filter_operator='AND'):
                 for arg_elem in arg:
                     if arg_elem:
                         first_arg = '{filter},{inp_arg}'.format(filter=arg_filter, inp_arg=k) if arg_filter else k
-                        arg_filter = "{first}:'{second}'".format(first=first_arg, second=arg_elem)
+                        arg_elem = f"'{arg_elem}'"
+                        if k == 'hostname' and exact_hostname:
+                            arg_elem = f'[{arg_elem}]'
+                        arg_filter = "{first}:{second}".format(first=first_arg, second=arg_elem)
                 if arg_filter:
                     url_filter = "{url_filter}{arg_filter}".format(url_filter=url_filter + op if url_filter else '',
                                                                    arg_filter=arg_filter)
@@ -1641,6 +1652,10 @@ def resolve_incident(ids: List[str], status: str):
     return update_incident_request(ids, STATUS_TEXT_TO_NUM[status], 'update_status')
 
 
+def update_incident_comment(ids: List[str], comment: str):
+    return update_incident_request(ids, comment, 'add_comment')
+
+
 def update_incident_request(ids: List[str], value: str, action_name: str):
     data = {
         "action_parameters": [
@@ -1681,7 +1696,7 @@ def delete_host_groups(host_group_ids: List[str]) -> Dict:
     return response
 
 
-def upload_batch_custom_ioc(ioc_batch: List[dict]) -> dict:
+def upload_batch_custom_ioc(ioc_batch: List[dict], timeout: float = None) -> dict:
     """
     Upload a list of IOC
     """
@@ -1689,7 +1704,7 @@ def upload_batch_custom_ioc(ioc_batch: List[dict]) -> dict:
         'indicators': ioc_batch
     }
 
-    return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
+    return http_request('POST', '/iocs/entities/indicators/v1', json=payload, timeout=timeout)
 
 
 def get_behaviors_by_incident(incident_id: str, params: dict = None) -> dict:
@@ -2645,7 +2660,7 @@ def get_endpoint_command():
         return create_entry_object(hr='Please add a filter argument - ip, hostname or id.')
 
     # use OR operator between filters (https://github.com/demisto/etc/issues/46353)
-    raw_res = search_device(filter_operator='OR')
+    raw_res = search_device(filter_operator='OR', exact_hostname='hostname' in args)
 
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
@@ -3601,6 +3616,12 @@ def resolve_incident_command(ids: List[str], status: str):
     return CommandResults(readable_output=readable)
 
 
+def update_incident_comment_command(ids: List[str], comment: str):
+    update_incident_comment(ids, comment)
+    readable = '\n'.join([f'{incident_id} updated successfully with comment \"{comment}\"' for incident_id in ids])
+    return CommandResults(readable_output=readable)
+
+
 def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str] = None, limit: Optional[str] = None) \
         -> CommandResults:
     response = list_host_groups(filter, limit, offset)
@@ -3622,14 +3643,14 @@ def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
 
 
 def upload_batch_custom_ioc_command(
-        multiple_indicators_json: str = None,
+        multiple_indicators_json: str = None, timeout: str = '180',
 ) -> List[dict]:
     """
     :param multiple_indicators_json: A JSON object with list of CS Falcon indicators to upload.
 
     """
     batch_json = safe_load_json(multiple_indicators_json)
-    raw_res = upload_batch_custom_ioc(batch_json)
+    raw_res = upload_batch_custom_ioc(batch_json, timeout=float(timeout))
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
     entry_objects_list = []
@@ -4229,6 +4250,9 @@ def main():
         elif command == 'cs-falcon-resolve-incident':
             return_results(resolve_incident_command(status=args.get('status'),
                                                     ids=argToList(args.get('ids'))))
+        elif command == 'cs-falcon-update-incident-comment':
+            return_results(update_incident_comment_command(comment=args.get('comment'),
+                                                           ids=argToList(args.get('ids'))))
         elif command == 'cs-falcon-batch-upload-custom-ioc':
             return_results(upload_batch_custom_ioc_command(**args))
 
