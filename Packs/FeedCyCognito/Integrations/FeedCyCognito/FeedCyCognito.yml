@@ -377,7 +377,7 @@ script:
     description: Fetches a given limit of indicators from the CyCognito platform and displays them in human-readable format in the war room.
     execution: false
     name: cycognito-get-indicators
-  dockerimage: demisto/pycountry:1.0.0.50186
+  dockerimage: demisto/pycountry:1.0.0.52357
   feed: true
   isfetch: false
   longRunning: false
