@@ -636,7 +636,6 @@ script:
   longRunning: true
   longRunningPort: false
   runonce: false
-  fetchSamples: true
   script: '-'
   subtype: python3
   type: python
