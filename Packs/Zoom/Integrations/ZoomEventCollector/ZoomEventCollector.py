@@ -29,6 +29,7 @@ OAuth)"""
 INVALID_FIRST_FETCH_TIME = "The First fetch time should fall within the last six months."
 
 LOG_TYPES = {"operationlogs": "operation_logs", "activities": "activity_logs"}
+EVENT_TYPE = {"operationlogs": "operation_log", "activities": "activity_log"}
 
 # maximum records that the api can return in one request
 MAX_RECORDS_PER_PAGE = 300
@@ -152,7 +153,7 @@ class Client(BaseClient):  # pragma: no cover # based on Zoom pack
 
         demisto.debug(f"Last run before the fetch run: {last_time} for {log_type}")
         start_date = first_fetch_time if not last_time else \
-            dateparser.parse(last_time).replace(tzinfo=timezone.utc)  # type: ignore # parse last_time only if != None
+            dateparser.parse(last_time).replace(tzinfo=timezone.utc)  # type: ignore[union-attr]
         end_date = datetime.now(timezone.utc)
 
         demisto.debug(f"Starting to get logs from: {start_date} to: {end_date} for {log_type}")
@@ -284,6 +285,7 @@ def fetch_events(client: Client, last_run: dict[str, str], first_fetch_time: dat
         )
         next_run[log_type] = next_run_time
         demisto.debug(f"Received {len(log_events)} events for log type {log_type}")
+        log_events = [event | {"event_type": EVENT_TYPE.get(log_type)} for event in log_events]
         events.extend(log_events)
 
     demisto.debug(f"Returning {len(events)} events in total")
@@ -335,10 +337,10 @@ def main() -> None:
             arg=first_fetch_time,
             arg_name='First fetch time',
             required=True
-        )  # type: ignore # - can't be None
+        )   # type: ignore[assignment]
         if first_fetch_time == '6 months':
             first_fetch_datetime += timedelta(days=1)
-        if first_fetch_datetime <= dateparser.parse('6 months', settings={'TIMEZONE': 'UTC'}):  # type: ignore
+        if first_fetch_datetime <= dateparser.parse('6 months', settings={'TIMEZONE': 'UTC'}):  # type: ignore[operator]
             raise DemistoException("The First fetch time should fall within the last six months. "
                                    "Please provide a valid date within the last six months.")
 
