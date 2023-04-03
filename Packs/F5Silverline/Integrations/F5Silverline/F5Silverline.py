@@ -1,9 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import re
-
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-
 import urllib3
 import traceback
 from typing import Dict, Any
@@ -277,8 +274,9 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
     list_type = args['list_type']
     object_ids = argToList(args.get('object_id'))
     page_number = args.get('page_number')
-    page_size = args.get('page_size')
+    page_size = int(args.get('page_size', 0))
     url_suffix = f'{list_type}/ip_objects'
+    limit = int(args.get('limit', 10000))
     paging_data = []
     paging_data_human_readable = ""
     is_paging_required, params = handle_paging(page_number, page_size)
@@ -286,9 +284,14 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
     if not object_ids:
         # in case the user wants to get all the IP objects and not specific ones
         response = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params=params)
-        outputs = response.get('data')
-        human_results = parse_get_ip_object_list_results(response)
-        if is_paging_required and outputs:
+        outputs = response.get('data', [])
+
+        if is_paging_required and len(outputs) > 0:
+            if page_size > 1000:
+                return_error("page_size can not exceed 1000")
+
+            human_results = parse_get_ip_object_list_results(response)
+            # get a single page
             to_page = response.get('links')
             if list_type == "allowlist":
                 current_page_number, last_page_number = add_paging_to_outputs(to_page, page_number)
@@ -297,7 +300,50 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
                 current_page_number, last_page_number = add_paging_to_outputs(to_page, page_number)
             paging_data = paging_outputs_dict(current_page_number, last_page_number, page_size)
             paging_data_human_readable = paging_data_to_human_readable(current_page_number, last_page_number, page_size)
+        else:
+            if limit > 1000:
+                # limit defaults to 10000 (max size of list in silverline)
+                # initialize next_page_link from the initial request
+                if list_type == "allowlist":
+                    next_page_link = response.get('links', {}).get('next')
+                else:
+                    next_page_link = response.get('links', {}).get('links', {}).get('next')
+
+                while next_page_link:
+                    # get ip objects up to the limit by auto paging the results
+                    # initialize the next page from the first request
+                    next_page_number = re.search(PAGE_NUMBER_PATTERN, next_page_link)
+                    next_page_link = None  # default to end the loop unless set
+                    if next_page_number:
+                        next_page_number = next_page_number.group(0)
+                        # build the parameters for next page
+                        params = paging_args_to_params(1000, next_page_number)
+
+                        np_response = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params=params)
+
+                        if np_response.get('data'):
+                            np_outputs = np_response.get('data', [])
+                            if len(np_outputs) + len(outputs) > limit:
+                                partial_amount = limit - len(outputs)
+                                partial_list = np_outputs[0:partial_amount] if len(np_outputs) > partial_amount else np_outputs
+                                outputs.extend(partial_list)
+                            else:
+                                outputs.extend(np_outputs)
+                                if list_type == "allowlist":
+                                    next_page_link = np_response.get('links', {}).get('next')
+                                else:
+                                    next_page_link = np_response.get('links', {}).get('links', {}).get('next')
+
+                # override response['data'] with the current contents of outputs
+                response['data'] = outputs
+            elif limit < 1000 and len(outputs) > limit:
+                # trim outputs that will be output to context
+                outputs = outputs[0:limit]
+                response['data'] = outputs
+
+            human_results = parse_get_ip_object_list_results(response)
     else:
+        # get specific object_ids
         human_results, outputs = get_ip_objects_by_ids(client, object_ids, list_type, params)  # type: ignore
 
     human_readable = tableToMarkdown(f'F5 Silverline {list_type} IP Objects', human_results, TABLE_HEADERS_GET_OBJECTS,
