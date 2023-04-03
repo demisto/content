@@ -1,0 +1,119 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "10af7775-37d3-4997-86ac-b49c0dad40e9",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"1": "Reset User Password via Chatbot"
+	},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": null,
+	"name": "Slack Classifier",
+	"nameRaw": "Slack Classifier",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": {
+			"filters": [
+				[
+					{
+						"ignoreCase": true,
+						"left": {
+							"isContext": true,
+							"value": {
+								"simple": "Message"
+							}
+						},
+						"operator": "containsString",
+						"right": {
+							"value": {
+								"simple": "reset password"
+							}
+						}
+					},
+					{
+						"ignoreCase": true,
+						"left": {
+							"isContext": true,
+							"value": {
+								"simple": "Message"
+							}
+						},
+						"operator": "containsString",
+						"right": {
+							"value": {
+								"simple": "reset my password"
+							}
+						}
+					},
+					{
+						"left": {
+							"isContext": true,
+							"value": {
+								"simple": "Message"
+							}
+						},
+						"operator": "containsString",
+						"right": {
+							"value": {
+								"simple": "forgot password"
+							}
+						}
+					},
+					{
+						"left": {
+							"isContext": true,
+							"value": {
+								"simple": "Message"
+							}
+						},
+						"operator": "containsString",
+						"right": {
+							"value": {
+								"simple": "forgot my password"
+							}
+						}
+					},
+					{
+						"left": {
+							"isContext": true,
+							"value": {
+								"simple": "Message"
+							}
+						},
+						"operator": "containsString",
+						"right": {
+							"value": {
+								"simple": "password reset"
+							}
+						}
+					}
+				]
+			],
+			"root": "Message",
+			"transformers": [
+				{
+					"operator": "count"
+				}
+			]
+		}
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}

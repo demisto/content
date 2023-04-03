@@ -30,6 +30,7 @@ ignore=BA101
 
 [file:classifier-mapper-outgoing-PaloAltoNetworks_CortexXDR.json]
 ignore=BA101
+
 [file:incidentfield-XDR_Alert_Category.json]
 ignore=IF100
 
@@ -85,3 +86,34 @@ ignore=RM108
 
 [file:Cortex_XDR_incident_handling_v3_6_5.yml]
 ignore=PB121
+
+[file:XCloudResourcesPieWidget.yml]
+ignore=BA124
+
+[file:EntryWidgetNumberResourcesXCLOUD.yml]
+ignore=BA124
+
+[file:EntryWidgetNumberHostsXDR.yml]
+ignore=BA124
+
+[file:EntryWidgetNumberUsersXDR.yml]
+ignore=BA124
+
+[file:XDRConnectedEndpoints.yml]
+ignore=BA124
+
+[file:DBotGroupXDRIncidents.yml]
+ignore=BA124
+
+[file:EntryWidgetNumberRegionsXCLOUD.yml]
+ignore=BA124
+
+[file:XDRDisconnectedEndpoints.yml]
+ignore=BA124
+
+[file:EntryWidgetPieAlertsXDR.yml]
+ignore=BA124
+
+[file:XCloudRegionsPieWidget.yml]
+ignore=BA124
+

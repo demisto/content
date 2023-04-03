@@ -8,4 +8,17 @@ ignore=IN145
 ignore=IM111
 
 [known_words]
-Imperva
+imperva
+
+[file:IncapListSites.yml]
+ignore=BA124
+
+[file:IncapGetAppInfo.yml]
+ignore=BA124
+
+[file:IncapScheduleTask.yml]
+ignore=BA124
+
+[file:IncapGetDomainApproverEmail.yml]
+ignore=BA124
+

@@ -165,3 +165,6 @@ CheckEmailAuthenticity
 DeleteReportedEmail
 GetBrandDeleteReportedEmail
 CommonTypes
+
+[file:LinkToPhishingCampaign.yml]
+ignore=BA124
