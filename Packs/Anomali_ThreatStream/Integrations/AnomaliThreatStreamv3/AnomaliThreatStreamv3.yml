@@ -4554,13 +4554,13 @@ script:
       description: Whether the rule matches keywords in newly created observables.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_reportedfiles
-      description: Whether the rule should match keywords in newly created Sandbox Reports
+      description: Whether the rule should match keywords in newly created sandbox reports.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_signatures
       description: Whether the rule should match keywords in newly created signatures.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_tips
-      description: Whether the rule matches keywords in newly created Threat Bulletins.
+      description: Whether the rule matches keywords in newly created threat bulletins.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_tools
       description: Whether the rule should match keywords in newly created tools.
@@ -4611,7 +4611,7 @@ script:
       description: URL for the avatar image associated with the user who created the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.user.can_share_intelligence
-      description: Whether the user that created the rule can share intelligence.
+      description: Whether the user who created the rule can share intelligence.
       type: Boolean
     - contextPath: ThreatStream.Rule.user.email
       description: Email of the user who created the rule.
@@ -4722,7 +4722,7 @@ script:
       description: Whether the assignee user should be restricted to Read Only status.
       type: Boolean
     - contextPath: ThreatStream.Rule.investigation.assignee.must_change_password
-      description: Whether the investigation assignee user will be forced to change their password the next time they login.
+      description: Whether the investigation assignee user will be forced to change their password the next time they log in.
       type: Boolean
     - contextPath: ThreatStream.Rule.investigation.assignee.name
       description: The investigation assignee user name.
@@ -4731,7 +4731,7 @@ script:
       description: The investigation assignee user nickname.
       type: Unknown
     - contextPath: ThreatStream.Rule.investigation.assignee.resource_uri
-      description: Resource URI associated with the investigation assignee user.
+      description: Resource URI associated with investigation assignee user.
       type: String
     - contextPath: ThreatStream.Rule.investigation.id
       description: The ID of the investigation.
@@ -4773,13 +4773,13 @@ script:
       description: Name of the tag applied to matched entities.
       type: String
     - contextPath: ThreatStream.Rule.tips.id
-      description: ID of the Threat Bulletin with which to associate to matched entities.
+      description: ID of the threat bulletin that associates to matched entities.
       type: String
     - contextPath: ThreatStream.Rule.tips.name
-      description: Name of the Threat Bulletin with which to associate to matched entities.
+      description: Name of the threat bulletin that associates to matched entities.
       type: String
     - contextPath: ThreatStream.Rule.tips.resource_uri
-      description: Resource URI of the Threat Bulletin with which to associate to matched entities.
+      description: Resource URI of the threat bulletin that associates to matched entities.
       type: String
     - contextPath: ThreatStream.Rule.tools
       description: List of tools associated with the rule.
@@ -4816,7 +4816,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "A comma-separated list of fields you want the rule to match to their keywords. Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities."
+      description: 'A comma-separated list of fields you want the rule to match to their keywords. Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities.'
       isArray: true
       name: match_include
       required: true
@@ -5040,7 +5040,7 @@ script:
       description: The investigation assignee user nickname.
       type: Unknown
     - contextPath: ThreatStream.Rule.investigation.assignee.resource_uri
-      description: Resource URI associated with the investigation assignee user.
+      description: Resource URI associated with investigation assignee user.
       type: String
     - contextPath: ThreatStream.Rule.investigation.investigation_config.name
       description: The name of the investigation configuration associated with the rule.
@@ -5187,13 +5187,13 @@ script:
       description: Name of the tag applied to matched entities.
       type: String
     - contextPath: ThreatStream.Rule.tips.id
-      description: ID of the Threat Bulletin with which to associate to matched entities.
+      description: ID of the threat bulletin that associates to matched entities.
       type: String
     - contextPath: ThreatStream.Rule.tips.name
-      description: Name of the Threat Bulletin with which to associate to matched entities.
+      description: Name of the threat bulletin that associates to matched entities.
       type: String
     - contextPath: ThreatStream.Rule.tips.resource_uri
-      description: Resource URI of the Threat Bulletin with which to associate to matched entities.
+      description: Resource URI of the threat bulletin that associates to matched entities.
       type: String
     - contextPath: ThreatStream.Rule.tools
       description: List of tools associated with the rule.
@@ -5217,7 +5217,7 @@ script:
       description: Email of the user who created the rule.
       type: String
     - contextPath: ThreatStream.Rule.user.id
-      description: ID of the user that created the rule.
+      description: ID of the user who created the rule.
       type: String
     - contextPath: ThreatStream.Rule.user.is_active
       description: Whether the user who created the rule is active.
@@ -5281,7 +5281,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "A comma-separated list of fields you want the rule to match to their keywords. Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities."
+      description: 'A comma-separated list of fields you want the rule to match to their keywords. Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities.'
       isArray: true
       name: match_include
       required: false
@@ -5497,7 +5497,7 @@ script:
       description: Whether the assignee user should be restricted to Read Only status.
       type: Boolean
     - contextPath: ThreatStream.Rule.investigation.assignee.must_change_password
-      description: Whether the assignee user will be forced to change their password the next time they login.
+      description: Whether the assignee user will be forced to change their password the next time they log in.
       type: Boolean
     - contextPath: ThreatStream.Rule.investigation.assignee.name
       description: The investigation assignee user name.
@@ -5506,7 +5506,7 @@ script:
       description: The investigation assignee user nickname.
       type: Unknown
     - contextPath: ThreatStream.Rule.investigation.assignee.resource_uri
-      description: Resource URI associated with the investigation assignee user.
+      description: Resource URI associated with investigation assignee user.
       type: String
     - contextPath: ThreatStream.Rule.investigation.investigation_config.name
       description: The name of the investigation configuration associated with the rule.
@@ -5653,13 +5653,13 @@ script:
       description: Name of the tag applied to matched entities.
       type: String
     - contextPath: ThreatStream.Rule.tips.id
-      description: ID of the Threat Bulletin with which to associate to matched entities.
+      description: ID of the threat bulletin that associates to matched entities.
       type: String
     - contextPath: ThreatStream.Rule.tips.name
-      description: Name of the Threat Bulletin with which to associate to matched entities.
+      description: Name of the threat bulletin that associates to matched entities.
       type: String
     - contextPath: ThreatStream.Rule.tips.resource_uri
-      description: Resource URI of the Threat Bulletin with which to associate to matched entities.
+      description: Resource URI of the threat bulletin that associates to matched entities.
       type: String
     - contextPath: ThreatStream.Rule.tools
       description: List of tools associated with the rule.
@@ -5683,7 +5683,7 @@ script:
       description: Email of the user who created the rule.
       type: String
     - contextPath: ThreatStream.Rule.user.id
-      description: ID of the user that created the rule.
+      description: ID of the user who created the rule.
       type: String
     - contextPath: ThreatStream.Rule.user.is_active
       description: Whether the user who created the rule is active.
@@ -5891,7 +5891,7 @@ script:
       description: Whether the assignee user should be restricted to Read Only status.
       type: Boolean
     - contextPath: ThreatStream.Investigation.assignee.must_change_password
-      description: Whether the assignee user will be forced to change their password the next time they login.
+      description: Whether the assignee user will be forced to change their password the next time they log in.
       type: Boolean
     - contextPath: ThreatStream.Investigation.assignee.name
       description: The investigation assignee user name.
@@ -6157,7 +6157,7 @@ script:
       description: Whether the assignee user should be restricted to Read Only status.
       type: Boolean
     - contextPath: ThreatStream.Investigation.assignee.must_change_password
-      description: Whether the assignee user will be forced to change their password the next time they login.
+      description: Whether the assignee user will be forced to change their password the next time they log in.
       type: Boolean
     - contextPath: ThreatStream.Investigation.assignee.name
       description: The investigation assignee user name.
@@ -6253,7 +6253,7 @@ script:
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.Investigation.elements.entity.tlp
-      description: Traffic Light Protocol designation for the entity-red, amber, green, white.
+      description: Traffic Light Protocol designation for the entity—red, amber, green, white.
       type: String
     - contextPath: ThreatStream.Investigation.elements.entity.uuid
       description: UUID assigned to the entity.
@@ -6343,7 +6343,7 @@ script:
       description: A string representing the creator of the entity.
       type: String
     - contextPath: ThreatStream.Investigation.elements.entity.expiration_ts
-      description: The timestamp when entity will expire on ThreatStream.
+      description: The timestamp when the entity will expire on ThreatStream.
       type: Date
     - contextPath: ThreatStream.Investigation.elements.entity.import_session_id
       description: A number representing the import session ID of the entity.
@@ -6564,10 +6564,10 @@ script:
       description: Whether the assignee user is active.
       type: Boolean
     - contextPath: ThreatStream.Investigation.assignee.is_readonly
-      description: Whether the asiignee user should be restricted to Read Only status.
+      description: Whether the assignee user should be restricted to Read Only status.
       type: Boolean
     - contextPath: ThreatStream.Investigation.assignee.must_change_password
-      description: Whether the assignee user will be forced to change their password the next time they login.
+      description: Whether the assignee user will be forced to change their password the next time they log in.
       type: Boolean
     - contextPath: ThreatStream.Investigation.assignee.name
       description: The investigation assignee user name.
@@ -6667,10 +6667,10 @@ script:
       required: true
       secret: false
     name: threatstream-delete-investigation
-    description: 'Deletes an existing investigation at ThreatStream.'
+    description: Deletes an existing investigation at ThreatStream.
   - arguments:
     - default: false
-      description: The ID of the investigation. Use the threatstream-get-model-list command to get the investigation id value.
+      description: The ID of the investigation. Use the threatstream-get-model-list command to get the investigation ID.
       isArray: false
       name: investigation_id
       required: true
@@ -6736,7 +6736,7 @@ script:
     deprecated: false
     execution: false
     name: threatstream-add-investigation-element
-    description: 'Add an elements to existing investigation at ThreatStream.'
+    description: Add an element to the existing investigation at ThreatStream.
   - arguments:
     - auto: PREDEFINED
       default: true
@@ -6770,23 +6770,23 @@ script:
       secret: false
     deprecated: false
     execution: false
-    description: "Get a list of whitelist entries"
+    description: Get a list of whitelist entries.
     name: threatstream-list-whitelist-entry
     outputs:
     - contextPath: InfoFile.Name
-      description: FileName
+      description: Name of the file.
       type: string
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the report
+      description: The entry ID of the report.
       type: string
     - contextPath: InfoFile.Size
-      description: File Size
+      description: Size of the file.
       type: number
     - contextPath: InfoFile.Type
-      description: File type e.g. "PE"
+      description: File type, e.g., "PE".
       type: string
     - contextPath: InfoFile.Info
-      description: Basic information of the file
+      description: Basic information of the file.
       type: string
     - contextPath: ThreatStream.WhitelistEntry.created_ts
       description: Timestamp of when the entry was created.
@@ -6807,17 +6807,17 @@ script:
       description: Value of the entry.
       type: String
     - contextPath: ThreatStream.WhitelistEntry.value_type
-      description: Value type the entry.
+      description: Value type of the entry.
       type: String
   - arguments:
     - default: false
-      description: The entry id of the file you want to upload.
+      description: The entry ID of the file you want to upload.
       isArray: false
       name: entry_id
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of cidrs associated with the entry.
+      description: A comma-separated list of CIDRs associated with the entry.
       isArray: true
       name: cidr
       required: false
@@ -6835,36 +6835,36 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of ips associated with the entry.
+      description: A comma-separated list of IPs associated with the entry.
       isArray: true
       name: ips
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of md5 associated with the entry.
+      description: A comma-separated list of MD5 hashes associated with the entry.
       isArray: true
       name: md5
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of urls associated with the entry.
+      description: A comma-separated list of URLs associated with the entry.
       isArray: true
       name: urls
       required: false
     - default: false
-      description: A comma-separated list of user_agents associated with the entry.
+      description: A comma-separated list of user agents associated with the entry.
       isArray: true
       name: user_agents
       required: false
     - default: false
-      description: A note that will be associated with all the indicators type that are provided in the command arguments.
+      description: A note that will be associated with all the indicator types that are provided in the command arguments.
       isArray: false
       name: note
       required: false
       secret: false
     deprecated: false
     execution: false
-    description: "Creates a new whitelist entry"
+    description: Creates a new whitelist entry.
     name: threatstream-create-whitelist-entry
   - arguments:
     - default: false
@@ -6874,7 +6874,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A note that will be associated with all the indicators type that are provided in the command arguments.
+      description: A note that will be associated with all the indicator types that are provided in the command arguments.
       isArray: false
       name: note
       required: true
@@ -6885,18 +6885,18 @@ script:
     name: threatstream-update-whitelist-entry-note
   - arguments:
     - default: false
-      description: The ID of the entry you want to update. Use the threatstream-list-whitelist-entry command to get the entry id value.
+      description: The ID of the entry you want to update. Use the threatstream-list-whitelist-entry command to get the entry ID.
       isArray: false
       name: entry_id
       required: true
       secret: false
     deprecated: false
     execution: false
-    description: "Delete a whitelist entry"
+    description: Delete a whitelist entry.
     name: threatstream-delete-whitelist-entry
   - arguments:
     - default: false
-      description: When specified, the results returned in the list are limited to specific import id.
+      description: When specified, the results returned in the list are limited to specific import ID.
       isArray: false
       name: import_id
       required: false
@@ -6934,14 +6934,14 @@ script:
       secret: false
     deprecated: false
     execution: false
-    description: "Gets an import list"
+    description: Gets an import list.
     name: threatstream-list-import-job
     outputs:
     - contextPath: ThreatStream.Import.approved_by_id
-      description: The id of the user that approved the import.
+      description: The ID of the user who approved the import.
       type: Unknown
     - contextPath: ThreatStream.Import.confidence
-      description: Confidence scores assigned to import.
+      description: Confidence scores assigned to the import.
       type: Number
     - contextPath: ThreatStream.Import.date
       description: A date representing the import date.
@@ -6959,7 +6959,7 @@ script:
       description: Whether the source domain is excluded.
       type: Boolean
     - contextPath: ThreatStream.Import.expiration_ts
-      description: The timestamp when import will expire on ThreatStream.
+      description: The timestamp when the import will expire on ThreatStream.
       type: Date
     - contextPath: ThreatStream.Import.fileName
       description: A string representing the name of file associated with the import.
@@ -7019,7 +7019,7 @@ script:
       description: A date representing the timestamp when the import was processed.
       type: Date
     - contextPath: ThreatStream.Import.resource_uri
-      description: Resource URI associated with entity.
+      description: Resource URI associated with the entity.
       type: String
     - contextPath: ThreatStream.Import.sandbox_submit
       description: The sandbox submit.
@@ -7037,7 +7037,7 @@ script:
       description: Traffic Light Protocol designation.
       type: Unknown
     - contextPath: ThreatStream.Import.user_id
-      description: A string representing the ID associated with the user that created the import.
+      description: A string representing the ID associated with the user who created the import.
       type: Number
     - contextPath: ThreatStream.Import.visibleForReview
       description: Whether the entity is visible for review.
@@ -7051,7 +7051,7 @@ script:
       secret: false
     deprecated: false
     execution: false
-    description: Approving all observables in an import job
+    description: Approve all observables in an import job.
     name: threatstream-approve-import-job
   - arguments:
     - default: false
@@ -7061,7 +7061,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The name of the threat model.'
+      description: The name of the threat model.
       isArray: false
       name: name
       required: false
@@ -7073,19 +7073,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Other names by which the entitiy are known.'
+      description: Other names by which the entity are known.
       isArray: false
       name: alias
       required: false
       secret: false
     - default: false
-      description: 'Numeric ID of the threat feed that provided the Threat Model entity.'
+      description: Numeric ID of the threat feed that provided the Threat Model entity.
       isArray: false
       name: feed_id
       required: false
       secret: false
     - auto: PREDEFINED
-      description: 'Whether the entitiy was created as a result of an email import.'
+      description: Whether the entity was created as a result of an email import.
       isArray: false
       name: is_email
       predefined:
@@ -7095,7 +7095,7 @@ script:
       secret: false
       default: false
     - auto: PREDEFINED
-      description: 'Whether the entity is public or private. True—if the entitiy is public, False—if the entitiy is private or belongs to a Trusted Circle'
+      description: 'Whether the entity is public or private. True—if the entity is public, False—if the entity is private or belongs to a Trusted Circle.'
       isArray: false
       name: is_public
       predefined:
@@ -7105,19 +7105,19 @@ script:
       secret: false
       default: false
     - default: false
-      description: 'A comma-separated list of publication status. Supported values are: new, pending_review, review_requested, reviewed.'
+      description: 'A comma-separated list of publication statuses. Supported values are: new, pending_review, review_requested, reviewed.'
       isArray: true
       name: publication_status
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of signature type. Supported values are: Bro, Carbon Black Query, ClamAV, Custom, CybOX, OpenIOC, RSA NetWitness, Snort, Splunk Query, Suricata, YARA'
+      description: 'A comma-separated list of signature types. Supported values are: Bro, Carbon Black Query, ClamAV, Custom, CybOX, OpenIOC, RSA NetWitness, Snort, Splunk Query, Suricata, YARA'
       isArray: true
       name: signature_type
       required: false
       secret: false
     - default: false
-      description: 'A comma-spareated list of Additional comments and context associated with the entitiy when it was imported from its original threat feed.'
+      description: 'A comma-separated list of additional comments and context associated with the entity when it was imported from its original threat feed.'
       isArray: true
       name: tags
       required: false
@@ -7149,7 +7149,7 @@ script:
       secret: false
     deprecated: false
     execution: false
-    description: "retrieve threat model entities from ThreatStream"
+    description: Retrieve threat model entities from ThreatStream.
     name: threatstream-search-threat-model
     outputs:
     - contextPath: ThreatStream.ThreatModel.source_created
@@ -7159,16 +7159,16 @@ script:
       description: Trusted circles with which data from streams is shared.
       type: Unknown
     - contextPath: ThreatStream.ThreatModel.feed_id
-      description: Numeric ID of the threat feed that provided the Threat Model entity.
+      description: Numeric ID of the threat feed that provided the threat model entity.
       type: Number
     - contextPath: ThreatStream.ThreatModel.workgroups
       description: Workgroups to which the threat model is visible.
       type: Unknown
     - contextPath: ThreatStream.ThreatModel.aliases
-      description: Other names by which the actors are known.
+      description: Other names by which the threat model are known.
       type: Unknown
     - contextPath: ThreatStream.ThreatModel.is_email
-      description: Whether the threat bulletin was created as a result of an email import.
+      description: Whether the threat model was created as a result of an email import.
       type: Unknown
     - contextPath: ThreatStream.ThreatModel.published_ts
       description: Timestamp of when the entity was published on ThreatStream, in UTC format.
@@ -7180,22 +7180,22 @@ script:
       description: Timestamp of when the entity was last updated by its original source.
       type: Date
     - contextPath: ThreatStream.ThreatModel.type
-      description: The Threat Model type.
+      description: The threat model type.
       type: String
     - contextPath: ThreatStream.ThreatModel.start_date
-      description: Time when a Threat Model was known to have started.
+      description: Time when a threat model was known to have started.
       type: Unknown
     - contextPath: ThreatStream.ThreatModel.publication_status
-      description: An actor can be in new, pending_review, review_requested, reviewed, published statuses.
+      description: The publication status. A threat model can be in new, pending_review, review_requested, reviewed, published statuses.
       type: String
     - contextPath: ThreatStream.ThreatModel.end_date
       description: Time when a Threat Model was known to have ended.
       type: Unknown
     - contextPath: ThreatStream.ThreatModel.tags.id
-      description: The id of the tag assigned to the actor.
+      description: The ID of the tag assigned to the threat model.
       type: String
     - contextPath: ThreatStream.ThreatModel.tags.name
-      description: The name of the tag assigned to the actor.
+      description: The name of the tag assigned to the threat model.
       type: String
     - contextPath: ThreatStream.ThreatModel.modified_ts
       description: Timestamp of when the tag was last updated on ThreatStream, in UTC format.
@@ -7204,25 +7204,25 @@ script:
       description: Whether the entity is public or private.
       type: Boolean
     - contextPath: ThreatStream.ThreatModel.uuid
-      description: UUID (universally unique identifier) assigned to the observable for STIX compliance.
+      description: UUID (universally unique identifier) assigned to the threat model for STIX compliance.
       type: String
     - contextPath: ThreatStream.ThreatModel.created_ts
-      description: 'Timestamp when the ThreatModel was created.'
+      description: Timestamp when the threat model was created.
       type: String
     - contextPath: ThreatStream.ThreatModel.tlp
-      description: 'TLP setting associated with the entity.'
+      description: TLP setting associated with the entity.
       type: String
     - contextPath: ThreatStream.ThreatModel.name
-      description: 'Name of the entity.'
+      description: Name of the entity.
       type: String
     - contextPath: ThreatStream.ThreatModel.status
-      description: 'Status of the entity.'
+      description: Status of the entity.
       type: Unknown
     - contextPath: ThreatStream.ThreatModel.model_type
-      description: 'Type of threat model entity.'
+      description: Type of threat model entity.
       type: String
     - contextPath: ThreatStream.ThreatModel.resource_uri
-      description: 'Resource URI associated with the entity.'
+      description: Resource URI associated with the entity.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -7254,7 +7254,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The entities IDs to associate with the primary entity. Note: The model type of all the IDs must be equal to the type in the  “associated_entity_type” argument.'
+      description: 'The entities IDs to associate with the primary entity. Note: The model type of all the IDs must be equal to the type in the “associated_entity_type” argument.'
       isArray: true
       name: associated_entity_ids
       required: true
