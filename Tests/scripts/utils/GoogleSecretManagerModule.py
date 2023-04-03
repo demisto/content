@@ -58,7 +58,7 @@ class GoogleSecreteManagerModule:
                     if missing_attrs:
                         missing_attrs_str = ','.join(missing_attrs)
                         print(
-                            # f'Error getting the secret: {secret.name}, it\'s missing the following required attributes: {missing_attrs_str}')  # noqa: E501
+                            # logging.error(f'Error getting the secret: {secret.name}, it\'s missing the following required attributes: {missing_attrs_str}')  # noqa: E501
                             f'Error getting the secret: {secret.name}, it\'s missing the following required attributes: {missing_attrs_str}')  # noqa: E501
                         continue
                     secrets.append(secret_value)

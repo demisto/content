@@ -73,13 +73,13 @@ def get_git_diff(branch_name, repo):
 
 
 def run(options):
-    # raise Exception(f'ppppaaaaattttthhhh: {Path(__file__).absolute()},ppppaaaaattttthhhh: {Path(__file__).absolute().parents[3]},ppppaaaaattttthhhh: {Path(__file__).absolute().parents[2]}')
     PATHS = PathManager(Path(__file__).absolute().parents[2])
     branch_name = PATHS.content_repo.active_branch.name
     import pathlib
     root_dir = Path(__file__).absolute().parents[2]
     root_dir_instance = pathlib.Path(root_dir)
     filesindir = [item.name for item in root_dir_instance.glob("*")]
+    # Add Ddup
     changed_files = get_git_diff(branch_name, PATHS.content_repo)
     changed_packs = []
     yml_ids = []
@@ -124,6 +124,7 @@ def run(options):
                                             attr_validation=('name', 'params'))
     secrets_dev = secret_conf_dev.list_secrets(options.gsm_project_id, with_secret=True,
                                                 attr_validation=('name', 'params'), branch_name=branch_name)
+    # TODO: talk about an error output notification/handling
     print(f'secrets pre merge: {secrets}')
     print(f'secrets_dev: {secrets_dev}')
     if secrets_dev:
@@ -143,7 +144,6 @@ def run(options):
         "userPassword": options.password,
         "integrations": secrets
     }
-
     with open(options.json_path_file, 'w') as secrets_out_file:
         try:
             secrets_out_file.write(json5.dumps(secret_file, quote_keys=True))
