@@ -21,6 +21,8 @@ tasks:
       '#none#':
       - "1"
       - "45"
+      - "118"
+      - "65"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -59,7 +61,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
+          "x": 1080,
           "y": 180
         }
       }
@@ -102,7 +104,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
+          "x": 1080,
           "y": 320
         }
       }
@@ -115,26 +117,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: e33c3871-8a14-47bc-8922-592c99eb9159
+    taskid: bc4425c7-f5a6-4889-8bda-7077c5288dff
     type: title
     task:
-      id: e33c3871-8a14-47bc-8922-592c99eb9159
+      id: bc4425c7-f5a6-4889-8bda-7077c5288dff
       version: -1
-      name: Download Signatures
+      name: Download Sigma Rules
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "46"
+      - "117"
       - "64"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 0,
+          "x": -420,
           "y": 180
         }
       }
@@ -147,10 +149,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 40011fe0-8d28-404c-869e-ddb6911289b5
+    taskid: 60e876d5-4598-4419-8215-e2e071d57ce1
     type: regular
     task:
-      id: 40011fe0-8d28-404c-869e-ddb6911289b5
+      id: 60e876d5-4598-4419-8215-e2e071d57ce1
       version: -1
       name: Download Yara rules
       description: |-
@@ -178,6 +180,7 @@ tasks:
       url:
         simple: https://raw.githubusercontent.com/Neo23x0/signature-base/master/yara/gen_mal_3cx_compromise_mar23.yar
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -225,7 +228,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1460,
+          "x": 1490,
           "y": 320
         }
       }
@@ -238,16 +241,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 27b0b13e-a8d9-4d0e-8739-6e87a368f5d2
+    taskid: bb87ed11-5429-4ed4-8740-9e4df5833f65
     type: regular
     task:
-      id: 27b0b13e-a8d9-4d0e-8739-6e87a368f5d2
+      id: bb87ed11-5429-4ed4-8740-9e4df5833f65
       version: -1
-      name: Download Sigma rules
+      name: Potential Compromised 3CXDesktopApp ICO C2 File Download
       description: |-
         This file contains a Sigma rule provided by Nasreddine Bencherchali (Nextron Systems).
 
-        Reference: [proxy_malware_3cx_compromise.yml](https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_malware_3cx_compromise.yml)
+        Reference: [proxy_malware_3cx_compromise_c2_beacon_activity.yml](https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_malware_3cx_compromise_c2_beacon_activity.yml)
       tags:
       - Sigma
       scriptName: HttpV2
@@ -259,7 +262,7 @@ tasks:
       - "65"
     scriptarguments:
       filename:
-        simple: proxy_malware_3cx_compromise.yml
+        simple: proxy_malware_3cx_compromise_susp_ico_requests.yml
       method:
         simple: GET
       save_as_file:
@@ -267,8 +270,9 @@ tasks:
       unsecure:
         simple: "True"
       url:
-        simple: https://raw.githubusercontent.com/SigmaHQ/sigma/master/rules/web/proxy_generic/proxy_malware_3cx_compromise.yml
+        simple: https://raw.githubusercontent.com/SigmaHQ/sigma/master/rules/web/proxy_generic/proxy_malware_3cx_compromise_susp_ico_requests.yml
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -286,10 +290,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 41af828e-a83b-4b9a-8793-517c05854519
+    taskid: 58e56f5b-9cba-4f3d-8c10-bfbe7b87e083
     type: title
     task:
-      id: 41af828e-a83b-4b9a-8793-517c05854519
+      id: 58e56f5b-9cba-4f3d-8c10-bfbe7b87e083
       version: -1
       name: Extract Indicators
       type: title
@@ -317,10 +321,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: d7d1d2de-4aaa-4c45-84eb-3e1e500d536f
+    taskid: 36a7d5d6-3cc6-434b-8c55-7a0668248cd7
     type: regular
     task:
-      id: d7d1d2de-4aaa-4c45-84eb-3e1e500d536f
+      id: 36a7d5d6-3cc6-434b-8c55-7a0668248cd7
       version: -1
       name: Extract indicators from collected data
       description: commands.local.cmd.extract.indicators
@@ -336,6 +340,27 @@ tasks:
         complex:
           root: http.parsedBlog
           accessor: indicators
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: |-
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon1.ico
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon2.ico
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon3.ico
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon4.ico
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon5.ico
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon6.ico
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon7.ico
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon8.ico
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon9.ico
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon10.ico
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon11.ico
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon12.ico
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon13.ico
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon14.ico
+                    hxxps://raw.githubusercontent[.]com/IconStorages/images/main/icon15.ico
     reputationcalc: 2
     separatecontext: false
     continueonerror: true
@@ -344,7 +369,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 630
+          "y": 620
         }
       }
     note: false
@@ -1802,10 +1827,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "103":
     id: "103"
-    taskid: 3e43d76b-8399-4d25-8bda-380c28e5d566
+    taskid: d62534cf-f5a8-4366-8ae1-f9f674158ce6
     type: playbook
     task:
-      id: 3e43d76b-8399-4d25-8bda-380c28e5d566
+      id: d62534cf-f5a8-4366-8ae1-f9f674158ce6
       version: -1
       name: Block Indicators - Generic v3
       description: |+
@@ -1834,92 +1859,22 @@ tasks:
         simple: "True"
       CustomURLCategory:
         simple: XSOAR Remediation - Malicious URLs
-      FilesToBlock:
+      DomainToBlock:
         complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
+          root: Domain
+          accessor: Name
       IP:
         complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: ip
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
+          root: IP
+          accessor: Address
           transformers:
           - operator: uniq
       InputEnrichment:
         simple: "False"
       MD5:
         complex:
-          root: DBotScore
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-          accessor: Indicator
+          root: File
+          accessor: MD5
           transformers:
           - operator: uniq
       RuleDirection:
@@ -1928,91 +1883,18 @@ tasks:
         simple: XSOAR - Block Indicators playbook - ${incident.id}
       SHA256:
         complex:
-          root: DBotScore
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-          accessor: Indicator
+          root: File
+          accessor: SHA256
           transformers:
           - operator: uniq
       URL:
         complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: url
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
+          root: URL
+          accessor: Data
           transformers:
           - operator: uniq
       UserVerification:
         simple: "True"
-      Username:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: username
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -2176,7 +2058,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 4130
+          "y": 4110
         }
       }
     note: false
@@ -2272,7 +2154,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 3960
+          "y": 3950
         }
       }
     note: false
@@ -2350,16 +2232,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "115":
     id: "115"
-    taskid: 4f6a08d0-39e0-4f74-8444-e348ea75a431
+    taskid: d33bf0f0-795c-47ba-8330-de34e144d120
     type: regular
     task:
-      id: 4f6a08d0-39e0-4f74-8444-e348ea75a431
+      id: d33bf0f0-795c-47ba-8330-de34e144d120
       version: -1
       name: Deploy Sigma rules
-      description: |
-        The Sigma rules file is ready to be used in the incident War Room, you can also find it by filtering for '**Sigma**' tag.
-
-        File name: proxy_malware_3cx_compromise.yml
+      description: "The Sigma rules file is ready to be used in the incident War Room, you can also find it by filtering for '**Sigma**' tag.\n\nFile names: \n\n1. proxy_malware_3cx_compromise_susp_ico_requests.yml\n2. proxy_malware_3cx_compromise_c2_beacon_activity.yml\n\n"
       type: regular
       iscommand: false
       brand: ""
@@ -2414,8 +2293,88 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
+          "x": 670,
           "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: 86026b89-36f4-4b7d-8f14-b2ffd5074114
+    type: regular
+    task:
+      id: 86026b89-36f4-4b7d-8f14-b2ffd5074114
+      version: -1
+      name: Potential Compromised 3CXDesktopApp Beaconing Activity - Proxy
+      description: |-
+        This file contains a Sigma rule provided by Nasreddine Bencherchali (Nextron Systems).
+
+        Reference: [proxy_malware_3cx_compromise_c2_beacon_activity.yml](https://github.com/SigmaHQ/sigma/blob/master/rules/web/proxy_generic/proxy_malware_3cx_compromise_c2_beacon_activity.yml)
+      tags:
+      - Sigma
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      filename:
+        simple: proxy_malware_3cx_compromise_c2_beacon_activity.yml
+      method:
+        simple: GET
+      save_as_file:
+        simple: "yes"
+      unsecure:
+        simple: "True"
+      url:
+        simple: https://raw.githubusercontent.com/SigmaHQ/sigma/master/rules/web/proxy_generic/proxy_malware_3cx_compromise_c2_beacon_activity.yml
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: bdb5bf8c-d2cf-4e42-82b0-0db20c59cc92
+    type: title
+    task:
+      id: bdb5bf8c-d2cf-4e42-82b0-0db20c59cc92
+      version: -1
+      name: Download Yara Rules
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 180
         }
       }
     note: false
@@ -2441,9 +2400,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4175,
-        "width": 3350,
-        "x": -210,
+        "height": 4155,
+        "width": 3770,
+        "x": -630,
         "y": 20
       }
     }
