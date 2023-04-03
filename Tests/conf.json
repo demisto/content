@@ -7,7 +7,7 @@
         "instance_configuration": "Allows to configure integration instance non-parameters classifier and incoming mapper.",
         "instance_names": "Specific instance names the test should run on. Can hold a list.",
         "integrations": "Integrations that the test uses. Can hold a list.",
-        "is_mockable": "Determines whether the results can bexed in the test. A boolean.",
+        "is_mockable": "Determines whether the results can be mocked in the test. A boolean.",
         "memory_threshold": "Maximum amount of memory required for this test. A number.",
         "nightly": "Determines whether the test will run only on a nightly build. Relevant only for nightly packs. A boolean.",
         "pid_threshold": "Maximum amount of processes allowed for this test. A number.",
@@ -2691,7 +2691,8 @@
                 "Cylance Protect v2",
                 "carbonblack-v2",
                 "epo",
-                "Active Directory Query v2"
+                "Active Directory Query v2",
+                "VMware Carbon Black EDR v2"
             ],
             "instance_names": "active_directory_ninja"
         },
@@ -4316,6 +4317,7 @@
         {
             "playbookID": "MSGraph_DeviceManagement_Test",
             "fromversion": "5.0.0",
+            "instance_names": "ms_graph_device_management_self_deployed_prod",
             "integrations": [
                 "Microsoft Graph Device Management"
             ]
@@ -4450,6 +4452,7 @@
         {
             "playbookID": "Microsoft Graph Calendar - Test",
             "fromversion": "5.0.0",
+            "instance_names": "ms_graph_calendar_dev",
             "integrations": [
                 "Microsoft Graph Calendar"
             ]
@@ -5350,7 +5353,7 @@
                 "UnpublishThreatIntelReport"
             ]
         },
-        {            
+        {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "Microsoft SQL Server - MS ODBC Driver",
@@ -5670,7 +5673,6 @@
         "ThreatGridv2": "No instance - developed by Qmasters",
         "SentinelOne V2": "No instance - developed by partner"
     },
-    "nightly_integrations": [],
     "nightly_packs": [
         "CommonScripts",
         "CommonPlaybooks",

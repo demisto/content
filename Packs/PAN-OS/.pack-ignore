@@ -30,13 +30,17 @@ ignore=PB121
 
 [known_words]
 pcaps
-FW
+fw
 dst
-feedExpirationPolicy
-feedExpirationInterval
+feedexpirationpolicy
+feedexpirationinterval
 pan-os-list-edls
-EDLs
+edls
 finanical
 ransomeware
 pbf
 ampersand
+
+[file:PanoramaCVECoverage.yml]
+ignore=BA124
+
