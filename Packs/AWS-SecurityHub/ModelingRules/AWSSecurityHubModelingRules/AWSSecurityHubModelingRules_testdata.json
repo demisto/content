@@ -40,7 +40,7 @@
         }
       },
       "expected_values": {
-        "xdm.alert.subcategory": "Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark",
+        "xdm.alert.subcategory": "[\"Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark\"]",
         "xdm.alert.description": "AWS IAM users can access AWS resources using different types of credentials, such as passwords or access keys. It is recommended that all credentials that have been unused in 90 or greater days be removed or deactivated.",
         "xdm.source.zone": "eu-central-1",
         "xdm.source.cloud.provider": "AWS",
