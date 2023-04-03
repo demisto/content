@@ -14,6 +14,7 @@ from requests.auth import HTTPBasicAuth
 import requests
 import urllib3.util
 
+
 from MicrosoftApiModule import *
 
 # Disable insecure warnings
