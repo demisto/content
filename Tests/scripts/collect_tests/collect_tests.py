@@ -532,10 +532,10 @@ class TestCollector(ABC):
             if (not allow_incompatible_marketplace or (allow_incompatible_marketplace and not is_xsoar_and_xsiam_pack)) \
                     and not collect_only_to_upload:
                 raise
-        finally:
-            # If changes are done to README files. Upload only.
-            if reason == CollectionReason.README_FILE_CHANGED:
-                collect_only_to_upload = True
+
+        # If changes are done to README files. Upload only.
+        if reason == CollectionReason.README_FILE_CHANGED:
+            collect_only_to_upload = True
 
         version_range = content_item_range \
             if pack_metadata.version_range.is_default \
