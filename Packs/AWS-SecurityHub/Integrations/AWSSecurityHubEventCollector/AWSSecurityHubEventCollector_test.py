@@ -1,5 +1,3 @@
-import datetime
-import json
 from pathlib import Path
 
 import pytest
@@ -23,6 +21,9 @@ def load_test_data(folder: str, file_name: str) -> dict:
 
 
 class MockClient:
+    """
+
+    """
     findings_data = load_test_data('api_mock', 'get_findings_10')
     calls_count = 0
     last_index = 0  # Used to mock pagination
@@ -51,9 +52,9 @@ class MockClient:
 
     def reset(self):
         """
-        Reset the mock pagination index.
-        Use if you want to mock a new call to get_findings.
+        A function for resetting the mock client.
         """
+        self.calls_count = 0
         self.last_index = 0
 
 
@@ -73,18 +74,28 @@ def client():
                              (2, 5, 3, "fetch_events_expected_results_1"),
                              (100, 5, 1, "fetch_events_expected_results_1"),
                          ])
-def test_fetch_events(client, page_size: int, limit: int, expected_api_calls_count: int, expected_output_file: str):
+def test_fetch(client, page_size: int, limit: int, expected_api_calls_count: int, expected_output_file: str):
     """
     Given: A page size parameter for the fetch events function.
     When: Fetching events from the API.
     Then: Assert the returned events are valid, and the number of API calls is as expected.
+
+    Note: This is a test for both 'fetch_events' and 'get_events_command' functions.
     """
+    expected_output = load_test_data("expected_results", expected_output_file)
+
     first_fetch_time = dt.datetime(2021, 1, 1)
     events, _ = fetch_events(client=client, last_run={},
                              first_fetch_time=first_fetch_time, page_size=page_size, limit=limit)
 
-    expected_output = load_test_data("expected_results", expected_output_file)
-
     assert client.calls_count == expected_api_calls_count
     assert len(events) == len(expected_output)
+    assert events == expected_output
+
+    client.reset()
+
+    result = get_events_command(client=client, should_push_events=False, page_size=page_size, limit=limit)
+
+    assert client.calls_count == expected_api_calls_count
+    assert result.readable_output == tableToMarkdown('AWS Security Hub Events', expected_output, sort_headers=False)
     assert events == expected_output

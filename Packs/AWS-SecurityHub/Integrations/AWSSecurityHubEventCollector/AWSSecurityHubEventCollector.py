@@ -142,7 +142,9 @@ def fetch_events(client: boto3.client, last_run: dict, first_fetch_time: dt.date
             events.extend(events_batch)
 
     except Exception as e:
-        demisto.error(f'Error while fetching events: {e}')
+        demisto.error(f'Error while fetching events.'
+                      f'Events fetched so far: {len(events)}'
+                      f'Error: {e}')
         error = e
 
     # --- Set next_run data ---
@@ -284,7 +286,13 @@ def main():  # pragma: no cover
 
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
-            if error:
+            if error and events:
+                raise Exception(f'An error occurred while running fetch-events. '
+                                f'The operation was partially successful, but failed midway.\n'
+                                f'A total of {len(events)} events were successfully fetched '
+                                f'before the error occurred.') from error
+
+            elif error:
                 raise error
 
         else:
@@ -292,7 +300,7 @@ def main():  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{e}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
