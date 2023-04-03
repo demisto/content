@@ -36,7 +36,7 @@
         "end Time UTC": "09/08/2022 07:51:17",
         "all vault operations in last 24 hours": "[SecretSet:1, SecretGet:5, Authentication:2, VaultGet:3]",
         "suspicious Operations": "[SecretGet:2, VaultGet:2]",
-        "attacker IP Address": "00.00.00.00",
+        "attacker IP Address": "0.0.0.0",
         "attacker Object ID": "00000000-0000-0000-0000-000000000000",
         "application ID": "00000000-0000-0000-0000-000000000000",
         "result Signature": "OK",
@@ -59,7 +59,7 @@
         },
         {
           "$id": "centralus_8",
-          "address": "00.00.00.00",
+          "address": "0.0.0.0",
           "location": {
             "countryCode": "US",
             "countryName": "United States",
@@ -154,7 +154,7 @@
         "2. If only specific IP addresses should be allowed to access the web app, set IP restrictions (https://docs.microsoft.com/azure/app-service/app-service-ip-restrictions) for it."
       ],
       "extendedProperties": {
-        "sample Source IP Addresses": "00.00.00.00",
+        "sample Source IP Addresses": "0.0.0.0",
         "sample User Agents": "Mozilla/5.0+(Windows+NT+10.0;+Win64;+x64;+rv:48.0)+Gecko/20100101+Firefox/48.0, Mozilla/5.0+(Windows+NT+10.0;+Win64;+x64)+AppleWebKit/537.36+(KHTML,+like+Gecko)+Chrome/63.0.3239.132+Safari/537.36",
         "last Event Time": "12/11/2019 12:34:27 AM",
         "sample Referer": "-",

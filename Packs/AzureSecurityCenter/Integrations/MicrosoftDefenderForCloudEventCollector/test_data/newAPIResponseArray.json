@@ -33,7 +33,7 @@
         "2. If only specific IP addresses should be allowed to access the web app, set IP restrictions (https://docs.microsoft.com/azure/app-service/app-service-ip-restrictions) for it."
       ],
       "extendedProperties": {
-        "sample Source IP Addresses": "00.00.00.00",
+        "sample Source IP Addresses": "0.0.0.0",
         "sample User Agents": "Mozilla/5.0+(Windows+NT+10.0;+Win64;+x64;+rv:48.0)+Gecko/20100101+Firefox/48.0, Mozilla/5.0+(Windows+NT+10.0;+Win64;+x64)+AppleWebKit/537.36+(KHTML,+like+Gecko)+Chrome/63.0.3239.132+Safari/537.36",
         "last Event Time": "12/11/2019 12:34:27 AM",
         "sample Referer": "-",

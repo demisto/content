@@ -95,7 +95,7 @@ def check_events_were_filtered_out(events: list, filtered_events: list) -> bool:
     return len(events) > len(filtered_events)
 
 
-def test_module(client: MsClient):
+def test_module(client: MsClient):    # pragma: no cover
     """
        Performs basic GET request to check if the API is reachable and authentication is successful.
        Returns ok if successful.
@@ -194,7 +194,7 @@ def add_time_key_to_events(events: list) -> list:
     return events
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
