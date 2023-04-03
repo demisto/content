@@ -364,7 +364,7 @@ jobs-done-check-on-push:
       optional: true
     - job: xsiam_server_ga
       optional: true
-    - job: xsoar_server_6_5
+    - job: xsoar_server_6_9
       optional: true
     - job: xsoar_server_6_6
       optional: true

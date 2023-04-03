@@ -49,7 +49,7 @@ PUSH_JOBS = [
     'xpanse-prepare-testing-bucket',
     'xsoar-prepare-testing-bucket',
     'xsiam_server_ga',
-    'xsoar_server_6_5',
+    'xsoar_server_6_9',
     'xsoar_server_6_6',
     'xsoar_server_6_8',
     'xsoar_server_master',
