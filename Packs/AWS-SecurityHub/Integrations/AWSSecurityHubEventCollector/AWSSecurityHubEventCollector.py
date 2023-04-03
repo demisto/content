@@ -146,7 +146,7 @@ def fetch_events(client: boto3.client, last_run: dict, first_fetch_time: dt.date
         error = e
 
     # --- Set next_run data ---
-    if events:  # TODO: Check what happens if first call fails
+    if events:
         demisto.info(f'Fetched {len(events)} findings.')
         next_run = generate_last_run(events)
         demisto.info(f'Last run data updated to: {next_run}.')
@@ -192,7 +192,7 @@ def get_events_command(client: boto3.client, should_push_events: bool,
     )
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
