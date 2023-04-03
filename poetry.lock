@@ -518,94 +518,103 @@ description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
 python-versions = ">=3.8,<3.11"
+develop = false
 
 [package.dependencies]
-autopep8 = ">=1.6.0,<2.0.0"
-bandit = ">=1.7.4,<2.0.0"
-beautifulsoup4 = ">=4.11.1,<5.0.0"
+autopep8 = "^1.6.0"
+bandit = "^1.7.4"
+beautifulsoup4 = "^4.11.1"
 chardet = ">=4,<6"
-click = ">=8.0.0,<9.0.0"
-colorama = ">=0.4.4,<0.5.0"
-coloredlogs = ">=15.0.1,<16.0.0"
-configparser = ">=5.2.0,<6.0.0"
-coverage = ">=7.2.1,<8.0.0"
-cryptography = ">=36.0.2,<37.0.0"
-dateparser = ">=1.1.1,<2.0.0"
-decorator = ">=5.1.1,<6.0.0"
-demisto-py = ">=3.2.6,<4.0.0"
-dictdiffer = ">=0.9.0,<0.10.0"
-dictor = ">=0.1.9,<0.2.0"
-docker = ">=5.0.3,<6.0.0"
-flake8 = ">=4.0.1,<5.0.0"
-flatten-dict = ">=0.4.2,<0.5.0"
-gitdb = ">=4.0.9,<5.0.0"
-GitPython = ">=3.1.27,<3.1.31"
-giturlparse = ">=0.10.0,<0.11.0"
-google-cloud-storage = ">=2.2.1,<3.0.0"
-imagesize = ">=1.3.0,<2.0.0"
-importlib-resources = ">=5.6.0,<6.0.0"
-inflection = ">=0.5.1,<0.6.0"
-isort = ">=5.10.1,<6.0.0"
-Jinja2 = ">=3.1.1,<4.0.0"
-jsonschema = ">=4.4.0,<5.0.0"
-klara = ">=0.6.3,<0.7.0"
-MarkupSafe = ">=2.1.1,<3.0.0"
-mergedeep = ">=1.3.4,<2.0.0"
-mypy = ">=0.982,<0.983"
-neo4j = ">=5.5.0,<6.0.0"
-networkx = ">=2.7.1,<3.0.0"
-nltk = ">=3.7,<4.0"
-ordered-set = ">=4.1.0,<5.0.0"
-orjson = ">=3.8.3,<4.0.0"
+click = "^8.0.0"
+colorama = "^0.4.4"
+coloredlogs = "^15.0.1"
+configparser = "^5.2.0"
+coverage = "^7.2.1"
+cryptography = "^36.0.2"
+dateparser = "^1.1.1"
+decorator = "^5.1.1"
+demisto-py = "^3.2.6"
+dictdiffer = "^0.9.0"
+dictor = "^0.1.9"
+docker = "^5.0.3"
+flake8 = "^4.0.1"
+flatten-dict = "^0.4.2"
+gitdb = "^4.0.9"
+GitPython = "^3.1.27,<3.1.31"
+giturlparse = "^0.10.0"
+google-cloud-storage = "^2.2.1"
+imagesize = "^1.3.0"
+importlib-resources = "^5.6.0"
+inflection = "^0.5.1"
+isort = "^5.10.1"
+Jinja2 = "^3.1.1"
+jsonschema = "^4.4.0"
+junitparser = "^2.8.0"
+klara = "^0.6.3"
+MarkupSafe = "^2.1.1"
+mergedeep = "^1.3.4"
+more-itertools = "^9.0.0"
+mypy = "^0.982"
+neo4j = "^5.5.0"
+networkx = "^2.7.1"
+nltk = "^3.7"
+ordered-set = "^4.1.0"
+orjson = "^3.8.3"
 packaging = "<22"
-paramiko = ">=2.11.0,<3.0.0"
+paramiko = "^2.11.0"
 Pebble = ">=4.6.3,<6.0.0"
-pipenv = ">=2022.3.28,<2023.0.0"
-prettytable = ">=3.2.0,<4.0.0"
-pydantic = ">=1.10,<2.0"
-pykwalify = ">=1.8.0,<2.0.0"
+pipenv = "^2022.3.28"
+prettytable = "^3.2.0"
+pydantic = "^1.10"
+pykwalify = "^1.8.0"
 pylint = "2.12.2"
-PyPDF2 = ">=1.28.6,<2.0.0"
-pyspellchecker = ">=0.6.3,<0.7.0"
-pytest-freezegun = ">=0.4.2,<0.5.0"
-python-dotenv = ">=0.20.0,<0.21.0"
-requests = ">=2.27.1,<3.0.0"
-"ruamel.yaml" = ">=0.17.21,<0.18.0"
-slack-sdk = ">=3.17.0,<4.0.0"
+PyPDF2 = "^1.28.6"
+pyspellchecker = "^0.6.3"
+pytest-freezegun = "^0.4.2"
+python-dotenv = "^0.20.0"
+requests = "^2.27.1"
+"ruamel.yaml" = "^0.17.21"
+slack-sdk = "^3.17.0"
 tabulate = ">=0.8.9,<0.10.0"
-typed-ast = ">=1.5.2,<2.0.0"
+typed-ast = "^1.5.2"
 typer = {version = ">=0.6.1,<0.8.0", extras = ["all"]}
 types-chardet = ">=4.0.3,<6.0.0"
-types-dateparser = ">=1.1.0,<2.0.0"
-types-decorator = ">=5.1.8,<6.0.0"
+types-dateparser = "^1.1.0"
+types-decorator = "^5.1.8"
 types-emoji = ">=1.2.7,<3.0.0"
-types-filelock = ">=3.2.5,<4.0.0"
-types-futures = ">=3.3.8,<4.0.0"
-types-ipaddress = ">=1.0.8,<2.0.0"
-types-Markdown = ">=3.3.21,<4.0.0"
-types-mock = ">=4.0.15,<5.0.0"
-types-paramiko = ">=2.8.17,<3.0.0"
-types-pkg-resources = ">=0.1.3,<0.2.0"
-types-protobuf = ">=3.19.15,<4.0.0"
-types-PyMySQL = ">=1.0.15,<2.0.0"
-types-python-dateutil = ">=2.8.10,<3.0.0"
+types-filelock = "^3.2.5"
+types-futures = "^3.3.8"
+types-ipaddress = "^1.0.8"
+types-Markdown = "^3.3.21"
+types-mock = "^4.0.15"
+types-paramiko = "^2.8.17"
+types-pkg-resources = "^0.1.3"
+types-protobuf = "^3.19.15"
+types-PyMySQL = "^1.0.15"
+types-python-dateutil = "^2.8.10"
 types-pytz = ">=2021.3.6,<2023.0.0"
 types-pyvmomi = ">=7.0.6,<9.0.0"
-types-PyYAML = ">=6.0.5,<7.0.0"
+types-PyYAML = "^6.0.5"
 types-requests = "2.28.11"
 types-setuptools = ">=65.6.0.1,<68.0.0.0"
-types-six = ">=1.16.12,<2.0.0"
+types-six = "^1.16.12"
 types-tabulate = ">=0.8.6,<0.10.0"
-types-ujson = ">=5.6.0.0,<6.0.0.0"
-typing-extensions = ">=4.1.1,<5.0.0"
-ujson = ">=5.1.0,<6.0.0"
-urllib3 = ">=1.26.9,<2.0.0"
-vulture = ">=2.3,<3.0"
-wcmatch = ">=8.3,<9.0"
-yamlordereddictloader = ">=0.4.0,<0.5.0"
+types-ujson = "^5.6.0.0"
+typing-extensions = "^4.1.1"
+ujson = "^5.1.0"
+urllib3 = "^1.26.9"
+vulture = "^2.3"
+wcmatch = "^8.3"
+yamlordereddictloader = "^0.4.0"
 
 [package.extras]
 build = ["gsutil (==5.17)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/demisto/demisto-sdk.git"
+reference = "correlation_rules_exspanse"
+resolved_reference = "f11e65fd9e23fd8932b51911964c37e4ca271d16"
 
 [[package]]
 name = "deprecated"
@@ -1356,6 +1365,17 @@ format = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validat
 format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-validator (>0.1.0)", "uri-template", "webcolors (>=1.11)"]
 
 [[package]]
+name = "junitparser"
+version = "2.8.0"
+description = "Manipulates JUnit/xUnit Result XML files"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+future = "*"
+
+[[package]]
 name = "klara"
 version = "0.6.3"
 description = "Automatic test case generation and static analysis library"
@@ -1443,6 +1463,14 @@ description = "A better mock for file I/O"
 category = "dev"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "more-itertools"
+version = "9.1.0"
+description = "More routines for operating on iterables, beyond itertools"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
 
 [[package]]
 name = "msal"
@@ -3439,7 +3467,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "42ad94dcd16027908941a577b3f6bfea88a52c885441b48b60803b70d19308d1"
+content-hash = "9f017e30066b3ed48a89d811810f855a5c57ac671385780eec9be0a1ae9cc4c6"
 
 [metadata.files]
 aiodns = [
@@ -3938,10 +3966,7 @@ demisto-py = [
     {file = "demisto-py-3.2.8.tar.gz", hash = "sha256:d67ec51d5a4a6c10f3b0a40151730bfe5f8a4f11b3b863154e2415f709ed769c"},
     {file = "demisto_py-3.2.8-py3-none-any.whl", hash = "sha256:ddf90a1166e85b8bd7f1542a5a3c9c6383f9a19c7ff34f197eee3eb9420180c1"},
 ]
-demisto-sdk = [
-    {file = "demisto_sdk-1.11.0-py3-none-any.whl", hash = "sha256:09eb2cebbd0d62add84edec8978df2e2fa7c81ad46690383d1373460ffadfe72"},
-    {file = "demisto_sdk-1.11.0.tar.gz", hash = "sha256:a361aed0dbf42b69df77386b5896716490db9798417dd7021a342fc88b6f7056"},
-]
+demisto-sdk = []
 deprecated = [
     {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
     {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
@@ -4418,6 +4443,10 @@ jsonschema = [
     {file = "jsonschema-4.17.3-py3-none-any.whl", hash = "sha256:a870ad254da1a8ca84b6a2905cac29d265f805acc57af304784962a2aa6508f6"},
     {file = "jsonschema-4.17.3.tar.gz", hash = "sha256:0f864437ab8b6076ba6707453ef8f98a6a0d512a80e93f8abdb676f737ecb60d"},
 ]
+junitparser = [
+    {file = "junitparser-2.8.0-py2.py3-none-any.whl", hash = "sha256:e1a7d41e0c92ca032c46eed07a6268c478f90ec1f411ea8a76b69f245e57cfb6"},
+    {file = "junitparser-2.8.0.tar.gz", hash = "sha256:a8d4290ab9fb93f2015e0dbef61ef93b7ea110e99099087a453f55c8e1481adf"},
+]
 klara = [
     {file = "klara-0.6.3-py3-none-any.whl", hash = "sha256:9687fb2503e0d0ae1ecc789d88af46d4008522a89db5d542c9c993ee6d0875d2"},
     {file = "klara-0.6.3.tar.gz", hash = "sha256:8a739b58b94f01b5464ca8d90282cb320e8aff8e221441a43bc423c3595525c1"},
@@ -4609,6 +4638,10 @@ mergedeep = [
 ]
 mock-open = [
     {file = "mock-open-1.4.0.tar.gz", hash = "sha256:c3ecb6b8c32a5899a4f5bf4495083b598b520c698bba00e1ce2ace6e9c239100"},
+]
+more-itertools = [
+    {file = "more-itertools-9.1.0.tar.gz", hash = "sha256:cabaa341ad0389ea83c17a94566a53ae4c9d07349861ecb14dc6d0345cf9ac5d"},
+    {file = "more_itertools-9.1.0-py3-none-any.whl", hash = "sha256:d2bc7f02446e86a68911e58ded76d6561eea00cddfb2a91e7019bbb586c799f3"},
 ]
 msal = [
     {file = "msal-1.21.0-py2.py3-none-any.whl", hash = "sha256:e8444617c1eccdff7bb73f5d4f94036002accea4a2c05f8f39c9efb5bd2b0c6a"},
@@ -4916,6 +4949,7 @@ pcodedmp = [
 ]
 pdf2image = [
     {file = "pdf2image-1.16.3-py3-none-any.whl", hash = "sha256:b6154164af3677211c22cbb38b2bd778b43aca02758e962fe1e231f6d3b0e380"},
+    {file = "pdf2image-1.16.3.tar.gz", hash = "sha256:74208810c2cef4d9e347769b8e62a52303982ddb4f2dfd744c7ab4b940ae287e"},
 ]
 pebble = [
     {file = "Pebble-5.0.3-py3-none-any.whl", hash = "sha256:8274aa0959f387b368ede47666129cbe5d123f276a1bd9cafe77e020194b2141"},
@@ -5594,6 +5628,8 @@ ruamel-yaml-clib = [
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:045e0626baf1c52e5527bd5db361bc83180faaba2ff586e763d3d5982a876a9e"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_12_6_arm64.whl", hash = "sha256:721bc4ba4525f53f6a611ec0967bdcee61b31df5a56801281027a3a6d1c2daf5"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:41d0f1fa4c6830176eef5b276af04c89320ea616655d01327d5ce65e50575c94"},
+    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-win32.whl", hash = "sha256:f6d3d39611ac2e4f62c3128a9eed45f19a6608670c5a2f4f07f24e8de3441d38"},
+    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-win_amd64.whl", hash = "sha256:da538167284de58a52109a9b89b8f6a53ff8437dd6dc26d33b57bf6699153122"},
     {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:4b3a93bb9bc662fc1f99c5c3ea8e623d8b23ad22f861eb6fce9377ac07ad6072"},
     {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-macosx_12_0_arm64.whl", hash = "sha256:a234a20ae07e8469da311e182e70ef6b199d0fbeb6c6cc2901204dd87fb867e8"},
     {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-manylinux2014_aarch64.whl", hash = "sha256:15910ef4f3e537eea7fe45f8a5d19997479940d9196f357152a09031c5be59f3"},
