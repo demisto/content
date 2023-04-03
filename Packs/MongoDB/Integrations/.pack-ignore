@@ -1,6 +1,0 @@
-[file:MongoDBLog.yml]
-ignore=BA124
-
-[file:MongoDBKeyValueStore.yml]
-ignore=BA124
-
