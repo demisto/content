@@ -14,7 +14,7 @@ configuration:
   required: true
   type: 9
   additionalinfo: Client ID and Client Secret.
-  displaypassword: "Client Secret"
+  displaypassword: Client Secret
   hiddenusername: false
   section: Connect
 - defaultvalue: 3 days
