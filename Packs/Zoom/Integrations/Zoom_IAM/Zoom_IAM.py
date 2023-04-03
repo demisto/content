@@ -2,8 +2,8 @@
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
-from ZoomApiModule import *
 from IAMApiModule import *
+from ZoomApiModule import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
