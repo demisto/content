@@ -411,12 +411,6 @@ script:
       type: String
   - name: mati-feed-get-indicators
     arguments:
-    - default: true
-      description: Update context.
-      isArray: false
-      name: update_context
-      required: false
-      secret: false
     - default: false
       description: The maximum number of indicators to fetch.
       isArray: false

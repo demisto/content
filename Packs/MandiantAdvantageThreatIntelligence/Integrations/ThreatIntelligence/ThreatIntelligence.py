@@ -235,7 +235,7 @@ class MandiantClient(BaseClient):
             response = response.get(MAP_TYPE_TO_RESPONSE[indicator_type], [])
 
         except DemistoException as e:
-            demisto.debug(f"Error retrieving objects from Mandiant Threat Intel: {e}")
+            demisto.error(f"Error retrieving objects from Mandiant Threat Intel: {e}")
             response = []
 
         return response
@@ -266,7 +266,7 @@ class MandiantClient(BaseClient):
                     indicator["publications"] = reports
 
         except DemistoException as e:
-            demisto.debug(f"Error retrieving objects from Mandiant Threat Intel: {e}")
+            demisto.error(f"Error retrieving objects from Mandiant Threat Intel: {e}")
             response = []
 
         return response
@@ -1141,6 +1141,13 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> List:
             enrich_indicators(client, indicators, indicator_type)
 
         result += indicators
+
+        last_run_dict = demisto.getLastRun()
+        last_run_dict[indicator_type + "List"] = indicators[limit:]
+        date_key = "last_seen" if indicator_type == "Indicators" else "last_updated"
+        last_run_dict[indicator_type + "LastFetch"] = indicators[-1][date_key]
+
+    demisto.setLastRun(last_run_dict)
     return result
 
 def debug_fetch_indicators(client: MandiantClient, args: Dict = None):
