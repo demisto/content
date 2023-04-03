@@ -902,8 +902,8 @@ def fetch_incidents():
     demisto.info("IntSight fetch last run time is: {}".format(str(last_run)))
     if not last_run or 'time' not in last_run:
         first_fetch_param = demisto.params().get('first_fetch', DEFAULT_TIME_RANGE)
-        first_fetch_date = arg_to_datetime(first_fetch_param, 'first_fetch', is_utc=True)
-        fetch_delta = int(first_fetch_date.timestamp() * 1000)
+        first_fetch_date = arg_to_datetime(first_fetch_param, 'first_fetch')
+        fetch_delta = int(first_fetch_date.timestamp() * 1000)  # type:ignore
         demisto.debug(f'First fetch, using {fetch_delta=}')
 
     else:
