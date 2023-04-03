@@ -250,7 +250,7 @@ def main() -> None:
             return_results(test_module(client))
 
         elif command == 'with-secure-get-events':
-            events, result = get_events_command(client, args)
+            _, result = get_events_command(client, args)
             return_results(result)
 
         elif command == 'fetch-events':
