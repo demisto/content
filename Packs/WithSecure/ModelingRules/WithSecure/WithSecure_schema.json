@@ -1,5 +1,5 @@
 {
-    "with_secure_endpoint_protection_raw": {
+    "withsecure_endpoint_protection_raw": {
         "details": {
             "type": "string",
             "is_array": false
