@@ -164,11 +164,23 @@ tasks:
                       value:
                         simple: DC=demisto,DC=ninja
             iscontext: true
+          right:
+            value: {}
       - - operator: isExists
           left:
             value:
               simple: Endpoint.CbSensorID
             iscontext: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: Endpoint.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: Carbon Black Response
+          ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
