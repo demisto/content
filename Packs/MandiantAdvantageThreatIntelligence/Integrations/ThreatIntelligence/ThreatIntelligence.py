@@ -1080,11 +1080,6 @@ def get_indicator_list(
 
     if indicators_list:
         new_indicators_list = indicators_list[:limit]
-        last_run_dict[indicator_type + "List"] = indicators_list[limit:]
-        date_key = "last_seen" if indicator_type == "Indicators" else "last_updated"
-        last_run_dict[indicator_type + "LastFetch"] = new_indicators_list[-1][date_key]
-
-        demisto.setLastRun(last_run_dict)
 
         indicators_list = new_indicators_list
 
