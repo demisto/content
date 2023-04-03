@@ -2026,12 +2026,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 7c222a54-1b27-430e-8d91-a30440f3853d
+    taskid: 0a49fb41-88e1-41ec-8786-b5cdaa602890
     type: condition
     task:
-      id: 7c222a54-1b27-430e-8d91-a30440f3853d
+      id: 0a49fb41-88e1-41ec-8786-b5cdaa602890
       version: -1
-      name: Verify List Users
+      name: Verify Rule update
       description: Gets list of rule from ThreatStream.
       type: condition
       iscommand: false
@@ -2158,7 +2158,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "62"
+      - "64"
     scriptarguments:
       all:
         simple: "yes"
@@ -2169,80 +2169,6 @@ tasks:
         "position": {
           "x": 910,
           "y": 6270
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "62":
-    id: "62"
-    taskid: a2bf2d31-e2d1-4dc4-8aa6-489daaae04bb
-    type: regular
-    task:
-      id: a2bf2d31-e2d1-4dc4-8aa6-489daaae04bb
-      version: -1
-      name: List Users
-      description: Gets list of users from ThreatStream. Only org admin permission can run this command
-      script: '|||threatstream-list-user'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "63"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 6430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "63":
-    id: "63"
-    taskid: 96ed6150-05f9-4be0-8b6b-4f3dc1924255
-    type: condition
-    task:
-      id: 96ed6150-05f9-4be0-8b6b-4f3dc1924255
-      version: -1
-      name: Verify List Users
-      description: Gets list of rule from ThreatStream.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "64"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: hasLength
-          left:
-            value:
-              simple: ThreatStream.User
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 6590
         }
       }
     note: false

@@ -7189,7 +7189,7 @@ script:
       description: The publication status. A threat model can be in new, pending_review, review_requested, reviewed, published statuses.
       type: String
     - contextPath: ThreatStream.ThreatModel.end_date
-      description: Time when a Threat Model was known to have ended.
+      description: Time when a threat model was known to have ended.
       type: Unknown
     - contextPath: ThreatStream.ThreatModel.tags.id
       description: The ID of the tag assigned to the threat model.
