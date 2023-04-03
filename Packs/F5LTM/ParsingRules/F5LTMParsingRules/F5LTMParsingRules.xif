@@ -1,4 +1,9 @@
 [INGEST:vendor="f5", product="ltm", target_dataset="f5_ltm_raw", no_hit=keep]
-alter timestamp=arrayindex(regextract(_raw_log,"timestamp\=\"([^=]+)\"\,"),0)
+filter _raw_log contains "timestamp"
+|alter timestamp=arrayindex(regextract(_raw_log,"timestamp\=\"([^=]+)\"\,"),0)
 |alter _time=parse_timestamp("%b %d %Y %H:%M:%S", timestamp)
 |fields -timestamp;
+filter _raw_log contains "date_time"
+|alter timestamp2=arrayindex(regextract(_raw_log,"date_time\=\"([^=]+)\"\,"),0)
+|alter _time=parse_timestamp("%Y-%m-%d %H:%M:%S", timestamp2)
+|fields -timestamp2;
