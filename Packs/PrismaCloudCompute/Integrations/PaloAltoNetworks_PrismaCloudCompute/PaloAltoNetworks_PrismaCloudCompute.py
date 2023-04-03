@@ -1889,8 +1889,8 @@ def get_logs_defender_command(client, args):
     Returns:
         CommandResults: command-results object.
     """
-    hostname = str(args.get('hostname', ''))
-    lines = args.get('lines', None)
+    hostname = args.get('hostname', '')
+    lines = args.get('lines')
 
     response = client.get_logs_defender_request(hostname, lines)
     entry = {
@@ -1938,12 +1938,12 @@ def get_logs_defender_download_command(client, args):
     Returns:
         CommandResults: command-results object.
     """
-    hostname = str(args.get('hostname', ''))
-    lines = args.get('lines', None)
+    hostname = args.get('hostname')
+    lines = args.get('lines')
 
     response = client.get_logs_defender_download_request(hostname, lines)
 
-    return fileResult("logs.tar.gz", response.get("content"))
+    return fileResult(f"{hostname}-logs.tar.gz", response.get("content"))
 
 
 def main():

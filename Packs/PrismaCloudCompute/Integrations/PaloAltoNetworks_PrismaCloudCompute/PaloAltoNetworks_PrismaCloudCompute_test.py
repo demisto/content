@@ -10,7 +10,7 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     get_hosts_scan_list, get_impacted_resources
 )
 
-from CommonServerPython import DemistoException, fileResult
+from CommonServerPython import *
 
 BASE_URL = 'https://test.com'
 
@@ -1494,7 +1494,6 @@ def test_get_logs_defender_download_command(mocker):
         "File": "logs.tar.gz"
     }
     mocker.patch.object(PrismaCloudComputeClient, 'get_logs_defender_download_request', return_value={"content": str(d)})
-    #mocker.patch.object(CommonServerPython, "fileResult", return_value=mock_file_result )
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
     args = {
         "hostname": "test.internal",

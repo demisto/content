@@ -1641,24 +1641,24 @@ script:
   - arguments:
     - description: The project to get the alert profiles for
       name: project
-    description: AlertProfiles returns the all alert profiles
+    description: Get the available alert alert profiles from a specific project.
     name: prisma-cloud-compute-get-alert-profiles
   - arguments: []
-    description: DefenderSettings returns the defenders settings
+    description: Get the Defender settings.
     name: prisma-cloud-compute-get-settings-defender
   - arguments:
-    - description: 'Hostname is the target defender hostname '
+    - description: The defender hostname.
       name: hostname
-    - description: 'Lines is the number of lines to fetch '
+    - description: The number of log lines to fetch.
       name: lines
-    description: 'DownloadDefenderLogs downloads all defender logs and metadata '
+    description: Download the defender logs.
     name: prisma-cloud-compute-logs-defender
   - arguments:
-    - description: 'Hostname is the target defender hostname '
+    - description: The defender hostname.
       name: hostname
-    - description: 'Lines is the number of lines to fetch '
+    - description: The number of log lines to fetch.
       name: lines
-    description: 'DownloadDefenderLogs downloads all defender logs and metadata '
+    description: Download a zip of all defender logs.
     name: prisma-cloud-compute-logs-defender-download
   - arguments:
     - description: The project to retrieve the backups from
