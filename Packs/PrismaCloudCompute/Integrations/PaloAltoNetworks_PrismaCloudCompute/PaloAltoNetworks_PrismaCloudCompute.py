@@ -420,7 +420,7 @@ class PrismaCloudComputeClient(BaseClient):
         params = assign_params(hostname=hostname, lines=lines)
 
         headers = self._headers
-        return self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type='response')
+        return self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type="content")
 
 
 def format_context(context):
@@ -1942,8 +1942,7 @@ def get_logs_defender_download_command(client, args):
     lines = args.get('lines')
 
     response = client.get_logs_defender_download_request(hostname, lines)
-
-    return fileResult(f"{hostname}-logs.tar.gz", response.get("content"))
+    return fileResult(f"{hostname}-logs.tar.gz", response)
 
 
 def main():
