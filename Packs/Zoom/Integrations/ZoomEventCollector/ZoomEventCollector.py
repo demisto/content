@@ -246,10 +246,10 @@ def get_events(client: Client, first_fetch_time: datetime, limit: int = MAX_RECO
             f" Please reduce the limit and try again.")
     hr = ""
     for log_type in LOG_TYPES:
-        _, events_ = client.search_events(log_type=log_type, limit=limit, first_fetch_time=first_fetch_time)
-        if events_:
-            hr += tableToMarkdown(name=f"{log_type} Events", t=events_)
-            events.extend(events_)
+        _, log_events = client.search_events(log_type=log_type, limit=limit, first_fetch_time=first_fetch_time)
+        if log_events:
+            hr += tableToMarkdown(name=f"{log_type} Events", t=log_events)
+            events.extend(log_events)
         else:
             hr += f"No events found for {log_type}.\n"
     return events, CommandResults(readable_output=hr)
@@ -277,14 +277,14 @@ def fetch_events(client: Client, last_run: dict[str, str], first_fetch_time: dat
     events = []
 
     for log_type in LOG_TYPES:
-        next_run_time, events_ = client.search_events(
+        next_run_time, log_events = client.search_events(
             log_type=log_type,
             last_time=last_run.get(log_type, ''),
             first_fetch_time=first_fetch_time,
         )
         next_run[log_type] = next_run_time
-        demisto.debug(f"Received {len(events_)} events for log type {log_type}")
-        events.extend(events_)
+        demisto.debug(f"Received {len(log_events)} events for log type {log_type}")
+        events.extend(log_events)
 
     demisto.debug(f"Returning {len(events)} events in total")
     return next_run, events
