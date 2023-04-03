@@ -180,7 +180,7 @@ references:
 
   remote_docker: &remote_docker
     setup_remote_docker:
-      version: 23.0.1
+      version: 20.10.17
       docker_layer_caching: true
 
   persist_to_workspace: &persist_to_workspace
