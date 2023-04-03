@@ -4,7 +4,9 @@ from CommonServerPython import *
 import requests
 import json
 import re
-import urllib.parse
+import urllib3
+
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 SERVER = None
