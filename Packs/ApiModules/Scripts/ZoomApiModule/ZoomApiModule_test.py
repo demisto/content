@@ -3,9 +3,7 @@ from freezegun import freeze_time
 from ZoomApiModule import *
 
 
-
 def mock_client_ouath(mocker):
-
     mocker.patch.object(Zoom_Client, 'get_oauth_token')
     client = Zoom_Client(base_url='https://test.com', account_id="mockaccount",
                          client_id="mockclient", client_secret="mocksecret")
