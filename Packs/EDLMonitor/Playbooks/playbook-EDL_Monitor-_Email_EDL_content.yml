@@ -50,23 +50,18 @@ tasks:
       - "2"
     note: false
     quietmode: 0
-    scriptarguments:
-      EDL:
-        simple: https://192.168.0.44/instance/execute/EDL_instance_1
-      Email:
-        simple: amurret@gmail.com
     separatecontext: false
     skipunavailable: false
     task:
       brand: EDL Monitor
       description: Gets the current contents of an EDL and emails it to a specified email address
-      id: 0ec0c93e-3055-422e-836e-b4903fa9aeae
+      id: 150d4159-9450-4ec1-8642-553579427d52
       iscommand: true
       name: Email contents
       script: EDL Monitor|||email-edl-contents
       type: regular
       version: -1
-    taskid: 0ec0c93e-3055-422e-836e-b4903fa9aeae
+    taskid: 150d4159-9450-4ec1-8642-553579427d52
     timertriggers: []
     type: regular
     view: |-

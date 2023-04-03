@@ -22,7 +22,7 @@ instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstan
 
 def sendemail(reason, create_ts, email, email_server, email_user, email_pwd, txtfile=None):
 
-    if txtfile != None:
+    if txtfile is not None:
         zf = tempfile.TemporaryFile(prefix='EDL monitor results', suffix='.zip')
         zip = zipfile.ZipFile(zf, 'a')
         zip.write(txtfile)
@@ -50,8 +50,7 @@ def sendemail(reason, create_ts, email, email_server, email_user, email_pwd, txt
 
         # Email current EDL to user
         sender = "noreply@demisto.com"
-        receivers = [email]
-        demisto.debug(f'EDL monitor availability email send to - ' + email)
+        demisto.debug(f'EDL monitor availability email send to - {email}')
 
         # Create the message
         themsg = MIMEMultipart()
@@ -62,24 +61,18 @@ def sendemail(reason, create_ts, email, email_server, email_user, email_pwd, txt
         themsg['To'] = email
         sender = "noreply@demisto.com"
         themsg['From'] = sender
-
-        #part1 = MIMEText(text, 'plain')
-
-        # themsg = f"""Subject: EDLmonitor content for {EDL}
-        # EDL contents as of {pull_time}:
-        # {linebreak.join(results)}
-        # """
     themsg_str = themsg.as_string()
     try:
         # Enable additional smtplib logs
-        #smtplib.SMTP.debuglevel = 1
+        # smtplib.SMTP.debuglevel = 1
         SERVER = smtplib.SMTP(email_server, 587)
         SERVER.ehlo()  # type: ignore
         # if TLS is True or TLS == 'STARTTLS' or str(TLS).lower() == 'true':
         SERVER.starttls()  # type: ignore
         if email_user != "":
             demisto.debug('EDL monitor Email AUTHING')
-            # demisto.debug(f'EDL monitor Email - ' + email_user + " " + email_pwd)  ## CAREFUL with this line for debugging only!!!!
+            # WARNING: the following line is for debugging only.
+            # demisto.debug(f'EDL monitor Email - {email_user} {email_pwd}')
             SERVER.login(email_user, email_pwd)
 
         SERVER.sendmail(sender, email, themsg_str)
@@ -93,21 +86,22 @@ def sendemail(reason, create_ts, email, email_server, email_user, email_pwd, txt
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(EDL, edl_user, edl_pwd, verify_certificate, pull_time, email, email_server, email_user, email_pwd, timeout) -> str:
+def test_module(email, email_server, email_user, email_pwd) -> str:
     """
     Tests server email (for sending email) connectivity and authentication'
     When 'ok' is returned it indicates the email server is accessible and if email credentials are valid
     """
     try:
         # Enable additional smtplib logs
-        #smtplib.SMTP.debuglevel = 1
+        # smtplib.SMTP.debuglevel = 1
         SERVER = smtplib.SMTP(email_server, 587)
         SERVER.ehlo()  # type: ignore
         # if TLS is True or TLS == 'STARTTLS' or str(TLS).lower() == 'true':
         SERVER.starttls()  # type: ignore
         if email_user != "":
             demisto.debug('EDL monitor Email AUTHING')
-            # demisto.debug(f'EDL monitor Email - ' + email_user + " " + email_pwd)  ## CAREFUL with this line for debugging only!!!!
+            # WARNING: the following line is for debugging only.
+            # demisto.debug(f'EDL monitor Email - {email_user} {email_pwd}')
             SERVER.login(email_user, email_pwd)
 
         SERVER.quit()
@@ -123,8 +117,8 @@ def check_edl(cmd, start_time, EDL, edl_user, edl_pwd, verify_certificate, email
 
         demisto.debug(f'Start time {start_time}')
         demisto.debug(f'Cur time {datetime.now()}')
-        demisto.debug(
-            f'Parameters: {start_time}, {EDL}, {edl_user}, {verify_certificate}, {email}, {email_server}, {email_user}, {timeout}, {mon_contents}')
+        demisto.debug(f'Parameters: {start_time}, {EDL}, {edl_user}, {verify_certificate}, {email}, \
+        {email_server}, {email_user}, {timeout}, {mon_contents}')
 
         if edl_pwd is None:
             # No auth on EDL
@@ -141,8 +135,7 @@ def check_edl(cmd, start_time, EDL, edl_user, edl_pwd, verify_certificate, email
             # Auth on EDL
             demisto.debug('EDL monitor auth to EDL')
             try:
-                response = requests.get(EDL, auth=HTTPBasicAuth(edl_user, edl_pwd),
-                                        headers=headers, verify=verify_certificate, timeout=timeout)
+                response = requests.get(EDL, auth=HTTPBasicAuth(edl_user, edl_pwd), verify=verify_certificate, timeout=timeout)
             except ConnectTimeout:
                 # Timeout!
                 pull_time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
@@ -150,7 +143,7 @@ def check_edl(cmd, start_time, EDL, edl_user, edl_pwd, verify_certificate, email
                     sendemail("timeout", pull_time, email, email_server, email_user, email_pwd)
                 return "timeout!"
 
-        #demisto.debug(f'EDL monitor EDL text contents:\n{response.text}')
+        # demisto.debug(f'EDL monitor EDL text contents:\n{response.text}')
 
         pull_time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
         # Monitoring for contents or just availability?
@@ -211,16 +204,14 @@ def main() -> None:
     demisto.debug(f'EDL monitor checking EDL {EDL}')
     if (timeout_str := params.get('timeout')) is not None:
         # if params.get('timeout') is not None:
-        #timeout = int(params.get('timeout'))
+        # timeout = int(params.get('timeout'))
         timeout = int(timeout_str)
     else:
         timeout = 120
     start_time = datetime.now()
 
-    headers = {"Content-Type": "application/json"}
-
     verify_certificate = not params.get('insecure', False)
-    #proxy = params.get('proxy', False)
+    # proxy = params.get('proxy', False)
 
     # INTEGRATION DEVELOPER TIP
     # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
@@ -232,8 +223,7 @@ def main() -> None:
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             pull_time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
-            result = test_module(EDL, edl_user, edl_pwd, verify_certificate, pull_time,
-                                 email, email_server, email_user, email_pwd, timeout)
+            result = test_module(email, email_server, email_user, email_pwd)
             return_results(result)
         elif command == 'get-edl-contents':
             mon_contents = True

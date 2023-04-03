@@ -1,6 +1,5 @@
 ## EDL logger
--BE SURE to set the integration to "fetch" to allow it to monitor the EDLs in the background
--EDLs will be emailed to the user emailTo provided to log the current content of the EDL at the incidentFetchInterval configured
+-You can use the playbook (or a cloned copy) with a job to check the EDL on a schedule, or you can use the integration commands in your own playbooks as needed
 -While the EDL contents are timestamped and attached in zip files, due to the nature of the files, zipping will likely not save much space
 
 Note: If you are a hosted customer, you may need to set the below server config:
