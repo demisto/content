@@ -59,6 +59,10 @@ def mock_set_last_run(last_run):
     return last_run
 
 
+def mock_get_last_run():
+    return {}
+
+
 @freeze_time("2023-03-14T00:00:00")
 @pytest.mark.parametrize('get_alerts_test, expected_last_run', test_main_params)
 def test_main(get_alerts_test, expected_last_run, mocker):
@@ -71,6 +75,7 @@ def test_main(get_alerts_test, expected_last_run, mocker):
     from OrcaEventCollector import main
     mocker.patch.object(demisto, 'command', return_value='fetch-events')
     mocker.patch.object(demisto, 'params', return_value=test_params)
+    mocker.patch.object(demisto, 'getLastRun', side_effect=mock_get_last_run)
     mock_last_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
     mocker.patch('OrcaEventCollector.send_events_to_xsiam')
     mocker.patch('OrcaEventCollector.Client.get_alerts_request', return_value=get_alerts_test)
