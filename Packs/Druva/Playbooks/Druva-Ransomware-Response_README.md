@@ -45,4 +45,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Druva-Ransomware-Response](../doc_files/Druva-Ransomware-Response.png)
+![Druva-Ransomware-Response](../doc_files/Druva-Ransomware-Response_Playbook.png)

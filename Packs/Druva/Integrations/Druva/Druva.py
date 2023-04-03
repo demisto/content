@@ -40,7 +40,7 @@ class Client(BaseClient):
                                   params=params, resp_type='response')
 
     def get_findVMDevice(self, search_string):
-        params = {'hostname': search_string,'serverTypes[]':3}
+        params = {'hostname': search_string, 'serverTypes[]': 3}
         return self._http_request(method='GET', url_suffix="/realize/ransomwarerecovery/v1/search/backupset",
                                   params=params, resp_type='response')
 
@@ -144,11 +144,11 @@ def Druva_FindDevice_Command(clientObj, search_string):
     if (statusCode == 200):
         responseJson = response.json()
         responseVMJson = responseVM.json()
-        finalResponse=responseJson.get('resources', []) + responseVMJson.get('resources', [])
-        results=CommandResults(
-            readable_output = tableToMarkdown('Found Druva Devices', finalResponse),
-            outputs = {"Druva.Resource(val.resourceID == obj.resourceID)": finalResponse},
-            raw_response = responseJson | responseVMJson
+        finalResponse = responseJson.get('resources', []) + responseVMJson.get('resources', [])
+        results = CommandResults(
+            readable_output=tableToMarkdown("Found Druva Devices", finalResponse),
+            outputs={"Druva.Resource(val.resourceID == obj.resourceID)": finalResponse},
+            raw_response=responseJson | responseVMJson,
         )
         return results
 

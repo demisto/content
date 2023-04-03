@@ -13,6 +13,7 @@ tasks:
       id: 63a4a3df-a4de-4433-8a96-9fdcce548815
       version: -1
       name: ""
+      description: Playbook starts
       iscommand: false
       brand: ""
     nexttasks:
@@ -42,6 +43,7 @@ tasks:
       id: e409e9d6-d16b-4e7a-841b-bc021be05303
       version: -1
       name: UserNameExist
+      description: Checks if user has given any input for username
       type: condition
       iscommand: false
       brand: ""
@@ -84,6 +86,7 @@ tasks:
       id: f92e2edb-c452-4619-8981-0193e9ede0e8
       version: -1
       name: ResourceNameExist
+      description: Checks if user has given any input for Hostnames
       type: condition
       iscommand: false
       brand: ""
@@ -125,6 +128,7 @@ tasks:
     task:
       id: 4e37d489-d410-4165-8cf4-0470f140bd71
       version: -1
+      description: Checks if user has given any input for URLs
       name: SiteURLExist
       type: condition
       iscommand: false
@@ -350,6 +354,7 @@ tasks:
       id: f16eafd9-fc08-49e2-8ff6-01d0c93adbd6
       version: -1
       name: Done
+      description: Playbook ends
       type: title
       iscommand: false
       brand: ""
@@ -413,6 +418,7 @@ tasks:
       version: -1
       name: Is User Present
       type: condition
+      description: Checks if any user is present for given input
       iscommand: false
       brand: Druva Ransomware Response
     nexttasks:
@@ -496,6 +502,7 @@ tasks:
       id: e5c46203-a589-4edf-87e4-e754e5d90bf9
       version: -1
       name: ResourceExist?
+      description: Checks if any resource are present for given input
       type: condition
       iscommand: false
       brand: Druva Ransomware Response
@@ -538,6 +545,7 @@ tasks:
       id: 78976e9e-10f6-4e24-8bc5-df083581b05a
       version: -1
       name: SharepointResourceExist?
+      description: Checks if any sharepoint sites are present for given input
       type: condition
       iscommand: false
       brand: Druva Ransomware Response
@@ -580,6 +588,7 @@ tasks:
       id: 48467aee-e88b-4b72-8f9b-221c3e71b3d2
       version: -1
       name: shareDriveResourceExist?
+      description: Checks if any share drive sites are present for given input
       type: condition
       iscommand: false
       brand: Druva Ransomware Response
