@@ -284,7 +284,7 @@ script:
     - description: Comma separated list of filters' IDs.
       isArray: true
       name: custom_fields_keys
-    - description: Comma separated list of the values of the filters' IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2.
+    - description: Comma separated list of the values of the filters' IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2. For times, separate with `-` instead of `,`.
       isArray: true
       name: custom_fields_values
     description: List all service requests. Cortex XSOAR recommends filtering the results by the desired fields.
@@ -604,6 +604,19 @@ script:
       required: true
     description: Returns the information for the specified service record.
     name: sysaid-service-record-get
+    outputs:
+    - contextPath: SysAid.ServiceRecord.id
+      description: The ID of the service record.
+    - contextPath: SysAid.ServiceRecord.title
+      description: The title of the service record.
+    - contextPath: SysAid.ServiceRecord.status
+      description: The status of the service record.
+    - contextPath: SysAid.ServiceRecord.update_time
+      description: The modify time of the service record.
+    - contextPath: SysAid.ServiceRecord.sr_type
+      description: The type of the service record.
+    - contextPath: SysAid.ServiceRecord.notes
+      description: The notes of the service record.
   - arguments:
     - description: The service record ID
       name: id

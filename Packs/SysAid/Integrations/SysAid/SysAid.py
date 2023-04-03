@@ -925,6 +925,7 @@ def service_record_get_command(client: Client, args: Dict[str, Any]) -> CommandR
     response = client.service_record_get_request(sr_id, fields)
     headers = ['id', 'title', 'Status', 'Modify time', 'Service Record Type', 'notes']
     readable_response = create_readable_response(response, service_record_handler)
+    response.update(response)
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecord',
         outputs_key_field='id',
