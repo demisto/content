@@ -1,6 +1,0 @@
-[file:CyrenShowThreatIndicators.yml]
-ignore=BA124
-
-[file:CyrenFindSimilarIncidents.yml]
-ignore=BA124
-
