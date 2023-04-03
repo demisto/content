@@ -22,6 +22,12 @@ import pytest
     ('ftp://www.test.com/test2/dev', 'www.test.com'),
     ('http://www.test.com/test2/dev', 'www.test.com'),
     ('hxxps://path.test.com/check', 'path.test.com'),
+    ('hxxps://path.test.com/check', 'path.test.com'),
+    ('hxxps://path.hxxp.com/check', 'path.hxxp.com'),
+    ('hxXps://path.hxxp.com/check', 'path.hxxp.com'),
+    ('meow://path.meow.com/check', 'path.meow.com'),
+    ('meow://path.mEow.com/check', 'path.meow.com'),
+    ('meOw://path.mEow.com/check', 'path.meow.com'),
     ('http-3A__go.getpostman.com_', 'go.getpostman.com'),
     ('http://survey.lavulcamktg.cl/index.php/', 'survey.lavulcamktg.cl'),
 
@@ -29,6 +35,7 @@ import pytest
     ('https%3A%2F%2Fdulunggakada40[.]com', 'dulunggakada40.com'),
     ('https%3A%2F%2Fpath.test.com', 'path.test.com'),
     ('https%3A%2F%2Ftwitter.com%2F', 'twitter.com'),
+    ('hxxps%3A%2F%2Ftwitter.com%2F', 'twitter.com'),
 
     # handle special charecter
     ('www[.]demisto[.]com', 'www.demisto.com'),
@@ -48,6 +55,7 @@ import pytest
     ('test.co.il)', 'test.co.il'),
     ('/evil3.com', 'evil3.com'),  # noqa: E501 disable-secrets-detection
     ('<br>kasai.qlmsourcing.com', 'kasai.qlmsourcing.com'),  # disable-secrets-detection
+    ('test.com@', ''),  # disable-secrets-detection
 ])  # noqa: E124
 def test_extract_fqdn_or_domain(input, fqdn):
     extracted_fqdn = extract_fqdn(input)
