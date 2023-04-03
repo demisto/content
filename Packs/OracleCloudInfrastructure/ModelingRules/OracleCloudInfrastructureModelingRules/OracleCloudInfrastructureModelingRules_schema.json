@@ -8,7 +8,7 @@
       "type": "string",
       "is_array": false
     },
-    "eventID": {
+    "eventId": {
       "type": "string",
       "is_array": false
     },

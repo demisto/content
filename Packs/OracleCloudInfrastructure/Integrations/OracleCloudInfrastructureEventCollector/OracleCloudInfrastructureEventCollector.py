@@ -2,10 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 from typing import Any, Dict, List, Optional
-from oci.config import validate_config
 from oci.regions import is_region
-import oci.audit
-import oci.pagination
+from oci.signer import Signer
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -16,23 +14,28 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'oracle'
 PRODUCT = 'cloud_infrastructure'
 MAX_EVENTS_TO_FETCH = 1000
-FETCH_DEFAULT_TIME = '3 days'
+FETCH_DEFAULT_TIME = '7 days'
+PORT = 20190901
 
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    """Client class to interact with the OCI SDK"""
+    """Client class to interact with the OCI SDK and API requests.
+    Will validate the fetching related parameters and create an OCI Singer object which will be used to fetch audit events.
+    """
     def __init__(self, verify_certificate: bool, proxy: bool, user_ocid: str, private_key: str, key_fingerprint: str,
                  tenancy_ocid: str, region: str):
-        self.config = self.build_oci_config(user_ocid, private_key, key_fingerprint, tenancy_ocid, region)
-        self.audit_client = oci.audit.AuditClient(self.config)
-        super().__init__(proxy=proxy, verify=verify_certificate, base_url=None)
+        self.singer = self.build_singer_object(user_ocid, private_key, key_fingerprint, tenancy_ocid, region)
+        self.base_url = self.build_audit_base_url(region)
+        self.compartment_id = tenancy_ocid
+        super().__init__(proxy=proxy, verify=verify_certificate, auth=self.singer, base_url=self.base_url)
 
-    def build_oci_config(
-            self, user_ocid: str, private_key: str, key_fingerprint: str, tenancy_ocid: str, region: str) -> Dict[str, str]:
-        """Build an OCI config object
+    def build_singer_object(self, user_ocid: str, private_key: str, key_fingerprint: str, tenancy_ocid: str,
+                            region: str) -> Dict[str, str]:
+        """Build a singer object.
+        The Signer used as part of making raw requests.
 
         Args:
             user_ocid (str): User OCID parameter.
@@ -42,50 +45,49 @@ class Client(BaseClient):
             region (str): Region parameter.
 
         Raises:
-            DemistoException: If the config object is invalid.
+            DemistoException: If the singer object is invalid.
 
         Returns:
             (dict): A config dictionary that can be used to create Audit clients.
         """
-        config = {
-            'user': user_ocid,
-            'key_content': self.validate_private_key_syntax(private_key),
-            'fingerprint': key_fingerprint,
-            'tenancy': tenancy_ocid,
-            'region': region
-        }
+        try:
+            validated_private_key = self.validate_private_key_syntax(private_key)
 
-        return config if self.validate_oci_config(config) else {}
+            singer = Signer(
+                tenancy=tenancy_ocid,
+                user=user_ocid,
+                fingerprint=key_fingerprint,
+                private_key_content=validated_private_key,
+                private_key_file_location=None,
+            )
+        except Exception as e:
+            raise DemistoException(
+                'Could not create a valid OCI singer object, Please check the instance configuration parameters.',
+                exception=e,) from e
 
-    def validate_oci_config(self, config: Dict[str, str]) -> bool:
-        """Validate the OCI config dictionary structure.
+        return singer
+
+    def build_audit_base_url(self, region: str) -> str:
+        """Build the base URL for the client.
 
         Args:
-            config (Dict[str, str]): A config dict that can be used to create Audit client using the oci.audit.AuditClient class.
+            region (str): Region parameter.
 
         Raises:
             DemistoException: If the region is not valid.
-            DemistoException: If the config  dictionary is invalid.
 
         Returns:
-            bool: True if the config dictionary is valid, False otherwise.
+            str: Base URL for the client.
         """
-
-        if not is_region(config.get('region')):
+        if not is_region(region):
             raise DemistoException('Could not create a valid OCI configuration dictionary fou to invalid region parameter. \
                 Please check your OCI related instance configuration parameters.')
-        try:
-            validate_config(config)
-        except Exception as e:
-            raise DemistoException(
-                'Could not create a valid OCI configuration dictionary, Please check OCI instance configuration parameters.',
-                exception=e,
-            ) from e
-        return True
+
+        return f'https://audit.{region}.oraclecloud.com/{PORT}/auditEvents'
 
     def validate_private_key_syntax(self, private_key_parameter: str) -> str:
         """Validate private key parameter syntax.
-        The Private Key parameter needs to be provided to the OCI SDK config object in a specific format.
+        The Private Key parameter needs to be provided to the OCI SDK singer object in a specific format.
         The most common way to obtain the private key is to download a .pem file from the OCI console.
         If copied from a .pem file, the private key parameter may contain unnecessary spaces.
         Further more, since the format uses \n as part of the key,
@@ -127,14 +129,14 @@ class Client(BaseClient):
 class OCIEventHandler:
     """
     Oracle Cloud Infrastructure event handler class.
-    Handles the logic for creating and handling Audit client and fetching events.
+    Handles the logic for using the OCI Audit Client and fetching events.
     """
 
     def __init__(self, client: Client, last_run: Dict[str, Any], max_fetch: int, first_fetch_time: datetime):
         self.client: Client = client
         self.last_run = last_run
         self.max_fetch = max_fetch
-        self.first_fetch_time = first_fetch_time
+        self.first_fetch_time: datetime = first_fetch_time
 
     def __str__(self):
         return f'OCIEventHandler: {self.last_run=}, {self.max_fetch=}, {self.first_fetch_time=}'
@@ -149,24 +151,23 @@ class OCIEventHandler:
           which will get all the events in a certain time range and than slice the events
           according to the desired amount of events.
         Args:
-            prev_id (int): The id of the last event we got from the last run.
-            alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
+            max_events (int): Maximum number of events to fetch. If None, the default value will be max_fetch parameter.
 
         Returns:
             List[Dict[str, Any]]: List of events.
         """
         try:
-            response = oci.pagination.list_call_get_all_results(
-                self.client.audit_client.list_events,
-                compartment_id=self.client.config.get('tenancy'),
-                start_time=self.first_fetch_time,
-                end_time=datetime.now())
+            params = {
+                'compartmentId': self.client.compartment_id,
+                'startTime': self.first_fetch_time.isoformat(),
+                'endTime': datetime.now().isoformat()
+            }
+            response = self.client._http_request(method='GET', params=params)
 
-            if not response.data:
+            if not response:
                 return []
 
-            events = json.loads(str(response.data[:max_events])) if max_events \
-                else json.loads(str(response.data[:self.max_fetch]))
+            events = response[:max_events] if max_events else response[:self.max_fetch]
 
             self.last_event_time = self.get_last_event_time(events)
             events = self.add_time_key_to_events(events)
@@ -174,7 +175,8 @@ class OCIEventHandler:
         except Exception as e:
             raise DemistoException(f'Error while fetching events: {e}') from e
 
-        demisto.info(f'{len(events)} Events fetched from start time: {self.first_fetch_time}.')
+        # demisto.info(f'OCI: {len(events)} Events fetched from start time: {self.first_fetch_time}.')
+        # return events
         return events
 
     def get_last_event_time(self, events: List) -> str:
@@ -191,7 +193,7 @@ class OCIEventHandler:
         """
         # if no events were fetched, return the current first fetch time.
         if not events:
-            return str(self.first_fetch_time)
+            return self.first_fetch_time.isoformat()
 
         # get the event time of last event in the list (will always be the most recent event)
         last_event_time = events[-1].get('event_time')
@@ -199,8 +201,8 @@ class OCIEventHandler:
             last_event_time = arg_to_datetime(arg=last_event_time)
 
         # return the last event time + 1 microsecond, or the current first fetch time if the last event time is None.
-        return str(last_event_time + timedelta(microseconds=1)) if last_event_time \
-            else str(self.first_fetch_time)
+        return (last_event_time + timedelta(microseconds=1)).isoformat() if last_event_time \
+            else self.first_fetch_time.isoformat()
 
     def add_time_key_to_events(self, events: List[Dict[str, Any]]) -> List:
         """
@@ -211,28 +213,32 @@ class OCIEventHandler:
             List[Dict[str, Any]]: The events with the _time key.
         """
         for event in events:
-            if event.get("event_time"):
-                event["_time"] = event.get("event_time")
+            if event.get("eventTime"):
+                event["_time"] = event.get("eventTime")
 
         return events
 
 
 def test_module(client: Client, oci_event_handler: OCIEventHandler) -> str:
     """
-    Tests API connectivity and authentication'
+    Tests API connectivity and authentication.
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
     successful.
     Raises exceptions if something goes wrong.
     Args:
         client (Client): Client for SDK interaction and api requests.
-        oci_event_handler (OCIEventHandler): OCI event handler.
+        oci_event_handler (OCIEventHandler): OCI event handler object.
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    client.validate_oci_config(client.config)
-
     try:
-        oci_event_handler.get_events(max_events=1)
+        params = {
+            'compartmentId': oci_event_handler.client.compartment_id,
+            'startTime': datetime.now().isoformat(),
+            'endTime': datetime.now().isoformat()
+        }
+        client._http_request(method='GET', params=params)
+
     except Exception as e:
         if 'failed' in str(e):
             return 'Authorization Error: make sure OCI parameters are correctly set'
@@ -280,10 +286,11 @@ def main():
     command = demisto.command()
     last_run = demisto.getLastRun()
     last_run_time = last_run.get('lastRun')
+    demisto.info(f'last_run_time value {last_run_time}')
     max_fetch = arg_to_number(params.get('max_fetch')) or MAX_EVENTS_TO_FETCH
     first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
-    first_fetch_time = calculate_first_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
-    demisto.info(f'Command being called is {command}')
+    first_fetch_time: Optional[datetime] = calculate_first_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
+    demisto.info(f'OCI: Command being called is {command}')
 
     try:
         if not isinstance(first_fetch_time, datetime):
@@ -298,10 +305,10 @@ def main():
             tenancy_ocid=params.get('tenancy_ocid'),
             region=params.get('region')
         )
-        demisto.info('Client created successfully.')
+        demisto.info('OCI: Client created successfully.')
 
         oci_event_handler = OCIEventHandler(client, last_run, max_fetch, first_fetch_time)
-        demisto.info(f'OCI Event Handler created successfully. {oci_event_handler=}')
+        demisto.info(f'OCI: OCI Event Handler created successfully. {oci_event_handler=}')
 
         if command == 'test-module':
             return_results(test_module(client, oci_event_handler))
@@ -313,16 +320,15 @@ def main():
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 if events:
                     last_event_time = oci_event_handler.last_event_time
-                    demisto.info(f'Set last run to {last_event_time}')
+                    demisto.info(f'OCI: Set last run to {last_event_time}')
                     demisto.setLastRun({"lastRun": {last_event_time}})
                 else:
-                    demisto.info('No new events fetched, Last run was not updated.')
+                    demisto.info('OCI: No new events fetched, Last run was not updated.')
 
             elif command == 'oracle-cloud-infrastructure-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown(
-                        'Oracle Cloud Infrastructure Events', events, removeNull=True, headerTransform=pascalToSpace
-                    ),
+                        'Oracle Cloud Infrastructure Events', events, removeNull=True, headerTransform=pascalToSpace),
                     raw_response=events,
                 )
                 return_results(command_results)

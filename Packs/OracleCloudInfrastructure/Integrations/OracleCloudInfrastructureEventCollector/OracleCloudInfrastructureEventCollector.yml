@@ -64,22 +64,6 @@ script:
       - 'true'
       - 'false'
       required: true
-    - auto: PREDEFINED
-      default: false
-      description: Filter by alert status.
-      isArray: false
-      name: status
-      predefined:
-      - ACTIVE
-      - CLOSED
-      required: false
-      secret: false
-    - default: false
-      description: Maximum results to return.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
     deprecated: false
     description: Gets events from Oracle Cloud Infrastructure.
     execution: false
