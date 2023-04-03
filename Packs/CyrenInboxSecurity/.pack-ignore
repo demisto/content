@@ -6,3 +6,10 @@ ignore=IM111
 
 [file:classifier-Cyren_Inbox_Security_Classifier.json]
 ignore=BA101
+
+[file:CyrenFindSimilarIncidents.yml]
+ignore=BA124
+
+[file:CyrenShowThreatIndicators.yml]
+ignore=BA124
+
