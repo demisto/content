@@ -16,11 +16,12 @@ ISSUE_INCIDENT_FIELDS = {'issue_id': 'The ID of the issue to edit',
                          'description': 'The description of the issue.',
                          'labels': 'A CSV list of labels.',
                          'priority': 'A priority name, for example "High" or "Medium".',
-                         'dueDate': 'The due date for the issue (in the format 2018-03-11).',
+                         'due_date': 'The due date for the issue (in the format 2018-03-11).',
                          'assignee': 'The name of the assignee. Relevant for Jira Server only',
                          'status': 'The name of the status.',
                          'assignee_id': 'The account ID of the assignee. Use'
-                                        ' the jira-get-id-by-attribute command to get the user\'s Account ID.'
+                                        ' the jira-get-id-by-attribute command to get the user\'s Account ID.',
+                         'original_estimate': 'The original estimate of the Jira issue.'
                          }
 DEFAULT_FETCH_LIMIT = 50
 DEFAULT_FIRST_FETCH_INTERVAL = '3 days'
@@ -99,7 +100,8 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         'parent_issue_id': 'fields.parent.id',
         'environment': 'fields.environment',
         'security': 'fields.security.name',
-        'components': 'fields.components'
+        'components': 'fields.components',
+        'original_estimate': 'fields.timetracking.originalEstimate'
     }
 
     # This will hold a mapping between the issue fields that are appendable (can append new values to them using the API)
@@ -1940,7 +1942,9 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
         # That means the action was `append`
         issue_fields = create_issue_fields_for_update(
             issue_args=args, issue_update_mapper=client.ISSUE_FIELDS_APPENDABLE_MAPPER)
-    client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=issue_fields)
+    if issue_fields:
+        demisto.debug(f'Updating the issue with the issue fields: {issue_fields}')
+        client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=issue_fields)
     demisto.log(f'Issue {issue_id_or_key} was updated successfully')
     res = client.get_issue(issue_id_or_key=issue_id_or_key)
     markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=res)
@@ -2069,30 +2073,9 @@ def extract_comment_entry_from_raw_response(comment_response: Dict[str, Any]) ->
         'Comment': comment_body,
         'User': demisto.get(comment_response, 'author.displayName') or '',
         'Created': comment_response.get('created') or '',
+        'Updated': comment_response.get('updated') or '',
         'UpdateUser': demisto.get(comment_response, 'updateAuthor.displayName') or '',
     }
-
-
-def extract_comments_entries_from_raw_response(comments_response: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Extract the comment entries from the raw response of the comments.
-
-    Args:
-        comments_response (List[Dict[str, Any]]): The comments object returned from the API.
-
-    Returns:
-        List[Dict[str, Any]]: The comment entries that will be used to return to the user.
-    """
-    comments: List[Dict[str, Any]] = []
-    for comment in comments_response:
-        comment_body = BeautifulSoup(comment.get('renderedBody')).get_text(
-        ) if comment.get('renderedBody') else comment.get('body')
-        comments.append({
-            'Id': comment.get('id'),
-            'Comment': comment_body,
-            'User': demisto.get(comment, 'author.displayName'),
-            'Created': comment.get('created')
-        })
-    return comments
 
 
 def edit_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
@@ -2185,7 +2168,6 @@ def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> Com
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    args = map_v2_args_to_v3(args=args)  # TODO: Check if we really need it or not
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
@@ -2196,7 +2178,7 @@ def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> Com
     readable_output = tableToMarkdown(
         'List Transitions:', transitions_names, headers=['Transition Name']
     )
-    outputs: Dict[str, Any] = {'Transitions': transitions_names}
+    outputs: Dict[str, Any] = {'Transitions': {'transitions': transitions_names, 'ticketId': issue_id_or_key}}
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
     outputs |= {'Id': issue_id_or_key} if is_id else {'Key': issue_id_or_key}
     return CommandResults(
@@ -2511,7 +2493,7 @@ def create_sprint_issues_command_results(board_id: str, issues: List[Dict[str, A
     return CommandResults(
         outputs_prefix='Jira.SprintIssues',
         outputs_key_field=['boardId', 'sprintId'] if board_id else [
-            'sprintId'],  # TODO Check if it is okay to use sprintID alone
+            'sprintId'],
         outputs=context_data_outputs or None,
         readable_output=tableToMarkdown(name=f'Sprint Issues in board {board_id}', t=markdown_list),
         raw_response=res
@@ -3143,7 +3125,8 @@ def get_comments_entries_for_fetched_incident(
         incident_modified_date (datetime | None): This will hold the timestamp of the last updated time of the incident in XSOAR
         that corresponds to the issue that holds the comments. This argument will be used when mirroring in, in order to retrieve
         comments that were updated after the incident's modified date, the argument is None when we don't want to take into
-        consideration the incident's modified date.
+        consideration the incident's modified date. NOTE: Talked to TPM, and we decided to keep all attachments, old and new ones,
+        therefore, I will delete this argument later.
 
     Returns:
         List[Dict[str, Any]]: The comment entries for a fetched or mirrored incident.
@@ -3153,13 +3136,13 @@ def get_comments_entries_for_fetched_incident(
     if comments_response := get_comments_response.get('comments', []):
         for comment_response in comments_response:
             comment_entry = extract_comment_entry_from_raw_response(comment_response)
-            if incident_modified_date:
-                if (updated_date := comment_response.get('updated')) \
-                        and (comment_updated_date := dateparser.parse(updated_date)):
-                    if comment_updated_date > incident_modified_date:
-                        comments_entries.append(comment_entry)
-            else:
-                comments_entries.append(comment_entry)
+            # if incident_modified_date:
+            #     if (updated_date := comment_response.get('updated')) \
+            #             and (comment_updated_date := dateparser.parse(updated_date)):
+            #         if True:  # Was comment_updated_date > incident_modified_date
+            #             comments_entries.append(comment_entry)
+            # else:
+            comments_entries.append(comment_entry)
     return comments_entries
 
 
@@ -3176,7 +3159,8 @@ def get_attachments_entries_for_fetched_incident(
         incident_modified_date (datetime | None): This will hold the timestamp of the last updated time of the incident in XSOAR
         that corresponds to the issue that holds the attachments. This argument will be used when mirroring, in order to retrieve
         attachments that were created after the incident's modified date. The argument is None when we don't want to take into
-        consideration the incident's modified date.
+        consideration the incident's modified date. NOTE: Talked to TPM, and we decided to keep all attachments, old and new ones,
+        therefore, I will delete this argument later.
 
     Returns:
         List[Dict[str, Any]]: The attachment entries for a fetched or mirrored incident.
@@ -3184,13 +3168,13 @@ def get_attachments_entries_for_fetched_incident(
     attachment_ids: List[str] = []
     for attachment_metadata in attachments_metadata:
         attachment_id = attachment_metadata.get('id', '')
-        if incident_modified_date:
-            if (created_date := attachment_metadata.get('created')) \
-                    and (attachment_created_date := dateparser.parse(created_date)):
-                if attachment_created_date > incident_modified_date:
-                    attachment_ids.append(attachment_id)
-        else:
-            attachment_ids.append(attachment_id)
+        # if incident_modified_date:
+        #     if (created_date := attachment_metadata.get('created')) \
+        #             and (attachment_created_date := dateparser.parse(created_date)):
+        #         if True:  # Was attachment_created_date > incident_modified_date
+        #             attachment_ids.append(attachment_id)
+        # else:
+        attachment_ids.append(attachment_id)
     demisto.debug(f"The fetched attachments' ids {attachment_ids}")
     attachments_entries: List[Dict[str, Any]] = [
         create_file_info_from_attachment(
@@ -3258,6 +3242,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         attachment_tag_to_jira
     ]
     issue['mirror_instance'] = demisto.integrationInstance()
+    issue['extractedAttachments'] = attachments
     return {
         "name": incident_name,
         "labels": labels,
@@ -3308,10 +3293,9 @@ def get_fetched_comments(client: JiraBaseClient, issue_id: str, issue: Dict[str,
     """
     demisto.debug('Fetching comments')
     comments_entries = get_comments_entries_for_fetched_incident(client=client, issue_id_or_key=issue_id)
-    extracted_comments_bodies = [comment_entry.get('Comment', '') for comment_entry in comments_entries]
-    demisto.debug(f'Fetched comments {extracted_comments_bodies}')
-    issue['extractedComments'] = extracted_comments_bodies
-    labels.append({'type': 'comments', 'value': str(extracted_comments_bodies)})
+    demisto.debug(f'Fetched comments {comments_entries}')
+    issue['extractedComments'] = comments_entries
+    labels.append({'type': 'comments', 'value': str(comments_entries)})
 
 
 def add_extracted_data_to_incident(issue: Dict[str, Any]) -> None:
@@ -3323,7 +3307,6 @@ def add_extracted_data_to_incident(issue: Dict[str, Any]) -> None:
     Args:
         issue (Dict[str, Any]): The issue object returned from the API.
     """
-    issue['extractedAttachments'] = JiraIssueFieldsParser.get_attachments_context(issue_data=issue).get('Attachments') or []
     issue['extractedSubtasks'] = JiraIssueFieldsParser.get_subtasks_context(issue_data=issue).get('Subtasks') or []
     issue['extractedCreator'] = JiraIssueFieldsParser.get_creator_context(issue_data=issue).get('Creator') or ''
     issue['extractedComponents'] = JiraIssueFieldsParser.get_components_context(issue_data=issue).get('Components') or []
@@ -3376,6 +3359,16 @@ def convert_string_date_to_specific_format(string_date: str, date_format: str = 
 
 # Mirroring
 # Still in development
+
+def get_user_timezone(client: JiraBaseClient) -> str:
+    user_info_res = client.get_user_info()
+    if timezone_name := user_info_res.get('timeZone', ''):
+        return timezone_name
+    else:
+        raise DemistoException(('Could not get Jira\'s timezone, the following response was'
+                                f' returned:\n{user_info_res}, with timezone:\n{timezone_name}'))
+
+
 def get_modified_remote_data_command(client: JiraBaseClient, args: Dict[str, Any]) -> GetModifiedRemoteDataResponse:
     """Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last
     update. If the command is implemented in the integration, the get-remote-data command will only be performed on
@@ -3390,28 +3383,23 @@ def get_modified_remote_data_command(client: JiraBaseClient, args: Dict[str, Any
         GetModifiedRemoteDataResponse: The object that maintains a list of incident ids to run
      'get-remote-data' on.
     """
+    demisto.debug('Running get_modified_remote_data_command')
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update_date: str = remote_args.last_update
     modified_issues_ids = []
     try:
-        user_info_res = client.get_user_info()
+        # user_info_res = client.get_user_info()
+        user_timezone_name = get_user_timezone(client=client)
+        modified_issues_ids = get_modified_issue_ids(
+            client=client, last_update_date=last_update_date, timezone_name=user_timezone_name,
+        )
     except Exception as e:
         demisto.error(f'Error when calling `client.get_user_info` in order to retrieve the user\'s timezone. Error message:\n{e}')
-    else:
-        if timezone_name := user_info_res.get('timeZone', '') or '':
-            modified_issues_ids = (
-                get_modified_issue_ids(
-                    client=client, last_update_date=last_update_date, timezone_name=timezone_name,
-                )
-            )
-        else:
-            demisto.error(f'Could not get Jira\'s timezone for get-modified-remote-data, the following response was returned:\n'
-                          f'{user_info_res}')
     finally:
         return GetModifiedRemoteDataResponse(modified_issues_ids)
 
 
-def get_modified_issue_ids(client: JiraBaseClient, last_update_date: str, timezone_name: str):
+def get_modified_issue_ids(client: JiraBaseClient, last_update_date: str, timezone_name: str) -> List:
     last_update = convert_string_date_to_specific_format(last_update_date,
                                                          dateparser_settings={'TIMEZONE': timezone_name})
     demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
@@ -3459,17 +3447,21 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         remove_empty_custom_fields(issue=issue,
                                    issue_fields_id_to_name_mapping=issue.get('names', {}) or {})
         demisto.debug(f'Got remote data for incident {issue_id}')
+        user_timezone_name = get_user_timezone(client=client)
         # issue_modified_date: Timestamp of the last updated time of the issue in Jira
         # incident_modified_date: Timestamp of the last updated time of the incident in XSOAR
         #
         # The following if statement is to make sure that we don't get None values when using dateparser.parse
         # by using the walrus operator (:=).
-        if (issue_modified_date := dateparser.parse(demisto.get(issue, 'fields.updated'))) \
-                and (incident_modified_date := dateparser.parse(parsed_args.last_update)):
+        if (issue_modified_date := dateparser.parse(demisto.get(issue, 'fields.updated'),
+                                                    settings={'TIMEZONE': user_timezone_name})) \
+                and (incident_modified_date := dateparser.parse(parsed_args.last_update,
+                                                                settings={'TIMEZONE': user_timezone_name})):
             demisto.debug(f"Issue modified date in Jira: {issue_modified_date}")
             demisto.debug(f"Incident modified date: {incident_modified_date}")
             # Update incident only if issue modified in Jira is after the last update time of the incident
-            if issue_modified_date > incident_modified_date:
+            # if issue_modified_date > incident_modified_date:
+            if True:
                 demisto.debug('Updating incident from remote system')
                 updated_incident = issue
                 parsed_entries = get_updated_remote_data(
@@ -3477,44 +3469,8 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
                     issue_modified_date=issue_modified_date, incident_modified_date=incident_modified_date,
                     issue_id=issue_id, mirror_resolved_issue=mirror_resolved_issue,
                     attachment_tag_from_jira=attachment_tag_from_jira,
-                    comment_tag_from_jira=comment_tag_from_jira)
-                # demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue.get('id')}\n\t"
-                #               f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
-                #               f"\n\Issue last updated time: {issue_modified_date}\n")
-                # demisto.debug(f"\n Raw issue response: {issue}\n")
-                # if mirror_resolved_issue:
-                #     if closed_issue := handle_incoming_resolved_issue(
-                #         updated_incident
-                #     ):
-                #         demisto.debug(
-                #             f'Close incident with ID: {issue_id}, since corresponding issue was resolved')
-                #         return GetRemoteDataResponse(updated_incident, [closed_issue])
-
-                # attachments_entries = get_attachments_entries_for_fetched_incident(
-                #     client=client,
-                #     attachments_metadata=demisto.get(issue, 'fields.attachment') or [],
-                #     incident_modified_date=incident_modified_date
-                # )
-                # for attachment_entry in attachments_entries:
-                #     attachment_entry['Tags'] = [attachment_tag]
-                #     parsed_entries.append(attachment_entry)
-                # demisto.debug(f'####################\n{attachments_entries}\n################')
-                # comments_entries = get_comments_entries_for_fetched_incident(
-                #     client=client,
-                #     issue_id_or_key=issue_id,
-                #     incident_modified_date=incident_modified_date
-                # )
-                # comments_bodies = []
-                # for comment_entry in comments_entries:
-                #     parsed_entries.append({
-                #         'Type': EntryType.NOTE,
-                #         'Contents': (f'{comment_entry.get("Comment")}\nJira Author: {comment_entry.get("UpdateUser")}'),
-                #         'ContentsFormat': EntryFormat.TEXT,
-                #         'Tags': [comment_tag],  # the list of tags to add to the entry
-                #         'Note': True,
-                #     })
-                #     comments_bodies.append(comment_entry.get('Comment', ''))
-                # updated_incident['extractedComments'] = comments_bodies
+                    comment_tag_from_jira=comment_tag_from_jira,
+                    user_timezone_name=user_timezone_name)
             if parsed_entries:
                 demisto.debug(f'Update the next entries: {parsed_entries}')
         else:
@@ -3546,7 +3502,7 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
 def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updated_incident: Dict[str, Any],
                             issue_modified_date: datetime, incident_modified_date: datetime, issue_id: str,
                             mirror_resolved_issue: bool, attachment_tag_from_jira: str, comment_tag_from_jira: str,
-                            ) -> List[Dict[str, Any]]:
+                            user_timezone_name: str) -> List[Dict[str, Any]]:
     """This function is in charge of returning the parsed entries of the updated incident, while updating
     the content of updated_incident, which is in charge of holding the updated data of the incident (since arguments
     are passed by reference, we can update the object in this function, and the changes to the object will be reflected
@@ -3584,29 +3540,33 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
         attachments_metadata=demisto.get(issue, 'fields.attachment') or [],
         incident_modified_date=incident_modified_date
     )
+    attachments_incident_field = []
+    demisto.debug(f'\nGot the following attachments entries {attachments_entries}\n')
     for attachment_entry in attachments_entries:
         if ATTACHMENT_MIRRORED_FROM_XSOAR not in attachment_entry.get('File', ''):
             attachment_entry['Tags'] = [attachment_tag_from_jira]
             parsed_entries.append(attachment_entry)
-    demisto.debug(f'####################\n{attachments_entries}\n################')
+        attachments_incident_field.append({'path': attachment_entry.get('FileID', ''),
+                                           'name': attachment_entry.get('File', '')})
+    updated_incident['extractedAttachments'] = attachments_incident_field
     comments_entries = get_comments_entries_for_fetched_incident(
         client=client,
         issue_id_or_key=issue_id,
         incident_modified_date=incident_modified_date
     )
-    comments_bodies = []
     for comment_entry in comments_entries:
         comment_body = comment_entry.get('Comment', '')
-        if COMMENT_MIRRORED_FROM_XSOAR not in comment_body:
-            parsed_entries.append({
-                'Type': EntryType.NOTE,
-                'Contents': (f'{comment_entry.get("Comment")}\nJira Author: {comment_entry.get("UpdateUser")}'),
-                'ContentsFormat': EntryFormat.TEXT,
-                'Tags': [comment_tag_from_jira],  # the list of tags to add to the entry
-                'Note': True,
-            })
-            comments_bodies.append(comment_entry.get('Comment', ''))
-    updated_incident['extractedComments'] = comments_bodies
+        if comment_updated_date := dateparser.parse(comment_entry.get('Updated', ''), settings={'TIMEZONE': user_timezone_name}):
+            # We only want to return comments that were recently added or updated as NOTE entry.
+            if COMMENT_MIRRORED_FROM_XSOAR not in comment_body and comment_updated_date > incident_modified_date:
+                parsed_entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': (f'{comment_body}\nJira Author: {comment_entry.get("UpdateUser")}'),
+                    'ContentsFormat': EntryFormat.TEXT,
+                    'Tags': [comment_tag_from_jira],  # The list of tags to add to the entry
+                    'Note': True,
+                })
+    updated_incident['extractedComments'] = comments_entries
     return parsed_entries
 
 
@@ -3691,10 +3651,13 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], c
             )
             # take the val from data as it's the updated value
             delta = {k: remote_args.data.get(k) for k in delta.keys()}
-            demisto.debug(f'sending the following data to edit the issue with: {delta}')
-            issue_fields = create_issue_fields(issue_args=delta, issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
-            client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields)
-            # edit_issue_command(remote_id, mirroring=True, **delta)
+            demisto.debug(f'Sending the following data to edit the issue with: {delta}')
+            if issue_fields := create_issue_fields(
+                issue_args=delta,
+                issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER,
+            ):
+                demisto.debug(f'Updating the issue with the following issue fields: {issue_fields}')
+                client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields)
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_id}] '
@@ -3714,15 +3677,13 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], c
                     upload_XSOAR_attachment_to_jira(client=client, entry_id=entry_id,
                                                     issue_id_or_key=remote_id,
                                                     attachment_name=f'{file_name}{ATTACHMENT_MIRRORED_FROM_XSOAR}{file_extension}')
-                    # upload_file(entry.get('id'), remote_id, file_name)
-                else:  # handle comments
-                    if comment_tag_to_jira in entry_tags:
-                        demisto.debug('Add new comment\n')
-                        payload = {
-                            'body': text_to_adf(text=f'{entry.get("contents", "")}\n\n{COMMENT_MIRRORED_FROM_XSOAR}')
-                        }
-                        res = client.add_comment(issue_id_or_key=remote_id, json_data=payload)
-                        # add_comment(remote_id, str(entry.get('contents', '')))
+                elif comment_tag_to_jira in entry_tags:
+                    demisto.debug('Add new comment\n')
+                    payload = {
+                        'body': text_to_adf(text=f'{entry.get("contents", "")}\n\n{COMMENT_MIRRORED_FROM_XSOAR}')
+                    }
+                    client.add_comment(issue_id_or_key=remote_id, json_data=payload)
+        demisto.debug('Updated the remote system successfully')
     except Exception as e:
         demisto.error(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")

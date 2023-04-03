@@ -1,0 +1,65 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "f3831f6e-f8ff-40b9-8069-4ef53c667cb3",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": {
+		"Jira Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"assignee": {
+					"simple": "assigneduser"
+				},
+				"components": {
+					"simple": "jiracomponent"
+				},
+				"description": {
+					"simple": "jiradescription"
+				},
+				"due_date": {
+					"simple": "jiraduedate"
+				},
+				"original_estimate": {
+					"simple": "jiraestimate"
+				},
+				"labels": {
+					"simple": "jiralabels"
+				},
+				"priority": {
+					"simple": "jirapriority"
+				},
+				"status": {
+					"simple": "jirastatus"
+				},
+				"summary": {
+					"simple": "jirasummary"
+				}
+			}
+		}
+	},
+	"name": "JiraV3 Outgoing Mapper",
+	"nameRaw": "JiraV3 Outgoing Mapper",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-outgoing",
+	"unclassifiedCases": null,
+	"version": -1
+}

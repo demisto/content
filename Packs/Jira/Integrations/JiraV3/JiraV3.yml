@@ -504,9 +504,21 @@ script:
     execution: false
     name: jira-list-transitions
     outputs:
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
     - contextPath: Ticket.Transitions
-      description: A list of all possible transitions.
+      description: An object that holds data about all possible transitions.
       type: Object
+    - contextPath: Ticket.Transitions.transitions
+      description: An array of all possible transitions.
+      type: Array
+    - contextPath: Ticket.Transitions.ticketId
+      description: The ticket ID.
+      type: String
   - arguments:
     - default: false
       description: The parent issue key (if you're editing a sub-task).
@@ -925,7 +937,10 @@ script:
       description: The text of the comment.
       type: string
     - contextPath: Ticket.Comment.Created
-      description: The issue creation date.
+      description: The comment creation date.
+      type: string
+    - contextPath: Ticket.Comment.Updated
+      description: The comment updated date.
       type: string
     - contextPath: Ticket.Comment.User
       description: The user that created the comment.

@@ -62,6 +62,9 @@
                 "Created Time": {
                     "simple": "fields.created"
                 },
+                "Assigned User": {
+                    "simple": "fields.assignee.displayName"
+                },
                 "Jira Attachments": {
                     "simple": "extractedAttachments"
                 },
@@ -117,7 +120,7 @@
                     "simple": "extractedComponents"
                 },
                 "Jira Estimate": {
-                    "simple": "fields.timeestimate"
+                    "simple": "fields.timetracking.originalEstimate"
                 },
                 "Jira Issue Type": {
                     "simple": "fields.issuetype.name"
