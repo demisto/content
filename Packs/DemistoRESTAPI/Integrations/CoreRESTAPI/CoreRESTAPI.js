@@ -11,7 +11,7 @@ log(params.credentials.identifier)
 log(params.credentials.password)
 log("$$$$$$$1")
 
-if (params.auth_id || (params.credentials && params.creds_apikey.identifier)) {
+if (params.auth_id || (params.credentials && params.credentials.identifier)) {
     if (!serverURL.endsWith('/xsoar')){
         serverURL = serverURL + '/xsoar'
     }
