@@ -35,12 +35,12 @@ configuration:
   name: insecure
   required: false
   type: 8
-  section: Collect
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-  section: Collect
+  section: Connect
 description: WithSecure event collector integration for Cortex XSIAM.
 display: 'WithSecure Event Collector'
 name: WithSecureEventCollector
