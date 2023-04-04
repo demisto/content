@@ -315,7 +315,7 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
                     next_page_number = re.search(PAGE_NUMBER_PATTERN, next_page_link)
                     next_page_link = None  # default to end the loop unless set
                     if next_page_number:
-                        next_page_number = next_page_number.group(0)
+                        next_page_number = next_page_number.group(0) if next_page_number.group(0) else None
                         # build the parameters for next page
                         params = paging_args_to_params(1000, next_page_number)
 
