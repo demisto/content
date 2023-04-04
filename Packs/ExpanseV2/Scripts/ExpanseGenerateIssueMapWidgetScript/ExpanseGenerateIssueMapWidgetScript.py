@@ -8,7 +8,6 @@ from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from math import floor, tan, log, cos, pi
 from base64 import b64encode
-from pathlib import Path
 
 # main formatting parameter
 RESULT_HEIGHT = 290
@@ -21097,11 +21096,7 @@ def generate_map_command(args: Dict[str, Any]) -> str:
 
     annotations_image = Image.new('RGBA', (RESULT_IMAGE_X * 2, RESULT_IMAGE_Y * 2), (255, 0, 0, 0))
     draw = ImageDraw.Draw(annotations_image)
-    if Path("/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"):  # debian location
-        deja_sans_mono_font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
-    else:  # ubi location
-        deja_sans_mono_font_path = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono-Bold.ttf"
-    font = ImageFont.truetype(deja_sans_mono_font_path, 20)
+    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf", 20)
 
     for c in circles:
         draw.ellipse((
