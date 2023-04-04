@@ -50,7 +50,7 @@ def get_events_command(client: BloxOneTDEventCollectorClient, args: dict):
     if argToBoolean(args.get('should_push_events', False)):
         send_events_to_xsiam(events, VENDOR, PRODUCT)
 
-    return CommandResults(outputs=events, outputs_prefix="test_get_events")
+    return CommandResults(outputs=events, outputs_prefix="TestGetEvents")
 
 
 def parse_from_ts_from_params(first_fetch_str: str = None) -> int:

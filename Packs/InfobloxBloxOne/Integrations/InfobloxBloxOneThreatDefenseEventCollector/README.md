@@ -42,4 +42,6 @@ Gets events. This command is for debugging purposes.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TestGetEvents | Unknown | The event data. | 

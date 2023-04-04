@@ -64,6 +64,10 @@ script:
       isArray: false
       name: offset
       required: true
+    outputs:
+    - description: The event data.
+      type: Unknown
+      contextPath: TestGetEvents
     deprecated: false
     description: "Gets events. This command is for debugging purposes."
     execution: false
