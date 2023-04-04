@@ -191,7 +191,7 @@ class TestMain:
         send_events_to_xsiam_mock.assert_called_once_with(
             [{'_time': 'event_time', 'event_time': 'event_time'}], 'Infoblox BloxOne', 'Threat Defense')
         assert return_results_mock.call_args.args[0].outputs == [{'_time': 'event_time', 'event_time': 'event_time'}]
-        assert return_results_mock.call_args.args[0].outputs_prefix == "test_get_events"
+        assert return_results_mock.call_args.args[0].outputs_prefix == "TestGetEvents"
 
     def test_get_events_without_send_to_server_happy_flow(self, mocker, requests_mock, return_results_mock):
         demisto_input_mocker(mocker, 'bloxone-td-event-collector-get-events',
@@ -203,4 +203,4 @@ class TestMain:
         main()
         assert send_events_to_xsiam_mock.call_count == 0
         assert return_results_mock.call_args.args[0].outputs == [{'_time': 'event_time', 'event_time': 'event_time'}]
-        assert return_results_mock.call_args.args[0].outputs_prefix == "test_get_events"
+        assert return_results_mock.call_args.args[0].outputs_prefix == "TestGetEvents"
