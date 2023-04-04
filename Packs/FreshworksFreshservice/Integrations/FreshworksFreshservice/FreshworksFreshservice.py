@@ -372,7 +372,7 @@ MIRRORING_COMMON_FIELDS = [
 ]
 
 TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS = {
-    'ticket': ['impact', 'requester_id', 'tags', 'custom_fields'],
+    'ticket': ['impact', 'urgency', 'requester_id', 'tags', 'custom_fields'],
     'problem': ['impact', 'requester_id', 'agent_id', 'custom_fields'],
     'change': [
         'impact', 'requester_id', 'agent_id', 'risk', 'change_type',
@@ -3445,9 +3445,11 @@ def update_remote_system(
             )
             updated_arguments = {}
             for key, value in update_args.items():
-                if value in MIRRORING_COMMON_FIELDS + TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[
+                if key in MIRRORING_COMMON_FIELDS + TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[
                         ticket_type]:
-                    update_value = TICKET[ticket_type].get(key, value)
+                    update_value = dict_safe_get(TICKET,
+                                                 [ticket_type, key, value],
+                                                 value)
                     updated_arguments[key] = update_value
 
             updated_arguments.update({'ticket_id': ticket_id})
