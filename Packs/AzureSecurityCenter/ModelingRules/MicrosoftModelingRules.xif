@@ -19,7 +19,7 @@ alter
 	xdm.target.process.parent_id = json_extract_scalar(properties, "$.extendedProperties.parent process id"),
 	xdm.observer.product = json_extract_scalar(properties, "$.productName"),
 	xdm.alert.severity = json_extract_scalar(properties, "$.severity"),
-	xdm.event.outcome = json_extract_scalar(properties, "$.status"),
+	xdm.event.outcome_reason = json_extract_scalar(properties, “$.status”),
 	xdm.alert.original_alert_id = json_extract_scalar(properties, "$.systemAlertId"),
 	xdm.alert.mitre_techniques = json_extract_array(properties, "$.techniques"),
 	xdm.observer.vendor = json_extract_scalar(properties, "$.vendorName"),
