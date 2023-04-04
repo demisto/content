@@ -210,7 +210,6 @@ def test_member_added_handler(mocker, requests_mock):
     from MicrosoftTeams import member_added_handler
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
     mocker.patch.object(demisto, 'setIntegrationContext')
-    mocker.patch.object(demisto, 'params', return_value={'bot_id': bot_id})
     requests_mock.get(
         f'{service_url}/v3/conversations/{team_id}/members',
         json=team_members
@@ -1411,7 +1410,7 @@ def test_update_message(requests_mock):
 
 def test_direct_message_handler(mocker, requests_mock):
     from MicrosoftTeams import direct_message_handler
-    mocker.patch.object(
+    create_incidents_mocker = mocker.patch.object(
         demisto,
         'createIncidents',
         return_value={
@@ -1432,6 +1431,17 @@ def test_direct_message_handler(mocker, requests_mock):
         'id': 'conversation-id'
     }
 
+    expected_created_incident: list = [
+        {
+            'name': 'GoFish',
+            'type': 'Phishing',
+            'rawJSON': '{"from": {"id": '
+                       '"29:1KZccCJRTxlPdHnwcKfxHAtYvPLIyHgkSLhFSnGXLGVFlnltovdZPmZAduPKQP6NrGqOcde7FXAF7uTZ_8FQOqg", '
+                       '"username": "Bruce Willis", "user_email": "bwillis@email.com"}}'
+        }
+    ]
+    expected_assigned_user = 'nice-demisto-id'
+
     # verify create incident fails on un allowed external incident creation and non found user
     message: str = 'create incident name=GoFish type=Phishing'
     mocker.patch.object(demisto, 'findUser', return_value=None)
@@ -1444,11 +1454,13 @@ def test_direct_message_handler(mocker, requests_mock):
     # verify create incident successfully
     mocker.patch.object(demisto, 'findUser', return_value={'id': 'nice-demisto-id'})
     direct_message_handler(integration_context, request_body, conversation, message)
+
     assert requests_mock.request_history[1].json() == {
         'text': "Successfully created incident incidentnumberfour.\n"
                 "View it on: [https://test-address:8443#/WarRoom/4](https://test-address:8443#/WarRoom/4)",
         'type': 'message'
     }
+    create_incidents_mocker.assert_called_with(expected_created_incident, userID=expected_assigned_user)
 
     # verify get my incidents
     my_incidents: str = "```ID         | Name                 | Status      | Type        | Owner       | Created" \
@@ -2252,9 +2264,8 @@ def test_is_bot_in_chat_parameters(mocker, requests_mock):
     Then: validate that the request is sent correctly and specifically that the BOT_ID is part of the query
     """
     request_mock = requests_mock.get(f'{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}/installedApps', json={})
-    mocker.patch.object(demisto, 'params', return_value={'bot_id': bot_id})
+    mocker.patch("MicrosoftTeams.BOT_ID", new=bot_id)
     from MicrosoftTeams import is_bot_in_chat
     is_bot_in_chat(GROUP_CHAT_ID)
     filters = request_mock.last_request.qs.get('$filter')[0]
     assert f"eq '{bot_id}'" in filters
-

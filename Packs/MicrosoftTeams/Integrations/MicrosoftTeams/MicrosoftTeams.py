@@ -92,6 +92,7 @@ MAX_ITEMS_PER_RESPONSE = 50
 EXTERNAL_FORM = "external/form"
 MAX_SAMPLES = 10
 
+
 class Handler:
     @staticmethod
     def write(msg: str):
@@ -197,6 +198,7 @@ def add_req_data_to_incidents(incidents: list, request_body: dict) -> list:
         incident['rawJSON'] = json.dumps(request_body)
     return incidents
 
+
 def process_incident_create_message(demisto_user: dict, message: str, request_body: dict) -> str:
     """
     Processes an incident creation message
@@ -220,8 +222,8 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
             if not isinstance(incidents, list):
                 incidents = [incidents]
 
-            add_req_data_to_incidents(incidents, request_body)
-            created_incident = create_incidents(demisto_user, incidents)
+            add_req_data_to_incidents(incidents, request_body)  # type: ignore[arg-type]
+            created_incident = create_incidents(demisto_user, incidents)    # type: ignore[arg-type]
             if not created_incident:
                 data = 'Failed creating incidents.'
     else:
@@ -246,10 +248,8 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
             created_incident = create_incidents(demisto_user, incidents)
             if not created_incident:
                 data = 'Failed creating incidents.'
-    demisto.debug(f'\n\n\ncreated_incident are: {incidents}')
     if created_incident:
-        demisto.debug(f'\n\n\nIncidents are: {incidents}')
-        update_integration_context_samples(incidents)
+        update_integration_context_samples(incidents)   # type: ignore[arg-type]
         if isinstance(created_incident, list):
             created_incident = created_incident[0]
         created_incident = cast(Dict[Any, Any], created_incident)
@@ -2229,7 +2229,7 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
 
     team_member: dict = get_team_member(integration_context, user_id)
     if team_member:
-        # enrich the sender info
+        # enrich our data with the sender info
         request_body['from'].update(team_member)
 
     username: str = team_member.get('username', '')
@@ -2605,7 +2605,6 @@ def test_connection():
     """
     Test connectivity in the Authorization Code flow mode.
     """
-    print(get_integration_context())
     get_graph_access_token()  # If fails, get_graph_access_token returns an error
     return_results(CommandResults(readable_output='✅ Success!'))
 
