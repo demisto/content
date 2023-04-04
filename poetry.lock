@@ -199,14 +199,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.104"
+version = "1.26.105"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.29.104,<1.30.0"
+botocore = ">=1.29.105,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -215,7 +215,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.104"
+version = "1.29.105"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
@@ -513,7 +513,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.11.0"
+version = "1.12.0"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -613,8 +613,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "45ebc3b8a4a8c13f2521a0fc0dd4f57821fc2c80"
-resolved_reference = "45ebc3b8a4a8c13f2521a0fc0dd4f57821fc2c80"
+reference = "9f50263b5ec9d5ae34fe277fb11234e4e5da5098"
+resolved_reference = "9f50263b5ec9d5ae34fe277fb11234e4e5da5098"
 
 [[package]]
 name = "deprecated"
@@ -1825,7 +1825,7 @@ resolved_reference = "6493798ceba8089345d970f71be4a896eb6b081d"
 
 [[package]]
 name = "parse-emails"
-version = "0.1.7"
+version = "0.1.8"
 description = "Parses an email message file and extracts the data from it."
 category = "dev"
 optional = false
@@ -3467,7 +3467,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "4d8d9a9ce3c8064414995c35ce18a1b3229f0a91f8711f511278832ab3defe8f"
+content-hash = "bc00f7ad2c7da4bd54835c63e67803febfcf53fe99db06b8c2edc0bf9a747287"
 
 [metadata.files]
 aiodns = [
@@ -3654,12 +3654,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.26.104-py3-none-any.whl", hash = "sha256:308c5a8293d9b76e74921f4d945be19cc467b92e5f128df1db76e31c71345bb3"},
-    {file = "boto3-1.26.104.tar.gz", hash = "sha256:bcd09f16bdf3d71ab7d0fab20e97242f09c63f4cea0943329521ab35a950f900"},
+    {file = "boto3-1.26.105-py3-none-any.whl", hash = "sha256:f4951f8162905b96fd045e32853ba8cf707042faac846a23910817c508ef27d7"},
+    {file = "boto3-1.26.105.tar.gz", hash = "sha256:2914776e0138530ec6464d0e2f05b4aa18e9212ac920c48472f8a93650feaed2"},
 ]
 botocore = [
-    {file = "botocore-1.29.104-py3-none-any.whl", hash = "sha256:932bfbf580a2ae53f471df4bfbebce531985ee27468cf7c37d7ccfb3cf8bc9e4"},
-    {file = "botocore-1.29.104.tar.gz", hash = "sha256:7e7a01cef10b1daa9cb01ec25a15e831e7359fc43d1b591359710f203c3620a8"},
+    {file = "botocore-1.29.105-py3-none-any.whl", hash = "sha256:06a2838daad3f346cba5460d0d3deb198225b556ff9ca729798d787fadbdebde"},
+    {file = "botocore-1.29.105.tar.gz", hash = "sha256:17c82391dfd6aaa8f96fbbb08cad2c2431ef3cda0ece89e6e6ba444c5eed45c2"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -4936,8 +4936,8 @@ paramiko = [
 ]
 parinx = []
 parse-emails = [
-    {file = "parse_emails-0.1.7-py3-none-any.whl", hash = "sha256:8032756cd9b86a8e8badabacbe6c765d6e6ebeb1019dbb45b14f13e5322f38b1"},
-    {file = "parse_emails-0.1.7.tar.gz", hash = "sha256:562134c4ab9ff3f7500ec62c2c38b35ac461149f18bc79c64a59a1332e475f08"},
+    {file = "parse_emails-0.1.8-py3-none-any.whl", hash = "sha256:b70f1897ec5234d60b30cd335db8c505e0da76d1eca205af9377bf0a19398ad4"},
+    {file = "parse_emails-0.1.8.tar.gz", hash = "sha256:79b4a9673d3ccf9e724bf97d0af44e16a5a9d84b962fd482519de713170b7d03"},
 ]
 pbr = [
     {file = "pbr-5.11.1-py2.py3-none-any.whl", hash = "sha256:567f09558bae2b3ab53cb3c1e2e33e726ff3338e7bae3db5dc954b3a44eef12b"},
