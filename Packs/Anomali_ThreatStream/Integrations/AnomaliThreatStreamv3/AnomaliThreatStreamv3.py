@@ -201,7 +201,7 @@ class Client(BaseClient):
         )
         return res
 
-    def error_handler(self, res: requests.Response):
+    def error_handler(self, res: requests.Response):  # pragma: no cover
         """
         Error handler to call by super().http_request in case an error was occurred
         """
@@ -972,7 +972,7 @@ def validate_investigation_action(investigation_action: Optional[str], new_inves
     """
     if investigation_action == 'Create New' and (not new_investigation_name):
         raise DemistoException("Please ensure to provide the 'new_investigation_name'"
-                               "argument when selecting the 'Create New' option for the 'investigation_action' argument.")
+                               " argument when selecting the 'Create New' option for the 'investigation_action' argument.")
     if investigation_action == 'Add To Existing' and (not existing_investigation_id):
         raise DemistoException("Please ensure to provide the 'existing_investigation_id'"
                                " argument when selecting the 'Add To Existing' option for the 'investigation_action' argument.")
@@ -1304,7 +1304,7 @@ def add_investigation_element_command(client: Client, investigation_id: str = No
             else:
                 readable_output = 'The following elements with IDs were successfully added:' \
                                   f' {", ".join(map(str, successful_ids))},' \
-                                  f'However, There are already {res.get("already_exists_elements_count")}' \
+                                  f' However, There are already {res.get("already_exists_elements_count")}' \
                                   ' existing elements.'
     else:
         readable_output = f'All The elements was added successfully to investigation ID: {investigation_id}'

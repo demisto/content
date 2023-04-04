@@ -11,7 +11,8 @@ from AnomaliThreatStreamv3 import main, get_indicators, \
     list_user_command, list_investigation_command, create_rule_command, update_rule_command, delete_rule_command, \
     create_investigation_command, update_investigation_command, delete_investigation_command, add_investigation_element_command, \
     approve_import_job_command, search_threat_model_command, create_element_list, \
-    add_threat_model_association_command, validate_values_search_threat_model
+    add_threat_model_association_command, validate_values_search_threat_model, validate_investigation_action, \
+    return_params_of_pagination_or_limit
 from CommonServerPython import *
 import pytest
 
@@ -682,6 +683,14 @@ class TestGetCommands:
             ('threatstream-list-import-job', {}, dict(limit=50)),
             ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Errors'},
              dict(limit=4, offset=4, status='errors')),
+            ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Approved'},
+             dict(limit=4, offset=4, status='approved')),
+            ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Ready To Review'},
+             dict(limit=4, offset=4, status='done')),
+            ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Rejected'},
+             dict(limit=4, offset=4, status='deleted')),
+            ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Processing'},
+             dict(limit=4, offset=4, status='processing')),
         ]
     )
     def test_expected_params_in_get_requests(self, mocker, command, command_args, expected_http_params):
@@ -1130,7 +1139,11 @@ def test_update_whitelist_entry_note_command(mocker):
     assert command_result.readable_output == 'The note was updated successfully.'
 
 
-def test_create_whitelist_entry_command(mocker):
+@pytest.mark.parametrize('args', [
+    ({'domains': 'example.com'}),
+    ({'entry_id': 'xxxx-xxxxx'}),
+])
+def test_create_whitelist_entry_command(mocker, args):
     """
 
     Given:
@@ -1144,10 +1157,14 @@ def test_create_whitelist_entry_command(mocker):
 
     """
     mocker.patch.object(Client, 'http_request', return_value={"message": "Created 1 item(s).", "success": True})
-
-    args = {'domains': 'example.com'}
+    mocker_file_get = mocker.patch.object(demisto, 'getFilePath', return_value={'id': 'xxx',
+                                                                                'path': 'test/test.txt', 'name': 'test.txt'})
+    mocker_file_open = mocker.patch("builtins.open", return_value="file_data")
     client = mock_client()
     command_result = create_whitelist_entry_command(client, **args)
+    if 'entry_id' in args:
+        assert mocker_file_get.call_count == 1
+        assert mocker_file_open.call_count == 1
     assert command_result.readable_output == "Created 1 item(s)."
 
 
@@ -1465,7 +1482,15 @@ def test_delete_investigation_command(mocker):
     assert command_result.readable_output == 'Investigation was deleted successfully.'
 
 
-def test_add_investigation_element_command(mocker):
+@pytest.mark.parametrize('args, get_from_jason, result_of_readable_output', [
+    ({'investigation_id': '222', 'associated_actor_ids': '55555,11111'}, 'add_investigation_elements_all',
+     'All The elements was added successfully to investigation ID: 222'),
+    ({'investigation_id': '222', 'associated_actor_ids': '55555,22222'}, 'add_investigation_elements',
+     'The following elements with IDs were successfully added: 55555. However, attempts to'
+     ' add elements with IDs: 22222 were unsuccessful.')
+
+])
+def test_add_investigation_element_command(mocker, args, get_from_jason, result_of_readable_output):
     """
 
     Given:
@@ -1479,13 +1504,12 @@ def test_add_investigation_element_command(mocker):
 
     """
     load_json = util_load_json('test_data/mocked_data.json')
-    mocked_response = load_json.get('add_investigation_elements')
+    mocked_response = load_json.get(get_from_jason)
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
 
-    args: dict = {'investigation_id': '222', 'associated_actor_ids': '55555,11111'}
     client = mock_client()
     command_result = add_investigation_element_command(client, **args)
-    assert command_result.readable_output == 'All The elements was added successfully to investigation ID: 222'
+    assert command_result.readable_output == result_of_readable_output
     assert command_result.raw_response == mocked_response
 
 
@@ -1542,7 +1566,14 @@ def test_search_threat_model_command(mocker):
     assert command_result.outputs_prefix == 'ThreatStream.ThreatModel'
 
 
-def test_add_threat_model_association_command(mocker):
+@pytest.mark.parametrize('mocker_return_value, expected_readable_output', [
+    ({'ids': [2222, 3333], 'success': True}, 'The Attack Pattern entities with ids 2222, 3333'
+                                             ' were associated successfully to entity id: 11111.'),
+    ({'ids': [3333], 'success': True}, 'Part of the Attack Pattern entities with ids 3333 '
+                                       'were associated successfully to entity id: 11111.'),
+
+])
+def test_add_threat_model_association_command(mocker, mocker_return_value, expected_readable_output):
     """
 
     Given:
@@ -1555,15 +1586,14 @@ def test_add_threat_model_association_command(mocker):
         - Validate the command result
 
     """
-    mocker.patch.object(Client, 'http_request', return_value={'ids': [2222, 3333], 'success': True})
+    mocker.patch.object(Client, 'http_request', return_value=mocker_return_value)
 
     args: dict = {'entity_type': 'Actor', 'entity_id': '11111', 'associated_entity_ids': '2222,3333',
                   'associated_entity_type': 'Attack Pattern'}
     client = mock_client()
     command_result = add_threat_model_association_command(client, **args)
-    assert command_result.readable_output == 'The Attack Pattern entities with ids 2222, 3333' \
-                                             ' were associated successfully to entity id: 11111.'
-    assert command_result.raw_response == {'ids': [2222, 3333], 'success': True}
+    assert command_result.readable_output == expected_readable_output
+    assert command_result.raw_response == mocker_return_value
 
 
 @pytest.mark.parametrize('model_type, publication_status, signature_type, message', [
@@ -1610,3 +1640,33 @@ def test_validate_values_search_threat_model(model_type, publication_status, sig
 def test_create_element_list(arguments_dict, expected_result):
     result = create_element_list(arguments_dict)
     assert result == expected_result
+
+
+@pytest.mark.parametrize('investigation_action, new_investigation_name, existing_investigation_id, message', [
+    ('Create New', None, None, "Please ensure to provide the 'new_investigation_name' argument when selecting the"
+     " 'Create New' option for the 'investigation_action' argument."),
+    ('Add To Existing', None, None, "Please ensure to provide the 'existing_investigation_id' argument when selecting"
+     " the 'Add To Existing' option for the 'investigation_action' argument."),
+
+])
+def test_validate_investigation_action(investigation_action, new_investigation_name, existing_investigation_id, message):
+    with pytest.raises(DemistoException) as de:
+        validate_investigation_action(investigation_action, new_investigation_name, existing_investigation_id)
+
+    assert de.value.message == message
+
+
+@pytest.mark.parametrize('page, page_size, limit', [
+    (2, 2, 0),
+    (2, None, 2),
+    (None, 2, 2)
+])
+def test_return_params_of_pagination_or_limit(page, page_size, limit):
+    if page is None or page_size is None:
+        with pytest.raises(DemistoException) as de:
+            return_params_of_pagination_or_limit(page, page_size, limit)
+
+        assert de.value.message == 'Please specify page and page_size'
+    else:
+        params = return_params_of_pagination_or_limit(page, page_size, limit)
+        assert params == {'limit': 2, 'offset': 2}

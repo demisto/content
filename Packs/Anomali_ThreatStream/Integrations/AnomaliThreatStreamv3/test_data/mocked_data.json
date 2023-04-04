@@ -1471,10 +1471,91 @@
       "users": [],
       "workgroups": []
     },
-    "add_investigation_elements": {
+    "add_investigation_elements_all": {
       "added_elements_count": 2,
       "all_added": true,
       "already_exists_elements_count": 0,
+      "errors": [],
+      "objects": [
+        {
+          "add_related_indicators": 0,
+          "entity": {
+            "assignee_user": null,
+            "created_ts": "2021-09-14T13:37:02.111599",
+            "feed_id": 0,
+            "id": 11111,
+            "intelligence_initiatives": [],
+            "is_anonymous": false,
+            "is_cloneable": "yes",
+            "is_mitre": false,
+            "is_public": false,
+            "is_team": false,
+            "modified_ts": "2023-03-22T13:43:51.110255",
+            "name": "Actor",
+            "organization_id": 11,
+            "owner_user_id": 111,
+            "primary_motivation": null,
+            "publication_status": "new",
+            "published_ts": null,
+            "resource_level": null,
+            "resource_uri": "resource_uri",
+            "source_created": null,
+            "source_modified": null,
+            "start_date": null,
+            "tlp": "red",
+            "uuid": "uuid",
+            "workgroups": []
+          },
+          "id": 2222,
+          "investigation_id": 222,
+          "r_id": 11111,
+          "r_type": "actor"
+        },
+        {
+          "add_related_indicators": 0,
+          "entity": {
+            "assignee_user": {
+              "email": "some_email",
+              "id": "111",
+              "name": "",
+              "resource_uri": "resource_uri"
+            },
+            "created_ts": "2023-03-19T12:02:53.977933",
+            "feed_id": 0,
+            "id": 55555,
+            "intelligence_initiatives": [],
+            "is_anonymous": false,
+            "is_cloneable": "yes",
+            "is_mitre": false,
+            "is_public": false,
+            "is_team": false,
+            "modified_ts": "2023-03-19T14:25:10.624643",
+            "name": "actor_test",
+            "organization_id": 11,
+            "owner_user_id": 111,
+            "primary_motivation": "dominance",
+            "publication_status": "review_requested",
+            "published_ts": null,
+            "resource_level": "team",
+            "resource_uri": "resource_uri",
+            "source_created": null,
+            "source_modified": null,
+            "start_date": null,
+            "tlp": "red",
+            "uuid": "uuid",
+            "workgroups": []
+          },
+          "id": 5555,
+          "investigation_id": 222,
+          "r_id": 55555,
+          "r_type": "actor"
+        }
+      ]
+    },
+    "add_investigation_elements": {
+      "added_elements_count": 1,
+      "all_added": false,
+      "already_exists_elements_count": 1,
       "errors": [],
       "objects": [
         {
