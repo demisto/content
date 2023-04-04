@@ -3093,19 +3093,6 @@ tasks:
                 root: CrowdStrike.MLExclusion
                 accessor: id
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: CrowdStrike.MLExclusion
-                accessor: last_modified
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: CrowdStrike.MLExclusion
-                accessor: last_modified
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -3308,19 +3295,6 @@ tasks:
               complex:
                 root: CrowdStrike.IOAExclusion
                 accessor: id
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: CrowdStrike.IOAExclusion
-                accessor: description
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: CrowdStrike.IOAExclusion
-                accessor: description
             iscontext: true
     continueonerrortype: ""
     view: |-
