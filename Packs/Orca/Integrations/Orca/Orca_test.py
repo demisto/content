@@ -1,9 +1,10 @@
 from datetime import datetime
+from io import StringIO
 
 import pytest
 import json
 from Orca import OrcaClient, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents, STEP_INIT, STEP_FETCH, \
-    set_alert_severity
+    set_alert_severity, get_alert_event_log, set_alert_status, verify_alert, download_malicious_file
 
 DUMMY_ORCA_API_DNS_NAME = "https://dummy.io/api"
 
@@ -631,7 +632,7 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
     assert len(fetched_incidents) == 0
 
 
-def test_set_alert_severity(requests_mock, orca_client: OrcaClient) -> None:
+def test_orca_set_alert_severity(requests_mock, orca_client: OrcaClient) -> None:
     alert_id = "orca-52"
 
     requests_mock.put(f"{DUMMY_ORCA_API_DNS_NAME}/alerts/{alert_id}/severity", json={
@@ -648,3 +649,104 @@ def test_set_alert_severity(requests_mock, orca_client: OrcaClient) -> None:
         "score": 6
     })
     assert response.to_context()['Contents']['alert_id'] == alert_id
+
+
+def test_orca_get_alert_event_log(requests_mock, orca_client: OrcaClient) -> None:
+    requests_mock.get(
+        f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/event_log?limit=20&start_at_index=0&type=dismiss",
+        json={
+            "event_log": [
+                {
+                    "id": None,
+                    "unique_id": "None",
+                    "user_email": "",
+                    "user_name": None,
+                    "alert_id": "orca-1",
+                    "asset_unique_id": "1",
+                    "create_time": "2020-01-01T01:01:01+00:00",
+                    "type": "set_status",
+                    "sub_type": "open",
+                    "details": {
+                        "description": "Alert status changed",
+                        "from": None,
+                        "to": "open"
+                    }
+                }
+            ],
+            "total_count": 1
+        }
+    )
+
+    args = {
+        "alert_id": "orca-1",
+        "limit": 20,
+        "start_at_index": 0,
+        "type": "dismiss"
+    }
+    result = get_alert_event_log(orca_client, args)
+
+    content = result.to_context()["Contents"]
+    assert content[0]["alert_id"] == "orca-1"
+    assert content[0]["type"] == "set_status"
+
+
+def test_orca_set_alert_status(requests_mock, orca_client: OrcaClient) -> None:
+    requests_mock.put(
+        f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/status/open",
+        json={
+            "status": "success",
+            "data": {
+                "id": None,
+                "unique_id": "None",
+                "user_email": "test@ut.test",
+                "user_name": "User User",
+                "alert_id": "orca-1",
+                "asset_unique_id": "1",
+                "create_time": "2020-01-01T01:01:01+00:00",
+                "type": "set_status",
+                "sub_type": "open",
+                "details": {
+                    "description": "Alert status changed",
+                    "from": "snoozed",
+                    "to": "open"
+                }
+            }
+        }
+    )
+    args = {
+        "alert_id": "orca-1",
+        "status": "open"
+    }
+    result = set_alert_status(orca_client, args)
+    content = result.to_context()["Contents"]
+    assert content["status"]
+
+
+def test_orca_verify_alert(requests_mock, orca_client: OrcaClient) -> None:
+    requests_mock.put(
+        f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/verify",
+        json={
+            "status": "scanning"
+        }
+    )
+    args = {
+        "alert_id": "orca-1"
+    }
+    result = verify_alert(orca_client, args)
+    content = result.to_context()["Contents"]
+    assert content["status"]
+
+
+def test_orca_download_malicious_file(requests_mock, orca_client) -> None:
+    requests_mock.get(
+        f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/download_malicious_file",
+        json={"status": "success", "filename": "malicious_file", "link": "http://aws.com/download/malicious_file"}
+    )
+
+    requests_mock.get(
+        "http://aws.com/download/malicious_file",
+        text="Hello World"
+    )
+    response = orca_client.download_malicious_file(alert_id="orca-1")
+    assert response == {'filename': 'malicious_file', 'file': b'Hello World'}
+

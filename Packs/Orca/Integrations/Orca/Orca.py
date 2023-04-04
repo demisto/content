@@ -162,8 +162,6 @@ class OrcaClient:
 
     def get_alert_event_log(self, alert_id: str, limit: int = 20, start_at_index: int = 0,
                             event_log_type: Optional[str] = None) -> Dict[str, Any]:
-        # /api/alerts/{alert_id}/event_log
-
         params = {
             "limit": limit,
             "start_at_index": start_at_index,
@@ -201,12 +199,11 @@ class OrcaClient:
         )
         demisto.debug(f"Got malicious download link {response}")
 
-        file_content = self.client._http_request(
-            method="GET",
-            url_suffix=response.get("link"),
+        file_content = requests.get(
+            url=response.get("link"),
             timeout=ORCA_API_TIMEOUT,
         )
-        return {"filename": response.get("filename"), "file": file_content}
+        return {"filename": response.get("filename"), "file": file_content.content}
 
 
 def map_orca_score_to_demisto_score(orca_score: int) -> Union[int, float]:  # pylint: disable=E1136
@@ -380,7 +377,7 @@ def verify_alert(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandResult
         readable_output="Verify alert",
         outputs_prefix="Orca.VerifyAlert",
         outputs={
-            "success": True
+            "status": True
         }
     )
 
