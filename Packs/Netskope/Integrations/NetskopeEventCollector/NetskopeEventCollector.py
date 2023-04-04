@@ -145,7 +145,7 @@ def get_events_v1(client: Client, last_run: dict, limit: Optional[int] = None) -
                     last_run_ids.add(event['_id'])
                 else:
                     last_run[f'{event_type}-ids'] = [event['_id']]
-                    last_run_ids = set(last_run[f'{event_type}-ids'])
+                    last_run_ids = set(event['_id'])
                     last_run[event_type] = event['timestamp']
                     events.append(event)
 
@@ -217,7 +217,7 @@ def get_events_v2(client, last_run: dict, limit: Optional[int] = None) -> List[A
                     last_run_ids.add(event['_id'])
                 else:
                     last_run[f'{event_type}-ids'] = [event['_id']]
-                    last_run_ids = set(last_run[f'{event_type}-ids'])
+                    last_run_ids = set(event['_id'])
                     last_run[event_type] = event['timestamp']
                     events.append(event)
 
