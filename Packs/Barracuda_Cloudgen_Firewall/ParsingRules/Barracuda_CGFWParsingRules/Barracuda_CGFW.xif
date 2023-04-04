@@ -8,7 +8,13 @@ alter
 | alter
     tmp_time2 = parse_timestamp("%Y %b %e %H:%M:%S", tmp_time2_unite_format)
 | alter
-    tmp_time1_convert = if (tmp_time1_get_epoch ~= "d{10}", to_timestamp(to_integer(tmp_time1_get_epoch), "SECONDS"),null)
+    tmp_time1_convert = if (tmp_time1_get_epoch ~= "\d{10}", to_timestamp(to_integer(tmp_time1_get_epoch), "SECONDS"),null)
 | alter
-    _time = coalesce(tmp_time1_convert, tmp_time2)
-| fields -tmp_time1_get_epoch, tmp_time2_gen_year, tmp_time2_get_datetime_log, tmp_time2_unite_format, tmp_time1_convert, tmp_time2_unite_format, tmp_time1, tmp_time2;
+    tmp_final_time = coalesce(tmp_time1_convert, tmp_time2)
+| alter
+    tmp_diff_time = timestamp_diff(tmp_final_time , _insert_time , "DAY")
+| alter
+    tmp_time_after_check = if (tmp_diff_time > 0, parse_timestamp("%F %H:%M:%S%z", replace(to_string(tmp_time2), tmp_time2_gen_year, to_string(subtract (to_number(tmp_time2_gen_year), 1)))), tmp_final_time)
+| alter
+    _time = tmp_time_after_check
+| fields -tmp_time1_get_epoch, tmp_time2_gen_year, tmp_time2_get_datetime_log, tmp_time2_unite_format, tmp_time1_convert, tmp_time2_unite_format, tmp_time2, tmp_diff_time, tmp_final_time, tmp_time_after_check;
