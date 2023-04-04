@@ -1,10 +1,9 @@
 from datetime import datetime
-from io import StringIO
 
 import pytest
 import json
 from Orca import OrcaClient, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents, STEP_INIT, STEP_FETCH, \
-    set_alert_severity, get_alert_event_log, set_alert_status, verify_alert, download_malicious_file
+    set_alert_severity, get_alert_event_log, set_alert_status, verify_alert
 
 DUMMY_ORCA_API_DNS_NAME = "https://dummy.io/api"
 
@@ -749,4 +748,3 @@ def test_orca_download_malicious_file(requests_mock, orca_client) -> None:
     )
     response = orca_client.download_malicious_file(alert_id="orca-1")
     assert response == {'filename': 'malicious_file', 'file': b'Hello World'}
-
