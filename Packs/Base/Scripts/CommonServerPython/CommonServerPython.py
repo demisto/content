@@ -6754,7 +6754,7 @@ class CommandResults:
         if raw_response is None:
             raw_response = outputs
         if outputs is not None:
-            if not outputs_prefix:
+            if not isinstance(outputs, dict) and not outputs_prefix:
                 raise ValueError('outputs_prefix is missing')
             if outputs_prefix == '.':
                 raise ValueError('outputs_prefix cannot be a period.')
