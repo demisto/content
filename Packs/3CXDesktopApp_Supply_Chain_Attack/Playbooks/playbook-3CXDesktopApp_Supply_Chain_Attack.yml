@@ -1827,10 +1827,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "103":
     id: "103"
-    taskid: d62534cf-f5a8-4366-8ae1-f9f674158ce6
+    taskid: 0cfe09da-10fe-467e-872b-c95d2a9fc23a
     type: playbook
     task:
-      id: d62534cf-f5a8-4366-8ae1-f9f674158ce6
+      id: 0cfe09da-10fe-467e-872b-c95d2a9fc23a
       version: -1
       name: Block Indicators - Generic v3
       description: |+
@@ -1861,8 +1861,67 @@ tasks:
         simple: XSOAR Remediation - Malicious URLs
       DomainToBlock:
         complex:
-          root: Domain
-          accessor: Name
+          root: Domain.Name
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+              right:
+                value:
+                  simple: raw.githubusercontent.com
+              ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+              right:
+                value:
+                  simple: www.3cx.com
+              ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+              right:
+                value:
+                  simple: github.com
+              ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+              right:
+                value:
+                  simple: www.github.com
+              ignorecase: true
+      FilesToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
       IP:
         complex:
           root: IP
