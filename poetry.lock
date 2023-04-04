@@ -613,8 +613,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "a94ef1143c9a2bbb037d4c4b5b64d1d2b389f1cc"
-resolved_reference = "a94ef1143c9a2bbb037d4c4b5b64d1d2b389f1cc"
+reference = "331fb9f0316e8e3b605c44ae203bf42b1cab6221"
+resolved_reference = "331fb9f0316e8e3b605c44ae203bf42b1cab6221"
 
 [[package]]
 name = "deprecated"
@@ -3092,7 +3092,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-markdown"
-version = "3.4.2.6"
+version = "3.4.2.7"
 description = "Typing stubs for Markdown"
 category = "dev"
 optional = false
@@ -3143,7 +3143,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-python-dateutil"
-version = "2.8.19.11"
+version = "2.8.19.12"
 description = "Typing stubs for python-dateutil"
 category = "dev"
 optional = false
@@ -3186,7 +3186,7 @@ types-urllib3 = "<1.27"
 
 [[package]]
 name = "types-setuptools"
-version = "67.6.0.6"
+version = "67.6.0.7"
 description = "Typing stubs for setuptools"
 category = "dev"
 optional = false
@@ -3467,7 +3467,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "be9d4d9ad375007474b08f70b584eb72f2a579a1d8d4cd873f63ba6014e7f780"
+content-hash = "8e628484fe269e95f128b1e812fe55df416e81a1358757c99a14ee3b9a417b71"
 
 [metadata.files]
 aiodns = [
@@ -5971,8 +5971,8 @@ types-ipaddress = [
     {file = "types_ipaddress-1.0.8-py3-none-any.whl", hash = "sha256:4933b74da157ba877b1a705d64f6fa7742745e9ffd65e51011f370c11ebedb55"},
 ]
 types-markdown = [
-    {file = "types-Markdown-3.4.2.6.tar.gz", hash = "sha256:8c6a834f207c621dbdc3aac5728006ae1b1d2ffea0b9f877b8ef26f4c10f4fc4"},
-    {file = "types_Markdown-3.4.2.6-py3-none-any.whl", hash = "sha256:00d7105ea9cdff57432494a7e4bf760a56a9ba8073bc5a9a4766844caa1094e2"},
+    {file = "types-Markdown-3.4.2.7.tar.gz", hash = "sha256:ecea668b1e5aaa8fb4f7067622af3c3341cb9145baa4d939b7c75d3e1eb26f7f"},
+    {file = "types_Markdown-3.4.2.7-py3-none-any.whl", hash = "sha256:7fd3ecb487f1d41c043fa24c00258ab7e1fe37585ee6ad016a1a3c03bca34f73"},
 ]
 types-mock = [
     {file = "types-mock-4.0.15.2.tar.gz", hash = "sha256:83fe479741adb92210c3c92f006fe058297d5051e93c2cec36f1a9e0bae16e9e"},
@@ -5995,8 +5995,8 @@ types-pymysql = [
     {file = "types_PyMySQL-1.0.19.6-py3-none-any.whl", hash = "sha256:9cbd61c6b478b9d024e56837f846533af9c86d76aed4fed03ba9fa2687eb402a"},
 ]
 types-python-dateutil = [
-    {file = "types-python-dateutil-2.8.19.11.tar.gz", hash = "sha256:de66222c54318c2e05ceb4956976d16696240a45fc2c98e54bfe9a56ce5e1eff"},
-    {file = "types_python_dateutil-2.8.19.11-py3-none-any.whl", hash = "sha256:357553f8056cfbb8ce8ea0ca4a6a3480268596748360df73a94c2b8c113a5b06"},
+    {file = "types-python-dateutil-2.8.19.12.tar.gz", hash = "sha256:355b2cb82b31e556fd18e7b074de7c350c680ab80608f0cc55ba6770d986d67d"},
+    {file = "types_python_dateutil-2.8.19.12-py3-none-any.whl", hash = "sha256:fe5b545e678ec13e3ddc83a0eee1545c1b5e2fba4cfc39b276ab6f4e7604a923"},
 ]
 types-pytz = [
     {file = "types-pytz-2022.7.1.2.tar.gz", hash = "sha256:487d3e8e9f4071eec8081746d53fa982bbc05812e719dcbf2ebf3d55a1a4cd28"},
@@ -6015,8 +6015,8 @@ types-requests = [
     {file = "types_requests-2.28.11-py3-none-any.whl", hash = "sha256:af5f55e803cabcfb836dad752bd6d8a0fc8ef1cd84243061c0e27dee04ccf4fd"},
 ]
 types-setuptools = [
-    {file = "types-setuptools-67.6.0.6.tar.gz", hash = "sha256:a5efd019b53c5793a112e0112b91bb402df749f75ee7abe681b6240841650ce4"},
-    {file = "types_setuptools-67.6.0.6-py3-none-any.whl", hash = "sha256:fb46e651c6b5880ec8932a8876aa832071d612b2954fc5156b09cd263927d85b"},
+    {file = "types-setuptools-67.6.0.7.tar.gz", hash = "sha256:f46b11773b1aeddbd2ef32fd6a6091ef33aa9b32daa124f6ce63f616de59ae51"},
+    {file = "types_setuptools-67.6.0.7-py3-none-any.whl", hash = "sha256:ea2873dc8dd9e8421929dc50617ac7c2054c9a873942c5b5b606e2effef5db12"},
 ]
 types-six = [
     {file = "types-six-1.16.21.8.tar.gz", hash = "sha256:02a892ff8f423c4c5d15de7c6f4d433e643c863bcbefabd19251b478cbb284ab"},
