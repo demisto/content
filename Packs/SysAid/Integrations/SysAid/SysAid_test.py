@@ -396,6 +396,20 @@ def test_create_readable_response_for_service_record():
                                     service_record_handler) == input_data.service_record_expected_output
 
 
+def test_create_response_for_service_record():
+    """
+    Given:
+        - Response to a command that retrieves service records
+    When:
+        - A command that retrieves service records is executed
+    Then:
+        - Returns the response for the command
+    """
+    from SysAid import create_readable_response, service_record_response_handler
+    assert create_readable_response(input_data.service_record_response,
+                                    service_record_response_handler) == input_data.service_record_expected_response_output
+
+
 @pytest.mark.parametrize('custom_fields_keys, custom_fields_values, expected_output', input_data.extract_filters_args)
 def test_extract_filters(custom_fields_keys, custom_fields_values, expected_output):
     """

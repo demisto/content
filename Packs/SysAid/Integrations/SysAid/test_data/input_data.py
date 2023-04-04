@@ -136,6 +136,13 @@ service_record_expected_output = [
      'title': 'Cannot connect to a Wi-Fi network'},
     {'Modify time': '03/20/2022 11:08:56 AM', 'Service Record Type': 'Incident', 'Status': 'New', 'id': '33',
      'title': 'Try Test'}]
+service_record_expected_response_output = [
+    {'alertID': 'green', 'id': '25', 'impact': 'Low', 'insert_time': '03/07/2022 08:56:35 AM', 'sr_type': 'Incident',
+     'status': 'New', 'title': 'Cannot access email - Test ', 'update_time': '03/15/2022 04:53:20 AM'},
+    {'description': 'I test this', 'id': '28', 'sr_type': 'Incident', 'status': 'New',
+     'title': 'Cannot connect to a Wi-Fi network', 'update_time': '03/07/2022 09:08:01 AM'},
+    {'id': '33', 'priority': 'Normal', 'source': 'Administrator Portal', 'sr_type': 'Incident', 'status': 'New',
+     'title': 'Try Test', 'update_time': '03/20/2022 11:08:56 AM'}]
 
 # custom_fields_keys, custom_fields_values, expected_output
 extract_filters_no_args = (argToList(None), argToList(None), {})

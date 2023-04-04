@@ -340,6 +340,23 @@ def service_record_handler(response: Dict[str, Any]):
     return None
 
 
+def service_record_response_handler(response: Dict[str, Any]):
+    """
+    Creates a response for one service record response. Is sent as **handle_one_response** to *create_readable_response*.
+    Saves all fields with their key names.
+
+    :param response: The response to turn to human readable
+    """
+    response_entry = {'id': response['id']}
+    if 'info' in response:
+        for service_record_info in response['info']:
+            response_entry[service_record_info['key']] = service_record_info['valueCaption']
+
+        return response_entry
+
+    return None
+
+
 def extract_filters(custom_fields_keys: List[str], custom_fields_values: List[str]) -> Dict[str, Any]:
     """
     Additional filters are sent in a request in a form of:
@@ -733,6 +750,7 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
     response = client.service_record_list_request(str(record_type), fields, offset, limit, ids, archive, filters)
     headers = ['id', 'title', 'Status', 'Modify time', 'Service Record Type', 'notes']
     readable_response = create_readable_response(response, service_record_handler)
+    response.update(create_readable_response(response, service_record_response_handler))
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecord',
         outputs_key_field='id',
@@ -765,6 +783,7 @@ def service_record_search_command(client: Client, args: Dict[str, Any]) -> Comma
     response = client.service_record_search_request(str(record_type), str(query), fields, offset, limit, archive, filters)
     headers = ['id', 'title', 'Status', 'Modify time', 'Service Record Type', 'notes']
     readable_response = create_readable_response(response, service_record_handler)
+    response.update(create_readable_response(response, service_record_response_handler))
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecord',
         outputs_key_field='id',
@@ -848,6 +867,7 @@ def service_record_create_command(client: Client, args: Dict[str, Any]) -> Comma
 
     headers = ['id', 'title', 'Status', 'Modify time', 'Service Record Type', 'notes']
     readable_response = create_readable_response(response, service_record_handler)
+    response.update(create_readable_response(response, service_record_response_handler))
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecord',
         outputs_key_field='id',
@@ -925,7 +945,7 @@ def service_record_get_command(client: Client, args: Dict[str, Any]) -> CommandR
     response = client.service_record_get_request(sr_id, fields)
     headers = ['id', 'title', 'Status', 'Modify time', 'Service Record Type', 'notes']
     readable_response = create_readable_response(response, service_record_handler)
-    response.update(response)
+    response.update(create_readable_response(response, service_record_response_handler))
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecord',
         outputs_key_field='id',
