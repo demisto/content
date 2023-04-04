@@ -15,7 +15,6 @@ ALL_SUPPORTED_EVENT_TYPES = ['alert', 'application', 'audit', 'network', 'page']
 MAX_EVENTS_PAGE_SIZE = 10000
 MAX_EVENTS_PAGES_PER_FETCH = 3 * MAX_EVENTS_PAGE_SIZE  # more than 3 pages likely to reach a timeout
 
-
 ''' CLIENT CLASS '''
 
 
@@ -121,11 +120,12 @@ def get_events_v1(client: Client, last_run: dict, limit: Optional[int] = None) -
     Returns:
         events (list).
     """
-    events = []
+    events_result = []
     if limit is None:
         limit = MAX_EVENTS_PAGE_SIZE
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
         # et - event_type
+        last_run_ids = set(last_run.get(f'{event_type}-ids', []))
         et_events: list = []
         et_limit = limit
         while len(et_events) < limit:
@@ -138,21 +138,31 @@ def get_events_v1(client: Client, last_run: dict, limit: Optional[int] = None) -
             if response.get('status') != 'success' or not (results := response.get('data', [])):  # type: ignore
                 break
 
-            et_events.extend(results)
+            events = []
+            for event in results:
+                if event.get('timestamp') == last_run[event_type] and event.get('_id') not in last_run_ids:
+                    events.append(event)
+                    last_run_ids.add(event['_id'])
+                else:
+                    last_run[f'{event_type}-ids'] = [event['_id']]
+                    last_run_ids = set(last_run[f'{event_type}-ids'])
+                    last_run[event_type] = event['timestamp']
+                    events.append(event)
 
+            et_events.extend(events)
             # prepare for the next iteration
-            et_limit -= len(results)
-            if last_run_for_event_type := get_last_run_for_event_type(event_type, et_events):
-                last_run[event_type] = last_run_for_event_type
+            last_run[f'{event_type}-ids'] = list(last_run_ids)
+            demisto.debug(f'Initialize last run again - {last_run}')
+            et_limit -= len(events)
             # results were less than a page - continue fetching next time
             if len(results) < MAX_EVENTS_PAGE_SIZE:
                 break
 
         for event in et_events:
             populate_modeling_rule_fields(event, event_type)
-        events.extend(et_events)
+        events_result.extend(et_events)
 
-    return events
+    return events_result
 
 
 def v1_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> Tuple[CommandResults, list]:
@@ -186,11 +196,12 @@ def get_events_v2(client, last_run: dict, limit: Optional[int] = None) -> List[A
     Returns:
         events (list).
     """
-    events = []
+    events_result = []
     if limit is None:
         limit = MAX_EVENTS_PAGE_SIZE
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
         # et - event_type
+        last_run_ids = set(last_run.get(f'{event_type}-ids', []))
         et_events: list = []
         et_limit = limit
         while len(et_events) < limit:
@@ -199,19 +210,31 @@ def get_events_v2(client, last_run: dict, limit: Optional[int] = None) -> List[A
             if response.get('ok') != 1 or not (results := response.get('result', [])):
                 break
 
-            et_events.extend(results)
+            events = []
+            for event in results:
+                if event.get('timestamp') == last_run[event_type] and event.get('_id') not in last_run_ids:
+                    events.append(event)
+                    last_run_ids.add(event['_id'])
+                else:
+                    last_run[f'{event_type}-ids'] = [event['_id']]
+                    last_run_ids = set(last_run[f'{event_type}-ids'])
+                    last_run[event_type] = event['timestamp']
+                    events.append(event)
+
+            et_events.extend(events)
 
             # prepare for the next iteration
-            et_limit -= len(results)
-            if et_last_run := get_last_run_for_event_type(event_type, et_events):
-                last_run[event_type] = et_last_run
+            last_run[f'{event_type}-ids'] = list(last_run_ids)
+            demisto.debug(f'Initialize last run again - {last_run}')
+            et_limit -= len(events)
+            # results were less than a page - continue fetching next time
             if len(results) < MAX_EVENTS_PAGE_SIZE:
                 break
         for event in et_events:
             populate_modeling_rule_fields(event, event_type)
-        events.extend(et_events)
+        events_result.extend(et_events)
 
-    return events
+    return events_result
 
 
 def v2_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> Tuple[CommandResults, list]:
@@ -266,7 +289,12 @@ def main() -> None:  # pragma: no cover
 
         last_run = demisto.getLastRun()
         first_fetch = int(arg_to_datetime(first_fetch).timestamp())  # type: ignore[union-attr]
-        last_run = {event_type: last_run.get(event_type, first_fetch) for event_type in ALL_SUPPORTED_EVENT_TYPES}
+        last_run = {}
+        for event_type in ALL_SUPPORTED_EVENT_TYPES:
+            last_run_id_key = f'{event_type}-ids'
+            last_run[event_type] = last_run.get(event_type, first_fetch)
+            last_run[last_run_id_key] = last_run.get(last_run_id_key, [])
+        demisto.debug(f'The last run after changes: {last_run}')
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
