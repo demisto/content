@@ -816,3 +816,13 @@ REMEDIATION_RULES_RESULTS = [
         "rule_name": "TestRule"
     }
 ]
+
+RCS_SUCCESSFUL_RESULTS_201 = {
+    "scanId": "12345abc-123a-1234-a123-efgh12345678",
+    "scan_creation_status": "created"
+}
+
+RCS_SUCCESSFUL_RESULTS_200 = {
+    "scanId": "12345abc-123a-1234-a123-efgh12345678",
+    "scan_creation_status": "existing"
+}
