@@ -208,6 +208,45 @@ def events_to_command_results(events: List[dict[str, Any]]) -> CommandResults:
         raw_response=events)
 
 
+def audit_log_api_request(client: Client, start_time: str, next_page: str | None = None) -> requests.Response:
+    """Makes HTTP GET request to
+
+    Args:
+        client (Client): client object.
+        start_time (str): start time querey parameter.
+        next_page (str | None, optional): next page query parameter for pagination. Defaults to None.
+
+    Returns:
+        requests.Response: raw raseponse from the API.
+    """
+    params = {
+        'compartmentId': client.compartment_id,
+        'startTime': start_time,
+        'endTime': datetime.now().strftime(DATE_FORMAT)}
+    if next_page:
+        params['opc-next-page'] = next_page
+    return client._http_request(method='GET', params=params, resp_type='response')
+
+
+def add_millisecond_to_timestamp(timestamp: str) -> str:
+    """Add 1 millisecond to the given timestamp.
+
+    Args:
+        timestamp (str): Timestamp to add 1 millisecond to.
+
+    Raises:
+        DemistoException: If datetime conversion fails.
+
+    Returns:
+        str: Timestamp with 1 millisecond added.
+    """
+    timestamp_datetime = arg_to_datetime(arg=timestamp, settings={'RETURN_AS_TIMEZONE_AWARE': False})
+    if isinstance(timestamp_datetime, datetime):
+        return (timestamp_datetime + timedelta(milliseconds=1)).strftime(DATE_FORMAT)
+    else:
+        raise DemistoException('')
+
+
 def get_events(
         client: Client, first_fetch_time: datetime, max_fetch: int) -> tuple[
         List[dict[str, Any]],
@@ -228,18 +267,20 @@ def get_events(
         tuple[ List[dict[str, Any]], str]: A tuple of the events list and the last event time for next fetch cycle.
     """
     try:
-        params = {
-            'compartmentId': client.compartment_id,
-            'startTime': first_fetch_time.strftime(DATE_FORMAT),
-            'endTime': datetime.now().strftime(DATE_FORMAT)
-        }
-        response = client._http_request(method='GET', params=params)
-        demisto.info('OCI: succesfully fetched events.')
+        response = audit_log_api_request(client=client, start_time=first_fetch_time.strftime(DATE_FORMAT))
+        events = json.loads(response.content)
 
-        if not response:
+        if not events:
             return [], first_fetch_time.strftime(DATE_FORMAT)
 
-        events = response[:max_fetch]  # TODO: add pagination back
+        if isinstance(events, dict):
+            events = [events]
+
+        # pagination handling
+        while len(events) < max_fetch and (next_page := response.headers._store.get('opc-next-page')):
+            current_start_time = add_millisecond_to_timestamp(events[-1].get('eventTime'))
+            response = audit_log_api_request(client=client, start_time=current_start_time, next_page=next_page[1])
+            events.extend(json.loads(response.content))
 
         last_event_time = get_last_event_time(events, first_fetch_time)
         events = add_time_key_to_events(events)
