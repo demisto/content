@@ -46,6 +46,12 @@ configuration:
   hiddenusername: true
   type: 9
   section: Connect
+- display: First fetch time interval
+  name: first_fetch
+  type: 0
+  defaultvalue: 3 days
+  required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
