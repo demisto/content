@@ -296,8 +296,9 @@ def main():
     args = demisto.args()
     command = demisto.command()
     last_run_time = demisto.getLastRun().get('lastRun')
+    demisto.info(f'OCI: last_run_time value {last_run_time}')
     max_fetch = arg_to_number(params.get('max_fetch')) or MAX_EVENTS_TO_FETCH
-    first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
+    first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME)
     first_fetch_time = get_first_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
     demisto.info(f'OCI: Command being called is {command}')
 
