@@ -854,6 +854,7 @@ def create_base_indicator(
         "trafficlightprotocol": tlp_color,
         "publications": generate_publications(raw_indicator.get("publications", [])),
         "DBotScore": get_dbot_score(raw_indicator),
+        "tags": client.tags
     }
 
     fields = {
@@ -1140,7 +1141,7 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> List:
         last_run_dict = demisto.getLastRun()
         last_run_dict[indicator_type + "List"] = indicators[limit:]
         date_key = "last_seen" if indicator_type == "Indicators" else "last_updated"
-        last_run_dict[indicator_type + "LastFetch"] = indicators[-1][date_key]
+        last_run_dict[indicator_type + "LastFetch"] = indicators_list[-1][date_key]
 
     demisto.setLastRun(last_run_dict)
     return result
@@ -1369,8 +1370,8 @@ def main() -> None:
     secret_key = params.get("secret_key", "")
     base_url = params.get("api_base_url", "")
     timeout = int(params.get("timeout", 60))
-    tlp_color = demisto.params().get("tlp_color")
-    feedTags = argToList(demisto.params().get("feedTags"))
+    tlp_color = params.get("tlp_color")
+    feedTags = argToList(params.get("feedTags"))
     first_fetch = params.get("first_fetch", "3 days ago")
     limit = int(params.get("max_fetch", 50))
     metadata = argToBoolean(params.get("indicatorMetadata", False))
