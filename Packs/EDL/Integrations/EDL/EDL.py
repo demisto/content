@@ -965,6 +965,9 @@ def test_module(_: Dict, params: Dict):
         1. Valid port.
         2. Valid cache_refresh_rate
     """
+    if not params.get('longRunningPort'):
+        # This is for the autogeneration port feature before port allocation.
+        params['longRunningPort'] = '8080'
     get_params_port(params)
     on_demand = params.get('on_demand', None)
     if not on_demand:
