@@ -21,7 +21,7 @@ More about OCI configuration [here](https://docs.oracle.com/en-us/iaas/Content/A
 | API Key Fingerprint                                                                   | Fingerprint for the public key that was added to this user. To get the value, see [Required Keys and OCIDs](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#Required_Keys_and_OCIDs).                                                                  | True        |
 | Private Key                                                                 | Private Key for authentication. <br> Important: The key pair must be in PEM format. For instructions on generating a key pair in PEM format, see [Required Keys and OCIDs](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#Required_Keys_and_OCIDs).                                                                       | True         |
 | Region                                               | An Oracle Cloud Infrastructure region. See [Regions and Availability Domains](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm#top). <br> Example: us-ashburn-1           | True         |
-| First fetch time    | The period to retrieve events for.  In the format (\[number] \[time unit]). For example, 12 hours, 1 day, 3 months. | False |
+| First fetch time    | First fetch time (< number > < time unit >, e.g., 12 hours, 1 day, 3 months). Default is 3 days. | False |
 | Trust any certificate (not secure) | Use SSL secure connection or ‘None’.  | False  |
 | User system proxy settings  | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.  | False  |
 
