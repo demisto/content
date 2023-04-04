@@ -132,6 +132,7 @@ def main():
                                    file_info=file_type, forced_encoding=forced_encoding,
                                    default_encoding=default_encoding, file_name=file_name)
         output = email_parser.parse()
+        demisto.debug(f'{output=}')
 
         results = []
         if isinstance(output, dict):
