@@ -590,5 +590,7 @@ inputs: []
 outputs: []
 sourceplaybookid: Recorded Future Identity - Identity Found (incident)
 fromversion: 6.5.0
+marketplaces:
+   - xsoar
 tests:
 - No tests (auto formatted)

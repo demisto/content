@@ -5,7 +5,7 @@ contentitemexportablefields:
 name: Recorded Future Identity - Create Incident (sub)
 description: This playbook was developed as a sub-playbook to generate incidents for
   each exposed identity found in the Recorded Future Identity - Lookup Identities
-  (parent) playbook.x§
+  (parent) playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -187,7 +187,7 @@ tasks:
     task:
       id: 67b14b17-ffe6-4b5b-87ea-4490236a42a1
       version: -1
-      name: Delete Context
+      name: Delete foundIncidents Context
       description: |-
         Delete field from context.
 
@@ -202,9 +202,11 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      subplaybook:
-        simple: "yes"
       all:
+        simple: "no"
+      key:
+        simple: foundIncidents
+      subplaybook:
         simple: "yes"
     separatecontext: false
     view: |-
