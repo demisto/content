@@ -3,7 +3,7 @@ if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
 }
 
-if (params.auth_id || (params.creds_apikey && params.creds_apikey.identifier)) {
+if (params.auth_id || (params.credentials && params.credentials.identifier)) {
     if (!serverURL.endsWith('/xsoar')){
         serverURL = serverURL + '/xsoar'
     }
@@ -74,11 +74,11 @@ sendMultipart = function (uri, entryID, body) {
         // do nothing, use the body as is in the request.
         logDebug('could not parse body as a JSON object, passing as is. body: ' + JSON.stringify(body));
     }
-    var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
+    var key = params.apikey? params.apikey : (params.credentials? params.credentials.password : '');
     if (key == ''){
         throw 'API Key must be provided.';
     }
-    var auth_id = params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '');
+    var auth_id = params.auth_id? params.auth_id : (params.credentials? params.credentials.identifier : '');
     var headers = {}
     // in case the integration was installed before auth_method was added, the auth_method param will be empty so
     // we will use the standard auth method
@@ -119,11 +119,11 @@ sendMultipart = function (uri, entryID, body) {
 
 var sendRequest = function(method, uri, body, raw) {
     var requestUrl = getRequestURL(uri)
-    var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
+    var key = params.apikey? params.apikey : (params.credentials? params.credentials.password : '');
     if (key == ''){
         throw 'API Key must be provided.';
     }
-    var auth_id = params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '');
+    var auth_id = params.auth_id? params.auth_id : (params.credentials? params.credentials.identifier : '');
     var headers = {}
     // in case the integration was installed before auth_method was added, the auth_method param will be empty so
     // we will use the standard auth method

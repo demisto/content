@@ -13,7 +13,7 @@ configuration:
   required: true
 - display: API Key ID
   displaypassword: API Key
-  name: creds_apikey
+  name: credentials
   type: 9
   additionalinfo: Please provide API Key ID when using Cortex XSIAM or Cortex XSOAR 8.0.0 and above.
   required: false
