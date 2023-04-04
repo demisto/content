@@ -3178,8 +3178,7 @@ tasks:
       cl_regex:
         simple: .*
       exclusion_name:
-        complex:
-          root: GeneratedUUID
+        simple: demo
       groups:
         simple: 7471ba0636b34cbb8c65fae7979a6a9b
       ifn_regex:
