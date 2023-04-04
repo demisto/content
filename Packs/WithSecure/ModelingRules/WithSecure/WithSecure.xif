@@ -12,7 +12,7 @@ alter
 	xdm.target.file.size = to_number(json_extract_scalar(details, "$.size")),
 	xdm.source.application.name = coalesce(json_extract_scalar(details, "$.appName"), json_extract_scalar(details, "$.process")),
 	xdm.network.http.url = coalesce(json_extract_scalar(details, "$.websiteUrl"), json_extract_scalar(details, "$.url")),
-	xdm.source.process.executable.path = coalesce(json_extract_scalar(details, "$.accessorPath"), json_extract_scalar(details, "$.filePath"), source),
+	xdm.source.process.executable.path = coalesce(json_extract_scalar(details, "$.accessorPath"), json_extract_scalar(details, "$.filePath")),
 	xdm.source.process.name = json_extract_scalar(details, "$.creator"),
 	xdm.source.host.device_id = coalesce(json_extract_scalar(details, "$.systemDataComputer"), json_extract_scalar(details, "$.deviceId"), json_extract_scalar(device, "$.id")),
 	xdm.source.host.hostname = coalesce(json_extract_scalar(details, "$.deviceName"), json_extract_scalar(details, "$.computerName"), json_extract_scalar(device, "$.name")),
