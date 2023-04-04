@@ -1,6 +1,6 @@
 {
   "ContentsFormat": "text",
-  "HumanReadable": "### Parsed Data Table\nIPs |Domains |\n- |- |\nValue|Value|\nwww.example.com|www.example.com|\nwww.example.org|www.example.org|\n1.1.1.1|\n8.8.8.8|\n",
+  "HumanReadable": "### Parsed Data Table\nIPs |Domains |Hashes |\n- |- |- |\n1.1.1.1|www.example.com|c8092abd8d581750c0530fa1fc8d8318|\n8.8.8.8|www.example.org| |\n",
   "EntryContext": {
     "IP": [
       {
@@ -17,8 +17,13 @@
       {
         "Name": "www.example.org"
       }
+    ],
+    "File": [
+      {
+        "MD5": "c8092abd8d581750c0530fa1fc8d8318"
+      }
     ]
   },
   "Type": 1,
-  "Contents": "\ufeffType,Value\nDomain,www.example.com\nDomain,www.example.org\nIP,1.1.1.1\nIP,8.8.8.8\n"
+  "Contents": "\ufeffType,Value\nDomain,www.example.com\nDomain,www.example.org\nIP,1.1.1.1\nIP,8.8.8.8\nHash,c8092abd8d581750c0530fa1fc8d8318\n"
 }

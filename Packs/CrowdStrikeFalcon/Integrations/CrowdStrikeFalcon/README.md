@@ -2071,7 +2071,7 @@ Lists incident summaries.
 
 ### 34. Endpoint
 ***
-Lists incident summaries.
+Returns information about an endpoint, does not support regex.
 
 #### Base Command
 
@@ -3962,6 +3962,26 @@ Gets the detections for a specific incident.
 >| ind:0bde2c4645294245aca522971ccc44c4:162596456872-10303-6710016 | ldt:0bde2c4645294245aca522971ccc44c4:38657629548 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
 >| ind:0bde2c4645294245aca522971ccc44c4:162597577534-10305-6712576 | ldt:0bde2c4645294245aca522971ccc44c4:38658614774 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
 >| ind:0bde2c4645294245aca522971ccc44c4:162589633341-10303-6705920 | ldt:0bde2c4645294245aca522971ccc44c4:38655034604 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
+
+
+### 17. cs-falcon-update-incident-comment
+---
+Updates CrowdStrike Incident with the comment.
+#### Base Command
+
+`cs-falcon-update-incident-comment`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of incident IDs. | Required | 
+| comment | A comment added to the CrowdStrike incident. | Required | 
+
+#### Context Output
+
+#### Command Example
+`cs-falcon-update-incident-comment ids=284771ee197e422d5176d6634a62b934 comment="Some comment"`
+
 
 # Spotlight
 
