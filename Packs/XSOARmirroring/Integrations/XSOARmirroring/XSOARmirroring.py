@@ -608,7 +608,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
             # in case new entries created less than a minute after incident creation
 
         demisto_debug(f'tags: {tags}')
-        demisto_debug(f'tags: {categories}')
+        demisto_debug(f'categories: {categories}')
         entries = client.get_incident_entries(
             incident_id=remote_args.remote_incident_id,  # type: ignore
             from_date=remote_args.last_update * 1000,
@@ -732,7 +732,13 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
                 'frompong': 'true'
             }
 
-        updated_incident = client.update_incident(incident=parsed_args.data)
+        try:
+            updated_incident = client.update_incident(incident=parsed_args.data)
+        except DemistoException as e:
+            demisto.debug(f'Failed to execute update_incident from update-remote-system command.\n'
+                          f'Error:\n{str(e)}\n'
+                          f'Running it again with json_data:\n{parsed_args.data}')
+            updated_incident = client.update_incident(incident=parsed_args.data)
         new_incident_id = updated_incident['id']
         demisto.debug(f'Got back ID [{new_incident_id}]')
 
