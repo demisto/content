@@ -2,14 +2,17 @@ import urllib3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import Dict, Any, List
+from requests import Response  # Used to typing Response as a return from functions
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 DEFAULT_SEARCH_LIMIT = 100
 
+
 class NotFoundError(Exception):
     pass
+
 
 class ProcessingError(Exception):
     pass
@@ -127,7 +130,7 @@ class Client(BaseClient):
 
         return response
 
-    def start_remediation_confirmation_scan(self, alert_internal_id: str, service_id: str, attack_surface_rule_id: str) -> Dict[str, Any]:
+    def start_remediation_confirmation_scan(self, alert_internal_id: str, service_id: str, attack_surface_rule_id: str) -> Response:
         """Retrieves ID of active (running) scan if it already exists for the given service; otherwise, creates new a scan.
 
         Args:
@@ -143,19 +146,8 @@ class Client(BaseClient):
             Dict[str, Any]: dictionary containing response information that includes a scan ID.
         """
         data = {"request_data": {"alert_internal_id": alert_internal_id, "service_id": service_id, "attack_surface_rule_id": attack_surface_rule_id}}
-        response = self._http_request('POST', 'remediation_confirmation_scanning/requests/get_or_create', json_data=data)
 
-        if response.status_code == 500:
-            try:
-                error_code = response.get('reply', {}).get("err_code", {})
-            except Exception as err:
-                print(f"Unexpected {err=}, {type(err)=}")
-            else:
-                if error_code:
-                    rcs_err_msg = response.get('reply', {}).get("err_msg", {})
-                    raise ProcessingError(f"{rcs_err_msg}. Please check you that your inputs are correct.")
-                elif not error_code:
-                    raise NotFoundError("The endpoint for scanning could not be contacted")
+        response = self._http_request('POST', 'remediation_confirmation_scanning/requests/get_or_create/', json_data=data, resp_type="response")
 
         return response
 
@@ -465,25 +457,47 @@ def start_remediation_confirmation_scan_command(client: Client, args: Dict[str, 
     """
     service_id = str(args.get('service_id'))
     attack_surface_rule_id = str(args.get('attack_surface_rule_id'))
-    try:
-        alert_internal_id = int(args.get('alert_internal_id'))
-    except ValueError:
-        print("The value of alert_internal_id is not an integer. Please update the value.")
+    alert_internal_id = args.get('alert_internal_id')
+    if isinstance(alert_internal_id, str):
+        try:
+            alert_internal_id = int(alert_internal_id)
+        except ValueError:
+            print("The value of alert_internal_id is not an integer. Please update the value.")
+        else:
+            if alert_internal_id < 0:
+                raise ValueError(f"Expected a non-negative integer, but got {alert_internal_id}.")
 
-    response = client.start_remediation_confirmation_scan(alert_internal_id=alert_internal_id, service_id=service_id, attack_surface_rule_id=attack_surface_rule_id)
-    formatted_outputs = response.get('reply', {})
+    response = client.start_remediation_confirmation_scan(alert_internal_id=alert_internal_id,
+                                                          service_id=service_id,
+                                                          attack_surface_rule_id=attack_surface_rule_id)
+
+    if response.status_code == 500:
+        try:
+            json_response = response.json()
+            error_code = json_response.get('reply', {}).get("err_code", {})
+        except Exception as err:
+            print(f"Unexpected {err=}, {type(err)=}")
+        else:
+            if error_code:
+                rcs_err_msg = json_response.get('reply', {}).get("err_msg", {})
+                raise ProcessingError(f"{rcs_err_msg}. Please check you that your inputs are correct.")
+            elif not error_code:
+                raise NotFoundError("The endpoint for scanning could not be contacted")
+
+    json_response = response.json()
+    formatted_outputs = json_response.get('reply', {})
 
     if response.status_code == 201:
         formatted_outputs.update({"scan_creation_status": "created"})
     elif response.status_code == 200:
-        formatted_outputs.update({"scan_creation_status": "existed"})
+        formatted_outputs.update({"scan_creation_status": "existing"})
 
     markdown = tableToMarkdown('External IP Address Ranges',
                                formatted_outputs,
                                removeNull=True,
                                headerTransform=string_to_table_header)
     command_results = CommandResults(
-        outputs_prefix='',
+        outputs_prefix='ASM.RemediationScan',
         outputs_key_field='',
         outputs=formatted_outputs,
         raw_response=response,
