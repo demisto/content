@@ -273,13 +273,15 @@ def test_service_record_attach_file_command(mocker, sysaid_client):
     Then:
         - The http request is called with the right arguments
     """
-    from SysAid import service_record_attach_file_command, read_file, get_content_type
+    from SysAid import service_record_attach_file_command
     http_request = mocker.patch.object(sysaid_client, '_http_request')
+    file_name = 'file_name.png'
+    file_data = b'data'
+    mocker.patch('SysAid.read_file', return_value=(file_data, 4, file_name))
+
     args = {'id': '37', 'file_id': '50@519fe085-179d-43f4-85c7-795eb4edd1a0'}
     service_record_attach_file_command(sysaid_client, args)
-    file_data, file_size, file_name = read_file(args['file_id'])
-    file_type = get_content_type(file_name)
-    http_request.assert_called_with('POST', 'sr/37/attachment', files={'file': (file_name, file_data, file_type)},
+    http_request.assert_called_with('POST', 'sr/37/attachment', files={'file': (file_name, file_data, 'image/png')},
                                     cookies=COOKIES, resp_type='response')
 
 
@@ -313,9 +315,10 @@ def test_service_record_get_request(mocker, sysaid_client):
     http_request = mocker.patch.object(sysaid_client, '_http_request')
     args = {'id': '37', 'fields': 'all'}
     service_record_get_command(sysaid_client, args)
-    http_request.assert_called_with('GET', 'sr/37', params={'fields': 'all'}, cookies=COOKIES)
+    http_request.assert_called_with('GET', 'sr/37', params={}, cookies=COOKIES)
 
 
+@freeze_time('2001-09-09 01:48:50 UTC')
 def test_service_record_add_note_command(mocker, sysaid_client):
     """
     Given:
@@ -338,7 +341,7 @@ def test_service_record_add_note_command(mocker, sysaid_client):
                 "value": [
                     {
                         "userName": "xsoar_dev",
-                        "createDate": "1679945624000",
+                        "createDate": "999989330000",
                         "text": "this is a new note"
                     }
                 ]
