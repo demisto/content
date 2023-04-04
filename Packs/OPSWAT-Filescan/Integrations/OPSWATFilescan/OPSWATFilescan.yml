@@ -271,7 +271,7 @@ script:
           description: The analysis id
           type: String
         - contextPath: OPSWAT.Filescan.Analysis.file.name
-          description: The file, URL ..etc name
+          description: The file name.
           type: String
         - contextPath: OPSWAT.Filescan.Analysis.file.sha256
           description: The file SHA256

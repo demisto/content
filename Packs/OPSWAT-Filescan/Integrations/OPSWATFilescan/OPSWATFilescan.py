@@ -117,8 +117,6 @@ def build_one_reputation_result(report: Dict[str, Any]):
         score = Common.DBotScore.BAD
     elif verdict.upper() == "SUSPICIOUS":
         score = Common.DBotScore.SUSPICIOUS
-    else:
-        score = Common.DBotScore.NONE
 
     report_file = report.get("file", {})
     report_hash = report_file.get("hash", None)
@@ -185,8 +183,6 @@ def build_serach_query_result(
             score = Common.DBotScore.BAD
         elif verdict.upper() == "SUSPICIOUS":
             score = Common.DBotScore.SUSPICIOUS
-        else:
-            score = Common.DBotScore.NONE
 
         analysis_file = analysis.get("file", {})
         dbot_score = Common.DBotScore(
@@ -267,16 +263,10 @@ def sample_submission(client: Client, args: Dict[str, Any]) -> PollResult:
 
 def build_reputation_result(api_reponse: Dict[str, Any]):
     reports = api_reponse.get("reports", {})
-
-    if len(reports) == 1:
-        first_report = next(iter((api_reponse.get("reports", {}).items())))[1]
-        return build_one_reputation_result(first_report)
-
-    elif len(reports) > 1:
-        command_res_ls = []
-        for report in reports:
-            command_res_ls.append(build_one_reputation_result(reports[report]))
-        return command_res_ls
+    command_res_ls = []
+    for report in reports:
+        command_res_ls.append(build_one_reputation_result(reports[report]))
+    return command_res_ls
 
 
 def is_valid_pass(api_response: Dict[str, Any]):
@@ -336,7 +326,7 @@ def test_module_command(client: Client, *_) -> str:
     results = client.test_module()
     if "accountId" in results:
         return "ok"
-    raise DemistoException("\nTest module failed, {}".format(results))
+    raise DemistoException(f"\nTest module failed, {results}")
 
 
 def scan_command(client: Client, args: Dict[str, Any]):

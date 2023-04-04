@@ -136,18 +136,18 @@ def test_scan_command_url_polling(mocker, client):
     mocker.patch.object(client, "get_scan_result", return_value=raw_response)
     response = OPSWAT_Filescan.scan_command(client, polling_args)
 
-    assert response.indicator.dbot_score.indicator == "ac6bb669e40e44a8d9f8f0c94dfc63734049dcf6219aac77f02edf94b9162c09"
-    assert response.indicator.dbot_score.score == 1
-    assert response.indicator.dbot_score.integration_name == "OPSWAT Filescan"
-    assert response.indicator.name == "https://www.google.com"
-    assert response.indicator.sha256 == "ac6bb669e40e44a8d9f8f0c94dfc63734049dcf6219aac77f02edf94b9162c09"
-    assert response.outputs['finalVerdict']['verdict'] == "BENIGN"
-    assert len(response.outputs['allTags']) == 2
-    assert response.outputs['overallState'] == "success_partial"
-    assert response.outputs['taskReference']['name'] == "transform-file"
-    assert response.outputs['file']['name'] == "https://www.google.com"
-    assert response.outputs['file']['hash'] == "ac6bb669e40e44a8d9f8f0c94dfc63734049dcf6219aac77f02edf94b9162c09"
-    assert response.outputs['file']['type'] == "other"
+    assert response[0].indicator.dbot_score.indicator == "ac6bb669e40e44a8d9f8f0c94dfc63734049dcf6219aac77f02edf94b9162c09"
+    assert response[0].indicator.dbot_score.score == 1
+    assert response[0].indicator.dbot_score.integration_name == "OPSWAT Filescan"
+    assert response[0].indicator.name == "https://www.google.com"
+    assert response[0].indicator.sha256 == "ac6bb669e40e44a8d9f8f0c94dfc63734049dcf6219aac77f02edf94b9162c09"
+    assert response[0].outputs['finalVerdict']['verdict'] == "BENIGN"
+    assert len(response[0].outputs['allTags']) == 2
+    assert response[0].outputs['overallState'] == "success_partial"
+    assert response[0].outputs['taskReference']['name'] == "transform-file"
+    assert response[0].outputs['file']['name'] == "https://www.google.com"
+    assert response[0].outputs['file']['hash'] == "ac6bb669e40e44a8d9f8f0c94dfc63734049dcf6219aac77f02edf94b9162c09"
+    assert response[0].outputs['file']['type'] == "other"
 
 
 def test_scan_command_file_polling(mocker, client):
@@ -163,7 +163,6 @@ def test_scan_command_file_polling(mocker, client):
 
     polling_args = {"flow_id": "1234", "hide_polling_output": True, "continue_to_poll": True, "url": "test.com"}
     mocker.patch.object(client, '_http_request', return_value=raw_response)
-    # mocker.patch.object(client, "get_scan_result", return_value=raw_response)
     response = OPSWAT_Filescan.scan_command(client, polling_args)
 
     assert len(response) == 3
