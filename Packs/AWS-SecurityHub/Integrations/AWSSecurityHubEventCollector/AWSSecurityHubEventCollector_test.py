@@ -22,7 +22,7 @@ def load_test_data(folder: str, file_name: str) -> dict:
 
 class MockClient:
     """
-
+    A client mocking Boto3.client
     """
     findings_data = load_test_data('api_mock', 'get_findings_10')
     calls_count = 0
@@ -68,9 +68,9 @@ def client():
 
 @pytest.mark.parametrize('page_size, limit, expected_api_calls_count, expected_output_file',
                          [
+                             (100, 1000, 1, "fetch_events_expected_results_0"),
                              (2, 1000, 5, "fetch_events_expected_results_0"),
                              (3, 1000, 4, "fetch_events_expected_results_0"),
-                             (100, 1000, 1, "fetch_events_expected_results_0"),
                              (2, 5, 3, "fetch_events_expected_results_1"),
                              (100, 5, 1, "fetch_events_expected_results_1"),
                          ])
