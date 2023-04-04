@@ -3445,26 +3445,19 @@ def update_remote_system(
             )
             updated_arguments = {}
             for key, value in update_args.items():
-                if 'freshservice' in key:
-                    updated_arguments.update(
-                        {key.removeprefix('freshservice'): value})
-                else:
-                    updated_arguments.update({key: value})
+                if value in MIRRORING_COMMON_FIELDS + TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[
+                        ticket_type]:
+                    update_value = TICKET[ticket_type].get(key, value)
+                    updated_arguments[key] = update_value
 
-            updated_arguments.pop('occurred')
             updated_arguments.update({'ticket_id': ticket_id})
 
-            arguments_to_update = convert_response_properties(
-                updated_arguments,
-                TICKET[ticket_type],
-            )
-            args_to_update = arguments_to_update[0]
             demisto.debug(
-                f"remote ID [{ticket_id} - {ticket_type}] to Freshservice. {updated_arguments=}|| {update_args=} || {args_to_update=}"
+                f"remote ID [{ticket_id} - {ticket_type}] to Freshservice. {updated_arguments=}|| {update_args=}"
             )
             freshservice_request = get_command_request(
                 client, f'{ticket_type}_update')
-            freshservice_request(**args_to_update)
+            freshservice_request(**updated_arguments)
 
         demisto.info(f"remote data of {ticket_id}: {parsed_args.data}")
     except Exception as error:
