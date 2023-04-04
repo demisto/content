@@ -1356,12 +1356,12 @@ def test_get_command_list_args(args, command_response_key, command_arg_id,
     """
 
     from FreshworksFreshservice import get_command_list_args
-    page, page_size, _, updated_query, _, _, _, _, command_response_key = get_command_list_args(
-        args, command_response_key, command_arg_id)
-    assert page == output['page']
-    assert page_size == output['page_size']
-    assert updated_query == output['updated_query']
-    assert command_response_key == output['command_response_key']
+    command_args = get_command_list_args(args, command_response_key,
+                                         command_arg_id)
+    assert command_args.page == output['page']
+    assert command_args.page_size == output['page_size']
+    assert command_args.updated_query == output['updated_query']
+    assert command_args.command_response_key == output['command_response_key']
 
 
 @pytest.mark.parametrize('command_entity, command_request', [
