@@ -3193,3 +3193,5 @@ from AWSApiModule import *  # noqa: E402
 
 if __name__ in ['__builtin__', 'builtins', '__main__']:
     main()
+
+# add comment for checking upload Slack notification - ["xsoar","marketplacev2","xpanse"]
