@@ -2,7 +2,7 @@
     "name": "CyCognito",
     "description": "Fetches the issues associated with a particular asset from the CyCognito platform.",
     "support": "partner",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "author": "CyCognito",
     "url": "",
     "email": "support@cycognito.com",
