@@ -10890,7 +10890,7 @@ def xsiam_api_call_with_retries(
         if status_code == 429:
             time.sleep(1)
         attempt_num += 1
-    if is_json_response:
+    if is_json_response and response:
         response = response.json()
         if response.get('error', '').lower() != 'false':
             raise DemistoException(error_msg + response.get('error'))
@@ -10910,7 +10910,7 @@ def split_data_to_chunks(data, target_chunk_size):
     :return: : An iterable of lists where each list contains events with approx size of chunk size.
     :rtype: ``collections.Iterable[list]``
     """
-    chunk = []
+    chunk = []  # type: ignore[var-annotated]
     chunk_size = 0
     if isinstance(data, str):
         data = data.split('\n')
