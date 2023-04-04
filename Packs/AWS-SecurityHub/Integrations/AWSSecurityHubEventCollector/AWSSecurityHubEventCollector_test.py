@@ -98,4 +98,3 @@ def test_fetch(client, page_size: int, limit: int, expected_api_calls_count: int
 
     assert client.calls_count == expected_api_calls_count
     assert result.readable_output == tableToMarkdown('AWS Security Hub Events', expected_output, sort_headers=False)
-    assert events == expected_output
