@@ -293,8 +293,6 @@ filter _raw_log ~= "from\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/\d+\sto\s\d+\.\d+\.\d+\
     xdm.observer.name = observer_ip,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
-
-dataset = cisco_asa_supported_events_raw
 //IP \=<dst_ip>
 | filter _raw_log ~= "from\s\d+\.\d+\.\d+\.\d+\sto\s\d+\.\d+\.\d+\.\d+"
 | alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*\d\-(\d+)\:"),0)),
