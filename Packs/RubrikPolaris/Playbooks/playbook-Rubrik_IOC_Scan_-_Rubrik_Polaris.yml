@@ -1847,6 +1847,11 @@ inputs:
   required: false
   description: Name of the scan. Default value is "PAXSOAR-1.1.0".
   playbookInputQuery:
+- key: Snappable_id
+  value: {}
+  required: false
+  description: The snappable ID.
+  playbookInputQuery:
 outputs:
 - contextPath: RubrikPolaris.RecoverableSnapshot.id
   description: ID of the snapshot that can be recovered.
