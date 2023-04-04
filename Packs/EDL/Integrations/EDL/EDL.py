@@ -967,7 +967,7 @@ def test_module(_: Dict, params: Dict):
     """
     if not params.get('longRunningPort'):
         # This is for the autogeneration port feature before port allocation.
-        params['longRunningPort'] = '8080'
+        params['longRunningPort'] = '1111'
     get_params_port(params)
     on_demand = params.get('on_demand', None)
     if not on_demand:
