@@ -25,8 +25,9 @@ alter
 	xdm.observer.vendor = json_extract_scalar(properties, "$.vendorName"),
 	xdm.observer.version = json_extract_scalar(properties, "$.version"),
 	xdm.observer.type = type,
-	Entities = json_extract_array(properties, "$.entities") | alter
-	xdm.target.agent.identifier = arraystring(arraymap(Entities, json_extract_scalar("@element", """$['$id']""")), ","),
+	Entities = json_extract_array(properties, "$.entities")
+	| alter
+	xdm.target.resource.id = arraystring(arraymap(Entities, json_extract_scalar("@element", """$['$id']""")), ","),
 	xdm.target.host.fqdn = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.dnsDomain")), ","),
 	xdm.target.host.os = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.OsVersion")), ","),
 	xdm.target.host.os_family = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.osFamily")), ","),
