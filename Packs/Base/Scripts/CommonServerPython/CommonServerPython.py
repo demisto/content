@@ -9892,7 +9892,7 @@ def get_size_of_object(input_object):
     if IS_PY3 and PY_VER_MINOR >= 10:
         from collections.abc import Mapping
     else:
-        from collections import Mapping  # type: ignore[no-redef]
+        from collections import Mapping  # type: ignore[attr-defined]
 
     from collections import deque
     from numbers import Number
