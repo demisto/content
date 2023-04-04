@@ -1,10 +1,12 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: WithSecureEventCollector
   version: -1
 configuration:
-- defaultvalue: https://api.connect-stg.fsapi.com
-  display: Your server URL
+- display: Server URL
   name: url
   required: true
   type: 0
@@ -22,23 +24,23 @@ configuration:
   name: first_fetch_time
   required: false
   type: 0
-  section: Connect
+  section: Collect
 - defaultvalue: 1000
   display: Maximum number of events per fetch, Max 1000
   name: limit
   type: 0
   required: false
-  section: Connect
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-  section: Connect
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-  section: Connect
+  section: Collect
 description: WithSecure event collector integration for Cortex XSIAM.
 display: 'WithSecure Event Collector'
 name: WithSecureEventCollector
