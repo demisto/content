@@ -14,14 +14,10 @@ configuration:
   type: 0
   section: Connect
 - display: API Key Fingerprint
-  name: key_fingerprint
+  displaypassword: API Private Key
+  name: credentials
   required: true
-  type: 0
-- display: Private Key
-  additionalinfo: May also be known as 'key file' or 'key content'.
-  name: private_key
-  required: true
-  type: 4
+  type: 9
   section: Connect
 - display: Region
   name: region
@@ -31,7 +27,6 @@ configuration:
   section: Connect
 - display: First fetch time
   defaultvalue: 3 days
-  description: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). Default is 3 days.
   name: first_fetch
   required: false
   type: 0
@@ -51,7 +46,7 @@ configuration:
   required: false
   type: 8
 description: Collects Audit log events from Oracle Cloud Infrastructure resources.
-display: Oracle Cloud Infrastructure 
+display: Oracle Cloud Infrastructure Event Collector
 name: OracleCloudInfrastructureEventCollector
 script:
   commands:
@@ -69,7 +64,7 @@ script:
     description: Manual command to fetch and display events.
     execution: false
     name: oracle-cloud-infrastructure-get-events
-  dockerimage: demisto/oci:1.0.0.51831
+  dockerimage: demisto/oci:1.0.0.52831
   isfetchevents: true
   runonce: false
   script: '-'

@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Any, List, Optional
+from typing import Any, Optional
 from oci.regions import is_region
 from oci.signer import Signer
 
@@ -27,9 +27,6 @@ class Client(BaseClient):
         self.base_url = self.build_audit_base_url(region)
         self.compartment_id = tenancy_ocid
         super().__init__(proxy=proxy, verify=verify_certificate, auth=self.singer, base_url=self.base_url)
-
-    def build_auth(self, user_ocid, private_key, key_fingerprint, tenancy_ocid, region):
-        ...
 
     def build_singer_object(self, user_ocid: str, private_key: str, key_fingerprint: str, tenancy_ocid: str,
                             region: str) -> dict[str, str]:
@@ -125,13 +122,13 @@ class Client(BaseClient):
 ''' Event related functions '''
 
 
-def add_time_key_to_events(events: List[dict[str, Any]]) -> List[dict[str, Any]]:
+def add_time_key_to_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Add the _time key to the events.
     Args:
-        events (List[dict[str, Any]]): The events to add the time key to.
+        events (list[dict[str, Any]]): The events to add the time key to.
     Returns:
-        List[dict[str, Any]]: The events with the _time key.
+        list[dict[str, Any]]: The events with the _time key.
     """
     for event in events:
         if event_time := event.get("eventTime"):
@@ -140,13 +137,13 @@ def add_time_key_to_events(events: List[dict[str, Any]]) -> List[dict[str, Any]]
     return events
 
 
-def get_last_event_time(events: List, first_fetch_time: datetime) -> str:
+def get_last_event_time(events: list, first_fetch_time: datetime) -> str:
     """Get the latest event time from the fetched events list for next fetch cycle.
     - Given a non empty list of events, the function will return the time of the last event (most recent event) + 1 milliseconds.
     - If the event list is empty, the function will return the current first fetch time.
 
     Args:
-        events (List): list of fetched events.
+        events (list): list of fetched events.
         first_fetch_time (datetime): current first fetch time.
 
     Returns:
@@ -192,11 +189,11 @@ def get_first_fetch_time(last_run: str | None, first_fetch_param: str) -> Option
         return arg_to_datetime(arg=FETCH_DEFAULT_TIME)
 
 
-def events_to_command_results(events: List[dict[str, Any]]) -> CommandResults:
+def events_to_command_results(events: list[dict[str, Any]]) -> CommandResults:
     """Returns a CommandResults object with a table of fetched events.
 
     Args:
-        events (List[dict[str, Any]]): List of fetched events.
+        events (list[dict[str, Any]]): list of fetched events.
 
     Returns:
         CommandResults: CommandResults object with a table of fetched events.
@@ -244,12 +241,12 @@ def add_millisecond_to_timestamp(timestamp: str) -> str:
     if isinstance(timestamp_datetime, datetime):
         return (timestamp_datetime + timedelta(milliseconds=1)).strftime(DATE_FORMAT)
     else:
-        raise DemistoException('')
+        raise DemistoException('Datetime conversion failed.')
 
 
 def get_events(
         client: Client, first_fetch_time: datetime, max_fetch: int) -> tuple[
-        List[dict[str, Any]],
+        list[dict[str, Any]],
         str]:
     """Get events from an oracle cloud infrastructure tenant.
     - The request returns a maximum of 100 events per call by default.
@@ -264,7 +261,7 @@ def get_events(
         DemistoException: If an error occurred while fetching events.
 
     Returns:
-        tuple[ List[dict[str, Any]], str]: A tuple of the events list and the last event time for next fetch cycle.
+        tuple[ list[dict[str, Any]], str]: A tuple of the events list and the last event time for next fetch cycle.
     """
     try:
         response = audit_log_api_request(client=client, start_time=first_fetch_time.strftime(DATE_FORMAT))
@@ -277,7 +274,7 @@ def get_events(
             events = [events]
 
         # pagination handling
-        while len(events) < max_fetch and (next_page := response.headers._store.get('opc-next-page')):
+        while len(events) < max_fetch and (next_page := response.headers._store.get('opc-next-page')):  # type: ignore
             current_start_time = add_millisecond_to_timestamp(events[-1].get('eventTime'))
             response = audit_log_api_request(client=client, start_time=current_start_time, next_page=next_page[1])
             events.extend(json.loads(response.content))
@@ -296,17 +293,18 @@ def get_events(
 
 
 def test_module(client: Client) -> str:
-    """
-    Tests API connectivity and authentication.
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-    successful.
-    Raises exceptions if something goes wrong.
+    """Tests API connectivity and authentication.
+
     Args:
         client (Client): Client for SDK interaction and api requests.
-        oci_event_handler (OCIEventHandler): OCI event handler object.
+
+    Raises:
+        DemistoException: If an error occurred while testing.
+
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
+
     try:
         datetime_now = datetime.now().strftime(DATE_FORMAT)
         params = {
@@ -332,7 +330,6 @@ def main():
     """
     main function, parses params and runs command functions
     """
-
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
@@ -351,8 +348,8 @@ def main():
             verify_certificate=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             user_ocid=params.get('user_ocid'),
-            private_key=params.get('private_key'),
-            key_fingerprint=params.get('key_fingerprint'),
+            private_key=params.get('credentials', {}).get('password'),
+            key_fingerprint=params.get('credentials', {}).get('identifier'),
             tenancy_ocid=params.get('tenancy_ocid'),
             region=params.get('region')
         )
