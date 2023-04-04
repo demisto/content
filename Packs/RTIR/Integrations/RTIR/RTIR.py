@@ -911,9 +911,6 @@ def fetch_incidents():
 def main():
     handle_proxy()
 
-    # disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
-
     params = demisto.params()
 
     ''' GLOBAL VARS '''
