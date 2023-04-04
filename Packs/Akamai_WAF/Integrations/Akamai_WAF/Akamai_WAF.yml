@@ -1321,7 +1321,7 @@ script:
       name: group_id
     description: 'Lists active property hostnames for all properties available in an account.'
     name: akamai-list-papi-property-by-hostname
-  dockerimage: demisto/akamai:1.0.0.50552
+  dockerimage: demisto/akamai:1.0.0.52532
   runonce: false
   script: ''
   subtype: python3

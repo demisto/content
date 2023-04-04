@@ -3386,7 +3386,7 @@ def update_network_list_elements_command(client: Client, network_list_id: str, e
     elements = argToList(elements)
     # demisto.results(elements)
 
-    raw_response = client.update_network_list_elements(network_list_id=network_list_id, elements=elements)
+    raw_response = client.update_network_list_elements(network_list_id=network_list_id, elements=elements)  #type: ignore # noqa
 
     if raw_response:
         human_readable = f'**{INTEGRATION_NAME} - network list {network_list_id} updated**'
