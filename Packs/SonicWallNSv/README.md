@@ -1,8 +1,8 @@
 # SonicWall NSv
 This pack includes Cortex XSIAM content. 
 ## Configuration on Server Side
-You need to configure SonicWall NSv to forward Syslog messages in CEF format.
 
+To configure the Sonicwall NSv to send Syslog to XSIAM server (Broker VM), please use the steps described [here](https://www.sonicwall.com/support/knowledge-base/how-can-i-configure-a-syslog-server-on-a-sonicwall-firewall/170505984096810/).
 
 ## Collect Events from Vendor
 
@@ -17,5 +17,5 @@ You can configure the specific vendor and product for this instance.
 1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
 2. Right-click, and select **Syslog Collector** > **Configure**.
 3. When configuring the Syslog Collector, set the following values:
-   - vendor as vendor - SonicWall
-   - product as product - NSv_270
+   - vendor as vendor - sonicwall
+   - product as product - default
