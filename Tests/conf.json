@@ -2691,7 +2691,8 @@
                 "Cylance Protect v2",
                 "carbonblack-v2",
                 "epo",
-                "Active Directory Query v2"
+                "Active Directory Query v2",
+                "VMware Carbon Black EDR v2"
             ],
             "instance_names": "active_directory_ninja"
         },
