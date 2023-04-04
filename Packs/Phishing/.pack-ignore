@@ -161,10 +161,10 @@ ignore=RM106
 ignore=RM106
 
 [known_words]
-checkemailauthenticity
-deletereportedemail
-getbranddeletereportedemail
+CheckEmailAuthenticity
+DeleteReportedEmail
+GetBrandDeleteReportedEmail
+CommonTypes
 
 [file:LinkToPhishingCampaign.yml]
 ignore=BA124
-

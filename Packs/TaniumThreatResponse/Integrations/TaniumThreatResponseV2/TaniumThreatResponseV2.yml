@@ -1807,7 +1807,7 @@ script:
       description: The ID of the quick scan question
       type: Number
     description: Scan a computer group for hashes in intel document. Computer groups can be viewed by navigating to `Administration -> Computer Groups` in the Threat-Response product console. Computer group names and IDs can also be retrieved by using the `tn-list-groups` command in the `Tanium` integration.
-  dockerimage: demisto/lxml:1.0.0.48857
+  dockerimage: demisto/lxml:1.0.0.52320
   isfetch: true
   runonce: false
   script: ''
