@@ -11,6 +11,8 @@ VENDOR = 'microsoft'
 PRODUCT = 'defender_for_cloud'
 API_VERSION = '2022-01-01'
 DEFAULT_LIMIT = 50
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+
 ''' CLIENT CLASS '''
 
 
@@ -194,6 +196,20 @@ def add_time_key_to_events(events: list) -> list:
     return events
 
 
+def handle_last_run(first_fetch_time: str) -> dict:
+    """
+    In the first run init with the first_fetch_time after use the previos last_run.
+    Args:
+        - first_fetch_time(str): The first fetch time arg
+    Returns:
+        The last run object.
+    """
+    return demisto.getLastRun() or {
+        'last_run': first_fetch_time,
+        'dup_digested_time_id': [],
+    }
+
+
 def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
@@ -211,11 +227,22 @@ def main() -> None:  # pragma: no cover
     ok_codes = (200, 201, 202, 204)
     certificate_thumbprint = params.get('certificate_thumbprint', {}).get('password')
     private_key = params.get('private_key')
+    first_fetch_time = params.get("first_fetch", "3 days")
 
     if not enc_key and not (certificate_thumbprint and private_key):
         raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.'
                                'For further information see '
                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+
+    first_fetch_time: datetime = arg_to_datetime(   # type: ignore
+        arg=first_fetch_time,
+        arg_name="First fetch time",
+        required=True,
+    )
+
+    first_fetch_time_strftime = first_fetch_time.strftime(
+        DATE_FORMAT
+    )
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -223,7 +250,7 @@ def main() -> None:  # pragma: no cover
                           server=server, verify=use_ssl, self_deployed=True, subscription_id=subscription_id,
                           ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
-        last_run = demisto.getLastRun()
+        last_run = handle_last_run(first_fetch_time_strftime)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.

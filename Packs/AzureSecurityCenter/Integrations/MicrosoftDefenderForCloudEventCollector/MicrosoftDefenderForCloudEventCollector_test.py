@@ -3,9 +3,11 @@ from MicrosoftDefenderForCloudEventCollector import (MsClient,
                                                      get_events,
                                                      filter_out_previosly_digested_events,
                                                      add_time_key_to_events,
-                                                     check_events_were_filtered_out)
+                                                     check_events_were_filtered_out,
+                                                     handle_last_run)
 import json
 import pytest
+import demistomock as demisto  # noqa: F401
 
 ALERTS_API_RAW = 'test_data/ListAlerts.json'
 ALERTS_TO_SORT = 'test_data/AlertsToSort.json'
@@ -250,3 +252,24 @@ def test_get_event_list(http_response, get_events_response):
     client.ms_client = MockHttpRequest()
     last_run = {'last_run': '2023-01-01T15:40:50.6222254Z', 'dup_digested_time_id': [1, 2, 3]}
     assert client.get_event_list(last_run) == get_events_response
+
+
+@pytest.mark.parametrize('last_run, expected_res', [({}, {'last_run': 'fake_first_fetch_time', 'dup_digested_time_id': []}),
+                                                    ({'last_run': '2023-01-01T15:40:50.6222254Z',
+                                                      'dup_digested_time_id': [1, 2, 3]},
+                                                     {'last_run': '2023-01-01T15:40:50.6222254Z',
+                                                      'dup_digested_time_id': [1, 2, 3]})])
+def test_handle_last_run(last_run, expected_res, mocker):
+    """
+    Given:
+        - first_fetch_time (str) and a last run object
+
+    When:
+        - We want to determine the last_run object
+
+    Then:
+        - Verity that if the last run object was empty it will be set to the first_fetch_time
+            else return the last_run object.
+    """
+    mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
+    assert handle_last_run('fake_first_fetch_time') == expected_res
