@@ -1917,7 +1917,7 @@ inputs:
     The method to delete emails using the O365 - Security And Compliance - Search And Delete playbook. Can be "Soft" (recoverable), or "Hard" (unrecoverable). Leave empty to decide manually for each email incident.
     This is only applicable if the SearchAndDeleteIntegration input is set to O365.
   playbookInputQuery:
-- key: O365DeleteTarget
+- key: O365ExchangeLocationExclusion
   value:
     simple: SingleMailbox
   required: false
@@ -1933,13 +1933,6 @@ inputs:
     simple: demistoadmin@demisto.int
   required: false
   description: The SOC email address to set if the playbook handles phishing alerts.
-  playbookInputQuery:
-- key: closeIfBlocked
-  value:
-    simple: "False"
-  required: false
-  description: Whether to close the investigation if the email has already
-    been blocked.
   playbookInputQuery:
 - key: escalationRole
   value: {}
@@ -1979,3 +1972,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+toversion: 6.4.9
