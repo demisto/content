@@ -294,7 +294,7 @@ def main() -> None:  # pragma: no cover
             last_run_id_key = f'{event_type}-ids'
             last_run[event_type] = last_run.get(event_type, first_fetch)
             last_run[last_run_id_key] = last_run.get(last_run_id_key, [])
-        demisto.debug(f'The last run after changes: {last_run}')
+        demisto.debug(f'Initialize last run: {last_run}')
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
