@@ -9,6 +9,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from threading import Lock
+from time import sleep
 from typing import List
 
 import demisto_client
@@ -365,41 +366,42 @@ def install_packs(client: demisto_client,
             super().__init__()
 
     def call_install_packs_request(packs, attempts_count=1):
-        try:
-            logging.info(f'Installing packs {", ".join([p.get("id") for p in packs_to_install])} on server {host}. '
-                         f'Attempts left on failure: {attempts_count}.')
-            response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                                path='/contentpacks/marketplace/install',
-                                                                                method='POST',
-                                                                                body={'packs': packs,
-                                                                                      'ignoreWarnings': True},
-                                                                                accept='application/json',
-                                                                                _request_timeout=request_timeout,
-                                                                                response_type='object')
-
-            if status_code in range(200, 300) and status_code != 204:
-                packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in response_data]
-                logging.success(f'Packs were successfully installed on server {host}')
-                logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
-
-        except ApiException as ex:
+        for attempt in range(attempts_count):
             try:
-                if ex.status in [502, 599]:
-                    if attempts_count <= 1:
-                        raise ex
+                logging.info(f'Installing packs {", ".join([p.get("id") for p in packs_to_install])} on server {host}. '
+                            f'Attempts left on failure: {attempt}.')
+                response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                                    path='/contentpacks/marketplace/install',
+                                                                                    method='POST',
+                                                                                    body={'packs': packs,
+                                                                                        'ignoreWarnings': True},
+                                                                                    accept='application/json',
+                                                                                    _request_timeout=request_timeout,
+                                                                                    response_type='object')
+
+                if status_code in range(200, 300) and status_code != 204:
+                    packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in response_data]
+                    logging.success(f'Packs were successfully installed on server {host}')
+                    logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
+
+            except ApiException as ex:
+                try:
+                    if ex.status in [502, 599]:
+                        # 502 - Bad Gateway, 599 - Connection timed out
+                        # In case of a timeout, sleep retry the request
+                        logging.info("Got 502, 599 from server, retrying the request. Sleeping for 60 seconds.")
+                        sleep(60)
+                    elif 'timeout awaiting response' in ex.body:
+                        raise GCPTimeOutException(ex.body)
+                    elif malformed_ids := find_malformed_pack_id(ex.body):
+                        raise MalformedPackException(malformed_ids)
+                    elif 'Item not found' in ex.body:
+                        raise GeneralItemNotFoundError(ex.body)
                     else:
-                        call_install_packs_request(packs, attempts_count - 1)
-                elif 'timeout awaiting response' in ex.body:
-                    raise GCPTimeOutException(ex.body)
-                elif malformed_ids := find_malformed_pack_id(ex.body):
-                    raise MalformedPackException(malformed_ids)
-                elif 'Item not found' in ex.body:
-                    raise GeneralItemNotFoundError(ex.body)
-                else:
+                        raise ex
+                except Exception:
+                    logging.debug(f'An error occurred during parsing the install error: {str(ex)}')
                     raise ex
-            except Exception:
-                logging.debug(f'An error occurred during parsing the install error: {str(ex)}')
-                raise ex
     try:
         try:
             call_install_packs_request(packs_to_install, attempts_count=3)
