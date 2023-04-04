@@ -1998,6 +1998,12 @@ script:
       name: hostname
       required: false
       secret: false
+    - default: true
+      description: ''
+      isArray: true
+      name: endpoint
+      required: true
+      secret: false
     deprecated: false
     description: Display information about the given sensor
     execution: false
@@ -2066,7 +2072,7 @@ script:
     - contextPath: Endpoint.Processor
       description: The model of the processor.
       type: String
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: true
   longRunning: false
