@@ -1491,9 +1491,6 @@ def test_get_logs_defender_download_command(mocker):
         d = json.load(f)
 
     data = json.dumps(d).encode("utf-8")
-    #mock_file_result = {
-    #    "File": "logs.tar.gz"
-    #}
     mocker.patch.object(PrismaCloudComputeClient, 'get_logs_defender_download_request', return_value=data)
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
     args = {

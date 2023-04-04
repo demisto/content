@@ -1892,7 +1892,7 @@ def get_logs_defender_command(client, args):
     hostname = args.get('hostname', '')
     lines = args.get('lines')
 
-    response = client.get_logs_defender_request(hostname, lines)
+    response = client.get_logs_defender_request(hostname, lines) or []
     entry = {
         "Hostname": hostname,
         "Logs": response
@@ -1918,7 +1918,7 @@ def get_backups_command(client, args):
         CommandResults: command-results object.
     """
     project = args.get("project")
-    response = client.get_backups_request(project)
+    response = client.get_backups_request(project) or []
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.Backups',
         outputs_key_field='Id',
