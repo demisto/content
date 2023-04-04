@@ -1221,7 +1221,7 @@ async def translate_create(message: str, user_name: str, user_email: str, demist
                 data = 'Failed creating incidents.'
 
     if created_incident:
-        demisto.debug(f'\n\n\nIncidents are: {incidents}')
+        demisto.debug(f'Created {len(incidents)} incidents')
         update_integration_context_samples(incidents)
         if isinstance(created_incident, list):
             created_incident = created_incident[0]
