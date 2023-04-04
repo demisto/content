@@ -90,6 +90,10 @@
             "mandatory": false,
             "display_name": "CVE-2023-23397 - Microsoft Outlook EoP"
         },
+        "3CXDesktopApp_Supply_Chain_Attack": {
+            "mandatory": false,
+            "display_name": "3CXDesktopApp Supply Chain Attack"
+        },
         "ServiceNow": {
             "mandatory": false,
             "display_name": "ServiceNow"
