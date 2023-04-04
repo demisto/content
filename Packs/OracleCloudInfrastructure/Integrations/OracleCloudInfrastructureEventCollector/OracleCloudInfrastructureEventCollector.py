@@ -1,12 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
-import urllib3
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 from oci.regions import is_region
 from oci.signer import Signer
-
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -36,7 +32,7 @@ class Client(BaseClient):
         ...
 
     def build_singer_object(self, user_ocid: str, private_key: str, key_fingerprint: str, tenancy_ocid: str,
-                            region: str) -> Dict[str, str]:
+                            region: str) -> dict[str, str]:
         """Build a singer object.
         The Signer used as part of making raw requests.
 
@@ -129,13 +125,13 @@ class Client(BaseClient):
 ''' Event related functions '''
 
 
-def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def add_time_key_to_events(events: List[dict[str, Any]]) -> List[dict[str, Any]]:
     """
     Add the _time key to the events.
     Args:
-        events (List[Dict[str, Any]]): The events to add the time key to.
+        events (List[dict[str, Any]]): The events to add the time key to.
     Returns:
-        List[Dict[str, Any]]: The events with the _time key.
+        List[dict[str, Any]]: The events with the _time key.
     """
     for event in events:
         if event_time := event.get("eventTime"):
@@ -172,7 +168,7 @@ def get_last_event_time(events: List, first_fetch_time: datetime) -> str:
         else first_fetch_time.strftime(DATE_FORMAT)
 
 
-def get_first_fetch_time(last_run: Optional[str], first_fetch_param: str) -> Optional[datetime]:
+def get_first_fetch_time(last_run: str | None, first_fetch_param: str) -> Optional[datetime]:
     """Calculates the first fetch time.
 
     Args:
@@ -190,18 +186,17 @@ def get_first_fetch_time(last_run: Optional[str], first_fetch_param: str) -> Opt
     else:
         last_run_datetime = arg_to_datetime(arg=last_run, settings={'RETURN_AS_TIMEZONE_AWARE': False})
 
-    # if last_run is not None -> return max(last_run, first_fetch_arg)
     if last_run_datetime and first_fetch_param_datetime:
         return max(last_run_datetime, first_fetch_param_datetime)
-    else:  # return default first fetch time datetime object
+    else:
         return arg_to_datetime(arg=FETCH_DEFAULT_TIME)
 
 
-def events_to_command_results(events: List[Dict[str, Any]]) -> CommandResults:
+def events_to_command_results(events: List[dict[str, Any]]) -> CommandResults:
     """Returns a CommandResults object with a table of fetched events.
 
     Args:
-        events (List[Dict[str, Any]]): List of fetched events.
+        events (List[dict[str, Any]]): List of fetched events.
 
     Returns:
         CommandResults: CommandResults object with a table of fetched events.
@@ -215,7 +210,7 @@ def events_to_command_results(events: List[Dict[str, Any]]) -> CommandResults:
 
 def get_events(
         client: Client, first_fetch_time: datetime, max_fetch: int) -> tuple[
-        List[Dict[str, Any]],
+        List[dict[str, Any]],
         str]:
     """Get events from an oracle cloud infrastructure tenant.
     - The request returns a maximum of 100 events per call by default.
@@ -230,7 +225,7 @@ def get_events(
         DemistoException: If an error occurred while fetching events.
 
     Returns:
-        tuple[ List[Dict[str, Any]], str]: A tuple of the events list and the last event time for next fetch cycle.
+        tuple[ List[dict[str, Any]], str]: A tuple of the events list and the last event time for next fetch cycle.
     """
     try:
         params = {
@@ -300,11 +295,10 @@ def main():
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    last_run = demisto.getLastRun()
-    last_run_time = last_run.get('lastRun')
+    last_run_time = demisto.getLastRun().get('lastRun')
     max_fetch = arg_to_number(params.get('max_fetch')) or MAX_EVENTS_TO_FETCH
     first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
-    first_fetch_time: Optional[datetime] = get_first_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
+    first_fetch_time = get_first_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
     demisto.info(f'OCI: Command being called is {command}')
 
     try:

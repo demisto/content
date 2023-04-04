@@ -1,6 +1,7 @@
 This integration fetches Audit log events from an Oracle Cloud Infrastructure resources.
 Audit log events can be used for security audits, to track usage of and changes to Oracle Cloud Infrastructure resources, and to help ensure compliance with standards or regulations.
 
+## API References
 [Oracle Cloud Infrastructure Audit Logs API documentation](https://docs.oracle.com/en-us/iaas/Content/Logging/Concepts/audit_logs.htm)
 [Oracle Cloud Infrastructure Audit API Endpoints (available Regions)](https://docs.oracle.com/en-us/iaas/api/#/en/audit/20190901)
 

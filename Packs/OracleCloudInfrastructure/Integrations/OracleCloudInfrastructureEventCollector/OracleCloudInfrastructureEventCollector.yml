@@ -50,7 +50,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This is the Oracle Cloud Infrastructure event collector integration for XSIAM.
+description: Collects Audit log events from Oracle Cloud Infrastructure resources.
 display: Oracle Cloud Infrastructure 
 name: OracleCloudInfrastructureEventCollector
 script:
