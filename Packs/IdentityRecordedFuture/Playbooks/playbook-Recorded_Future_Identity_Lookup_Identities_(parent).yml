@@ -179,8 +179,8 @@ tasks:
     task:
       id: 9cd9ea0f-883c-426c-8c3f-5c886165b85a
       version: -1
-      name: Identity - Create Incident (subplaybook)
-      playbookName: Identity - Create Incident (subplaybook)
+      name: Recorded Future Identity - Create Incident (sub)
+      playbookName: Recorded Future Identity - Create Incident (sub)
       type: playbook
       iscommand: false
       brand: ""

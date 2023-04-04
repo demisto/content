@@ -204,6 +204,8 @@ tasks:
     scriptarguments:
       subplaybook:
         simple: "yes"
+      all:
+        simple: "yes"
     separatecontext: false
     view: |-
       {
