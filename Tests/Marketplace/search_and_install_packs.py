@@ -383,6 +383,7 @@ def install_packs(client: demisto_client,
                     packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in response_data]
                     logging.success(f'Packs were successfully installed on server {host}')
                     logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
+                    break
 
             except ApiException as ex:
                 try:
