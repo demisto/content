@@ -103,8 +103,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the AutoFocus Tags Feed integration to fetch indicators from AutoFocus Tags.
-display: AutoFocus Tags Feed
+description: Deprecated. Use Unit 42 Intel Objects Feed instead. Use the AutoFocus Tags Feed integration to fetch indicators from AutoFocus Tags.
+display: AutoFocus Tags Feed (Deprecated)
 name: AutoFocusTagsFeed
 script:
   commands:
@@ -132,3 +132,4 @@ script:
 tests:
 - AutoFocusTagsFeed-test
 fromversion: 6.5.0
+deprecated: true
