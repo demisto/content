@@ -2,8 +2,6 @@
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
-from IAMApiModule import *
-from ZoomApiModule import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -217,6 +215,10 @@ def check_authentication_type_arguments(api_key: str, api_secret: str,
         raise DemistoException("""Too many fields were filled.
                                    You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
                                    OR the API Key and API Secret fields (JWT - Deprecated)""")
+
+
+from IAMApiModule import *      # noqa: E402
+from ZoomApiModule import *     # noqa: E402
 
 
 def main():  # pragma: no cover
