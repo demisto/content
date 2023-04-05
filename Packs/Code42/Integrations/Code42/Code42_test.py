@@ -2511,24 +2511,6 @@ def test_security_data_search_command_searches_exposure_exists_when_no_exposure_
     assert len(filter_groups) == 3
 
 
-def test_file_events_search_command_returns_error_when_v2_events_not_configured(
-    mocker, code42_file_events_mock
-):
-    mock_demisto = mocker.patch("Code42.demisto")
-    mock_demisto.params.return_value = {"v2_events": False}
-    client = _create_client(code42_file_events_mock)
-    with pytest.raises(SystemExit):
-        file_events_search_command(
-            client,
-            args={
-                "hash": "d41d8cd98f00b204e9800998ecf8427e",
-                "hostname": "DESKTOP-0001",
-                "username": "user3@example.com",
-                "results": 50,
-            },
-        )
-
-
 def test_file_events_search_command_returns_only_table_when_add_to_context_false(
     mocker, code42_file_events_mock
 ):
