@@ -1,30 +1,6 @@
-Manage a common set of lists for use in various Akamai security products such as Kona Site Defender, Web App Protector,
-and Bot Manager. This integration was integrated and tested with [Network Lists API v2.0](https://developer.akamai.com/api/cloud_security/network_lists/v2.html)
+Use the Akamai WAF integration to manage common sets of lists used by various Akamai security products and features.
 
-##  Playbooks
-
-* Akamai WAF Network list activate generic polling.
-
-## Use Cases
-
-*   Get network list details - activations status, elements etc
-*   Create or remove network lists.
-*   Network list editing - add or remove elements.
-*   Network list activation.
-
-## Detailed Description
-
-The Akamai WAF integration allows you to manage a common set of lists for use in various Akamai security products such as Kona Site Defender, Web App Protector, and Bot Manager. Network lists are shared sets of IP addresses, CIDR blocks, or broad geographic areas. Along with managing your own lists, you can also access read-only lists that Akamai dynamically updates for you.
-
-## API keys generating steps
-
-1.  [Open Control panel](https://control.akamai.com/) and login with admin account.
-2.  Open `identity and access management` menu.
-3.  Create `new api client for me`
-4.  Assign API key to the relevant users group, and assign on next page `Read/Write` access for `Network Lists`.
-5.  Save configuration and go to API detail you created.
-6. Press `new credentials` and download or copy it.
-7. Now use the credentials for configure Akamai WAF in Cortex XSOAR
+This is the modified version where a new command "akamai-update-network-list-elements" was added by the SA.
 
 ## Configure Akamai WAF on Cortex XSOAR
 
@@ -42,17 +18,21 @@ The Akamai WAF integration allows you to manage a common set of lists for use in
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### akamai-get-network-lists
+
 ***
 Returns a list of all network lists available for an authenticated user who belongs to a group.
-
 
 #### Base Command
 
 `akamai-get-network-lists`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -61,7 +41,6 @@ Returns a list of all network lists available for an authenticated user who belo
 | search | The query by which to search for list names and list items. | Optional | 
 | extended | When enabled, provides additional response data identifying who created and updated the list and when, and the network list’s deployment status in both STAGING and PRODUCTION environments. This data takes longer to provide. Possible values are: true, false. Default is true. | Optional | 
 | include_elements | If enabled, the response list includes all items. For large network lists, this may slow responses and yield large response objects. The default false value when listing more than one network list omits the network list’s elements and only provides higher-level metadata. Possible values are: true, false. Default is false. | Optional | 
-
 
 #### Context Output
 
@@ -81,90 +60,20 @@ Returns a list of all network lists available for an authenticated user who belo
 | Akamai.NetworkLists.Lists.UpdatedBy | String | The last user that updated the network list. | 
 | Akamai.NetworkLists.Lists.Elements | String | The elements in the network list. | 
 
-##### Command Example
-
-`!akamai-get-network-lists` 
-
-`!akamai-get-network-lists type=IP search="192.168.0.1"`
-
- `!akamai-get-network-lists type=GEO search=IL`
-
-##### Context Example
-
-```
-{
-    "Akamai":{
-        "NetworkLists":{ 
-        	"Lists": [
-              {
-                  "CreatedBy": "user",
-                  "ElementCount": 2,
-                  "Elements": [
-                      "8.8.8.8",
-                      "8.8.8.8"
-                  ],
-                  "ExpeditedProductionActivationStatus": "INACTIVE",
-                  "ExpeditedStagingActivationStatus": "INACTIVE",
-                  "Name": "Test",
-                  "ProductionActivationStatus": "PENDING_ACTIVATION",
-                  "StagingActivationStatus": "INACTIVE",
-                  "Type": "IP",
-                  "UniqueID": "uniq_id",
-                  "UpdateDate": "2020-01-13T18:57:05.99Z",
-                  "UpdatedBy": "user"
-              },
-              {
-                  "CreatedBy": "akamai",
-                  "ElementCount": 18,
-                  "Elements": [
-                      "iq",
-                      "mm",
-                      "ir",
-                      "ye",
-                      "so",
-                      "sd"
-                  ],
-                  "ExpeditedProductionActivationStatus": "INACTIVE",
-                  "ExpeditedStagingActivationStatus": "INACTIVE",
-                  "Name": "Test",
-                  "ProductionActivationStatus": "PENDING_ACTIVATION",
-                  "StagingActivationStatus": "INACTIVE",
-                  "Type": "IP",
-                  "UniqueID": "uniq_id",
-                  "UpdateDate": "2020-01-13T18:57:05.99Z",
-                  "UpdatedBy": "user"
-              }
-          ]
-       }
-    }
-}
-```
-
-##### Human Readable Output
-
-### Akamai WAF - network lists
-
-|**Element count**|**Name**|**The production Activation Status**|**The staging Activation Status**|**Type**|**Unique ID**|**Updated by**|
-|--- |--- |--- |--- |--- |--- |--- |
-|2|Test|PENDING_ACTIVATION|INACTIVE|IP|uniqe_id|user|
-|1|test|INACTIVE|INACTIVE|IP|uniqe_id|user|
-
-* * *
-
 ### akamai-get-network-list-by-id
+
 ***
 Gets a network list by the network list ID.
-
 
 #### Base Command
 
 `akamai-get-network-list-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | network_list_id | The network list ID. | Required | 
-
 
 #### Context Output
 
@@ -184,57 +93,15 @@ Gets a network list by the network list ID.
 | Akamai.NetworkLists.Lists.UpdatedBy | String | The last user who updated the network list. | 
 | Akamai.NetworkLists.Lists.Elements | String | The elements in the network list. | 
 
-##### Command Example
-
-`!akamai-get-network-list-by-id network_list_id=69988_TEST`
-
-##### Context Example
-
-```
-{ 
-	"Akamai": {
-		"NetworkLists": {
-			"Lists": [
-            {
-              "CreatedBy": "user",
-              "ElementCount": 2,
-              "Elements": [
-              "8.8.8.8",
-              "8.8.8.8"
-              ],
-              "ExpeditedProductionActivationStatus": "INACTIVE",
-              "ExpeditedStagingActivationStatus": "INACTIVE",
-              "Name": "Test",
-              "ProductionActivationStatus": "PENDING_ACTIVATION",
-              "StagingActivationStatus": "INACTIVE",
-              "Type": "IP",
-              "UniqueID": "unique_id",
-              "UpdateDate": "2020-01-13T18:57:05.99Z",
-              "UpdatedBy": "user"
-            }
-        ]    
-    }
-}
-```
-
-##### Human Readable Output
-
-### Akamai WAF - network list 69988_TEST
-
-|**Element count**|**Name**|**The production Activation Status**|**The staging Activation Status**|**Type**|**Unique ID**|**Updated by**|
-|--- |--- |--- |--- |--- |--- |--- |
-|2|Test|PENDING_ACTIVATION|INACTIVE|IP|uique_id|user|
-
-* * *
-
 ### akamai-create-network-list
+
 ***
 Creates a new network list. Supports TXT file upload for elements.
-
 
 #### Base Command
 
 `akamai-create-network-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -244,7 +111,6 @@ Creates a new network list. Supports TXT file upload for elements.
 | elements | The network list elements. | Optional | 
 | entry_id | The War Room entry ID of the sample file. | Optional | 
 | description | The network list description. | Optional | 
-
 
 #### Context Output
 
@@ -256,81 +122,33 @@ Creates a new network list. Supports TXT file upload for elements.
 | Akamai.NetworkLists.Lists.ElementCount | Number | The number of elements in the list. | 
 | Akamai.NetworkLists.Lists.Elements | String | The elements in the list. | 
 
-##### Command Example
-
-`!akamai-create-network-list list_name=test list_type=IP description=test elements=8.8.8.8`
-
-##### Context Example
-
-```
-{
-    "Akamai": {
-        "NetworkLists": [
-            {
-                "Elements": [
-                    "8.8.8.8"
-                ],
-                "Name": "test",
-                "Type": "IP",
-                "UniqueID": "70548_TEST"
-            }
-        ]
-    }
-}
-```
-
-##### Human Readable Output
-
-### Akamai WAF - network list test created successfully
-
-|**Name**|**Type**|**Unique ID**|
-|--- |--- |--- |
-|test|IP|70548_TEST|
-
-* * *
 ### akamai-delete-network-list
+
 ***
 Deletes the specified network list.
-
 
 #### Base Command
 
 `akamai-delete-network-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | network_list_id | The ID of the network list to delete. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
-##### Command Example
-
-`!akamai-delete-network-list network_list_id=69856_NEW`
-
-##### Context Example
-
-```
-{}
-```
-
-##### Human Readable Output
-
-Akamai WAF - network list **69856_NEW** deleted.
-
-* * *
-
 ### akamai-activate-network-list
+
 ***
 Activates a network list on the specified environment.
-
 
 #### Base Command
 
 `akamai-activate-network-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -340,35 +158,18 @@ Activates a network list on the specified environment.
 | comment | A comment to be logged. | Optional | 
 | notify | A comma-separated list of email addresses. | Optional | 
 
-##### Context Output
+#### Context Output
 
-There are no context output for this command.
-
-##### Command Example
-
-`!akamai-activate-network-list network_list_id=69988_TEST,69989_TEST env=PRODUCTION comment=test`
-
-##### Context Example
-
-```
-{}
-```
-
-##### Human Readable Output
-
-Akamai WAF - network list **69988_TEST** activated on **PRODUCTION** successfully
-Akamai WAF  - network list **69989_TEST** already active on **PRODUCTION**
-
-* * *
-
+There is no context output for this command.
 ### akamai-add-elements-to-network-list
+
 ***
 Adds elements to the specified network list.
-
 
 #### Base Command
 
 `akamai-add-elements-to-network-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -377,39 +178,18 @@ Adds elements to the specified network list.
 | entry_id | The War Room entry ID of the sample file. | Optional | 
 | elements | A comma-separated list of elements to add to the network list. | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
-##### Command Example
-
-`!akamai-add-elements-to-network-list network_list_id=69988_TEST elements="8.8.8.8, 9.9.9.9"`
-
-##### Context Example
-
-```
-{}
-```
-
-##### Human Readable Output
-
-### Akamai WAF - elements added to network list 69988_TEST successfully
-
-|**elements**|
-|--- |
-|8.8.8.8, 9.9.9.9|
-
-* * *
-
 ### akamai-remove-element-from-network-list
+
 ***
 Removes elements from the specified network list.
-
 
 #### Base Command
 
 `akamai-remove-element-from-network-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -417,42 +197,24 @@ Removes elements from the specified network list.
 | network_list_id | The ID of the network list from which to remove elements. | Required | 
 | element | The element to remove from the network list. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
-##### Command Example
-
-`!akamai-remove-element-from-network-list network_list_id=69988_TEST element=8.8.8.8`
-
-##### Context Example
-
-```
-{}
-```
-
-##### Human Readable Output
-
-Akamai WAF - element **8.8.8.8** removed from network list **69988_TEST** successfully
-
-* * *
-
 ### akamai-get-network-list-activation-status
+
 ***
 Gets the activation status of the specified network list.
-
 
 #### Base Command
 
 `akamai-get-network-list-activation-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | network_list_ids | A comma-separated list of network list IDs for which to get the activation status. For example: (support list - list1,list2). | Required | 
 | env | The environment type. Possible values are: PRODUCTION, STAGING. | Required | 
-
 
 #### Context Output
 
@@ -462,40 +224,15 @@ Gets the activation status of the specified network list.
 | Akamai.NetworkLists.ActivationStatus.StagingStatus | String | The network list environment staging activation status. | 
 | Akamai.NetworkLists.ActivationStatus.ProductionStatus | String | The network list environment activation production status. | 
 
-##### Command Example
-
-`!akamai-get-network-list-activation-status network_list_id=69988_TEST env=PRODUCTION`
-
-`!akamai-get-network-list-activation-status network_list_id=69988_TEST, 69989_TEST env=PRODUCTION`
-
-##### Context Example
-
-```
-{
-    "Akamai": {
-        "NetworkLists": {
-            "ActivationStatus": {
-                "Status": "PENDING_ACTIVATION",
-                "UniqueID": "69988_TEST"
-            }
-        }
-    }
-}
-```
-
-##### Human Readable Output
-
-Akamai WAF - network list **69988_TEST** is **PENDING_ACTIVATION** in **PRODUCTION**
-Akamai WAF - network list **69989_TEST** canot be found
-
 ### akamai-update-network-list-elements
+
 ***
 Updates list elements of a network list.
-
 
 #### Base Command
 
 `akamai-update-network-list-elements`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -503,24 +240,23 @@ Updates list elements of a network list.
 | network_list_id | The ID of the network list to update. | Required | 
 | elements | Comma-separated list of elements. Use BLANK to empty a list. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### akamai-check-group
+
 ***
 Check an existing group within the context of your account.
-
 
 #### Base Command
 
 `akamai-check-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | checking_group_name | Group Name. | Optional | 
-
 
 #### Context Output
 
@@ -534,31 +270,32 @@ Check an existing group within the context of your account.
 | Akamai.CheckGroup.checking_group_name | unknown | Group name. | 
 
 ### akamai-create-group
+
 ***
 Create a new group under a parent GID.
-
 
 #### Base Command
 
 `akamai-create-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_path | The group path separated with &gt;. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### akamai-create-enrollment
+
 ***
 Create a new enrollment.
-
 
 #### Base Command
 
 `akamai-create-enrollment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -588,15 +325,14 @@ Create a new enrollment.
 | org_address_line_one | The organization address. | Required | 
 | clone_dns_names | Network Configuration - Dns Name Settings - Clone DNS Names. Default is True. | Optional | 
 | exclude_sans | Third Party - Exclude Sans. Default is False. | Optional | 
-| change_management |  . Default is False. | Optional | 
-| network_configuration_geography |  . Default is core. | Optional | 
-| ra |  . Default is third-party. | Optional | 
-| validation_type |  . Default is third-party. | Optional | 
-| enable_multi_stacked_certificates |  . Default is False. | Optional | 
-| network_configuration_quic_enabled |  . Default is True. | Optional | 
-| network_configuration_secure_network |  . Default is enhanced-tls. | Optional | 
-| network_configuration_sni_only |  . Default is True. | Optional | 
-
+| change_management | Enable this will stop CPS from deploying the certificate to the network. Default is False. | Optional | 
+| network_configuration_geography | Use core to specify worldwide (includes China and Russia), china+core to specify worldwide and China, and 'russia+core` to specify worldwide and Russia. Default is core. | Optional | 
+| ra | The registration authority or certificate authority (CA) you want to use to obtain a certificate. Default is third-party. | Optional | 
+| validation_type | Validation type, Either dv, ev, ov, or third-party. Default is third-party. | Optional | 
+| enable_multi_stacked_certificates | Enable Dual-Stacked certificate deployment for this enrollment. Default is False. | Optional | 
+| network_configuration_quic_enabled | Set to true to enable QUIC protocol. Default is True. | Optional | 
+| network_configuration_secure_network | Set the type of deployment network you want to use. Default is enhanced-tls. | Optional | 
+| network_configuration_sni_only | SNI settings for your enrollment. Set to true to enable SNI-only for the enrollment. Default is True. | Optional | 
 
 #### Context Output
 
@@ -605,31 +341,32 @@ Create a new enrollment.
 | Akamai.Enrollment | string | Enrollment path. | 
 
 ### akamai-list-enrollments
+
 ***
 List enrollments of a specific contract.
-
 
 #### Base Command
 
 `akamai-list-enrollments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | contract_id | Contract ID. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### akamai-create-domain
+
 ***
 Create a domain with properties and domain controller (DC).
-
 
 #### Base Command
 
 `akamai-create-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -637,18 +374,18 @@ Create a domain with properties and domain controller (DC).
 | domain_name | Domain name. | Required | 
 | group_id | Group ID. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### akamai-update-property
+
 ***
 Update a property for a specific domain.
-
 
 #### Base Command
 
 `akamai-update-property`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -662,29 +399,28 @@ Update a property for a specific domain.
 | server_2 | Server 2. | Optional | 
 | weight_1 | Weight 1. | Optional | 
 | weight_2 | Weight 2. | Optional | 
-| property_comments |  . | Optional | 
+| property_comments | GTM property comments. | Optional | 
 | dc1_id | Data center ID 1. | Optional | 
 | dc2_id | Data center ID 2. | Optional | 
-
 
 #### Context Output
 
 There is no context output for this command.
 ### akamai-get-change
+
 ***
 Get the CPS code.
-
 
 #### Base Command
 
 `akamai-get-change`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | enrollment_path | Enrollment path. | Required | 
-| allowed_input_type_param | . Default is third-party-csr. | Optional | 
-
+| allowed_input_type_param | Currently supported values include change-management-info, lets-encrypt-challenges, post-verification-warnings, pre-verification-warnings, third-party-csr. Default is third-party-csr. | Optional | 
 
 #### Context Output
 
@@ -693,13 +429,14 @@ Get the CPS code.
 | Akamai.Change | unknown | Certificate Signing Request \(CSR\). | 
 
 ### akamai-update-change
+
 ***
 Update the certs and trust chains.
-
 
 #### Base Command
 
 `akamai-update-change`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -709,25 +446,24 @@ Update the certs and trust chains.
 | certificate | The updated certificate. | Optional | 
 | trust_chain | The updated trust chain. | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### akamai-get-enrollment-by-cn
+
 ***
 Get enrollment by common name.
-
 
 #### Base Command
 
 `akamai-get-enrollment-by-cn`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | contract_id | Contract ID. | Required | 
 | target_cn | Target common name. | Required | 
-
 
 #### Context Output
 
@@ -737,18 +473,18 @@ Get enrollment by common name.
 | Akamai.Enrollment.target_cn | unknown | Target common name. | 
 
 ### akamai-list-groups
+
 ***
 Lists groups of Akamai.
-
 
 #### Base Command
 
 `akamai-list-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
@@ -757,36 +493,36 @@ Lists groups of Akamai.
 | Akamai.Group | unknown | Akmai Group | 
 
 ### akamai-get-group
+
 ***
 Get group.
-
 
 #### Base Command
 
 `akamai-get-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_id | Group ID. Default is 0. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### akamai-get-domains
+
 ***
 Get Google Tag Manager (GTM) domains.
-
 
 #### Base Command
 
 `akamai-get-domains`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
@@ -795,19 +531,19 @@ Get Google Tag Manager (GTM) domains.
 | Akamai.Domain | unknown | Domains. | 
 
 ### akamai-get-domain
+
 ***
 Get a specific GTM domain.
-
 
 #### Base Command
 
 `akamai-get-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain_name | Domain name to get. | Required | 
-
 
 #### Context Output
 
@@ -816,13 +552,14 @@ Get a specific GTM domain.
 | Akamai.Domain | unknown | Domain. | 
 
 ### akamai-create-datacenter
+
 ***
 Create a data center.
-
 
 #### Base Command
 
 `akamai-create-datacenter`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -831,18 +568,18 @@ Create a data center.
 | dc_name | Domain controller name. | Required | 
 | dc_country | Country name. Default is US. | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### akamai-clone-papi-property
+
 ***
 Clone a new PAPI property.
-
 
 #### Base Command
 
 `akamai-clone-papi-property`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -855,7 +592,6 @@ Clone a new PAPI property.
 | version | Property version. | Required | 
 | check_existence_before_create | Whether to continue execution if an existing record is found without creating a new record. Default is yes. | Required | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -865,13 +601,14 @@ Clone a new PAPI property.
 | Akamai.PapiProperty.AssetId | unknown | PAPI \(Ion Standard\) property asset ID. | 
 
 ### akamai-add-papi-property-hostname
+
 ***
 Add hostnames to the PAPI property.
-
 
 #### Base Command
 
 `akamai-add-papi-property-hostname`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -886,7 +623,6 @@ Add hostnames to the PAPI property.
 | edge_hostname_id | Edge hostname ID. | Required | 
 | sleep_time | Sleep time in seconds between each iteration. | Required | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -894,13 +630,14 @@ Add hostnames to the PAPI property.
 | Akamai.PapiProperty.Etag | unknown | ETag for concurrency control. | 
 
 ### akamai-new-papi-edgehostname
+
 ***
 Add a PAPI edge hostname.
-
 
 #### Base Command
 
 `akamai-new-papi-edgehostname`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -917,7 +654,6 @@ Add a PAPI edge hostname.
 | cert_enrollment_id | Certificate enrollment ID for the domain URL. | Optional | 
 | check_existence_before_create | Whether to continue execution if an existing record is found without creating a new record. Default is yes. | Required | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -926,20 +662,20 @@ Add a PAPI edge hostname.
 | Akamai.PapiProperty.EdgeHostnames.DomainPrefix | unknown | Edge hostname domain prefix URL. | 
 
 ### akamai-get-cps-enrollmentid-by-cnname
+
 ***
 Get cps certificate enrollment ID by common name.
-
 
 #### Base Command
 
 `akamai-get-cps-enrollmentid-by-cnname`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | contract_id | Contract ID. | Required | 
 | cnname | URL of common name. | Optional | 
-
 
 #### Context Output
 
@@ -949,13 +685,14 @@ Get cps certificate enrollment ID by common name.
 | Akamai.Cps.Enrollment.CN | unknown | Certificate enrollment common name. | 
 
 ### akamai-new-papi-cpcode
+
 ***
 Create a new PAPI CP code.
-
 
 #### Base Command
 
 `akamai-new-papi-cpcode`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -966,7 +703,6 @@ Create a new PAPI CP code.
 | cpcode_name | Content provider codes name. | Required | 
 | check_existence_before_create | Whether to continue execution if an existing record is found without creating a new record. Default is yes. | Required | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -974,13 +710,14 @@ Create a new PAPI CP code.
 | Akamai.PapiCpcode.CpcodeId | unknown | Content provider code ID. | 
 
 ### akamai-patch-papi-property-rule-cpcode
+
 ***
 Patch PAPI property default rule with a CP code.
-
 
 #### Base Command
 
 `akamai-patch-papi-property-rule-cpcode`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -995,7 +732,6 @@ Patch PAPI property default rule with a CP code.
 | cpcode_id | Content provider code ID. | Optional | 
 | name | Content provider code name. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -1003,13 +739,14 @@ Patch PAPI property default rule with a CP code.
 | Akamai.PapiProperty.Etag | unknown | ETag for concurrency control. | 
 
 ### akamai-patch-papi-property-rule-origin
+
 ***
 Patch PAPI property default rule with an origin.
-
 
 #### Base Command
 
 `akamai-patch-papi-property-rule-origin`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1026,7 +763,6 @@ Patch PAPI property default rule with an origin.
 | gzip_compression | Gzip compression. | Optional | 
 | sleep_time | Sleep time between each iteration. | Required | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -1034,13 +770,14 @@ Patch PAPI property default rule with an origin.
 | Akamai.PapiProperty.Etag | unknown | Etag for Concurrency Control. | 
 
 ### akamai-activate-papi-property
+
 ***
 Activate a PAPI property.
-
 
 #### Base Command
 
 `akamai-activate-papi-property`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1053,7 +790,6 @@ Activate a PAPI property.
 | property_version | PAPI (Ion Standard) property version. | Optional | 
 | note | activation note. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -1062,13 +798,14 @@ Activate a PAPI property.
 | Akamai.PapiProperty.Production.ActivationId | unknown | Production activation ID. | 
 
 ### akamai-clone-security-policy
+
 ***
 AppSec clone security policy.
-
 
 #### Base Command
 
 `akamai-clone-security-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1080,7 +817,6 @@ AppSec clone security policy.
 | policy_prefix | Security policy ID prefix. | Optional | 
 | check_existence_before_create | Whether to continue execution if an existing record is found without creating a new record. Default is yes. | Required | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -1089,13 +825,14 @@ AppSec clone security policy.
 | Akamai.AppSecConfig.Policy.PolicyId | unknown | Security policy ID. | 
 
 ### akamai-new-match-target
+
 ***
 AppSec create match target.
-
 
 #### Base Command
 
 `akamai-new-match-target`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1109,7 +846,6 @@ AppSec create match target.
 | file_paths | File paths. Default is /*. | Required | 
 | default_file | Default is noMatch. | Required | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -1119,13 +855,14 @@ AppSec create match target.
 | Akamai.AppSecConfig.Policy.TargetId | unknown | Match target ID. | 
 
 ### akamai-activate-appsec-config-version
+
 ***
 AppSec activate appsec configuration version.
-
 
 #### Base Command
 
 `akamai-activate-appsec-config-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1138,7 +875,6 @@ AppSec activate appsec configuration version.
 | network | STAGING or PRODUCTION. | Required | 
 | note | Note to describe the activity. | Required | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -1147,13 +883,14 @@ AppSec activate appsec configuration version.
 | Akamai.AppSecConfig.Production.ActivationId | unknown | Security configuration production activation ID. | 
 
 ### akamai-get-appsec-config-activation-status
+
 ***
 AppSec get appsec config activation status.
-
 
 #### Base Command
 
 `akamai-get-appsec-config-activation-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1161,7 +898,6 @@ AppSec get appsec config activation status.
 | activation_id | Security configuration activation ID. | Required | 
 | sleep_time | Sleep time in seconds between each iteration. | Required | 
 | retries | Number of retries of the consistency check to be conducted. | Required | 
-
 
 #### Context Output
 
@@ -1171,13 +907,14 @@ AppSec get appsec config activation status.
 | Akamai.AppSecConfig.Production | unknown | Production Security Configration. | 
 
 ### akamai-get-appsec-config-latest-version
+
 ***
 AppSec get appsec config latest version.
-
 
 #### Base Command
 
 `akamai-get-appsec-config-latest-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1187,7 +924,6 @@ AppSec get appsec config latest version.
 | retries | Number of retries of the consistency check to be conducted. | Required | 
 | skip_consistency_check | Do not perform LatestVersion, Staging Version, Production Version consistency check. | Required | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -1195,13 +931,14 @@ AppSec get appsec config latest version.
 | Akamai.AppSecConfig.LatestVersion | unknown | Security configuration latest version number. | 
 
 ### akamai-get-security-policy-id-by-name
+
 ***
 AppSec get security policy ID by name.
-
 
 #### Base Command
 
 `akamai-get-security-policy-id-by-name`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1210,7 +947,6 @@ AppSec get security policy ID by name.
 | config_id | AppSec configuration ID. | Required | 
 | config_version | AppSec configuration version. | Required | 
 | is_baseline_policy | Whether this is the baseline security policy. | Required | 
-
 
 #### Context Output
 
@@ -1223,21 +959,22 @@ AppSec get security policy ID by name.
 | Akamai.AppSecConfig.Id | unknown | AppSec security configuration ID. | 
 
 ### akamai-clone-appsec-config-version
+
 ***
 AppSec_clone appsec config version
-
 
 #### Base Command
 
 `akamai-clone-appsec-config-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | config_id | AppSec configuration ID. | Required | 
 | create_from_version | AppSec configuration version. | Required | 
+| rule_update | Specifies whether the application rules should be migrated to the latest version. Possible values are: True, False. Default is True. | Optional | 
 | do_not_clone | Do not clone to create a new version. Use in the test. | Required | 
-
 
 #### Context Output
 
@@ -1248,13 +985,14 @@ AppSec_clone appsec config version
 | Akamai.AppSecConfig.NewVersion | unknown | AppSec Configration New Version | 
 
 ### akamai-patch-papi-property-rule-httpmethods
+
 ***
 Patch PAPI property rule HTTP methods.
-
 
 #### Base Command
 
 `akamai-patch-papi-property-rule-httpmethods`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1266,8 +1004,7 @@ Patch PAPI property rule HTTP methods.
 | validate_rules | Whether to validate the Rules. | Required | 
 | operation | The operation to execute. | Required | 
 | path | The path of the rule. | Required | 
-| value | The value. | Required | 
-
+| value | The value of the HTTP Method in dictionary format. | Required | 
 
 #### Context Output
 
@@ -1276,13 +1013,14 @@ Patch PAPI property rule HTTP methods.
 | Akamai.PapiProperty.Etag | unknown | ETag for concurrency control. | 
 
 ### akamai-get-papi-property-activation-status-command
+
 ***
 Get PAPI property activation status until it is active.
-
 
 #### Base Command
 
 `akamai-get-papi-property-activation-status-command`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1292,18 +1030,18 @@ Get PAPI property activation status until it is active.
 | sleep_time | Sleep time between retries. | Required | 
 | retries | Number of retires. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### akamai-get-papi-edgehostname-creation-status-command
+
 ***
 Get PAPI edgehostname creation status command until it is created.
-
 
 #### Base Command
 
 `akamai-get-papi-edgehostname-creation-status-command`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1315,36 +1053,36 @@ Get PAPI edgehostname creation status command until it is created.
 | sleep_time | Sleep time between each iteration. | Required | 
 | retries | Number of retries. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### akamai-acknowledge-warning-command
+
 ***
 Acknowledge the warning message for uploading the certs and trust chains of enrollments.
-
 
 #### Base Command
 
 `akamai-acknowledge-warning-command`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | change_path | The path of the changed certificate. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### akamai-modify-appsec-config-selected-hosts
+
 ***
 Update the list of selected hostnames for a configuration version.
-
 
 #### Base Command
 
 `akamai-modify-appsec-config-selected-hosts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1352,56 +1090,56 @@ Update the list of selected hostnames for a configuration version.
 | config_id | A unique identifier for each configuration. | Required | 
 | config_version | A unique identifier for each version of a configuration. | Required | 
 | hostname_list | A list hostnames is used to modifying the configuration. | Required | 
-| mode | The type of update you want to make to the evaluation hostname list. Use "append" to add additional hostnames, Use "remove" to delete the hostnames from the list, Use "replace" to replace the existing list with the hostnames you pass in your request. Use "append" to add additional hostnames. Use "remove" to delete the hostnames from the list. Use "replace" to replace the existing list with the hostnames you pass in your request. | Required | 
-
+| mode | The type of update you want to make to the evaluation hostname list.             - Use "append" to add additional hostnames.             - Use "remove" to delete the hostnames from the list.             - Use "replace" to replace the existing list with the hostnames you pass in your request. Use "append" to add additional hostnames. Use "remove" to delete the hostnames from the list. Use "replace" to replace the existing list with the hostnames you pass in your request. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
 ### akamai-get-production-deployment
+
 ***
 Get Production Deployment
-
 
 #### Base Command
 
 `akamai-get-production-deployment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| enrollment_id |  . | Required | 
-
+| enrollment_id | The enrollment id. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
 ### akamai-get-change-history
+
 ***
 Get change history
-
 
 #### Base Command
 
 `akamai-get-change-history`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| enrollment_id |  . | Required | 
-
+| enrollment_id | The enrollment id. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
 ### akamai-patch-papi-property-rule-siteshield
+
 ***
 Patch papi property default rule siteshield
-
 
 #### Base Command
 
 `akamai-patch-papi-property-rule-siteshield`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1415,18 +1153,18 @@ Patch papi property default rule siteshield
 | path | Json patch Rule path. | Required | 
 | ssmap | siteshiled json format data. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### akamai-update-appsec-config-version-notes
+
 ***
 Update application secuirty configuration version notes command
-
 
 #### Base Command
 
 `akamai-update-appsec-config-version-notes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1435,18 +1173,18 @@ Update application secuirty configuration version notes command
 | config_version | The version number of the application seucirty configuration. | Required | 
 | notes | The notes need to be written into the application seucirty configuration version. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### akamai-new-or-renew-match-target
+
 ***
 New match target if no existing found otherwise update the existing match target hostnames. If there are multiple match targets found, the first one in the list will be updated
-
 
 #### Base Command
 
 `akamai-new-or-renew-match-target`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1460,18 +1198,18 @@ New match target if no existing found otherwise update the existing match target
 | hostnames | A list of hostnames that need to be added into match target. | Required | 
 | policy_id | Specifies the security policy to filter match targets. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### akamai-patch-papi-property-rule-generic
+
 ***
 Generic JSON patch command for Papi Property Default Rule
-
 
 #### Base Command
 
 `akamai-patch-papi-property-rule-generic`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1484,19 +1222,20 @@ Generic JSON patch command for Papi Property Default Rule
 | operation | add/replace/remove. | Required | 
 | path | json rule tree path for the default rule. | Required | 
 | value | value to be operated against. | Required | 
-
+| value_to_json | whether to convert value to json format. yes/no. Possible values are: yes, no. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
 ### akamai-get-papi-property-rule
+
 ***
 get papi property rule json and dump into string
-
 
 #### Base Command
 
 `akamai-get-papi-property-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1506,11 +1245,6 @@ get papi property rule json and dump into string
 | property_id | A unique identifier for each Papi Property. | Required | 
 | property_version | A unique identifier for each Papi Property Version. | Required | 
 | validate_rules | whether validate rule or not. | Required | 
-| operation | add/replace/remove. | Required | 
-| path | json rule tree path for the default rule. | Required | 
-| value | value to be operated against. | Required | 
-| value_to_json | whether to convert value to json format. yes/no. | Required | 
-
 
 #### Context Output
 
@@ -1518,21 +1252,161 @@ get papi property rule json and dump into string
 | --- | --- | --- |
 | Akamai.PapiProperty.DefaultRule | unknown | Papi Property default rule | 
 
-### akamai-patch-papi-property-rule-generic
-***
-Generic JSON patch command for Papi Property Default Rule
+### akamai-acknowledge-pre-verification-warning
 
+***
+acknowledge pre verification warning
 
 #### Base Command
 
 `akamai-acknowledge-pre-verification-warning`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | change_path | The path that includes enrollmentId and changeId. | Required | 
 
+#### Context Output
+
+There is no context output for this command.
+### akamai-get-papi-property-by-name
+
+***
+Get PAPI property info without the default rule. To get the default rule, use the "get-papi-property-rule" command.
+
+#### Base Command
+
+`akamai-get-papi-property-by-name`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| contract_id | Unique identifier for the contract. | Required | 
+| property_name | Name of the PAPI property. | Optional | 
+| group_id | Unique identifier for the group. | Optional | 
 
 #### Context Output
 
-There is no context output for this command
+There is no context output for this command.
+### akamai-list-papi-property-by-group
+
+***
+Lists properties available for the current contract and group. 
+
+#### Base Command
+
+`akamai-list-papi-property-by-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| contract_id | Unique identifier for the contract. | Required | 
+| group_id | Unique identifier for the group. | Required | 
+| context_path | Custom output context path, default is "PapiProperty.ByGroup". Default is PapiProperty.ByGroup. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### akamai-get-papi-property-by-id
+
+***
+get papi property info by id without default rule. to get default rule, please use "get-papi-property-rule" command.
+
+#### Base Command
+
+`akamai-get-papi-property-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| contract_id | Unique identifier of the contract. | Required | 
+| group_id | Unique identifier for the group. | Required | 
+| property_id | Unique identifier of the property. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### akamai-new-papi-property-version
+
+***
+Create a new property version based on any previous version.          All data from the createFromVersion populates the new version, including its rules and hostnames. 
+
+#### Base Command
+
+`akamai-new-papi-property-version`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| contract_id | Unique identifier for the contract. | Required | 
+| property_id | Unique identifier for the property. | Required | 
+| group_id | Unique identifier for the group. | Required | 
+| create_from_version | The property version on which to base the new version. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### akamai-list-papi-property-activations
+
+***
+This lists all activations for all versions of a property, on both production and staging networks.
+
+#### Base Command
+
+`akamai-list-papi-property-activations`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| contract_id | Unique identifier for the contract. | Required | 
+| group_id | Unique identifier for the group. | Required | 
+| property_id | Unique identifier for the property. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### akamai-list-appsec-configuration-activation-history
+
+***
+        Lists the activation history for a configuration.          The history is an array in descending order of submitDate.          The most recent submitted activation lists first. Products: All.
+
+#### Base Command
+
+`akamai-list-appsec-configuration-activation-history`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| config_id | Unique identifier for the contract. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### akamai-list-papi-property-by-hostname
+
+***
+Lists active property hostnames for all properties available in an account.
+
+#### Base Command
+
+`akamai-list-papi-property-by-hostname`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | Filter the results by cnameFrom. Supports wildcard matches with *. | Required | 
+| network | Network of activated hostnames, either STAGING or PRODUCTION. Or leave it BLANK. Possible values are: STAGING, PRODUCTION. | Optional | 
+| contract_id | Unique identifier for the contract. contract_id and groupd_id need to be presented at the same time. | Optional | 
+| group_id | Unique identifier for the group. Both contract_id and group_id need to be defined. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
