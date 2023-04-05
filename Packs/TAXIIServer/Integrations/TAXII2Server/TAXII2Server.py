@@ -1272,7 +1272,7 @@ def create_relationships_objects(stix_iocs: list[dict[str, Any]], extensions: li
                     return shash_value
 
         else:
-            return (stix_ioc.get('value') or stix_ioc.get('name'))
+            return stix_ioc.get('value') or stix_ioc.get('name')
 
     relationships_list: list[dict[str, Any]] = []
     iocs_value_to_id = {get_stix_object_value(stix_ioc): stix_ioc.get('id') for stix_ioc in stix_iocs}
