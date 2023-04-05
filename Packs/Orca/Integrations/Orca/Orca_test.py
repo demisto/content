@@ -743,7 +743,7 @@ def test_orca_download_malicious_file(requests_mock, orca_client) -> None:
         f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/download_malicious_file",
         json={
             "status": "success", "malicious_file.png": "malicious_file.png",
-            "link": "https://aws.com/download/malicious_file"
+            "link": "https://aws.com/download/malicious_file.png"
         }
     )
 
