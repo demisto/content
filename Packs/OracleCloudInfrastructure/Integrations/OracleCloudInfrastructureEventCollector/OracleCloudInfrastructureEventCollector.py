@@ -279,10 +279,32 @@ def get_events(
         events = add_time_key_to_events(events)
 
     except Exception as e:
-        raise DemistoException(f'Error while fetching events: {e}') from e
+        if events:
+            last_event_time = get_last_event_time(events, first_fetch_time)
+            events = add_time_key_to_events(events)
+            handle_fetched_events(events, last_event_time)
+            raise DemistoException(f'Error while fetching events: {e}') from e
 
     demisto.info(f'OCI: {len(events)} Events fetched from start time: {first_fetch_time}.')
     return events, last_event_time
+
+
+def handle_fetched_events(events: list[dict[str, Any]], last_event_time: str):
+    """Handles fetched events.
+    - Sends the events to XSIAM.
+    - Sets the last run for next fetch cycle.
+
+    Args:
+        events (list[dict[str, Any]]): Fetched events.
+        last_event_time (str): Last event time.
+    """
+    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+    demisto.info(f'OCI: {len(events)} events were sent to XSIAM at {datetime.now()}.')
+    if events:
+        demisto.setLastRun({"lastRun": last_event_time})
+        demisto.info(f'OCI: Set last run to {last_event_time}')
+    else:
+        demisto.info('OCI: No new events fetched, Last run was not updated.')
 
 
 ''' Test module '''
@@ -358,13 +380,7 @@ def main():
             events, last_event_time = get_events(client, first_fetch_time, max_fetch)
 
             if command == 'fetch-events' or args.get('should_push_events'):
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                demisto.info(f'OCI: {len(events)} events were sent to XSIAM at {datetime.now()}.')
-                if events:
-                    demisto.setLastRun({"lastRun": last_event_time})
-                    demisto.info(f'OCI: Set last run to {last_event_time}')
-                else:
-                    demisto.info('OCI: No new events fetched, Last run was not updated.')
+                handle_fetched_events(events, last_event_time)
 
             elif command == 'oracle-cloud-infrastructure-get-events':
                 return_results(events_to_command_results(events))
