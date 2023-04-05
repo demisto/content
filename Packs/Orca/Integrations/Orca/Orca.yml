@@ -204,7 +204,7 @@ script:
         - contextPath: File
           description: The Malicious File
       description: Downloads a capture file from CS Enterprise.
-  dockerimage: demisto/python3:3.10.10.51930
+  dockerimage: demisto/python3:3.10.10.52956
   feed: false
   isfetch: true
   longRunning: false

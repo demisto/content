@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 import dateutil.parser
 from requests import Response
 
@@ -199,11 +201,19 @@ class OrcaClient:
         )
         demisto.debug(f"Got malicious download link {response}")
 
-        file_content = requests.get(
-            url=response.get("link"),
+        if "link" not in response:
+            raise DemistoException("Unable to get malicious file")
+
+        file_link = response.get("link")
+        file_response = requests.get(
+            url=file_link,
             timeout=ORCA_API_TIMEOUT,
         )
-        return {"filename": response.get("filename"), "file": file_content.content}
+        if file_response.status_code != 200:
+            raise DemistoException("Unable to download malicious file")
+        file_name = os.path.basename(urlparse(file_link).path)
+
+        return {"filename": file_name, "file": file_response.content}
 
 
 def map_orca_score_to_demisto_score(orca_score: int) -> Union[int, float]:  # pylint: disable=E1136

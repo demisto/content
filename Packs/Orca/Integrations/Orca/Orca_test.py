@@ -5,6 +5,8 @@ import json
 from Orca import OrcaClient, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents, STEP_INIT, STEP_FETCH, \
     set_alert_severity, get_alert_event_log, set_alert_status, verify_alert
 
+from CommonServerPython import DemistoException
+
 DUMMY_ORCA_API_DNS_NAME = "https://dummy.io/api"
 
 mock_alerts_response = {
@@ -739,12 +741,32 @@ def test_orca_verify_alert(requests_mock, orca_client: OrcaClient) -> None:
 def test_orca_download_malicious_file(requests_mock, orca_client) -> None:
     requests_mock.get(
         f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/download_malicious_file",
-        json={"status": "success", "filename": "malicious_file", "link": "http://aws.com/download/malicious_file"}
+        json={
+            "status": "success", "malicious_file.png": "malicious_file.png",
+            "link": "https://aws.com/download/malicious_file"
+        }
     )
 
     requests_mock.get(
-        "http://aws.com/download/malicious_file",
+        "https://aws.com/download/malicious_file.png",
         text="Hello World"
     )
     response = orca_client.download_malicious_file(alert_id="orca-1")
-    assert response == {'filename': 'malicious_file', 'file': b'Hello World'}
+    assert response == {'filename': 'malicious_file.png', 'file': b'Hello World'}
+
+
+def test_orca_download_malicious_file__error(requests_mock, orca_client):
+    requests_mock.get(
+        f"{DUMMY_ORCA_API_DNS_NAME}/alerts/orca-1/download_malicious_file",
+        json={
+            "status": "success", "malicious_file.png": "malicious_file.png",
+            "link": "https://aws.com/download/malicious_file.png"
+        }
+    )
+    requests_mock.get(
+        "https://aws.com/download/malicious_file.png",
+        status_code=404
+    )
+    with pytest.raises(DemistoException):
+        file = orca_client.download_malicious_file("orca-1")
+
