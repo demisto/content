@@ -5,7 +5,7 @@ from CommonServerPython import *
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
-
+        
     def _http_request(self, *args, **kwargs):
         resp = super()._http_request(*args, return_empty_response=True, **kwargs)
         try:
@@ -285,16 +285,16 @@ class Client(BaseClient):
 
         return response
 
-    def get_account_of_global_domain_request(self, domain_id, account_id, q, offset, limit, fields):
-        params = assign_params(q=q, offset=offset, limit=limit, fields=fields)
+    def get_account_of_global_domain_request(self, domain_id, account_id, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'domains/{domain_id}/accounts/{account_id}', params=params, headers=headers)
 
         return response
 
-    def get_account_reference_request(self, account_id, reference_id, q, sort, offset, limit, fields):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_account_reference_request(self, account_id, reference_id, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'accounts/{account_id}/references/{reference_id}', params=params, headers=headers)
@@ -333,16 +333,16 @@ class Client(BaseClient):
 
         return response
 
-    def get_application_request(self, application_id, q, sort, offset, limit, fields):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_application_request(self, application_id, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'applications/{application_id}', params=params, headers=headers)
 
         return response
 
-    def get_application_account_request(self, application_id, domain_id, account_id, q, sort, offset, limit, fields):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_application_account_request(self, application_id, domain_id, account_id, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}', params=params, headers=headers)
@@ -397,8 +397,8 @@ class Client(BaseClient):
 
         return response
 
-    def get_auth_domain_request(self, domain_id, q, sort, offset, limit, fields):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_auth_domain_request(self, domain_id, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'authdomains/{domain_id}', params=params, headers=headers)
@@ -413,8 +413,8 @@ class Client(BaseClient):
 
         return response
 
-    def get_authentication_request(self, auth_id, from_date, to_date, date_field, q, sort, offset, limit, fields):
-        params = assign_params(from_date=from_date, to_date=to_date, date_field=date_field, q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_authentication_request(self, auth_id, from_date, to_date, date_field, fields):
+        params = assign_params(from_date=from_date, to_date=to_date, date_field=date_field, fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'authentications/{auth_id}', params=params, headers=headers)
@@ -429,8 +429,8 @@ class Client(BaseClient):
 
         return response
 
-    def get_authorization_request(self, authorization_id, q, sort, offset, limit, fields):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_authorization_request(self, authorization_id, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'authorizations/{authorization_id}', params=params, headers=headers)
@@ -469,16 +469,16 @@ class Client(BaseClient):
 
         return response
 
-    def get_checkout_policy_request(self, checkout_policy_id, q, sort, offset, limit, fields):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_checkout_policy_request(self, checkout_policy_id, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'checkoutpolicies/{checkout_policy_id}', params=params, headers=headers)
 
         return response
 
-    def get_device_request(self, device_id, q, sort, offset, limit, fields):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_device_request(self, device_id, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'devices/{device_id}', params=params, headers=headers)
@@ -493,8 +493,8 @@ class Client(BaseClient):
 
         return response
 
-    def get_global_domain_request(self, domain_id, q, sort, offset, limit, fields):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_global_domain_request(self, domain_id, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'domains/{domain_id}', params=params, headers=headers)
@@ -523,8 +523,8 @@ class Client(BaseClient):
 
         return response
 
-    def get_ldap_user_of_domain_request(self, domain, user_name, last_connection, q, offset, limit, fields):
-        params = assign_params(last_connection=last_connection, q=q, offset=offset, limit=limit, fields=fields)
+    def get_ldap_user_of_domain_request(self, domain, user_name, last_connection, fields):
+        params = assign_params(last_connection=last_connection, fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'ldapusers/{domain}/{user_name}', params=params, headers=headers)
@@ -547,11 +547,10 @@ class Client(BaseClient):
 
         return response
 
-    def get_notification_request(self, notification_id, q, sort, offset, limit):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit)
+    def get_notification_request(self, notification_id):
         headers = self._headers
 
-        response = self._http_request('get', f'notifications/{notification_id}', params=params, headers=headers)
+        response = self._http_request('get', f'notifications/{notification_id}', headers=headers)
 
         return response
 
@@ -571,24 +570,24 @@ class Client(BaseClient):
 
         return response
 
-    def get_one_account_request(self, account_id, account_type, application, device, passwords, key_format, q, sort, offset, limit, fields):
-        params = assign_params(account_type=account_type, application=application, device=device, passwords=passwords, key_format=key_format, q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_one_account_request(self, account_id, account_type, application, device, passwords, key_format, fields):
+        params = assign_params(account_type=account_type, application=application, device=device, passwords=passwords, key_format=key_format, fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'accounts/{account_id}', params=params, headers=headers)
 
         return response
 
-    def get_one_account_on_device_local_domain_request(self, device_id, domain_id, account_id, key_format, q, sort, offset, limit, fields):
-        params = assign_params(key_format=key_format, q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_one_account_on_device_local_domain_request(self, device_id, domain_id, account_id, key_format, fields):
+        params = assign_params(key_format=key_format, fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}', params=params, headers=headers)
 
         return response
 
-    def get_profile_request(self, profile_id, q, sort, offset, limit, fields):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_profile_request(self, profile_id, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'profiles/{profile_id}', params=params, headers=headers)
@@ -603,16 +602,16 @@ class Client(BaseClient):
 
         return response
 
-    def get_scan_request(self, scan_id, q, sort, offset, limit, fields):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_scan_request(self, scan_id, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'scans/{scan_id}', params=params, headers=headers)
 
         return response
 
-    def get_scanjob_request(self, scanjob_id, q, sort, offset, limit, fields):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_scanjob_request(self, scanjob_id, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'scanjobs/{scanjob_id}', params=params, headers=headers)
@@ -635,8 +634,8 @@ class Client(BaseClient):
 
         return response
 
-    def get_service_of_device_request(self, device_id, service_id, q, sort, offset, limit, fields):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_service_of_device_request(self, device_id, service_id, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'devices/{device_id}/services/{service_id}', params=params, headers=headers)
@@ -667,8 +666,8 @@ class Client(BaseClient):
 
         return response
 
-    def get_sessionrights_user_name_request(self, user_name, q, sort, offset, limit, fields):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_sessionrights_user_name_request(self, user_name, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'sessionrights/{user_name}', params=params, headers=headers)
@@ -699,8 +698,8 @@ class Client(BaseClient):
 
         return response
 
-    def get_target_group_request(self, group_id, device, application, domain, q, sort, offset, limit, fields):
-        params = assign_params(device=device, application=application, domain=domain, q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_target_group_request(self, group_id, device, application, domain, fields):
+        params = assign_params(device=device, application=application, domain=domain, fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'targetgroups/{group_id}', params=params, headers=headers)
@@ -715,16 +714,16 @@ class Client(BaseClient):
 
         return response
 
-    def get_user_request(self, name, password_hash, q, sort, offset, limit, fields):
-        params = assign_params(password_hash=password_hash, q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_user_request(self, name, password_hash, fields):
+        params = assign_params(password_hash=password_hash, fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'users/{name}', params=params, headers=headers)
 
         return response
 
-    def get_user_group_request(self, group_id, q, sort, offset, limit, fields):
-        params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
+    def get_user_group_request(self, group_id, fields):
+        params = assign_params(fields=fields)
         headers = self._headers
 
         response = self._http_request('get', f'usergroups/{group_id}', params=params, headers=headers)
@@ -1443,12 +1442,9 @@ def generate_trace_for_session_command(client: Client, args: Dict[str, Any]) -> 
 def get_account_of_global_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     domain_id = str(args.get('domain_id', ''))
     account_id = str(args.get('account_id', ''))
-    q = str(args.get('q', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_account_of_global_domain_request(domain_id, account_id, q, offset, limit, fields)
+    response = client.get_account_of_global_domain_request(domain_id, account_id, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.domain_account_get',
         outputs_key_field='id',
@@ -1462,13 +1458,9 @@ def get_account_of_global_domain_command(client: Client, args: Dict[str, Any]) -
 def get_account_reference_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     account_id = str(args.get('account_id', ''))
     reference_id = str(args.get('reference_id', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_account_reference_request(account_id, reference_id, q, sort, offset, limit, fields)
+    response = client.get_account_reference_request(account_id, reference_id, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.account_reference_get',
         outputs_key_field='id',
@@ -1562,13 +1554,9 @@ def get_all_accounts_on_device_local_domain_command(client: Client, args: Dict[s
 
 def get_application_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     application_id = str(args.get('application_id', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_application_request(application_id, q, sort, offset, limit, fields)
+    response = client.get_application_request(application_id, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.application_get',
         outputs_key_field='id',
@@ -1583,13 +1571,9 @@ def get_application_account_command(client: Client, args: Dict[str, Any]) -> Com
     application_id = str(args.get('application_id', ''))
     domain_id = str(args.get('domain_id', ''))
     account_id = str(args.get('account_id', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_application_account_request(application_id, domain_id, account_id, q, sort, offset, limit, fields)
+    response = client.get_application_account_request(application_id, domain_id, account_id, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.app_account_get',
         outputs_key_field='id',
@@ -1716,13 +1700,9 @@ def get_approvals_for_approver_command(client: Client, args: Dict[str, Any]) -> 
 
 def get_auth_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     domain_id = str(args.get('domain_id', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_auth_domain_request(domain_id, q, sort, offset, limit, fields)
+    response = client.get_auth_domain_request(domain_id, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.auth_domain_get',
         outputs_key_field='id',
@@ -1756,13 +1736,9 @@ def get_authentication_command(client: Client, args: Dict[str, Any]) -> CommandR
     from_date = str(args.get('from_date', ''))
     to_date = str(args.get('to_date', ''))
     date_field = str(args.get('date_field', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_authentication_request(auth_id, from_date, to_date, date_field, q, sort, offset, limit, fields)
+    response = client.get_authentication_request(auth_id, from_date, to_date, date_field, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.authentication_get',
         outputs_key_field='id',
@@ -1796,13 +1772,9 @@ def get_authentications_command(client: Client, args: Dict[str, Any]) -> Command
 
 def get_authorization_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     authorization_id = str(args.get('authorization_id', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_authorization_request(authorization_id, q, sort, offset, limit, fields)
+    response = client.get_authorization_request(authorization_id, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.authorization_get',
         outputs_key_field='id',
@@ -1892,13 +1864,9 @@ def get_checkout_policies_command(client: Client, args: Dict[str, Any]) -> Comma
 
 def get_checkout_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     checkout_policy_id = str(args.get('checkout_policy_id', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_checkout_policy_request(checkout_policy_id, q, sort, offset, limit, fields)
+    response = client.get_checkout_policy_request(checkout_policy_id, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.checkoutpolicy_get',
         outputs_key_field='id',
@@ -1911,13 +1879,9 @@ def get_checkout_policy_command(client: Client, args: Dict[str, Any]) -> Command
 
 def get_device_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     device_id = str(args.get('device_id', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_device_request(device_id, q, sort, offset, limit, fields)
+    response = client.get_device_request(device_id, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.device_get',
         outputs_key_field='id',
@@ -1948,13 +1912,9 @@ def get_devices_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def get_global_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     domain_id = str(args.get('domain_id', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_global_domain_request(domain_id, q, sort, offset, limit, fields)
+    response = client.get_global_domain_request(domain_id, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.domain_get',
         outputs_key_field='id',
@@ -2014,12 +1974,9 @@ def get_ldap_user_of_domain_command(client: Client, args: Dict[str, Any]) -> Com
     domain = str(args.get('domain', ''))
     user_name = str(args.get('user_name', ''))
     last_connection = argToBoolean(args.get('last_connection', False))
-    q = str(args.get('q', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_ldap_user_of_domain_request(domain, user_name, last_connection, q, offset, limit, fields)
+    response = client.get_ldap_user_of_domain_request(domain, user_name, last_connection, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.ldapuser_get',
         outputs_key_field='',
@@ -2066,12 +2023,8 @@ def get_metadata_of_one_or_multiple_sessions_command(client: Client, args: Dict[
 
 def get_notification_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     notification_id = str(args.get('notification_id', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
 
-    response = client.get_notification_request(notification_id, q, sort, offset, limit)
+    response = client.get_notification_request(notification_id)
     command_results = CommandResults(
         outputs_prefix='WAB.notification_get',
         outputs_key_field='id',
@@ -2126,13 +2079,9 @@ def get_one_account_command(client: Client, args: Dict[str, Any]) -> CommandResu
     device = str(args.get('device', ''))
     passwords = argToBoolean(args.get('passwords', False))
     key_format = str(args.get('key_format', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_one_account_request(account_id, account_type, application, device, passwords, key_format, q, sort, offset, limit, fields)
+    response = client.get_one_account_request(account_id, account_type, application, device, passwords, key_format, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.account_get',
         outputs_key_field='id',
@@ -2148,13 +2097,9 @@ def get_one_account_on_device_local_domain_command(client: Client, args: Dict[st
     domain_id = str(args.get('domain_id', ''))
     account_id = str(args.get('account_id', ''))
     key_format = str(args.get('key_format', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_one_account_on_device_local_domain_request(device_id, domain_id, account_id, key_format, q, sort, offset, limit, fields)
+    response = client.get_one_account_on_device_local_domain_request(device_id, domain_id, account_id, key_format, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.device_account_get',
         outputs_key_field='id',
@@ -2167,13 +2112,9 @@ def get_one_account_on_device_local_domain_command(client: Client, args: Dict[st
 
 def get_profile_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     profile_id = str(args.get('profile_id', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_profile_request(profile_id, q, sort, offset, limit, fields)
+    response = client.get_profile_request(profile_id, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.profile_get',
         outputs_key_field='id',
@@ -2204,13 +2145,9 @@ def get_profiles_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
 def get_scan_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     scan_id = str(args.get('scan_id', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_scan_request(scan_id, q, sort, offset, limit, fields)
+    response = client.get_scan_request(scan_id, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.scan_get',
         outputs_key_field='id',
@@ -2223,13 +2160,9 @@ def get_scan_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def get_scanjob_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     scanjob_id = str(args.get('scanjob_id', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_scanjob_request(scanjob_id, q, sort, offset, limit, fields)
+    response = client.get_scanjob_request(scanjob_id, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.scanjob_get',
         outputs_key_field='id',
@@ -2279,13 +2212,9 @@ def get_scans_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def get_service_of_device_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     device_id = str(args.get('device_id', ''))
     service_id = str(args.get('service_id', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_service_of_device_request(device_id, service_id, q, sort, offset, limit, fields)
+    response = client.get_service_of_device_request(device_id, service_id, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.service_get',
         outputs_key_field='id',
@@ -2350,13 +2279,9 @@ def get_sessionrights_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 def get_sessionrights_user_name_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     user_name = str(args.get('user_name', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_sessionrights_user_name_request(user_name, q, sort, offset, limit, fields)
+    response = client.get_sessionrights_user_name_request(user_name, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.sessionrights_get',
         outputs_key_field='',
@@ -2434,13 +2359,9 @@ def get_target_group_command(client: Client, args: Dict[str, Any]) -> CommandRes
     device = str(args.get('device', ''))
     application = str(args.get('application', ''))
     domain = str(args.get('domain', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_target_group_request(group_id, device, application, domain, q, sort, offset, limit, fields)
+    response = client.get_target_group_request(group_id, device, application, domain, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.targetgroups_get',
         outputs_key_field='id',
@@ -2475,13 +2396,9 @@ def get_target_groups_command(client: Client, args: Dict[str, Any]) -> CommandRe
 def get_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     name = str(args.get('name', ''))
     password_hash = argToBoolean(args.get('password_hash', False))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_user_request(name, password_hash, q, sort, offset, limit, fields)
+    response = client.get_user_request(name, password_hash, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.user_get',
         outputs_key_field='',
@@ -2494,13 +2411,9 @@ def get_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def get_user_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     group_id = str(args.get('group_id', ''))
-    q = str(args.get('q', ''))
-    sort = str(args.get('sort', ''))
-    offset = args.get('offset', None)
-    limit = args.get('limit', None)
     fields = str(args.get('fields', ''))
 
-    response = client.get_user_group_request(group_id, q, sort, offset, limit, fields)
+    response = client.get_user_group_request(group_id, fields)
     command_results = CommandResults(
         outputs_prefix='WAB.usergroups_get',
         outputs_key_field='id',
@@ -2688,7 +2601,7 @@ def main() -> None:
 
     try:
         requests.packages.urllib3.disable_warnings()
-
+        
         if apiv:
             apiv = validate_api_version(apiv)
             base_path += '/v' + apiv
