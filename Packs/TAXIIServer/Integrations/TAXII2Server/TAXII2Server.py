@@ -1268,10 +1268,8 @@ def create_relationships_objects(stix_iocs: list[dict[str, Any]], extensions: li
     def get_stix_object_value(stix_ioc):
         if stix_ioc['type'] == "file":
             for hash_type in ["SHA-256", "MD5", "SHA-1", "SHA-512"]:
-                if hash_type in stix_ioc["hashes"]:
-                    return stix_ioc["hashes"][hash_type]
-                else:
-                    continue
+                if hash_value := stix_ioc.get("hashes").get(hash_type):
+                    return shash_value
 
         else:
             return (stix_ioc.get('value') or stix_ioc.get('name'))
