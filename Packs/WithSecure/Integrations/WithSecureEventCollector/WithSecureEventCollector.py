@@ -21,12 +21,6 @@ PRODUCT = 'Endpoint Protection'
 
 class Client(BaseClient):
     """Client class to interact with the service API
-
-    This Client implements API calls.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
     """
     def __init__(self, base_url, verify, proxy, client_id, client_secret):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
@@ -199,7 +193,7 @@ def fetch_events_command(client: Client, first_fetch: str, limit: int) -> list:
     to start fetching the first time.
 
     Args:
-        client (Client): RunZero client to use.
+        client (Client): WithSecure client to use.
         first_fetch (str): Timestamp to start fetch from
         limit (int): Maximum numbers of events per fetch.
     Returns:

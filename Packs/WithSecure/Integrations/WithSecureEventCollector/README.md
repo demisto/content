@@ -2,7 +2,7 @@ WithSecure event collector integration for Cortex XSIAM.
 This integration was integrated and tested with version 1.0 of WithSecure API
 
 ## Authentication Process
-WithSecure Authenticates the User with Client Credentials flow, follow this [documentation](https://connect.withsecure.com/getting-started/elements#:~:text=API%20deprecation%20policy.-,Getting%20client%20credentials,-To%20use%20Elements), to obtain your own Client ID and Client Secret.
+see this [documentation](https://connect.withsecure.com/getting-started/elements#:~:text=API%20deprecation%20policy.-,Getting%20client%20credentials,-To%20use%20Elements), to create a Client ID and Client Secret.
 
 ## Configure WithSecure Event Collector on Cortex XSOAR
 
@@ -12,7 +12,7 @@ WithSecure Authenticates the User with Client Credentials flow, follow this [doc
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Your server URL |  | True |
+    | server URL |  | True |
     | Client ID | Client ID and Client Secret. | True |
     | Client Secret |  | True |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
