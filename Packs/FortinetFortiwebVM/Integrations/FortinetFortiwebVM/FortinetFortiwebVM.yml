@@ -2394,7 +2394,7 @@ script:
     - contextPath: FortiwebVM.HttpContentRoutingMember.Members.status
       description: HTTP content routing status. Supports API version 2 only.
       type: String
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.52956
   feed: false
   longRunning: false
   longRunningPort: false

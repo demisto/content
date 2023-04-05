@@ -42,6 +42,7 @@ configuration:
   name: applicationDateField
   required: true
   type: 0
+  additionalinfo: The value should be the field name
 - defaultvalue: '10'
   display: Maximum number of incidents to pull per fetch
   name: fetch_limit
@@ -418,7 +419,7 @@ script:
   - arguments: []
     description: Prints the Archer's integration cache.
     name: archer-print-cache
-  dockerimage: demisto/python3-deb:3.10.9.46022
+  dockerimage: demisto/python3-deb:3.10.10.51929
   isfetch: true
   runonce: false
   script: ''
