@@ -1,8 +1,10 @@
 {
+  "@name": "Test",
   "@admin": "edlapitest",
   "@dirtyId": "7",
   "@time": "2023/04/03 15:47:58",
-  "url": {
+  "@loc": "Dev_External_Lab",
+  "type": {
     "@admin": "edlapitest",
     "@dirtyId": "7",
     "@time": "2023/04/03 15:47:58",
@@ -10,16 +12,21 @@
       "@admin": "edlapitest",
       "@dirtyId": "7",
       "@time": "2023/04/03 15:47:58",
-      "#text": "jmathia.test.com"
-    },
-    "recurring": {
-      "@admin": "edlapitest",
-      "@dirtyId": "7",
-      "@time": "2023/04/03 15:47:58",
-      "five-minute": {
+      "url": {
         "@admin": "edlapitest",
         "@dirtyId": "7",
-        "@time": "2023/04/03 15:47:58"
+        "@time": "2023/04/03 15:47:58",
+        "#text": "jmathia.test.com"
+      },
+      "recurring": {
+        "@admin": "edlapitest",
+        "@dirtyId": "7",
+        "@time": "2023/04/03 15:47:58",
+        "five-minute": {
+          "@admin": "edlapitest",
+          "@dirtyId": "7",
+          "@time": "2023/04/03 15:47:58"
+        }
       }
     }
   }
