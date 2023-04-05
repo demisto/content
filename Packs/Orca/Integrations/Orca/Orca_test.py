@@ -768,5 +768,4 @@ def test_orca_download_malicious_file__error(requests_mock, orca_client):
         status_code=404
     )
     with pytest.raises(DemistoException):
-        file = orca_client.download_malicious_file("orca-1")
-
+        orca_client.download_malicious_file("orca-1")
