@@ -1211,6 +1211,7 @@ class Client(BaseClient):
         parser_class = {"V1": ParserV1, "V2": ParserV2}[version]
         self.parser: Parser = parser_class()
         headers = {"Content-Type": "application/json", "Authorization": api_key}
+        print(api_key)
         super().__init__(
             base_url=self.base_url, verify=verify, headers=headers, proxy=proxy
         )
@@ -1242,6 +1243,7 @@ class Client(BaseClient):
     def wrong_parameter_error_list(self) -> Union[List[str], List[int]]:
         pass
 
+    @abstractmethod
     def error_handler(self, res: Response):
         """Error handler for Fortiweb response.
 
@@ -1254,6 +1256,7 @@ class Client(BaseClient):
             DemistoException: There is a problem with one or more arguments.
             DemistoException: One or more of the specified fields are invalid. Please validate them.
         """
+        print(res.status_code)
         output = res.json()
         error_code = res.status_code
         error = self.get_error_data(output)
@@ -2162,6 +2165,25 @@ class ClientV1(Client):
             proxy=proxy,
             verify=verify,
         )
+
+    def error_handler(self, res: Response):
+        """Error handler for Fortiweb response.
+
+        Args:
+            res (Response): Error response.
+
+        Raises:
+            DemistoException: The object does not exist.
+            DemistoException: The object already exist.
+            DemistoException: There is a problem with one or more arguments.
+            DemistoException: One or more of the specified fields are invalid. Please validate them.
+        """
+        print('error_handler v1')
+        # if res.status_code == HTTPStatus.UNAUTHORIZED:
+        #     raise DemistoException(
+        #         "Authorization Error: make sure username and password are set correctly."
+        #     )
+        super().error_handler(res=res)
 
     def encode_api_key(self, username: str, password: str):
         to_encode = f"{username}:{password}:root"
@@ -3428,6 +3450,24 @@ class ClientV2(Client):
             proxy=proxy,
             verify=verify,
         )
+
+    def error_handler(self, res: Response):
+        """Error handler for Fortiweb response.
+
+        Args:
+            res (Response): Error response.
+
+        Raises:
+            DemistoException: The object does not exist.
+            DemistoException: The object already exist.
+            DemistoException: There is a problem with one or more arguments.
+            DemistoException: One or more of the specified fields are invalid. Please validate them.
+        """
+        if res.status_code == HTTPStatus.UNAUTHORIZED:
+            raise DemistoException(
+                "Authorization Error: make sure username and password are set correctly."
+            )
+        super().error_handler(res=res)
 
     def encode_api_key(self, username: str, password: str) -> str:
         """Encode username, password to Fortiweb V2 API key.
