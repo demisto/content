@@ -61,7 +61,7 @@ class OrcaClient:
         if alert_type:
             params = {"type": alert_type}
         else:
-            params = {"asset_unique_id": asset_unique_id}
+            params = {"asset_unique_id": asset_unique_id}  # type: ignore[dict-item]
 
         params["limit"] = str(limit)
 
