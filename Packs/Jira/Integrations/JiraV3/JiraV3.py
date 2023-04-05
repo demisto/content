@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 from typing import Callable
 from collections import defaultdict
 from bs4 import BeautifulSoup
+from datetime import timezone
 urllib3.disable_warnings()
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
@@ -15,6 +16,7 @@ ISSUE_INCIDENT_FIELDS = {'issue_id': 'The ID of the issue to edit',
                          'summary': 'The summary of the issue.',
                          'description': 'The description of the issue.',
                          'labels': 'A CSV list of labels.',
+                         'components': 'A CSV list of components',
                          'priority': 'A priority name, for example "High" or "Medium".',
                          'due_date': 'The due date for the issue (in the format 2018-03-11).',
                          'assignee': 'The name of the assignee. Relevant for Jira Server only',
@@ -490,6 +492,18 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
 
         Returns:
             Dict[str, Any]: The result of the API, which will hold available transitions.
+        """
+        pass
+
+    @abstractmethod
+    def get_statuses(self, issue_id_or_key: str) -> Dict[str, Any]:
+        """This method is in charge of returning the available statuses of a specific issue.
+
+        Args:
+            issue_id_or_key (str): The issue id or key.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold available statuses.
         """
         pass
 
@@ -988,6 +1002,12 @@ class JiraCloudClient(JiraBaseClient):
         )
 
     def get_transitions(self, issue_id_or_key: str) -> Dict[str, Any]:
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/transitions',
+        )
+
+    def get_statuses(self, issue_id_or_key: str) -> Dict[str, Any]:
         return self.http_request_with_access_token(
             method='GET',
             url_suffix=f'rest/api/3/issue/{issue_id_or_key}/transitions',
@@ -2181,6 +2201,8 @@ def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> Com
     outputs: Dict[str, Any] = {'Transitions': {'transitions': transitions_names, 'ticketId': issue_id_or_key}}
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
     outputs |= {'Id': issue_id_or_key} if is_id else {'Key': issue_id_or_key}
+    # The scripts script-JiraListTransition, and script-JiraListStatus use this command, therefore any change here (if necessary)
+    # must be reflected in the scripts.
     return CommandResults(
         outputs_prefix='Ticket',
         outputs=outputs,
@@ -3302,7 +3324,7 @@ def add_extracted_data_to_incident(issue: Dict[str, Any]) -> None:
     """This function extracts data from the issue response returned from the API, to add it to the given issue object,
     so it can be forwarded as part of the incident's data, since most of the data returned from the API contains a lot
     of nested objects, which require further extraction.
-    The data that is extracted: Attachments, Subtasks, Creator, Components
+    The data that is extracted: Subtasks, Creator, Components
 
     Args:
         issue (Dict[str, Any]): The issue object returned from the API.
@@ -3361,12 +3383,30 @@ def convert_string_date_to_specific_format(string_date: str, date_format: str = 
 # Still in development
 
 def get_user_timezone(client: JiraBaseClient) -> str:
+    """Returns the timezone of the Jira user.
+    This will also print to the debug console the timezone of the Jira user.
+
+    Args:
+        client (JiraBaseClient): The Jira client
+
+    Returns:
+        str: The timezone of the Jira user.
+    """
     user_info_res = client.get_user_info()
-    if timezone_name := user_info_res.get('timeZone', ''):
-        return timezone_name
-    else:
+    if not (timezone_name := user_info_res.get('timeZone', '')):
         raise DemistoException(('Could not get Jira\'s timezone, the following response was'
                                 f' returned:\n{user_info_res}, with timezone:\n{timezone_name}'))
+    demisto.debug(f'Timezone of the Jira user: {timezone_name}')
+    return timezone_name
+
+
+def get_system_timezone() -> Any:
+    """Returns the system's timezone.
+    This will also print to the debug console the system timezone.
+    """
+    system_timezone = datetime.now(timezone.utc).astimezone().tzinfo
+    demisto.debug(f'Timezone of the system: {system_timezone}')
+    return system_timezone
 
 
 def get_modified_remote_data_command(client: JiraBaseClient, args: Dict[str, Any]) -> GetModifiedRemoteDataResponse:
@@ -3388,7 +3428,6 @@ def get_modified_remote_data_command(client: JiraBaseClient, args: Dict[str, Any
     last_update_date: str = remote_args.last_update
     modified_issues_ids = []
     try:
-        # user_info_res = client.get_user_info()
         user_timezone_name = get_user_timezone(client=client)
         modified_issues_ids = get_modified_issue_ids(
             client=client, last_update_date=last_update_date, timezone_name=user_timezone_name,
@@ -3441,38 +3480,27 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
                       f'and last_update: {parsed_args.last_update}')
         # Get raw response for issue ID
         issue = client.get_issue(issue_id_or_key=issue_id)
+        demisto.debug(f'Got remote data for incident {issue_id}')
         issue['parsedDescription'] = JiraIssueFieldsParser.get_description_context(
             issue).get('Description') or ''
         add_extracted_data_to_incident(issue=issue)
         remove_empty_custom_fields(issue=issue,
                                    issue_fields_id_to_name_mapping=issue.get('names', {}) or {})
-        demisto.debug(f'Got remote data for incident {issue_id}')
         user_timezone_name = get_user_timezone(client=client)
-        # issue_modified_date: Timestamp of the last updated time of the issue in Jira
-        # incident_modified_date: Timestamp of the last updated time of the incident in XSOAR
-        #
-        # The following if statement is to make sure that we don't get None values when using dateparser.parse
-        # by using the walrus operator (:=).
-        if (issue_modified_date := dateparser.parse(demisto.get(issue, 'fields.updated'),
-                                                    settings={'TIMEZONE': user_timezone_name})) \
-                and (incident_modified_date := dateparser.parse(parsed_args.last_update,
-                                                                settings={'TIMEZONE': user_timezone_name})):
-            demisto.debug(f"Issue modified date in Jira: {issue_modified_date}")
-            demisto.debug(f"Incident modified date: {incident_modified_date}")
-            # Update incident only if issue modified in Jira is after the last update time of the incident
-            # if issue_modified_date > incident_modified_date:
-            if True:
-                demisto.debug('Updating incident from remote system')
-                updated_incident = issue
-                parsed_entries = get_updated_remote_data(
-                    client=client, issue=issue, updated_incident=updated_incident,
-                    issue_modified_date=issue_modified_date, incident_modified_date=incident_modified_date,
-                    issue_id=issue_id, mirror_resolved_issue=mirror_resolved_issue,
-                    attachment_tag_from_jira=attachment_tag_from_jira,
-                    comment_tag_from_jira=comment_tag_from_jira,
-                    user_timezone_name=user_timezone_name)
-            if parsed_entries:
-                demisto.debug(f'Update the next entries: {parsed_entries}')
+        _ = get_system_timezone()
+        demisto.debug(f'Issue modified date in Jira: {dateparser.parse(demisto.get(issue, "fields.updated"))}')
+        demisto.debug(f'Incident Last update time: {dateparser.parse(parsed_args.last_update)}')
+        demisto.debug('Updating incident from remote system')
+        incident_modified_date = dateparser.parse(parsed_args.last_update, settings={'TIMEZONE': user_timezone_name})
+        updated_incident = issue
+        parsed_entries = get_updated_remote_data(
+            client=client, issue=issue, updated_incident=updated_incident,
+            issue_id=issue_id, mirror_resolved_issue=mirror_resolved_issue,
+            attachment_tag_from_jira=attachment_tag_from_jira,
+            comment_tag_from_jira=comment_tag_from_jira,
+            user_timezone_name=user_timezone_name, incident_modified_date=incident_modified_date)
+        if parsed_entries:
+            demisto.debug(f'Update the next entries: {parsed_entries}')
         else:
             demisto.debug('The last update time of the incident, or the updated time of the corresponding Jira issue'
                           'were not in correct datetime format')
@@ -3499,10 +3527,9 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         )
 
 
-def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updated_incident: Dict[str, Any],
-                            issue_modified_date: datetime, incident_modified_date: datetime, issue_id: str,
+def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updated_incident: Dict[str, Any], issue_id: str,
                             mirror_resolved_issue: bool, attachment_tag_from_jira: str, comment_tag_from_jira: str,
-                            user_timezone_name: str) -> List[Dict[str, Any]]:
+                            user_timezone_name: str, incident_modified_date: datetime | None) -> List[Dict[str, Any]]:
     """This function is in charge of returning the parsed entries of the updated incident, while updating
     the content of updated_incident, which is in charge of holding the updated data of the incident (since arguments
     are passed by reference, we can update the object in this function, and the changes to the object will be reflected
@@ -3513,7 +3540,8 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
         issue (Dict[str, Any]): The issue object returned from the API.
         updated_incident (Dict[str, Any]): The object that will hold the updated data of the incident.
         issue_modified_date (datetime): Timestamp of the last updated time of the issue in Jira.
-        incident_modified_date (datetime): Timestamp of the last updated time of the incident in XSOAR.
+        incident_modified_date (datetime): Timestamp of the last updated time of the incident in XSOAR, with timezone equal
+        to the Jira user's timezone (using {'TIMEZONE': user_timezone_name} setting in dateparser.parse)
         issue_id (str): The issue id
         mirror_resolved_issue (bool): Whether to mirror Jira issues that have been resolved, or have the status `Done`.
         attachment_tag (str): The attachment tag, to tag the mirrored attachments.
@@ -3523,22 +3551,20 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
         List[Dict[str, Any]]:  Parsed entries of the updated incident, which will be supplied to the class GetRemoteDataResponse.
     """
     parsed_entries: List[Dict[str, Any]] = []
-    demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue.get('id')}\n\t"
-                  f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
-                  f"\n\Issue last updated time: {issue_modified_date}\n")
-    demisto.debug(f"\n Raw issue response: {issue}\n")
+    demisto.debug((f"\nUpdate incident:\n\tIncident name: Jira issue {issue.get('id')}\n\t"
+                  f"Reason: Issue modified in remote.\n"))
+    demisto.debug(f"\n\nRaw issue response: {issue}\n\n")
     if mirror_resolved_issue:
         if closed_issue := handle_incoming_resolved_issue(
             updated_incident
         ):
             demisto.debug(
-                f'Close incident with ID: {issue_id}, since corresponding issue was resolved')
-            return [closed_issue]
+                f'Closing incident with ID: {issue_id}, since corresponding issue was resolved')
+            parsed_entries.append(closed_issue)
 
     attachments_entries = get_attachments_entries_for_fetched_incident(
         client=client,
         attachments_metadata=demisto.get(issue, 'fields.attachment') or [],
-        incident_modified_date=incident_modified_date
     )
     attachments_incident_field = []
     demisto.debug(f'\nGot the following attachments entries {attachments_entries}\n')
@@ -3557,8 +3583,12 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
     for comment_entry in comments_entries:
         comment_body = comment_entry.get('Comment', '')
         if comment_updated_date := dateparser.parse(comment_entry.get('Updated', ''), settings={'TIMEZONE': user_timezone_name}):
-            # We only want to return comments that were recently added or updated as NOTE entry.
-            if COMMENT_MIRRORED_FROM_XSOAR not in comment_body and comment_updated_date > incident_modified_date:
+            if (
+                COMMENT_MIRRORED_FROM_XSOAR not in comment_body
+                and incident_modified_date
+                and comment_updated_date > incident_modified_date
+            ):
+                # We only want to add comments as a Note Entry if it is newer than the incident's modified date.
                 parsed_entries.append({
                     'Type': EntryType.NOTE,
                     'Contents': (f'{comment_body}\nJira Author: {comment_entry.get("UpdateUser")}'),
@@ -3566,6 +3596,10 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
                     'Tags': [comment_tag_from_jira],  # The list of tags to add to the entry
                     'Note': True,
                 })
+            elif not incident_modified_date:
+                demisto.debug(f'Could not parse the incident updated date, got the following date: {incident_modified_date}')
+        else:
+            demisto.debug(f'Could not parse the comment updated date, got the following date: {comment_entry.get("Updated", "")}')
     updated_incident['extractedComments'] = comments_entries
     return parsed_entries
 
@@ -3574,8 +3608,8 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     """This function creates an entry to send to XSOAR, which will indicate that the incident that corresponds
     to the issue, transitioned to status `Done`, or has been resolved and closed, by checking the resolution time.
     NOTE: Checking the status if it equals to `Done` is not enough, since not every
-    workflow has these two statuses, therefore, to make the implementation backwards compatible,
-    an extra condition was added to check if the issue was `resolved`.
+    workflow has these two statuses, therefore, to make the implementation backwards compatible, this condition
+    was left in V3, and an extra condition was added to check if the issue was `resolved`.
 
     Args:
         issue_data (Dict[str, Any]): The issue object returned from the API, which will be mirrored to XSAOR.
@@ -3592,7 +3626,6 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
         demisto.debug(f'Handling incoming resolved issue (id {issue_id}) with resolution date: {resolution_date}'
                       if resolution_date
                       else f'Handling incoming resolved issue (id {issue_id}) with status `Done`')
-        # if issue_data.get('fields').get('status').get('name') == 'Done':
         closing_entry = {
             'Type': EntryType.NOTE,
             'Contents': {
@@ -3612,8 +3645,8 @@ def get_mapping_fields_command(client: JiraBaseClient) -> GetMappingFieldsRespon
     """
     jira_incident_type_scheme = SchemeTypeMapping(type_name=JIRA_INCIDENT_TYPE_NAME)
     custom_fields = get_issue_fields_id_to_description_mapping(client=client)
-    ISSUE_INCIDENT_FIELDS.update(custom_fields)
-    for argument, description in ISSUE_INCIDENT_FIELDS.items():
+    custom_fields.update(ISSUE_INCIDENT_FIELDS)
+    for argument, description in custom_fields.items():
         jira_incident_type_scheme.add_field(name=argument, description=description)
 
     mapping_response = GetMappingFieldsResponse()

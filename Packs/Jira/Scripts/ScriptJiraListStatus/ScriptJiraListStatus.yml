@@ -1,0 +1,21 @@
+commonfields:
+  id: 0f124006-b54c-4181-84f4-d25c30f14170
+  version: -1
+name: script-JiraListStatus
+script: ''
+type: python
+tags:
+- field-display
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.10.51930
+fromversion: 5.0.0
+comment: |-
+  This script lists all possible statuses for a given issue.
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
+tests:
+- Jira-v2-Test

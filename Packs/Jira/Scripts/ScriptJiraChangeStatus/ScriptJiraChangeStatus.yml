@@ -1,0 +1,21 @@
+commonfields:
+  id: a246a37c-f746-4136-8f1d-6c69ce4da1e6
+  version: -1
+name: script-JiraChangeStatus
+script: ''
+type: python
+tags:
+- field-change-triggered
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.10.51930
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
+fromversion: 5.0.0
+comment: |-
+  This script changes the status field of an issue. It gets the new Jira status and updates the Cortex XSOAR incident status.
+tests:
+- Jira-v2-Test

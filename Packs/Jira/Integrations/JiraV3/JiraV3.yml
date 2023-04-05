@@ -576,7 +576,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of labels (using this argument will overwrite the old ones).
+      description: A CSV list of labels.
       isArray: false
       name: labels
       required: false
@@ -632,7 +632,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The component names of the issue. For example components="component1,component2".
+      description: A CSV list of components. For example components="component1,component2". The entered components must be
+        already exist if the action is append.
       isArray: true
       name: components
       required: false
