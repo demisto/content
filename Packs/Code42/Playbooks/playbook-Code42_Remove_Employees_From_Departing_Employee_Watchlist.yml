@@ -1,6 +1,5 @@
 id: Remove Employees from Departing Employee Watchlist
 version: -1
-fromversion: "6.8.0"
 name: Remove Employees from Departing Employee Watchlist
 description: Loops through Departing Employee watchlist entries from Code42 Incydr and removes employees based on specified criteria.
 tags:
@@ -9,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a29bae15-8875-4d2e-877f-12dda3a024cc
+    taskid: 1bc56656-3cfd-448a-8a6f-5c138f4e09ae
     type: start
     task:
-      id: a29bae15-8875-4d2e-877f-12dda3a024cc
+      id: 1bc56656-3cfd-448a-8a6f-5c138f4e09ae
       version: -1
       name: ""
       description: ""
@@ -39,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c57281eb-0cb3-4c06-8bce-aa5592261256
+    taskid: 507fad4f-f750-4fec-8c96-acf7b38ba7c5
     type: condition
     task:
-      id: c57281eb-0cb3-4c06-8bce-aa5592261256
+      id: 507fad4f-f750-4fec-8c96-acf7b38ba7c5
       version: -1
       name: Is Departure Date More Than 30 Days Ago?
       description: ""
@@ -104,10 +103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 911e6c91-a02d-40a3-8dfd-de874cb02632
+    taskid: 31697334-8819-49df-8969-988696cdc340
     type: regular
     task:
-      id: 911e6c91-a02d-40a3-8dfd-de874cb02632
+      id: 31697334-8819-49df-8969-988696cdc340
       version: -1
       name: Remove User from Departing Employee Watchlist
       description: Removes a user from the Departing Employee List.
@@ -140,44 +139,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: 5a0a4bd5-c60d-4df1-890f-4431a825e1fe
-    type: title
-    task:
-      id: 5a0a4bd5-c60d-4df1-890f-4431a825e1fe
-      version: -1
-      name: Playbook Complete
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 230,
-          "y": 1170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 5065d779-a522-4ad3-89fd-a1ef556f1d66
+    taskid: bb0b1067-6bee-4a47-8f87-5dcdca0b61e4
     type: regular
     task:
-      id: 5065d779-a522-4ad3-89fd-a1ef556f1d66
+      id: bb0b1067-6bee-4a47-8f87-5dcdca0b61e4
       version: -1
       name: Check for Post-Departure File Events in Incydr
-      description: Searches for file events by JSON query, hash, username, device hostname, exfiltration type, or a combination of parameters. At least one argument must be passed in the command. If a JSON argument is passed, it will be used to the exclusion of other parameters, otherwise parameters will be combined with an AND clause.
-      script: Code42|||code42-securitydata-search
+      description: Search for Code42 Incydr File Events
+      script: Code42|||code42-file-events-search
       type: regular
       iscommand: true
       brand: Code42
@@ -185,6 +156,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      add-to-context:
+        simple: "true"
       json:
         simple: |-
           {
@@ -236,10 +209,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 1bbdd024-bffb-4b92-83c9-e4fbdbe848dc
+    taskid: 0ea0fa9e-6f4b-47a9-82e7-5e3083696493
     type: condition
     task:
-      id: 1bbdd024-bffb-4b92-83c9-e4fbdbe848dc
+      id: 0ea0fa9e-6f4b-47a9-82e7-5e3083696493
       version: -1
       name: Are There Post-Departure File Events?
       description: ""
@@ -263,7 +236,7 @@ tasks:
       - - operator: isEmpty
           left:
             value:
-              simple: Code42.SecurityData.Results
+              simple: Code42.FileEvents
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -282,10 +255,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 1a1e5a55-e17c-4f24-8387-7737b20447eb
+    taskid: 5a97c22e-ffb7-4839-8296-6360f81e4092
     type: regular
     task:
-      id: 1a1e5a55-e17c-4f24-8387-7737b20447eb
+      id: 5a97c22e-ffb7-4839-8296-6360f81e4092
       version: -1
       name: Set "Error Removing" Log Message
       description: Set a value in context under the key you entered.
@@ -295,7 +268,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "18"
     scriptarguments:
       append:
         simple: "true"
@@ -321,10 +294,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 151f708b-609a-4a1d-8439-cfad34d7d8fe
+    taskid: eca20a6a-f971-4cd3-8d15-8b0d23eedb0b
     type: regular
     task:
-      id: 151f708b-609a-4a1d-8439-cfad34d7d8fe
+      id: eca20a6a-f971-4cd3-8d15-8b0d23eedb0b
       version: -1
       name: Set "Removed from Watchlist" Log Message
       description: Set a value in context under the key you entered.
@@ -334,7 +307,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "18"
     scriptarguments:
       append:
         simple: "true"
@@ -360,10 +333,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: f6fa2f1a-34f5-41ec-8e51-e8de361aef6c
+    taskid: 13ab8d8c-4aef-449a-81d5-a801a7452709
     type: regular
     task:
-      id: f6fa2f1a-34f5-41ec-8e51-e8de361aef6c
+      id: 13ab8d8c-4aef-449a-81d5-a801a7452709
       version: -1
       name: Set "No Action Taken" Log Message
       description: Set a value in context under the key you entered.
@@ -373,7 +346,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "18"
     scriptarguments:
       append:
         simple: "true"
@@ -399,10 +372,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: fccaf487-6323-48e3-8da7-03645a020198
+    taskid: 0c7f850e-676b-4b9e-83bd-d9bf400c0ccb
     type: regular
     task:
-      id: fccaf487-6323-48e3-8da7-03645a020198
+      id: 0c7f850e-676b-4b9e-83bd-d9bf400c0ccb
       version: -1
       name: Set "Post-Departure Activity" Log Message
       description: Set a value in context under the key you entered.
@@ -412,7 +385,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "18"
     scriptarguments:
       append:
         simple: "true"
@@ -438,10 +411,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 7029c695-de1a-4573-85c1-ed8aa2a30b11
+    taskid: 30579462-f482-42b0-867d-3f62ee22a65d
     type: regular
     task:
-      id: 7029c695-de1a-4573-85c1-ed8aa2a30b11
+      id: 30579462-f482-42b0-867d-3f62ee22a65d
       version: -1
       name: Update Incydr User Profile
       description: Update a user's risk profile.
@@ -494,6 +467,74 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: a0734bc3-5794-4073-82a5-4f4d4470e816
+    type: regular
+    task:
+      id: a0734bc3-5794-4073-82a5-4f4d4470e816
+      version: -1
+      name: Delete Code42 Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: Code42
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: ad5e7ca8-8e43-40d3-8c37-96551ff8921e
+    type: title
+    task:
+      id: ad5e7ca8-8e43-40d3-8c37-96551ff8921e
+      version: -1
+      name: Playbook Complete
+      description: commands.local.cmd.set.incident
+      type: title
+      iscommand: false
+      brand: Builtin
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -501,7 +542,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1235,
+        "height": 1415,
         "width": 1540,
         "x": 230,
         "y": 0
@@ -525,5 +566,6 @@ inputs:
   description: The unique identifier of a user provided by Code42 Incydr (optional).
   playbookInputQuery:
 outputs: []
+fromversion: 6.8.0
 tests:
-- No tests (auto formatted)
+- Code42 File Search Test
