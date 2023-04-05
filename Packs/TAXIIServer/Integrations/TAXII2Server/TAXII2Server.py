@@ -1266,7 +1266,7 @@ def create_relationships_objects(stix_iocs: list[dict[str, Any]], extensions: li
     :return: A list of dictionaries representing the relationships objects, including entityBs objects
     """
     def get_stix_object_value(stix_ioc):
-        if stix_ioc['type'] == "file":
+        if stix_ioc.get('type') == "file":
             for hash_type in ["SHA-256", "MD5", "SHA-1", "SHA-512"]:
                 if hash_value := stix_ioc.get("hashes").get(hash_type):
                     return shash_value
