@@ -593,23 +593,30 @@ def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
     assert 'pattern_type' in output.keys()
 
 
-def test_build_sco_object(mocker):
+xsoar_indicators = util_load_json('test_data/xsoar_sco_indicators.json').get('iocs', {})
+sco_indicators = util_load_json('test_data/stix_sco_indicators.json').get('objects', {})
+
+
+@pytest.mark.parametrize('indicator, sco_indicator', [
+    (xsoar_indicators[0], sco_indicators[0]),
+    (xsoar_indicators[1], sco_indicators[1]),
+    (xsoar_indicators[2], sco_indicators[2])
+])
+def test_build_sco_object(indicator, sco_indicator):
     """
         Given
-            xsoar indicator and STIX SCO object type
-
+            Case 1: xsoar File indicator with hashes.
+            Case 2: xsoar Registry key indicator with key and value data
+            Case 3: xsoar ASN indicator with "name" as a unique field and the as number as the value
         When
             Running build_sco_object
-
         Then
-            Validate the result
+            Case 1: validate that the resulted object has the "hashes" key with all relevant hashes
+            Case 2: validate that the resulted object has all key-values data of the registry key
+            Case 3: validate that the ASN has a "number" key as well as a "name" key.
     """
-    xsoar_indicators = util_load_json('test_data/xsoar_sco_indicators.json').get('iocs', {})
-    sco_indicators = util_load_json('test_data/stix_sco_indicators.json').get('objects', {})
-
-    for index, indicator in enumerate(xsoar_indicators):
-        output = build_sco_object(indicator["stix_type"], indicator["xsoar_indicator"])
-        assert output == sco_indicators[index]
+    output = build_sco_object(indicator["stix_type"], indicator["xsoar_indicator"])
+    assert output == sco_indicator
 
 
 def test_taxii21_objects_with_relationships(mocker, taxii2_server_v21):

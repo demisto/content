@@ -841,6 +841,7 @@ def build_sco_object(stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any
 
     if stix_object['type'] == 'asn':
         stix_object['number'] = xsoar_indicator.get('value', '')
+        stix_object['name'] = custom_fields.get('name', '')
 
     elif stix_object['type'] == 'file':
         value = xsoar_indicator.get('value')
