@@ -76,7 +76,8 @@ class Client(BaseClient):
     def get_events_api_call(self, fetch_from: str, limit: int, next_anchor: str = None):
         params = {
             "serverTimestampStart": fetch_from,
-            "limit": limit
+            "limit": limit,
+            "order": "asc"
         }
         if next_anchor:
             params['anchor'] = next_anchor
@@ -144,6 +145,16 @@ def get_events(client: Client, fetch_from: str, limit: int) -> list:
     return events
 
 
+def fetch_events(client: Client, fetch_from: str, limit: int, next_anchor):
+    events: list = []
+    req_limit = min(limit, MAX_FETCH_LIMIT)
+    res = client.get_events_api_call(fetch_from, req_limit, next_anchor if next_anchor else None)
+    events.extend(res.get('items'))
+    next_anchor = res.get('nextAnchor')
+
+    return events, next_anchor
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -201,10 +212,11 @@ def fetch_events_command(client: Client, first_fetch: str, limit: int) -> list:
     """
     last_run = demisto.getLastRun()
     fetch_from = last_run.get('fetch_from') or first_fetch
-    events = get_events(client, fetch_from, limit)
+    next_anchor = last_run.get('next_anchor')
+    events, next_anchor = fetch_events(client, fetch_from, limit, next_anchor)
 
     last_fetch, parsed_events = parse_events(events[:limit], fetch_from)
-    demisto.setLastRun({'fetch_from': last_fetch})
+    demisto.setLastRun({'fetch_from': last_fetch, 'next_anchor': next_anchor})
 
     return parsed_events
 
