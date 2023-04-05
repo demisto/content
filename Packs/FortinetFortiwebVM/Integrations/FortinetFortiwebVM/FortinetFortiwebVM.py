@@ -2222,7 +2222,6 @@ class ClientV1(Client):
         Returns:
             Union[int,str]: Error value.
         """
-        print('xxx')
         return error["msg"]
 
     def validate_update_ip_list_group(self, args: dict[str, Any]):
