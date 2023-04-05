@@ -1261,9 +1261,15 @@ class Client(BaseClient):
             )
         if res.status_code == HTTPStatus.NOT_FOUND:
             raise DemistoException(
-                "Make sure server URL is set correctly."
+                "Connection Error: Make sure server URL is set correctly."
             )
-        output = res.json()
+        output: str = None
+        try:
+            output = res.json()
+        except requests.exceptions.JSONDecodeError:
+            raise DemistoException(
+                res,
+                res=res)
         error = self.get_error_data(output)
         if error_code == HTTPStatus.INTERNAL_SERVER_ERROR:
             # update & delete
@@ -2216,6 +2222,7 @@ class ClientV1(Client):
         Returns:
             Union[int,str]: Error value.
         """
+        print('xxx')
         return error["msg"]
 
     def validate_update_ip_list_group(self, args: dict[str, Any]):
