@@ -6483,3 +6483,20 @@ def test_build_xpath_filter(name_match, name_contain, filters, expected_result):
     from Panorama import build_xpath_filter
     mock_result = build_xpath_filter(name_match, name_contain, filters)
     assert mock_result == expected_result
+
+@pytest.mark.parametrize('sample_file, expected_result_file',
+                         [
+                             ('test_data/prettify_edls_arr_sample.json',
+                              'test_data/prettify_edls_arr_expected_result.json'),
+                         ])
+def test_prettify_edls_arr(sample_file, expected_result_file):
+    from Panorama import prettify_edls_arr
+
+    with open(sample_file, 'r') as f:
+        sample = json.loads(f.read())
+
+    with open(expected_result_file, 'r') as f:
+        expected_result = json.loads(f.read())
+
+    mock_result = prettify_edls_arr(sample)
+    assert mock_result == expected_result

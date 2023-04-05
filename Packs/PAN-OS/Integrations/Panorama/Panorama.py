@@ -4245,12 +4245,15 @@ def panorama_list_applications_command(args:Dict[str, str]):
 
 
 def prettify_edls_arr(edls_arr: Union[list, dict]):
+
+    if isinstance(edls_arr, dict):  # handle case of only one edl in the instance
+        return prettify_edl(parse_pan_os_un_committed_data(edls_arr, ['@admin', '@dirtyId', '@time']))
+
     for edl in edls_arr:
         parse_pan_os_un_committed_data(edl, ['@admin', '@dirtyId', '@time'])
 
     pretty_edls_arr = []
-    if not isinstance(edls_arr, list):  # handle case of only one edl in the instance
-        return prettify_edl(edls_arr)
+
     for edl in edls_arr:
         pretty_edl = {
             'Name': edl['@name'],
