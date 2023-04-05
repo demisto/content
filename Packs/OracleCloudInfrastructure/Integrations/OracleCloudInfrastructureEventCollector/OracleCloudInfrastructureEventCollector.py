@@ -23,13 +23,12 @@ class Client(BaseClient):
     """
     def __init__(self, verify_certificate: bool, proxy: bool, user_ocid: str, private_key: str, key_fingerprint: str,
                  tenancy_ocid: str, region: str):
-        self.singer = self.build_singer_object(user_ocid, private_key, key_fingerprint, tenancy_ocid, region)
+        self.singer = self.build_singer_object(user_ocid, private_key, key_fingerprint, tenancy_ocid)
         self.base_url = self.build_audit_base_url(region)
         self.compartment_id = tenancy_ocid
         super().__init__(proxy=proxy, verify=verify_certificate, auth=self.singer, base_url=self.base_url)
 
-    def build_singer_object(self, user_ocid: str, private_key: str, key_fingerprint: str, tenancy_ocid: str,
-                            region: str) -> dict[str, str]:
+    def build_singer_object(self, user_ocid: str, private_key: str, key_fingerprint: str, tenancy_ocid: str) -> dict[str, str]:
         """Build a singer object.
         The Signer used as part of making raw requests.
 
@@ -76,8 +75,8 @@ class Client(BaseClient):
             str: Base URL for the client.
         """
         if not is_region(region):
-            raise DemistoException('Could not create a valid OCI configuration dictionary fou to invalid region parameter. \
-                Please check your OCI related instance configuration parameters.')
+            raise DemistoException('Could not create a valid OCI configuration dictionary due to invalid region parameter. \
+                Please check your OCI-related instance configuration parameters.')
 
         return f'https://audit.{region}.oraclecloud.com/{PORT}/auditEvents'
 
@@ -98,7 +97,7 @@ class Client(BaseClient):
         Output: -----BEGIN PRIVATE KEY-----\nTHIS-IS-A\nPRIVATE-KEY\n-----END PRIVATE KEY-----
 
         Args:
-            private_key (str): Private Key parameter.
+            private_key_parameter (str): Private Key parameter.
 
         Returns:
             str: Private Key parameter unescaped and spaceless.
@@ -151,22 +150,19 @@ def get_last_event_time(events: list, first_fetch_time: datetime) -> str:
         - If the events list is not empty, return the time of the lateset event + 1 milliseconds.
         - If the events list is empty, return the current first fetch time.
     """
-    # if no events were fetched, return the current first fetch time.
     if not events:
         return first_fetch_time.strftime(DATE_FORMAT)
 
-    # get the event time of last event in the list (will always be the most recent event)
     last_event_time = events[-1].get('eventTime')
     if not isinstance(last_event_time, datetime):
         last_event_time = arg_to_datetime(arg=last_event_time, settings={'RETURN_AS_TIMEZONE_AWARE': False})
 
-    # return the last event time + 1 milliseconds, or the current first fetch time if the last event time is None.
     return (last_event_time + timedelta(milliseconds=1)).strftime(DATE_FORMAT) if last_event_time \
         else first_fetch_time.strftime(DATE_FORMAT)
 
 
-def get_first_fetch_time(last_run: str | None, first_fetch_param: str) -> Optional[datetime]:
-    """Calculates the first fetch time.
+def get_fetch_time(last_run: str | None, first_fetch_param: str) -> Optional[datetime]:
+    """Calculates the time in which the current fetch should start from.
 
     Args:
         last_run (Optional[str]): Last run time from previous fetch.
@@ -206,11 +202,11 @@ def events_to_command_results(events: list[dict[str, Any]]) -> CommandResults:
 
 
 def audit_log_api_request(client: Client, start_time: str, next_page: str | None = None) -> requests.Response:
-    """Makes HTTP GET request to
+    """Makes HTTP GET request to an OCI API endpoint.
 
     Args:
         client (Client): client object.
-        start_time (str): start time querey parameter.
+        start_time (str): start time query parameter.
         next_page (str | None, optional): next page query parameter for pagination. Defaults to None.
 
     Returns:
@@ -337,7 +333,7 @@ def main():
     demisto.info(f'OCI: last_run_time value {last_run_time}')
     max_fetch = arg_to_number(params.get('max_fetch')) or MAX_EVENTS_TO_FETCH
     first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME)
-    first_fetch_time = get_first_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
+    first_fetch_time = get_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
     demisto.info(f'OCI: Command being called is {command}')
 
     try:
@@ -363,7 +359,7 @@ def main():
 
             if command == 'fetch-events' or args.get('should_push_events'):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                demisto.info(f'OCI: {len(events)} events were sent to XSOAR at {datetime.now()}.')
+                demisto.info(f'OCI: {len(events)} events were sent to XSIAM at {datetime.now()}.')
                 if events:
                     demisto.setLastRun({"lastRun": last_event_time})
                     demisto.info(f'OCI: Set last run to {last_event_time}')
