@@ -1263,7 +1263,6 @@ class Client(BaseClient):
             raise DemistoException(
                 "Connection Error: Make sure server URL is set correctly."
             )
-        output: dict[str, Any] = None
         if res.headers.get("Content-Type") != "application/json":
             raise DemistoException(
                 res,
