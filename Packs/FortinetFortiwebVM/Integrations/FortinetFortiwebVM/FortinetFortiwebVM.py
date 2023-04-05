@@ -1263,13 +1263,12 @@ class Client(BaseClient):
             raise DemistoException(
                 "Connection Error: Make sure server URL is set correctly."
             )
-        output: str = None
-        try:
-            output = res.json()
-        except requests.exceptions.JSONDecodeError:
+        output: dict[str, Any] = None
+        if res.headers.get("Content-Type") != "application/json":
             raise DemistoException(
                 res,
                 res=res)
+        output = res.json()
         error = self.get_error_data(output)
         if error_code == HTTPStatus.INTERNAL_SERVER_ERROR:
             # update & delete
@@ -2176,7 +2175,6 @@ class ClientV1(Client):
             proxy=proxy,
             verify=verify,
         )
-
 
     def encode_api_key(self, username: str, password: str):
         to_encode = f"{username}:{password}:root"
