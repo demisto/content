@@ -5,7 +5,7 @@ from CommonServerPython import *
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
-        
+
     def _http_request(self, *args, **kwargs):
         resp = super()._http_request(*args, return_empty_response=True, **kwargs)
         try:
