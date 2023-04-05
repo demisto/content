@@ -176,6 +176,8 @@ def main():  # pragma: no cover
     aws_gd_severity = params.get('gd_severity', '')
     first_fetch = arg_to_datetime(params.get('first_fetch'))
     limit = arg_to_number(params.get('limit'))
+    sts_endpoint_url = params.get('sts_endpoint_url') or None
+    endpoint_url = params.get('endpoint_url') or None
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
@@ -184,7 +186,7 @@ def main():  # pragma: no cover
         # proxy is being handled in AWSClient.
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
-                               timeout, retries)
+                               timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
 
         client = aws_client.aws_session(service=CLIENT_SERVICE, region=aws_default_region)
 
