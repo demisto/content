@@ -1,4 +1,5 @@
 import pytest
+from CortexAttackSurfaceManagement import NotFoundError, ProcessingError
 from test_data.raw_response import (
     EXTERNAL_EXPOSURES_RESPONSE,
     EXTERNAL_EXPOSURE_RESPONSE,
@@ -9,6 +10,7 @@ from test_data.raw_response import (
     GENERAL_500_WAITRESS_ERROR,
     INTERNET_EXPOSURE_PRE_FORMAT,
     RCS_FAILURE_RESPONSE_100,
+    RCS_FAILURE_RESPONSE_400,
     RCS_SUCCESSFUL_RESPONSE_200,
     RCS_SUCCESSFUL_RESPONSE_201,
     REMEDIATION_RULES_RESPONSE,
@@ -26,6 +28,7 @@ from test_data.expected_results import (
     REMEDIATION_RULES_RESULTS,
 )
 
+
 """Fixtures for the test cases"""
 
 
@@ -33,11 +36,20 @@ from test_data.expected_results import (
 def client():
     from CortexAttackSurfaceManagement import Client
 
-    client = Client(base_url="https://test.com/api/webapp/public_api/v1", verify=True, headers={"HOST": "test.com", "Authorizatio": "THISISAFAKEKEY", "Content-Type": "application/json"}, proxy=False)
+    client = Client(base_url="https://test.com/api/webapp/public_api/v1",
+                    verify=True,
+                    headers={
+                        "HOST": "test.com",
+                        "Authorization": "THISISAFAKEKEY",
+                        "Content-Type": "application/json"
+                    },
+                    proxy=False)
+
     return client
 
 
 """Test cases"""
+
 
 def test_format_asm_id_func():
     """Tests format_asm_id helper function.
@@ -247,3 +259,46 @@ def test_start_remediation_confirmation_scan_successful_codes(client, alert_inte
     assert response.outputs == expected_results
     assert response.outputs_prefix == "ASM.RemediationScan"
     assert response.outputs_key_field == ""
+
+
+@pytest.mark.parametrize(
+    "alert_internal_id, service_id, attack_surface_rule_id, raw_results, exception_type",
+    [(123, "12345abc-123a-1234-a123-efgh12345678", "RdpServer", RCS_FAILURE_RESPONSE_100, ProcessingError),
+     (None, None, None, RCS_FAILURE_RESPONSE_400, ProcessingError)])
+def test_start_remediation_confirmation_failure_codes(client, alert_internal_id, service_id, attack_surface_rule_id, raw_results, exception_type, requests_mock):
+    '''
+    Given:
+        - Mock request for /assets/get_external_services/ that returns a 500 error and application/json content type.
+    When:
+        - Running the 'start_remediation_confirmation_scan'.
+    Then:
+        - Checks that a ProcessingError exception is raised and that the correct error message is returned.
+    '''
+    requests_mock.post('https://test.com/api/webapp/public_api/v1/remediation_confirmation_scanning/requests/get_or_create/',
+                       json=raw_results, status_code=500, headers={"Content-Type": "application/json"})
+
+    with pytest.raises(exception_type) as err:
+        client.start_remediation_confirmation_scan(alert_internal_id=alert_internal_id, service_id=service_id, attack_surface_rule_id=attack_surface_rule_id)
+
+    assert type(err.value) is exception_type
+    assert str(err.value) == f"Got error message '{raw_results.get('reply').get('err_msg', {})}'. Please check you that your inputs are correct."
+
+
+def test_general_500_error(client, requests_mock):
+    '''
+    Uses any one endpoint that returns a 500 error for when a response for waitress error is received.
+
+    Given:
+        - Mock request for /assets/get_external_services/ that returns a 500 error and text/plain content type.
+    When:
+        - Running the 'start_remediation_confirmation_scan'.
+    Then:
+        - Checks that a NotFoundError exception is raised
+    '''
+    uri_for_post = "https://test.com/api/webapp/public_api/v1/assets/get_external_services/"
+
+    with pytest.raises(NotFoundError) as err:
+        requests_mock.post(uri_for_post, text=GENERAL_500_WAITRESS_ERROR, status_code=500, headers={"Content-Type": "text/plain"})
+        client.list_external_service_request(search_params=["test"])
+
+    assert type(err.value) is NotFoundError

@@ -861,9 +861,19 @@ REMEDIATION_RULES_RESPONSE = {
 }
 
 RCS_FAILURE_RESPONSE_100 = {
-    "err_code": 100,
-    "err_msg": "An error occurred while processing API call",
-    "err_extra": "Error running API"
+    "reply": {
+        "err_code": 100,
+        "err_msg": "An error occurred while processing API call",
+        "err_extra": "Error running API"
+    }
+}
+
+RCS_FAILURE_RESPONSE_400 = {
+    "reply": {
+        "err_code": 400,
+        "err_msg": "Bad Request. Got an invalid JSON.",
+        "err_extra": "Expecting value: line 6 column 5 (char 158)"
+    }
 }
 
 GENERAL_500_WAITRESS_ERROR = '''
