@@ -817,12 +817,32 @@ REMEDIATION_RULES_RESULTS = [
     }
 ]
 
-RCS_SUCCESSFUL_RESULTS_201 = {
+RCS_START_SCAN_SUCCESSFUL_RESULTS_201 = {
     "scanId": "12345abc-123a-1234-a123-efgh12345678",
     "scan_creation_status": "created"
 }
 
-RCS_SUCCESSFUL_RESULTS_200 = {
+RCS_START_SCAN_SUCCESSFUL_RESULTS_200 = {
     "scanId": "12345abc-123a-1234-a123-efgh12345678",
     "scan_creation_status": "existing"
+}
+
+RCS_GET_SCAN_STATUS_SUCCESS_RESULTS_200 = {
+    "status": "SUCCESS",
+    "result": "REMEDIATED"
+}
+
+RCS_GET_SCAN_STATUS_IN_PROGRESS_RESULTS_200 = {
+    "status": "IN_PROGRESS",
+    "result": "UNREMEDIATED"
+}
+
+RCS_GET_SCAN_STATUS_FAILED_ERROR_RESULTS_200 = {
+    "status": "FAILED_ERROR",
+    "result": "UNREMEDIATED"
+}
+
+RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESULTS_200 = {
+    "status": "FAILED_TIMEOUT",
+    "result": "UNREMEDIATED"
 }

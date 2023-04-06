@@ -9,11 +9,16 @@ from test_data.raw_response import (
     EXTERNAL_SERVICE_RESPONSE,
     GENERAL_500_WAITRESS_ERROR,
     INTERNET_EXPOSURE_PRE_FORMAT,
-    RCS_FAILURE_RESPONSE_100,
-    RCS_FAILURE_RESPONSE_400,
-    RCS_SUCCESSFUL_RESPONSE_200,
-    RCS_SUCCESSFUL_RESPONSE_201,
+    RCS_START_SCAN_FAILURE_RESPONSE_100,
+    RCS_START_SCAN_FAILURE_RESPONSE_400,
+    RCS_START_SCAN_SUCCESSFUL_RESPONSE_200,
+    RCS_START_SCAN_SUCCESSFUL_RESPONSE_201,
     REMEDIATION_RULES_RESPONSE,
+    RCS_GET_SCAN_STATUS_SUCCESS_RESPONSE_200,
+    RCS_GET_SCAN_STATUS_IN_PROGRESS_RESPONSE_200,
+    RCS_GET_SCAN_STATUS_FAILED_ERROR_RESPONSE_200,
+    RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESPONSE_200,
+    RCS_GET_SCAN_STATUS_FAILURE_RESPONSE_500
 )
 from test_data.expected_results import (
     EXTERNAL_EXPOSURES_RESULTS,
@@ -23,9 +28,13 @@ from test_data.expected_results import (
     EXTERNAL_SERVICES_RESULTS,
     EXTERNAL_SERVICE_RESULTS,
     INTERNET_EXPOSURE_POST_FORMAT,
-    RCS_SUCCESSFUL_RESULTS_200,
-    RCS_SUCCESSFUL_RESULTS_201,
+    RCS_START_SCAN_SUCCESSFUL_RESULTS_200,
+    RCS_START_SCAN_SUCCESSFUL_RESULTS_201,
     REMEDIATION_RULES_RESULTS,
+    RCS_GET_SCAN_STATUS_SUCCESS_RESULTS_200,
+    RCS_GET_SCAN_STATUS_IN_PROGRESS_RESULTS_200,
+    RCS_GET_SCAN_STATUS_FAILED_ERROR_RESULTS_200,
+    RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESULTS_200
 )
 
 
@@ -66,6 +75,26 @@ def test_format_asm_id_func():
     response = format_asm_id(INTERNET_EXPOSURE_PRE_FORMAT)
 
     assert response == INTERNET_EXPOSURE_POST_FORMAT
+
+
+def test_general_500_error(client, requests_mock):
+    '''
+    Uses any one endpoint that returns a 500 error for when a response for waitress error is received.
+
+    Given:
+        - Mock request for /assets/get_external_services/ that returns a 500 error and text/plain content type.
+    When:
+        - Running the 'start_remediation_confirmation_scan'.
+    Then:
+        - Checks that a NotFoundError exception is raised
+    '''
+    uri_for_post = "https://test.com/api/webapp/public_api/v1/assets/get_external_services/"
+
+    with pytest.raises(NotFoundError) as err:
+        requests_mock.post(uri_for_post, text=GENERAL_500_WAITRESS_ERROR, status_code=500, headers={"Content-Type": "text/plain"})
+        client.list_external_service_request(search_params=["test"])
+
+    assert type(err.value) is NotFoundError
 
 
 def test_list_external_service_command(client, requests_mock):
@@ -241,12 +270,20 @@ def test_list_remediation_rule_command(client, requests_mock):
 @pytest.mark.parametrize(
     "alert_internal_id, service_id, attack_surface_rule_id, expected_results, raw_response, status_code",
     [
-        (123, "12345abc-123a-1234-a123-efgh12345678", "RdpServer", RCS_SUCCESSFUL_RESULTS_201, RCS_SUCCESSFUL_RESPONSE_201, 201),
-        (123, "12345abc-123a-1234-a123-efgh12345678", "RdpServer", RCS_SUCCESSFUL_RESULTS_200, RCS_SUCCESSFUL_RESPONSE_200, 200),
+        (123, "12345abc-123a-1234-a123-efgh12345678", "RdpServer", RCS_START_SCAN_SUCCESSFUL_RESULTS_201, RCS_START_SCAN_SUCCESSFUL_RESPONSE_201, 201),
+        (123, "12345abc-123a-1234-a123-efgh12345678", "RdpServer", RCS_START_SCAN_SUCCESSFUL_RESULTS_200, RCS_START_SCAN_SUCCESSFUL_RESPONSE_200, 200),
     ],
 )
 def test_start_remediation_confirmation_scan_successful_codes(client, alert_internal_id, service_id, attack_surface_rule_id,
                                                               expected_results, raw_response, status_code, requests_mock):
+    '''
+    Given:
+        - Mock request for /remediation_confirmation_scanning/requests/get_or_create/ that returns a 200.
+    When:
+        - Running the 'start_remediation_confirmation_scan_command'.
+    Then:
+        - Checks that the expected outputs, outputs_prefix, and outputs_key_field is returned.
+    '''
     from CortexAttackSurfaceManagement import start_remediation_confirmation_scan_command
 
     requests_mock.post("https://test.com/api/webapp/public_api/v1/remediation_confirmation_scanning/requests/get_or_create/",
@@ -263,12 +300,12 @@ def test_start_remediation_confirmation_scan_successful_codes(client, alert_inte
 
 @pytest.mark.parametrize(
     "alert_internal_id, service_id, attack_surface_rule_id, raw_results, exception_type",
-    [(123, "12345abc-123a-1234-a123-efgh12345678", "RdpServer", RCS_FAILURE_RESPONSE_100, ProcessingError),
-     (None, None, None, RCS_FAILURE_RESPONSE_400, ProcessingError)])
+    [(123, "12345abc-123a-1234-a123-efgh12345678", "RdpServer", RCS_START_SCAN_FAILURE_RESPONSE_100, ProcessingError),
+     (None, None, None, RCS_START_SCAN_FAILURE_RESPONSE_400, ProcessingError)])
 def test_start_remediation_confirmation_failure_codes(client, alert_internal_id, service_id, attack_surface_rule_id, raw_results, exception_type, requests_mock):
     '''
     Given:
-        - Mock request for /assets/get_external_services/ that returns a 500 error and application/json content type.
+        - Mock request for /remediation_confirmation_scanning/requests/get_or_create/ that returns a 500 error and application/json content type.
     When:
         - Running the 'start_remediation_confirmation_scan'.
     Then:
@@ -284,21 +321,55 @@ def test_start_remediation_confirmation_failure_codes(client, alert_internal_id,
     assert str(err.value) == f"Got error message '{raw_results.get('reply').get('err_msg', {})}'. Please check you that your inputs are correct."
 
 
-def test_general_500_error(client, requests_mock):
+@pytest.mark.parametrize(
+    "scan_id, expected_results, raw_response",
+    [
+        ("12345abc-123a-1234-a123-efgh12345678", RCS_GET_SCAN_STATUS_SUCCESS_RESULTS_200, RCS_GET_SCAN_STATUS_SUCCESS_RESPONSE_200),
+        ("12345abc-123a-1234-a123-efgh12345678", RCS_GET_SCAN_STATUS_IN_PROGRESS_RESULTS_200, RCS_GET_SCAN_STATUS_IN_PROGRESS_RESPONSE_200),
+        ("12345abc-123a-1234-a123-efgh12345678", RCS_GET_SCAN_STATUS_FAILED_ERROR_RESULTS_200, RCS_GET_SCAN_STATUS_FAILED_ERROR_RESPONSE_200),
+        ("12345abc-123a-1234-a123-efgh12345678", RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESULTS_200, RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESPONSE_200)
+    ],
+)
+def test_get_remediation_confirmation_scan_status_successful_codes(client, scan_id, expected_results, raw_response, requests_mock):
     '''
-    Uses any one endpoint that returns a 500 error for when a response for waitress error is received.
-
     Given:
-        - Mock request for /assets/get_external_services/ that returns a 500 error and text/plain content type.
+        - Mock request for /remediation_confirmation_scanning/requests/get/ that returns a 200.
+    When:
+        - Running the 'get_remediation_confirmation_scan_status_command'.
+    Then:
+        - Checks that the expected outputs, outputs_prefix, and outputs_key_field is returned.
+    '''
+    from CortexAttackSurfaceManagement import get_remediation_confirmation_scan_status_command
+
+    requests_mock.post("https://test.com/api/webapp/public_api/v1/remediation_confirmation_scanning/requests/get/",
+                       json=raw_response, status_code=200)
+
+    args = {"scan_id": scan_id}
+
+    response = get_remediation_confirmation_scan_status_command(client=client, args=args)
+
+    assert response.outputs == expected_results
+    assert response.outputs_prefix == "ASM.RemediationScan.status"
+    assert response.outputs_key_field == ""
+
+
+def test_get_remediation_confirmation_scan_status_failure(client, requests_mock):
+    '''
+    Given:
+        - Mock request for /remediation_confirmation_scanning/requests/get_or_create/ that returns a 500 error and application/json content type.
     When:
         - Running the 'start_remediation_confirmation_scan'.
     Then:
-        - Checks that a NotFoundError exception is raised
+        - Checks that a ProcessingError exception is raised and that the correct error message is returned.
     '''
-    uri_for_post = "https://test.com/api/webapp/public_api/v1/assets/get_external_services/"
+    requests_mock.post('https://test.com/api/webapp/public_api/v1/remediation_confirmation_scanning/requests/get_or_create/',
+                       json=RCS_GET_SCAN_STATUS_FAILURE_RESPONSE_500, status_code=500, headers={"Content-Type": "application/json"})
 
-    with pytest.raises(NotFoundError) as err:
-        requests_mock.post(uri_for_post, text=GENERAL_500_WAITRESS_ERROR, status_code=500, headers={"Content-Type": "text/plain"})
-        client.list_external_service_request(search_params=["test"])
+    scan_id = "12345abc-123a-1234-a123-efgh12345678"
+    error_message = RCS_GET_SCAN_STATUS_FAILURE_RESPONSE_500.get('reply').get("message", "")
 
-    assert type(err.value) is NotFoundError
+    with pytest.raises(ProcessingError) as err:
+        client.get_remediation_confirmation_scan_status(scan_id=scan_id)
+
+    assert type(err.value) is ProcessingError
+    assert str(err.value) == f"Got error message '{error_message}'. Please check you that your inputs are correct."
