@@ -11,11 +11,11 @@ DEFAULT_SEARCH_LIMIT = 100
 
 
 class NotFoundError(Exception):
-    pass
+    '''Exception raised when a 500 error is returned from the API specifically with a waitress error text'''
 
 
 class ProcessingError(Exception):
-    pass
+    '''Exception raised when a 500 error is returned from the API with a json body containing an error code and message'''
 
 
 class Client(BaseClient):
