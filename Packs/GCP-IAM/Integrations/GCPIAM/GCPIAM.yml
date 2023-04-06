@@ -71,6 +71,19 @@ script:
       or "project_name".'
     execution: false
     name: gcp-iam-projects-get
+  - arguments:
+    - default: false
+      description: The name of the parent resource to list projects under. For example,
+        setting this field to 'folders/1234' would list all projects directly under
+        that folder.
+      isArray: false
+      name: parent
+      required: false
+      secret: false
+    deprecated: false
+    description: 'add description later'
+    execution: false
+    name: gcp-iam-tagbindings-list
     outputs:
     - contextPath: GCPIAM.Project.createTime
       description: Project creation time.

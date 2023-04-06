@@ -47,6 +47,26 @@ class Client:
                 proxy_pass=parsed_proxy.password)
         return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=verify_certificate)
 
+    def gcp_iam_tagbindings_list_request(self, parent: str, limit: int = None, page_token=None) -> dict:
+        """
+        List projects under the specified parent.
+        Args:
+            parent (str): The name of the parent resource to list projects under.
+            limit (int): The number of results to retrieve.
+            page_token (str): Pagination token returned from a previous request.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        params = assign_params(parent=parent, pageSize=limit, pageToken=page_token)
+
+        request = self.cloud_resource_manager_service.tagBindings().list(**params)
+        response = request.execute()
+
+        return response
+
+
     def gcp_iam_project_list_request(self, parent: str, limit: int = None, page_token=None,
                                      show_deleted: bool = False) -> dict:
         """
@@ -3667,6 +3687,31 @@ def gcp_iam_folder_iam_policy_remove_command(client: Client, args: Dict[str, Any
     return command_results
 
 
+def gcp_iam_tagbindings_get_command(client: Client, args: Dict[str, Any]) -> list:
+    """
+    List projects under the specified parent, or retrieve specific project information.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
+
+    """
+
+    parent = args.get('parent')
+
+    if not parent:
+        raise Exception('One of the arguments: ''parent'' must be provided.')
+    max_limit = 100
+
+    response = client.gcp_iam_tagbindings_list_request(parent=parent, limit=max_limit)
+# Next steps: 1. add other request for https://googleapis.github.io/google-api-python-client/docs/dyn/cloudresourcemanager_v3.tagValues.html#get or https://googleapis.github.io/google-api-python-client/docs/dyn/cloudresourcemanager_v3.tagValues.html#list
+#2. Might need the same for keys
+#3. Add to this command
+    return response
+
+
 def test_module(service_account_key: str) -> None:
     try:
         client: Client = Client(client_secret=service_account_key)
@@ -3756,7 +3801,8 @@ def main() -> None:
             'gcp-iam-testable-permission-list': gcp_iam_testable_permission_list_command,
             'gcp-iam-grantable-role-list': gcp_iam_grantable_role_list_command,
             'gcp-iam-role-get': gcp_iam_predefined_role_get_command,
-            'gcp-iam-role-list': gcp_iam_predefined_role_list_command
+            'gcp-iam-role-list': gcp_iam_predefined_role_list_command,
+            'gcp-iam-tagbindings-list': gcp_iam_tagbindings_get_command
         }
 
         if command in commands:
