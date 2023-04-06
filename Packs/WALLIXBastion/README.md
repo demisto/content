@@ -4,7 +4,7 @@ Easy to use and easy to deploy, the WALLIX Bastion PAM solution delivers robust 
 
 ## What does this pack do
 
-This pack provides an integration for a Bastion appliance. It provides an access to a large part of the Bastion API to enable users, targets and sessions management automation.
+This pack contains an integration for Bastion appliances. It provides an access to a large part of the Bastion API to enable users, targets and sessions management automation.
 
 Read the integration description for more details on the supported Bastion versions.
 
