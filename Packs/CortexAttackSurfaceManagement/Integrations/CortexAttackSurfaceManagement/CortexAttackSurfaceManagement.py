@@ -207,7 +207,7 @@ def format_asm_id(formatted_response: List[dict]) -> List[dict]:
 
 def get_api_error(response):
     if response.status_code == 500 and "text/plain" in response.headers["Content-Type"]:
-        raise NotFoundError("The endpoint for scanning could not be contacted")
+        raise NotFoundError("The endpoint could not be contacted at this time.")
     elif response.status_code == 500 and response is not None:
         try:
             json_response = response.json()
@@ -218,6 +218,8 @@ def get_api_error(response):
             if error_code:
                 rcs_err_msg = json_response.get('reply', {}).get("err_msg", {})
                 raise ProcessingError(f"Got error message '{rcs_err_msg}'. Please check you that your inputs are correct.")
+            else:
+                raise NotFoundError("The endpoint could not be contacted at this time.")
 
 
 ''' COMMAND FUNCTIONS '''
