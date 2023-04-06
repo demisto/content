@@ -55,18 +55,17 @@ def test_get_events_command(requests_mock, mocker):
 
 
 def test_fetch_events_command(requests_mock, mocker):
-    """Tests get-events command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+    """Tests fetch-events command function.
+        Given: and already fetched event id, and a latested fetched event timestamp
+        When: running fetch-event command
+        Check: the already fetched event does not get fetched again
     """
 
     client = mock_client()
     mock_response = util_load_json('test_data/fetch_events.json')
     mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
-    mocker.patch.object(demisto, 'getLastRun', return_value={'fetch_from': '2023-03-15T14:39:13Z'})
+    mocker.patch.object(demisto, 'getLastRun', return_value={'fetch_from': '2023-03-15T14:39:13Z',
+                                                             'event_id': 'test_id'})
     requests_mock.get(
         'https://test.com/security-events/v1/security-events?serverTimestampStart=2023-03-15T14:39:13Z&limit=100',
         json=mock_response)

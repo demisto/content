@@ -4,6 +4,7 @@
             "severity": "critical",
             "engine": "edr",
             "serverTimestamp": "2023-03-15T22:00:22.574Z",
+            "id": "test_id2",
             "organization": {
                 "name": "Palo Alto_comp",
                 "id": "id_one"
@@ -28,6 +29,7 @@
             "severity": "critical",
             "engine": "edr",
             "serverTimestamp": "2023-03-15T14:39:13.022Z",
+            "id": "test_id",
             "organization": {
                 "name": "Palo Alto_comp",
                 "id": "id_two"

@@ -112,25 +112,28 @@ def parse_date(dt: str) -> str:
     return date_time.strftime(DATE_FORMAT)  # type: ignore
 
 
-def parse_events(events: list, last_fetch: str) -> tuple[str, list]:
+def parse_events(events: list, last_fetch: str, last_event_id: str) -> tuple[str, str, list]:
 
     last_fetch_timestamp = date_to_timestamp(last_fetch, DATE_FORMAT)
     last_event_timestamp = last_fetch_timestamp
     last_event_time = last_fetch
+    new_event_id = last_event_id
     parsed_events: list = []
     for event in events:
         event_time = date_to_timestamp(parse_date(event.get('serverTimestamp')), DATE_FORMAT)
+        ev_id = event.get('id')
         # the event was already fetched
-        if last_fetch_timestamp == event_time:
+        if last_fetch_timestamp == event_time and last_event_id == ev_id:
             continue
         event['_time'] = parse_date(event.get('clientTimestamp'))
         if last_event_timestamp < event_time:
             last_event_timestamp = event_time
             last_event_time = event.get('serverTimestamp')
+            new_event_id = ev_id
 
         parsed_events.append(event)
 
-    return parse_date(last_event_time), parsed_events
+    return parse_date(last_event_time), new_event_id, parsed_events
 
 
 def get_events(client: Client, fetch_from: str, limit: int) -> list:
@@ -213,10 +216,11 @@ def fetch_events_command(client: Client, first_fetch: str, limit: int) -> list:
     last_run = demisto.getLastRun()
     fetch_from = last_run.get('fetch_from') or first_fetch
     next_anchor = last_run.get('next_anchor')
+    event_id = last_run.get('event_id', '')
     events, next_anchor = fetch_events(client, fetch_from, limit, next_anchor)
 
-    last_fetch, parsed_events = parse_events(events[:limit], fetch_from)
-    demisto.setLastRun({'fetch_from': last_fetch, 'next_anchor': next_anchor})
+    last_fetch, event_id, parsed_events = parse_events(events[:limit], fetch_from, event_id)
+    demisto.setLastRun({'fetch_from': last_fetch, 'next_anchor': next_anchor, 'event_id': event_id})
 
     return parsed_events
 
