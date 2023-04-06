@@ -556,15 +556,16 @@ def get_remediation_confirmation_scan_status_command(client: Client, args: Dict[
     response = client.get_remediation_confirmation_scan_status(scan_id=scan_id)
 
     json_response = response.json()
+    formatted_outputs = json_response.get('reply', {})
 
     markdown = tableToMarkdown('Status of Remediation Confirmation Scan',
-                               json_response,
+                               formatted_outputs,
                                removeNull=True,
                                headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='ASM.RemediationScan.status',
         outputs_key_field='',
-        outputs=json_response,
+        outputs=formatted_outputs,
         raw_response=json_response,
         readable_output=markdown
     )
