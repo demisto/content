@@ -233,9 +233,6 @@
         ./Tests/scripts/sdk_pylint_check.sh
       fi
     - section_end "Test Infrastructure"
-    - section_start "Create id set"
-    - *create-id-set
-    - section_end "Create id set"
     - section_start "Run Unit Testing and Lint"
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
@@ -261,17 +258,17 @@
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
           demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image ${DOCKER}
-        else
-          if [[ -n $BUCKET_UPLOAD ]]; then
-            demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
-          else
-            demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
-          fi
         fi
+        if [[ -n $BUCKET_UPLOAD ]]; then
+          demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
+        else
+          demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
+        fi
+      
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
           if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||   -n "$SHOULD_LINT_ALL"  ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
             demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --allowed-coverage-degradation-percentage 100
-            if [[ -n "${NIGHTLY}" && "$CI_COMMIT_BRANCH" == "master" ]]; then
+            if [[ -n "${NIGHTLY}" && "$CI_COMMIT_BRANCH" == "master" && $DOCKER == "from-yml" ]]; then
               python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name $ARTIFACTS_FOLDER/coverage_report/coverage.json --minimal_file_name $ARTIFACTS_FOLDER/coverage_report/coverage-min.json
             fi
           else

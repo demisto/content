@@ -6,3 +6,7 @@ ignore=IM111
 
 [known_words]
 ck
+
+[file:CuckooDisplayReport.yml]
+ignore=BA124
+

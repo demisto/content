@@ -114,6 +114,10 @@ def test_module():
     if not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) > 0:
         return_error(
             "When 'Types of Notifications to Send' is populated, a dedicated channel is required.")
+    if not BOT_TOKEN.startswith("xoxb"):
+        return_error("Invalid Bot Token.")
+    if not APP_TOKEN.startswith("xapp"):
+        return_error("Invalid App Token.")
     elif not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) == 0:
         CLIENT.auth_test()  # type: ignore
     else:
@@ -2600,7 +2604,7 @@ def init_globals(command_name: str = ''):
     MAX_LIMIT_TIME = int(demisto.params().get('max_limit_time', '60'))
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
     ENABLE_DM = demisto.params().get('enable_dm', True)
-    DEFAULT_PERMITTED_NOTIFICATION_TYPES = ['externalAskSubmit']
+    DEFAULT_PERMITTED_NOTIFICATION_TYPES = ['externalAskSubmit', 'externalFormSubmit']
     CUSTOM_PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
     PERMITTED_NOTIFICATION_TYPES = DEFAULT_PERMITTED_NOTIFICATION_TYPES + CUSTOM_PERMITTED_NOTIFICATION_TYPES
     MIRRORING_ENABLED = demisto.params().get('mirroring', True)
