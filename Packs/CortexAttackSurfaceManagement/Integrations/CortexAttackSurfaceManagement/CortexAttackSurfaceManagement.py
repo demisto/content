@@ -39,7 +39,7 @@ class Client(BaseClient):
             dict: dict containing list of external services.
         """
 
-        response = self._http_request('POST', '/xpanse_remediation_rules/rules/', json_data=request_data)
+        response = self._http_request('POST', '/xpanse_remediation_rules/rules/', json_data=request_data, error_handler=get_api_error)
 
         return response
 
@@ -54,7 +54,7 @@ class Client(BaseClient):
         """
         data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
 
-        response = self._http_request('POST', '/assets/get_external_services/', json_data=data)
+        response = self._http_request('POST', '/assets/get_external_services/', json_data=data, error_handler=get_api_error)
 
         return response
 
@@ -69,7 +69,7 @@ class Client(BaseClient):
         """
         data = {"request_data": {"service_id_list": service_id_list}}
 
-        response = self._http_request('POST', '/assets/get_external_service', json_data=data)
+        response = self._http_request('POST', '/assets/get_external_service', json_data=data, error_handler=get_api_error)
 
         return response
 
@@ -81,7 +81,7 @@ class Client(BaseClient):
         """
         data = {"request_data": {"search_to": DEFAULT_SEARCH_LIMIT}}
 
-        response = self._http_request('POST', '/assets/get_external_ip_address_ranges/', json_data=data)
+        response = self._http_request('POST', '/assets/get_external_ip_address_ranges/', json_data=data, error_handler=get_api_error)
 
         return response
 
@@ -96,7 +96,7 @@ class Client(BaseClient):
         """
         data = {"request_data": {"range_id_list": range_id_list}}
 
-        response = self._http_request('POST', '/assets/get_external_ip_address_range/', json_data=data)
+        response = self._http_request('POST', '/assets/get_external_ip_address_range/', json_data=data, error_handler=get_api_error)
 
         return response
 
@@ -111,7 +111,7 @@ class Client(BaseClient):
         """
         data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
 
-        response = self._http_request('POST', '/assets/get_assets_internet_exposure/', json_data=data)
+        response = self._http_request('POST', '/assets/get_assets_internet_exposure/', json_data=data, error_handler=get_api_error)
 
         return response
 
@@ -126,7 +126,7 @@ class Client(BaseClient):
         """
         data = {"request_data": {"asm_id_list": asm_id_list}}
 
-        response = self._http_request('POST', '/assets/get_asset_internet_exposure/', json_data=data)
+        response = self._http_request('POST', '/assets/get_asset_internet_exposure/', json_data=data, error_handler=get_api_error)
 
         return response
 
@@ -147,7 +147,12 @@ class Client(BaseClient):
         """
         data = {"request_data": {"alert_internal_id": alert_internal_id, "service_id": service_id, "attack_surface_rule_id": attack_surface_rule_id}}
 
-        response = self._http_request('POST', 'remediation_confirmation_scanning/requests/get_or_create/', json_data=data, resp_type="response")
+        response = self._http_request(method='POST',
+                                      url_suffix='remediation_confirmation_scanning/requests/get_or_create/',
+                                      json_data=data,
+                                      resp_type="response",
+                                      error_handler=get_api_error
+                                      )
 
         return response
 
@@ -172,6 +177,21 @@ def format_asm_id(formatted_response: List[dict]) -> List[dict]:
                 entry['asm_ids'] = entry['asm_ids'][0]
 
     return formatted_response
+
+
+def get_api_error(response):
+    if response.status_code == 500 and "text/plain" in response.headers["Content-Type"]:
+        raise NotFoundError("The endpoint for scanning could not be contacted")
+    elif response.status_code == 500 and response is not None:
+        try:
+            json_response = response.json()
+            error_code = json_response.get('reply', {}).get("err_code", {})
+        except Exception as err:
+            print(f"Unexpected {err=}, {type(err)=}")
+        else:
+            if error_code:
+                rcs_err_msg = json_response.get('reply', {}).get("err_msg", {})
+                raise ProcessingError(f"Got error message '{rcs_err_msg}'. Please check you that your inputs are correct.")
 
 
 ''' COMMAND FUNCTIONS '''
@@ -470,19 +490,6 @@ def start_remediation_confirmation_scan_command(client: Client, args: Dict[str, 
     response = client.start_remediation_confirmation_scan(alert_internal_id=alert_internal_id,
                                                           service_id=service_id,
                                                           attack_surface_rule_id=attack_surface_rule_id)
-
-    if response.status_code == 500:
-        try:
-            json_response = response.json()
-            error_code = json_response.get('reply', {}).get("err_code", {})
-        except Exception as err:
-            print(f"Unexpected {err=}, {type(err)=}")
-        else:
-            if error_code:
-                rcs_err_msg = json_response.get('reply', {}).get("err_msg", {})
-                raise ProcessingError(f"{rcs_err_msg}. Please check you that your inputs are correct.")
-            elif not error_code:
-                raise NotFoundError("The endpoint for scanning could not be contacted")
 
     json_response = response.json()
     formatted_outputs = json_response.get('reply', {})
