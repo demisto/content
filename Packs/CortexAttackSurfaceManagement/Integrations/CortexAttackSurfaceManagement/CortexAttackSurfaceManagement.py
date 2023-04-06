@@ -156,6 +156,32 @@ class Client(BaseClient):
 
         return response
 
+    def get_remediation_confirmation_scan_status(self, scan_id: str) -> Response:
+        """Retrieves ID of active (running) scan if it already exists for the given service; otherwise, creates new a scan.
+
+        Args:
+            alert_internal_id (str): _description_
+            service_id (str): _description_
+            attack_surface_rule_id (str): _description_
+
+        Raises:
+            ProcessingError: Custom error to handling 500 error with an internal error code 100 for having incorrect request values.
+            NotFoundError: Custom error for handling 500 error that is a "The server encountered an unexpected internal server error" error from waitress.
+
+        Returns:
+            Dict[str, Any]: dictionary containing response information that includes a scan ID.
+        """
+        data = {"scan_id": scan_id}
+
+        response = self._http_request(method='POST',
+                                      url_suffix='/remediation_confirmation_scanning/requests/get/',
+                                      json_data=data,
+                                      resp_type="response",
+                                      error_handler=get_api_error
+                                      )
+
+        return response
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -513,6 +539,38 @@ def start_remediation_confirmation_scan_command(client: Client, args: Dict[str, 
     return command_results
 
 
+def get_remediation_confirmation_scan_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    get-start-get_remediation_confirmation_scan_status command: Get status of existing remediation confirmation scan.
+
+    Args:
+        client (Client): CortexAttackSurfaceManagment client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()`` (not used in this function).
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains the ID of the Remediation Confirmation Scan.
+    """
+    scan_id = str(args.get('scan_id'))
+
+    response = client.get_remediation_confirmation_scan_status(scan_id=scan_id)
+
+    json_response = response.json()
+
+    markdown = tableToMarkdown('Status of Remediation Confirmation Scan',
+                               json_response,
+                               removeNull=True,
+                               headerTransform=string_to_table_header)
+    command_results = CommandResults(
+        outputs_prefix='ASM.RemediationScan.status',
+        outputs_key_field='',
+        outputs=json_response,
+        raw_response=response,
+        readable_output=markdown
+    )
+    return command_results
+
+
 def test_module(client: Client) -> None:
     """
     Tests API connectivity and authentication'
@@ -578,7 +636,8 @@ def main() -> None:
             'asm-list-asset-internet-exposure': list_asset_internet_exposure_command,
             'asm-get-asset-internet-exposure': get_asset_internet_exposure_command,
             'asm-list-remediation-rule': list_remediation_rule_command,
-            'asm-start-remediation_confirmation_scan': start_remediation_confirmation_scan_command
+            'asm-start-remediation_confirmation_scan': start_remediation_confirmation_scan_command,
+            'asm-get-remediation-confirmation0scan-status': get_remediation_confirmation_scan_status_command
         }
 
         if command == 'test-module':
