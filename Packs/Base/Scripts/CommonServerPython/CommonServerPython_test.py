@@ -4415,7 +4415,7 @@ class TestExecuteCommand:
                                                    return_value=error_entries)
         demisto_results_mock = mocker.patch.object(demisto, 'results')
 
-        with raises(SystemExit, match='0'):
+        with raises(DemistoException, match='0'):
             execute_command('bad', {'arg1': 'value'})
 
         assert demisto_execute_mock.call_count == 1
