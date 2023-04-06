@@ -212,12 +212,15 @@ def get_api_error(response):
         try:
             json_response = response.json()
             error_code = json_response.get('reply', {}).get("err_code", {})
+            error_message = json_response.get('reply', {}).get("message", {})
         except Exception as err:
             print(f"Unexpected {err=}, {type(err)=}")
         else:
             if error_code:
                 rcs_err_msg = json_response.get('reply', {}).get("err_msg", {})
-                raise ProcessingError(f"Got error message '{rcs_err_msg}'. Please check you that your inputs are correct.")
+                raise ProcessingError(f"Received error message: '{rcs_err_msg}'. Please check you that your inputs are correct.")
+            elif error_message:
+                raise ProcessingError(f"Received error message: '{error_message}'")
             else:
                 raise NotFoundError("The endpoint could not be contacted at this time.")
 

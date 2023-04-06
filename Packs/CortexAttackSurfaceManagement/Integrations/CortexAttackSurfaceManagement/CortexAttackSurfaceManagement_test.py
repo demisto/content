@@ -318,7 +318,7 @@ def test_start_remediation_confirmation_failure_codes(client, alert_internal_id,
         client.start_remediation_confirmation_scan(alert_internal_id=alert_internal_id, service_id=service_id, attack_surface_rule_id=attack_surface_rule_id)
 
     assert type(err.value) is exception_type
-    assert str(err.value) == f"Got error message '{raw_results.get('reply').get('err_msg', {})}'. Please check you that your inputs are correct."
+    assert str(err.value) == f"Received error message: '{raw_results.get('reply').get('err_msg', {})}'. Please check you that your inputs are correct."
 
 
 @pytest.mark.parametrize(
@@ -362,14 +362,14 @@ def test_get_remediation_confirmation_scan_status_failure(client, requests_mock)
     Then:
         - Checks that a ProcessingError exception is raised and that the correct error message is returned.
     '''
-    requests_mock.post('https://test.com/api/webapp/public_api/v1/remediation_confirmation_scanning/requests/get_or_create/',
+    requests_mock.post('https://test.com/api/webapp/public_api/v1/remediation_confirmation_scanning/requests/get/',
                        json=RCS_GET_SCAN_STATUS_FAILURE_RESPONSE_500, status_code=500, headers={"Content-Type": "application/json"})
 
-    scan_id = "12345abc-123a-1234-a123-efgh12345678"
-    error_message = RCS_GET_SCAN_STATUS_FAILURE_RESPONSE_500.get('reply').get("message", "")
+    # scan_id = "12345abc-123a-1234-a123-efgh12345678"
+    error_message = RCS_GET_SCAN_STATUS_FAILURE_RESPONSE_500.get('reply').get("message")  # type: ignore
 
     with pytest.raises(ProcessingError) as err:
-        client.get_remediation_confirmation_scan_status(scan_id=scan_id)
+        client.get_remediation_confirmation_scan_status(scan_id=None)
 
     assert type(err.value) is ProcessingError
-    assert str(err.value) == f"Got error message '{error_message}'. Please check you that your inputs are correct."
+    assert str(err.value) == f"Received error message: '{error_message}'"
