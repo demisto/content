@@ -37,6 +37,7 @@ prisma-cloud-config-search
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | PrismaCloud.Attribution | Prisma Cloud attributed asset information. | unknown |
+| PrismaCloud.Config.data.tags | Prisma Cloud Tags information. | unknown |
 
 ## Playbook Image
 
