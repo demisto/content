@@ -525,7 +525,7 @@ def start_remediation_confirmation_scan_command(client: Client, args: Dict[str, 
     elif response.status_code == 200:
         formatted_outputs.update({"scan_creation_status": "existing"})
 
-    markdown = tableToMarkdown('External IP Address Ranges',
+    markdown = tableToMarkdown('Creation of Remediation Confirmation Scan',
                                formatted_outputs,
                                removeNull=True,
                                headerTransform=string_to_table_header)
@@ -533,7 +533,7 @@ def start_remediation_confirmation_scan_command(client: Client, args: Dict[str, 
         outputs_prefix='ASM.RemediationScan',
         outputs_key_field='',
         outputs=formatted_outputs,
-        raw_response=response,
+        raw_response=json_response,
         readable_output=markdown
     )
     return command_results
@@ -565,7 +565,7 @@ def get_remediation_confirmation_scan_status_command(client: Client, args: Dict[
         outputs_prefix='ASM.RemediationScan.status',
         outputs_key_field='',
         outputs=json_response,
-        raw_response=response,
+        raw_response=json_response,
         readable_output=markdown
     )
     return command_results
@@ -637,7 +637,7 @@ def main() -> None:
             'asm-get-asset-internet-exposure': get_asset_internet_exposure_command,
             'asm-list-remediation-rule': list_remediation_rule_command,
             'asm-start-remediation_confirmation_scan': start_remediation_confirmation_scan_command,
-            'asm-get-remediation-confirmation0scan-status': get_remediation_confirmation_scan_status_command
+            'asm-get-remediation-confirmation-scan-status': get_remediation_confirmation_scan_status_command
         }
 
         if command == 'test-module':
