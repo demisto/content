@@ -4247,7 +4247,7 @@ def panorama_list_applications_command(args:Dict[str, str]):
 def prettify_edls_arr(edls_arr: Union[list, dict]):
 
     if isinstance(edls_arr, dict):  # handle case of only one edl in the instance
-        return prettify_edl(parse_pan_os_un_committed_data(edls_arr, ['@admin', '@dirtyId', '@time']))
+        return prettify_edl(edls_arr)
 
     for edl in edls_arr:
         parse_pan_os_un_committed_data(edl, ['@admin', '@dirtyId', '@time'])
