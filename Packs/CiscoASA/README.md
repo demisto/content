@@ -22,3 +22,5 @@ an example ofr the timestamp: "2023-04-09T16:30:00-07:00"
 3. Enter global configuration mode by typing ```conf t```.
 4. Enter the logging timestamp command to update the timestamp format to iso8601 by typeing
 ```logging timestamp iso8601```
+5. Exit the logging configuration by typing ```exit```.
+6. Save the configuration changes by typing ```write memory```.
