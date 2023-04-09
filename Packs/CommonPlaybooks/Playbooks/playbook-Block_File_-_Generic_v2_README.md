@@ -13,10 +13,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Block File
-* Block File - Cybereason
 * Block File - Carbon Black Response
 * Block File - Cylance Protect v2
+* Cortex XDR - Block File
+* Block File - Cybereason
 
 ### Integrations
 
@@ -28,7 +28,7 @@ This playbook does not use any scripts.
 
 ### Commands
 
-This playbook does not use any commands.
+* appendIndicatorField
 
 ## Playbook Inputs
 

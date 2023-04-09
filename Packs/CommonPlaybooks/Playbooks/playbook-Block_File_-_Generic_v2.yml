@@ -57,7 +57,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "17"
     scriptarguments:
       MD5:
         complex:
@@ -114,7 +114,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 515
+          "y": 670
         }
       }
     note: false
@@ -138,7 +138,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "17"
     scriptarguments:
       MD5:
         complex:
@@ -194,7 +194,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "17"
     scriptarguments:
       SHA256:
         complex:
@@ -362,7 +362,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "17"
     scriptarguments:
       HashList:
         complex:
@@ -402,13 +402,55 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d4ed1039-9949-4fb0-87fd-d343403b7e9e
+    type: regular
+    task:
+      id: d4ed1039-9949-4fb0-87fd-d343403b7e9e
+      version: -1
+      name: Untitled Task
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: test
+      indicatorsValues:
+        complex:
+          root: inputs.Hash
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 530,
+        "height": 685,
         "width": 1670,
         "x": 50,
         "y": 50
