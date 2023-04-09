@@ -68,19 +68,23 @@ def add_time_key_to_alerts(alerts: List[Dict]) -> List[Dict]:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, last_fetch: str) -> str:
+def test_module(client: Client, last_fetch: str, max_fetch: int) -> str:
     """ Test the connection to Orca Security.
     Args:
         client: client - An Orca client.
-        last_fetch: int - The time and date of the last fetch alert
+        last_fetch: str - The time and date of the last fetch alert
+        max_fetch: int - The maximum number of events per fetch
     Returns:
         'ok' if the connection was successful, else throws exception.
     """
     try:
-        client.get_alerts_request(1, last_fetch, None)
+        client.get_alerts_request(max_fetch, last_fetch, None)
         return 'ok'
     except DemistoException as e:
-        raise Exception(e.message)
+        if 'Error in API call [404] - Not Found' in e.message:
+            raise Exception('Error in API call [404] - Not Found\n{"error": "URL is invalid"}')
+        else:
+            raise Exception(e.message)
 
 
 def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token: str = None) -> tuple:
@@ -88,7 +92,7 @@ def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token:
     Args:
         client: client - An Orca client.
         max_fetch: int - The maximum number of events per fetch
-        last_fetch: int - The time and date of the last fetch alert
+        last_fetch: str - The time and date of the last fetch alert
         next_page_token: str - The token to the next page.
     Returns:
         - list of alerts
@@ -144,7 +148,7 @@ def main() -> None:
         next_page_token = last_run.get('next_page_token')
 
         if command == 'test-module':
-            return_results(test_module(client, last_fetch))
+            return_results(test_module(client, last_fetch, max_fetch))
         elif command in ('fetch-events', 'orca-security-get-events'):
             alerts, next_page_token = get_alerts(client, max_fetch, last_fetch, next_page_token)
 
