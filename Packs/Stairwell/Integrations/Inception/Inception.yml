@@ -49,7 +49,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.50695
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
