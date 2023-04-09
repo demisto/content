@@ -3,6 +3,7 @@ import io
 import freezegun
 import pytest
 from FeedMandiant import MandiantClient
+from CommonServerPython import arg_to_datetime
 
 
 def mock_client():
@@ -238,3 +239,15 @@ def test_get_indicator_list_two_iterations(mocker):
     FeedMandiant.get_new_indicators = get_new_indicators_mock
     res = FeedMandiant.get_indicator_list(client, 1, '90 days ago', 'Indicators')
     assert res == [res_indicators['new_indicators_2'][1]]
+
+
+def test_different_datetimes():
+    import pytz
+    utc=pytz.UTC
+    try:
+        start_date = arg_to_datetime("2022-02-26T22:05:32.000Z")
+        earliest_fetch = utc.localize(arg_to_datetime('90 days ago'))
+        start_date = max(earliest_fetch, start_date)  # type:ignore
+    except Exception as e:
+        print(e)
+    print(start_date)

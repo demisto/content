@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 
 import urllib3
 from typing import Dict
+import pytz
 
 urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -31,6 +32,7 @@ MAP_INDICATORS_TYPE = {'fqdn': FeedIndicatorType.Domain,
                        'sha1': FeedIndicatorType.File,
                        'sha256': FeedIndicatorType.File,
                        'url': FeedIndicatorType.URL}
+UTC=pytz.UTC
 
 ''' CLIENT CLASS '''
 
@@ -183,7 +185,7 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
     params = {}
     if indicator_type == 'Indicators':
         # for indicator type the earliest time to fetch is 90 days ago
-        earliest_fetch = arg_to_datetime('90 days ago')
+        earliest_fetch = UTC.localize(arg_to_datetime('90 days ago'))  # type:ignore
         start_date = max(earliest_fetch, start_date)  # type:ignore
         params = {'start_epoch': int(start_date.timestamp()), 'limit': limit}  # type:ignore
 
