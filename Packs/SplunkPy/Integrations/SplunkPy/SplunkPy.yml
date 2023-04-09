@@ -112,6 +112,8 @@ configuration:
   required: false
   type: 15
   section: Collect
+  hidden:
+    - marketplacev2
 - additionalinfo: When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident.
   defaultvalue: 'false'
   display: Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
@@ -120,6 +122,8 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  hidden:
+    - marketplacev2
 - display: Additional Splunk status labels to close on mirror (Incoming Mirroring)
   name: close_extra_labels
   required: false
@@ -140,6 +144,8 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  hidden:
+    - marketplacev2
   additionalinfo: When selected, closing the Cortex XSOAR incident  will close the Notable Event in Splunk.
   defaultvalue: 'false'
 - display: Trust any certificate (not secure)
@@ -376,6 +382,18 @@ script:
       - informational
     - description: Notable event status. 0 - Unassigned, 1 - Assigned, 2 - In Progress, 3 - Pending, 4 - Resolved, 5 - Closed.
       name: status
+    - name: disposition
+      auto: PREDEFINED
+      predefined:
+      - True Positive - Suspicious Activity
+      - Benign Positive - Suspicious But Expected
+      - False Positive - Incorrect Analytic Logic
+      - False Positive - Inaccurate Data
+      - Other
+      - Undetermined
+      description: Disposition of the notable. If the more options exist on the server,
+        specifying the disposition as `disposition:#` will work in place of choosing
+        one of the default values from the list.
     description: Updates existing notable events in Splunk ES.
     execution: true
     name: splunk-notable-event-edit
@@ -610,7 +628,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.46376
+  dockerimage: demisto/splunksdk-py3:1.0.0.51137
   isfetch: true
   ismappable: true
   isremotesyncin: true

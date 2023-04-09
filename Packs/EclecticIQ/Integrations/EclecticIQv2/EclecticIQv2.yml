@@ -12,9 +12,11 @@ configuration:
   type: 0
   required: true
 - display: API Key
+  displaypassword: API Key
   name: apikey
   type: 9
   required: true
+  hiddenusername: true
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -168,7 +170,7 @@ script:
       type: string
     description: 'create observable in the EclecticIQ Intelligence Center Platform '
   runonce: true
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.10.51930
 tests:
 - No test - instance issues
 fromversion: 6.5.0

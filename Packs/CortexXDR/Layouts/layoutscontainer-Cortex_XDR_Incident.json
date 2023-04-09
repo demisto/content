@@ -871,6 +871,410 @@
                             "right": {
                                 "isContext": false,
                                 "value": {
+                                    "simple": "First SSO access from ASN in organization"
+                                }
+                            },
+                            "type": "multiSelect"
+                        },
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsGeneral",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "First successful SSO connection from a country in organization"
+                                }
+                            },
+                            "type": "multiSelect"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "ytqxqon7uf",
+                "name": "First SSO access",
+                "sections": [
+                    {
+                        "description": "",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-e6soxtwivx-1vduzkpmlh-e6soxtwivx-1vduzkpmlh-6748ea30-8b5b-11ed-8534-dd7eadd1d5dd",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "alertname",
+                                "height": 22,
+                                "id": "8b8c35a0-8b5b-11ed-8534-dd7eadd1d5dd",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xdrdescription",
+                                "height": 22,
+                                "id": "57b7f020-8b6a-11ed-8534-dd7eadd1d5dd",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "sourceip",
+                                "height": 22,
+                                "id": "8b9fe6e0-8b6a-11ed-8534-dd7eadd1d5dd",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "detecteduser",
+                                "height": 22,
+                                "id": "9050c4c0-8b6a-11ed-8534-dd7eadd1d5dd",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "99b47c50-8b6a-11ed-8534-dd7eadd1d5dd",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "cc11c830-91bc-11ed-8f3c-a572807a21ae",
+                                "index": 5,
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Alert Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-e6soxtwivx-1vduzkpmlh-e6soxtwivx-1vduzkpmlh-b91be240-8b6a-11ed-8534-dd7eadd1d5dd",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "samaccountname",
+                                "height": 22,
+                                "id": "4e690d90-97f6-11ed-a36a-3f1ec2cc633b",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "accountname",
+                                "height": 22,
+                                "id": "85721b10-8b6c-11ed-8534-dd7eadd1d5dd",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "employeeemail",
+                                "height": 22,
+                                "id": "afd14610-8b6c-11ed-8534-dd7eadd1d5dd",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "accountgroups",
+                                "height": 22,
+                                "id": "b78b6c50-8b6c-11ed-8534-dd7eadd1d5dd",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "managername",
+                                "height": 22,
+                                "id": "bf8d9810-8b6c-11ed-8534-dd7eadd1d5dd",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "manageremailaddress",
+                                "height": 22,
+                                "id": "c81658f0-8b6c-11ed-8534-dd7eadd1d5dd",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Account Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-e6soxtwivx-1vduzkpmlh-e6soxtwivx-1vduzkpmlh-76c7cac0-8b6b-11ed-8534-dd7eadd1d5dd",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sourceip",
+                                "height": 22,
+                                "id": "1f8bea40-8b6e-11ed-8f68-b3bf4a3a1ddf",
+                                "index": 0,
+                                "listId": "1vduzkpmlh-76c7cac0-8b6b-11ed-8534-dd7eadd1d5dd",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "asn",
+                                "height": 22,
+                                "id": "161ebcd0-8b6e-11ed-8f68-b3bf4a3a1ddf",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "asnname",
+                                "height": 22,
+                                "id": "c1d02320-8b6e-11ed-8f68-b3bf4a3a1ddf",
+                                "index": 2,
+                                "listId": "1vduzkpmlh-76c7cac0-8b6b-11ed-8534-dd7eadd1d5dd",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "countrycode",
+                                "height": 22,
+                                "id": "26601020-90ba-11ed-8ab6-ab0516dbb87b",
+                                "index": 3,
+                                "listId": "1vduzkpmlh-76c7cac0-8b6b-11ed-8534-dd7eadd1d5dd",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "countryname",
+                                "height": 22,
+                                "id": "37132b60-8b6e-11ed-8f68-b3bf4a3a1ddf",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ipreputation",
+                                "height": 22,
+                                "id": "0a0b3210-9c86-11ed-b102-9fbd020d1773",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Connection Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-e6soxtwivx-1vduzkpmlh-e6soxtwivx-1vduzkpmlh-001975e0-8b70-11ed-9514-c56dac00c61e",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "userdisabledstatus",
+                                "height": 22,
+                                "id": "b5f0e930-90dd-11ed-be71-736de8263a17",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "containmentsla",
+                                "height": 22,
+                                "id": "82526ee0-902a-11ed-bbb4-fbf235dd1775",
+                                "index": 0,
+                                "listId": "1vduzkpmlh-001975e0-8b70-11ed-9514-c56dac00c61e",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "remediationsla",
+                                "height": 22,
+                                "id": "e7ffdd50-91a5-11ed-941b-e567ac08eaae",
+                                "index": 1,
+                                "listId": "1vduzkpmlh-001975e0-8b70-11ed-9514-c56dac00c61e",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Containment and Remediation status",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-e6soxtwivx-1vduzkpmlh-e6soxtwivx-1vduzkpmlh-b3c63170-8c31-11ed-a026-b1d5b381234f",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "relatedreports",
+                                "height": 22,
+                                "id": "f782bd20-8c31-11ed-a026-b1d5b381234f",
+                                "index": 1,
+                                "listId": "1vduzkpmlh-b3c63170-8c31-11ed-a026-b1d5b381234f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "partofcampaign",
+                                "height": 22,
+                                "id": "0c60e1d0-8c33-11ed-a026-b1d5b381234f",
+                                "index": 2,
+                                "listId": "1vduzkpmlh-e1c742c0-8b6a-11ed-8534-dd7eadd1d5dd",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "xdralertsearchresults",
+                                "height": 106,
+                                "id": "e982e840-8b6d-11ed-8f68-b3bf4a3a1ddf",
+                                "index": 2,
+                                "listId": "1vduzkpmlh-b3c63170-8c31-11ed-a026-b1d5b381234f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "verdictdetails",
+                                "height": 22,
+                                "id": "8641c240-9650-11ed-8dd2-65d32e26c83b",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Investigation Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-e6soxtwivx-1vduzkpmlh-6d2f0be0-9660-11ed-a2af-cd9affeb35c4",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "verdict",
+                                "height": 22,
+                                "id": "65731ac0-9027-11ed-bbb4-fbf235dd1775",
+                                "index": 0,
+                                "listId": "1vduzkpmlh-e6soxtwivx-1vduzkpmlh-6d2f0be0-9660-11ed-a2af-cd9affeb35c4",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xdrinvestigationresults",
+                                "height": 106,
+                                "id": "482ac9c0-a23a-11ed-b1e2-670240eb75b1",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Verdict Results Parameters",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsGeneral",
+                            "right": {
+                                "isContext": false,
+                                "value": {
                                     "simple": "Possible external RDP Brute-Force"
                                 }
                             },

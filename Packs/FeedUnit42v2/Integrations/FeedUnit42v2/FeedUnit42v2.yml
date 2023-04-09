@@ -122,7 +122,7 @@ script:
     description: Retrieves a limited number of the indicators.
     execution: false
     name: unit42-get-indicators
-  dockerimage: demisto/taxii2:1.0.0.45745
+  dockerimage: demisto/taxii2:1.0.0.52421
   feed: true
   isfetch: false
   longRunning: false

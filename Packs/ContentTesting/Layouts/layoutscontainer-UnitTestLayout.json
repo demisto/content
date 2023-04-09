@@ -64,7 +64,8 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
@@ -89,7 +90,8 @@
                         "static": false,
                         "w": 2,
                         "x": 1,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     }
                 ],
                 "type": "custom"
@@ -97,7 +99,7 @@
             {
                 "hidden": false,
                 "id": "v9jrekezkg",
-                "name": "Content Pack Details",
+                "name": "Upgrade Content Pack Details",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -132,7 +134,7 @@
             {
                 "hidden": false,
                 "id": "yeneg4ivqt",
-                "name": "Commit History",
+                "name": "Version History ",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -204,7 +206,7 @@
                         "displayType": "ROW",
                         "h": 5,
                         "hideName": false,
-                        "i": "lfvtip6zqh-tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
+                        "i": "tneywsgips-field-changed-caseinfoid-lfvtip6zqh-tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
                         "items": [
                             {
                                 "args": {},
@@ -256,7 +258,7 @@
                                 "index": 3,
                                 "listId": "lfvtip6zqh-tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
                                 "name": "Save Context to List",
-                                "scriptId": "UnitTestSaveContextList",
+                                "scriptId": "UnitTestSaveFieldsList",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -346,22 +348,42 @@
                                 "scriptId": "DeleteContext",
                                 "sectionItemType": "button",
                                 "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "playbook": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "81badb80-a0cd-11ed-ac98-8545a9b867ac",
+                                "index": 10,
+                                "name": "Test Coverage",
+                                "scriptId": "UnitTestCoverage",
+                                "sectionItemType": "button",
+                                "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxW": 1,
                         "minH": 1,
                         "moved": false,
                         "name": "Configure Test",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null,
+                        "minW": 1
                     },
                     {
                         "displayType": "ROW",
-                        "h": 10,
+                        "h": 5,
                         "hideName": false,
-                        "i": "lfvtip6zqh-tneywsgips-7dece9d0-19a5-11ed-a7d3-5db049d4637a",
+                        "i": "tneywsgips-field-changed-caseinfoid-lfvtip6zqh-tneywsgips-7dece9d0-19a5-11ed-a7d3-5db049d4637a",
                         "items": [
                             {
                                 "endCol": 4,
@@ -382,20 +404,22 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxW": 2,
                         "minH": 1,
                         "moved": false,
                         "name": "Test Results",
                         "static": false,
                         "w": 2,
                         "x": 1,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null,
+                        "minW": 2
                     },
                     {
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "lfvtip6zqh-aa9c98a0-5ebe-11ed-86c5-93661c2f1992",
+                        "i": "tneywsgips-field-changed-caseinfoid-lfvtip6zqh-aa9c98a0-5ebe-11ed-86c5-93661c2f1992",
                         "items": [
                             {
                                 "args": {
@@ -531,20 +555,22 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxW": 1,
                         "minH": 1,
                         "moved": false,
                         "name": "Execute Test",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 5
+                        "y": 5,
+                        "maxH": null,
+                        "minW": 1
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "lfvtip6zqh-0f991900-8aec-11ed-9e3c-17ed4b0ede75",
+                        "i": "tneywsgips-field-changed-caseinfoid-lfvtip6zqh-0f991900-8aec-11ed-9e3c-17ed4b0ede75",
                         "items": [
                             {
                                 "args": {
@@ -590,17 +616,190 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxW": 1,
                         "minH": 1,
                         "moved": false,
                         "name": "Execute Test Cases",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 8
+                        "y": 8,
+                        "maxH": null,
+                        "minW": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "tneywsgips-field-changed-caseinfoid-lfvtip6zqh-ab9f0a20-a0cd-11ed-ac98-8545a9b867ac",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "contenttestingcoverage",
+                                "height": 44,
+                                "id": "d0330da0-a0cd-11ed-ac98-8545a9b867ac",
+                                "index": 0,
+                                "listId": "lfvtip6zqh-ab9f0a20-a0cd-11ed-ac98-8545a9b867ac",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Test Coverage",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 5
                     }
                 ],
                 "type": "custom"
+            },
+            {
+                "id": "oondzhhjkf",
+                "name": "Playbook Analysis",
+                "type": "custom",
+                "hidden": false,
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "lfvtip6zqh-eaef0ff0-9e88-11ed-baa8-b1aeca41b30f",
+                        "items": [
+                            {
+                                "args": {
+                                    "playbook": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "ef7ab290-9e88-11ed-baa8-b1aeca41b30f",
+                                "index": 0,
+                                "listId": "lfvtip6zqh-eaef0ff0-9e88-11ed-baa8-b1aeca41b30f",
+                                "name": "Playbook Analyzer",
+                                "scriptId": "UnitTestPlaybookAnalyzer",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 4,
+                        "i": "lfvtip6zqh-2e180e30-9e89-11ed-baa8-b1aeca41b30f",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Task Average Duration (ms)",
+                        "query": "UnitTestPBATaskAvg",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 4,
+                        "i": "lfvtip6zqh-4535b810-9e89-11ed-baa8-b1aeca41b30f",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Task Maximum Duration (ms)",
+                        "query": "UnitTestPBATaskMax",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "lfvtip6zqh-6d070c40-9e89-11ed-baa8-b1aeca41b30f",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "contenttestingpbainfo",
+                                "height": 22,
+                                "id": "73fa7100-9e92-11ed-baa8-b1aeca41b30f",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Task Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "h": 4,
+                        "i": "lfvtip6zqh-1d94f350-9e95-11ed-baa8-b1aeca41b30f",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Task Statistics ",
+                        "query": "UnitTestPBAStats",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 6,
+                        "hideName": false,
+                        "i": "lfvtip6zqh-86f8d5a0-a0b6-11ed-ac98-8545a9b867ac",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "contenttestingdependencies",
+                                "height": 44,
+                                "id": "0fc30130-a17f-11ed-b457-6f285e13a606",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Dependencies",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ]
             },
             {
                 "id": "warRoom",
@@ -611,40 +810,6 @@
                 "id": "workPlan",
                 "name": "Work Plan",
                 "type": "workPlan"
-            },
-            {
-                "hidden": false,
-                "id": "q8gm8qirtd",
-                "name": "Help ?",
-                "sections": [
-                    {
-                        "displayType": "ROW",
-                        "h": 8,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false,
-                        "i": "lfvtip6zqh-79f0c030-6447-11ed-a51f-adb5d88dd001",
-                        "items": [
-                            {
-                                "endCol": 6,
-                                "fieldId": "contenttestingunittesthelp",
-                                "height": 106,
-                                "id": "663d2a50-8d2e-11ed-a214-6be289ae8ffe",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Content Testing Help",
-                        "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 0
-                    }
-                ],
-                "type": "custom"
             },
             {
                 "hidden": true,

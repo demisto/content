@@ -12,11 +12,10 @@ from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
-    DEFAULT_MARKETPLACE_WHEN_MISSING,
-    DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
-    ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
+    DEFAULT_MARKETPLACE_WHEN_MISSING, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
+    ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK, ONLY_UPLOAD_PACK_FILE_TYPES,
     SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
-    ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES)
+    ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES, XSIAM_COMPONENT_FILES)
 from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, IncompatibleMarketplaceException,
     InvalidTestException, NonDictException, NonXsoarSupportedPackException,
@@ -50,7 +49,7 @@ class CollectionReason(str, Enum):
     TEST_PLAYBOOK_CHANGED = 'test playbook changed'
     MAPPER_CHANGED = 'mapper file changed, configured as incoming_mapper_id in test conf'
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
-    DEFAULT_REPUTATION_TESTS = 'default reputation tests'
+    DEFAULT_REPUTATION_TESTS = 'Indicator type file changed, running reputation tests from conf.json[\'reputation_tests\']'
     ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
     PACK_TEST_DEPENDS_ON = 'a test depends on this pack'
     NON_XSOAR_SUPPORTED = 'support level is not xsoar: collecting the pack, not collecting tests'
@@ -61,6 +60,8 @@ class CollectionReason(str, Enum):
     MODELING_RULE_TEST_DATA_CHANGED = 'modeling rule\'s associated testdata file was changed'
     MODELING_RULE_NIGHTLY = 'nightly testing of modeling rules'
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
+    XSIAM_COMPONENT_CHANGED = 'xsiam component was changed'
+    README_FILE_CHANGED = 'readme file was changed'
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
@@ -423,6 +424,21 @@ class TestCollector(ABC):
             only_to_install=True,
         )
 
+    def _collect_all_marketplace_compatible_packs(self, is_nightly) -> Optional[CollectionResult]:
+        result = []
+        for pack_metadata in PACK_MANAGER.iter_pack_metadata():
+            try:
+                result.append(self._collect_pack(
+                    pack_id=pack_metadata.pack_id,
+                    reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
+                    reason_description=self.marketplace.value,
+                    allow_incompatible_marketplace=False,
+                    is_nightly=is_nightly,
+                ))
+            except (NothingToCollectException, NonXsoarSupportedPackException, IncompatibleMarketplaceException) as e:
+                logger.debug(str(e))
+        return CollectionResult.union(result)
+
     def __validate_compatibility(
             self,
             id_: str,
@@ -491,7 +507,7 @@ class TestCollector(ABC):
             only_to_install: bool = False,
     ) -> Optional[CollectionResult]:
         pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
-        collect_only_to_upload = False
+        collect_only_to_upload: bool = False
 
         try:
             self._validate_content_item_compatibility(pack_metadata, is_integration=False)
@@ -516,6 +532,10 @@ class TestCollector(ABC):
             if (not allow_incompatible_marketplace or (allow_incompatible_marketplace and not is_xsoar_and_xsiam_pack)) \
                     and not collect_only_to_upload:
                 raise
+
+        # If changes are done to README files. Upload only.
+        if reason == CollectionReason.README_FILE_CHANGED:
+            collect_only_to_upload = True
 
         version_range = content_item_range \
             if pack_metadata.version_range.is_default \
@@ -594,6 +614,55 @@ class TestCollector(ABC):
             is_nightly=is_nightly
         )
 
+    def _collect_pack_for_xsiam_component(
+        self, pack_id: str, reason_description: str, changed_file_path: Path,
+        content_item_range: Optional[VersionRange] = None, is_nightly: bool = False,
+        reason: Optional[CollectionReason] = None
+    ) -> CollectionResult:
+        """Create a CollectionResult for a pack because of an xsiam component.
+
+        Marks the pack being collected and the modeling rule that needs to be tested
+
+        Args:
+            pack_id (str): the id of the pack being collected
+            reason (Optional[CollectionReason]): the reason the pack is being collected. Defaults to None.
+            reason_description (str): the reason the pack is being collected
+            changed_file_path (Path): the path to the file that was modified
+            content_item_range (Optional[VersionRange], optional): version range. Defaults to None.
+            is_nightly (Optional[bool]): whether this is a nightly flow. Defaults to False.
+
+        Returns:
+            CollectionResult: the object detailing the pack to collect and the modeling rule that should be tested
+        """
+        # Not validating compatibility with function so xsoar & marketplacev2 supported packs will be installed if needed.
+        if self.marketplace != MarketplaceVersions.MarketplaceV2:
+            logger.info(f'Not collecting pack {pack_id} for XSIAM component {changed_file_path} because '
+                        f'it is not a collection for an XSIAM (MarketplaceV2) marketplace - '
+                        f'marketplace is {self.marketplace}')
+            raise NothingToCollectException(changed_file_path, 'packs for XSIAM components are only collected for XSIAM')
+
+        pack = PACK_MANAGER.get_pack_metadata(pack_id)
+
+        version_range = content_item_range \
+            if pack.version_range.is_default \
+            else (pack.version_range | content_item_range)
+
+        if not reason:
+            file_type = find_type(changed_file_path.as_posix())
+            reason = f"{CollectionReason.XSIAM_COMPONENT_CHANGED} {file_type.value}"
+
+        return CollectionResult(
+            test=None,
+            modeling_rule_to_test=None,
+            pack=pack_id,
+            reason=reason,
+            version_range=version_range,
+            reason_description=reason_description,
+            conf=self.conf,
+            id_set=self.id_set,
+            is_nightly=is_nightly
+        )
+
     def __validate_skipped_integration(self, id_: str, path: Path):
         if id_ in self.conf.skipped_integrations:
             raise NothingToCollectException(path, 'integration is skipped')
@@ -638,6 +707,8 @@ class TestCollector(ABC):
                 # For XSIAM machines we collect tests that have not xsoar marketplace.
                 # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
                 # will run on xsiam machines only.
+                # However only xsiam component files will be collected anyway in
+                # _collect_xsiam_and_modeling_pack function.
                 if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
                         (MarketplaceVersions.XSOAR in content_item_marketplaces):
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
@@ -722,7 +793,7 @@ class BranchTestCollector(TestCollector):
                 if pack_to_collect := self._collect_pack(pack_id=pack_id,
                                                          reason=CollectionReason.FILES_REMOVED_FROM_PACK,
                                                          reason_description='',
-                                                         allow_incompatible_marketplace=True):
+                                                         ):
                     collected.append(pack_to_collect)
             except NothingToCollectException as e:
                 logger.info(e.message)
@@ -836,6 +907,24 @@ class BranchTestCollector(TestCollector):
                 allow_incompatible_marketplace=override_support_level_compatibility,
             )
 
+    def _collect_xsiam_and_modeling_pack(self,
+                                         file_type: Optional[FileType],
+                                         pack_id: str, reason_description: str,
+                                         path: Path,
+                                         content_item_range: Optional[VersionRange]) -> Optional[CollectionResult]:
+        if file_type in MODELING_RULE_COMPONENT_FILES:
+            # mark pack for installation and mark the modeling rule for dynamic testing
+            return self._collect_pack_for_modeling_rule(
+                pack_id=pack_id, reason_description=reason_description,
+                changed_file_path=path, content_item_range=content_item_range
+            )
+
+        # if the file is an xsiam component and is not a modeling rule
+        return self._collect_pack_for_xsiam_component(
+            pack_id=pack_id, reason_description=reason_description,
+            changed_file_path=path, content_item_range=content_item_range
+        )
+
     def _collect_single(self, path: Path) -> Optional[CollectionResult]:
         self._validate_path(path)
 
@@ -854,7 +943,7 @@ class BranchTestCollector(TestCollector):
             content_item = ContentItem(path)
             self._validate_content_item_compatibility(content_item, is_integration='Integrations' in path.parts)
         except IncompatibleMarketplaceException:
-            if file_type not in MODELING_RULE_COMPONENT_FILES:
+            if file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES):
                 raise
         except NonDictException:
             content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
@@ -865,12 +954,12 @@ class BranchTestCollector(TestCollector):
         if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
             content_item_range = content_item.version_range if content_item else None
 
-            if file_type in MODELING_RULE_COMPONENT_FILES:
-                # mark pack for installation and mark the modeling rule for dynamic testing
-                return self._collect_pack_for_modeling_rule(
-                    pack_id=pack_id, reason_description=reason_description,
-                    changed_file_path=path, content_item_range=content_item_range
+            if file_type in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES):
+                return self._collect_xsiam_and_modeling_pack(
+                    file_type=file_type, pack_id=pack_id, reason_description=reason_description,
+                    path=path, content_item_range=content_item_range
                 )
+
             else:
                 # install pack without collecting tests.
                 return self._collect_pack(
@@ -879,6 +968,15 @@ class BranchTestCollector(TestCollector):
                     reason_description=reason_description,
                     content_item_range=content_item.version_range if content_item else None
                 )
+
+        if file_type in ONLY_UPLOAD_PACK_FILE_TYPES:
+            return self._collect_pack(
+                pack_id=pack_id,
+                reason=CollectionReason.README_FILE_CHANGED,
+                reason_description=reason_description,
+                content_item_range=content_item.version_range if content_item else None
+            )
+
         if content_item:
             try:
                 '''
@@ -905,7 +1003,7 @@ class BranchTestCollector(TestCollector):
             return self._collect_yml(path)
 
         elif file_type == FileType.REPUTATION:
-            tests = DEFAULT_REPUTATION_TESTS
+            tests = self.conf['reputation_tests']
             reason = CollectionReason.DEFAULT_REPUTATION_TESTS
 
         elif file_type in {FileType.MAPPER, FileType.CLASSIFIER}:
@@ -1039,7 +1137,7 @@ def find_pack_file_removed_from(old_path: Path, new_path: Path | None = None):
     return old_pack
 
 
-class UploadCollector(BranchTestCollector):
+class UploadBranchCollector(BranchTestCollector):
     def _collect(self) -> Optional[CollectionResult]:
         # same as BranchTestCollector, but without tests.
         if result := super()._collect():
@@ -1082,20 +1180,10 @@ class NightlyTestCollector(TestCollector, ABC):
 
         return CollectionResult.union(result)
 
-    def _collect_all_marketplace_compatible_packs(self) -> Optional[CollectionResult]:
-        result = []
-        for pack_metadata in PACK_MANAGER.iter_pack_metadata():
-            try:
-                result.append(self._collect_pack(
-                    pack_id=pack_metadata.pack_id,
-                    reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
-                    reason_description=self.marketplace.value,
-                    allow_incompatible_marketplace=False,
-                    is_nightly=True,
-                ))
-            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
-                logger.debug(str(e))
-        return CollectionResult.union(result)
+
+class UploadAllCollector(TestCollector):
+    def _collect(self) -> Optional[CollectionResult]:
+        return self._collect_all_marketplace_compatible_packs(is_nightly=False)
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
@@ -1185,7 +1273,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
             self._id_set_tests_matching_marketplace_value(),
-            self._collect_all_marketplace_compatible_packs(),
+            self._collect_all_marketplace_compatible_packs(is_nightly=True),
             self._collect_packs_of_content_matching_marketplace_value(),
             self._collect_modeling_rule_packs(),
             self.sanity_tests,  # XSIAM nightly always collects its sanity test(s)
@@ -1199,7 +1287,7 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
             self._id_set_tests_matching_marketplace_value(),
-            self._collect_all_marketplace_compatible_packs(),
+            self._collect_all_marketplace_compatible_packs(is_nightly=True),
         ))
 
 
@@ -1225,7 +1313,8 @@ def output(result: Optional[CollectionResult]):
     logger.info(f'collected {len(tests)} test playbooks:\n{test_str}')
     logger.info(f'collected {len(packs_to_install)} packs to install:\n{packs_to_install_str}')
     logger.info(f'collected {len(packs_to_upload)} packs to upload:\n{packs_to_upload_str}')
-    logger.info(f'collected {len(modeling_rules_to_test_str)} modeling rules to test:\n{modeling_rules_to_test_str}')
+    num_of_modeling_rules = len(modeling_rules_to_test_str.split("\n"))
+    logger.info(f'collected {num_of_modeling_rules} modeling rules to test:\n{modeling_rules_to_test_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
 
     PATHS.output_tests_file.write_text(test_str)
@@ -1245,7 +1334,7 @@ class XPANSENightlyTestCollector(NightlyTestCollector):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v20221108')
+    logger.info('TestCollector v20230123')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
@@ -1255,8 +1344,11 @@ if __name__ == '__main__':
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
     parser.add_argument('--graph', '-g', type=str2bool, help='Should use graph', default=False, required=False)
+    parser.add_argument('--override_all_packs', '-a', type=str2bool, help='Collect all packs if override upload', default=False,
+                        required=False)
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
+
     logger.debug(f'parsed args:\n{args_string}')
     logger.debug('CONTRIB_BRANCH=' + os.getenv('CONTRIB_BRANCH', '<undefined>'))
     branch_name = PATHS.content_repo.active_branch.name
@@ -1271,7 +1363,10 @@ if __name__ == '__main__':
         collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path, graph=graph)
 
     elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
-        collector = UploadCollector(branch_name, marketplace, service_account, graph=graph)
+        if args.override_all_packs:
+            collector = UploadAllCollector(marketplace, graph)
+        else:
+            collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
 
     else:
         match (nightly, marketplace):

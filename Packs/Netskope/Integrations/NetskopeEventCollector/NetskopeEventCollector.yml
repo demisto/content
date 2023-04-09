@@ -38,7 +38,7 @@ configuration:
   required: false
   section: Collect
   type: 0
-- additionalinfo: The maximum amount of events to retrieve for each event type (up to 10000 events). For more information about event types see the help section.
+- additionalinfo: The maximum amount of events to retrieve for each event type (up to 30000 events). For more information about event types see the help section.
   defaultvalue: '1000'
   display: Max events per fetch
   section: Collect
@@ -81,7 +81,7 @@ script:
     description: Returns events extracted from SaaS traffic and or logs.
     execution: false
     name: netskope-get-events
-  dockerimage: demisto/python3:3.10.9.46032
+  dockerimage: demisto/python3:3.10.10.52956
   feed: false
   isfetch: false
   longRunning: false

@@ -6681,7 +6681,11 @@ script:
       description: Troubleshooting information.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.47103
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: microsoft-atp-generate-login-url
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: true
   longRunning: false

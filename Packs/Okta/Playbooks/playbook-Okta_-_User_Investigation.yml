@@ -84,6 +84,7 @@ tasks:
       - "9"
       - "33"
       - "38"
+      - "41"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -327,9 +328,13 @@ tasks:
       since:
         complex:
           root: TimeLast1DayTimeNow
+          transformers:
+          - operator: LastArrayElement
       until:
         complex:
           root: CurrentTimeTimeNow
+          transformers:
+          - operator: LastArrayElement
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -465,9 +470,13 @@ tasks:
       since:
         complex:
           root: TimeLast1DayTimeNow
+          transformers:
+          - operator: LastArrayElement
       until:
         complex:
           root: CurrentTimeTimeNow
+          transformers:
+          - operator: LastArrayElement
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -881,9 +890,13 @@ tasks:
       since:
         complex:
           root: TimeLast1WeekTimeNow
+          transformers:
+          - operator: LastArrayElement
       until:
         complex:
           root: TimeLast1DayTimeNow
+          transformers:
+          - operator: LastArrayElement
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -1101,7 +1114,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -820,
           "y": 265
         }
       }
@@ -1114,10 +1127,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 05c37780-62be-49d6-80e7-da51afbfa334
+    taskid: 60f59adf-a233-4d7f-87ee-43d559400184
     type: regular
     task:
-      id: 05c37780-62be-49d6-80e7-da51afbfa334
+      id: 60f59adf-a233-4d7f-87ee-43d559400184
       version: -1
       name: Search for failed logon attempts using OKTA
       description: Gets logs on failed logon events.
@@ -1142,16 +1155,20 @@ tasks:
       since:
         complex:
           root: TimeLast1DayTimeNow
+          transformers:
+          - operator: LastArrayElement
       until:
         complex:
           root: CurrentTimeTimeNow
+          transformers:
+          - operator: LastArrayElement
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -820,
           "y": 420
         }
       }
@@ -1192,8 +1209,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
-          "y": 810
+          "x": -620,
+          "y": 805
         }
       }
     note: false
@@ -1217,7 +1234,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
+      - "40"
       "yes":
       - "35"
     separatecontext: false
@@ -1237,7 +1254,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -820,
           "y": 585
         }
       }
@@ -1365,6 +1382,253 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 25a5abbc-d30d-4012-8acf-75488d58aed8
+    type: regular
+    task:
+      id: 25a5abbc-d30d-4012-8acf-75488d58aed8
+      version: -1
+      name: Set Number Of Okta Failed Logon to Zero
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: NumOfOktaFailedLogon
+      value:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1020,
+          "y": 805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 13072b32-dac0-4c4d-8c5a-cc0b5de7d1a0
+    type: title
+    task:
+      id: 13072b32-dac0-4c4d-8c5a-cc0b5de7d1a0
+      version: -1
+      name: Failed Logon from ASN Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 256398af-e248-438b-8e7a-c72f9c238635
+    type: regular
+    task:
+      id: 256398af-e248-438b-8e7a-c72f9c238635
+      version: -1
+      name: Check for all failed logon from ASN
+      description: Gets logs by providing optional filters.
+      script: Okta v2|||okta-get-logs
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      extend-context:
+        simple: ASNfailedlogs=
+      filter:
+        simple: securityContext.asNumber eq "${inputs.ASN}" and (eventType eq "user.authentication.sso" and outcome.result eq "FAILURE" or eventType eq "user.authentication.auth" and outcome.result eq "FAILURE")
+      ignore-outputs:
+        simple: "true"
+      retry-count:
+        simple: "6"
+      retry-interval:
+        simple: "10"
+      since:
+        complex:
+          root: TimeLast1DayTimeNow
+          transformers:
+          - operator: LastArrayElement
+      until:
+        complex:
+          root: CurrentTimeTimeNow
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 59d70330-75bc-4ff7-8558-c57b4e6c4a8a
+    type: regular
+    task:
+      id: 59d70330-75bc-4ff7-8558-c57b4e6c4a8a
+      version: -1
+      name: Count failed logon from ASN
+      description: Count an array size
+      scriptName: CountArraySize
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      array:
+        complex:
+          root: ASNfailedlogs
+      contextKey:
+        simple: NumOfFailedLogonASN
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 1035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: b4510d1e-8338-40f9-856d-1e08db99747a
+    type: condition
+    task:
+      id: b4510d1e-8338-40f9-856d-1e08db99747a
+      version: -1
+      name: Does the result from Okta exist?
+      description: Check if there are results from Okta.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ASNfailedlogs
+                accessor: displayMessage
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 815
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: bb29f22a-c8db-4192-8345-462cb2453443
+    type: condition
+    task:
+      id: bb29f22a-c8db-4192-8345-462cb2453443
+      version: -1
+      name: Does the ASN is defined?
+      description: Check if there are results from Okta.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ASN
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -1373,16 +1637,21 @@ view: |-
       "16_18_#default#": 0.22,
       "29_18_#default#": 0.53,
       "2_18_#default#": 0.16,
-      "36_18_#default#": 0.1,
+      "2_41_yes": 0.9,
       "36_35_yes": 0.47,
+      "36_40_#default#": 0.47,
       "39_18_#default#": 0.16,
-      "39_4_yes": 0.44
+      "39_4_yes": 0.44,
+      "44_18_#default#": 0.1,
+      "44_43_yes": 0.58,
+      "45_18_#default#": 0.1,
+      "45_42_yes": 0.49
     },
     "paper": {
       "dimensions": {
         "height": 2525,
-        "width": 3360,
-        "x": -730,
+        "width": 4110,
+        "x": -1480,
         "y": -880
       }
     }
@@ -1397,6 +1666,11 @@ inputs:
   value: {}
   required: false
   description: The Country from which the user logged in.
+  playbookInputQuery:
+- key: ASN
+  value: {}
+  required: false
+  description: The ASN from which the user logged in.
   playbookInputQuery:
 outputs:
 - contextPath: PermanentCountry
@@ -1422,6 +1696,9 @@ outputs:
   type: unknown
 - contextPath: NumOfOktaFailedLogon
   description: Number of failed login.
+  type: unknown
+- contextPath: NumOfFailedLogonASN
+  description: Number of failed login from ASN by all users.
   type: unknown
 quiet: true
 tests:

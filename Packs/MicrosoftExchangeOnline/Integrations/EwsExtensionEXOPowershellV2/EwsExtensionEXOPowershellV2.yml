@@ -1,4 +1,7 @@
-category: Utilities
+category: Email
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: EWS Extension Online Powershell v2
   version: -1
@@ -8,25 +11,30 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - displaypassword: Certificate
   name: certificate
   type: 9
   required: true
   additionalinfo: A pfx certificate encoded in Base64.
   hiddenusername: true
+  section: Connect
 - displaypassword: Password
   name: password
   required: true
   type: 9
   hiddenusername: true
+  section: Connect
 - display: The organization used in app-only authentication.
   name: organization
   required: true
   type: 0
+  section: Connect
 - display: The application ID from the Azure portal
   name: app_id
   required: true
   type: 0
+  section: Connect
 description: Use the EWS Extension Online Powershell v2 integration to get information about mailboxes and users in your organization.  This integration can also retrieve and modify Tenant Allow/Block Lists.
 display: EWS Extension Online Powershell v2
 name: EWS Extension Online Powershell v2
@@ -561,7 +569,7 @@ script:
   runonce: false
   script: ''
   type: powershell
-  dockerimage: demisto/pwsh-exchange:1.0.0.34118
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
 fromversion: 5.5.0
 tests:
-- 'EWS Extension: Powershell Online V2 Test'
+- playbook-O365-EWS-Extension-Powershell-Online-V2-Test

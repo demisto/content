@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 sectionOrder:
 - Connect
 - Collect
@@ -117,7 +117,7 @@ script:
     - contextPath: FireMonSecurityManager.SIQL.matchId
       description: Resposne for the SIQL query
       type: Unknown
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.10.51930
   isfetch: true
   runonce: false
   script: ''

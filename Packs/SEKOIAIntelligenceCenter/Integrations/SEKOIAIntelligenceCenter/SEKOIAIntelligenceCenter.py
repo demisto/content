@@ -58,7 +58,7 @@ class Client(BaseClient):
         try:
             self._http_request(
                 method="GET",
-                url_suffix="/v1/apiauth/auth/validate",
+                url_suffix="/v1/auth/validate",
                 raise_on_status=True,
             )
             return "ok"

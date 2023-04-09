@@ -431,7 +431,7 @@
             {
                 "hidden": false,
                 "id": "yuellml8sw",
-                "name": "ZTAP",
+                "name": "ZTAP Info",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -552,6 +552,33 @@
                     }
                 ],
                 "type": "custom"
+            },
+            {
+                "id": "vkiwzwurkm",
+                "name": "ZTAP Timeline",
+                "type": "custom",
+                "hidden": false,
+                "sections": [
+                    {
+                        "description": "",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-3dd5bde0-c427-11ed-b1be-ef2101b9822e",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "query": "ZTAPViewTimeline",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ]
             },
             {
                 "id": "warRoom",

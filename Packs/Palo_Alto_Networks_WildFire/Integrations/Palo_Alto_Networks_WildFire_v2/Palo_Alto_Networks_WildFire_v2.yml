@@ -5,7 +5,7 @@ sectionOrder:
 commonfields:
   id: WildFire-v2
   version: -1
-defaultEnabled: true
+defaultEnabled: false
 configuration:
 - defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
   display: Server base URL (e.g., https://192.168.0.1/publicapi)
@@ -1405,7 +1405,7 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
-  dockerimage: demisto/python3:3.10.9.45313
+  dockerimage: demisto/python3:3.10.10.50695
   feed: false
   isfetch: false
   longRunning: false

@@ -846,7 +846,5 @@ view: |-
   }
 inputs: []
 outputs: []
-marketplaces:
-- marketplacev2
 fromversion: 6.5.0
 description: ''

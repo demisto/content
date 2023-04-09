@@ -9,6 +9,7 @@ repos:
     -   id: check-ast
     -   id: check-toml
     -   id: check-xml
+    -   id: check-merge-conflict
 
 -   repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.10.1

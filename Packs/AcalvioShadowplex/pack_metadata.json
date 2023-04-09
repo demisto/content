@@ -2,13 +2,13 @@
     "name": "Acalvio ShadowPlex",
     "description": "Acalvio ShadowPlex Autonomous Deception Solution",
     "support": "partner",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.11",
     "author": "Acalvio Technologies",
     "url": "https://www.acalvio.com",
     "email": "support@acalvio.com",
     "created": "2020-12-22T10:37:17Z",
     "categories": [
-        "Deception"
+        "Deception & Breach Simulation"
     ],
     "tags": [],
     "useCases": [],

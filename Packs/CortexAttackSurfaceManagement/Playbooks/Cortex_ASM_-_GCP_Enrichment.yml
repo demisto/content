@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 7e88d6a9-2f2a-407c-8f34-736fa7f41b7e
+    taskid: 17107715-e114-4007-8d78-dbe7b96251ff
     type: playbook
     task:
-      id: 7e88d6a9-2f2a-407c-8f34-736fa7f41b7e
+      id: 17107715-e114-4007-8d78-dbe7b96251ff
       version: -1
       name: GCP - Enrichment
       description: Given the IP address this playbook enriches GCP and Firewall information.
@@ -62,10 +62,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      GcpIP:
+        complex:
+          root: inputs.RemoteIP
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
   "2":
     id: "2"
     taskid: ee4812d0-34d9-41e9-8ddc-58390e5371eb
@@ -1135,5 +1144,3 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
-marketplaces:
-  - marketplacev2

@@ -1,0 +1,3 @@
+{
+    "query": "{\r\n\\\"query\\\": \\\"query get_sample($q_json:\r\nString) {sample(, q_json: $q_json,limit: 3) {submitted_at id submitted_file_type status threat_score state login url}}\\\",\\\"variables\\\": {\\\"q_json\\\": \\\"{\\\\\\\"op\\\\\\\": \\\\\\\"and\\\\\\\",\\\\\\\"clauses\\\\\\\": [{\\\\\\\"op\\\\\\\": \\\\\\\"attr\\\\\\\",\\\\\\\"attr\\\\\\\": \\\\\\\"submitted_file_name\\\\\\\",\\\\\\\"comp_op\\\\\\\": \\\\\\\"eq\\\\\\\",\\\\\\\"value\\\\\\\": \\\\\\\"www.example.com_.url\\\\\\\"}]}\\\"}}"
+}

@@ -1,4 +1,7 @@
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Panorama
   version: -1
@@ -7,57 +10,78 @@ configuration:
   name: server
   required: true
   type: 0
+  section: Connect
 - displaypassword: API Key
   name: credentials
   required: false
   type: 9
   hiddenusername: true
+  section: Connect
 - defaultvalue: '443'
   display: Port (e.g 443)
   name: port
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select the desired Device Group
   display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - additionalinfo: Located in the Firewall URL; by default of PAN-OS it is vsys1
   display: Vsys - Firewall instances only
   name: vsys
   required: false
   type: 0
+  section: Connect
 - display: Template - Panorama instances only
   name: template
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - additionalinfo: If selected, when running the !url command, the command will execute using pan-os with PAN_DB (with applied filters). The URL filtering categories determine DBot score (malicious, suspicious, benign).
   display: Use URL Filtering for auto enrichment
   name: use_url_filtering
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious.
   name: additional_suspicious
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - display: URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious.
   name: additional_malicious
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: API Key (Deprecated)
   name: key
   required: false
   type: 4
   hidden: true
   additionalinfo: Use the "API Key (Recommended)" parameter instead.
+  section: Connect
+  advanced: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -72,6 +96,8 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
+  section: Collect
+  advanced: true
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -82,26 +108,33 @@ configuration:
   - suddenDeath
   required: false
   type: 17
+  section: Collect
+  advanced: true
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   required: false
   type: 1
+  section: Collect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - defaultvalue: 24 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: "100"
   display: Max incidents per fetch (for each selected Log Type Query)
   additionalinfo: The maximum number of incidents to fetch per Log Type Query.
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - display: Log Type
   name: log_types
   required: false
@@ -117,50 +150,69 @@ configuration:
   - Wildfire
   - Decryption
   - All
+  section: Connect
+  advanced: true
 - display: Traffic Log Type Query
   name: traffic_query
   additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action})"
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - display: Threat Log Type Query
   name: threat_query
   additionalinfo: "Threat Log Type query example: (severity geq high)"
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - display: URL Log Type Query
   name: url_query
   additionalinfo: "URL Log Type query example: ((action eq block-override) or (action eq block-url)) and (severity geq high)"
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - display: Data Log Type Query
   name: data_query
   additionalinfo: "Data Log Type query example: ((action eq alert) or (action eq wildfire-upload-success) or (action eq forward)) and (severity geq high)"
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - display: Correlation Log Type Query
   name: correlation_query
   additionalinfo: "Correlation Log Type query example: (hostid eq {host_id}) and (match_time in {last_x_time}) and (objectname eq {object_name}) and (severity geq '{severity}'') and (src in {source_address})"
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - display: System Log Type Query
   name: system_query
   additionalinfo: "System Log Type query example: (subtype eq {sub_type}) and (severity geq {severity})"
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - display: Wildfire Submission Log Type Query
   name: wildfire_query
   additionalinfo: "Wildfire Submission Log Type query example: ((action eq wildfire-upload-fail) or (action eq wildfire-upload-skip) or (action eq sinkhole))"
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - display: Decryption Log Type Query
   name: decryption_query
   additionalinfo: "Decryption Log Type query example: (app eq {application}) and (policy_name geq {policy_name}) and ((src in {source}) or (dst in {destination}))"
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 description: Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
@@ -5186,6 +5238,7 @@ script:
       - profile-setting
       - source-user
       - service
+      - audit-comment
       required: true
     - description: The new value for the parameter.
       name: element_value
@@ -5283,9 +5336,73 @@ script:
     - description: The device group for which to return applications.
       name: device-group
       required: false
+    - description: When specified, the results returned in the list are limited to applications whose names match the specified string.
+      name: name_match
+      required: false
+      isArray: false
+    - description: When specified, the results returned in the list are limited to applications whose names contain the specified string.
+      name: name_contain
+      required: false
+      isArray: false
+    - description: The application risk (1 to 5).
+      auto: PREDEFINED
+      name: risk
+      required: false
+      isArray: false
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+    - description: The application category.
+      auto: PREDEFINED
+      name: category
+      required: false
+      isArray: false
+      predefined:
+      - 'collaboration'
+      - 'business-systems'
+      - 'networking'
+      - 'media'
+    - description: The application sub-category.
+      name: sub_category
+      required: false
+      isArray: false
+    - description: The application technology.
+      auto: PREDEFINED
+      name: technology
+      required: false
+      isArray: false
+      predefined:
+      - 'browser-based'
+      - 'client-server'
+      - 'network-protocol'
+      - 'peer-to-peer'
+    - description: "A comma-separated list of characteristics. Possible values are: 'virus-ident', 'evasive-behavior', 'file-type-ident', 'consume-big-bandwidth', 'used-by-malware', 'able-to-transfer-file', 'has-known-vulnerability', 'tunnel-other-application', 'prone-to-misuse', 'pervasive-use', 'file-forward', 'is-saas'."
+      name: characteristics
+      required: false
+      isArray: false
+    - defaultValue: '50'
+      description: The maximum number of rules to retrieve. Will be used by default if page argument was not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The page size of the applications to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing applications. Must be a positive number.
+      isArray: false
+      name: page
+      required: false
     description: Returns a list of applications.
     name: pan-os-list-applications
     outputs:
+    - contextPath: Panorama.Applications.Characteristics
+      description: The application characteristics.
+      type: string
     - contextPath: Panorama.Applications.Name
       description: The application name.
       type: string
@@ -5358,7 +5475,7 @@ script:
       - filter-pcap
       - threat-pcap
       - dlp-pcap
-    - description: The serial number of the firewall to download the PCAP from.
+    - description: The serial number of the firewall to download the PCAP from, relevant only for Panorama instances.
       name: serialNumber
     - description: The file name for the PCAP type ('dlp-pcap', 'filter-pcap', or 'application-pcap'). Required for 'filter-pcap'.
       name: from
@@ -5372,11 +5489,11 @@ script:
       name: pcapID
     - description: The password for Panorama, needed for the 'dlp-pcap' PCAP type only.
       name: password
-    - description: The device name on which the PCAP is stored. See the Panorama XML API documentation. Required for 'threat-pcap' in pan-os firewalls < 9.0.7 versions
+    - description: The device name on which the PCAP is stored. See the Panorama XML API documentation. Required for 'threat-pcap' when using a Panorama instance.
       name: deviceName
-    - description: The Session ID of the PCAP. See the Panorama XML API documentation. Required for 'threat-pcap' in pan-os firewalls < 9.0.7 versions
+    - description: The Session ID of the PCAP. See the Panorama XML API documentation. Required for 'threat-pcap' when using Panorama instance.
       name: sessionID
-    description: Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to SSH the firewall and run the scp export command to export the PCAP file. See the Palo Alto Networks documentation.
+    description: Returns a PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to connect to the firewall and run the scp export command in order to export the PCAP file. See the Palo Alto Networks documentation.
     name: pan-os-get-pcap
     outputs:
     - contextPath: File.Size
@@ -5627,8 +5744,37 @@ script:
       name: device-group
     - description: The tag to filter the rules.
       name: tag
+      deprecated: true
+    - description: A comma-separated list of tags by which to filter the rules.
+      name: tags
+      isArray: true
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
+      required: false
+    - description: The name of the rule to retrieve. If not mentioned, will retrieve all the rules.
+      isArray: false
+      name: rulename
+      required: false
+    - auto: PREDEFINED
+      description: Whether to retrieve the disabled rules or not. If not mentioned, will retrieve all the rules.
+      name: disabled
+      isArray: false
+      required: false
+      predefined:
+      - yes
+      - no
+    - auto: PREDEFINED
+      description: The action of the rules to retrieve. If not mentioned, will retrieve all the rules.
+      name: action
+      isArray: false
+      required: false
+      predefined:
+      - allow
+      - deny
+      - drop
+    - description: Free query to retrieve rules. If not mentioned, will retrieve all the rules.
+      name: query
+      isArray: false
       required: false
     description: Returns a list of predefined Security Rules.
     name: pan-os-list-rules
@@ -5669,6 +5815,9 @@ script:
     - contextPath: Panorama.SecurityRules.Tags
       description: The rule tags.
       type: String
+    - contextPath: Panorama.SecurityRules.Disabled
+      description: Whether the rule is disabled.
+      type: string
   - arguments:
     - description: The log type.
       name: log-type
@@ -8453,6 +8602,31 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the NAT rules.
+      isArray: false
+      name: disabled
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    - description: The type of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
+      isArray: false
+      name: nat_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - ipv4
+      - nat64
+      - nptv6
+    - description: A comma-separated list of tags of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
+      isArray: true
+      name: tags
+      required: false
+    - description: Free query to retrieve NAT rule. If not mentioned, will retrieve all the NAT rules.
+      name: query
+      isArray: false
+      required: false
     - defaultValue: '50'
       description: The maximum number of rules to retrieve. Will be used by default if page argument was not provided.
       isArray: false
@@ -8509,6 +8683,9 @@ script:
     - contextPath: Panorama.NAT.DynamicDestinationTranslation
       description: The dynamic destination translation of the rule.
       type: Unknown
+    - contextPath: Panorama.NAT.Disabled
+      description: Whether the rule is disabled.
+      type: String
   - arguments:
     - description: The name of the NAT rule to create.
       isArray: false
@@ -8998,6 +9175,31 @@ script:
       - 'false'
       name: show_uncommitted
       required: false
+    - description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the PBF rules.
+      isArray: false
+      name: disabled
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    - description: The action of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules.
+      isArray: false
+      name: action
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - discard
+      - forward
+      - no-pbf
+    - description: A comma-separated list of tags of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules.
+      isArray: true
+      name: tags
+      required: false
+    - description: Free query to retrieve PBF rule. If not mentioned, will retrieve all the PBF rules.
+      name: query
+      isArray: false
+      required: false
     - defaultValue: '50'
       description: The maximum number of rules to retrieve. Will be used by default if page argument was not provided.
       isArray: false
@@ -9051,6 +9253,9 @@ script:
     - contextPath: Panorama.PBF.Service
       description: The services of the PBF rule.
       type: Unknown
+    - contextPath: Panorama.PBF.Disabled
+      description: Whether the rule is disabled.
+      type: String
   - arguments:
     - description: The name of the PBF-rule to create.
       isArray: false
@@ -9199,6 +9404,7 @@ script:
       - action_forward_nexthop_fqdn
       - action_forward_discard
       - action_forward_no_pbf
+      - disabled
     - description: The value of the element to change. Can be a list for some of the elements. When element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically.
       isArray: true
       name: element_value
@@ -9346,7 +9552,7 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.45668
+  dockerimage: demisto/pan-os-python:1.0.0.52342
   feed: false
   isfetch: true
   longRunning: false

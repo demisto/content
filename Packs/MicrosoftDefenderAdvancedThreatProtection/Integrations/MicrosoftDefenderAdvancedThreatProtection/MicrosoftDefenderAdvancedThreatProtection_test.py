@@ -2814,3 +2814,45 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.security_center]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+def test_generate_login_url(mocker):
+    """
+    Given:
+        - Self-deployed are true and auth code are the auth flow
+    When:
+        - Calling function microsoft-atp-generate-login-url
+    Then:
+        - Ensure the generated url are as expected.
+    """
+    # prepare
+    import demistomock as demisto
+    from MicrosoftDefenderAdvancedThreatProtection import main, Scopes
+    import MicrosoftDefenderAdvancedThreatProtection
+
+    redirect_uri = 'redirect_uri'
+    tenant_id = 'tenant_id'
+    client_id = 'client_id'
+    mocked_params = {
+        'redirect_uri': redirect_uri,
+        'auth_type': 'Authorization Code',
+        'self_deployed': 'True',
+        'tenant_id': tenant_id,
+        'auth_id': client_id,
+        'credentials': {
+            'password': 'client_secret'
+        }
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='microsoft-atp-generate-login-url')
+    mocker.patch.object(MicrosoftDefenderAdvancedThreatProtection, 'return_results')
+
+    # call
+    main()
+
+    # assert
+    expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
+                   f'response_type=code&scope=offline_access%20{Scopes.security_center_apt_service}' \
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+    res = MicrosoftDefenderAdvancedThreatProtection.return_results.call_args[0][0].readable_output
+    assert expected_url in res

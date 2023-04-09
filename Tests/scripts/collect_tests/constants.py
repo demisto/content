@@ -17,12 +17,6 @@ SANITY_TEST_TO_PACK: dict[str, str] = {
     'Sanity Test - Playbook with mocked integration': 'HelloWorld',
 }
 
-DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
-    'FormattingPerformance - Test',
-    'reputations.json Test',
-    'Indicators reputation-.json Test',
-)
-
 ALWAYS_INSTALLED_PACKS_XSOAR = (
     'Base',
     'DeveloperTools',
@@ -68,7 +62,6 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.CORRELATION_RULE,
     FileType.XSIAM_DASHBOARD,
     FileType.XSIAM_REPORT,
-    FileType.REPORT,
     FileType.GENERIC_TYPE,
     FileType.GENERIC_FIELD,
     FileType.GENERIC_MODULE,
@@ -88,10 +81,15 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
     FileType.XDRC_TEMPLATE,
+    FileType.PARSING_RULE_XIF,
+    FileType.LAYOUT_RULE,
+}
+
+ONLY_UPLOAD_PACK_FILE_TYPES: set[FileType] = {
+    FileType.README,
 }
 
 IGNORED_FILE_TYPES: set[FileType] = {
-    FileType.README,
     FileType.PACK_IGNORE,
     FileType.XIF_FILE,
     FileType.SECRET_IGNORE,
@@ -121,4 +119,15 @@ MODELING_RULE_COMPONENT_FILES: set[FileType] = {
     FileType.MODELING_RULE_XIF,
     FileType.MODELING_RULE_SCHEMA,
     FileType.MODELING_RULE_TEST_DATA,
+}
+
+XSIAM_COMPONENT_FILES: set[FileType] = {
+    FileType.PARSING_RULE,
+    FileType.CORRELATION_RULE,
+    FileType.XSIAM_DASHBOARD,
+    FileType.XSIAM_REPORT,
+    FileType.TRIGGER,
+    FileType.MODELING_RULE_SCHEMA,
+    FileType.XDRC_TEMPLATE,
+    FileType.LAYOUT_RULE
 }

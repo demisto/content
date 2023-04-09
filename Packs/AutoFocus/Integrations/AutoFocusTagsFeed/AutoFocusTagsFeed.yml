@@ -103,8 +103,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the AutoFocus Tags Feed integration to fetch indicators from AutoFocus Tags.
-display: AutoFocus Tags Feed
+description: Deprecated. Use Unit 42 Intel Objects Feed instead. Use the AutoFocus Tags Feed integration to fetch indicators from AutoFocus Tags.
+display: AutoFocus Tags Feed (Deprecated)
 name: AutoFocusTagsFeed
 script:
   commands:
@@ -120,7 +120,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: autofocus-tags-feed-get-indicators
-  dockerimage: demisto/python3:3.10.9.45313
+  dockerimage: demisto/python3:3.10.10.49934
   feed: true
   isfetch: false
   longRunning: false
@@ -130,5 +130,6 @@ script:
   subtype: python3
   type: python
 tests:
-- AutoFocusTagsFeed-test
+- No tests
 fromversion: 6.5.0
+deprecated: true

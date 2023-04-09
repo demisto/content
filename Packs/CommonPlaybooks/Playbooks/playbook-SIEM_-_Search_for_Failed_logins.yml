@@ -419,8 +419,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 1070
+          "x": 730,
+          "y": 1090
         }
       }
     note: false
@@ -463,8 +463,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 1070
+          "x": -500,
+          "y": 1080
         }
       }
     note: false
@@ -504,8 +504,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 430,
-          "y": 1070
+          "x": 170,
+          "y": 1080
         }
       }
     note: false
@@ -529,7 +529,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "22"
+      - "23"
       "yes":
       - "11"
     separatecontext: false
@@ -574,7 +574,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "22"
+      - "23"
       "yes":
       - "12"
     separatecontext: false
@@ -619,7 +619,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "22"
+      - "23"
       "yes":
       - "9"
     separatecontext: false
@@ -668,7 +668,7 @@ tasks:
       {
         "position": {
           "x": -810,
-          "y": 1390
+          "y": 1470
         }
       }
     note: false
@@ -678,19 +678,57 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 97dd0ada-f3d2-4dd8-8152-3d8349706c7d
+    type: regular
+    task:
+      id: 97dd0ada-f3d2-4dd8-8152-3d8349706c7d
+      version: -1
+      name: Set Number Of SIEM Failed Logon to Zero
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: NumOfSiemFailedLogon
+      value:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "16_22_#default#": 0.11,
-      "17_22_#default#": 0.26,
-      "18_22_#default#": 0.1,
+      "16_23_#default#": 0.1,
+      "17_23_#default#": 0.1,
+      "18_23_#default#": 0.21,
       "18_9_yes": 0.71,
       "3_22_#default#": 0.17
     },
     "paper": {
       "dimensions": {
-        "height": 1285,
-        "width": 2250,
+        "height": 1365,
+        "width": 2560,
         "x": -810,
         "y": 170
       }

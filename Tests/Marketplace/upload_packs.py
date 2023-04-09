@@ -9,9 +9,7 @@ import prettytable
 import glob
 import requests
 from datetime import datetime
-from google.cloud.storage import Bucket
 from pathlib import Path
-
 from zipfile import ZipFile
 from typing import Any, List, Tuple, Union, Optional
 
@@ -28,6 +26,7 @@ from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4j
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
+from Tests.Marketplace.pack_readme_handler import replace_readme_urls, download_readme_images_from_url_data_list
 
 METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
@@ -79,6 +78,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
         str: downloaded index generation.
 
     """
+    logging.info('Start of download_and_extract_index')
     if storage_bucket.name == GCPConfig.PRODUCTION_PRIVATE_BUCKET:
         index_storage_path = os.path.join(GCPConfig.PRIVATE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     else:
@@ -248,31 +248,21 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
     return False
 
 
-def upload_index_to_storage(index_folder_path: str, extract_destination_path: str, index_blob: Any,
-                            build_number: str, private_packs: list, current_commit_hash: str,
-                            index_generation: int, is_private: bool = False, force_upload: bool = False,
-                            previous_commit_hash: str = None, landing_page_sections: dict = None,
-                            artifacts_dir: Optional[str] = None,
-                            storage_bucket: Optional[Bucket] = None,
-                            ):
+def prepare_index_json(index_folder_path: str, build_number: str, private_packs: list,
+                       current_commit_hash: str, force_upload: bool = False, previous_commit_hash: str = None,
+                       landing_page_sections: dict = None):
     """
-    Upload updated index zip to cloud storage.
+    Args:
+        index_folder_path (str): index folder full path.
+        build_number (str): CI build number, used as an index revision.
+        private_packs (list): List of private packs and their price.
+        current_commit_hash (str): last commit hash of head.
+        force_upload (bool): Indicates if force upload or not.
+        previous_commit_hash (str): The previous commit hash to diff with.
+        landing_page_sections (dict): landingPage sections.
 
-    :param index_folder_path: index folder full path.
-    :param extract_destination_path: extract folder full path.
-    :param index_blob: google cloud storage object that represents index.zip blob.
-    :param build_number: CI build number, used as an index revision.
-    :param private_packs: List of private packs and their price.
-    :param current_commit_hash: last commit hash of head.
-    :param index_generation: downloaded index generation.
-    :param is_private: Indicates if upload is private.
-    :param force_upload: Indicates if force upload or not.
-    :param previous_commit_hash: The previous commit hash to diff with.
-    :param landing_page_sections: landingPage sections.
-    :param artifacts_dir: The CI artifacts directory to upload the index.json to.
-    :param storage_bucket: The storage bucket object
-    :returns None.
-
+    Returns:
+        None
     """
     if force_upload:
         # If we force upload we don't want to update the commit in the index.json file,
@@ -301,34 +291,102 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         }
         json.dump(index, index_file, indent=4)
 
+
+def upload_index_to_storage(index_folder_path: str,
+                            extract_destination_path: str,
+                            index_blob: Any,
+                            index_generation: int,
+                            is_private: bool = False,
+                            artifacts_dir: Optional[str] = None,
+                            index_name: str = GCPConfig.INDEX_NAME
+                            ):
+    """
+    Upload updated index zip to cloud storage.
+
+    :param index_folder_path: index folder full path.
+    :param extract_destination_path
+    :param index_blob: google cloud storage object that represents index.zip blob.
+    :param index_generation: downloaded index generation.
+    :param is_private: Indicates if upload is private.
+    :param artifacts_dir: The CI artifacts directory to upload the index.json to.
+    :param index_name: The index name to upload.
+    :returns None.
+
+    """
     index_zip_name = os.path.basename(index_folder_path)
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
     try:
         logging.info(f'index zip path: {index_zip_path}')
+
         index_blob.reload()
         current_index_generation = index_blob.generation
+
         index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
 
         if is_private or current_index_generation == index_generation:
             # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
             index_blob.upload_from_filename(index_zip_path)
-            logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
+            logging.success(f"Finished uploading {index_name}.zip to storage.")
         else:
-            logging.critical(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation.")
+            logging.critical(f"Failed in uploading {index_name}, mismatch in index file generation.")
             logging.critical(f"Downloaded index generation: {index_generation}")
             logging.critical(f"Current index generation: {current_index_generation}")
             sys.exit(0)
+
     except Exception:
-        logging.exception(f"Failed in uploading {GCPConfig.INDEX_NAME}.")
+        logging.exception(f"Failed in uploading {index_name}.")
         sys.exit(1)
     finally:
         if artifacts_dir:
             # Store index.json in CircleCI artifacts
             shutil.copyfile(
-                os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json'),
-                os.path.join(artifacts_dir, f'{GCPConfig.INDEX_NAME}.json'),
+                os.path.join(index_folder_path, f'{index_name}.json'),
+                os.path.join(artifacts_dir, f'{index_name}.json'),
             )
+        shutil.rmtree(index_folder_path)
+
+
+def init_index_v2(storage_base_path: str, extract_destination_path: str, storage_bucket, index_folder_path: str) -> tuple:
+    """
+    Args:
+        storage_base_path (str): The storage base path.
+        extract_destination_path (str): Extract_destination path.
+        storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
+        index_folder_path (str): The path to the local folder of the index file.
+    Returns:
+        index_v2_local_path (str): The path to the local folder of the index_v2.
+        index_v2_blob (Blob): google cloud storage object that represents index_v2.zip blob.
+    """
+    index_v2_gcs_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_V2_NAME}.zip")
+    index_v2_local_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_V2_NAME}")
+    index_v2_blob = storage_bucket.blob(index_v2_gcs_path)
+    shutil.copytree(index_folder_path, index_v2_local_path)
+    return index_v2_local_path, index_v2_blob
+
+
+def upload_index_v2(index_folder_path: str,
+                    extract_destination_path: str,
+                    index_blob: Any,
+                    index_name: str = GCPConfig.INDEX_V2_NAME):
+    """
+    Args:
+        index_folder_path (str): The path to the index_v2 folder.
+        extract_destination_path (str),
+        index_blob (Blob) : The blob to upload to.
+        index_name (str): Index_name
+    """
+    index_zip_name = os.path.basename(index_folder_path)
+    index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
+                                         root_dir=extract_destination_path, base_dir=index_zip_name)
+
+    try:
+        index_blob.upload_from_filename(index_zip_path)
+        logging.success(f"Finished uploading {index_name}.zip to storage.")
+    except Exception:
+        logging.exception(f"Failed in uploading {index_name}.")
+        sys.exit(1)
+    finally:
         shutil.rmtree(index_folder_path)
 
 
@@ -860,7 +918,7 @@ def handle_private_content(public_index_folder_path, private_bucket_name, extrac
         return False, [], []
 
 
-def get_images_data(packs_list: list):
+def get_images_data(packs_list: list, readme_images_dict: dict):
     """ Returns a data structure of all packs that an integration/author image of them was uploaded
 
     Args:
@@ -879,11 +937,10 @@ def get_images_data(packs_list: list):
             pack_image_data[pack.name][BucketUploadFlow.INTEGRATIONS] = pack.uploaded_integration_images
         if pack.uploaded_preview_images:
             pack_image_data[pack.name][BucketUploadFlow.PREVIEW_IMAGES] = pack.uploaded_preview_images
-        if pack.uploaded_readme_images:
-            pack_image_data[pack.name][BucketUploadFlow.README_IMAGES] = pack.uploaded_readme_images
         if pack_image_data[pack.name]:
             images_data.update(pack_image_data)
 
+    pack_image_data[BucketUploadFlow.README_IMAGES] = readme_images_dict
     return images_data
 
 
@@ -1143,7 +1200,7 @@ def main():
 
         # upload author integration images and readme images
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
-                                  override_all_packs, marketplace):
+                                  override_all_packs):
             continue
 
         # detect if the pack is modified and return modified RN files
@@ -1199,7 +1256,7 @@ def main():
         sign_and_zip_pack(pack, signature_key, remove_test_playbooks)
         shutil.copyfile(pack.zip_path, uploaded_packs_dir / f"{pack.name}.zip")
         task_status, skipped_upload, _ = pack.upload_to_storage(pack.zip_path, pack.latest_version, storage_bucket,
-                                                                override_all_packs or pack.is_modified,
+                                                                pack.is_modified,
                                                                 storage_base_path)
 
         if not task_status:
@@ -1269,15 +1326,43 @@ def main():
     create_corepacks_config(storage_bucket, build_number, index_folder_path,
                             os.path.dirname(packs_artifacts_path), storage_base_path, marketplace)
 
-    # finished iteration over content packs
-    upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,
-                            index_blob=index_blob, build_number=build_number, private_packs=private_packs,
-                            current_commit_hash=current_commit_hash, index_generation=index_generation,
-                            force_upload=force_upload, previous_commit_hash=previous_commit_hash,
-                            landing_page_sections=statistics_handler.landing_page_sections,
-                            artifacts_dir=os.path.dirname(packs_artifacts_path),
-                            storage_bucket=storage_bucket)
+    prepare_index_json(index_folder_path=index_folder_path,
+                       build_number=build_number,
+                       private_packs=private_packs,
+                       current_commit_hash=current_commit_hash,
+                       force_upload=force_upload,
+                       previous_commit_hash=previous_commit_hash,
+                       landing_page_sections=statistics_handler.landing_page_sections)
 
+    logging.info('Starting initialize index_v2')
+    index_v2_local_path, index_v2_blob = init_index_v2(storage_base_path, extract_destination_path,
+                                                       storage_bucket, index_folder_path)
+
+    logging.info('Starting to replace the readme images urls in index_V2')
+    replace_readme_urls(index_v2_local_path, storage_base_path=storage_base_path,
+                        marketplace=marketplace, index_v2=True)
+
+    readme_images_dict, readme_urls_data_list = replace_readme_urls(index_folder_path,
+                                                                    storage_base_path=storage_base_path,
+                                                                    marketplace=marketplace)
+    download_readme_images_from_url_data_list(readme_urls_data_list, storage_bucket=storage_bucket)
+
+    # finished iteration over content packs
+    upload_index_to_storage(index_folder_path=index_folder_path,
+                            extract_destination_path=extract_destination_path,
+                            index_blob=index_blob,
+                            index_generation=index_generation,
+                            artifacts_dir=os.path.dirname(packs_artifacts_path)
+                            )
+
+    logging.info('Staring to upload index v2')
+
+    upload_index_v2(index_folder_path=index_v2_local_path,
+                    extract_destination_path=extract_destination_path,
+                    index_blob=index_v2_blob,
+                    index_name=GCPConfig.INDEX_V2_NAME)
+
+    logging.info('Finished uploading index v2')
     # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
     if is_create_dependencies_zip and marketplace == 'xsoar':
         # handle packs with dependencies zip
@@ -1292,7 +1377,7 @@ def main():
     store_successful_and_failed_packs_in_ci_artifacts(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
         successful_uploaded_dependencies_zip_packs, failed_packs, updated_private_packs_ids,
-        images_data=get_images_data(packs_list)
+        images_data=get_images_data(packs_list, readme_images_dict=readme_images_dict)
     )
 
     # summary of packs status

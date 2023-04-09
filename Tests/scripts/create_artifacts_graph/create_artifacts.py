@@ -3,6 +3,7 @@ from pathlib import Path
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.content_graph.objects.repository import ContentDTO
+from demisto_sdk.commands.content_graph.objects.pack import Pack
 from Tests.scripts.utils.log_util import install_logging
 import logging as logger
 from demisto_sdk.commands.common.logger import logging_setup
@@ -25,17 +26,18 @@ def create_dependencies(content_dto: ContentDTO, is_bucket_upload: bool, output:
         first_level_dependencies = {}
         all_level_dependencies = {}
         for dependency in dependencies:
-            if is_bucket_upload and dependency.is_test:
+            dependency_content_item_to: Pack = dependency.content_item_to
+            if (is_bucket_upload and dependency.is_test) or dependency_content_item_to.hidden:
                 continue
             if dependency.mandatorily:
-                all_level_dependencies[dependency.content_item.object_id] = {
-                    "display_name": dependency.content_item.name,
+                all_level_dependencies[dependency.content_item_to.object_id] = {
+                    "display_name": dependency.content_item_to.name,
                     "mandatory": True,
-                    "author": dependency.content_item.author,
+                    "author": dependency.content_item_to.author,
                 }
             if dependency.is_direct:
-                first_level_dependencies[dependency.content_item.object_id] = {
-                    "display_name": dependency.content_item.name,
+                first_level_dependencies[dependency.content_item_to.object_id] = {
+                    "display_name": dependency.content_item_to.name,
                     "mandatory": dependency.mandatorily,
                     "is_test": dependency.is_test,
                 }
@@ -64,11 +66,12 @@ def main():
 
     with Neo4jContentGraphInterface() as interface:
         content_dto: ContentDTO = interface.marshal_graph(args.marketplace, all_level_dependencies=True)
-        logger.info("Creating content artifacts zips")
-        create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
 
         logger.info("Creating pack dependencies mapping")
         create_dependencies(content_dto, args.bucket_upload, Path(args.dependencies_output))
+
+        logger.info("Creating content artifacts zips")
+        create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
 
 
 if __name__ == "__main__":

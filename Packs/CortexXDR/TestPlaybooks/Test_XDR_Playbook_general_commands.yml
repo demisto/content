@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 49231027-21ac-4b91-89e3-5824b2433c87
+    taskid: bcb5e778-d1b2-495f-8a47-71742c32167b
     type: start
     task:
-      id: 49231027-21ac-4b91-89e3-5824b2433c87
+      id: bcb5e778-d1b2-495f-8a47-71742c32167b
       version: -1
       name: ""
       iscommand: false
@@ -22,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": -800
+          "x": 265,
+          "y": 50
         }
       }
     note: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 715ddb77-fae2-4838-8267-d67af054e51b
+    taskid: d8169320-38bb-4bfb-8c69-cebe4e476203
     type: regular
     task:
-      id: 715ddb77-fae2-4838-8267-d67af054e51b
+      id: d8169320-38bb-4bfb-8c69-cebe4e476203
       version: -1
       name: DeleteContext
       description: DeleteContext
@@ -57,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 205
+          "x": 265,
+          "y": 1070
         }
       }
     note: false
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: b9e66d96-8179-41bb-8bef-10f107db82c1
+    taskid: f6b8e1ad-b0f6-48f7-8374-e9ef4558bbf2
     type: regular
     task:
-      id: b9e66d96-8179-41bb-8bef-10f107db82c1
+      id: f6b8e1ad-b0f6-48f7-8374-e9ef4558bbf2
       version: -1
       name: xdr-get-incidents
       description: xdr-get-incidents
@@ -96,8 +96,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 380
+          "x": 265,
+          "y": 1245
         }
       }
     note: false
@@ -109,10 +109,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 734be429-eb6e-45c4-864a-f4d5c741f159
+    taskid: a117cebe-63cb-4e1d-8cc0-aae7066d6fd2
     type: condition
     task:
-      id: 734be429-eb6e-45c4-864a-f4d5c741f159
+      id: a117cebe-63cb-4e1d-8cc0-aae7066d6fd2
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -150,8 +150,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 555
+          "x": 265,
+          "y": 1420
         }
       }
     note: false
@@ -163,10 +163,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 5b9f5be4-7a6d-4896-8998-468208db9552
+    taskid: 2d2c2ab4-93c2-4137-8139-7d9df828d2e0
     type: regular
     task:
-      id: 5b9f5be4-7a6d-4896-8998-468208db9552
+      id: 2d2c2ab4-93c2-4137-8139-7d9df828d2e0
       version: -1
       name: xdr-get-incident-extra-data
       description: xdr-get-incident-extra-data
@@ -185,8 +185,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 730
+          "x": 265,
+          "y": 1595
         }
       }
     note: false
@@ -198,10 +198,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: f71b8db7-55f8-4185-850d-97d2e9bec20d
+    taskid: 9afacc8a-7757-43ce-8aa4-5421fbb6e9ea
     type: condition
     task:
-      id: f71b8db7-55f8-4185-850d-97d2e9bec20d
+      id: 9afacc8a-7757-43ce-8aa4-5421fbb6e9ea
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -264,8 +264,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 905
+          "x": 265,
+          "y": 1770
         }
       }
     note: false
@@ -277,10 +277,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 822b712d-53d9-4027-87ad-0dd630353f8e
+    taskid: 79399166-a9eb-48db-8071-ba4bf486a8ec
     type: regular
     task:
-      id: 822b712d-53d9-4027-87ad-0dd630353f8e
+      id: 79399166-a9eb-48db-8071-ba4bf486a8ec
       version: -1
       name: xdr-update-incident
       description: xdr-update-incident
@@ -307,8 +307,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 1080
+          "x": 265,
+          "y": 1945
         }
       }
     note: false
@@ -320,10 +320,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 4c6a7b84-cccc-442f-8a49-ae8e68a1e209
+    taskid: cf565c46-b910-4406-8df9-4149ad693b18
     type: regular
     task:
-      id: 4c6a7b84-cccc-442f-8a49-ae8e68a1e209
+      id: cf565c46-b910-4406-8df9-4149ad693b18
       version: -1
       name: Save incident id
       description: Save incident id
@@ -348,8 +348,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 1255
+          "x": 265,
+          "y": 2120
         }
       }
     note: false
@@ -361,10 +361,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: dbcf44ab-f1ed-4b6e-8b47-72314454ce43
+    taskid: 17fa22d4-fb9b-43a1-8151-235693128004
     type: regular
     task:
-      id: dbcf44ab-f1ed-4b6e-8b47-72314454ce43
+      id: 17fa22d4-fb9b-43a1-8151-235693128004
       version: -1
       name: DeleteContext
       description: DeleteContext
@@ -385,8 +385,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 1430
+          "x": 265,
+          "y": 2295
         }
       }
     note: false
@@ -398,10 +398,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 3180df4d-50d9-4afc-8777-4e089025e091
+    taskid: 6396fcbb-6f03-4d58-8341-8d36ee0998fb
     type: regular
     task:
-      id: 3180df4d-50d9-4afc-8777-4e089025e091
+      id: 6396fcbb-6f03-4d58-8341-8d36ee0998fb
       version: -1
       name: xdr-get-incidents
       description: xdr-get-incidents
@@ -422,8 +422,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 1605
+          "x": 265,
+          "y": 2470
         }
       }
     note: false
@@ -435,10 +435,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: f26a9044-c6fa-4beb-805b-ab8323816dfd
+    taskid: 9cb187f1-e307-491f-82b6-c5ef509a4af2
     type: condition
     task:
-      id: f26a9044-c6fa-4beb-805b-ab8323816dfd
+      id: 9cb187f1-e307-491f-82b6-c5ef509a4af2
       version: -1
       name: Verify updated values
       description: Verify updated values
@@ -472,8 +472,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 1780
+          "x": 265,
+          "y": 2645
         }
       }
     note: false
@@ -485,10 +485,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: b2a0af24-a982-4bb4-8cca-eaa418ac43b2
+    taskid: f415ba0b-81cb-4ec9-8387-37a54bbb7caf
     type: regular
     task:
-      id: b2a0af24-a982-4bb4-8cca-eaa418ac43b2
+      id: f415ba0b-81cb-4ec9-8387-37a54bbb7caf
       version: -1
       name: xdr-update-incident
       description: xdr-update-incident
@@ -511,8 +511,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 1955
+          "x": 265,
+          "y": 2820
         }
       }
     note: false
@@ -524,10 +524,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: d6b13764-b2cd-4f2a-85d3-548604d095a8
+    taskid: b0ab13ae-dbcb-4a75-8f77-0c1e956ff758
     type: regular
     task:
-      id: d6b13764-b2cd-4f2a-85d3-548604d095a8
+      id: b0ab13ae-dbcb-4a75-8f77-0c1e956ff758
       version: -1
       name: xdr-insert-parsed-alert
       description: xdr-insert-parsed-alert
@@ -562,8 +562,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 2130
+          "x": 265,
+          "y": 2995
         }
       }
     note: false
@@ -575,10 +575,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 203ba0ba-984b-4a2c-828f-72d884b3c072
+    taskid: 7e57cd62-5f18-4ded-8b00-f2f7e1e3a386
     type: regular
     task:
-      id: 203ba0ba-984b-4a2c-828f-72d884b3c072
+      id: 7e57cd62-5f18-4ded-8b00-f2f7e1e3a386
       version: -1
       name: Set 2 CEF alerts to context
       description: Set 2 CEF alerts to context
@@ -605,8 +605,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 2305
+          "x": 265,
+          "y": 3170
         }
       }
     note: false
@@ -618,10 +618,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 41b0f717-c99f-487f-8d2a-103999e48b79
+    taskid: 81eaec3e-a040-43bc-822e-e33a92142a61
     type: regular
     task:
-      id: 41b0f717-c99f-487f-8d2a-103999e48b79
+      id: 81eaec3e-a040-43bc-822e-e33a92142a61
       version: -1
       name: xdr-insert-cef-alerts
       description: xdr-insert-cef-alerts
@@ -640,8 +640,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 2480
+          "x": 265,
+          "y": 3345
         }
       }
     note: false
@@ -653,12 +653,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: f5d652a9-5af8-467b-8fc5-1146c9b63a4d
+    taskid: f63e6a0e-e5fa-4de6-8920-4971dcd45153
     type: regular
     task:
-      id: f5d652a9-5af8-467b-8fc5-1146c9b63a4d
+      id: f63e6a0e-e5fa-4de6-8920-4971dcd45153
       version: -1
-      name: Get Endpoint f8a2f58846b542579c12090652e79f3d
+      name: Get Endpoint aeec6a2cc92e46fab3b6f621722e9916
       description: Gets a list of endpoints, according to the passed filters. Filtering
         by multiple fields will be concatenated using AND condition (OR is not supported).
         Maximum result set size is 100. Offset is the zero-based number of endpoint
@@ -672,14 +672,14 @@ tasks:
       - "16"
     scriptarguments:
       endpoint_id_list:
-        simple: f8a2f58846b542579c12090652e79f3d
+        simple: aeec6a2cc92e46fab3b6f621722e9916
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 2655
+          "x": 265,
+          "y": 3520
         }
       }
     note: false
@@ -691,10 +691,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: ed0851cb-fc5f-47f4-839c-d4d806c5ecd2
+    taskid: e1eca1fa-f43c-4ddd-8a0f-2aa6572f75c7
     type: condition
     task:
-      id: ed0851cb-fc5f-47f4-839c-d4d806c5ecd2
+      id: e1eca1fa-f43c-4ddd-8a0f-2aa6572f75c7
       version: -1
       name: To isolate ?
       description: To isolate
@@ -722,8 +722,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 2830
+          "x": 265,
+          "y": 3695
         }
       }
     note: false
@@ -735,10 +735,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 030dd21f-37ff-4da8-83ed-7490f86b3ad1
+    taskid: 34392061-dc31-42fd-8f51-bccaeab47ed2
     type: condition
     task:
-      id: 030dd21f-37ff-4da8-83ed-7490f86b3ad1
+      id: 34392061-dc31-42fd-8f51-bccaeab47ed2
       version: -1
       name: To unisolate?
       description: To unisolate
@@ -766,8 +766,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 662.5,
-          "y": 3005
+          "x": 50,
+          "y": 3870
         }
       }
     note: false
@@ -779,10 +779,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 97c69b46-013a-4dc5-858a-408b69f392d3
+    taskid: 6f9c0a3d-7db0-4155-8af5-c0b28efeb70e
     type: regular
     task:
-      id: 97c69b46-013a-4dc5-858a-408b69f392d3
+      id: 6f9c0a3d-7db0-4155-8af5-c0b28efeb70e
       version: -1
       name: xdr-unisolate-endpoint
       description: xdr-unisolate-endpoint
@@ -801,8 +801,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 3180
+          "x": 162.5,
+          "y": 4045
         }
       }
     note: false
@@ -814,10 +814,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 20c3fb3a-029a-46be-8345-ec5fa463f70f
+    taskid: c5ac4a23-328c-4f31-8311-09d2f21913ee
     type: regular
     task:
-      id: 20c3fb3a-029a-46be-8345-ec5fa463f70f
+      id: c5ac4a23-328c-4f31-8311-09d2f21913ee
       version: -1
       name: xdr-isolate-endpoint
       description: xdr-isolate-endpoint
@@ -836,8 +836,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 120,
-          "y": 3180
+          "x": 592.5,
+          "y": 4045
         }
       }
     note: false
@@ -849,10 +849,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: fe11d6ae-895c-4791-8be9-026f6f3692ff
+    taskid: 389c509f-a239-4490-85e8-f33628e970cf
     type: regular
     task:
-      id: fe11d6ae-895c-4791-8be9-026f6f3692ff
+      id: 389c509f-a239-4490-85e8-f33628e970cf
       version: -1
       name: xdr-get-endpoints
       description: xdr-get-endpoints
@@ -871,8 +871,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 3500
+          "x": 162.5,
+          "y": 4365
         }
       }
     note: false
@@ -884,10 +884,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: a9b1aeba-72ef-48be-8922-d0cd5cff6e5c
+    taskid: 1b60abf9-6e20-4fe6-8f64-cdc5f3121e56
     type: condition
     task:
-      id: a9b1aeba-72ef-48be-8922-d0cd5cff6e5c
+      id: 1b60abf9-6e20-4fe6-8f64-cdc5f3121e56
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -923,8 +923,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 3675
+          "x": 162.5,
+          "y": 4540
         }
       }
     note: false
@@ -936,10 +936,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: a38f5a04-b4ce-4918-8904-e0c8672480dd
+    taskid: 820d3cac-91a2-4ca9-8698-c9861b2ecf1e
     type: title
     task:
-      id: a38f5a04-b4ce-4918-8904-e0c8672480dd
+      id: 820d3cac-91a2-4ca9-8698-c9861b2ecf1e
       version: -1
       name: Isolation done
       description: Isolation done
@@ -954,8 +954,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 3355
+          "x": 162.5,
+          "y": 4220
         }
       }
     note: false
@@ -967,10 +967,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 96d35a32-b388-414a-8d09-bae0389fa8ec
+    taskid: 83e67cb0-1f8d-4faa-88be-f1fe9dc3e9cd
     type: title
     task:
-      id: 96d35a32-b388-414a-8d09-bae0389fa8ec
+      id: 83e67cb0-1f8d-4faa-88be-f1fe9dc3e9cd
       version: -1
       name: Success!
       type: title
@@ -981,8 +981,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 8060
+          "x": 162.5,
+          "y": 10140
         }
       }
     note: false
@@ -994,10 +994,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: c2f1b761-4903-483a-8c73-6a61bde28b2b
+    taskid: 130a6c7c-2433-457d-8da2-169ffa483755
     type: condition
     task:
-      id: c2f1b761-4903-483a-8c73-6a61bde28b2b
+      id: 130a6c7c-2433-457d-8da2-169ffa483755
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -1006,7 +1006,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "24"
+      - "62"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1020,8 +1020,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 7870
+          "x": 162.5,
+          "y": 8740
         }
       }
     note: false
@@ -1033,10 +1033,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: e938ab58-f699-473e-84d4-7e5d88983df0
+    taskid: 4568374a-c1df-4d97-88f4-692ffc40dc3f
     type: regular
     task:
-      id: e938ab58-f699-473e-84d4-7e5d88983df0
+      id: 4568374a-c1df-4d97-88f4-692ffc40dc3f
       version: -1
       name: xdr-get-script-code
       description: Gets the code of a specific script in the script library.
@@ -1059,8 +1059,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 7695
+          "x": 162.5,
+          "y": 8565
         }
       }
     note: false
@@ -1072,10 +1072,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 8d92d200-ab28-4d81-8dca-8e6fd3b7cfdb
+    taskid: 166a102b-ccec-4b14-8847-22b5558e17c8
     type: condition
     task:
-      id: 8d92d200-ab28-4d81-8dca-8e6fd3b7cfdb
+      id: 166a102b-ccec-4b14-8847-22b5558e17c8
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -1098,8 +1098,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 7520
+          "x": 162.5,
+          "y": 8390
         }
       }
     note: false
@@ -1111,10 +1111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: d91b9d04-022d-4cb7-86c4-17b35bf7b864
+    taskid: e74793ec-710d-4d8c-8f87-d086556ad664
     type: regular
     task:
-      id: d91b9d04-022d-4cb7-86c4-17b35bf7b864
+      id: e74793ec-710d-4d8c-8f87-d086556ad664
       version: -1
       name: xdr-get-script-metadata
       description: Gets the full definition of a specific script in the scripts library.
@@ -1137,8 +1137,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 7345
+          "x": 162.5,
+          "y": 8215
         }
       }
     note: false
@@ -1150,10 +1150,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 86428254-baec-4eac-8213-55d9f17aa13b
+    taskid: 8b02cba7-7ed9-425e-8ede-a45b80e63ad0
     type: condition
     task:
-      id: 86428254-baec-4eac-8213-55d9f17aa13b
+      id: 8b02cba7-7ed9-425e-8ede-a45b80e63ad0
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -1180,8 +1180,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 7170
+          "x": 162.5,
+          "y": 8040
         }
       }
     note: false
@@ -1193,10 +1193,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 19b7b987-0321-4a0e-8caa-a4ea8a39a09a
+    taskid: 13620d03-1e3c-4ad7-8673-89bc684c5a34
     type: regular
     task:
-      id: 19b7b987-0321-4a0e-8caa-a4ea8a39a09a
+      id: 13620d03-1e3c-4ad7-8673-89bc684c5a34
       version: -1
       name: xdr-get-scripts
       description: Gets a list of scripts available in the scripts library.
@@ -1212,8 +1212,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 6995
+          "x": 162.5,
+          "y": 7865
         }
       }
     note: false
@@ -1225,10 +1225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 744071f5-6bc5-48f8-8665-2d2f474c3437
+    taskid: 8061bef1-4544-40db-8732-9863d98f1926
     type: condition
     task:
-      id: 744071f5-6bc5-48f8-8665-2d2f474c3437
+      id: 8061bef1-4544-40db-8732-9863d98f1926
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -1251,8 +1251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 6820
+          "x": 162.5,
+          "y": 7690
         }
       }
     note: false
@@ -1264,10 +1264,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 6562f2a0-d0e0-4f1b-87f4-c8a3cd15dcbc
+    taskid: 009116e7-f848-450c-8c4b-9c079cd06281
     type: regular
     task:
-      id: 6562f2a0-d0e0-4f1b-87f4-c8a3cd15dcbc
+      id: 009116e7-f848-450c-8c4b-9c079cd06281
       version: -1
       name: xdr-get-endpoint-device-control-violations
       description: Gets a list of device control violations filtered by selected fields.
@@ -1284,8 +1284,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 6640
+          "x": 162.5,
+          "y": 7515
         }
       }
     note: false
@@ -1297,10 +1297,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: dc37dd50-eac1-4c7c-824a-7cafcb14fc1a
+    taskid: 61b5a475-6499-465f-81fb-7d0eab33bfb8
     type: condition
     task:
-      id: dc37dd50-eac1-4c7c-824a-7cafcb14fc1a
+      id: 61b5a475-6499-465f-81fb-7d0eab33bfb8
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -1323,8 +1323,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 6470
+          "x": 162.5,
+          "y": 7340
         }
       }
     note: false
@@ -1336,10 +1336,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 31249a17-80f9-4224-889c-8bd4688bbc4f
+    taskid: 06af3939-668a-44da-89f0-791d0b69a6c9
     type: regular
     task:
-      id: 31249a17-80f9-4224-889c-8bd4688bbc4f
+      id: 06af3939-668a-44da-89f0-791d0b69a6c9
       version: -1
       name: xdr-get-policy
       description: Gets the policy name for a specific endpoint.
@@ -1352,18 +1352,14 @@ tasks:
       - "38"
     scriptarguments:
       endpoint_id:
-        complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          accessor: endpoint_id
-          transformers:
-          - operator: FirstArrayElement
+        simple: aeec6a2cc92e46fab3b6f621722e9916
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 6295
+          "x": 162.5,
+          "y": 7165
         }
       }
     note: false
@@ -1375,10 +1371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 49393816-0680-4de9-8402-05356371308a
+    taskid: 37bc36d6-9fed-4657-888e-ca14c0105a53
     type: condition
     task:
-      id: 49393816-0680-4de9-8402-05356371308a
+      id: 37bc36d6-9fed-4657-888e-ca14c0105a53
       version: -1
       name: Check the number of endpoints in context
       description: Check the number of endpoints in context
@@ -1408,8 +1404,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 6115
+          "x": 162.5,
+          "y": 6990
         }
       }
     note: false
@@ -1421,10 +1417,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 2cf8760e-cd37-4309-8e06-6d0a89a987a5
+    taskid: 250b2c96-bc4f-4742-80ab-11384a278350
     type: regular
     task:
-      id: 2cf8760e-cd37-4309-8e06-6d0a89a987a5
+      id: 250b2c96-bc4f-4742-80ab-11384a278350
       version: -1
       name: xdr-get-endpoints
       description: Gets a list of endpoints, according to the passed filters. If there
@@ -1444,8 +1440,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 5940
+          "x": 162.5,
+          "y": 6815
         }
       }
     note: false
@@ -1457,10 +1453,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: e522df93-bb9a-4a55-8e84-150b9539e4bc
+    taskid: 100a0676-0d86-4ef0-8e21-ae3d741c821d
     type: condition
     task:
-      id: e522df93-bb9a-4a55-8e84-150b9539e4bc
+      id: 100a0676-0d86-4ef0-8e21-ae3d741c821d
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -1496,8 +1492,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 5765
+          "x": 162.5,
+          "y": 6640
         }
       }
     note: false
@@ -1509,10 +1505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 9405fb56-0289-408d-878f-81baf2af4b2d
+    taskid: 92e5b0ad-e485-42b3-8678-ce5363812825
     type: regular
     task:
-      id: 9405fb56-0289-408d-878f-81baf2af4b2d
+      id: 92e5b0ad-e485-42b3-8678-ce5363812825
       version: -1
       name: xdr-get-audit-agent-reports
       description: xdr-get-audit-agent-reports
@@ -1545,8 +1541,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 5590
+          "x": 162.5,
+          "y": 6465
         }
       }
     note: false
@@ -1558,10 +1554,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 4dff5bb9-aa43-4646-842d-7ff019a96115
+    taskid: ff1cd4bf-4784-4d53-8e3c-f04a925cf093
     type: condition
     task:
-      id: 4dff5bb9-aa43-4646-842d-7ff019a96115
+      id: ff1cd4bf-4784-4d53-8e3c-f04a925cf093
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -1592,8 +1588,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 5415
+          "x": 162.5,
+          "y": 6290
         }
       }
     note: false
@@ -1605,10 +1601,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: a5f65b3e-b58a-48a8-8f2a-e0753667f883
+    taskid: 0d1e9551-be44-4a3e-808a-bf729b042a27
     type: regular
     task:
-      id: a5f65b3e-b58a-48a8-8f2a-e0753667f883
+      id: 0d1e9551-be44-4a3e-808a-bf729b042a27
       version: -1
       name: xdr-get-audit-management-logs
       description: xdr-get-audit-management-logs
@@ -1635,8 +1631,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 5240
+          "x": 162.5,
+          "y": 6115
         }
       }
     note: false
@@ -1648,10 +1644,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 009b56a3-d373-4549-8e14-e092221adb9a
+    taskid: f475d36c-02fb-4d9a-87ed-d1d027d4a70d
     type: condition
     task:
-      id: 009b56a3-d373-4549-8e14-e092221adb9a
+      id: f475d36c-02fb-4d9a-87ed-d1d027d4a70d
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -1674,8 +1670,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 5065
+          "x": 162.5,
+          "y": 5940
         }
       }
     note: false
@@ -1687,10 +1683,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 9497bde2-0810-45c8-80be-34ac5cc34349
+    taskid: d1f22aa0-960c-42fa-8fb1-ea00f8f29c00
     type: regular
     task:
-      id: 9497bde2-0810-45c8-80be-34ac5cc34349
+      id: d1f22aa0-960c-42fa-8fb1-ea00f8f29c00
       version: -1
       name: xdr-get-distribution-url
       description: xdr-get-distribution-url
@@ -1711,8 +1707,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 4890
+          "x": 162.5,
+          "y": 5765
         }
       }
     note: false
@@ -1724,10 +1720,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 9b909f8f-2f52-413b-8400-f867d7cbcc33
+    taskid: 033adbaa-b185-4672-8636-59bbcc5348fd
     type: condition
     task:
-      id: 9b909f8f-2f52-413b-8400-f867d7cbcc33
+      id: 033adbaa-b185-4672-8636-59bbcc5348fd
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -1761,8 +1757,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 4715
+          "x": 162.5,
+          "y": 5590
         }
       }
     note: false
@@ -1774,10 +1770,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 32de4dfa-1db5-4e43-804d-aa5664417d18
+    taskid: 9be6b068-bf3d-40ad-8d0f-abdb18521847
     type: regular
     task:
-      id: 32de4dfa-1db5-4e43-804d-aa5664417d18
+      id: 9be6b068-bf3d-40ad-8d0f-abdb18521847
       version: -1
       name: xdr-get-create-distribution-status
       description: xdr-get-create-distribution-status
@@ -1796,8 +1792,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 4540
+          "x": 162.5,
+          "y": 5415
         }
       }
     note: false
@@ -1809,10 +1805,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 6d32cee1-56a1-41ea-83cb-b0accb94c842
+    taskid: eb3252fd-1c90-410b-8d63-ea2a922a1c22
     type: condition
     task:
-      id: 6d32cee1-56a1-41ea-83cb-b0accb94c842
+      id: eb3252fd-1c90-410b-8d63-ea2a922a1c22
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -1840,8 +1836,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 4365
+          "x": 162.5,
+          "y": 5240
         }
       }
     note: false
@@ -1853,10 +1849,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: c27c712e-1825-46d2-8591-bd3d5d874b7f
+    taskid: 6dd35397-bb59-42b4-86b7-b7d73383ace1
     type: regular
     task:
-      id: c27c712e-1825-46d2-8591-bd3d5d874b7f
+      id: 6dd35397-bb59-42b4-86b7-b7d73383ace1
       version: -1
       name: xdr-create-distribution
       description: xdr-create-distribution
@@ -1887,8 +1883,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 4190
+          "x": 162.5,
+          "y": 5065
         }
       }
     note: false
@@ -1900,10 +1896,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: e70e850c-2b62-46d9-8d67-1b0493a7cd5e
+    taskid: c05ad173-1611-4db9-809b-74cc506bb796
     type: condition
     task:
-      id: e70e850c-2b62-46d9-8d67-1b0493a7cd5e
+      id: c05ad173-1611-4db9-809b-74cc506bb796
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -1931,8 +1927,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 4015
+          "x": 162.5,
+          "y": 4890
         }
       }
     note: false
@@ -1944,10 +1940,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: c02a5804-0c0d-4374-845f-7ed661c34bba
+    taskid: 4c3bd253-980f-4066-88c9-1cb06b3178aa
     type: regular
     task:
-      id: c02a5804-0c0d-4374-845f-7ed661c34bba
+      id: 4c3bd253-980f-4066-88c9-1cb06b3178aa
       version: -1
       name: xdr-get-distribution-versions
       description: xdr-get-distribution-versions
@@ -1963,8 +1959,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 3840
+          "x": 162.5,
+          "y": 4715
         }
       }
     note: false
@@ -1976,10 +1972,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: c408d29d-043c-4a11-8396-9b0f77047251
+    taskid: 4bc174c7-7ed9-421b-868c-5e2315d9b60e
     type: regular
     task:
-      id: c408d29d-043c-4a11-8396-9b0f77047251
+      id: 4bc174c7-7ed9-421b-868c-5e2315d9b60e
       version: -1
       name: xdr-get-contributing-event
       description: Retrieves contributing events for a specific alert.
@@ -1998,8 +1994,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": -485
+          "x": 265,
+          "y": 370
         }
       }
     note: false
@@ -2011,10 +2007,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 44e3fce4-7f45-42a3-8567-591c4d06a5e3
+    taskid: 8fa5608b-29a6-4428-8670-e635b8b64086
     type: condition
     task:
-      id: 44e3fce4-7f45-42a3-8567-591c4d06a5e3
+      id: 8fa5608b-29a6-4428-8670-e635b8b64086
       version: -1
       name: Verify Outputs
       type: condition
@@ -2051,8 +2047,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": -310
+          "x": 265,
+          "y": 545
         }
       }
     note: false
@@ -2064,10 +2060,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 516de138-f508-4575-84b5-3fbb307df6ec
+    taskid: e3c4690f-261d-488e-8aff-65b85f20b90d
     type: regular
     task:
-      id: 516de138-f508-4575-84b5-3fbb307df6ec
+      id: e3c4690f-261d-488e-8aff-65b85f20b90d
       version: -1
       name: xdr-replace-featured-field
       description: Replace the featured hosts\users\ips\active-directory_groups listed
@@ -2091,8 +2087,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": -145
+          "x": 265,
+          "y": 720
         }
       }
     note: false
@@ -2104,10 +2100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 462ffdd5-0caf-4f55-8b6b-e7dc7f23c759
+    taskid: 314304cc-7b87-4496-8de3-9e0e459d0e8c
     type: condition
     task:
-      id: 462ffdd5-0caf-4f55-8b6b-e7dc7f23c759
+      id: 314304cc-7b87-4496-8de3-9e0e459d0e8c
       version: -1
       name: Verify Outputs
       type: condition
@@ -2144,8 +2140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 20
+          "x": 265,
+          "y": 895
         }
       }
     note: false
@@ -2157,10 +2153,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: cfa8b152-43c6-4c0e-89f4-2f6f3d34e474
+    taskid: 7608bd0c-68a9-44b9-8e69-8dcf9026aa93
     type: regular
     task:
-      id: cfa8b152-43c6-4c0e-89f4-2f6f3d34e474
+      id: 7608bd0c-68a9-44b9-8e69-8dcf9026aa93
       version: -1
       name: DeleteContext
       description: DeleteContext
@@ -2179,8 +2175,312 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": -655
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 678fcd9b-0f53-41f7-8265-96786455ecd1
+    type: regular
+    task:
+      id: 678fcd9b-0f53-41f7-8265-96786455ecd1
+      version: -1
+      name: Get endpoint
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
+      script: '|||xdr-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      endpoint_id_list:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 5b1dd870-24ed-4d0e-8cd8-91a587750245
+    type: regular
+    task:
+      id: 5b1dd870-24ed-4d0e-8cd8-91a587750245
+      version: -1
+      name: Save original alias name
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      key:
+        simple: old_name
+      value:
+        complex:
+          root: PaloAltoNetworksXDR.Endpoint
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
+                iscontext: true
+              right:
+                value:
+                  simple: aeec6a2cc92e46fab3b6f621722e9916
+          accessor: alias
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 92ff5de2-7e3a-4df3-8d24-5af4c2f797c3
+    type: regular
+    task:
+      id: 92ff5de2-7e3a-4df3-8d24-5af4c2f797c3
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: c83d1f76-85b7-4d80-84a6-2d4b2af037cc
+    type: regular
+    task:
+      id: c83d1f76-85b7-4d80-84a6-2d4b2af037cc
+      version: -1
+      name: Change alias name
+      description: Gets a list of endpoints according to the passed filters, and changes
+        their alias name. Filtering by multiple fields will be concatenated using
+        the AND condition (OR is not supported).
+      script: '|||xdr-endpoint-alias-change'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      endpoint_id_list:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+      new_alias_name:
+        simple: testing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 3fdb0499-afe4-4c8c-86c7-4a1374e62b7e
+    type: condition
+    task:
+      id: 3fdb0499-afe4-4c8c-86c7-4a1374e62b7e
+      version: -1
+      name: Verify the name was changed
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Endpoint
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: aeec6a2cc92e46fab3b6f621722e9916
+                accessor: alias
+            iscontext: true
+          right:
+            value:
+              simple: testing
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 3a821ac1-6045-4e52-870c-46c64258d01d
+    type: regular
+    task:
+      id: 3a821ac1-6045-4e52-870c-46c64258d01d
+      version: -1
+      name: Get endpoint
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
+      script: '|||xdr-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      endpoint_id_list:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: f6aff7b0-199f-4aae-8eab-2ed0b0840ce8
+    type: regular
+    task:
+      id: f6aff7b0-199f-4aae-8eab-2ed0b0840ce8
+      version: -1
+      name: Change alias name to the original name
+      description: Gets a list of endpoints according to the passed filters, and changes
+        their alias name. Filtering by multiple fields will be concatenated using
+        the AND condition (OR is not supported).
+      script: '|||xdr-endpoint-alias-change'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      alias_name:
+        complex:
+          root: old_name
+      endpoint_id_list:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+      new_alias_name:
+        simple: testing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9965
         }
       }
     note: false
@@ -2195,10 +2495,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8925,
+        "height": 10155,
         "width": 922.5,
-        "x": 120,
-        "y": -800
+        "x": 50,
+        "y": 50
       }
     }
   }

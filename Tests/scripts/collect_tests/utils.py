@@ -196,6 +196,8 @@ class ContentItem(DictFileBased):
             return self['trigger_id']
         if self.path.parent.parent.name == 'XDRCTemplates' and self.path.suffix == '.json':
             return self['content_global_id']
+        if self.path.parent.name == 'LayoutRules' and self.path.suffix == '.json':
+            return self['rule_id']
         return self['id']
 
     @property

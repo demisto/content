@@ -757,7 +757,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "79"
+      - "80"
     scriptarguments:
       AzureSearchTime:
         complex:
@@ -890,8 +890,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "78"
+      - "80"
     scriptarguments:
+      ASN:
+        complex:
+          root: inputs.ASN
       LoginCountry:
         complex:
           root: inputs.LoginCountry
@@ -950,96 +953,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "78":
-    id: "78"
-    taskid: 96dac5c1-f748-42a0-8ef0-f1e22445bbf0
-    type: regular
-    task:
-      id: 96dac5c1-f748-42a0-8ef0-f1e22445bbf0
-      version: -1
-      name: Count failed logon from Okta
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "80"
-    scriptarguments:
-      ignore-outputs:
-        simple: "false"
-      key:
-        simple: NumOfOktaFailedLog
-      value:
-        complex:
-          root: NumOfOktaFailedLogon
-          transformers:
-          - operator: count
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -160,
-          "y": 730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "79":
-    id: "79"
-    taskid: bceb9f6a-3759-4b7b-85aa-3754e7abdcc8
-    type: regular
-    task:
-      id: bceb9f6a-3759-4b7b-85aa-3754e7abdcc8
-      version: -1
-      name: Count failed logon from SIEM
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "80"
-    scriptarguments:
-      ignore-outputs:
-        simple: "false"
-      key:
-        simple: NumOfSiemFailedLog
-      value:
-        complex:
-          root: NumOfSiemFailedLogon
-          transformers:
-          - operator: count
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": 730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: 35e3cd03-5cd8-4543-8f4e-061497adb9db
+    taskid: 9faef5f8-cf67-4f6f-8419-6104cf012806
     type: regular
     task:
-      id: 35e3cd03-5cd8-4543-8f4e-061497adb9db
+      id: 9faef5f8-cf67-4f6f-8419-6104cf012806
       version: -1
       name: Number Of Failed Logon
       description: |
@@ -1057,20 +976,22 @@ tasks:
         simple: +
       contextKey:
         simple: NumOfFailedLogon
+      ignore-outputs:
+        simple: "false"
       lh:
         complex:
-          root: NumOfSiemFailedLog
+          root: NumOfOktaFailedLogon
       rh:
         complex:
-          root: NumOfOktaFailedLog
+          root: NumOfSiemFailedLogon
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 940
+          "x": 110,
+          "y": 730
         }
       }
     note: false
@@ -1080,6 +1001,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1182,6 +1104,11 @@ inputs:
   required: false
   description: 'The Search Time for the Azure Log Analytics search query. for example: ago(1d)'
   playbookInputQuery:
+- key: ASN
+  value: {}
+  required: false
+  description: The ASN from which the user logged in.
+  playbookInputQuery:
 outputs:
 - contextPath: NumOfSiemFailedLogon
   description: Number of failed login from Siem.
@@ -1226,6 +1153,9 @@ outputs:
   description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
 - contextPath: NumOfFailedLogon
   description: Number of failed login.
+  type: unknown
+- contextPath: NumOfFailedLogonASN
+  description: Number of failed login from ASN by all users.
   type: unknown
 quiet: true
 tests:

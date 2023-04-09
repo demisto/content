@@ -11,10 +11,11 @@ configuration:
   defaultvalue: https://127.0.0.1
   type: 0
   required: true
-- display: Auth ID
+- display: API Key ID
+  displaypassword: API Key
   name: creds_apikey
   type: 9
-  additionalinfo: Please provide Auth ID when using Cortex XSIAM or Cortex XSOAR 8.0.0 and above.
+  additionalinfo: Please provide API Key ID when using Cortex XSIAM or Cortex XSOAR 8.0.0 and above.
   required: false
 - display: Authentication method
   name: auth_method
@@ -27,7 +28,7 @@ configuration:
   - Advanced
 - display: Base marketplace url
   name: marketplace_url
-  defaultvalue: https://storage.googleapis.com/marketplace-dist/content/packs/
+  defaultvalue: https://marketplace.xsoar.paloaltonetworks.com/content/packs/
   type: 0
   required: false
 - display: Trust any certificate (not secure)
@@ -194,7 +195,7 @@ script:
         description: File name of download
       - name: description
         description: Description of file entry
-    description: Download files from Demisto server
+    description: Download files from core server
   - name: core-api-multipart
     arguments:
       - name: uri
@@ -205,14 +206,14 @@ script:
         description: File entry ID
       - name: body
         description: Request body
-    description: Send HTTP Multipart request to upload files to Demisto server
+    description: Send HTTP Multipart request to upload files to core server
   - name: core-delete-incidents
     arguments:
     - name: ids
       required: true
       description: IDs of the incidents to delete
       isArray: true
-    description: Delete Demisto incidents
+    description: Delete core incidents
     execution: true
   - name: core-api-install-packs
     arguments:
@@ -246,7 +247,7 @@ script:
       predefined:
         - 'true'
         - 'false'
-    description: Upload packs to Demisto server from url or the marketplace.
+    description: Upload packs to core server from url or the marketplace.
   runonce: false
 tests:
 - No tests

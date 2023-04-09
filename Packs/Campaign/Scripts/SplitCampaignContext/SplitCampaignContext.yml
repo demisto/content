@@ -11,7 +11,7 @@ comment: |-
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 tags: []
 enabled: true
 args:
@@ -33,13 +33,10 @@ outputs:
   description: The domains of the email senders involved in the campaign.
   type: string
 - contextPath: EmailCampaign.incidents.recipients
-  description: A list of email addresses of recipients involved in the campaign. The
-    list is comprised of the following fields, "Email To", "Email CC", "Email BCC".
+  description: A list of email addresses of recipients involved in the campaign. The list is comprised of the following fields, "Email To", "Email CC", "Email BCC".
   type: string
 - contextPath: EmailCampaign.incidents.recipientsdomain
-  description: A list of the domains of the email addresses of recipients involved
-    in the campaign. The list is comprised of the following fields, "Email To", "Email
-    CC", "Email BCC".
+  description: A list of the domains of the email addresses of recipients involved in the campaign. The list is comprised of the following fields, "Email To", "Email CC", "Email BCC".
   type: Unknown
 - contextPath: EmailCampaign.LowerSimilarityIncidents.id
   description: The IDs of the incidents involved in the campaign.
@@ -54,18 +51,15 @@ outputs:
   description: The domains of the email senders involved in the campaign.
   type: string
 - contextPath: EmailCampaign.LowerSimilarityIncidents.recipients
-  description: A list of email addresses of recipients involved in the campaign. The
-    list is comprised of the following fields, "Email To", "Email CC", "Email BCC".
+  description: A list of email addresses of recipients involved in the campaign. The list is comprised of the following fields, "Email To", "Email CC", "Email BCC".
   type: string
 - contextPath: EmailCampaign.LowerSimilarityIncidents.recipientsdomain
-  description: A list of the domains of the email addresses of recipients involved
-    in the campaign. The list is comprised of the following fields, "Email To", "Email
-    CC", "Email BCC".
+  description: A list of the domains of the email addresses of recipients involved in the campaign. The list is comprised of the following fields, "Email To", "Email CC", "Email BCC".
   type: Unknown
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.10.48392
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

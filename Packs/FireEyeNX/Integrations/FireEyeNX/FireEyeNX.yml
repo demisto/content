@@ -9,42 +9,47 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
-- additionalinfo: The FireEye NX API calls timeout if the response is not
-    returned within the configured time interval. Default is 120 seconds.
+  section: Connect
+- additionalinfo: The FireEye NX API calls timeout if the response is not returned within the configured time interval. Default is 120 seconds.
   defaultvalue: '120'
   display: HTTP(S) Request Timeout (in seconds)
   hidden: false
   name: request_timeout
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-- additionalinfo: The time range to consider for the initial data fetch.(<number> <unit>,
-    e.g., 1 hour, 2 hours, 6 hours, 12 hours, 48 hours). Default is 12 hours. The API supports up to 48 hours. More than 48 hours will produce an error.
+  section: Connect
+- additionalinfo: The time range to consider for the initial data fetch.(<number> <unit>, e.g., 1 hour, 2 hours, 6 hours, 12 hours, 48 hours). Default is 12 hours. The API supports up to 48 hours. More than 48 hours will produce an error.
   defaultvalue: 12 hours
   display: First fetch time interval
   hidden: false
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: The maximum number of alerts to fetch. A maximum of 200
-    alerts is fetched. Default is 50.
+  section: Collect
+- additionalinfo: The maximum number of alerts to fetch. A maximum of 200 alerts is fetched. Default is 50.
   defaultvalue: '50'
   display: Fetch Limit
   hidden: false
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: Fetches Alerts and/or IPS Events.
   display: Fetch Types
   hidden: false
@@ -54,13 +59,14 @@ configuration:
   - IPS Events
   required: false
   type: 16
-- additionalinfo: Fetches MVX-correlated events only. Works only for events defined in Fetch
-    Types.
+  section: Collect
+- additionalinfo: Fetches MVX-correlated events only. Works only for events defined in Fetch Types.
   display: Fetches MVX-correlated events only
   hidden: false
   name: fetch_mvx_correlated_events
   required: false
   type: 8
+  section: Collect
 - additionalinfo: The type of malware object to fetch alerts.
   display: Alert Malware Type
   hidden: false
@@ -73,40 +79,42 @@ configuration:
   - infection_match
   required: false
   type: 15
-- additionalinfo: Replaces the domain of the alert URL key to the instance URL for
-    fetch incident and command.
+  section: Collect
+- additionalinfo: Replaces the domain of the alert URL key to the instance URL for fetch incident and command.
   display: Use instance URL for all the fetched alerts URL.
   hidden: false
   name: replace_alert_url
   required: false
   type: 8
+  section: Collect
 - display: Fetch artifacts for each alert
   hidden: false
   name: fetch_artifacts
   required: false
   type: 8
+  section: Collect
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   hidden: false
   name: proxy
   required: false
   type: 8
-description: FireEye Network Security is an effective cyber threat protection solution
-  that helps organizations minimize the risk of costly breaches by accurately detecting
-  and immediately stopping advanced, targeted, and other evasive attacks hiding in
-  internet traffic.
+  section: Connect
+  advanced: true
+description: FireEye Network Security is an effective cyber threat protection solution that helps organizations minimize the risk of costly breaches by accurately detecting and immediately stopping advanced, targeted, and other evasive attacks hiding in internet traffic.
 display: FireEye NX
 name: FireEyeNX
 script:
   commands:
   - arguments:
     - default: false
-      description: 'Universally unique ID (UUID) of the alert. To retrieve the UUID, execute the
-        fireeye-nx-get-alerts command.'
+      description: 'Universally unique ID (UUID) of the alert. To retrieve the UUID, execute the fireeye-nx-get-alerts command.'
       isArray: false
       name: uuid
       required: true
@@ -150,8 +158,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The output format of the report. Possible values are: "csv" and "pdf",
-        or both depending upon the report type.'
+      description: 'The output format of the report. Possible values are: "csv" and "pdf", or both depending upon the report type.'
       isArray: false
       name: type
       predefined:
@@ -160,21 +167,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The start time of the search. The search occurs between the start
-        and end times. When specifying a\ \ start_time value, you must specify both
-        a start_time and an end_ time value.\n\ Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN
-        days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n
-        5 hours.'
+      description: 'The start time of the search. The search occurs between the start and end times. When specifying a\ \ start_time value, you must specify both a start_time and an end_ time value.\n\ Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The end time of the search. The search occurs between the start
-        and end times. When specifying an\ \ end_ time value, you must specify both
-        a start_time and an end_time value.\n\ Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN
-        days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n
-        5 hours.'
+      description: 'The end time of the search. The search occurs between the start and end times. When specifying an\ \ end_ time value, you must specify both a start_time and an end_time value.\n\ Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours.'
       isArray: false
       name: end_time
       required: false
@@ -227,18 +226,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The alert ID. To retrieve the alert ID, execute the fireeye-nx-get-alerts command. Use the combination of infection_id and infection_type arguments to specify a unique alert to describe in the Alert Details Report. If one option is used alone and does not specify a unique alert, an error message
-        is produced.
+      description: The alert ID. To retrieve the alert ID, execute the fireeye-nx-get-alerts command. Use the combination of infection_id and infection_type arguments to specify a unique alert to describe in the Alert Details Report. If one option is used alone and does not specify a unique alert, an error message is produced.
       isArray: false
       name: infection_id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the infection. Use the combination of infection_id and infection_type arguments
-        to specify a unique alert to describe in the Alert Details Report. If one
-        option is used alone and does not specify a unique alert, an error message
-        is produced. Possible values are: "malware-object", "malware-callback", "infection-match", "domain-match", and "web-infection".'
+      description: 'The type of the infection. Use the combination of infection_id and infection_type arguments to specify a unique alert to describe in the Alert Details Report. If one option is used alone and does not specify a unique alert, an error message is produced. Possible values are: "malware-object", "malware-callback", "infection-match", "domain-match", and "web-infection".'
       isArray: false
       name: infection_type
       predefined:
@@ -250,8 +245,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns reports on selected alerts by specifying a time_frame value
-      or a start_time and end_time of the search range.
+    description: Returns reports on selected alerts by specifying a time_frame value or a start_time and end_time of the search range.
     execution: false
     name: fireeye-nx-get-reports
     outputs:
@@ -265,8 +259,7 @@ script:
       description: The size of the file (in bytes).
       type: Number
     - contextPath: InfoFile.Type
-      description: The file type, as determined by libmagic (same as displayed in the
-        file entries).
+      description: The file type, as determined by libmagic (same as displayed in the file entries).
       type: String
     - contextPath: InfoFile.Extension
       description: The file extension.
@@ -276,8 +269,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID number of the alert to retrieve. To retrieve the alert
-        ID, execute the fireeye-nx-get-alerts command without specifying the alert_id.
+      description: The ID number of the alert to retrieve. To retrieve the alert ID, execute the fireeye-nx-get-alerts command without specifying the alert_id.
       isArray: false
       name: alert_id
       required: false
@@ -309,21 +301,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: "The start time of the search. This filter is used with the duration\
-        \ filter. If the start_time is specified but not the duration, the system\
-        \ defaults to duration=12_hours, starting at the specified start_time.\nFormats:\n\
-        YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n\
-        \ 2020-05-01T00:00:00 \n 2 days \n 5 hours"
+      description: "The start time of the search. This filter is used with the duration filter. If the start_time is specified but not the duration, the system defaults to duration=12_hours, starting at the specified start_time.\nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours"
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: "The end time of the search. This filter is used with the duration\
-        \ filter. If the end_time is specified but not the duration, the system defaults\
-        \ to duration=12_hours, ending at the specified end_time.\nFormats:\nYYYY-MM-dd\n\
-        YYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00\
-        \ \n 2 days \n 5 hours"
+      description: "The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time.\nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours"
       isArray: false
       name: end_time
       required: false
@@ -494,8 +478,7 @@ script:
       description: The entry offset of the bytes list in the heap spraying.
       type: String
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.BytesList.Entry.IsNOP
-      description: If entry NOP appears in the bytes list in the heap spraying then yes,
-        otherwise no.
+      description: If entry NOP appears in the bytes list in the heap spraying then yes, otherwise no.
       type: String
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.BytesList.Distinct
       description: The distinct number of the byte list in the heap spraying.
@@ -708,8 +691,7 @@ script:
       description: The image path of the process in the network.
       type: String
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.Processinfo.Tainted
-      description: If the process state is tainted then true, otherwise false for the
-        network.
+      description: If the process state is tainted then true, otherwise false for the network.
       type: Boolean
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.Processinfo.Md5sum
       description: The md5sum of the process in the network.
@@ -841,8 +823,7 @@ script:
       description: The PID of the process for the file.
       type: Number
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Processinfo.Tainted
-      description: If the process state is tainted then true, otherwise false for the
-        file.
+      description: If the process state is tainted then true, otherwise false for the file.
       type: Boolean
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.SrcThread
       description: The source thread name of the file.
@@ -1138,9 +1119,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The time interval to search. This filter is used with
-        the end_time filter. If the duration is not specified, the system defaults
-        to duration=12_hours, end_time=current_time.
+      description: The time interval to search. This filter is used with the end_time filter. If the duration is not specified, the system defaults to duration=12_hours, end_time=current_time.
       isArray: false
       name: duration
       predefined:
@@ -1153,29 +1132,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: "The start time of the search. This filter is used with the duration\
-        \ filter. If the start_time is specified but not the duration, the system\
-        \ defaults to duration=12_hours, starting at the specified start_time.\nFormats:\n\
-        YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n\
-        \ 2020-05-01T00:00:00 \n 2 days \n 5 hours"
+      description: "The start time of the search. This filter is used with the duration filter. If the start_time is specified but not the duration, the system defaults to duration=12_hours, starting at the specified start_time.\nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours"
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: "The end time of the search. This filter is used with the duration\
-        \ filter. If the end_time is specified but not the duration, the system defaults\
-        \ to duration=12_hours, ending at the specified end_time. \nFormats:\nYYYY-MM-dd\n\
-        YYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00\
-        \ \n 2 days \n 5 hours"
+      description: "The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. \nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours"
       isArray: false
       name: end_time
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to include all IPS events or MVX-correlated
-        events only. Default: false'
+      description: 'Whether to include all IPS events or MVX-correlated events only. Default: false'
       isArray: false
       name: mvx_correlated_only
       predefined:
@@ -1254,7 +1224,7 @@ script:
     - contextPath: FireEyeNX.Event.IncidentId
       description: The incident ID of the event on FireEye.
       type: Number
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: true
   longRunning: false
@@ -1266,5 +1236,5 @@ script:
 tests:
 - FireEyeNX-Test
 fromversion: 5.0.0
-defaultclassifier: FireEye NX - Classifier
+defaultclassifier: FireEye NX
 defaultmapperin: FireEye NX-mapper

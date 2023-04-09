@@ -1516,7 +1516,7 @@ script:
     description: Delete an IP group resource.
     execution: false
     name: azure-firewall-ip-group-delete
-  dockerimage: demisto/crypto:1.0.0.47103
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false
   longRunning: false

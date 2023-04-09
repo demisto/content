@@ -1999,7 +1999,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List the CarbonBlack sensors
+    description: Display information about the given sensor
     execution: false
     name: endpoint
     outputs:
@@ -2066,7 +2066,7 @@ script:
     - contextPath: Endpoint.Processor
       description: The model of the processor.
       type: String
-  dockerimage: demisto/python3:3.10.9.44472
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: true
   longRunning: false

@@ -88,7 +88,7 @@ def test_test_module_ok(client, requests_mock):
         "user_claims": None,
     }
 
-    requests_mock.get(MOCK_URL + "/v1/apiauth/auth/validate", json=response)
+    requests_mock.get(MOCK_URL + "/v1/auth/validate", json=response)
     assert SEKOIAIntelligenceCenter.test_module(client) == "ok"
 
 
@@ -105,7 +105,7 @@ def test_test_module_ok(client, requests_mock):
 )
 def test_test_module_nok(client, requests_mock, api_response, expected):
     requests_mock.get(
-        MOCK_URL + "/v1/apiauth/auth/validate", json=api_response, status_code=401
+        MOCK_URL + "/v1/auth/validate", json=api_response, status_code=401
     )
 
     assert expected in SEKOIAIntelligenceCenter.test_module(client)

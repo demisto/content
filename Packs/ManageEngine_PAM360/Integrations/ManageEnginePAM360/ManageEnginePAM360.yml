@@ -1,11 +1,10 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: ManageEngine PAM360
   version: -1
 name: ManageEngine PAM360
 display: ManageEngine PAM360
-description: Integration to fetch passwords from the PAM360 repository, and to manage
-  accounts, resources, and privileged credentials.
+description: Integration to fetch passwords from the PAM360 repository, and to manage accounts, resources, and privileged credentials.
 configuration:
 - display: Server URL
   name: url
@@ -96,8 +95,7 @@ script:
       description: Status of the operation.
       type: string
   - name: pam360-update-resource
-    description: Updates the attributes of a resource such as name, type, URL, and
-      description.
+    description: Updates the attributes of a resource such as name, type, URL, and description.
     arguments:
     - name: resource_id
       description: Denotes the ID of the resource.
@@ -129,8 +127,7 @@ script:
       description: Status of the operation.
       type: string
   - name: pam360-update-account
-    description: Updates the attributes an account such as name, password policy,
-      and notes if applicable.
+    description: Updates the attributes an account such as name, password policy, and notes if applicable.
     arguments:
     - name: resource_id
       description: Denotes the ID of the resource.
@@ -232,11 +229,9 @@ script:
       description: Denotes the name of the account.
       type: string
     - contextPath: PAM360.Account.operation.Details.ACCOUNT LIST.PASSWORD STATUS
-      description: Refers to the availability status of the password. Denotes whether
-        the password is available for check-out or in use by another user.
+      description: Refers to the availability status of the password. Denotes whether the password is available for check-out or in use by another user.
       type: string
-    - contextPath: PAM360.Account.operation.Details.ACCOUNT LIST.ACCOUNT PASSWORD
-        POLICY
+    - contextPath: PAM360.Account.operation.Details.ACCOUNT LIST.ACCOUNT PASSWORD POLICY
       description: The type of password policy set for the account.
       type: string
     - contextPath: PAM360.Account.operation.Details.ACCOUNT LIST.PASSWDID
@@ -246,8 +241,7 @@ script:
       description: Refers to the reason provided to access the password.
       type: string
   - name: pam360-fetch-account-details
-    description: Fetches the details of an account using the corresponding account
-      ID.
+    description: Fetches the details of an account using the corresponding account ID.
     arguments:
     - name: resource_id
       description: Denotes the ID of the resource.
@@ -278,15 +272,13 @@ script:
       description: Reason for the password not being compliant with the password policy.
       type: string
     - contextPath: PAM360.Account.operation.Details.PASSWORD STATUS
-      description: Refers to the availability status of the password. Denotes whether
-        the password is available for check-out or in use by another user.
+      description: Refers to the availability status of the password. Denotes whether the password is available for check-out or in use by another user.
       type: string
     - contextPath: PAM360.Account.operation.Details.PASSWORD POLICY
       description: The type of password policy set for the account.
       type: string
     - contextPath: PAM360.Account.operation.Details.COMPLIANT STATUS
-      description: Status of whether the account password is compliant with the password
-        policy for it.
+      description: Status of whether the account password is compliant with the password policy for it.
       type: string
     - contextPath: PAM360.Account.operation.Details.LAST ACCESSED TIME
       description: The time at which the account was last accessed.
@@ -325,8 +317,7 @@ script:
     - name: reason
       description: The reason provided to request for the password of an account.
     - name: ticket_id
-      description: Valid ticket ID required when the ticketing system integration
-        is enabled.
+      description: Valid ticket ID required when the ticketing system integration is enabled.
     outputs:
     - contextPath: PAM360.Account.operation.Details.PASSWORD
       description: Account password.
@@ -355,8 +346,7 @@ script:
     - name: reason
       description: Refers to the reason provided to update the password of an account.
     - name: ticket_id
-      description: Valid ticket ID required when the ticketing system integration
-        is enabled.
+      description: Valid ticket ID required when the ticketing system integration is enabled.
     outputs:
     - contextPath: PAM360.Account.operation.result.message
       description: Command execution status.
@@ -369,7 +359,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.10.50695
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

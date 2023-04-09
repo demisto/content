@@ -11,8 +11,8 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 * GetTime
-* Set
 * CountArraySize
+* Set
 
 ### Commands
 * okta-get-logs
@@ -24,6 +24,7 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | UserEmail | The user email to search Okta logs. |  | Optional |
 | LoginCountry | The Country from which the user logged in. |  | Optional |
+| ASN | The ASN from which the user logged in. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -38,6 +39,7 @@ This playbook does not use any sub-playbooks.
 | SuspiciousUserAgent | Suspicious User Agent. | unknown |
 | UserApplication |  Applications used by the user. | unknown |
 | NumOfOktaFailedLogon | Number of failed login. | unknown |
+| NumOfFailedLogonASN | Number of failed login from ASN by all users. | unknown |
 
 ## Playbook Image
 ---

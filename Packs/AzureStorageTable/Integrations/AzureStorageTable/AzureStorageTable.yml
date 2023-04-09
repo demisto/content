@@ -279,7 +279,7 @@ script:
     description: Delete an existing entity in a table.
     execution: true
     name: azure-storage-table-entity-delete
-  dockerimage: demisto/python3:3.10.9.46807
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: false
   longRunning: false

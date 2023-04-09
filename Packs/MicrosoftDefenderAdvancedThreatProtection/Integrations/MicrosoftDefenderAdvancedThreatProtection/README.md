@@ -6575,3 +6575,30 @@ Retrieves missing KBs (security updates) by software ID.
 >| 1111111 | some_name_1 | 22222 | some_id | some_url_1 | 1 | 2 |
 >| 2222222 | some_name_2 | 22222 | some_id | some_url_2 | 1 | 2 |
 
+
+### microsoft-atp-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`microsoft-atp-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```microsoft-atp-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
