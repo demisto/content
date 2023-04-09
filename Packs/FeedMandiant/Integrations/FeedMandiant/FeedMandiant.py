@@ -32,7 +32,7 @@ MAP_INDICATORS_TYPE = {'fqdn': FeedIndicatorType.Domain,
                        'sha1': FeedIndicatorType.File,
                        'sha256': FeedIndicatorType.File,
                        'url': FeedIndicatorType.URL}
-UTC=pytz.UTC
+UTC = pytz.UTC
 
 ''' CLIENT CLASS '''
 
