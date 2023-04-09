@@ -218,6 +218,7 @@ filter cloud_provider = "gcp"
     interface_3 = json_extract_scalar(model, "$.data.AzurePublicIp.NetworkInterface.model.name")
 | alter xdm.target.interface = coalesce(interface_1, interface_2, interface_3),
     xdm.target.ipv4 = json_extract_scalar(model, "$.data.AzureNetworkInterface.ConnectedPublicIps.models.model.data.AzurePublicIp.IpAddress"),
+    xdm.target.cloud.zone = json_extract_scalar(model, "$.data.Inventory.Zones"),
     azure_region_1 = json_extract_scalar(model, "$.data.AzureNetworkInterface.ConnectedPublicIps.models.model.data.AzurePublicIp.Location"),
     azure_region_2 = json_extract_scalar(model, "$.data.AzureNetworkWatcher.Location"),
     azure_region_3 = json_extract_scalar(model, "$.data.AzureNetworkInterface.ConnectedPublicIps.models.model.data.AzurePublicIp.Location"),
