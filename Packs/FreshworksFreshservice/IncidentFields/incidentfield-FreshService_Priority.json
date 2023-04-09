@@ -1,0 +1,40 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "FreshService Ticket",
+        "FreshService Change Request",
+        "FreshService Problem Request",
+        "FreshService Release Request"
+    ],
+    "caseInsensitive": false,
+    "cliName": "freshservicepriority",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_freshservicepriority",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "FreshService Priority",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "",
+        "Low",
+        "Medium",
+        "High",
+        "Urgent"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,18 @@
+{
+    "description": "FreshService - Classifier",
+    "feed": false,
+    "id": "FreshService - Classifier",
+    "keyTypeMap": {
+        "change": "FreshService Change Request",
+        "problem": "FreshService Problem Request",
+        "release": "FreshService Release Request",
+        "ticket": "FreshService Ticket"
+    },
+    "name": "FreshService - Classifier",
+    "transformer": {
+        "simple": "ticket_type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

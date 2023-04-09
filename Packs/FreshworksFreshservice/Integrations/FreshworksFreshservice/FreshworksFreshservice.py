@@ -14,7 +14,7 @@ MAX_DEFAULT_ARGS_COUNT = 3
 STRFTIME = "%Y-%m-%d"
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
-TICKET = {
+TICKET_PROPERTIES_BY_TYPE = {
     'ticket': {
         'status': {
             'Open': 2,
@@ -125,7 +125,7 @@ TICKET = {
     },
 }
 
-READABLE_OUTPUT_HEADER = {
+READABLE_OUTPUT_HEADER_BY_ENTITY = {
     'ticket': [
         'id',
         'description_text',
@@ -336,8 +336,14 @@ READABLE_OUTPUT_HEADER = {
     ],
 }
 
-TASK = {'status': {'Open': 1, 'In Progress': 2, 'Completed': 3}}
-PURCHASE_ORDER = {'status': {'Open': 20, 'Cancelled': 10, 'Ordered': 25}}
+TASK_STATUS_VALUES = {'status': {'Open': 1, 'In Progress': 2, 'Completed': 3}}
+PURCHASE_ORDER_STATUS_VALUES = {
+    'status': {
+        'Open': 20,
+        'Cancelled': 10,
+        'Ordered': 25
+    }
+}
 
 FETCH_TICKET_TYPE = {
     'Incident/Service Request': 'ticket',
@@ -391,14 +397,25 @@ TICKET_ID_PREFIX = {
 
 CommandArgs = namedtuple('CommandArgs', [
     'page', 'page_size', 'pagination_message', 'updated_query',
-    'updated_since', 'filter', 'include', 'order_type', 'command_response_key'
+    'updated_since', 'ticket_filter', 'include', 'order_type',
+    'command_response_key'
+])
+
+TicketProperties = namedtuple('TicketProperties', [
+    'urgency', 'status', 'source', 'priority', 'impact', 'risk', 'change_type',
+    'release_type'
 ])
 
 
 class Client(BaseClient):
 
-    def __init__(self, server_url: str, api_token: str, verify: bool,
-                 proxy: bool):
+    def __init__(
+        self,
+        server_url: str,
+        api_token: str,
+        verify: bool,
+        proxy: bool,
+    ):
         headers = {'Authorization': f'Basic {api_token}'}
         super().__init__(base_url=server_url,
                          verify=verify,
@@ -412,7 +429,7 @@ class Client(BaseClient):
         ticket_id: int = None,
         updated_query: str = None,
         updated_since: str = None,
-        filter: str = None,
+        ticket_filter: str = None,
         include: str = None,
         order_type: str = None,
     ) -> Dict[str, Any]:
@@ -436,12 +453,12 @@ class Client(BaseClient):
             'per_page': page_size,
             'query': updated_query,
             'updated_since': updated_since,
-            'filter': filter,
+            'filter': ticket_filter,
             'include': include or 'tags',
             'order_type': order_type,
         })
 
-        url_suffix = f'/{ticket_id}' if ticket_id else ''
+        url_suffix = get_url_suffix(ticket_id)
         url_suffix = '/filter' if updated_query else url_suffix
 
         return self._http_request('GET',
@@ -539,39 +556,14 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        body = remove_empty_elements({
-            "urgency": urgency,
-            "tags": tags,
-            "subject": subject,
-            "sub_category": sub_category,
-            "status": status,
-            "source": source,
-            "responder_id": responder_id,
-            "requester_id": requester_id,
-            "problem": problem,
-            "priority": priority,
-            "phone": phone,
-            "name": name,
-            "impact": impact,
-            "group_id": group_id,
-            "fr_due_by": fr_due_by,
-            "email_config_id": email_config_id,
-            "email": email,
-            "due_by": due_by,
-            "description": description,
-            "department_id": department_id,
-            "custom_fields": custom_fields,
-            "change_initiating_ticket": change_initiating_ticket,
-            "change_initiated_by_ticket": change_initiated_by_ticket,
-            "cc_emails": cc_emails,
-            "category": category,
-            "assets": assets,
-        })
+        request_args = locals()
+        request_args.pop('self', None)
+        data = remove_empty_elements(request_args)
 
         return self._http_request(
             'POST',
             'api/v2/tickets',
-            json_data=body,
+            json_data=data,
         )
 
     def freshservice_ticket_update(
@@ -605,7 +597,7 @@ class Client(BaseClient):
         attachments: List[Tuple] = None,
         assets: int = None,
     ) -> Dict[str, Any]:
-        """ Update a new Ticket in a Freshservice account.
+        """ Update a Ticket in a Freshservice account.
 
         Args:
             ticket_id (int): Ticket ID.
@@ -667,38 +659,15 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        body = remove_empty_elements({
-            "urgency": urgency,
-            "tags": tags,
-            "subject": subject,
-            "sub_category": sub_category,
-            "status": status,
-            "source": source,
-            "responder_id": responder_id,
-            "requester_id": requester_id,
-            "problem": problem,
-            "priority": priority,
-            "phone": phone,
-            "name": name,
-            "impact": impact,
-            "group_id": group_id,
-            "fr_due_by": fr_due_by,
-            "email_config_id": email_config_id,
-            "email": email,
-            "due_by": due_by,
-            "description": description,
-            "department_id": department_id,
-            "custom_fields": custom_fields,
-            "change_initiating_ticket": change_initiating_ticket,
-            "change_initiated_by_ticket": change_initiated_by_ticket,
-            "cc_emails": cc_emails,
-            "category": category,
-            "assets": assets,
-        })
+        request_args = locals()
+        request_args.pop('self', None)
+        request_args.pop('ticket_id', None)
+        request_args.pop('attachments', None)
+        data = remove_empty_elements(request_args)
 
         return self._http_request('PUT',
                                   f'api/v2/tickets/{ticket_id}',
-                                  json_data=body,
+                                  json_data=data,
                                   files=attachments)
 
     def freshservice_ticket_delete(self, ticket_id: int) -> requests.Response:
@@ -738,10 +707,10 @@ class Client(BaseClient):
             'page': page,
             'per_page': page_size,
         })
-        url_suffix = f'/{task_id}' if task_id else ''
+
         return self._http_request(
             'GET',
-            f'api/v2/tickets/{ticket_id}/tasks{url_suffix}',
+            f'api/v2/tickets/{ticket_id}/tasks{get_url_suffix(task_id)}',
             params=params,
         )
 
@@ -890,14 +859,14 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Freshservice.
         """
         data = remove_empty_elements({
-            "body": body,
-            "from_email": from_email,
-            "user_id": user_id,
-            "cc_emails[]": cc_emails,
-            "bcc_emails[]": bcc_emails,
+            'body': body,
+            'from_email': from_email,
+            'user_id': user_id,
+            'cc_emails[]': cc_emails,
+            'bcc_emails[]': bcc_emails,
         })
         if not files:
-            self._headers.update({"Content-Type": "multipart/form-data"})
+            self._headers.update({'Content-Type': 'multipart/form-data'})
 
         return self._http_request('POST',
                                   f'api/v2/tickets/{ticket_id}/reply',
@@ -934,15 +903,15 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Freshservice.
         """
         data = remove_empty_elements({
-            "body": body,
-            "notify_emails[]": notify_emails,
-            "user_id": user_id,
-            "incoming": incoming,
-            "private": private,
+            'body': body,
+            'notify_emails[]': notify_emails,
+            'user_id': user_id,
+            'incoming': incoming,
+            'private': private,
         })
 
         if not files:
-            self._headers.update({"Content-Type": "multipart/form-data"})
+            self._headers.update({'Content-Type': 'multipart/form-data'})
 
         return self._http_request('POST',
                                   f'api/v2/tickets/{ticket_id}/notes',
@@ -970,12 +939,12 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Freshservice
         """
         data = {
-            "body": body,
-            "name": name,
+            'body': body,
+            'name': name,
         }
 
         if not files:
-            self._headers.update({"Content-Type": "multipart/form-data"})
+            self._headers.update({'Content-Type': 'multipart/form-data'})
 
         return self._http_request('PUT',
                                   f'api/v2/conversations/{conversation_id}',
@@ -1027,10 +996,11 @@ class Client(BaseClient):
             'updated_since': updated_since,
             'order_type': order_type,
         })
-        url_suffix = f'/{problem_id}' if problem_id else ''
-        return self._http_request('GET',
-                                  f'api/v2/problems{url_suffix}',
-                                  params=params)
+
+        return self._http_request(
+            'GET',
+            f'api/v2/problems{get_url_suffix(problem_id)}',
+            params=params)
 
     def freshservice_problem_create(
         self,
@@ -1085,29 +1055,14 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        body = remove_empty_elements({
-            "subject": subject,
-            "sub_category": sub_category,
-            "status": status,
-            "analysis_fields": analysis_fields,
-            "requester_id": requester_id,
-            "priority": priority,
-            "impact": impact,
-            "group_id": group_id,
-            "agent_id": agent_id,
-            "email": email,
-            "due_by": due_by,
-            "description": description,
-            "department_id": department_id,
-            "custom_fields": custom_fields,
-            "category": category,
-            "assets": assets,
-        })
+        request_args = locals()
+        request_args.pop('self', None)
+        data = remove_empty_elements(request_args)
 
         return self._http_request(
             'POST',
             'api/v2/problems',
-            json_data=body,
+            json_data=data,
         )
 
     def freshservice_problem_update(
@@ -1165,28 +1120,14 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        body = remove_empty_elements({
-            "subject": subject,
-            "sub_category": sub_category,
-            "status": status,
-            "analysis_fields": analysis_fields,
-            "requester_id": requester_id,
-            "priority": priority,
-            "impact": impact,
-            "group_id": group_id,
-            "agent_id": agent_id,
-            "email": email,
-            "due_by": due_by,
-            "description": description,
-            "department_id": department_id,
-            "custom_fields": custom_fields,
-            "category": category,
-            "assets": assets,
-        })
+        request_args = locals()
+        request_args.pop('self', None)
+        request_args.pop('ticket_id', None)
+        data = remove_empty_elements(request_args)
         return self._http_request(
             'PUT',
             f'api/v2/problems/{ticket_id}',
-            json_data=body,
+            json_data=data,
         )
 
     def freshservice_problem_delete(
@@ -1230,11 +1171,9 @@ class Client(BaseClient):
             'per_page': page_size,
         })
 
-        url_suffix = f'/{task_id}' if task_id else ''
-
         return self._http_request(
             'GET',
-            f'api/v2/problems/{problem_id}/tasks{url_suffix}',
+            f'api/v2/problems/{problem_id}/tasks{get_url_suffix(task_id)}',
             params=params,
         )
 
@@ -1355,9 +1294,9 @@ class Client(BaseClient):
             'updated_since': updated_since,
             'order_type': order_type,
         })
-        url_suffix = f'/{change_id}' if change_id else ''
+
         return self._http_request('GET',
-                                  f'api/v2/changes{url_suffix}',
+                                  f'api/v2/changes{get_url_suffix(change_id)}',
                                   params=params)
 
     def freshservice_change_create(
@@ -1407,24 +1346,9 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        data = remove_empty_elements({
-            "change_type": change_type,
-            "description": description,
-            "email": email,
-            "category": category,
-            "sub_category": sub_category,
-            "impact": impact,
-            "planned_end_date": planned_end_date,
-            "planned_start_date": planned_start_date,
-            "priority": priority,
-            "risk": risk,
-            "status": status,
-            "subject": subject,
-            "requester_id": requester_id,
-            "department_id": department_id,
-            "group_id": group_id,
-            "agent_id": agent_id,
-        })
+        request_args = locals()
+        request_args.pop('self', None)
+        data = remove_empty_elements(request_args)
 
         return self._http_request('POST', 'api/v2/changes', json_data=data)
 
@@ -1477,24 +1401,10 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        data = remove_empty_elements({
-            "change_type": change_type,
-            "description": description,
-            "email": email,
-            "category": category,
-            "sub_category": sub_category,
-            "impact": impact,
-            "planned_end_date": planned_end_date,
-            "planned_start_date": planned_start_date,
-            "priority": priority,
-            "risk": risk,
-            "status": status,
-            "subject": subject,
-            "requester_id": requester_id,
-            "department_id": department_id,
-            "group_id": group_id,
-            "agent_id": agent_id,
-        })
+        request_args = locals()
+        request_args.pop('self', None)
+        request_args.pop('ticket_id', None)
+        data = remove_empty_elements(request_args)
 
         return self._http_request(
             'PUT',
@@ -1543,10 +1453,10 @@ class Client(BaseClient):
             'page': page,
             'per_page': page_size,
         })
-        url_suffix = f'/{task_id}' if task_id else ''
+
         return self._http_request(
             'GET',
-            f'api/v2/changes/{change_id}/tasks{url_suffix}',
+            f'api/v2/changes/{change_id}/tasks{get_url_suffix(task_id)}',
             params=params,
         )
 
@@ -1669,10 +1579,10 @@ class Client(BaseClient):
             'order_type': order_type,
         })
 
-        url_suffix = f'/{release_id}' if release_id else ''
-        return self._http_request('GET',
-                                  f'api/v2/releases{url_suffix}',
-                                  params=params)
+        return self._http_request(
+            'GET',
+            f'api/v2/releases{get_url_suffix(release_id)}',
+            params=params)
 
     def freshservice_release_create(
         self,
@@ -1721,21 +1631,9 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        data = remove_empty_elements({
-            "category": category,
-            "sub_category": sub_category,
-            "description": description,
-            "planned_end_date": planned_end_date,
-            "planned_start_date": planned_start_date,
-            "priority": priority,
-            "release_type": release_type,
-            "status": status,
-            "subject": subject,
-            "custom_fields": custom_fields,
-            "department_id": department_id,
-            "agent_id": agent_id,
-            "group_id": group_id,
-        })
+        request_args = locals()
+        request_args.pop('self', None)
+        data = remove_empty_elements(request_args)
 
         return self._http_request('POST', 'api/v2/releases', json_data=data)
 
@@ -1787,21 +1685,10 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        data = remove_empty_elements({
-            "category": category,
-            "sub_category": sub_category,
-            "description": description,
-            "planned_end_date": planned_end_date,
-            "planned_start_date": planned_start_date,
-            "priority": priority,
-            "release_type": release_type,
-            "status": status,
-            "subject": subject,
-            "custom_fields": custom_fields,
-            "department_id": department_id,
-            "agent_id": agent_id,
-            "group_id": group_id,
-        })
+        request_args = locals()
+        request_args.pop('self', None)
+        request_args.pop('ticket_id', None)
+        data = remove_empty_elements(request_args)
 
         return self._http_request(
             'PUT',
@@ -1850,10 +1737,10 @@ class Client(BaseClient):
             'page': page,
             'per_page': page_size,
         })
-        url_suffix = f'/{task_id}' if task_id else ''
+
         return self._http_request(
             'GET',
-            f'api/v2/releases/{release_id}/tasks{url_suffix}',
+            f'api/v2/releases/{release_id}/tasks{get_url_suffix(task_id)}',
             params=params,
         )
 
@@ -1971,10 +1858,11 @@ class Client(BaseClient):
             'per_page': page_size,
             'query': updated_query,
         })
-        url_suffix = f'/{entity_id_value}' if entity_id_value else ''
-        return self._http_request('GET',
-                                  f'api/v2/requesters{url_suffix}',
-                                  params=params)
+
+        return self._http_request(
+            'GET',
+            f'api/v2/requesters{get_url_suffix(entity_id_value)}',
+            params=params)
 
     def freshservice_requester_field_list(
         self,
@@ -2019,10 +1907,11 @@ class Client(BaseClient):
             'per_page': page_size,
             'query': updated_query,
         })
-        url_suffix = f'/{entity_id_value}' if entity_id_value else ''
-        return self._http_request('GET',
-                                  f'api/v2/agents{url_suffix}',
-                                  params=params)
+
+        return self._http_request(
+            'GET',
+            f'api/v2/agents{get_url_suffix(entity_id_value)}',
+            params=params)
 
     def freshservice_role_list(
         self,
@@ -2041,10 +1930,11 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({'page': page, 'per_page': page_size})
-        url_suffix = f'/{entity_id_value}' if entity_id_value else ''
-        return self._http_request('GET',
-                                  f'api/v2/roles{url_suffix}',
-                                  params=params)
+
+        return self._http_request(
+            'GET',
+            f'api/v2/roles{get_url_suffix(entity_id_value)}',
+            params=params)
 
     def freshservice_vendor_list(
         self,
@@ -2063,10 +1953,11 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({'page': page, 'per_page': page_size})
-        url_suffix = f'/{entity_id_value}' if entity_id_value else ''
-        return self._http_request('GET',
-                                  f'api/v2/vendors{url_suffix}',
-                                  params=params)
+
+        return self._http_request(
+            'GET',
+            f'api/v2/vendors{get_url_suffix(entity_id_value)}',
+            params=params)
 
     def freshservice_software_list(
         self,
@@ -2086,10 +1977,11 @@ class Client(BaseClient):
         """
 
         params = remove_empty_elements({'page': page, 'per_page': page_size})
-        url_suffix = f'/{entity_id_value}' if entity_id_value else ''
-        return self._http_request('GET',
-                                  f'api/v2/applications{url_suffix}',
-                                  params=params)
+
+        return self._http_request(
+            'GET',
+            f'api/v2/applications{get_url_suffix(entity_id_value)}',
+            params=params)
 
     def freshservice_asset_list(
         self,
@@ -2116,11 +2008,10 @@ class Client(BaseClient):
             'per_page': page_size
         })
 
-        url_suffix = f'/{entity_id_value}' if entity_id_value else ''
-
-        return self._http_request('GET',
-                                  f'api/v2/assets{url_suffix}',
-                                  params=params)
+        return self._http_request(
+            'GET',
+            f'api/v2/assets{get_url_suffix(entity_id_value)}',
+            params=params)
 
     def freshservice_purchase_order_list(
         self,
@@ -2140,10 +2031,10 @@ class Client(BaseClient):
         """
         params = remove_empty_elements({'page': page, 'per_page': page_size})
 
-        url_suffix = f'/{entity_id_value}' if entity_id_value else ''
-        return self._http_request('GET',
-                                  f'api/v2/purchase_orders{url_suffix}',
-                                  params=params)
+        return self._http_request(
+            'GET',
+            f'api/v2/purchase_orders{get_url_suffix(entity_id_value)}',
+            params=params)
 
     def freshservice_agent_group_list(
         self,
@@ -2163,10 +2054,10 @@ class Client(BaseClient):
         """
         params = remove_empty_elements({'page': page, 'per_page': page_size})
 
-        url_suffix = f'/{entity_id_value}' if entity_id_value else ''
-        return self._http_request('GET',
-                                  f'api/v2/groups{url_suffix}',
-                                  params=params)
+        return self._http_request(
+            'GET',
+            f'api/v2/groups{get_url_suffix(entity_id_value)}',
+            params=params)
 
     def freshservice_department_list(
         self,
@@ -2191,10 +2082,10 @@ class Client(BaseClient):
             'query': updated_query,
         })
 
-        url_suffix = f'/{entity_id_value}' if entity_id_value else ''
-        return self._http_request('GET',
-                                  f'api/v2/departments{url_suffix}',
-                                  params=params)
+        return self._http_request(
+            'GET',
+            f'api/v2/departments{get_url_suffix(entity_id_value)}',
+            params=params)
 
 
 def list_freshservice_ticket_command(
@@ -2214,31 +2105,27 @@ def list_freshservice_ticket_command(
         args)
 
     command_args = get_command_list_args(args, entity_name, entity_id_value)
-
     freshservice_request = get_command_request(client, entity_name)
 
-    request_args = remove_empty_elements({
-        'page': command_args.page,
-        'page_size': command_args.page_size,
-        f'{entity_name}_id': entity_id_value,
-        'updated_query': command_args.updated_query,
-        'updated_since': command_args.updated_since,
-        'filter': command_args.filter,
-        'include': command_args.include,
-        'order_type': command_args.order_type
-    })
+    command_args_dict = command_args._asdict()
+    command_args_dict[f'{entity_name}_id'] = entity_id_value
+    pagination_message = command_args_dict.pop('pagination_message', None)
+    command_response_key = command_args_dict.pop('command_response_key', None)
+
+    request_args = remove_empty_elements(command_args_dict)
+
     response = freshservice_request(**request_args)
 
     updated_response = convert_response_properties(
-        response.get(command_args.command_response_key),
-        TICKET[entity_name],
+        response.get(command_response_key),
+        TICKET_PROPERTIES_BY_TYPE[entity_name],
     )
 
     readable_output = tableToMarkdown(
         name=output_prefix,
-        metadata=command_args.pagination_message,
+        metadata=pagination_message,
         t=remove_empty_elements(updated_response),
-        headers=READABLE_OUTPUT_HEADER.get(entity_name),
+        headers=READABLE_OUTPUT_HEADER_BY_ENTITY.get(entity_name),
         headerTransform=string_to_table_header,
     )
 
@@ -2253,7 +2140,7 @@ def create_update_freshservice_ticket_command(
     client: Client,
     args: Dict[str, Any],
 ) -> CommandResults:
-    """ Create an new or update an existing Ticket/ Problem/ Change/ Release in Freshservice.
+    """ Create a new or update an existing Ticket/ Problem/ Change/ Release in Freshservice.
 
     Args:
         client (Client): Freshservice API client.
@@ -2263,7 +2150,7 @@ def create_update_freshservice_ticket_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     entity_id_value, entity_name, output_prefix, command_operator = get_args_by_command_name(
-        args, )
+        args)
 
     args_for_request = get_request_arguments_per_ticket_type(
         entity_name,
@@ -2275,23 +2162,24 @@ def create_update_freshservice_ticket_command(
 
     response = freshservice_request(**args_for_request, )
 
-    # Only 'ticket' support 'attachments' field but there is an issue in the API
-    # to create ticket with attachments & all the rest of the fields together.
-    # So stage1 is create ticket without the attachments (if exist)
-    # and stage2 is update the ticket with the attachments (if exist).
+    # Only 'ticket' supports the 'attachments' field.
+    # In the API there is an issue while creating a ticket with 'attachments' and other fields.
+    # If the ticket exists we:
+    # 1. Create a ticket without the attachments.
+    # 2. Update the ticket with the attachments.
     update_response = update_ticket_attachments(client, args_for_request,
                                                 response, command_operator)
-    response = update_response if update_response else response
+    response = update_response or response
     updated_response = convert_response_properties(
-        response.get(entity_name),
-        TICKET[entity_name],
+        response[entity_name],
+        TICKET_PROPERTIES_BY_TYPE[entity_name],
     )
 
     readable_output = tableToMarkdown(
         name=output_prefix,
         metadata=f'{output_prefix} {command_operator}d successfully',
         t=remove_empty_elements(updated_response),
-        headers=READABLE_OUTPUT_HEADER.get(entity_name),
+        headers=READABLE_OUTPUT_HEADER_BY_ENTITY.get(entity_name),
         headerTransform=string_to_table_header,
     )
 
@@ -2350,7 +2238,7 @@ def list_freshservice_ticket_task_command(
 
     task_id = args.get('task_id')
     entity_id_value, entity_name, output_prefix, _ = get_args_by_command_name(
-        args, )
+        args)
 
     command_args = get_command_list_args(args, 'task', task_id)
 
@@ -2360,16 +2248,16 @@ def list_freshservice_ticket_task_command(
                                     command_args.page_size, task_id)
 
     updated_response = convert_response_properties(
-        response.get(command_args.command_response_key),
-        TASK,
+        response[command_args.command_response_key],
+        TASK_STATUS_VALUES,
     )
     updated_output = {'id': entity_id_value, 'Task': updated_response}
 
     readable_output = tableToMarkdown(
         name=f'{output_prefix}',
         metadata=command_args.pagination_message,
-        t=remove_empty_elements(updated_output.get('Task')),
-        headers=READABLE_OUTPUT_HEADER.get('task'),
+        t=remove_empty_elements(updated_output['Task']),
+        headers=READABLE_OUTPUT_HEADER_BY_ENTITY['task'],
         headerTransform=string_to_table_header,
     )
 
@@ -2395,7 +2283,7 @@ def create_update_freshservice_ticket_task_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     entity_id_value, entity_name, output_prefix, command_operator = get_args_by_command_name(
-        args, )
+        args)
 
     if notify_before := arg_to_datetime(args.get('notify_before')):
         notify_before_timestamp = int(notify_before.timestamp())
@@ -2412,7 +2300,7 @@ def create_update_freshservice_ticket_task_command(
                       notify_before=notify_before_seconds,
                       title=args.get('title'),
                       description=args.get('description'),
-                      status=TASK['status'][args['status']]
+                      status=TASK_STATUS_VALUES['status'][args['status']]
                       if args.get('status') else None))
 
     freshservice_request = get_command_request(
@@ -2422,7 +2310,7 @@ def create_update_freshservice_ticket_task_command(
 
     updated_response = convert_response_properties(
         response.get('task'),
-        TASK,
+        TASK_STATUS_VALUES,
     )
     updated_output = {'id': entity_id_value, 'Task': updated_response}
 
@@ -2430,7 +2318,7 @@ def create_update_freshservice_ticket_task_command(
         name=f'{output_prefix}',
         metadata=f'{output_prefix} Task {command_operator}d successfully',
         t=remove_empty_elements(updated_output.get('Task')),
-        headers=READABLE_OUTPUT_HEADER.get('task'),
+        headers=READABLE_OUTPUT_HEADER_BY_ENTITY.get('task'),
         headerTransform=string_to_table_header,
     )
     return CommandResults(readable_output=readable_output,
@@ -2455,7 +2343,7 @@ def delete_freshservice_ticket_task_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     entity_id_value, entity_name, output_prefix, command_operator = get_args_by_command_name(
-        args, )
+        args)
 
     task_id = args['task_id']
 
@@ -2489,7 +2377,7 @@ def list_freshservice_ticket_conversation_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    entity_id_value, _, _, _ = get_args_by_command_name(args, )
+    entity_id_value, *_ = get_args_by_command_name(args)
 
     command_args = get_command_list_args(args, 'conversation')
 
@@ -2506,7 +2394,7 @@ def list_freshservice_ticket_conversation_command(
         name='Ticket conversations',
         metadata=command_args.pagination_message,
         t=remove_empty_elements(updated_output.get('Conversation')),
-        headers=READABLE_OUTPUT_HEADER.get('conversation'),
+        headers=READABLE_OUTPUT_HEADER_BY_ENTITY.get('conversation'),
         headerTransform=string_to_table_header,
     )
     return CommandResults(readable_output=readable_output,
@@ -2557,7 +2445,7 @@ def create_freshservice_ticket_conversation_reply_command(
     readable_output = tableToMarkdown(
         name='Ticket conversation reply created successfully',
         t=remove_empty_elements(updated_output.get('Conversation')),
-        headers=READABLE_OUTPUT_HEADER.get('reply'),
+        headers=READABLE_OUTPUT_HEADER_BY_ENTITY.get('reply'),
         headerTransform=string_to_table_header,
     )
     return CommandResults(readable_output=readable_output,
@@ -2603,7 +2491,7 @@ def create_freshservice_ticket_conversation_note_command(
     readable_output = tableToMarkdown(
         name='Ticket conversation note created successfully',
         t=remove_empty_elements(updated_output.get('Note')),
-        headers=READABLE_OUTPUT_HEADER.get('conversation'),
+        headers=READABLE_OUTPUT_HEADER_BY_ENTITY.get('conversation'),
         headerTransform=string_to_table_header,
     )
     return CommandResults(readable_output=readable_output,
@@ -2647,7 +2535,7 @@ def update_freshservice_ticket_conversation_command(
     readable_output = tableToMarkdown(
         name='Ticket conversation updated successfully',
         t=remove_empty_elements(updated_output.get('Conversation')),
-        headers=READABLE_OUTPUT_HEADER.get('conversation'),
+        headers=READABLE_OUTPUT_HEADER_BY_ENTITY.get('conversation'),
         headerTransform=string_to_table_header,
     )
     return CommandResults(readable_output=readable_output,
@@ -2722,7 +2610,7 @@ def list_freshservice_entities_command(
     if entity_name == 'purchase_order':
         updated_response = convert_response_properties(
             updated_response,
-            PURCHASE_ORDER,
+            PURCHASE_ORDER_STATUS_VALUES,
         )
         # to be align to rest entity response when get one entity and not list
         updated_response = updated_response[0] if len(
@@ -2732,7 +2620,7 @@ def list_freshservice_entities_command(
         name=output_prefix,
         metadata=command_args.pagination_message,
         t=remove_empty_elements(updated_response),
-        headers=READABLE_OUTPUT_HEADER.get(f'{entity_name}s'),
+        headers=READABLE_OUTPUT_HEADER_BY_ENTITY.get(f'{entity_name}s'),
         headerTransform=string_to_table_header,
     )
 
@@ -2777,7 +2665,7 @@ def get_request_arguments_per_ticket_type(
     Returns:
         Dict[str, Any]: The updated arguments.
     """
-    urgency, status, source, priority, impact, risk, change_type, release_type = convert_command_properties(
+    ticket_properties = convert_command_properties(
         args,
         entity_name,
     )
@@ -2792,19 +2680,19 @@ def get_request_arguments_per_ticket_type(
         assign_params(
             ticket_id=entity_id_value,
             description=args.get('description'),
-            priority=priority,
-            status=status,
+            priority=ticket_properties.priority,
+            status=ticket_properties.status,
             subject=args.get('subject'),
-            urgency=urgency,
+            urgency=ticket_properties.urgency,
             tags=argToList(args.get('tags')),
             sub_category=args.get('sub_category'),
-            source=source,
+            source=ticket_properties.source,
             responder_id=arg_to_number(args.get('responder_id')),
             requester_id=arg_to_number(args.get('requester_id')),
             problem=get_arg_template(args.get('problem'), 'problem'),
             phone=args.get('phone'),
             name=args.get('name'),
-            impact=impact,
+            impact=ticket_properties.impact,
             group_id=arg_to_number(args.get('group_id')),
             fr_due_by=args.get('fr_due_by'),
             email_config_id=args.get('email_config_id'),
@@ -2823,9 +2711,9 @@ def get_request_arguments_per_ticket_type(
             attachments=get_files_to_attach(args),
             assets=get_arg_template(argToList(args.get('assets')), 'assets'),
             analysis_fields=argToList(args.get('analysis_fields')),
-            change_type=change_type,
-            risk=risk,
-            release_type=release_type,
+            change_type=ticket_properties.change_type,
+            risk=ticket_properties.risk,
+            release_type=ticket_properties.release_type,
             planned_start_date=args.get('planned_start_date'),
             planned_end_date=args.get('planned_end_date'),
         ))
@@ -2848,8 +2736,9 @@ def update_ticket_attachments(
         Union[Dict[str, Any], None]: Update ticket response.
     """
     response = None
-    attachments = args_for_request.get('attachments')
-    if attachments and command_operator == 'create':
+
+    if (attachments := args_for_request.get('attachments')
+        ) and command_operator == 'create':
         ticket_id = create_response['ticket']['id']
         response = client.freshservice_ticket_update(ticket_id,
                                                      attachments=attachments)
@@ -2872,18 +2761,17 @@ def get_arg_template(
     """
     if not arg_values:
         return None
-    arg_template = []
+    arg_template = [{
+        'display_id': arg_to_number(value)
+    } for value in arg_values]
 
-    for value in arg_values:
-        arg_template.append({'display_id': arg_to_number(value)})
-
-        if arg_name != 'assets':
-            return arg_template[0]
+    if arg_name != 'assets':
+        return arg_template[0]
 
     return arg_template
 
 
-def update_custom_fields(args: Dict[str, Any], ) -> Dict[Any, Any] | None:
+def update_custom_fields(args: Dict[str, Any]) -> Dict[Any, Any] | None:
     """ Update custom_fields argument to match Freshservice template.
 
     Args:
@@ -2902,7 +2790,7 @@ def update_custom_fields(args: Dict[str, Any], ) -> Dict[Any, Any] | None:
 def validate_mandatory_ticket_requester_fields(
     entity_name: str,
     args: Dict[str, Any],
-    entity_id_value: str | None,
+    entity_id_value: str = None,
 ):
     """ Validate user specified one of the following:
         requester_id, phone, email
@@ -2916,14 +2804,15 @@ def validate_mandatory_ticket_requester_fields(
     Raises:
         ValueError: In case user don't specified the required fields.
     """
-    if entity_name != 'release' and not entity_id_value:
-        if not any(
-            [args.get('requester_id'),
-             args.get('phone'),
-             args.get('email')]):
-            raise ValueError(
-                'One of the following is mandatory: requester_id, phone, email'
-            )
+    if all([
+            entity_name != 'release', not entity_id_value, not any([
+                args.get('requester_id'),
+                args.get('phone'),
+                args.get('email')
+            ])
+    ]):
+        raise ValueError(
+            'One of the following is mandatory: requester_id, phone, email')
 
 
 def get_files_to_attach(args: Dict[str, Any], ) -> List[Tuple]:
@@ -2935,32 +2824,27 @@ def get_files_to_attach(args: Dict[str, Any], ) -> List[Tuple]:
     Returns:
         List[Tuple]: List of files.
     """
-    attachments = argToList(args.get('attachments'))
-
-    files = []
-    for file in attachments:
-        files.append(get_file(file))
-    return files
+    return [get_file(file) for file in argToList(args.get('attachments'))]
 
 
 def convert_response_properties(
-    updated_response: List[Dict],
+    updated_response: List[dict] | Dict[str, Any],
     predefined_values: Dict[str, Dict[str, int]],
-) -> List[Dict]:
+) -> List[dict] | Dict[str, Any]:
     """ Convert command properties from number to string for
         the XSOAR output.
 
     Args:
-        updated_response (Dict[str, Any]): Freshservice response.
-        predefined_values (Dict[str, Any]): Predefined values for Freshservice.
+        updated_response (List[dict]): Freshservice response.
+        predefined_values (Dict[str, Dict[str, int]]): Predefined values for Freshservice.
 
     Returns:
-        Dict[str, Any]: Updated response.
+        List[dict]: Updated response.
     """
     if not updated_response:
         return updated_response
 
-    if not isinstance(updated_response, list):
+    if isinstance(updated_response, dict):
         updated_response = [updated_response]
 
     response_keys = updated_response[0].keys()
@@ -2971,7 +2855,7 @@ def convert_response_properties(
                     response_key) and response_key in predefined_values.keys():
 
                 property_values = reverse_dict(predefined_values[response_key])
-                item |= {response_key: property_values.get(item[response_key])}
+                item[response_key] = property_values.get(item[response_key])
 
     return updated_response
 
@@ -2986,7 +2870,7 @@ def reverse_dict(dict_: Dict[str, Any]) -> Dict[str, Any]:
     return {v: k for k, v in dict_.items()}
 
 
-def get_args_by_command_name(args: Dict[str, Any], ) -> Tuple:
+def get_args_by_command_name(args: Dict[str, Any]) -> Tuple:
     """ Return the default command args by the command name.
 
     Args:
@@ -2997,20 +2881,19 @@ def get_args_by_command_name(args: Dict[str, Any], ) -> Tuple:
     """
     command_name = args['command_name'].split("-")
     command_operator = command_name[-1]
-    entity_id_key = f'{command_name[1]}_id'
     entity_name = command_name[1]
+    entity_id_key = f'{entity_name}_id'
     output_prefix = entity_name.capitalize()
 
     # checks if command entity consists of two words.
-    if len(
-            command_name
-    ) > MAX_DEFAULT_ARGS_COUNT and 'task' not in command_name and 'conversation' not in command_name:
-        entity_id_key = f'{command_name[1]}_{command_name[2]}_id'
-        entity_name = f'{command_name[1]}_{command_name[2]}'
-        output_prefix = f'{command_name[1].capitalize()}{command_name[2].capitalize()}'
+    if (len(command_name) > MAX_DEFAULT_ARGS_COUNT
+            and not {'task', 'conversation'}.intersection(command_name)):
+        entity_id_key = f'{entity_name}_{command_name[2]}_id'
+        entity_name = f'{entity_name}_{command_name[2]}'
+        output_prefix = f'{output_prefix}{command_name[2].capitalize()}'
 
-    entity_id_value = args.get(entity_id_key)
-    return entity_id_value, entity_name, output_prefix, command_operator
+    return args.get(
+        entity_id_key), entity_name, output_prefix, command_operator
 
 
 def get_default_seconds(time_in_seconds: int) -> int:
@@ -3022,18 +2905,8 @@ def get_default_seconds(time_in_seconds: int) -> int:
     Returns:
         int: The updated seconds.
     """
-    default_time_in_seconds = 0
-    if time_in_seconds > 0:
-        for min, max in zip([0, 900, 1800, 2700, 3600],
-                            [900, 1800, 2700, 3600, 7200]):
-            if time_in_seconds in range(min, max):
-                if max - time_in_seconds < time_in_seconds - min:
-                    default_time_in_seconds = max
-                else:
-                    default_time_in_seconds = min
-            elif time_in_seconds > max:
-                default_time_in_seconds = max
-    return default_time_in_seconds
+    return min([0, 900, 1800, 2700, 3600, 7200],
+               key=lambda default_time: abs(default_time - time_in_seconds))
 
 
 def get_file(file_id: str) -> Tuple:
@@ -3046,15 +2919,14 @@ def get_file(file_id: str) -> Tuple:
         Dict[str, Any]: Dict with file data.
     """
     file_data = demisto.getFilePath(file_id)
-    file_name = file_data["name"]
-    with open(file_data["path"], "rb") as f:
-        file = ('attachments[]', (file_name, f.read(), "image/png"))
+    with open(file_data['path'], 'rb') as f:
+        file = ('attachments[]', (file_data['name'], f.read(), 'image/png'))
 
     return file
 
 
 def convert_command_properties(args: Dict[str, Any],
-                               ticket_type: str) -> Tuple:
+                               ticket_type: str) -> TicketProperties:
     """ Convert command properties from string to number for
         the Freshservice request.
 
@@ -3065,23 +2937,36 @@ def convert_command_properties(args: Dict[str, Any],
     Returns:
         Tuple: The converted arguments.
     """
-    ticket_properties = TICKET[ticket_type]
-    urgency = dict_safe_get(ticket_properties,
-                            ['urgency', args.get('urgency')])
-    status = dict_safe_get(ticket_properties, ['status', args.get('status')])
-    source = dict_safe_get(ticket_properties, ['source', args.get('source')])
-    priority = dict_safe_get(ticket_properties,
-                             ['priority', args.get('priority')])
-    impact = dict_safe_get(ticket_properties, ['impact', args.get('impact')])
-    risk = dict_safe_get(ticket_properties, ['risk', args.get('risk')])
-    change_type = dict_safe_get(
-        ticket_properties,
-        ['change_type', args.get('change_type')])
-    release_type = dict_safe_get(
-        ticket_properties,
-        ['release_type', args.get('release_type')])
+    ticket_property_keys = [
+        'urgency',
+        'status',
+        'source',
+        'priority',
+        'impact',
+        'risk',
+        'change_type',
+        'release_type',
+    ]
+    return TicketProperties(
+        **{
+            ticket_property_key: dict_safe_get(
+                TICKET_PROPERTIES_BY_TYPE[ticket_type],
+                [ticket_property_key,
+                 args.get(ticket_property_key)])
+            for ticket_property_key in ticket_property_keys
+        })
 
-    return urgency, status, source, priority, impact, risk, change_type, release_type
+
+def get_url_suffix(entity_id: int = None) -> str:
+    """ Get the URL suffix.
+
+    Args:
+        entity_id (int, optional): The entity ID. Defaults to None.
+
+    Returns:
+        str: Updated URL suffix.
+    """
+    return f'/{entity_id}' if entity_id is not None else ''
 
 
 def get_command_request(client: Client, command_entity: str) -> Callable:
@@ -3159,28 +3044,30 @@ def get_command_list_args(args: Dict[str, Any],
         Tuple: The command argument according to the command mode.
     """
 
-    command_response_key = 'group' if command_response_key == 'agent_group' else command_response_key
-    command_response_key = 'application' if command_response_key == 'software' else command_response_key
+    if command_response_key == 'agent_group':
+        command_response_key = 'group'
+    elif command_response_key == 'software':
+        command_response_key = 'application'
+
     page, page_size, pagination_message = pagination(args)
 
-    # Check if special arguments are exist
+    # Check whether special arguments exist
     filter_name = args.get('filter_name')
-    filter = args.get('filter')
+    ticket_filter = args.get('filter')
     include = args.get('include')
     updated_since = args.get('updated_since')
     order_type = args.get('order_type')
 
     if not command_arg_id:
-        # Check if filter or updated_since exists, if exist -
-        # other query arguments are irrelevant
-        if updated_since or filter or include:
-            updated_since = convert_date_time(
-                updated_since) if updated_since else updated_since
-            filter = 'new_and_my_open' if filter == 'open' else filter
+        # Check whether include, ticket_filter or updated_since exists,
+        # if they do the other query arguments are irrelevant
+        if any([updated_since, ticket_filter, include]):
+            updated_since = updated_since and convert_date_time(updated_since)
+            ticket_filter = 'new_and_my_open' if ticket_filter == 'open' else ticket_filter
             updated_query = None
         else:
-            updated_query = filter_name if filter_name else build_query(
-                args, command_response_key)
+            updated_query = filter_name or build_query(args,
+                                                       command_response_key)
 
         command_response_key = f'{command_response_key}s'
     else:
@@ -3199,7 +3086,7 @@ def get_command_list_args(args: Dict[str, Any],
         pagination_message = f'{command_response_key} ID - {command_arg_id}'
 
     return CommandArgs(page, page_size, pagination_message, updated_query,
-                       updated_since, filter, include, order_type,
+                       updated_since, ticket_filter, include, order_type,
                        command_response_key)
 
 
@@ -3227,8 +3114,9 @@ def build_query(
                 raise ValueError(
                     'You can specify query or any other filter arguments, not both'
                 )
-            else:
-                updated_query = value
+
+            updated_query = value
+
         # assign to updated_query only the filter arguments
         elif key not in [
                 'command_name', 'limit', 'page', 'page_size', 'order_type'
@@ -3240,9 +3128,9 @@ def build_query(
 
             # Convert str value to int in case it's a predefined values
             if entity_name in ['ticket', 'problem', 'change', 'release']:
-                if dict_key := TICKET[entity_name].get(key):
+                if dict_key := TICKET_PROPERTIES_BY_TYPE[entity_name].get(key):
                     integer_value = dict_key.get(value)
-                    correct_value = integer_value if integer_value else correct_value
+                    correct_value = integer_value if integer_value is not None else correct_value
 
             if updated_query:
                 updated_query += f" AND {key}:{correct_value}"
@@ -3255,7 +3143,7 @@ def build_query(
     return updated_query
 
 
-def convert_date_time(date_time: str) -> str:
+def convert_date_time(date_time: str) -> str | None:
     """ Convert str to datetime.
 
     Args:
@@ -3285,21 +3173,15 @@ def validate_pagination_arguments(
     Raises:
         ValueError: Appropriate error message.
     """
-    if page_size:
-        if page_size < MIN_PAGE_SIZE or page_size > MAX_PAGE_SIZE:
-            raise ValueError(
-                f"page size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}."
-            )
-
-    if page is not None:
-        if page < MIN_PAGE_NUM:
-            raise ValueError(
-                f"page argument must be greater than {MIN_PAGE_NUM-1}.")
-
-    if limit is not None:
-        if limit <= MIN_LIMIT:
-            raise ValueError(
-                f"limit argument must be greater than {MIN_LIMIT}.")
+    if page_size and (page_size < MIN_PAGE_SIZE or page_size > MAX_PAGE_SIZE):
+        raise ValueError(
+            f"page size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}."
+        )
+    if page is not None and page < MIN_PAGE_NUM:
+        raise ValueError(
+            f"page argument must be greater than {MIN_PAGE_NUM-1}.")
+    if limit is not None and limit <= MIN_LIMIT:
+        raise ValueError(f"limit argument must be greater than {MIN_LIMIT}.")
 
 
 def pagination(args: Dict[str, Any]) -> Tuple:
@@ -3368,8 +3250,8 @@ def get_modified_remote_data(
         freshservice_request = get_command_request(client, ticket_type)
         response = freshservice_request(**request_args)
         modified_tickets_by_type = convert_response_properties(
-            response.get(f'{ticket_type}s'),
-            TICKET[ticket_type],
+            response[f'{ticket_type}s'],
+            TICKET_PROPERTIES_BY_TYPE[ticket_type],
         )
 
         for ticket in modified_tickets_by_type:
@@ -3422,13 +3304,9 @@ def update_remote_system(
     incident_id = parsed_args.remote_incident_id
     ticket_type, ticket_id = get_ticket_type_by_alert_id(incident_id)
 
-    if parsed_args.delta:
-        demisto.debug(
-            f"Got the following delta keys {str(list(parsed_args.delta.keys()))}"
-        )
-
-    else:
-        demisto.debug("There is no delta fields in Freshservice")
+    demisto.debug(
+        f"Got the following delta keys {str(list(parsed_args.delta.keys()))}"
+        if parsed_args.delta else "There is no delta fields in Freshservice")
 
     try:
         demisto.debug(
@@ -3447,7 +3325,7 @@ def update_remote_system(
             for key, value in update_args.items():
                 if key in MIRRORING_COMMON_FIELDS + TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[
                         ticket_type]:
-                    update_value = dict_safe_get(TICKET,
+                    update_value = dict_safe_get(TICKET_PROPERTIES_BY_TYPE,
                                                  [ticket_type, key, value],
                                                  value)
                     updated_arguments[key] = update_value
@@ -3465,7 +3343,7 @@ def update_remote_system(
     except Exception as error:
         demisto.info(
             f"Error in Freshservice outgoing mirror for incident {ticket_id} - {ticket_type} \n"
-            f"Error message: {str(error)}")
+            f"Error message: {error}")
 
     finally:
         return incident_id
@@ -3499,7 +3377,7 @@ def get_remote_data_command(
     response = freshservice_request(**{f'{ticket_type}_id': ticket_id})
     response = convert_response_properties(
         response.get(ticket_type),
-        TICKET[ticket_type],
+        TICKET_PROPERTIES_BY_TYPE[ticket_type],
     )
     mirrored_ticket = response[0]
     mirrored_ticket.update(
@@ -3535,8 +3413,7 @@ def convert_datetime_to_iso(created_at: str) -> datetime:
         datetime: Updated argument.
     """
     alert_date = datetime.strptime(created_at, TIME_FORMAT)
-    iso_time = FormatIso8601(alert_date) + 'Z'
-    return iso_time
+    return FormatIso8601(alert_date) + 'Z'
 
 
 def get_alert_properties(args: Dict[str, Any]) -> Tuple:
@@ -3548,17 +3425,16 @@ def get_alert_properties(args: Dict[str, Any]) -> Tuple:
     Returns:
         Tuple: Updated alert properties.
     """
-    ticket_types = FETCH_TICKET_TYPE.keys() if argToList(
-        args.get('ticket_type')) == ['All'] else argToList(
-            args.get('ticket_type'))
+    ticket_types = argToList(args.get('ticket_type'))
+    if ticket_types == ['All']:
+        ticket_types = FETCH_TICKET_TYPE.keys()
 
-    alert_properties = [
-        ('impact', argToList(args.get('ticket_impact'))),
-        ('status', argToList(args.get('ticket_status'))),
-        ('risk', argToList(args.get('ticket_risk'))),
-        ('urgency', argToList(args.get('ticket_urgency'))),
-        ('priority', argToList(args.get('ticket_priority'))),
-    ]
+    ticket_prefix = 'ticket_'
+    alert_properties = [(alert_property,
+                         argToList(args.get(ticket_prefix + alert_property)))
+                        for alert_property in
+                        ['impact', 'status', 'risk', 'urgency', 'priority']]
+
     return ticket_types, alert_properties
 
 
@@ -3573,13 +3449,13 @@ def get_last_run(args: Dict[str, Any], ticket_type: str) -> Tuple:
         Tuple: Updated last run arguments.
     """
     last_run = demisto.getLastRun()
-    last_run_id = None
-    last_run_time = args.get('first_fetch', '3 Days')
 
-    if last_run:
-        if ticket_last_run := last_run.get(ticket_type):
-            last_run_id = ticket_last_run.get('id')
-            last_run_time = ticket_last_run.get('time')
+    if last_run and (ticket_last_run := last_run.get(ticket_type)):
+        last_run_time = ticket_last_run.get('time')
+    else:
+        last_run_time = args.get('first_fetch', '3 Days')
+
+    last_run_id = ticket_last_run.get('id')
 
     first_fetch = arg_to_datetime(arg=last_run_time,
                                   arg_name='First fetch time',
@@ -3592,7 +3468,7 @@ def get_last_run(args: Dict[str, Any], ticket_type: str) -> Tuple:
     # convert the last_run_time to Freshservice time format
     last_run_datetime = dateparser.parse(last_run_time)
     # use condition statement to avoid mypy error
-    if isinstance(last_run_datetime, datetime):
+    if last_run_datetime:
         last_run_datetime_str = last_run_datetime.strftime(TIME_FORMAT)
     last_run_datetime = dateparser.parse(last_run_datetime_str)
 
@@ -3648,26 +3524,26 @@ def fetch_relevant_tickets_by_ticket_type(
 
     for alert in alert_list:
         alert_time = dateparser.parse(alert['created_at'])
+        alert_id = alert.get('id')
+
         # use condition statement to avoid mypy error for alert_time
-        if alert.get(
-                'id'
-        ) != last_run_id and alert_time and last_run_datetime < alert_time:
+        if alert_id != last_run_id and alert_time and last_run_datetime < alert_time:
 
             # check if alert properties is according to the defined properties.
-            if all((property := alert.get(key)) is None
-                   or properties == ['All'] or property in properties
+            if all((alert_property := alert.get(key)) is None
+                   or properties == ['All'] or alert_property in properties
                    for key, properties in alert_properties):
 
                 # fetch task for each ticket if true
                 if fetch_ticket_task:
                     freshservice_request = get_command_request(
                         client, f'{ticket_type}_task')
-                    task_response = freshservice_request(alert['id'])
+                    task_response = freshservice_request(alert_id)
                     alert |= task_response
 
-                alert.update({'incident_id': alert["id"]})
+                alert.update({'incident_id': alert_id})
                 alert.update(
-                    {'id': f'{TICKET_ID_PREFIX[ticket_type]}: {alert["id"]}'})
+                    {'id': f'{TICKET_ID_PREFIX[ticket_type]}: {alert_id}'})
 
                 alerts.append(alert)
                 incidents.append(
@@ -3704,21 +3580,30 @@ def parse_incident(alert: dict, entity_name: str,
     }
 
 
-def fetch_incidents(client: Client, params: dict) -> None:
-    """ This function retrieves new alerts every interval (default is 1 minute).
-        This function has to implement the logic of making sure that incidents are
-        fetched only onces and no incidents are missed. By default it's invoked by
-        XSOAR every minute. It will use last_run to save the timestamp of the last
-        alert it processed. If last_run is not provided, it should use the
-        integration parameter first_fetch to determine when to start fetching
-        the first time.
+def fetch_incidents(client: Client, params: dict):
+    """ This function retrieves new alerts from an API endpoint every interval (default is 1 minute).
+        It is responsible for fetching incidents only once and ensuring that no incidents are missed.
+        By default, this function is invoked by XSOAR every minute.
+        It uses the last_run parameter to save the timestamp of the last alert it processed.
+        If last_run is not provided, the function uses the integration parameter first_fetch
+        to determine when to start fetching the first time.
 
     Args:
-        client (Client): The API client.
-        args (dict): The args for fetch: alert types, alert severities, alert status,
-                     max fetch and first fetch.
+        client (Client): An API client object used to retrieve incidents.
+        args (dict): A dictionary of parameters used to configure the function.
+            The following keys are supported:
+                - alert types (str): A comma-separated list of alert types to fetch.
+                - alert severities (str): A comma-separated list of alert severities to fetch.
+                - alert status (str): The status of alerts to fetch.
+                - max fetch (int): The maximum number of incidents to fetch per ticket type.
+                - first_fetch (str): The timestamp of the first alert to fetch.
+                - mirror_direction (str):
+                    The mirror direction to use when syncing incidents with another system.
+                    Can be 'None' or one of the values defined in the MIRROR_DIRECTION_MAPPING dictionary.
+                - fetch_ticket_task (str):
+                    A boolean value indicating whether to fetch ticket tasks along with incidents.
     """
-
+    # use condition statement to avoid mypy error
     mirror_direction = None if params[
         "mirror_direction"] == 'None' else MIRROR_DIRECTION_MAPPING[
             params["mirror_direction"]]
@@ -3727,16 +3612,18 @@ def fetch_incidents(client: Client, params: dict) -> None:
     fetch_ticket_task = argToBoolean(params['fetch_ticket_task'])
 
     # use condition statement to avoid mypy error
-    if max_fetch := arg_to_number(params['max_fetch']) is not None:
-        max_fetch_per_ticket_type = int(max_fetch / len(ticket_types))
+    if (max_fetch := arg_to_number(params['max_fetch'])) is not None:
+        max_fetch_per_ticket_type = max_fetch // len(ticket_types)
 
     incidents = []
     last_run = {}
 
     for alert_type in ticket_types:
         ticket_type = FETCH_TICKET_TYPE[alert_type]
+
         last_run_id, last_run_datetime, last_run_datetime_str = get_last_run(
             params, ticket_type)
+
         freshservice_request = get_command_request(client, ticket_type)
         request_args = {
             'updated_since': convert_datetime_to_iso(last_run_datetime_str),
@@ -3746,21 +3633,30 @@ def fetch_incidents(client: Client, params: dict) -> None:
 
         alert_list = convert_response_properties(
             response.get(f'{ticket_type}s'),
-            TICKET[ticket_type],
+            TICKET_PROPERTIES_BY_TYPE[ticket_type],
         )
         relevant_alerts, relevant_incidents = fetch_relevant_tickets_by_ticket_type(
-            client, alert_list, alert_properties, fetch_ticket_task,
-            ticket_type, last_run_id, last_run_datetime,
-            max_fetch_per_ticket_type, mirror_direction)
+            client=client,
+            alert_list=alert_list,
+            alert_properties=alert_properties,
+            fetch_ticket_task=fetch_ticket_task,
+            ticket_type=ticket_type,
+            last_run_id=last_run_id,
+            last_run_datetime=last_run_datetime,
+            max_fetch_per_ticket_type=max_fetch_per_ticket_type,
+            mirror_direction=mirror_direction,
+        )
 
         incidents += relevant_incidents
 
         if relevant_alerts:
             last_run_alert = max(relevant_alerts,
                                  key=lambda k: k["created_at"])
-            last_run_time = last_run_alert["created_at"]
-            last_run_id = last_run_alert["id"]
-            last_run[ticket_type] = {'id': last_run_id, 'time': last_run_time}
+
+            last_run[ticket_type] = {
+                'id': last_run_alert["id"],
+                'time': last_run_alert["created_at"]
+            }
         else:
             last_run[ticket_type] = {
                 'id': last_run_id,
@@ -3771,18 +3667,19 @@ def fetch_incidents(client: Client, params: dict) -> None:
     demisto.incidents(incidents)
 
 
-def main() -> None:
+def main():
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
 
     url = params['url']
     api_token = params.get('credentials', {}).get('password')
+
     verify_certificate: bool = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    proxy: bool = params.get('proxy', False)
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
-    args.update({'command_name': command})
+    args['command_name'] = command
 
     try:
         client: Client = Client(url, api_token, verify_certificate, proxy)

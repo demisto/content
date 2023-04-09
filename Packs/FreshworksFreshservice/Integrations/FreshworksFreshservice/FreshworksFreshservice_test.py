@@ -22,8 +22,8 @@ def util_load_json(file_name):
 @pytest.fixture()
 def client():
     return Client(server_url=SERVER_URL,
-                  verify=None,
-                  proxy=None,
+                  verify=False,
+                  proxy=False,
                   api_token=API_TOKEN)
 
 
@@ -104,55 +104,55 @@ def test_get_freshservice_entities_command(
     requests_mock.get(url, json=mock_response_freshservice_entities_list)
     results = list_freshservice_entities_command(client=client, args=args)
 
-    assert results.outputs.get('id') == 1
+    assert results.outputs['id'] == 1
     assert results.outputs_prefix == f'Freshservice.{output_prefix}'
     assert results.outputs_key_field == 'id'
 
 
 @pytest.mark.parametrize('url, args, entity_name, output_prefix', [
-    (f'{SERVER_URL}api/v2/requesters?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/requesters', {
         'page': 1,
         'page_size': 4,
         'first_name': 'Jack',
         'command_name': 'freshservice-requester-list',
     }, 'requester_list', 'Requester'),
-    (f'{SERVER_URL}api/v2/vendors?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/vendors', {
         'page': 1,
         'page_size': 4,
         'command_name': 'freshservice-vendor-list',
     }, 'vendor_list', 'Vendor'),
-    (f'{SERVER_URL}api/v2/agents?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/agents', {
         'page': 1,
         'page_size': 4,
         'command_name': 'freshservice-agent-list',
     }, 'agent_list', 'Agent'),
-    (f'{SERVER_URL}api/v2/roles?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/roles', {
         'page': 1,
         'page_size': 4,
         'command_name': 'freshservice-role-list',
     }, 'role_list', 'Role'),
-    (f'{SERVER_URL}api/v2/applications?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/applications', {
         'page': 1,
         'page_size': 4,
         'command_name': 'freshservice-software-list',
     }, 'software_list', 'Software'),
-    (f'{SERVER_URL}api/v2/departments?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/departments', {
         'page': 1,
         'page_size': 4,
         'first_name': 'Jack',
         'command_name': 'freshservice-department-list',
     }, 'department_list', 'Department'),
-    (f'{SERVER_URL}api/v2/groups?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/groups', {
         'page': 1,
         'page_size': 4,
         'command_name': 'freshservice-agent-group-list',
     }, 'agent_group_list', 'AgentGroup'),
-    (f'{SERVER_URL}api/v2/purchase_orders?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/purchase_orders', {
         'page': 1,
         'page_size': 4,
         'command_name': 'freshservice-purchase-order-list',
     }, 'purchase_order_list', 'PurchaseOrder'),
-    (f'{SERVER_URL}api/v2/assets?filter=%22first_name%3A%27Jack%27%22', {
+    (f'{SERVER_URL}api/v2/assets', {
         'first_name': 'Jack',
         'command_name': 'freshservice-asset-list',
     }, 'asset_list', 'Asset'),
@@ -201,22 +201,21 @@ def test_list_freshservice_entities_command(
     requests_mock.get(url, json=mock_response_freshservice_entities_list)
     results = list_freshservice_entities_command(client=client, args=args)
 
-    assert results.outputs[0].get('id') == 1
+    assert results.outputs[0]['id'] == 1
     assert results.outputs_prefix == f'Freshservice.{output_prefix}'
     assert results.outputs_key_field == 'id'
 
 
 @pytest.mark.parametrize('url, args', [
-    (f'{SERVER_URL}api/v2/tickets?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/tickets', {
         'page': 1,
         'page_size': 4,
         'command_name': 'freshservice-ticket-list',
     }),
-    (f'{SERVER_URL}api/v2/tickets/filter?page=1&query=%22priority%3A%3E3%2520AND%2520status%3A2%22',
-     {
-         'query': "priority:>3%20AND%20status:2",
-         'command_name': 'freshservice-ticket-list',
-     }),
+    (f'{SERVER_URL}api/v2/tickets/filter', {
+        'query': "priority:>3 AND status:2",
+        'command_name': 'freshservice-ticket-list',
+    }),
 ])
 def test_list_freshservice_ticket_command(
     client,
@@ -246,9 +245,9 @@ def test_list_freshservice_ticket_command(
     requests_mock.get(url, json=mock_response_freshservice_entities_list)
     results = list_freshservice_ticket_command(client=client, args=args)
 
-    assert results.outputs[0].get('id') == 1
+    assert results.outputs[0]['id'] == 1
     assert results.raw_response[0].get('source') == 'Portal'
-    assert results.outputs[0].get('status') == 'Resolved'
+    assert results.outputs[0]['status'] == 'Resolved'
     assert results.outputs_prefix == 'Freshservice.Ticket'
     assert results.outputs_key_field == 'id'
 
@@ -286,15 +285,15 @@ def test_get_freshservice_ticket_command(
                                                    'freshservice-ticket-list'
                                                })
 
-    assert results.outputs[0].get('id') == 1
-    assert results.raw_response[0].get('source') == 'Portal'
-    assert results.outputs[0].get('status') == 'Resolved'
+    assert results.outputs[0]['id'] == 1
+    assert results.raw_response[0]['source'] == 'Portal'
+    assert results.outputs[0]['status'] == 'Resolved'
     assert results.outputs_prefix == 'Freshservice.Ticket'
     assert results.outputs_key_field == 'id'
 
 
 @pytest.mark.parametrize('url, args', [
-    (f'{SERVER_URL}api/v2/problems?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/problems', {
         'page': 1,
         'page_size': 4,
         'command_name': 'freshservice-problem-list',
@@ -332,9 +331,9 @@ def test_list_freshservice_problem_command(
     requests_mock.get(url, json=mock_response_freshservice_entities_list)
     results = list_freshservice_ticket_command(client=client, args=args)
 
-    assert results.outputs[0].get('id') == 1
-    assert results.raw_response[0].get('priority') == 'High'
-    assert results.outputs[0].get('status') == 'Open'
+    assert results.outputs[0]['id'] == 1
+    assert results.raw_response[0]['priority'] == 'High'
+    assert results.outputs[0]['status'] == 'Open'
     assert results.outputs_prefix == 'Freshservice.Problem'
     assert results.outputs_key_field == 'id'
 
@@ -373,15 +372,15 @@ def test_get_freshservice_problem_command(
                                                    'freshservice-problem-list'
                                                })
 
-    assert results.outputs[0].get('id') == 1
-    assert results.raw_response[0].get('priority') == 'High'
-    assert results.outputs[0].get('status') == 'Open'
+    assert results.outputs[0]['id'] == 1
+    assert results.raw_response[0]['priority'] == 'High'
+    assert results.outputs[0]['status'] == 'Open'
     assert results.outputs_prefix == 'Freshservice.Problem'
     assert results.outputs_key_field == 'id'
 
 
 @pytest.mark.parametrize('url, args', [
-    (f'{SERVER_URL}api/v2/changes?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/changes', {
         'page': 1,
         'page_size': 4,
         'command_name': 'freshservice-change-list',
@@ -419,9 +418,9 @@ def test_list_freshservice_change_command(
     requests_mock.get(url, json=mock_response_freshservice_entities_list)
     results = list_freshservice_ticket_command(client=client, args=args)
 
-    assert results.outputs[0].get('id') == 1
-    assert results.raw_response[0].get('risk') == 'Low'
-    assert results.outputs[0].get('status') == 'Open'
+    assert results.outputs[0]['id'] == 1
+    assert results.raw_response[0]['risk'] == 'Low'
+    assert results.outputs[0]['status'] == 'Open'
     assert results.outputs_prefix == 'Freshservice.Change'
     assert results.outputs_key_field == 'id'
 
@@ -460,15 +459,15 @@ def test_get_freshservice_change_command(
                                                    'freshservice-change-list'
                                                })
 
-    assert results.outputs[0].get('id') == 1
-    assert results.raw_response[0].get('risk') == 'Low'
-    assert results.outputs[0].get('status') == 'Open'
+    assert results.outputs[0]['id'] == 1
+    assert results.raw_response[0]['risk'] == 'Low'
+    assert results.outputs[0]['status'] == 'Open'
     assert results.outputs_prefix == 'Freshservice.Change'
     assert results.outputs_key_field == 'id'
 
 
 @pytest.mark.parametrize('url, args', [
-    (f'{SERVER_URL}api/v2/releases?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/releases', {
         'page': 1,
         'page_size': 4,
         'command_name': 'freshservice-release-list',
@@ -507,9 +506,9 @@ def test_list_freshservice_release_command(
     requests_mock.get(url, json=mock_response_freshservice_entities_list)
     results = list_freshservice_ticket_command(client=client, args=args)
 
-    assert results.outputs[0].get('id') == 1
-    assert results.raw_response[0].get('priority') == 'Low'
-    assert results.outputs[0].get('status') == 'Open'
+    assert results.outputs[0]['id'] == 1
+    assert results.raw_response[0]['priority'] == 'Low'
+    assert results.outputs[0]['status'] == 'Open'
     assert results.outputs_prefix == 'Freshservice.Release'
     assert results.outputs_key_field == 'id'
 
@@ -548,9 +547,9 @@ def test_get_freshservice_release_command(
                                                    'freshservice-release-list'
                                                })
 
-    assert results.outputs[0].get('id') == 1
-    assert results.raw_response[0].get('priority') == 'Low'
-    assert results.outputs[0].get('status') == 'Open'
+    assert results.outputs[0]['id'] == 1
+    assert results.raw_response[0]['priority'] == 'Low'
+    assert results.outputs[0]['status'] == 'Open'
     assert results.outputs_prefix == 'Freshservice.Release'
     assert results.outputs_key_field == 'id'
 
@@ -636,13 +635,13 @@ def test_get_freshservice_release_command(
 @mock.patch('FreshworksFreshservice.demisto.getFilePath', lambda x: FILE_ENTRY)
 def test_create_update_freshservice_ticket_command(
     client,
-    requests_mock,
     url,
     method,
     args,
     entity_name,
     output_prefix,
     response_entity,
+    requests_mock,
 ):
     """
     Scenario: Create/ Update a ticket/ change/ problem/
@@ -791,25 +790,25 @@ def test_get_freshservice_ticket_task_command(
 
 
 @pytest.mark.parametrize('url, args, output_prefix', [
-    (f'{SERVER_URL}api/v2/tickets/1/tasks?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/tickets/1/tasks', {
         'command_name': 'freshservice-ticket-task-list',
         'ticket_id': 1,
         'page': 1,
         'page_size': 4,
     }, 'Ticket'),
-    (f'{SERVER_URL}api/v2/problems/1/tasks?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/problems/1/tasks', {
         'command_name': 'freshservice-problem-task-list',
         'problem_id': 1,
         'page': 1,
         'page_size': 4,
     }, 'Problem'),
-    (f'{SERVER_URL}api/v2/changes/1/tasks?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/changes/1/tasks', {
         'command_name': 'freshservice-change-task-list',
         'change_id': 1,
         'page': 1,
         'page_size': 4,
     }, 'Change'),
-    (f'{SERVER_URL}api/v2/releases/1/tasks?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/releases/1/tasks', {
         'command_name': 'freshservice-release-task-list',
         'release_id': 1,
         'page': 1,
@@ -1014,7 +1013,7 @@ def test_delete_freshservice_ticket_task_command(
         'command_name': 'freshservice-ticket-conversation-list',
         'ticket_id': 1,
     }),
-    (f'{SERVER_URL}api/v2/tickets/1/conversations?page=1&per_page=4', {
+    (f'{SERVER_URL}api/v2/tickets/1/conversations', {
         'page': 1,
         'page_size': 4,
         'ticket_id': 1,
@@ -1250,16 +1249,12 @@ def test_delete_freshservice_ticket_conversation_command(
         'page_size': 2,
     }),
     ({
-        'page': None,
-        'page_size': None,
         'limit': 20,
     }, {
         'page': 1,
         'page_size': 20,
     }),
     ({
-        'page': None,
-        'page_size': None,
         'limit': 50,
     }, {
         'page': 1,
@@ -1561,21 +1556,7 @@ def test_get_args_by_command_name(args, output):
     assert command_operator == output.get('command_operator')
 
 
-@pytest.mark.parametrize('args,  output', [
-    (
-        {
-            'a': 1,
-            'b': 2,
-            'c': 3,
-        },
-        {
-            1: 'a',
-            2: 'b',
-            3: 'c',
-        },
-    ),
-])
-def test_reverse_dict(args, output):
+def test_reverse_dict():
     """
     Scenario: Reverse dictionary.
 
@@ -1588,9 +1569,17 @@ def test_reverse_dict(args, output):
     """
 
     from FreshworksFreshservice import reverse_dict
-    reversed_dict = reverse_dict(args)
+    reversed_dict = reverse_dict({
+        'a': 1,
+        'b': 2,
+        'c': 3,
+    })
 
-    assert reversed_dict == output
+    assert reversed_dict == {
+        1: 'a',
+        2: 'b',
+        3: 'c',
+    }
 
 
 def test_convert_response_properties():
@@ -1605,19 +1594,19 @@ def test_convert_response_properties():
      - Ensure value string is correct.
     """
 
-    from FreshworksFreshservice import convert_response_properties, TICKET
+    from FreshworksFreshservice import convert_response_properties, TICKET_PROPERTIES_BY_TYPE
     updated_response = util_load_json('freshservice_ticket_get.json')
     converted_response = convert_response_properties(
         updated_response,
-        TICKET.get('ticket'),
+        TICKET_PROPERTIES_BY_TYPE.get('ticket'),
     )
 
-    assert converted_response[0].get('ticket').get(
-        'status') == updated_response.get('ticket').get('status')
-    assert converted_response[0].get('ticket').get(
-        'priority') == updated_response.get('ticket').get('priority')
-    assert converted_response[0].get('ticket').get(
-        'source') == updated_response.get('ticket').get('source')
+    assert converted_response[0]['ticket'].get(
+        'status') == updated_response['ticket'].get('status')
+    assert converted_response[0]['ticket'].get(
+        'priority') == updated_response['ticket'].get('priority')
+    assert converted_response[0]['ticket'].get(
+        'source') == updated_response['ticket'].get('source')
 
 
 def test_get_request_arguments_per_ticket_type():
@@ -1638,7 +1627,7 @@ def test_get_request_arguments_per_ticket_type():
      - Ensure value is correct.
     """
 
-    from FreshworksFreshservice import get_request_arguments_per_ticket_type, TICKET
+    from FreshworksFreshservice import get_request_arguments_per_ticket_type, TICKET_PROPERTIES_BY_TYPE
 
     response = get_request_arguments_per_ticket_type('ticket', {
         'status': 'Open',
@@ -1646,9 +1635,12 @@ def test_get_request_arguments_per_ticket_type():
         'source': 'Email'
     }, 11)
 
-    assert response.get('status') == TICKET['ticket']['status']['Open']
-    assert response.get('priority') == TICKET['ticket']['priority']['Low']
-    assert response.get('source') == TICKET['ticket']['source']['Email']
+    assert response.get(
+        'status') == TICKET_PROPERTIES_BY_TYPE['ticket']['status']['Open']
+    assert response.get(
+        'priority') == TICKET_PROPERTIES_BY_TYPE['ticket']['priority']['Low']
+    assert response.get(
+        'source') == TICKET_PROPERTIES_BY_TYPE['ticket']['source']['Email']
 
 
 def test_get_arg_template():

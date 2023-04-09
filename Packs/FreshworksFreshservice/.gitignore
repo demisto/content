@@ -3,3 +3,5 @@ CommonServerPython.py
 CommonServerUserPython.py
 DemistoClassApiModule.py
 command_examples.txt
+htmlcov
+__pycache__
