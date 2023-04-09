@@ -147,7 +147,8 @@
          "ignored_native_images":[
             "native:8.1",
             "native:8.2",
-            "native:dev"
+            "native:dev",
+            "native:candidate"
          ]
       },
       {
@@ -156,7 +157,8 @@
          "ignored_native_images":[
             "native:8.1",
             "native:8.2",
-            "native:dev"
+            "native:dev",
+            "native:candidate"
          ]
       },
       {
@@ -165,7 +167,8 @@
          "ignored_native_images": [
             "native:8.1",
             "native:8.2",
-            "native:dev"
+            "native:dev",
+            "native:candidate"
          ]
       },
       {
@@ -181,7 +184,8 @@
          "reason": "Issue: CIAC-6005",
          "ignored_native_images": [
             "native:8.2",
-            "native:dev"
+            "native:dev",
+            "native:candidate"
          ]
       }
    ],
