@@ -708,7 +708,7 @@ for time in UTC time. |
     },
     "Domain": {
         "CreationDate": "2021-03-31T10:17:13.553Z",
-        "DNS": "1.2.3.4",
+        "DNS": "1.2.4.5",
         "Geo": {
             "Country": "DE",
             "Location": "51.2993,9.491"
@@ -719,7 +719,7 @@ for time in UTC time. |
             {
                 "EntityA": "y.gp",
                 "EntityAType": "Domain",
-                "EntityB": "1.2.3.4",
+                "EntityB": "1.2.4.5",
                 "EntityBType": "IP",
                 "Relationship": "resolved-from"
             }
@@ -1916,7 +1916,7 @@ Returns the report of a file or URL submitted to the sandbox.
             "Duration": 152,
             "Network": [
                 {
-                    "UdpDestinaton": "1.2.3.4",
+                    "UdpDestinaton": "1.2.4.5",
                     "UdpPort": 53,
                     "UdpSource": "192.168.2.4"
                 },
@@ -4286,7 +4286,7 @@ Get a list of whitelist entries.
                 "modified_ts": "2023-04-02T13:18:00.862395",
                 "notes": null,
                 "resource_uri": "/api/v1/orgwhitelist/222/",
-                "value": "1.2.3.4",
+                "value": "1.2.4.5",
                 "value_type": "ip"
             }
         ]
@@ -4300,7 +4300,7 @@ Get a list of whitelist entries.
 >|Id|Value|Resource Uri|Created At|Modified At|Value Type|
 >|---|---|---|---|---|---|
 >| 111 | 1.2.4.5 | /api/v1/orgwhitelist/111/ | 2023-04-02T13:18:00.862395 | 2023-04-02T13:18:00.862395 | ip |
->| 222 | 1.2.3.4 | /api/v1/orgwhitelist/222/ | 2023-04-02T13:18:00.862395 | 2023-04-02T13:18:00.862395 | ip |
+>| 222 | 1.2.4.5 | /api/v1/orgwhitelist/222/ | 2023-04-02T13:18:00.862395 | 2023-04-02T13:18:00.862395 | ip |
 
 ### threatstream-create-whitelist-entry
 
