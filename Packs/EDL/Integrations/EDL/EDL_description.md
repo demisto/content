@@ -17,7 +17,7 @@ In a web browser, go to **http://<cortex-xsoar-server-address>:<listen_port>**.
 <~XSIAM>
 **Note**: Do not set `username` and `password` in the integration instance if you are running the integration via the hosted instance. The `username    and `password` fields are for usage when running the integration via an on-prem engine.
 
-**Note2**: If no `Listen Port` param was given and the test button is clicked, the test will run with a defualt port 1111. After pressing `save & exit` a new free port will be assigned to the `Listen Port` parameter automaticlly.
+**Note**: If no `Listen Port` param was given and the test button was clicked, the test will run with the default port 1111. After pressing `save & exit` a new free port will be assigned to the `Listen Port` parameter automatically.
 
 1. To access the **Generic Export Indicators Service** by instance name, set up the **username** and **password** values in the **External Dynamic List Integration** page (**Settings** > **Configurations** > **Integrations** > **External Dynamic List Integration**).
 2. You can access the External Dynamic List at the following url: `https://edl-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>`.
@@ -33,7 +33,7 @@ curl -v -u test:password https://edl-my-xsiam-subdomain.us.paloaltonetworks.com/
 <~XSOAR>
 **Note**: By default, the route to access the Generic Export Indicators Service by instance name will be open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use the service with a username and password. Click **Switch to username and password** and provide the credentials that must be used to access the service.
 
-To access the Generic Export Indicators Service by instance name, make sure ***Instance execute external*** is enabled.
+To access the Generic Export Indicators Service by instance name, make sure *Instance execute external* is enabled.
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
