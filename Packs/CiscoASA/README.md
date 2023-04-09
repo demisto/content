@@ -17,7 +17,9 @@ You can configure the specific vendor and product for this instance.
 In Cisco ASA product we support only rfc 5424 date format with timezone.
 an example ofr the timestamp: "2023-04-09T16:30:00Z"
 
+1. Access the Cisco ADSM.
+2. Go to Configuration -> logging -> Syslog setup.
+3. On Timestamp Format drildown click on the option "RFC 5424(yyyy-MM-ddTHH:mm:ssZ)".
+4. Click on the Apply button.
 
-1. Access the Cisco ADSM
-2. go Configuration -> logging -> Syslog setup
-![Server Screenshot] (https://raw.githubusercontent.com/demisto/content/8a2f8a41f73e9d9f4e20693e3b99dc6b75336321/Packs/CiscoASA/docs_imgs/CiscoASDM_timestamp.png)
+![Server Screenshot](https://raw.githubusercontent.com/demisto/content/8a2f8a41f73e9d9f4e20693e3b99dc6b75336321/Packs/CiscoASA/docs_imgs/CiscoASDM_timestamp.png)
