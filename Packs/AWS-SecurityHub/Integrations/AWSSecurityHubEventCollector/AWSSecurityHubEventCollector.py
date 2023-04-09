@@ -157,7 +157,6 @@ def fetch_events(client: boto3.client, last_run: dict, first_fetch_time: dt.date
         demisto.info('No new findings were found.')
         next_run = last_run
 
-    demisto.info(f'Setting next run to: {next_run}.')
     demisto.setLastRun(next_run)
 
     return events, error
@@ -254,8 +253,7 @@ def main():  # pragma: no cover
         demisto.info(f'Executing \"{command}\" command...')
 
         if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            get_events(client, limit=1)
+            next(get_events(client=client, limit=1))
             return_results('ok')
 
         elif command == 'aws-securityhub-get-events':
