@@ -3287,13 +3287,14 @@ def get_last_run(args: Dict[str, Any], ticket_type: str) -> Tuple:
         Tuple: Updated last run arguments.
     """
     last_run = demisto.getLastRun()
+    ticket_last_run = last_run.get(ticket_type)
+    last_run_id = None
 
-    if last_run and (ticket_last_run := last_run.get(ticket_type)):
+    if last_run and ticket_last_run:
         last_run_time = ticket_last_run.get('time')
+        last_run_id = ticket_last_run.get('id')
     else:
         last_run_time = args.get('first_fetch', '3 Days')
-
-    last_run_id = ticket_last_run and ticket_last_run.get('id')
 
     first_fetch = arg_to_datetime(arg=last_run_time,
                                   arg_name='First fetch time',
