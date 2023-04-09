@@ -6,6 +6,7 @@
       "product": "zoom",
       "dataset": "zoom_zoom_raw",
       "event_data": {
+        "event_type": "operation_log",
         "time": "2023-04-03T08:58:05Z",
         "operator": "test@test.com",
         "category_type": "Team Chat",
@@ -26,6 +27,7 @@
       "product": "zoom",
       "dataset": "zoom_zoom_raw",
       "event_data": {
+        "event_type": "activity_log",
         "email": "test@test.com",
         "time": "2023-03-01T09:58:33Z",
         "type": "Sign in",
