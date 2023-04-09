@@ -1,4 +1,4 @@
-[INGEST:vendor="sonicwall", product="nsv", target_dataset="sonicwall_nsv_raw", no_hit=keep]
+[INGEST:vendor="sonicwall", product="ns", target_dataset="sonicwall_ns_raw", no_hit=keep]
 alter timestamp=arrayindex(regextract(_raw_log,"time\=\"([^=]+)\""),0)
 |alter _time=parse_timestamp("%Y-%m-%d %H:%M:%S", timestamp)
 |fields -timestamp;

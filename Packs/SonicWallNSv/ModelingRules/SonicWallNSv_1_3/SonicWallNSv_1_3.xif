@@ -1,4 +1,4 @@
-[MODEL: dataset=sonicwall_nsv_raw]
+[MODEL: dataset=sonicwall_ns_raw]
 alter
 proto=arrayindex(regextract(_raw_log,"proto\=([^=]+)\/"),0),
 httpMethod=arrayindex(regextract(_raw_log,"op\=([^=]+)[\s|\"]"),0)
