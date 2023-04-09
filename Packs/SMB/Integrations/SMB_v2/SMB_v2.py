@@ -1,47 +1,35 @@
 import uuid
+from pathlib import Path, PurePosixPath, PureWindowsPath
+
 from CommonServerPython import *
 import demistomock as demisto
 
-''' IMPORTS '''
-
 import smbclient
-from smbclient import (
-    open_file,
-    register_session,
-    scandir,
-    remove,
-    mkdir,
-    rmdir,
-)
 
 
-def get_file_name(path):
-    delimiter = '/' if '/' in path else '\\'
-    return path.split(delimiter)[-1]
+def generate_pathlib_object(hostname: str, path: str, os_type: str) -> PurePosixPath | PureWindowsPath:
+    if os_type.casefold() == "Unix".casefold():
+        return PurePosixPath(hostname, path)
 
+    elif os_type.casefold() == "Windows".casefold():
+        return PureWindowsPath(hostname, path)
 
-def handle_path(path):
-    """
-    Stripping the '\\' and '/' characters from a given path.
-    Examples:
-        \\Shared\\123.txt\\ ---> Shared\\123.txt
-        /Shared/123.txt/ ---> Shared/123.txt
-        \\Shared\\123.txt/\\ ---> Shared\\123.txt
-    """
-    return path.strip('\\/')
+    else:
+        raise ValueError(f"\"{os_type}\" is an invalid OSType value.\nOnly \"Unix\" or \"Windows\" can be used.")
 
 
 class SMBClient:
-    def __init__(self, hostname, user, password, encrypt, port):
+    def __init__(self, hostname, port, os_type, user, password, encrypt):
         self.hostname = hostname
+        self.os_type = os_type
+        self._port = port
         self._user = user
         self._password = password
         self._encrypt = encrypt
-        self._port = port
 
     def create_session(self, hostname: str = None, user: str = None, password: str = None, encrypt: bool = False,
                        port: int = None):
-        register_session(
+        smbclient.register_session(
             server=hostname or self.hostname,
             username=user or self._user,
             password=password or self._password,
@@ -58,71 +46,83 @@ def test_module(client: SMBClient):
 
 def smb_upload(client: SMBClient, args: dict):
     hostname = args.get('hostname')
-    path = handle_path(args.get('file_path'))
-    path = os.path.join(hostname or client.hostname, path)
+    os_type = args.get('os_type') or client.os_type
     username = args.get('username')
     password = args.get('password')
-    entryID = args.get('entryID')
-    content = args.get('content')
+    entry_id = args.get('entryID')
+    content = args.get('content')  # The input is text.
+    path_input = args['file_path']
+    path = generate_pathlib_object(hostname, path_input, os_type)
 
-    if not entryID and not content:
+    if not entry_id and not content:
         raise DemistoException(
             "You must provide a content to upload using one of the following arguments: content, entryID.")
 
     client.create_session(hostname, username, password)
 
-    # For the content argument - the input is text.
     writing_mode = 'w'
-    if entryID:
-        file = demisto.getFilePath(entryID)
-        filePath = file['path']
+
+    if entry_id:
+        file = demisto.getFilePath(entry_id)
+        file_path = Path(file['path'])
         writing_mode = 'wb'
 
-        with open(filePath, mode='rb') as f:
+        with open(file_path, mode='rb') as f:
             content = f.read()
 
-    with open_file(fr'{path}', mode=writing_mode) as file_obj:
+    demisto.debug(f"Uploading file: {path}")
+    with smbclient.open_file(str(path), mode=writing_mode) as file_obj:
         file_obj.write(content)
-    return f'File {get_file_name(path)} was uploaded successfully'
+
+    return f'File {path.name} was uploaded successfully'
 
 
 def smb_download(client: SMBClient, args: dict):
     hostname = args.get('hostname')
-    path = handle_path(args.get('file_path'))
-    path = os.path.join(hostname or client.hostname, path)
+    os_type = args.get('os_type') or client.os_type
     username = args.get('username')
     password = args.get('password')
+    path_input = args['file_path']
+    path = generate_pathlib_object(hostname, path_input, os_type)
 
     client.create_session(hostname, username, password)
 
-    with open_file(fr'{path}', mode="rb") as fd:
+    demisto.debug(f"Downloading file: {path}")
+    with smbclient.open_file(str(path), mode="rb") as fd:
         file_contents = fd.read()
-        file_name = get_file_name(path)
-        return fileResult(file_name, file_contents)
+        file_name = path.name
+
+    return fileResult(file_name, file_contents)
 
 
 def smb_remove_file(client: SMBClient, args: dict):
     hostname = args.get('hostname')
-    path = handle_path(args.get('file_path'))
-    path = os.path.join(hostname or client.hostname, path)
+    os_type = args.get('os_type') or client.os_type
     username = args.get('username')
     password = args.get('password')
+    path_input = args['file_path']
+    path = generate_pathlib_object(hostname, path_input, os_type)
 
     client.create_session(hostname, username, password)
-    remove(path)
-    file_name = get_file_name(path)
-    return f'File {file_name} was deleted successfully'
+
+    demisto.debug(f"Removing file: {path}")
+    smbclient.remove(str(path))
+
+    return f'File {path.name} has been deleted successfully.'
 
 
 def list_dir(client: SMBClient, args: dict):
     hostname = args.get('hostname')
+    os_type = args.get('os_type') or client.os_type
     username = args.get('username')
     password = args.get('password')
-    path = handle_path(args.get('path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path_input = args['path']
+    path = generate_pathlib_object(hostname, path_input, os_type)
 
     client.create_session(hostname, username, password)
-    entries = list(scandir(path))
+
+    demisto.debug(f"Listing directory: {path}")
+    entries = list(smbclient.scandir(str(path)))
 
     files = []
     dirs = []
@@ -134,10 +134,11 @@ def list_dir(client: SMBClient, args: dict):
             dirs.append(entry.name)
 
     context = {
-        'SharedFolder': path,
+        'SharedFolder': str(path),
         'Files': files,
         'Directories': dirs,
     }
+
     return CommandResults(
         outputs_prefix='SMB.Path',
         outputs_key_field='SharedFolder',
@@ -148,27 +149,31 @@ def list_dir(client: SMBClient, args: dict):
 
 def smb_mkdir(client: SMBClient, args: dict):
     hostname = args.get('hostname')
+    os_type = args.get('os_type') or client.os_type
     username = args.get('username')
     password = args.get('password')
-    path = handle_path(args.get('path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path_input = args['path']
+    path = generate_pathlib_object(hostname, path_input, os_type)
 
     client.create_session(hostname, username, password)
 
-    mkdir(path)
-
+    demisto.debug(f"Creating directory: {path}")
+    smbclient.mkdir(str(path))
     return f"Directory: {path} was created successfully"
 
 
 def smb_rmdir(client: SMBClient, args: dict):
     hostname = args.get('hostname')
+    os_type = args.get('os_type') or client.os_type
     username = args.get('username')
     password = args.get('password')
-    path = handle_path(args.get('path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path_input = args['path']
+    path = generate_pathlib_object(hostname, path_input, os_type)
 
     client.create_session(hostname, username, password)
-    rmdir(path)
+
+    demisto.debug(f"Removing directory: {path}")
+    smbclient.rmdir(str(path))
 
     return f"Directory: {path} was removed successfully"
 
@@ -177,6 +182,7 @@ def main():
     params = demisto.params()
     hostname = params['hostname']
     port = int(params.get('port', '445'))
+    os_type = params.get('os_type', 'Unix')
     user = params['credentials']['identifier']
     password = params['credentials']['password']
     encrypt = params.get('encrypt', False)
@@ -185,7 +191,7 @@ def main():
     client_guid = params.get('client_guid', None)
 
     # Temporary workaround to an issue in the smbprotocol package.
-    # Git issue: https://github.com/jborean93/smbprotocol/issues/109
+    # GitHub issue: https://github.com/jborean93/smbprotocol/issues/109
     config = smbclient.ClientConfig(username=user, password=password, require_secure_negotiate=verify)
     config.domain_controller = dc
 
@@ -198,12 +204,13 @@ def main():
                 f'Failed to convert {client_guid} to a valid UUID string. Using a random generated UUID instead')
 
     client = SMBClient(hostname=hostname,
+                       os_type=os_type,
                        user=user,
                        password=password,
                        encrypt=encrypt,
                        port=port)
 
-    demisto.info(f'Command being called is {demisto.command()}')
+    demisto.info(f'Command used: {demisto.command()}')
 
     try:
         if demisto.command() == 'test-module':
@@ -220,8 +227,12 @@ def main():
             return_results(smb_mkdir(client, demisto.args()))
         elif demisto.command() == 'smb-directory-remove':
             return_results(smb_rmdir(client, demisto.args()))
+        else:
+            raise NotImplementedError(f'Command {demisto.command()} does not exist.')
+
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
     finally:
         smbclient.reset_connection_cache()
 
