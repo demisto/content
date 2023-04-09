@@ -4,7 +4,9 @@ from CommonServerPython import *
 import requests
 import json
 import re
-import urllib.parse
+import urllib3
+
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 SERVER = None
@@ -250,10 +252,8 @@ def create_ticket():
 
 
 def get_ticket_request(ticket_id):
-    suffix_url = 'ticket/{}/show'.format(ticket_id)
-    raw_ticket = http_request('GET', suffix_url)
-
-    return raw_ticket
+    suffix_url = f'ticket/{ticket_id}/show'
+    return http_request('GET', suffix_url)
 
 
 def fix_query_suffix(query):
@@ -428,10 +428,8 @@ def close_ticket():
 
 
 def edit_ticket_request(ticket_id, encoded):
-    suffix_url = 'ticket/{}/edit'.format(ticket_id)
-    edited_ticket = http_request('POST', suffix_url, data=encoded)
-
-    return edited_ticket
+    suffix_url = f'ticket/{ticket_id}/edit'
+    return http_request('POST', suffix_url, data=encoded)
 
 
 def edit_ticket():
@@ -477,6 +475,7 @@ def edit_ticket():
 
     customfields = demisto.args().get('customfields')
     if customfields:
+        arguments_given = True
         cf_list = customfields.split(',')
         for cf in cf_list:
             equal_index = cf.index('=')
@@ -911,9 +910,6 @@ def fetch_incidents():
 
 def main():
     handle_proxy()
-
-    # disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
 
     params = demisto.params()
 
