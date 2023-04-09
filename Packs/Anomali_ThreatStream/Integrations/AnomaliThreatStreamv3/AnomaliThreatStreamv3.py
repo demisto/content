@@ -1473,7 +1473,7 @@ def list_import_job_command(client: Client, import_id: str = None, status_in: st
         params['status'] = status_in.lower()
 
     res = client.list_import_job_request(import_id, params)
-    outputs = res.get("objects", res)
+    outputs = res if import_id else res.get("objects", [])
     readable_output = tableToMarkdown("Import entries", outputs, removeNull=True, headerTransform=header_transformer,
                                       headers=["id", "date", "status", "approved_by", "email", "intelligence_initiatives",
                                                "numIndicators", "numRejected", "tags"],
