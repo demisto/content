@@ -1,9 +1,9 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "FreshService Change Request",
-        "FreshService Problem Request",
-        "FreshService Release Request"
+        "FreshworksFreshservice Change Request",
+        "FreshworksFreshservice Problem Request",
+        "FreshworksFreshservice Release Request"
     ],
     "caseInsensitive": true,
     "cliName": "freshworksfreshserviceagentid",

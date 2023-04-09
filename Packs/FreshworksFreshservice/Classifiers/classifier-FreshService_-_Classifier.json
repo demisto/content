@@ -3,10 +3,10 @@
     "feed": false,
     "id": "FreshworksFreshservice - Classifier",
     "keyTypeMap": {
-        "change": "FreshService Change Request",
-        "problem": "FreshService Problem Request",
-        "release": "FreshService Release Request",
-        "ticket": "FreshService Ticket"
+        "change": "FreshworksFreshservice Change Request",
+        "problem": "FreshworksFreshservice Problem Request",
+        "release": "FreshworksFreshservice Release Request",
+        "ticket": "FreshworksFreshservice Ticket"
     },
     "name": "FreshworksFreshservice - Classifier",
     "transformer": {

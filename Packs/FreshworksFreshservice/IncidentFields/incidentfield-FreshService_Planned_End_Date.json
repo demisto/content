@@ -1,8 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "FreshService Change Request",
-        "FreshService Release Request"
+        "FreshworksFreshservice Change Request",
+        "FreshworksFreshservice Release Request"
     ],
     "caseInsensitive": true,
     "cliName": "freshworksfreshserviceplannedenddate",

@@ -1,10 +1,10 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "FreshService Ticket",
-        "FreshService Change Request",
-        "FreshService Problem Request",
-        "FreshService Release Request"
+        "FreshworksFreshservice Ticket",
+        "FreshworksFreshservice Change Request",
+        "FreshworksFreshservice Problem Request",
+        "FreshworksFreshservice Release Request"
     ],
     "caseInsensitive": true,
     "cliName": "freshworksfreshserviceassets",
