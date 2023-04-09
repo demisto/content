@@ -6490,6 +6490,16 @@ def test_build_xpath_filter(name_match, name_contain, filters, expected_result):
                               'test_data/prettify_edls_arr_expected_result.json'),
                          ])
 def test_prettify_edls_arr(sample_file, expected_result_file):
+    """
+    Given:
+    - raw response from api represented by a dictionary
+
+    When:
+    - calling panorama_list_edls and there is only one edl in response
+
+    Then:
+    - assert that the returned value after prettify is correct
+    """
     from Panorama import prettify_edls_arr
 
     with open(sample_file, 'r') as f:
