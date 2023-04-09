@@ -293,7 +293,7 @@ filter _raw_log ~= "from\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/\d+\sto\s\d+\.\d+\.\d+\
     xdm.observer.name = observer_ip,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
-//IP \=<dst_ip>
+//from <source_ip> to <dst_ip>
 | filter _raw_log ~= "from\s\d+\.\d+\.\d+\.\d+\sto\s\d+\.\d+\.\d+\.\d+"
 | alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*\d\-(\d+)\:"),0)),
     severity = arrayindex(regextract(_raw_log, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
@@ -318,3 +318,42 @@ filter _raw_log ~= "from\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/\d+\sto\s\d+\.\d+\.\d+\
     xdm.observer.name = observer_ip,
     xdm.source.sent_bytes=bytes,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
+
+//IP \=<dst_ip>
+| filter _raw_log ~= "IP\s*\=\s*\d+\.\d+\.\d+\.\d+"
+| alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*\d\-(\d+)\:"),0)),
+    severity = arrayindex(regextract(_raw_log, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
+    message = arrayindex(regextract(_raw_log, "\%ASA\-[session]*\-*\d\-\d+[\:|\s\-]+\s(.*)"),0),
+    observer_ip = arrayindex(regextract(_raw_log ,"\d{2}\:\d{2}\:\d{2}Z*\s(\d+\.\d+\.\d+\.\d+)\s"),0),
+    action1 = arrayindex(regextract(_raw_log ,"\%ASA\-[session]*\-*\d\-\d+\:([A-Za-z\s]+)\s[A-Za-z]+"),0),
+    action2 = arrayindex(regextract(_raw_log ,"\,\s([\w\s]+)\.*$"),0),
+    dst_ip = arrayindex(regextract(_raw_log ,"IP\s*\=\s*(\d+\.\d+\.\d+\.\d+)"),0),
+    dst_user1 = arrayindex(regextract(_raw_log ,"[u|U]ser\s*\=\s*([\w\-\_\.\@]+)"),0),
+    dst_user2 = arrayindex(regextract(_raw_log ,"Username\s*\=\s*([^\,]+)\,"),0),
+    sent_bytes = arrayindex(regextract(_raw_log ,"Bytes\sxmt\:\s(\d+)"),0),
+    //bytes_received = arrayindex(regextract(_raw_log ,"Bytes\srcv\:\s(\d+)"),0),
+    outcome_reason = arrayindex(regextract(_raw_log ,"[R|r]eason\s*[\:|\=]\s*([\w\s]+)"),0),
+    session_id = arrayindex(regextract(_raw_log ,"Session\=([^\,]+)\,"),0)
+| alter dst_user = coalesce(dst_user1 , dst_user2 ),
+    action = coalesce(action1 , action2 )
+// duration
+| alter duration_string = arrayindex(regextract(_raw_log ,"[D|d]uration\:*\s+([a-z0-9\:]+)[\s|\,]"),0)
+| alter duration_split = split(duration_string ,":")
+// duration parts
+| alter duration_part_0 = arrayindex(duration_split,0),
+    duration_part_1 = arrayindex(duration_split,1),
+    duration_part_2 = arrayindex(duration_split,2)
+| alter duration_part_0_millis = if(duration_part_0 contains "h", multiply( to_number(arrayindex(regextract(duration_part_0 ,"\d+"),0)),3600000),duration_part_0 contains "m", multiply( to_number(arrayindex(regextract(duration_part_0 ,"\d+"),0)),60000) ,duration_part_0 contains "s", multiply( to_number(arrayindex(regextract(duration_part_0 ,"\d+"),0)),1000),duration_part_0 ~= "\d+" and duration_part_0 != "0", multiply(to_number(duration_part_0),3600000) ,0),
+    duration_part_1_millis = if(duration_part_1 contains "h", multiply( to_number(arrayindex(regextract(duration_part_1 ,"\d+"),0)),3600000),duration_part_1 contains "m", multiply( to_number(arrayindex(regextract(duration_part_1 ,"\d+"),0)),60000) ,duration_part_1 contains "s", multiply( to_number(arrayindex(regextract(duration_part_1 ,"\d+"),0)),1000) ,duration_part_1 ~= "\d+" and duration_part_1 != "0", multiply(to_number(duration_part_1),60000),0),
+    duration_part_2_millis = if(duration_part_2 contains "h", multiply( to_number(arrayindex(regextract(duration_part_2 ,"\d+"),0)),3600000),duration_part_2 contains "m", multiply( to_number(arrayindex(regextract(duration_part_2 ,"\d+"),0)),60000) ,duration_part_2 contains "s", multiply( to_number(arrayindex(regextract(duration_part_2 ,"\d+"),0)),1000) ,duration_part_2 ~= "\d+" and duration_part_2 != "0", multiply(to_number(duration_part_2),1000),0)
+| alter duration = add(add(duration_part_0_millis , duration_part_1_millis ),duration_part_2_millis)
+| alter xdm.event.original_event_type = to_string(event_id),
+    xdm.event.description = message,
+    xdm.alert.severity = severity,
+    xdm.target.ipv4 = dst_ip,
+    xdm.event.outcome_reason = coalesce(outcome_reason,action),
+    xdm.observer.name = observer_ip,
+    xdm.event.is_completed = if(action contains "Teardown",true, false),
+    xdm.target.user.username = dst_user,
+    xdm.source.sent_bytes = sent_bytes,
+    xdm.network.session_id = session_id;
