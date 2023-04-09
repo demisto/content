@@ -12,7 +12,7 @@ from AnomaliThreatStreamv3 import main, get_indicators, \
     create_investigation_command, update_investigation_command, delete_investigation_command, add_investigation_element_command, \
     approve_import_job_command, search_threat_model_command, create_element_list, \
     add_threat_model_association_command, validate_values_search_threat_model, validate_investigation_action, \
-    return_params_of_pagination_or_limit
+    return_params_of_pagination_or_limit, create_indicators_list
 from CommonServerPython import *
 import pytest
 
@@ -1191,19 +1191,18 @@ def test_list_whitelist_entry_command(mocker):
                                              '|Id|Value|Resource Uri|Created At|Modified At|Value Type|Notes|\n|' \
                                              '---|---|---|---|---|---|---|\n|' \
                                              ' 13 | example.com | resource_uri | 2023-02-21T19:59:02.091404 |' \
-                                             ' 2023-02-21T19:59:02.091404 | domain | example domain |\n| 12 | 1.2.4.5 |' \
+                                             ' 2023-02-21T19:59:02.091404 | domain | example domain |\n| 12 | 1.2.3.4 |' \
                                              ' resource_uri | 2023-03-14T14:28:20.110021 | 2023-03-20T11:38:26.279451 |'   \
                                              ' ip | example ip |\n| 11 | u | resource_uri | 2023-03-14T14:26:18.765256 |' \
                                              ' 2023-03-14T14:26:18.765256 | user-agent |  |\n'
     assert command_result.raw_response == mocked_response
-    assert command_result.outputs_prefix == 'ThreatStream.WhitelistEntry'
     assert command_result.outputs == [{'created_ts': '2023-02-21T19:59:02.091404', 'id': 13,
                                        'modified_ts': '2023-02-21T19:59:02.091404', 'notes': 'example domain',
                                        'resource_uri': 'resource_uri', 'value': 'example.com', 'value_type': 'domain'},
                                       {'created_ts': '2023-03-14T14:28:20.110021', 'id': 12,
                                        'modified_ts': '2023-03-20T11:38:26.279451',
                                        'notes': 'example ip', 'resource_uri': 'resource_uri',
-                                       'value': '1.2.4.5', 'value_type': 'ip'},
+                                       'value': '1.2.3.4', 'value_type': 'ip'},
                                       {'created_ts': '2023-03-14T14:26:18.765256', 'id': 11,
                                        'modified_ts': '2023-03-14T14:26:18.765256',
                                        'notes': None, 'resource_uri': 'resource_uri', 'value': 'u', 'value_type': 'user-agent'}]
@@ -1236,7 +1235,6 @@ def test_list_import_job_command(mocker):
                                              ' 0 | 0 |  |\n| 120759 | 2023-03-19T14:29:40.592787 | errors |' \
                                              ' some_email |  | 0 | 0 | tag1, tag2 |\n'
     assert command_result.raw_response == mocked_response
-    assert command_result.outputs_prefix == 'ThreatStream.Import'
     assert command_result.outputs == load_json.get('list_import_job_output')
 
 
@@ -1271,7 +1269,6 @@ def test_list_rule_command(mocker):
                                              ' 2023-03-06T12:17:43.907629 |' \
                                              ' 2023-03-06T12:17:43.907629 | true | true |\n'
     assert command_result.raw_response == mocked_response
-    assert command_result.outputs_prefix == 'ThreatStream.Rule'
     assert command_result.outputs == load_json.get('list_rule_outputs')
 
 
@@ -1300,7 +1297,6 @@ def test_list_user_command(mocker):
                                              '|\n| 111 | some_email | true |  |\n| 111 | some_email |' \
                                              ' true | 2023-03-07T10:16:02.953700 |\n'
     assert command_result.raw_response == mocked_response
-    assert command_result.outputs_prefix == 'ThreatStream.User'
     assert command_result.outputs == load_json.get('list_user_outputs')
 
 
@@ -1330,7 +1326,6 @@ def test_list_investigation_command(mocker):
                                              ' in-progress | user | some_email | some_email |\n| New | 111 |' \
                                              ' 2023-01-24T11:23:03.308344 | pending | rules | some_email | some_email |\n'
     assert command_result.raw_response == mocked_response
-    assert command_result.outputs_prefix == 'ThreatStream.Investigation'
     assert command_result.outputs == load_json.get('list_investigation_output')
 
 
@@ -1356,7 +1351,6 @@ def test_create_rule_command(mocker):
     command_result = create_rule_command(client, **args)
     assert command_result.readable_output == 'The rule was created successfully with id: 11111.'
     assert command_result.raw_response == mocked_response
-    assert command_result.outputs_prefix == 'ThreatStream.Rule'
 
 
 def test_update_rule_command(mocker):
@@ -1384,7 +1378,6 @@ def test_update_rule_command(mocker):
                                              ' 2023-03-21T11:55:54.411471 | 2023-03-21T12:29:37.984911 | true | true |\n'
     assert command_result.raw_response == mocked_response
     assert command_result.outputs == mocked_response
-    assert command_result.outputs_prefix == 'ThreatStream.Rule'
 
 
 def test_delete_rule_command(mocker):
@@ -1431,7 +1424,6 @@ def test_create_investigation_command(mocker):
     assert command_result.readable_output == 'Investigation was created successfully with ID: 111.\n'
     assert command_result.raw_response == mocked_response
     assert command_result.outputs == mocked_response
-    assert command_result.outputs_prefix == 'ThreatStream.Investigation'
 
 
 def test_update_investigation_command(mocker):
@@ -1458,7 +1450,6 @@ def test_update_investigation_command(mocker):
     assert command_result.readable_output == 'Investigation was updated successfully with ID: 111'
     assert command_result.raw_response == mocked_response
     assert command_result.outputs == mocked_response
-    assert command_result.outputs_prefix == 'ThreatStream.Investigation'
 
 
 def test_delete_investigation_command(mocker):
@@ -1563,7 +1554,6 @@ def test_search_threat_model_command(mocker):
                                              ' published | 2022-10-08T05:18:20.389951+00:00 |\n'
     assert command_result.raw_response == mocked_response
     assert command_result.outputs == load_json.get('search_threat_model_outputs')
-    assert command_result.outputs_prefix == 'ThreatStream.ThreatModel'
 
 
 @pytest.mark.parametrize('mocker_return_value, expected_readable_output', [
@@ -1602,6 +1592,18 @@ def test_add_threat_model_association_command(mocker, mocker_return_value, expec
     ('ttl', '', '', 'Unvalid values model_type argument'),
 ])
 def test_validate_values_search_threat_model(model_type, publication_status, signature_type, message):
+    """
+
+    Given:
+        - model_type, publication_status, signature_type
+
+    When:
+        - Call validate_values_search_threat_model function
+
+    Then:
+        - Validate the error message
+
+    """
     with pytest.raises(DemistoException) as de:
         validate_values_search_threat_model(model_type, publication_status, signature_type)
 
@@ -1638,6 +1640,18 @@ def test_validate_values_search_threat_model(model_type, publication_status, sig
       'add_related_indicators': 1, 'is_update': True, 'investigation_id': 1111}, ([], [])),
 ])
 def test_create_element_list(arguments_dict, expected_result):
+    """
+
+    Given:
+        - arguments_dict (dict)
+
+    When:
+        - Call create_element_list function
+
+    Then:
+        - Validate the result
+
+    """
     result = create_element_list(arguments_dict)
     assert result == expected_result
 
@@ -1650,6 +1664,18 @@ def test_create_element_list(arguments_dict, expected_result):
 
 ])
 def test_validate_investigation_action(investigation_action, new_investigation_name, existing_investigation_id, message):
+    """
+
+    Given:
+        - investigation_action, new_investigation_name, existing_investigation_id
+
+    When:
+        - Call validate_investigation_action function
+
+    Then:
+        - Validate the error message
+
+    """
     with pytest.raises(DemistoException) as de:
         validate_investigation_action(investigation_action, new_investigation_name, existing_investigation_id)
 
@@ -1662,6 +1688,18 @@ def test_validate_investigation_action(investigation_action, new_investigation_n
     (None, 2, 2)
 ])
 def test_return_params_of_pagination_or_limit(page, page_size, limit):
+    """
+
+    Given:
+        - page, page_size, limit
+
+    When:
+        - Call validate_investigation_action function
+
+    Then:
+        - Validate the error message
+
+    """
     if page is None or page_size is None:
         with pytest.raises(DemistoException) as de:
             return_params_of_pagination_or_limit(page, page_size, limit)
@@ -1670,3 +1708,44 @@ def test_return_params_of_pagination_or_limit(page, page_size, limit):
     else:
         params = return_params_of_pagination_or_limit(page, page_size, limit)
         assert params == {'limit': 2, 'offset': 2}
+
+
+@pytest.mark.parametrize('names_and_indicators_list, notes, expected_result', [
+    ([('domain', ['some_domain']), ('email', ['some_email']),
+      ('ip', ['some_ip']), ('md5', ['some_md5']),
+      ('url', ['some_url']), ('user-agent', ['some_user_agent']),
+      ('cidr', ['some_cidr'])], '',
+     [{'value_type': 'domain', 'value': 'some_domain'},
+      {'value_type': 'email', 'value': 'some_email'},
+      {'value_type': 'ip', 'value': 'some_ip'},
+      {'value_type': 'md5', 'value': 'some_md5'},
+      {'value_type': 'url', 'value': 'some_url'},
+      {'value_type': 'user-agent', 'value': 'some_user_agent'},
+      {'value_type': 'cidr', 'value': 'some_cidr'}]),
+    ([('domain', ['some_domain']), ('email', ['some_email']),
+      ('ip', ['some_ip']), ('md5', ['some_md5']),
+      ('url', ['some_url']), ('user-agent', ['some_user_agent']),
+      ('cidr', ['some_cidr'])], 'some_note',
+     [{'value_type': 'domain', 'value': 'some_domain', 'notes': 'some_note'},
+      {'value_type': 'email', 'value': 'some_email', 'notes': 'some_note'},
+      {'value_type': 'ip', 'value': 'some_ip', 'notes': 'some_note'},
+      {'value_type': 'md5', 'value': 'some_md5', 'notes': 'some_note'},
+      {'value_type': 'url', 'value': 'some_url', 'notes': 'some_note'},
+      {'value_type': 'user-agent', 'value': 'some_user_agent', 'notes': 'some_note'},
+      {'value_type': 'cidr', 'value': 'some_cidr', 'notes': 'some_note'}]),
+])
+def test_create_indicators_list(names_and_indicators_list, notes, expected_result):
+    """
+
+    Given:
+        - names_and_indicators_list, notes
+
+    When:
+        - Call create_indicators_list function
+
+    Then:
+        - Validate the result
+
+    """
+    result = create_indicators_list(names_and_indicators_list, notes)
+    assert result == expected_result

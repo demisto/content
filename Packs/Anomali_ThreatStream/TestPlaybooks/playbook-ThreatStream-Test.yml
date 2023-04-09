@@ -2158,7 +2158,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "64"
+      - "75"
     scriptarguments:
       all:
         simple: "yes"
@@ -2238,7 +2238,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 1.1.1.1
+              simple: 1.2.3.4
     continueonerrortype: ""
     view: |-
       {
@@ -2272,7 +2272,7 @@ tasks:
       - "68"
     scriptarguments:
       ips:
-        simple: 1.1.1.1
+        simple: 1.2.3.4
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2319,7 +2319,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: 1.1.1.1
+                  simple: 1.2.3.4
           accessor: id
     separatecontext: false
     continueonerrortype: ""
@@ -2505,7 +2505,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: 1.1.1.1
+                        simple: 1.2.3.4
                 accessor: notes
             iscontext: true
           right:
@@ -2593,6 +2593,38 @@ tasks:
         "position": {
           "x": 900,
           "y": 8220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: d65aaa72-0fbd-461a-8f4a-02e824f9b633
+    type: regular
+    task:
+      id: d65aaa72-0fbd-461a-8f4a-02e824f9b633
+      version: -1
+      name: List Users
+      description: Gets list of users from ThreatStream. Only users with org admin permission can run this command.
+      script: '|||threatstream-list-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6460
         }
       }
     note: false

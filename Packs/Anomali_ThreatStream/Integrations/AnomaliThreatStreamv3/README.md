@@ -708,7 +708,7 @@ for time in UTC time. |
     },
     "Domain": {
         "CreationDate": "2021-03-31T10:17:13.553Z",
-        "DNS": "1.1.1.1",
+        "DNS": "1.2.3.4",
         "Geo": {
             "Country": "DE",
             "Location": "51.2993,9.491"
@@ -719,7 +719,7 @@ for time in UTC time. |
             {
                 "EntityA": "y.gp",
                 "EntityAType": "Domain",
-                "EntityB": "1.1.1.1",
+                "EntityB": "1.2.3.4",
                 "EntityBType": "IP",
                 "Relationship": "resolved-from"
             }
@@ -1409,9 +1409,9 @@ Returns enrichment data for Domain or IP for available observables.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The type of passive DNS search ("ip", "domain"). Possible values are: ip, domain. Default is ip. | Required | 
-| value | The values that can be sent to the API should correspond to the type that is chosen. For example,if IP is chosen in the type argument, then a valid IP address should be sent in the value argument. | Required | 
+| value | The values that can be sent to the API should correspond to the type that is chosen. For example, if IP is chosen in the type argument, then a valid IP address should be sent in the value argument. | Required | 
 | limit | The maximum number of results to return. Default is 50. | Optional | 
-| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false. Possible values are: false, true. Default is false. | Optional | 
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
@@ -1916,7 +1916,7 @@ Returns the report of a file or URL submitted to the sandbox.
             "Duration": 152,
             "Network": [
                 {
-                    "UdpDestinaton": "1.1.1.1",
+                    "UdpDestinaton": "1.2.3.4",
                     "UdpPort": 53,
                     "UdpSource": "192.168.2.4"
                 },
@@ -4286,7 +4286,7 @@ Get a list of whitelist entries.
                 "modified_ts": "2023-04-02T13:18:00.862395",
                 "notes": null,
                 "resource_uri": "/api/v1/orgwhitelist/222/",
-                "value": "1.1.1.1",
+                "value": "1.2.3.4",
                 "value_type": "ip"
             }
         ]
@@ -4300,7 +4300,7 @@ Get a list of whitelist entries.
 >|Id|Value|Resource Uri|Created At|Modified At|Value Type|
 >|---|---|---|---|---|---|
 >| 111 | 1.2.4.5 | /api/v1/orgwhitelist/111/ | 2023-04-02T13:18:00.862395 | 2023-04-02T13:18:00.862395 | ip |
->| 222 | 1.1.1.1 | /api/v1/orgwhitelist/222/ | 2023-04-02T13:18:00.862395 | 2023-04-02T13:18:00.862395 | ip |
+>| 222 | 1.2.3.4 | /api/v1/orgwhitelist/222/ | 2023-04-02T13:18:00.862395 | 2023-04-02T13:18:00.862395 | ip |
 
 ### threatstream-create-whitelist-entry
 

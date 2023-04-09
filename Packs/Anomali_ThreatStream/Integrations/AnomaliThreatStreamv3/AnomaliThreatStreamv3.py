@@ -6,14 +6,21 @@ import traceback
 import urllib3
 from datetime import date
 
-REPUTATION_COMMANDS = ['ip', 'domain', 'file', 'url', 'threatstream-email-reputation']
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 DEFAULT_LIMIT_PAGE_SIZE = 50
+REPUTATION_COMMANDS = ['ip', 'domain', 'file', 'url', 'threatstream-email-reputation']
+
+MODEL_TYPE_LIST = ['actor', 'attackpattern', 'campaign', 'courseofaction', 'incident',
+                   'identity', 'infrastructure', 'intrusionset',
+                   'malware', 'signature', 'tipreport', 'ttp', 'tool', 'vulnerability']
+PUBLICATION_STATUS_LIST = ['new', 'pending_review', 'review_requested', 'reviewed', 'published']
+SIGNATURE_TYPE_LIST = ['Bro', 'Carbon Black Query', 'ClamAV', 'Custom', 'CybOX',
+                       'OpenIOC', 'RSA NetWitness',
+                       'Snort', 'Splunk Query', 'Suricata', 'YARA']
 
 THREAT_STREAM = 'ThreatStream'
 NO_INDICATORS_FOUND_MSG = 'No intelligence has been found for {searchable_value}'
@@ -236,7 +243,7 @@ class Client(BaseClient):
             If a specific rule_id is given, it will return the information about this rule.
         Args:
             rule_id (int):  Unique ID assigned to the rule.
-            params
+            params (dict): The required parameters for the request.
         Returns:
             A response object in a form of a dictionary.
         """
@@ -781,9 +788,9 @@ def return_params_of_pagination_or_limit(page: int = None, page_size: int = None
     """
     Returns request params accroding to page, page_size and limit arguments.
     Args:
-        page (int): page.
-        page_size (int): page size.
-        limit (int): limit.
+        page: page.
+        page_size: page size.
+        limit: limit.
     Returns:
         params (dict).
     """
@@ -830,17 +837,17 @@ def list_rule_command(client: Client, rule_id: str = None, limit: str = '50', pa
     """
     Returns a list rules.
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        rule_id (Str):  Unique ID assigned to the rule.
-        limit (Str): The maximum number of results to return.
-        page (Str): The page number of the results to retrieve.
-        page_size (Str):  The maximum number of objects to retrieve per page.
+        client: Client to perform calls to Anomali ThreatStream service.
+        rule_id: Unique ID assigned to the rule.
+        limit: The maximum number of results to return.
+        page: The page number of the results to retrieve.
+        page_size: The maximum number of objects to retrieve per page.
     Returns:
         (CommandResults).
     """
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
     res = client.list_rule_request(rule_id, params)
-    data = res.get('objects', res)
+    data = res if rule_id else res.get('objects', [])
     return CommandResults(
         outputs_prefix=f"{THREAT_STREAM}.Rule",
         outputs_key_field="id",
@@ -865,26 +872,26 @@ def create_request_body_rule(rule_id: str = None, rule_name: str = None, keyword
     Creates a request body for create and update rule command.
     Args:
         client (Client): Client to perform calls to Anomali ThreatStream service.
-        rule_id (Str):  The rule id.
-        rule_name (Str):  Rule name.
-        keywords (Str):  A comma-separated list of keywords.
-        match_include (Str):  Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities.
-        actor_ids (Str):  A comma-separated list of actor IDs.
-        campaign_ids (Str):  A comma-separated list of campaign IDs.
-        investigation_action (Str): Possible values: Create New, Add To Existing, No Action.
-        new_investigation_name (Str):  Name of investigation.
-        existing_investigation_id (Str):  An id of existing investigation.
-        exclude_indicator (Str):  A comma-separated list of indicator type.
-        include_indicator (Str):  A comma-separated list of indicator type.
-        exclude_notify_org_whitelisted (Str):  'true' or 'false' value.
-        exclude_notify_owner_org (Str):  'true' or 'false' value.
-        incident_ids (Str):  A comma-separated list of incident IDs.
-        malware_ids (Str):  A comma-separated list of malwares IDs.
-        signature_ids (Str):  A comma-separated list of signatures IDs.
-        threat_bulletin_ids (Str):  A comma-separated list of threat bulletin IDs.
-        ttp_ids (Str):  A comma-separated list of ttp IDs.
-        vulnerability_ids (Str):  A comma-separated list of vulnerabilities IDs.
-        tags (Str):  A comma-separated list of tags.
+        rule_id: The rule id.
+        rule_name: Rule name.
+        keywords: A comma-separated list of keywords.
+        match_include: Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities.
+        actor_ids: A comma-separated list of actor IDs.
+        campaign_ids: A comma-separated list of campaign IDs.
+        investigation_action: Possible values: Create New, Add To Existing, No Action.
+        new_investigation_name: Name of investigation.
+        existing_investigation_id: An id of existing investigation.
+        exclude_indicator: A comma-separated list of indicator type.
+        include_indicator: A comma-separated list of indicator type.
+        exclude_notify_org_whitelisted: 'true' or 'false' value.
+        exclude_notify_owner_org: 'true' or 'false' value.
+        incident_ids: A comma-separated list of incident IDs.
+        malware_ids: A comma-separated list of malwares IDs.
+        signature_ids: A comma-separated list of signatures IDs.
+        threat_bulletin_ids: A comma-separated list of threat bulletin IDs.
+        ttp_ids: A comma-separated list of ttp IDs.
+        vulnerability_ids: A comma-separated list of vulnerabilities IDs.
+        tags: A comma-separated list of tags.
     Returns:
         (CommandResults).
     """
@@ -925,26 +932,26 @@ def create_rule_command(client: Client, **kwargs) -> CommandResults:
     """
     Creates a new rule in ThreatStream.
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        rule_name (Str):  Rule name.
-        keywords (Str):  A comma-separated list of keywords.
-        match_include (Str):  Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities.
-        actor_ids (Str):  A comma-separated list of actor IDs.
-        campaign_ids (Str):  A comma-separated list of campaign IDs.
-        investigation_action (Str): Possible values: Create New, Add To Existing, No Action.
-        new_investigation_name (Str):  Name of investigation.
-        existing_investigation_id (Str):  An id of existing investigation.
-        exclude_indicator (Str):  A comma-separated list of indicator type.
-        include_indicator (Str):  A comma-separated list of indicator type.
-        exclude_notify_org_whitelisted (Str):  'true' or 'false' value.
-        exclude_notify_owner_org (Str):  'true' or 'false' value.
-        incident_ids (Str):  A comma-separated list of incident IDs.
-        malware_ids (Str):  A comma-separated list of malwares IDs.
-        signature_ids (Str):  A comma-separated list of signatures IDs.
-        threat_bulletin_ids (Str):  A comma-separated list of threat bulletin IDs.
-        ttp_ids (Str):  A comma-separated list of ttp IDs.
-        vulnerability_ids (Str):  A comma-separated list of vulnerabilities IDs.
-        tags (Str):  A comma-separated list of tags.
+        client: Client to perform calls to Anomali ThreatStream service.
+        rule_name: Rule name.
+        keywords: A comma-separated list of keywords.
+        match_include: Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities.
+        actor_ids: A comma-separated list of actor IDs.
+        campaign_ids: A comma-separated list of campaign IDs.
+        investigation_action: Possible values: Create New, Add To Existing, No Action.
+        new_investigation_name: Name of investigation.
+        existing_investigation_id: An id of existing investigation.
+        exclude_indicator: A comma-separated list of indicator type.
+        include_indicator: A comma-separated list of indicator type.
+        exclude_notify_org_whitelisted: 'true' or 'false' value.
+        exclude_notify_owner_org: 'true' or 'false' value.
+        incident_ids: A comma-separated list of incident IDs.
+        malware_ids: A comma-separated list of malwares IDs.
+        signature_ids: A comma-separated list of signatures IDs.
+        threat_bulletin_ids: A comma-separated list of threat bulletin IDs.
+        ttp_ids: A comma-separated list of ttp IDs.
+        vulnerability_ids: A comma-separated list of vulnerabilities IDs.
+        tags: A comma-separated list of tags.
     Returns:
         (CommandResults).
     """
@@ -982,27 +989,27 @@ def update_rule_command(client: Client, **kwargs) -> CommandResults:
     """
     Updates exists rule from ThreatStream.
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        rule_id (Str):  Rule ID.
-        rule_name (Str):  Rule name.
-        keywords (Str):  A comma-separated list of keywords.
-        match_include (Str):  Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities.
-        actor_ids (Str):  A comma-separated list of actor IDs.
-        campaign_ids (Str):  A comma-separated list of campaign IDs.
-        investigation_action (Str): Possible values: Create New, Add To Existing, No Action.
-        new_investigation_name (Str):  Name of investigation.
-        existing_investigation_id (Str):  An id of existing investigation.
-        exclude_indicator (Str):  A comma-separated list of indicator type.
-        include_indicator (Str):  A comma-separated list of indicator type.
-        exclude_notify_org_whitelisted (Str):  'true' or 'false' value.
-        exclude_notify_owner_org (Str):  'true' or 'false' value.
-        incident_ids (Str):  A comma-separated list of incident IDs.
-        malware_ids (Str):  A comma-separated list of malwares IDs.
-        signature_ids (Str):  A comma-separated list of signatures IDs.
-        threat_bulletin_ids (Str):  A comma-separated list of threat bulletin IDs.
-        ttp_ids (Str):  A comma-separated list of ttp IDs.
-        vulnerability_ids (Str):  A comma-separated list of vulnerabilities IDs.
-        tags (Str):  A comma-separated list of tags.
+        client: Client to perform calls to Anomali ThreatStream service.
+        rule_id: Rule ID.
+        rule_name: Rule name.
+        keywords: A comma-separated list of keywords.
+        match_include: Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities.
+        actor_ids: A comma-separated list of actor IDs.
+        campaign_ids: A comma-separated list of campaign IDs.
+        investigation_action: Possible values: Create New, Add To Existing, No Action.
+        new_investigation_name: Name of investigation.
+        existing_investigation_id: An id of existing investigation.
+        exclude_indicator: A comma-separated list of indicator type.
+        include_indicator: A comma-separated list of indicator type.
+        exclude_notify_org_whitelisted: 'true' or 'false' value.
+        exclude_notify_owner_org: 'true' or 'false' value.
+        incident_ids: A comma-separated list of incident IDs.
+        malware_ids: A comma-separated list of malwares IDs.
+        signature_ids: A comma-separated list of signatures IDs.
+        threat_bulletin_ids: A comma-separated list of threat bulletin IDs.
+        ttp_ids: A comma-separated list of ttp IDs.
+        vulnerability_ids: A comma-separated list of vulnerabilities IDs.
+        tags: A comma-separated list of tags.
     Returns:
         (CommandResults).
     """
@@ -1028,8 +1035,8 @@ def delete_rule_command(client: Client, rule_id=None) -> CommandResults:
     """
     Deletes a rules.
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        rule_id (Str):  Unique ID assigned to the rule.
+        client: Client to perform calls to Anomali ThreatStream service.
+        rule_id: Unique ID assigned to the rule.
     Returns:
         (CommandResults).
     """
@@ -1045,17 +1052,17 @@ def list_user_command(client: Client, user_id: str = None, limit: str = '50',
     """
     Returns a list of users.
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        user_id (Str):  Unique ID assigned to the user.
-        limit (Str): The maximum number of results to return.
-        page (Str): The page number of the results to retrieve.
-        page_size (Str):  The maximum number of objects to retrieve per page.
+        client: Client to perform calls to Anomali ThreatStream service.
+        user_id: Unique ID assigned to the user.
+        limit: The maximum number of results to return.
+        page: The page number of the results to retrieve.
+        page_size: The maximum number of objects to retrieve per page.
     Returns:
         (CommandResults).
     """
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
     res = client.list_users_request(user_id, params)
-    data = res.get('objects', res)
+    data = res if user_id else res.get('objects', [])
     return CommandResults(
         outputs_prefix=f"{THREAT_STREAM}.User",
         outputs_key_field="id",
@@ -1074,18 +1081,18 @@ def list_investigation_command(client: Client, investigation_id: str = None, lim
     """
     Returns a list of investigations.
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        investigation_id (Str):  Unique ID assigned to the investigation.
-        limit (Str): The maximum number of results to return.
-        page (Str): The page number of the results to retrieve.
-        page_size (Str):  The maximum number of objects to retrieve per page.
+        client: Client to perform calls to Anomali ThreatStream service.
+        investigation_id:  Unique ID assigned to the investigation.
+        limit: The maximum number of results to return.
+        page: The page number of the results to retrieve.
+        page_size: The maximum number of objects to retrieve per page.
     Returns:
         (CommandResults).
     """
 
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
     res = client.list_investigation_request(investigation_id, params)
-    data = res.get('objects', res)
+    data = res if investigation_id else res.get('objects', [])
     return CommandResults(
         outputs_prefix=f"{THREAT_STREAM}.Investigation",
         outputs_key_field="id",
@@ -1114,24 +1121,24 @@ def create_investigation_command(client: Client, name: str = None, description: 
     """
     Creates an investigation on Anomali ThreatStream.
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        name (Str):  Unique name the user want to assigned to the investigation.
-        description (Str): Investigation description.
-        priority (Str): Investigation priority. Possible values are: 'Very Low', 'Low', 'Medium', 'High', 'Very High'.
-        status (Str): Investigation status. Possible values are: 'Completed', 'In-Progress', 'Pending', 'Unassigned'.
-        tags (Str): A comma-separated list of tags. For example, tag1,tag2.
-        tlp (Str): The TLP of the investigation.
-        assignee_id (Str): user id to assignee for the investigation.
-        connect_related_indicators (Str):  When enabled, observables related to the entity
+        client: Client to perform calls to Anomali ThreatStream service.
+        name: Unique name the user want to assigned to the investigation.
+        description: Investigation description.
+        priority: Investigation priority. Possible values are: 'Very Low', 'Low', 'Medium', 'High', 'Very High'.
+        status: Investigation status. Possible values are: 'Completed', 'In-Progress', 'Pending', 'Unassigned'.
+        tags: A comma-separated list of tags. For example, tag1,tag2.
+        tlp: The TLP of the investigation.
+        assignee_id: user id to assignee for the investigation.
+        connect_related_indicators: When enabled, observables related to the entity
         you are associating with the investigation are also added.
-        associated_signature_ids (Str):  A comma-separated list of signature ids.
-        associated_threat_bulletin_ids (Str):  A comma-separated list of threat bulletin ids.
-        associated_ttp_ids (Str):  A comma-separated list of ttp ids.
-        associated_vulnerability_ids (Str):  A comma-separated list of vulnerability ids.
-        associated_actor_ids (Str):  A comma-separated list of actor ids.
-        associated_campaign_ids (Str):  A comma-separated list of campaign ids.
-        associated_incident_ids (Str):  A comma-separated list of incident ids.
-        associated_observable_ids (Str):  A comma-separated list of observable ids.
+        associated_signature_ids: A comma-separated list of signature ids.
+        associated_threat_bulletin_ids: A comma-separated list of threat bulletin ids.
+        associated_ttp_ids: A comma-separated list of ttp ids.
+        associated_vulnerability_ids: A comma-separated list of vulnerability ids.
+        associated_actor_ids: A comma-separated list of actor ids.
+        associated_campaign_ids: A comma-separated list of campaign ids.
+        associated_incident_ids: A comma-separated list of incident ids.
+        associated_observable_ids: A comma-separated list of observable ids.
     Returns:
         (CommandResults).
     """
@@ -1173,8 +1180,8 @@ def create_investigation_command(client: Client, name: str = None, description: 
             if str(entity.get('r_id')) in associated_list
         ]
         readable_output = f'Investigation was created successfully with ID: {res.get("id")}.\n' \
-                          f' Elements with ids {", ".join(map(str, successful_ids))} was added successfully' \
-                          f' to the investigation with ID: {res.get("id")}.ֿ\n'
+                          f' Elements with IDs {", ".join(map(str, successful_ids))} was added successfully' \
+                          ' to the investigation.ֿ\n'
     elif res.get('all_added') is True:
         readable_output = f'Investigation was created successfully with ID: {res.get("id")}.\n' \
             'All Elements was added successfully to the investigation.'
@@ -1192,13 +1199,13 @@ def update_investigation_command(client: Client, investigation_id: str = None, d
     """
     Updates an investigation on Anomali ThreatStream.
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        investigation_id (Str):  Unique ID of the investigation.
-        description (Str): Investigation description.
-        priority (Str): Investigation priority. Possible values are: 'Very Low', 'Low', 'Medium', 'High', 'Very High'.
-        status (Str): Investigation status. Possible values are: 'Completed', 'In-Progress', 'Pending', 'Unassigned'.
-        tags (Str):   A comma-separated list of tags. For example, tag1,tag2.
-        assignee_id (Str): user id to assignee for the investigation.
+        client: Client to perform calls to Anomali ThreatStream service.
+        investigation_id: Unique ID of the investigation.
+        description: Investigation description.
+        priority: Investigation priority. Possible values are: 'Very Low', 'Low', 'Medium', 'High', 'Very High'.
+        status: Investigation status. Possible values are: 'Completed', 'In-Progress', 'Pending', 'Unassigned'.
+        tags: A comma-separated list of tags. For example, tag1,tag2.
+        assignee_id: User id to assignee for the investigation.
     Returns:
         (CommandResults).
     """
@@ -1227,8 +1234,8 @@ def delete_investigation_command(client: Client, investigation_id: str = None) -
     """
     Deletes an investigation on Anomali ThreatStream.
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        investigation_id (Str):  Unique ID of the investigation.
+        client: Client to perform calls to Anomali ThreatStream service.
+        investigation_id: Unique ID of the investigation.
     Returns:
         (CommandResults).
     """
@@ -1248,18 +1255,18 @@ def add_investigation_element_command(client: Client, investigation_id: str = No
     """
     Addes an elements to an investigation.
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        investigation_id (Str):  Unique name the user want to assigned to the investigation.
-        connect_related_indicators (Str): When enabled, observables related to the entity you are associating with the
+        client: Client to perform calls to Anomali ThreatStream service.
+        investigation_id: Unique name the user want to assigned to the investigation.
+        connect_related_indicators: When enabled, observables related to the entity you are associating with the
         investigation are also added.
-        associated_signature_ids (Str):  A comma-separated list of signature ids.
-        associated_threat_bulletin_ids (Str):  A comma-separated list of threat bulletin ids.
-        associated_ttp_ids (Str):  A comma-separated list of ttp ids.
-        associated_vulnerability_ids (Str):  A comma-separated list of vulnerability ids.
-        associated_actor_ids (Str):  A comma-separated list of actor ids.
-        associated_campaign_ids (Str):  A comma-separated list of campaign ids.
-        associated_incident_ids (Str):  A comma-separated list of incident ids.
-        associated_observable_ids (Str):  A comma-separated list of observable ids.
+        associated_signature_ids: A comma-separated list of signature ids.
+        associated_threat_bulletin_ids: A comma-separated list of threat bulletin ids.
+        associated_ttp_ids: A comma-separated list of ttp ids.
+        associated_vulnerability_ids: A comma-separated list of vulnerability ids.
+        associated_actor_ids: A comma-separated list of actor ids.
+        associated_campaign_ids: A comma-separated list of campaign ids.
+        associated_incident_ids: A comma-separated list of incident ids.
+        associated_observable_ids: A comma-separated list of observable ids.
     Returns:
         (CommandResults).
     """
@@ -1303,9 +1310,7 @@ def add_investigation_element_command(client: Client, investigation_id: str = No
                                   f'{", ".join(map(str, unsuccessful_ids))} were unsuccessful.'
             else:
                 readable_output = 'The following elements with IDs were successfully added:' \
-                                  f' {", ".join(map(str, successful_ids))},' \
-                                  f' However, There are already {res.get("already_exists_elements_count")}' \
-                                  ' existing elements.'
+                                  f' {", ".join(map(str, successful_ids))}.'
     else:
         readable_output = f'All The elements was added successfully to investigation ID: {investigation_id}'
     return CommandResults(
@@ -1319,22 +1324,23 @@ def list_whitelist_entry_command(client: Client, format: str = 'json', limit: st
     """
     Get a list of whitelist entries.
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        format (Str):  A URL parameter to define the format of the response CSV or JSON.
-        limit (Str): The maximum number of results to return.
-        page (Str): The page number of the results to retrieve.
-        page_size (Str):  The maximum number of objects to retrieve per page.
+        client: Client to perform calls to Anomali ThreatStream service.
+        format:  A URL parameter to define the format of the response CSV or JSON.
+        limit: The maximum number of results to return.
+        page: The page number of the results to retrieve.
+        page_size:  The maximum number of objects to retrieve per page.
     Returns:
         (CommandResults).
     """
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
     res = client.list_whitelist_entry_request(format, params)
     if format and format.lower() == 'json':
+        data = res.get('objects', [])
         return CommandResults(
             outputs_prefix=f'{THREAT_STREAM}.WhitelistEntry',
             outputs_key_field='id',
-            outputs=res.get('objects'),
-            readable_output=tableToMarkdown('Whitelist entries', res.get('objects'), removeNull=True,
+            outputs=data,
+            readable_output=tableToMarkdown('Whitelist entries', data, removeNull=True,
                                             headerTransform=header_transformer,
                                             headers=['id', 'value', 'resource_uri', 'created_ts',
                                                      'modified_ts', 'value_type', 'notes']),
@@ -1377,15 +1383,15 @@ def create_whitelist_entry_command(client: Client, entry_id: str = None, cidr: s
     """
     "Creates a new whitelist entry.
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        entry_id (Str):  The file entry id.
-        domains (Str): A comma-separated list of domains.
-        emails (Str): A comma-separated list of emails.
-        ips (Str):  A comma-separated list of ips.
-        md5 (Str):  A comma-separated list of md5.
-        urls (Str):  A comma-separated list of urls.
-        user_agents (Str):  A comma-separated list of user agents.
-        note (Str):  A note string.
+        client: Client to perform calls to Anomali ThreatStream service.
+        entry_id: The file entry id.
+        domains: A comma-separated list of domains.
+        emails: A comma-separated list of emails.
+        ips: A comma-separated list of ips.
+        md5: A comma-separated list of md5.
+        urls: A comma-separated list of urls.
+        user_agents : A comma-separated list of user agents.
+        note: A note string.
     Returns:
         (CommandResults).
     """
@@ -1420,9 +1426,9 @@ def update_whitelist_entry_note_command(client: Client, entry_id: str = None,
     """
     "Modify contextual notes associated with existing whitelist entries
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        entry_id (Str):  The id of a specific whitelist entry.
-        note (Str):  A note string.
+        client: Client to perform calls to Anomali ThreatStream service.
+        entry_id: The id of a specific whitelist entry.
+        note: A note string.
     Returns:
         (CommandResults).
     """
@@ -1434,8 +1440,8 @@ def delete_whitelist_entry_command(client: Client, entry_id: str = None) -> Comm
     """
     Delete a whitelist entry
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        entry_id (Str):  The id of a specific whitelist entry.
+        client: Client to perform calls to Anomali ThreatStream service.
+        entry_id:  The id of a specific whitelist entry.
     Returns:
         (CommandResults).
     """
@@ -1449,26 +1455,23 @@ def list_import_job_command(client: Client, import_id: str = None, status_in: st
     """
     Gets a list of import job
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        import_id (Str):  The id of a specific import entry.
-        status_in (Str):  The status of the entry.
-        limit (Str): The maximum number of results to return.
-        page (Str): The page number of the results to retrieve.
-        page_size (Str):  The maximum number of objects to retrieve per page.
+        client: Client to perform calls to Anomali ThreatStream service.
+        import_id:  The id of a specific import entry.
+        status_in:  The status of the entry.
+        limit: The maximum number of results to return.
+        page: The page number of the results to retrieve.
+        page_size:  The maximum number of objects to retrieve per page.
     Returns:
         (CommandResults).
     """
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
-    if status_in == 'Processing':
-        params['status'] = 'processing'
+    if status_in == 'Ready To Review':
+        params['status'] = 'done'
     elif status_in == 'Rejected':
         params['status'] = 'deleted'
-    elif status_in == 'Ready To Review':
-        params['status'] = 'done'
-    elif status_in == 'Errors':
-        params['status'] = 'errors'
-    elif status_in == 'Approved':
-        params['status'] = 'approved'
+    elif status_in:
+        params['status'] = status_in.lower()
+
     res = client.list_import_job_request(import_id, params)
     outputs = res.get("objects", res)
     readable_output = tableToMarkdown("Import entries", outputs, removeNull=True, headerTransform=header_transformer,
@@ -1501,8 +1504,8 @@ def approve_import_job_command(client: Client, import_id: str = None) -> Command
     """
     Approving all observables in an import job
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        import_id (Str):  The id of a specific import entry.
+        client: Client to perform calls to Anomali ThreatStream service.
+        import_id:  The id of a specific import entry.
     Returns:
         (CommandResults).
     """
@@ -1534,19 +1537,33 @@ def validate_values_search_threat_model(model_type: str = None, publication_stat
     model_type_list = argToList(model_type)
     publication_status_list = argToList(publication_status)
     signature_type_list = argToList(signature_type)
+    raise_exception_model_type = False
+    invalid_model_type = []
+    raise_exception_publication_status = False
+    invalid_publication_status = []
+    raise_exception_signature_type = False
+    invalid_signature_type = []
     for model_type_item in model_type_list:
-        if model_type_item.lower() not in ['actor', 'attackpattern', 'campaign', 'courseofaction', 'incident',
-                                           'identity', 'infrastructure', 'intrusionset',
-                                           'malware', 'signature', 'tipreport', 'ttp', 'tool', 'vulnerability']:
-            raise DemistoException('Unvalid values model_type argument')
+        if model_type_item.lower() not in MODEL_TYPE_LIST:
+            raise_exception_model_type = True
+            invalid_model_type.append(model_type_item)
+    if raise_exception_model_type:
+        raise DemistoException(f'The model_type argument contains the following invalid values: '
+                               f'{", ".join(map(str, invalid_model_type))}')
     for publication_status_item in publication_status_list:
-        if publication_status_item.lower() not in ['new', 'pending_review', 'review_requested', 'reviewed', 'published']:
-            raise DemistoException('Unvalid values publication_status argument')
+        if publication_status_item.lower() not in PUBLICATION_STATUS_LIST:
+            raise_exception_publication_status = True
+            invalid_publication_status.append(publication_status_item)
+    if raise_exception_publication_status:
+        raise DemistoException(f'The publication_status argument contains the following invalid values: '
+                               f'{", ".join(map(str, invalid_publication_status))}')
     for signature_type_item in signature_type_list:
-        if signature_type_item not in ['Bro', 'Carbon Black Query', 'ClamAV', 'Custom', 'CybOX',
-                                       'OpenIOC', 'RSA NetWitness',
-                                       'Snort', 'Splunk Query', 'Suricata', 'YARA']:
-            raise DemistoException('Unvalid values signature_type argument')
+        if signature_type_item not in SIGNATURE_TYPE_LIST:
+            raise_exception_signature_type = True
+            invalid_signature_type.append(signature_type_item)
+    if raise_exception_signature_type:
+        raise DemistoException('The signature_type argument contains the following invalid values: '
+                               f'{", ".join(map(str, invalid_signature_type))}')
 
 
 def search_threat_model_command(client: Client, model_type: str = None, name: str = None,
@@ -1559,26 +1576,26 @@ def search_threat_model_command(client: Client, model_type: str = None, name: st
     """
     Retrieve threat model entities from ThreatStream
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        model_type (Str): A comma-separated list of model types. Supported values are: actor, attackpattern , campaign,
-        courseofaction, incident,identity, infrastructure, intrusionset, malware,signature, tipreport, ttp, tool, vulnerability.
-        name (Str): The name of the threat model.
-        alias (Str): Other names by which the actors are known.
-        keyword_search (Str): Free text to search string in the fields: Aliases, Description, Name, Tags.
-        feed_id (Str): Numeric ID of the threat feed that provided the Threat Model entity.
-        is_email (Str): Whether the threat bulletin was created as a result of an email import.
-        is_public (Str): Whether the entity is public or private. True—if the Campaign is public, False—if the Campaign
+        client: Client to perform calls to Anomali ThreatStream service.
+        model_type: A comma-separated list of model types. Supported values are: actor, attackpattern , campaign,
+        courseofaction, incident, identity, infrastructure, intrusionset, malware, signature, tipreport, ttp, tool, vulnerability.
+        name: The name of the threat model.
+        alias: Other names by which the actors are known.
+        keyword_search: Free text to search string in the fields: Aliases, Description, Name, Tags.
+        feed_id: Numeric ID of the threat feed that provided the Threat Model entity.
+        is_email: Whether the threat bulletin was created as a result of an email import.
+        is_public: Whether the entity is public or private. True—if the Campaign is public, False—if the Campaign
         is private or belongs to a Trusted Circle.
-        publication_status (Str): A comma-separated list of publication status. Supported values are: new, pending_review,
+        publication_status: A comma-separated list of publication status. Supported values are: new, pending_review,
         review_requested, reviewed, published statuses..
-        signature_type (Str): A comma-separated list of signature type. Supported values are: Bro, Carbon Black Query,
+        signature_type: A comma-separated list of signature type. Supported values are: Bro, Carbon Black Query,
         ClamAV, Custom, CybOX, OpenIOC, RSA+NetWitness, Snort, Splunk+Query, Suricata, YARA.
-        tags (Str):  A comma-spareated list of Additional comments and context associated with the observable when it
+        tags: A comma-spareated list of Additional comments and context associated with the observable when it
         was imported from its original threat feed.
-        trusted_circle_ids (Str): Used for querying entities associated with specified trusted circles..
-        limit (Str): The maximum number of results to return.
-        page (Str): The page number of the results to retrieve.
-        page_size (Str):  The maximum number of objects to retrieve per page.
+        trusted_circle_ids: Used for querying entities associated with specified trusted circles..
+        limit: The maximum number of results to return.
+        page: The page number of the results to retrieve.
+        page_size:  The maximum number of objects to retrieve per page.
     Returns:
         (CommandResults).
     """
@@ -1599,10 +1616,9 @@ def search_threat_model_command(client: Client, model_type: str = None, name: st
     ))
     if signature_type:
         params['signature$type'] = ','.join(argToList(signature_type))
-        params['model_type'] = "signature"
     demisto.debug("params to request threat_model_search", params)
     res = client.search_threat_model_request(params)
-    data_res = res.get('objects', res)
+    data_res = res.get('objects', [])
 
     return CommandResults(
         outputs_prefix=f"{THREAT_STREAM}.ThreatModel",
@@ -1620,11 +1636,11 @@ def add_threat_model_association_command(client: Client, entity_type: str = None
     """
     Creates associations between threat model entities on the ThreatStream platform
     Args:
-        client (Client): Client to perform calls to Anomali ThreatStream service.
-        entity_type (Str): The type of threat model entity on which you are adding the association.
-        entity_id (Str): The ID of the threat model entity on which you are adding the association.
-        associated_entity_type (Str): The type of threat model entity on which you are adding the association.
-        associated_entity_ids (Str): The entity id we want to associate with the primary entity.
+        client: Client to perform calls to Anomali ThreatStream service.
+        entity_type: The type of threat model entity on which you are adding the association.
+        entity_id: The ID of the threat model entity on which you are adding the association.
+        associated_entity_type: The type of threat model entity on which you are adding the association.
+        associated_entity_ids: The entity id we want to associate with the primary entity.
     Returns:
         (CommandResults).
     """
@@ -2160,9 +2176,9 @@ def get_model_list(client: Client, model, limit="50", page=None, page_size=None)
     # if limit=0 don't put to context
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
     params.update(dict(skip_intelligence="true", skip_associations="true", order_by='-created_ts'))
-    url = F"v1/{model}/"
+    url = f"v1/{model}/"
     if model == 'attack pattern':
-        url = F"v1/{model.replace(' ', '')}/"
+        url = 'v1/attackpattern/'
     model_list = client.http_request("GET", url, params=params).get('objects', None)
 
     if not model_list:
@@ -2219,9 +2235,9 @@ def get_iocs_by_model(client: Client, model, id, limit="20", page=None, page_siz
     """
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
     model_type = model.title()
-    url = F"v1/{model}/{id}/intelligence/"
+    url = f"v1/{model}/{id}/intelligence/"
     if model == 'attack pattern':
-        url = F"v1/{model.replace(' ', '')}/{id}/intelligence/"
+        url = f"v1/attackpattern/{id}/intelligence/"
     response = client.http_request("GET", url, params=params, resp_type='response')
 
     if response.status_code == 404:

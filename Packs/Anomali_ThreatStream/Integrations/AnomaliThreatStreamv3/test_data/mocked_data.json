@@ -23,7 +23,7 @@
           "modified_ts": "2023-03-20T11:38:26.279451",
           "notes": "example ip",
           "resource_uri": "resource_uri",
-          "value": "1.2.4.5",
+          "value": "1.2.3.4",
           "value_type": "ip"
         },
         {
