@@ -53,8 +53,8 @@ def test_file_enrichment_command(requests_mock):
 
     results = file_enrichment_command(test_client, TEST_FILE_HASH)
     assert results
-    assert results['data']['attributes']['mal_eval_result']['label'] == "online_games"
-    assert results['data']['attributes']['mal_eval_result']['probability_bucket'] == "PROBABILITY_VERY_HIGH"
+    assert results.outputs['data']['attributes']['mal_eval_result']['label'] == "onlinegames"
+    assert results.outputs['data']['attributes']['mal_eval_result']['probability_bucket'] == "PROBABILITY_VERY_HIGH"
 
 
 def test_file_enrichment_command_notfound(requests_mock):
