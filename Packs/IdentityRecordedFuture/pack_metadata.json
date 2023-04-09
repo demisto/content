@@ -23,5 +23,9 @@
     "dependencies": {},
     "githubUser": [
         "rderkachrf"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
