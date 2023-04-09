@@ -3,14 +3,14 @@
 WithSecure Endpoint Protection is a cloud-based platform that provides effective endpoint protection against ransomware and advanced attacks.
 
 ### Authentication Process
-To Create a Client ID and Client Secret, follow these steps
+To create a Client ID and Client Secret:
 1. Login as EPP administrator in [Elements Security Center](https://elements.withsecure.com/).
-2. Open API client view under Management section.
-3. Change your scope to organization for which you want to create new pair of credentials. If you are a partner and you want to create credentials for company, then you have to change scope to the organization, for which credentials should be issued.
-4. Click button Add new.
-5. Insert description of new client credentials and choose whether client should be restricted to reading data, or should it also be allowed to edit it. Deselect checkbox "Read-only" if new credentials pair will be used for clients, that send requests, which modify data on the server. For example trigger new remote operation. If checkbox "Read-only" is unchecked, then client can request authentication token with scope connect.api.write.
-6. After new pair of credentials is created follow displayed instructions. Remember to save secret value in safe place, because you won't be able to read that value again.
-7. Select checkbox and click button Done.
-8. New item should become visible in list.
+2. Open API client view under the Management section.
+3. Change your scope to the organization for which you want to create new pair of credentials. If you are a partner and you want to create credentials for company, then you have to change the scope to the organization, for which credentials should be issued.
+4. Click **Add new**.
+5. Insert the description of the new client credentials and choose whether the client should be restricted to reading data, or should also be allowed to edit it. Deselect the "Read-only" checkbox if the new credentials pair will be used for clients that send requests, which modify data on the server. For example, trigger a new remote operation. If the "Read-only" checkbox is unchecked, then the client can request an authentication token with the connect.api.write scope.
+6. After the new pair of credentials is created, follow the displayed instructions. Remember to save the secret value in a safe place, because you won't be able to access that value again.
+7. Select **I have copied and stored the secret** checkbox and click **Done**.
+8. The new item should become visible in the list.
 
 API Documentation: [Authentication Reference](https://connect.withsecure.com/getting-started/elements#:~:text=API%20deprecation%20policy.-,Getting%20client%20credentials,-To%20use%20Elements).
