@@ -294,7 +294,7 @@ filter _raw_log ~= "from\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/\d+\sto\s\d+\.\d+\.\d+\
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
 //from <source_ip> to <dst_ip>
-| filter _raw_log ~= "from\s\d+\.\d+\.\d+\.\d+\sto\s\d+\.\d+\.\d+\.\d+"
+filter _raw_log ~= "from\s\d+\.\d+\.\d+\.\d+\sto\s\d+\.\d+\.\d+\.\d+"
 | alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*\d\-(\d+)\:"),0)),
     severity = arrayindex(regextract(_raw_log, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
     message = arrayindex(regextract(_raw_log, "\%ASA\-[session]*\-*\d\-\d+[\:|\s\-]+\s(.*)"),0),
@@ -320,7 +320,7 @@ filter _raw_log ~= "from\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/\d+\sto\s\d+\.\d+\.\d+\
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
 //IP \=<dst_ip>
-| filter _raw_log ~= "IP\s*\=\s*\d+\.\d+\.\d+\.\d+"
+filter _raw_log ~= "IP\s*\=\s*\d+\.\d+\.\d+\.\d+"
 | alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*\d\-(\d+)\:"),0)),
     severity = arrayindex(regextract(_raw_log, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
     message = arrayindex(regextract(_raw_log, "\%ASA\-[session]*\-*\d\-\d+[\:|\s\-]+\s(.*)"),0),
