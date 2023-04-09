@@ -7,7 +7,7 @@ from multiprocessing import Process
 import dateparser  # type: ignore
 import exchangelib
 from CommonServerPython import *
-from cStringIO import StringIO
+from io import StringIO #python3 change
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Body, Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
@@ -22,7 +22,7 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ResponseMessageError, TransportError)
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
-from exchangelib.services import EWSAccountService, EWSService
+from exchangelib.services import EWSAccountService, EWSService #exchangelib change - from exchangelib.services.common import EWSAccountService 
 from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
                                  EXCHANGE_2010_SP2, EXCHANGE_2013,
@@ -30,12 +30,13 @@ from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
 
-# Define utf8 as default encoding
-reload(sys)
-sys.setdefaultencoding('utf8')  # pylint: disable=E1101
+#python3 change
+# # Define utf8 as default encoding 
+# reload(sys)
+# sys.setdefaultencoding('utf8')  # pylint: disable=E1101
 
-# Ignore warnings print to stdout
-warnings.filterwarnings("ignore")
+# # Ignore warnings print to stdout
+# warnings.filterwarnings("ignore")
 
 # Docker BC
 MNS = None
@@ -43,7 +44,7 @@ TNS = None
 if exchangelib.__version__ == "1.12.0":
     MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
 else:
-    MNS, TNS = exchangelib.transport.MNS, exchangelib.transport.TNS  # pylint: disable=E1101
+    MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS  # pylint: disable=E1101 #exchangelib change
 
 # consts
 VERSIONS = {
