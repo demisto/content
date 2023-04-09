@@ -196,10 +196,10 @@
       - local: .gitlab/ci/slack-notify.yml
 
 
-.run-unittests-and-lint:
+.unittests-and-lint-settings:
   tags:
     - gce
-  needs: []
+  needs: [ ]
   stage: unittests-and-validations
   artifacts:
     reports:
@@ -221,6 +221,11 @@
     DOCKER_TLS_CERTDIR: ""
   extends:
     - .default-job-settings
+
+
+.run-unittests-and-lint:
+  extends:
+    - .unittests-and-lint-settings
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
@@ -280,7 +285,7 @@
     - job-done
   parallel:
     matrix:
-      - DOCKER: ['native:ga,native:maintenance','native:dev,from-yml']
+      - DOCKER: ['native:ga,native:maintenance,native:candidate','native:dev,from-yml']
 
 .run-validations:
   stage: unittests-and-validations
