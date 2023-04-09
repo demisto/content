@@ -14,7 +14,7 @@ Press **Add** and **Update** to apply the new configuration.
 ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/db8cf3ad2df971f19d89a00d34cfab444b434dfb/Packs/F5LTM/doc_imgs/F5LTM.png)
 ## Collect Events from Vendor
 
-In order to use the collector, use the [Broker VM](configuration/broker-vms/brokers) option.
+In order to use the collector, use the [Broker VM](/configuration/broker-vms/brokers) option.
 
 ### Broker VM 
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
