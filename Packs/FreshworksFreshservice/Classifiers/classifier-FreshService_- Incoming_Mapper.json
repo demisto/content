@@ -1,81 +1,81 @@
 {
-    "description": "FreshService - Incoming Mapper",
+    "description": "FreshworksFreshservice - Incoming Mapper",
     "feed": false,
-    "id": "FreshService - Incoming Mapper",
+    "id": "FreshworksFreshservice - Incoming Mapper",
     "mapping": {
-        "FreshService Ticket": {
+        "FreshworksFreshservice Ticket": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Description": {
                     "simple": "description_text"
                 },
-                "FreshService Assets": {
+                "FreshworksFreshservice Assets": {
                     "simple": "assets"
                 },
-                "FreshService Attachments": {
+                "FreshworksFreshservice Attachments": {
                     "simple": "attachments"
                 },
-                "FreshService Category": {
+                "FreshworksFreshservice Category": {
                     "simple": "category"
                 },
-                "FreshService Custom Fields": {
+                "FreshworksFreshservice Custom Fields": {
                     "simple": "custom_fields"
                 },
-                "FreshService Deleted": {
+                "FreshworksFreshservice Deleted": {
                     "simple": "deleted"
                 },
-                "FreshService Department ID": {
+                "FreshworksFreshservice Department ID": {
                     "simple": "department_id"
                 },
-                "FreshService Due By": {
+                "FreshworksFreshservice Due By": {
                     "simple": "due_by"
                 },
-                "FreshService Group ID": {
+                "FreshworksFreshservice Group ID": {
                     "simple": "group_id"
                 },
-                "FreshService Impact": {
+                "FreshworksFreshservice Impact": {
                     "simple": "impact"
                 },
-                "FreshService Incident Type": {
+                "FreshworksFreshservice Incident Type": {
                     "simple": "ticket_type"
                 },
-                "FreshService Item Category": {
+                "FreshworksFreshservice Item Category": {
                     "simple": "item_category"
                 },
-                "FreshService Priority": {
+                "FreshworksFreshservice Priority": {
                     "simple": "priority"
                 },
-                "FreshService Requester ID": {
+                "FreshworksFreshservice Requester ID": {
                     "simple": "requester_id"
                 },
-                "FreshService Responder ID": {
+                "FreshworksFreshservice Responder ID": {
                     "simple": "responder_id"
                 },
-                "FreshService Source": {
+                "FreshworksFreshservice Source": {
                     "simple": "source"
                 },
-                "FreshService Spam": {
+                "FreshworksFreshservice Spam": {
                     "simple": "spam"
                 },
-                "FreshService Sub Category": {
+                "FreshworksFreshservice Sub Category": {
                     "simple": "sub_category"
                 },
-                "FreshService Tags": {
+                "FreshworksFreshservice Tags": {
                     "simple": "tags"
                 },
-                "FreshService Ticket Status": {
+                "FreshworksFreshservice Ticket Status": {
                     "simple": "status"
                 },
-                "FreshService Ticket Type": {
+                "FreshworksFreshservice Ticket Type": {
                     "simple": "type"
                 },
-                "FreshService Urgency": {
+                "FreshworksFreshservice Urgency": {
                     "simple": "urgency"
                 },
-                "FreshService Workspace ID": {
+                "FreshworksFreshservice Workspace ID": {
                     "simple": "workspace_id"
                 },
-                "FreshService Task": {
+                "FreshworksFreshservice Task": {
                     "simple": "tasks"
                 },
                 "Source Priority": {
@@ -166,79 +166,73 @@
                 }
             }
         },
-        "FreshService Change Request": {
+        "FreshworksFreshservice Change Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                " FreshService Change Status": {
-                    "simple": "status"
-                },
-                " FreshService Risk": {
-                    "simple": "risk"
-                },
                 "Description": {
                     "simple": "description_text"
                 },
-                "FreshService Agent ID": {
+                "FreshworksFreshservice Agent ID": {
                     "simple": "agent_id"
                 },
-                "FreshService Approval Status": {
+                "FreshworksFreshservice Approval Status": {
                     "simple": "approval_status"
                 },
-                "FreshService Assets": {
+                "FreshworksFreshservice Assets": {
                     "simple": "assets"
                 },
-                "FreshService Category": {
+                "FreshworksFreshservice Category": {
                     "simple": "category"
                 },
-                "FreshService Change Status": {
+                "FreshworksFreshservice Change Status": {
                     "simple": "status"
                 },
-                "FreshService Change Type": {
+                "FreshworksFreshservice Change Type": {
                     "simple": "change_type"
                 },
-                "FreshService Custom Fields": {
+                "FreshworksFreshservice Custom Fields": {
                     "simple": "custom_fields"
                 },
-                "FreshService Department ID": {
+                "FreshworksFreshservice Department ID": {
                     "simple": "department_id"
                 },
-                "FreshService Due By": {
+                "FreshworksFreshservice Due By": {
                     "simple": "due_by"
                 },
-                "FreshService Group ID": {
+                "FreshworksFreshservice Group ID": {
                     "simple": "group_id"
                 },
-                "FreshService Impact": {
+                "FreshworksFreshservice Impact": {
                     "simple": "impact"
                 },
-                "FreshService Impacted Services": {
+                "FreshworksFreshservice Impacted Services": {
                     "simple": "impacted_services"
                 },
-                "FreshService Incident Type": {
+                "FreshworksFreshservice Incident Type": {
                     "simple": "ticket_type"
                 },
-                "FreshService Item Category": {
+                "FreshworksFreshservice Item Category": {
                     "simple": "item_category"
                 },
-                "FreshService Planned End Date": {
+                "FreshworksFreshservice Planned End Date": {
                     "simple": "planned_end_date"
                 },
-                "FreshService Planned Start Date": {
+                "FreshworksFreshservice Planned Start Date": {
                     "simple": "planned_start_date"
                 },
-                "FreshService Priority": {
+                "FreshworksFreshservice Priority": {
                     "simple": "priority"
                 },
-                "FreshService Requester ID": {
+                "FreshworksFreshservice Requester ID": {
                     "simple": "requester_id"
                 },
-                "FreshService Risk": {
+                "FreshworksFreshservice Risk": {
                     "simple": "risk"
                 },
-                "FreshService Sub Category": {
+                "FreshworksFreshservice Sub Category": {
                     "simple": "sub_category"
                 },
-                "FreshService Task": {
+                "FreshworksFreshservice Task": {
                     "simple": "tasks"
                 },
                 "Source Priority": {
@@ -329,64 +323,61 @@
                 }
             }
         },
-        "FreshService Problem Request": {
+        "FreshworksFreshservice Problem Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                " FreshService Problem Status": {
-                    "simple": "status"
-                },
                 "Description": {
                     "simple": "description_text"
                 },
-                "FreshService Agent ID": {
+                "FreshworksFreshservice Agent ID": {
                     "simple": "agent_id"
                 },
-                "FreshService Analysis Fields": {
+                "FreshworksFreshservice Analysis Fields": {
                     "simple": "analysis_fields"
                 },
-                "FreshService Assets": {
+                "FreshworksFreshservice Assets": {
                     "simple": "assets"
                 },
-                "FreshService Category": {
+                "FreshworksFreshservice Category": {
                     "simple": "category"
                 },
-                "FreshService Custom Fields": {
+                "FreshworksFreshservice Custom Fields": {
                     "simple": "custom_fields"
                 },
-                "FreshService Department ID": {
+                "FreshworksFreshservice Department ID": {
                     "simple": "department_id"
                 },
-                "FreshService Due By": {
+                "FreshworksFreshservice Due By": {
                     "simple": "due_by"
                 },
-                "FreshService Group ID": {
+                "FreshworksFreshservice Group ID": {
                     "simple": "group_id"
                 },
-                "FreshService Impact": {
+                "FreshworksFreshservice Impact": {
                     "simple": "impact"
                 },
-                "FreshService Incident Type": {
+                "FreshworksFreshservice Incident Type": {
                     "simple": "ticket_type"
                 },
-                "FreshService Item Category": {
+                "FreshworksFreshservice Item Category": {
                     "simple": "item_category"
                 },
-                "FreshService Known Error": {
+                "FreshworksFreshservice Known Error": {
                     "simple": "known_error"
                 },
-                "FreshService Priority": {
+                "FreshworksFreshservice Priority": {
                     "simple": "priority"
                 },
-                "FreshService Problem Status": {
+                "FreshworksFreshservice Problem Status": {
                     "simple": "status"
                 },
-                "FreshService Requester ID": {
+                "FreshworksFreshservice Requester ID": {
                     "simple": "requester_id"
                 },
-                "FreshService Sub Category": {
+                "FreshworksFreshservice Sub Category": {
                     "simple": "sub_category"
                 },
-                "FreshService Task": {
+                "FreshworksFreshservice Task": {
                     "simple": "tasks"
                 },
                 "Source Priority": {
@@ -477,64 +468,61 @@
                 }
             }
         },
-        "FreshService Release Request": {
+        "FreshworksFreshservice Release Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                " FreshService Release Status": {
-                    "simple": "status"
-                },
                 "Description": {
                     "simple": "description_text"
                 },
-                "FreshService Agent ID": {
+                "FreshworksFreshservice Agent ID": {
                     "simple": "agent_id"
                 },
-                "FreshService Assets": {
+                "FreshworksFreshservice Assets": {
                     "simple": "assets"
                 },
-                "FreshService Category": {
+                "FreshworksFreshservice Category": {
                     "simple": "category"
                 },
-                "FreshService Custom Fields": {
+                "FreshworksFreshservice Custom Fields": {
                     "simple": "custom_fields"
                 },
-                "FreshService Department ID": {
+                "FreshworksFreshservice Department ID": {
                     "simple": "department_id"
                 },
-                "FreshService Due By": {
+                "FreshworksFreshservice Due By": {
                     "simple": "due_by"
                 },
-                "FreshService Group ID": {
+                "FreshworksFreshservice Group ID": {
                     "simple": "group_id"
                 },
-                "FreshService Incident Type": {
+                "FreshworksFreshservice Incident Type": {
                     "simple": "ticket_type"
                 },
-                "FreshService Item Category": {
+                "FreshworksFreshservice Item Category": {
                     "simple": "item_category"
                 },
-                "FreshService Planned End Date": {
+                "FreshworksFreshservice Planned End Date": {
                     "simple": "planned_end_date"
                 },
-                "FreshService Planned Start Date": {
+                "FreshworksFreshservice Planned Start Date": {
                     "simple": "planned_start_date"
                 },
-                "FreshService Priority": {
+                "FreshworksFreshservice Priority": {
                     "simple": "priority"
                 },
-                "FreshService Release ID": {
+                "FreshworksFreshservice Release ID": {
                     "simple": "release_id"
                 },
-                "FreshService Release Status": {
+                "FreshworksFreshservice Release Status": {
                     "simple": "status"
                 },
-                "FreshService Release Type": {
+                "FreshworksFreshservice Release Type": {
                     "simple": "release_type"
                 },
-                "FreshService Sub Category": {
+                "FreshworksFreshservice Sub Category": {
                     "simple": "sub_category"
                 },
-                "FreshService Task": {
+                "FreshworksFreshservice Task": {
                     "simple": "tasks"
                 },
                 "Source Priority": {
@@ -630,7 +618,7 @@
             "internalMapping": {}
         }
     },
-    "name": "FreshService - Incoming Mapper",
+    "name": "FreshworksFreshservice - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

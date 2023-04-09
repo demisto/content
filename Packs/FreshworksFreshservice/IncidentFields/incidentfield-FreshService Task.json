@@ -7,7 +7,7 @@
         "FreshService Release Request"
     ],
     "caseInsensitive": true,
-    "cliName": "freshservicetask",
+    "cliName": "freshworksfreshservicetask",
     "closeForm": false,
     "columns": [
         {
@@ -176,10 +176,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_freshservicetask",
+    "id": "incident_freshworksfreshservicetask",
     "isReadOnly": false,
     "locked": false,
-    "name": "FreshService Task",
+    "name": "FreshworksFreshservice Task",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

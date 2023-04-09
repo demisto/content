@@ -1,14 +1,14 @@
 {
-    "description": "FreshService - Classifier",
+    "description": "FreshworksFreshservice - Classifier",
     "feed": false,
-    "id": "FreshService - Classifier",
+    "id": "FreshworksFreshservice - Classifier",
     "keyTypeMap": {
         "change": "FreshService Change Request",
         "problem": "FreshService Problem Request",
         "release": "FreshService Release Request",
         "ticket": "FreshService Ticket"
     },
-    "name": "FreshService - Classifier",
+    "name": "FreshworksFreshservice - Classifier",
     "transformer": {
         "simple": "ticket_type"
     },

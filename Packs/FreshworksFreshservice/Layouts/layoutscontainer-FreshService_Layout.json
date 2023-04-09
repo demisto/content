@@ -320,7 +320,7 @@
                             "left": {
                                 "isContext": true,
                                 "value": {
-                                    "simple": "freshserviceincidenttype"
+                                    "simple": "freshworksfreshserviceincidenttype"
                                 }
                             },
                             "operator": "isEqualString",
@@ -365,7 +365,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshserviceincidenttype",
+                                "fieldId": "freshworksfreshserviceincidenttype",
                                 "height": 53,
                                 "id": "bcb84a60-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 2,
@@ -376,7 +376,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshservicecategory",
+                                "fieldId": "freshworksfreshservicecategory",
                                 "height": 53,
                                 "id": "91d437f0-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 3,
@@ -418,7 +418,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicetickettype",
+                                "fieldId": "freshworksfreshservicetickettype",
                                 "height": 53,
                                 "id": "d0c299c0-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 2,
@@ -429,7 +429,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicesubcategory",
+                                "fieldId": "freshworksfreshservicesubcategory",
                                 "height": 53,
                                 "id": "99f3afb0-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 3,
@@ -455,7 +455,7 @@
                         "items": [
                             {
                                 "endCol": 1,
-                                "fieldId": "freshserviceticketstatus",
+                                "fieldId": "freshworksfreshserviceticketstatus",
                                 "height": 53,
                                 "id": "67075290-d152-11ed-b877-09ea73968356",
                                 "index": 0,
@@ -464,7 +464,7 @@
                             },
                             {
                                 "endCol": 1,
-                                "fieldId": "freshserviceurgency",
+                                "fieldId": "freshworksfreshserviceurgency",
                                 "height": 53,
                                 "id": "6e718410-d152-11ed-b877-09ea73968356",
                                 "index": 1,
@@ -474,7 +474,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicepriority",
+                                "fieldId": "freshworksfreshservicepriority",
                                 "height": 53,
                                 "id": "f9192380-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -485,7 +485,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshserviceimpact",
+                                "fieldId": "freshworksfreshserviceimpact",
                                 "height": 53,
                                 "id": "04bf02e0-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 2,
@@ -512,7 +512,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshservicetags",
+                                "fieldId": "freshworksfreshservicetags",
                                 "height": 53,
                                 "id": "089dd4a0-ce45-11ed-861e-61c58ce93800",
                                 "index": 0,
@@ -522,7 +522,7 @@
                             },
                             {
                                 "endCol": 1,
-                                "fieldId": "freshservicespam",
+                                "fieldId": "freshworksfreshservicespam",
                                 "height": 53,
                                 "id": "0fe7ace0-ce45-11ed-861e-61c58ce93800",
                                 "index": 1,
@@ -532,7 +532,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshservicedueby",
+                                "fieldId": "freshworksfreshservicedueby",
                                 "height": 53,
                                 "id": "a57f7a90-ce3f-11ed-861e-61c58ce93800",
                                 "index": 2,
@@ -543,7 +543,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicesource",
+                                "fieldId": "freshworksfreshservicesource",
                                 "height": 53,
                                 "id": "70a785e0-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -554,7 +554,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicedeleted",
+                                "fieldId": "freshworksfreshservicedeleted",
                                 "height": 53,
                                 "id": "145d5680-ce45-11ed-861e-61c58ce93800",
                                 "index": 1,
@@ -565,7 +565,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshserviceitemcategory",
+                                "fieldId": "freshworksfreshserviceitemcategory",
                                 "height": 53,
                                 "id": "58ec0000-ced9-11ed-a716-cf57762f7af4",
                                 "index": 2,
@@ -591,7 +591,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "freshservicerequesterid",
+                                "fieldId": "freshworksfreshservicerequesterid",
                                 "height": 22,
                                 "id": "e96e6840-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -610,7 +610,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshserviceworkspaceid",
+                                "fieldId": "freshworksfreshserviceworkspaceid",
                                 "height": 22,
                                 "id": "0106e770-ce3d-11ed-bb44-53a7254e86e7",
                                 "index": 2,
@@ -621,7 +621,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshserviceresponderid",
+                                "fieldId": "freshworksfreshserviceresponderid",
                                 "height": 22,
                                 "id": "f77912a0-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 3,
@@ -632,7 +632,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicedepartmentid",
+                                "fieldId": "freshworksfreshservicedepartmentid",
                                 "height": 22,
                                 "id": "fb58bdd0-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 4,
@@ -643,7 +643,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicegroupid",
+                                "fieldId": "freshworksfreshservicegroupid",
                                 "height": 22,
                                 "id": "eed54fb0-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 5,
@@ -669,7 +669,7 @@
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "freshserviceassets",
+                                "fieldId": "freshworksfreshserviceassets",
                                 "height": 106,
                                 "id": "4b7f3c30-ce3d-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -694,7 +694,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "freshservicecustomfields",
+                                "fieldId": "freshworksfreshservicecustomfields",
                                 "height": 22,
                                 "id": "cc3939b0-ce3e-11ed-861e-61c58ce93800",
                                 "index": 0,
@@ -720,7 +720,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshserviceattachments",
+                                "fieldId": "freshworksfreshserviceattachments",
                                 "height": 106,
                                 "id": "c3674ff0-ce40-11ed-861e-61c58ce93800",
                                 "index": 0,
@@ -749,7 +749,7 @@
                             "left": {
                                 "isContext": true,
                                 "value": {
-                                    "simple": "freshserviceincidenttype"
+                                    "simple": "freshworksfreshserviceincidenttype"
                                 }
                             },
                             "operator": "isEqualString",
@@ -794,7 +794,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshserviceincidenttype",
+                                "fieldId": "freshworksfreshserviceincidenttype",
                                 "height": 53,
                                 "id": "bcb84a60-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 2,
@@ -805,7 +805,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshservicecategory",
+                                "fieldId": "freshworksfreshservicecategory",
                                 "height": 53,
                                 "id": "91d437f0-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 3,
@@ -847,7 +847,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicechangetype",
+                                "fieldId": "freshworksfreshservicechangetype",
                                 "height": 53,
                                 "id": "d92b2440-ce42-11ed-861e-61c58ce93800",
                                 "index": 2,
@@ -858,7 +858,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicesubcategory",
+                                "fieldId": "freshworksfreshservicesubcategory",
                                 "height": 53,
                                 "id": "99f3afb0-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 3,
@@ -885,7 +885,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshservicechangestatus",
+                                "fieldId": "freshworksfreshservicechangestatus",
                                 "height": 53,
                                 "id": "49c787d0-ce42-11ed-861e-61c58ce93800",
                                 "index": 0,
@@ -896,7 +896,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshserviceimpact",
+                                "fieldId": "freshworksfreshserviceimpact",
                                 "height": 53,
                                 "id": "04bf02e0-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 1,
@@ -907,7 +907,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshserviceapprovalstatus",
+                                "fieldId": "freshworksfreshserviceapprovalstatus",
                                 "height": 53,
                                 "id": "a9e01160-ce46-11ed-91a7-cfa2d59836ed",
                                 "index": 2,
@@ -918,7 +918,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicepriority",
+                                "fieldId": "freshworksfreshservicepriority",
                                 "height": 53,
                                 "id": "f9192380-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -929,7 +929,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicerisk",
+                                "fieldId": "freshworksfreshservicerisk",
                                 "height": 53,
                                 "id": "9fa581d0-ce46-11ed-91a7-cfa2d59836ed",
                                 "index": 1,
@@ -956,7 +956,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshserviceimpactedservices",
+                                "fieldId": "freshworksfreshserviceimpactedservices",
                                 "height": 53,
                                 "id": "ae135ad0-ce46-11ed-91a7-cfa2d59836ed",
                                 "index": 0,
@@ -967,7 +967,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshserviceplannedstartdate",
+                                "fieldId": "freshworksfreshserviceplannedstartdate",
                                 "height": 53,
                                 "id": "b4c252a0-ce46-11ed-91a7-cfa2d59836ed",
                                 "index": 1,
@@ -978,7 +978,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicedueby",
+                                "fieldId": "freshworksfreshservicedueby",
                                 "height": 53,
                                 "id": "a57f7a90-ce3f-11ed-861e-61c58ce93800",
                                 "index": 0,
@@ -989,7 +989,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshserviceplannedenddate",
+                                "fieldId": "freshworksfreshserviceplannedenddate",
                                 "height": 53,
                                 "id": "d55cba50-ce46-11ed-91a7-cfa2d59836ed",
                                 "index": 1,
@@ -1015,7 +1015,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "freshservicerequesterid",
+                                "fieldId": "freshworksfreshservicerequesterid",
                                 "height": 22,
                                 "id": "e96e6840-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -1036,7 +1036,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "freshservicegroupid",
+                                "fieldId": "freshworksfreshservicegroupid",
                                 "height": 22,
                                 "id": "eed54fb0-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -1047,7 +1047,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "freshservicedepartmentid",
+                                "fieldId": "freshworksfreshservicedepartmentid",
                                 "height": 22,
                                 "id": "fb58bdd0-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 1,
@@ -1074,7 +1074,7 @@
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "freshserviceassets",
+                                "fieldId": "freshworksfreshserviceassets",
                                 "height": 106,
                                 "id": "4b7f3c30-ce3d-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -1100,7 +1100,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "freshserviceattachments",
+                                "fieldId": "freshworksfreshserviceattachments",
                                 "height": 22,
                                 "id": "a1e6ee90-d231-11ed-ad72-bf20c8fc7908",
                                 "index": 0,
@@ -1128,7 +1128,7 @@
                             "left": {
                                 "isContext": true,
                                 "value": {
-                                    "simple": "freshserviceincidenttype"
+                                    "simple": "freshworksfreshserviceincidenttype"
                                 }
                             },
                             "operator": "isEqualString",
@@ -1173,7 +1173,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshservicecategory",
+                                "fieldId": "freshworksfreshservicecategory",
                                 "height": 53,
                                 "id": "91d437f0-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 2,
@@ -1204,7 +1204,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshserviceincidenttype",
+                                "fieldId": "freshworksfreshserviceincidenttype",
                                 "height": 53,
                                 "id": "bcb84a60-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -1226,7 +1226,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicesubcategory",
+                                "fieldId": "freshworksfreshservicesubcategory",
                                 "height": 53,
                                 "id": "99f3afb0-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 2,
@@ -1253,7 +1253,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshserviceproblemstatus",
+                                "fieldId": "freshworksfreshserviceproblemstatus",
                                 "height": 53,
                                 "id": "ac325b40-ce45-11ed-a2f3-052cb6769150",
                                 "index": 0,
@@ -1264,7 +1264,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshserviceimpact",
+                                "fieldId": "freshworksfreshserviceimpact",
                                 "height": 53,
                                 "id": "04bf02e0-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 1,
@@ -1275,7 +1275,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicepriority",
+                                "fieldId": "freshworksfreshservicepriority",
                                 "height": 53,
                                 "id": "f9192380-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -1302,7 +1302,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshservicedueby",
+                                "fieldId": "freshworksfreshservicedueby",
                                 "height": 53,
                                 "id": "a57f7a90-ce3f-11ed-861e-61c58ce93800",
                                 "index": 0,
@@ -1312,7 +1312,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "freshserviceknownerror",
+                                "fieldId": "freshworksfreshserviceknownerror",
                                 "height": 53,
                                 "id": "cadc64a0-ce45-11ed-a2f3-052cb6769150",
                                 "index": 1,
@@ -1321,7 +1321,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "freshserviceanalysisfields",
+                                "fieldId": "freshworksfreshserviceanalysisfields",
                                 "height": 53,
                                 "id": "e9591c70-ce45-11ed-a2f3-052cb6769150",
                                 "index": 2,
@@ -1346,7 +1346,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "freshservicerequesterid",
+                                "fieldId": "freshworksfreshservicerequesterid",
                                 "height": 22,
                                 "id": "e96e6840-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -1356,7 +1356,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicedepartmentid",
+                                "fieldId": "freshworksfreshservicedepartmentid",
                                 "height": 22,
                                 "id": "fb58bdd0-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 1,
@@ -1367,7 +1367,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicegroupid",
+                                "fieldId": "freshworksfreshservicegroupid",
                                 "height": 22,
                                 "id": "eed54fb0-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 2,
@@ -1404,7 +1404,7 @@
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "freshserviceassets",
+                                "fieldId": "freshworksfreshserviceassets",
                                 "height": 106,
                                 "id": "4b7f3c30-ce3d-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -1430,7 +1430,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicecustomfields",
+                                "fieldId": "freshworksfreshservicecustomfields",
                                 "height": 53,
                                 "id": "cc3939b0-ce3e-11ed-861e-61c58ce93800",
                                 "index": 0,
@@ -1456,7 +1456,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "freshserviceattachments",
+                                "fieldId": "freshworksfreshserviceattachments",
                                 "height": 22,
                                 "id": "ad82e2e0-d231-11ed-ad72-bf20c8fc7908",
                                 "index": 0,
@@ -1484,7 +1484,7 @@
                             "left": {
                                 "isContext": true,
                                 "value": {
-                                    "simple": "freshserviceincidenttype"
+                                    "simple": "freshworksfreshserviceincidenttype"
                                 }
                             },
                             "operator": "isEqualString",
@@ -1529,7 +1529,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshserviceincidenttype",
+                                "fieldId": "freshworksfreshserviceincidenttype",
                                 "height": 53,
                                 "id": "bcb84a60-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 2,
@@ -1540,7 +1540,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshservicecategory",
+                                "fieldId": "freshworksfreshservicecategory",
                                 "height": 53,
                                 "id": "91d437f0-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 3,
@@ -1582,7 +1582,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicereleasetype",
+                                "fieldId": "freshworksfreshservicereleasetype",
                                 "height": 53,
                                 "id": "3f7569e0-ce48-11ed-8f12-6f4cd6b24d72",
                                 "index": 2,
@@ -1593,7 +1593,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicesubcategory",
+                                "fieldId": "freshworksfreshservicesubcategory",
                                 "height": 53,
                                 "id": "99f3afb0-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 3,
@@ -1619,7 +1619,7 @@
                         "items": [
                             {
                                 "endCol": 1,
-                                "fieldId": "freshservicereleasestatus",
+                                "fieldId": "freshworksfreshservicereleasestatus",
                                 "height": 53,
                                 "id": "3c935890-ce48-11ed-8f12-6f4cd6b24d72",
                                 "index": 0,
@@ -1629,7 +1629,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicepriority",
+                                "fieldId": "freshworksfreshservicepriority",
                                 "height": 53,
                                 "id": "f9192380-ce3b-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -1656,7 +1656,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "freshservicedueby",
+                                "fieldId": "freshworksfreshservicedueby",
                                 "height": 53,
                                 "id": "a57f7a90-ce3f-11ed-861e-61c58ce93800",
                                 "index": 0,
@@ -1666,7 +1666,7 @@
                             },
                             {
                                 "endCol": 1,
-                                "fieldId": "freshserviceplannedstartdate",
+                                "fieldId": "freshworksfreshserviceplannedstartdate",
                                 "height": 53,
                                 "id": "94ae4710-ce48-11ed-8f12-6f4cd6b24d72",
                                 "index": 1,
@@ -1676,7 +1676,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshserviceitemcategory",
+                                "fieldId": "freshworksfreshserviceitemcategory",
                                 "height": 53,
                                 "id": "67d80190-ce48-11ed-8f12-6f4cd6b24d72",
                                 "index": 0,
@@ -1687,7 +1687,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshserviceplannedenddate",
+                                "fieldId": "freshworksfreshserviceplannedenddate",
                                 "height": 53,
                                 "id": "97c4fcf0-ce48-11ed-8f12-6f4cd6b24d72",
                                 "index": 1,
@@ -1714,7 +1714,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicedepartmentid",
+                                "fieldId": "freshworksfreshservicedepartmentid",
                                 "height": 22,
                                 "id": "fb58bdd0-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -1725,7 +1725,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "freshservicegroupid",
+                                "fieldId": "freshworksfreshservicegroupid",
                                 "height": 22,
                                 "id": "eed54fb0-ce3c-11ed-bb44-53a7254e86e7",
                                 "index": 1,
@@ -1762,7 +1762,7 @@
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "freshserviceassets",
+                                "fieldId": "freshworksfreshserviceassets",
                                 "height": 106,
                                 "id": "4b7f3c30-ce3d-11ed-bb44-53a7254e86e7",
                                 "index": 0,
@@ -1787,7 +1787,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "freshserviceattachments",
+                                "fieldId": "freshworksfreshserviceattachments",
                                 "height": 22,
                                 "id": "d08e71a0-d231-11ed-ad72-bf20c8fc7908",
                                 "index": 0,
@@ -1820,7 +1820,7 @@
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "freshservicetask",
+                                "fieldId": "freshworksfreshservicetask",
                                 "height": 106,
                                 "id": "4c6bc140-b371-11ed-9732-a97e308dae95",
                                 "index": 0,
@@ -1868,13 +1868,13 @@
         ]
     },
     "group": "incident",
-    "id": "FreshService Layout",
-    "name": "FreshService Layout",
+    "id": "FreshworksFreshservice Layout",
+    "name": "FreshworksFreshservice Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
     "marketplaces": [
         "xsoar"
     ],
-    "description": ""
+    "description": "FreshworksFreshservice Layout"
 }

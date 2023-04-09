@@ -1,207 +1,207 @@
 {
-    "description": "FreshService - Outgoing Common Mapping",
+    "description": "FreshworksFreshservice - Outgoing Common Mapping",
     "feed": false,
-    "id": "FreshService - Outgoing Common Mapping",
+    "id": "FreshworksFreshservice - Outgoing Common Mapping",
     "mapping": {
-        "FreshService Ticket": {
+        "FreshworksFreshservice Ticket": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "assets": {
-                    "simple": "freshserviceassets"
+                    "simple": "freshworksfreshserviceassets"
                 },
                 "category": {
-                    "simple": "freshservicecategory"
+                    "simple": "freshworksfreshservicecategory"
                 },
                 "custom_fields": {
-                    "simple": "freshservicecustomfields"
+                    "simple": "freshworksfreshservicecustomfields"
                 },
                 "department_id": {
-                    "simple": "freshservicedepartmentid"
+                    "simple": "freshworksfreshservicedepartmentid"
                 },
                 "description": {
                     "simple": "description"
                 },
                 "due_by": {
-                    "simple": "freshservicedueby"
+                    "simple": "freshworksfreshservicedueby"
                 },
                 "group_id": {
-                    "simple": "freshservicegroupid"
+                    "simple": "freshworksfreshservicegroupid"
                 },
                 "impact": {
-                    "simple": "freshserviceimpact"
+                    "simple": "freshworksfreshserviceimpact"
                 },
                 "priority": {
-                    "simple": "freshservicepriority"
+                    "simple": "freshworksfreshservicepriority"
                 },
                 "requester_id": {
-                    "simple": "freshservicerequesterid"
+                    "simple": "freshworksfreshservicerequesterid"
                 },
                 "status": {
-                    "simple": "freshserviceticketstatus"
+                    "simple": "freshworksfreshserviceticketstatus"
                 },
                 "sub_category": {
-                    "simple": "freshservicesubcategory"
+                    "simple": "freshworksfreshservicesubcategory"
                 },
                 "tags": {
-                    "simple": "freshservicetags"
+                    "simple": "freshworksfreshservicetags"
                 },
                 "ticket_type": {
-                    "simple": "freshserviceincidenttype"
+                    "simple": "freshworksfreshserviceincidenttype"
                 }
             }
         },
-        "FreshService Change Request": {
+        "FreshworksFreshservice Change Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "agent_id": {
-                    "simple": "freshserviceagentid"
+                    "simple": "freshworksfreshserviceagentid"
                 },
                 "assets": {
-                    "simple": "freshserviceassets"
+                    "simple": "freshworksfreshserviceassets"
                 },
                 "category": {
-                    "simple": "freshservicecategory"
+                    "simple": "freshworksfreshservicecategory"
                 },
                 "change_type": {
-                    "simple": "freshservicechangetype"
+                    "simple": "freshworksfreshservicechangetype"
                 },
                 "department_id": {
-                    "simple": "freshservicedepartmentid"
+                    "simple": "freshworksfreshservicedepartmentid"
                 },
                 "description": {
                     "simple": "description"
                 },
                 "due_by": {
-                    "simple": "freshservicedueby"
+                    "simple": "freshworksfreshservicedueby"
                 },
                 "group_id": {
-                    "simple": "freshservicegroupid"
+                    "simple": "freshworksfreshservicegroupid"
                 },
                 "impact": {
-                    "simple": "freshserviceimpact"
+                    "simple": "freshworksfreshserviceimpact"
                 },
                 "planned_end_date": {
-                    "simple": "freshserviceplannedenddate"
+                    "simple": "freshworksfreshserviceplannedenddate"
                 },
                 "planned_start_date": {
-                    "simple": "freshserviceplannedstartdate"
+                    "simple": "freshworksfreshserviceplannedstartdate"
                 },
                 "priority": {
-                    "simple": "freshservicepriority"
+                    "simple": "freshworksfreshservicepriority"
                 },
                 "requester_id": {
-                    "simple": "freshservicerequesterid"
+                    "simple": "freshworksfreshservicerequesterid"
                 },
                 "risk": {
-                    "simple": "freshservicerisk"
+                    "simple": "freshworksfreshservicerisk"
                 },
                 "status": {
-                    "simple": "freshservicechangestatus"
+                    "simple": "freshworksfreshservicechangestatus"
                 },
                 "sub_category": {
-                    "simple": "freshservicesubcategory"
+                    "simple": "freshworksfreshservicesubcategory"
                 },
                 "ticket_type": {
-                    "simple": "freshserviceincidenttype"
+                    "simple": "freshworksfreshserviceincidenttype"
                 }
             }
         },
-        "FreshService Problem Request": {
+        "FreshworksFreshservice Problem Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "agent_id": {
-                    "simple": "freshserviceagentid"
+                    "simple": "freshworksfreshserviceagentid"
                 },
                 "assets": {
-                    "simple": "freshserviceassets"
+                    "simple": "freshworksfreshserviceassets"
                 },
                 "category": {
-                    "simple": "freshservicecategory"
+                    "simple": "freshworksfreshservicecategory"
                 },
                 "custom_fields": {
-                    "simple": "freshservicecustomfields"
+                    "simple": "freshworksfreshservicecustomfields"
                 },
                 "department_id": {
-                    "simple": "freshservicedepartmentid"
+                    "simple": "freshworksfreshservicedepartmentid"
                 },
                 "description": {
                     "simple": "description"
                 },
                 "due_by": {
-                    "simple": "freshservicedueby"
+                    "simple": "freshworksfreshservicedueby"
                 },
                 "group_id": {
-                    "simple": "freshservicegroupid"
+                    "simple": "freshworksfreshservicegroupid"
                 },
                 "impact": {
-                    "simple": "freshserviceimpact"
+                    "simple": "freshworksfreshserviceimpact"
                 },
                 "priority": {
-                    "simple": "freshservicepriority"
+                    "simple": "freshworksfreshservicepriority"
                 },
                 "requester_id": {
-                    "simple": "freshservicerequesterid"
+                    "simple": "freshworksfreshservicerequesterid"
                 },
                 "status": {
-                    "simple": "freshserviceproblemstatus"
+                    "simple": "freshworksfreshserviceproblemstatus"
                 },
                 "sub_category": {
-                    "simple": "freshservicesubcategory"
+                    "simple": "freshworksfreshservicesubcategory"
                 },
                 "ticket_type": {
-                    "simple": "freshserviceincidenttype"
+                    "simple": "freshworksfreshserviceincidenttype"
                 }
             }
         },
-        "FreshService Release Request": {
+        "FreshworksFreshservice Release Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "agent_id": {
-                    "simple": "freshserviceagentid"
+                    "simple": "freshworksfreshserviceagentid"
                 },
                 "assets": {
-                    "simple": "freshserviceassets"
+                    "simple": "freshworksfreshserviceassets"
                 },
                 "category": {
-                    "simple": "freshservicecategory"
+                    "simple": "freshworksfreshservicecategory"
                 },
                 "department_id": {
-                    "simple": "freshservicedepartmentid"
+                    "simple": "freshworksfreshservicedepartmentid"
                 },
                 "description": {
                     "simple": "description"
                 },
                 "due_by": {
-                    "simple": "freshservicedueby"
+                    "simple": "freshworksfreshservicedueby"
                 },
                 "group_id": {
-                    "simple": "freshservicegroupid"
+                    "simple": "freshworksfreshservicegroupid"
                 },
                 "planned_end_date": {
-                    "simple": "freshserviceplannedenddate"
+                    "simple": "freshworksfreshserviceplannedenddate"
                 },
                 "planned_start_date": {
-                    "simple": "freshserviceplannedstartdate"
+                    "simple": "freshworksfreshserviceplannedstartdate"
                 },
                 "priority": {
-                    "simple": "freshservicepriority"
+                    "simple": "freshworksfreshservicepriority"
                 },
                 "release_type": {
-                    "simple": "freshservicereleasetype"
+                    "simple": "freshworksfreshservicereleasetype"
                 },
                 "status": {
-                    "simple": "freshservicereleasestatus"
+                    "simple": "freshworksfreshservicereleasestatus"
                 },
                 "sub_category": {
-                    "simple": "freshservicesubcategory"
+                    "simple": "freshworksfreshservicesubcategory"
                 },
                 "ticket_type": {
-                    "simple": "freshserviceincidenttype"
+                    "simple": "freshworksfreshserviceincidenttype"
                 }
             }
         }
     },
-    "name": "FreshService - Outgoing Common Mapping",
+    "name": "FreshworksFreshservice - Outgoing Common Mapping",
     "type": "mapping-outgoing",
     "version": -1,
     "fromVersion": "6.0.0"

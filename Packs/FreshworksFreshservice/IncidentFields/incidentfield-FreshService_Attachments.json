@@ -7,7 +7,7 @@
         "FreshService Release Request"
     ],
     "caseInsensitive": true,
-    "cliName": "freshserviceattachments",
+    "cliName": "freshworksfreshserviceattachments",
     "closeForm": false,
     "columns": [
         {
@@ -111,10 +111,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_freshserviceattachments",
+    "id": "incident_freshworksfreshserviceattachments",
     "isReadOnly": false,
     "locked": false,
-    "name": "FreshService Attachments",
+    "name": "FreshworksFreshservice Attachments",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
