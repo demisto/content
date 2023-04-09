@@ -16,7 +16,7 @@ xdm.network.ip_protocol=if(proto="HOPOPT",XDM_CONST.IP_PROTOCOL_HOPOPT, proto="I
 xdm.source.sent_bytes=to_integer(arrayindex(regextract(_raw_log,"sent\=([^=]+)[\s|\"]"),0)),
 xdm.source.sent_packets=to_integer(arrayindex(regextract(_raw_log,"spkt\=([^=]+)[\s|\"]"),0)),
 xdm.event.duration=to_integer(arrayindex(regextract(_raw_log,"cdur\=([^=]+)[\s|\"]"),0)),
-xdm.observer.action=arrayindex(regextract(_raw_log,"fw_action\=([^=]+)[\s|\"]"),0),
+xdm.observer.action=arrayindex(regextract(_raw_log,"fw_action\=\"([^=]+)\""),0),
 xdm.source.host.mac_addresses=regextract(_raw_log,"srcMac\=([^=]+)[\s|\"]"),
 xdm.target.sent_bytes=to_integer(arrayindex(regextract(_raw_log,"rcvd\=([^=]+)[\s|\"]"),0)),
 xdm.target.sent_packets=to_integer(arrayindex(regextract(_raw_log,"rpkt\=([^=]+)[\s|\"]"),0)),
