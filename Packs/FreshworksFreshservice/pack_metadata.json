@@ -1,5 +1,5 @@
 {
-    "name": "Freshwork Freshservice",
+    "name": "Freshworks Freshservice",
     "description": "Freshservice is a service management solution that allows customers to manage service requests, incidents, change requests tasks, and problem investigation.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
