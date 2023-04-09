@@ -217,6 +217,58 @@ script:
       name: filter
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Relevant only for V2, Use this field to filter by alert's classification.
+      isArray: false
+      name: classification
+      predefined:
+      - unknown
+      - truePositive
+      - falsePositive
+      - benignPositive
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Relevant only for V2, Use this field to filter the alerts by the service or product that created this alert.
+      isArray: false
+      name: service_source
+      predefined:
+      - microsoftDefenderForEndpoint
+      - microsoftDefenderForIdentity
+      - microsoftDefenderForOffice365
+      - microsoftCloudAppSecurity
+      - microsoft365Defender
+      - microsoftAppGovernance
+      - aadIdentityProtection
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Relevant only for V2, Use this field to filter by alert's status.
+      isArray: false
+      name: status
+      predefined:
+      - unknown
+      - new
+      - inProgress
+      - resolved
+      required: false
+      secret: false
+    - description: Page number to return. The maximum number of alerts that can be skipped for API V1 is 500.
+      isArray: false
+      name: page
+      required: false
+    - description: Number of results in a page. default is 50, the limit for API V1 is 1000, the limit for API V2 is 2000.
+      isArray: false
+      name: page_size
+      required: false
+    - description: Number of total results to return. default is 50.
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 50
     deprecated: false
     description: List alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.
     execution: false
