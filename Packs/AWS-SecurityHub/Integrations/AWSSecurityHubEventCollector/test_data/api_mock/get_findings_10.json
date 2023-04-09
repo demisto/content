@@ -1,0 +1,1032 @@
+[
+    {
+        "SchemaVersion": "2018-10-08",
+        "Id": "arn:aws:securityhub:eu-central-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.3/finding/1f710db2-d22c-4326-b5f3-b37d979d1211",
+        "ProductArn": "arn:aws:securityhub:eu-central-1::product/aws/securityhub",
+        "ProductName": "Security Hub",
+        "CompanyName": "AWS",
+        "Region": "eu-central-1",
+        "GeneratorId": "arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0/rule/1.3",
+        "AwsAccountId": "123456789012",
+        "Types": [
+            "Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark"
+        ],
+        "FirstObservedAt": "2022-11-22T13:01:54.938Z",
+        "LastObservedAt": "2022-12-29T12:49:01.568Z",
+        "CreatedAt": "2022-11-22T13:01:54.938Z",
+        "UpdatedAt": "2022-12-29T12:49:01.569Z",
+        "Severity": {
+            "Product": 0,
+            "Label": "INFORMATIONAL",
+            "Normalized": 0,
+            "Original": "INFORMATIONAL"
+        },
+        "Title": "1.3 Ensure credentials unused for 90 days or greater are disabled",
+        "Description": "AWS IAM users can access AWS resources using different types of credentials, such as passwords or access keys. It is recommended that all credentials that have been unused in 90 or greater days be removed or deactivated.",
+        "Remediation": {
+            "Recommendation": {
+                "Text": "For directions on how to fix this issue, consult the AWS Security Hub CIS documentation.",
+                "Url": "https://docs.aws.amazon.com/console/securityhub/standards-cis-1.3/remediation"
+            }
+        },
+        "ProductFields": {
+            "StandardsGuideArn": "arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0",
+            "StandardsGuideSubscriptionArn": "arn:aws:securityhub:eu-central-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0",
+            "RuleId": "1.3",
+            "RecommendationUrl": "https://docs.aws.amazon.com/console/securityhub/standards-cis-1.3/remediation",
+            "RelatedAWSResources:0/name": "securityhub-iam-user-unused-credentials-check-fd1fe3ba",
+            "RelatedAWSResources:0/type": "AWS::Config::ConfigRule",
+            "StandardsControlArn": "arn:aws:securityhub:eu-central-1:123456789012:control/cis-aws-foundations-benchmark/v/1.2.0/1.3",
+            "aws/securityhub/ProductName": "Security Hub",
+            "aws/securityhub/CompanyName": "AWS",
+            "aws/securityhub/annotation": "AWS Config evaluated your resources against the rule. The rule did not apply to the AWS resources in its scope, the specified resources were deleted, or the evaluation results were deleted.",
+            "Resources:0/Id": "arn:aws:iam::123456789012:root",
+            "aws/securityhub/FindingId": "arn:aws:securityhub:eu-central-1::product/aws/securityhub/arn:aws:securityhub:eu-central-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.3/finding/1f710db2-d22c-4326-b5f3-b37d979d1211"
+        },
+        "Resources": [
+            {
+                "Type": "AwsAccount",
+                "Id": "AWS::::Account:123456789012",
+                "Partition": "aws",
+                "Region": "eu-central-1"
+            }
+        ],
+        "Compliance": {
+            "Status": "PASSED",
+            "StatusReasons": [
+                {
+                    "ReasonCode": "CONFIG_EVALUATIONS_EMPTY",
+                    "Description": "AWS Config evaluated your resources against the rule. The rule did not apply to the AWS resources in its scope, the specified resources were deleted, or the evaluation results were deleted."
+                }
+            ]
+        },
+        "WorkflowState": "NEW",
+        "Workflow": {
+            "Status": "RESOLVED"
+        },
+        "RecordState": "ARCHIVED",
+        "FindingProviderFields": {
+            "Severity": {
+                "Label": "INFORMATIONAL",
+                "Original": "INFORMATIONAL"
+            },
+            "Types": [
+                "Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark"
+            ]
+        }
+    },
+    {
+        "SchemaVersion": "2018-10-08",
+        "Id": "arn:aws:securityhub:eu-central-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.2/finding/d2ecf67f-b26b-42f1-ba3e-3d69b9b7b517",
+        "ProductArn": "arn:aws:securityhub:eu-central-1::product/aws/securityhub",
+        "ProductName": "Security Hub",
+        "CompanyName": "AWS",
+        "Region": "eu-central-1",
+        "GeneratorId": "arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0/rule/1.2",
+        "AwsAccountId": "123456789012",
+        "Types": [
+            "Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark"
+        ],
+        "FirstObservedAt": "2022-11-22T13:01:54.133Z",
+        "LastObservedAt": "2022-12-29T12:49:08.585Z",
+        "CreatedAt": "2022-11-22T13:01:54.133Z",
+        "UpdatedAt": "2022-12-29T12:49:08.586Z",
+        "Severity": {
+            "Product": 0,
+            "Label": "INFORMATIONAL",
+            "Normalized": 0,
+            "Original": "INFORMATIONAL"
+        },
+        "Title": "1.2 Ensure multi-factor authentication (MFA) is enabled for all IAM users that have a console password",
+        "Description": "Multi-Factor Authentication (MFA) adds an extra layer of protection on top of a user name and password. It is recommended that MFA be enabled for all accounts that have a console password.",
+        "Remediation": {
+            "Recommendation": {
+                "Text": "For directions on how to fix this issue, consult the AWS Security Hub CIS documentation.",
+                "Url": "https://docs.aws.amazon.com/console/securityhub/standards-cis-1.2/remediation"
+            }
+        },
+        "ProductFields": {
+            "StandardsGuideArn": "arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0",
+            "StandardsGuideSubscriptionArn": "arn:aws:securityhub:eu-central-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0",
+            "RuleId": "1.2",
+            "RecommendationUrl": "https://docs.aws.amazon.com/console/securityhub/standards-cis-1.2/remediation",
+            "RelatedAWSResources:0/name": "securityhub-mfa-enabled-for-iam-console-access-85a761e4",
+            "RelatedAWSResources:0/type": "AWS::Config::ConfigRule",
+            "StandardsControlArn": "arn:aws:securityhub:eu-central-1:123456789012:control/cis-aws-foundations-benchmark/v/1.2.0/1.2",
+            "aws/securityhub/ProductName": "Security Hub",
+            "aws/securityhub/CompanyName": "AWS",
+            "aws/securityhub/annotation": "AWS Config evaluated your resources against the rule. The rule did not apply to the AWS resources in its scope, the specified resources were deleted, or the evaluation results were deleted.",
+            "Resources:0/Id": "arn:aws:iam::123456789012:root",
+            "aws/securityhub/FindingId": "arn:aws:securityhub:eu-central-1::product/aws/securityhub/arn:aws:securityhub:eu-central-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.2/finding/d2ecf67f-b26b-42f1-ba3e-3d69b9b7b517"
+        },
+        "Resources": [
+            {
+                "Type": "AwsAccount",
+                "Id": "AWS::::Account:123456789012",
+                "Partition": "aws",
+                "Region": "eu-central-1"
+            }
+        ],
+        "Compliance": {
+            "Status": "PASSED",
+            "StatusReasons": [
+                {
+                    "ReasonCode": "CONFIG_EVALUATIONS_EMPTY",
+                    "Description": "AWS Config evaluated your resources against the rule. The rule did not apply to the AWS resources in its scope, the specified resources were deleted, or the evaluation results were deleted."
+                }
+            ]
+        },
+        "WorkflowState": "NEW",
+        "Workflow": {
+            "Status": "RESOLVED"
+        },
+        "RecordState": "ARCHIVED",
+        "FindingProviderFields": {
+            "Severity": {
+                "Label": "INFORMATIONAL",
+                "Original": "INFORMATIONAL"
+            },
+            "Types": [
+                "Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark"
+            ]
+        }
+    },
+    {
+        "SchemaVersion": "2018-10-08",
+        "Id": "arn:aws:securityhub:eu-central-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.3/finding/74e4ff06-573b-44f5-afb5-4b82959d680d",
+        "ProductArn": "arn:aws:securityhub:eu-central-1::product/aws/securityhub",
+        "ProductName": "Security Hub",
+        "CompanyName": "AWS",
+        "Region": "eu-central-1",
+        "GeneratorId": "arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0/rule/1.3",
+        "AwsAccountId": "123456789012",
+        "Types": [
+            "Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark"
+        ],
+        "FirstObservedAt": "2022-12-29T12:48:57.852Z",
+        "LastObservedAt": "2022-12-30T00:50:04.950Z",
+        "CreatedAt": "2022-12-29T12:48:57.852Z",
+        "UpdatedAt": "2022-12-30T00:50:04.951Z",
+        "Severity": {
+            "Product": 40,
+            "Label": "INFORMATIONAL",
+            "Normalized": 40,
+            "Original": "INFORMATIONAL"
+        },
+        "Title": "1.3 Ensure credentials unused for 90 days or greater are disabled",
+        "Description": "AWS IAM users can access AWS resources using different types of credentials, such as passwords or access keys. It is recommended that all credentials that have been unused in 90 or greater days be removed or deactivated.",
+        "Remediation": {
+            "Recommendation": {
+                "Text": "For directions on how to fix this issue, consult the AWS Security Hub CIS documentation.",
+                "Url": "https://docs.aws.amazon.com/console/securityhub/standards-cis-1.3/remediation"
+            }
+        },
+        "ProductFields": {
+            "StandardsGuideArn": "arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0",
+            "StandardsGuideSubscriptionArn": "arn:aws:securityhub:eu-central-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0",
+            "RuleId": "1.3",
+            "RecommendationUrl": "https://docs.aws.amazon.com/console/securityhub/standards-cis-1.3/remediation",
+            "RelatedAWSResources:0/name": "securityhub-iam-user-unused-credentials-check-fd1fe3ba",
+            "RelatedAWSResources:0/type": "AWS::Config::ConfigRule",
+            "StandardsControlArn": "arn:aws:securityhub:eu-central-1:123456789012:control/cis-aws-foundations-benchmark/v/1.2.0/1.3",
+            "aws/securityhub/ProductName": "Security Hub",
+            "aws/securityhub/CompanyName": "AWS",
+            "aws/securityhub/annotation": "InternalError",
+            "Resources:0/Id": "arn:aws:iam::123456789012:root",
+            "aws/securityhub/FindingId": "arn:aws:securityhub:eu-central-1::product/aws/securityhub/arn:aws:securityhub:eu-central-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.3/finding/74e4ff06-573b-44f5-afb5-4b82959d680d"
+        },
+        "Resources": [
+            {
+                "Type": "AwsAccount",
+                "Id": "AWS::::Account:123456789012",
+                "Partition": "aws",
+                "Region": "eu-central-1"
+            }
+        ],
+        "Compliance": {
+            "Status": "NOT_AVAILABLE",
+            "StatusReasons": [
+                {
+                    "ReasonCode": "CONFIG_RULE_EVALUATION_ERROR",
+                    "Description": "InternalError"
+                }
+            ]
+        },
+        "WorkflowState": "NEW",
+        "Workflow": {
+            "Status": "NEW"
+        },
+        "RecordState": "ARCHIVED",
+        "FindingProviderFields": {
+            "Severity": {
+                "Label": "INFORMATIONAL",
+                "Original": "INFORMATIONAL"
+            },
+            "Types": [
+                "Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark"
+            ]
+        }
+    },
+    {
+        "SchemaVersion": "2018-10-08",
+        "Id": "arn:aws:securityhub:eu-central-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.2/finding/1caaab02-b3f4-41f0-9498-2616307736d8",
+        "ProductArn": "arn:aws:securityhub:eu-central-1::product/aws/securityhub",
+        "ProductName": "Security Hub",
+        "CompanyName": "AWS",
+        "Region": "eu-central-1",
+        "GeneratorId": "arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0/rule/1.2",
+        "AwsAccountId": "123456789012",
+        "Types": [
+            "Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark"
+        ],
+        "FirstObservedAt": "2022-12-29T12:48:57.852Z",
+        "LastObservedAt": "2022-12-30T00:50:06.182Z",
+        "CreatedAt": "2022-12-29T12:48:57.852Z",
+        "UpdatedAt": "2022-12-30T00:50:06.191Z",
+        "Severity": {
+            "Product": 40,
+            "Label": "INFORMATIONAL",
+            "Normalized": 40,
+            "Original": "INFORMATIONAL"
+        },
+        "Title": "1.2 Ensure multi-factor authentication (MFA) is enabled for all IAM users that have a console password",
+        "Description": "Multi-Factor Authentication (MFA) adds an extra layer of protection on top of a user name and password. It is recommended that MFA be enabled for all accounts that have a console password.",
+        "Remediation": {
+            "Recommendation": {
+                "Text": "For directions on how to fix this issue, consult the AWS Security Hub CIS documentation.",
+                "Url": "https://docs.aws.amazon.com/console/securityhub/standards-cis-1.2/remediation"
+            }
+        },
+        "ProductFields": {
+            "StandardsGuideArn": "arn:aws:securityhub:::ruleset/cis-aws-foundations-benchmark/v/1.2.0",
+            "StandardsGuideSubscriptionArn": "arn:aws:securityhub:eu-central-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0",
+            "RuleId": "1.2",
+            "RecommendationUrl": "https://docs.aws.amazon.com/console/securityhub/standards-cis-1.2/remediation",
+            "RelatedAWSResources:0/name": "securityhub-mfa-enabled-for-iam-console-access-85a761e4",
+            "RelatedAWSResources:0/type": "AWS::Config::ConfigRule",
+            "StandardsControlArn": "arn:aws:securityhub:eu-central-1:123456789012:control/cis-aws-foundations-benchmark/v/1.2.0/1.2",
+            "aws/securityhub/ProductName": "Security Hub",
+            "aws/securityhub/CompanyName": "AWS",
+            "aws/securityhub/annotation": "InternalError",
+            "Resources:0/Id": "arn:aws:iam::123456789012:root",
+            "aws/securityhub/FindingId": "arn:aws:securityhub:eu-central-1::product/aws/securityhub/arn:aws:securityhub:eu-central-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.2/finding/1caaab02-b3f4-41f0-9498-2616307736d8"
+        },
+        "Resources": [
+            {
+                "Type": "AwsAccount",
+                "Id": "AWS::::Account:123456789012",
+                "Partition": "aws",
+                "Region": "eu-central-1"
+            }
+        ],
+        "Compliance": {
+            "Status": "NOT_AVAILABLE",
+            "StatusReasons": [
+                {
+                    "ReasonCode": "CONFIG_RULE_EVALUATION_ERROR",
+                    "Description": "InternalError"
+                }
+            ]
+        },
+        "WorkflowState": "NEW",
+        "Workflow": {
+            "Status": "NEW"
+        },
+        "RecordState": "ARCHIVED",
+        "FindingProviderFields": {
+            "Severity": {
+                "Label": "INFORMATIONAL",
+                "Original": "INFORMATIONAL"
+            },
+            "Types": [
+                "Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark"
+            ]
+        }
+    },
+    {
+        "SchemaVersion": "2018-10-08",
+        "Id": "arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/EC2.4/finding/b62c59eb-41d5-4a42-bba6-1d5af55ba8be",
+        "ProductArn": "arn:aws:securityhub:eu-central-1::product/aws/securityhub",
+        "ProductName": "Security Hub",
+        "CompanyName": "AWS",
+        "Region": "eu-central-1",
+        "GeneratorId": "aws-foundational-security-best-practices/v/1.0.0/EC2.4",
+        "AwsAccountId": "123456789012",
+        "Types": [
+            "Software and Configuration Checks/Industry and Regulatory Standards/AWS-Foundational-Security-Best-Practices"
+        ],
+        "FirstObservedAt": "2022-12-19T13:02:03.949Z",
+        "LastObservedAt": "2023-01-01T12:49:47.773Z",
+        "CreatedAt": "2022-12-19T13:02:03.949Z",
+        "UpdatedAt": "2023-01-01T12:49:47.796Z",
+        "Severity": {
+            "Product": 0,
+            "Label": "INFORMATIONAL",
+            "Normalized": 0,
+            "Original": "INFORMATIONAL"
+        },
+        "Title": "EC2.4 Stopped EC2 instances should be removed after a specified time period",
+        "Description": "This control checks whether any EC2 instances have been stopped for more than the allowed number of days. An EC2 instance fails this check if it is stopped for longer than the maximum allowed time period, which by default is 30 days.",
+        "Remediation": {
+            "Recommendation": {
+                "Text": "For directions on how to fix this issue, consult the AWS Security Hub Foundational Security Best Practices documentation.",
+                "Url": "https://docs.aws.amazon.com/console/securityhub/EC2.4/remediation"
+            }
+        },
+        "ProductFields": {
+            "StandardsArn": "arn:aws:securityhub:::standards/aws-foundational-security-best-practices/v/1.0.0",
+            "StandardsSubscriptionArn": "arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0",
+            "ControlId": "EC2.4",
+            "RecommendationUrl": "https://docs.aws.amazon.com/console/securityhub/EC2.4/remediation",
+            "RelatedAWSResources:0/name": "securityhub-ec2-stopped-instance-33117ff7",
+            "RelatedAWSResources:0/type": "AWS::Config::ConfigRule",
+            "StandardsControlArn": "arn:aws:securityhub:eu-central-1:123456789012:control/aws-foundational-security-best-practices/v/1.0.0/EC2.4",
+            "aws/securityhub/ProductName": "Security Hub",
+            "aws/securityhub/CompanyName": "AWS",
+            "Resources:0/Id": "arn:aws:ec2:eu-central-1:123456789012:instance/i-0d23486b9c96c93e2",
+            "aws/securityhub/FindingId": "arn:aws:securityhub:eu-central-1::product/aws/securityhub/arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/EC2.4/finding/b62c59eb-41d5-4a42-bba6-1d5af55ba8be"
+        },
+        "Resources": [
+            {
+                "Type": "AwsEc2Instance",
+                "Id": "arn:aws:ec2:eu-central-1:123456789012:instance/i-0d23486b9c96c93e2",
+                "Partition": "aws",
+                "Region": "eu-central-1",
+                "Details": {
+                    "AwsEc2Instance": {
+                        "ImageId": "ami-082068326bde5e52e",
+                        "KeyName": "broker-keypair",
+                        "VpcId": "vpc-079c0c9fdb14180b2",
+                        "SubnetId": "subnet-099d5cc1e103bb50a",
+                        "LaunchedAt": "2022-11-21T18:38:53.000Z",
+                        "NetworkInterfaces": [
+                            {
+                                "NetworkInterfaceId": "eni-0e219a5f81ebfa4a8"
+                            }
+                        ],
+                        "VirtualizationType": "hvm",
+                        "MetadataOptions": {
+                            "HttpEndpoint": "enabled",
+                            "HttpPutResponseHopLimit": 1,
+                            "HttpTokens": "optional"
+                        }
+                    }
+                }
+            }
+        ],
+        "Compliance": {
+            "Status": "PASSED"
+        },
+        "WorkflowState": "NEW",
+        "Workflow": {
+            "Status": "RESOLVED"
+        },
+        "RecordState": "ARCHIVED",
+        "FindingProviderFields": {
+            "Severity": {
+                "Label": "INFORMATIONAL",
+                "Original": "INFORMATIONAL"
+            },
+            "Types": [
+                "Software and Configuration Checks/Industry and Regulatory Standards/AWS-Foundational-Security-Best-Practices"
+            ]
+        }
+    },
+    {
+        "SchemaVersion": "2018-10-08",
+        "Id": "arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/EC2.4/finding/a61f555f-9abc-4dba-a066-2d27a0778cd6",
+        "ProductArn": "arn:aws:securityhub:eu-central-1::product/aws/securityhub",
+        "ProductName": "Security Hub",
+        "CompanyName": "AWS",
+        "Region": "eu-central-1",
+        "GeneratorId": "aws-foundational-security-best-practices/v/1.0.0/EC2.4",
+        "AwsAccountId": "123456789012",
+        "Types": [
+            "Software and Configuration Checks/Industry and Regulatory Standards/AWS-Foundational-Security-Best-Practices"
+        ],
+        "FirstObservedAt": "2022-12-20T01:02:00.117Z",
+        "LastObservedAt": "2023-01-01T12:49:55.877Z",
+        "CreatedAt": "2022-12-20T01:02:00.117Z",
+        "UpdatedAt": "2023-01-01T12:49:55.900Z",
+        "Severity": {
+            "Product": 0,
+            "Label": "INFORMATIONAL",
+            "Normalized": 0,
+            "Original": "INFORMATIONAL"
+        },
+        "Title": "EC2.4 Stopped EC2 instances should be removed after a specified time period",
+        "Description": "This control checks whether any EC2 instances have been stopped for more than the allowed number of days. An EC2 instance fails this check if it is stopped for longer than the maximum allowed time period, which by default is 30 days.",
+        "Remediation": {
+            "Recommendation": {
+                "Text": "For directions on how to fix this issue, consult the AWS Security Hub Foundational Security Best Practices documentation.",
+                "Url": "https://docs.aws.amazon.com/console/securityhub/EC2.4/remediation"
+            }
+        },
+        "ProductFields": {
+            "StandardsArn": "arn:aws:securityhub:::standards/aws-foundational-security-best-practices/v/1.0.0",
+            "StandardsSubscriptionArn": "arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0",
+            "ControlId": "EC2.4",
+            "RecommendationUrl": "https://docs.aws.amazon.com/console/securityhub/EC2.4/remediation",
+            "RelatedAWSResources:0/name": "securityhub-ec2-stopped-instance-33117ff7",
+            "RelatedAWSResources:0/type": "AWS::Config::ConfigRule",
+            "StandardsControlArn": "arn:aws:securityhub:eu-central-1:123456789012:control/aws-foundational-security-best-practices/v/1.0.0/EC2.4",
+            "aws/securityhub/ProductName": "Security Hub",
+            "aws/securityhub/CompanyName": "AWS",
+            "Resources:0/Id": "arn:aws:ec2:eu-central-1:123456789012:instance/i-00d3e8f947dc7f4e8",
+            "aws/securityhub/FindingId": "arn:aws:securityhub:eu-central-1::product/aws/securityhub/arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/EC2.4/finding/a61f555f-9abc-4dba-a066-2d27a0778cd6"
+        },
+        "Resources": [
+            {
+                "Type": "AwsEc2Instance",
+                "Id": "arn:aws:ec2:eu-central-1:123456789012:instance/i-00d3e8f947dc7f4e8",
+                "Partition": "aws",
+                "Region": "eu-central-1",
+                "Details": {
+                    "AwsEc2Instance": {
+                        "ImageId": "ami-09335ba47f03ee09f",
+                        "KeyName": "broker-keypair",
+                        "VpcId": "vpc-079c0c9fdb14180b2",
+                        "SubnetId": "subnet-099d5cc1e103bb50a",
+                        "LaunchedAt": "2022-10-07T15:59:24.000Z",
+                        "NetworkInterfaces": [
+                            {
+                                "NetworkInterfaceId": "eni-0f1e54e505f9df773"
+                            }
+                        ],
+                        "VirtualizationType": "hvm",
+                        "MetadataOptions": {
+                            "HttpEndpoint": "enabled",
+                            "HttpPutResponseHopLimit": 1,
+                            "HttpTokens": "optional"
+                        }
+                    }
+                }
+            }
+        ],
+        "Compliance": {
+            "Status": "PASSED"
+        },
+        "WorkflowState": "NEW",
+        "Workflow": {
+            "Status": "RESOLVED"
+        },
+        "RecordState": "ARCHIVED",
+        "FindingProviderFields": {
+            "Severity": {
+                "Label": "INFORMATIONAL",
+                "Original": "INFORMATIONAL"
+            },
+            "Types": [
+                "Software and Configuration Checks/Industry and Regulatory Standards/AWS-Foundational-Security-Best-Practices"
+            ]
+        }
+    },
+    {
+        "SchemaVersion": "2018-10-08",
+        "Id": "arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/EC2.4/finding/36420e30-4caa-41d9-a2d9-0276f37b82a6",
+        "ProductArn": "arn:aws:securityhub:eu-central-1::product/aws/securityhub",
+        "ProductName": "Security Hub",
+        "CompanyName": "AWS",
+        "Region": "eu-central-1",
+        "GeneratorId": "aws-foundational-security-best-practices/v/1.0.0/EC2.4",
+        "AwsAccountId": "123456789012",
+        "Types": [
+            "Software and Configuration Checks/Industry and Regulatory Standards/AWS-Foundational-Security-Best-Practices"
+        ],
+        "FirstObservedAt": "2023-01-01T12:49:43.959Z",
+        "LastObservedAt": "2023-01-03T00:48:51.891Z",
+        "CreatedAt": "2023-01-01T12:49:43.959Z",
+        "UpdatedAt": "2023-01-03T00:48:51.914Z",
+        "Severity": {
+            "Product": 40,
+            "Label": "MEDIUM",
+            "Normalized": 40,
+            "Original": "INFORMATIONAL"
+        },
+        "Title": "EC2.4 Stopped EC2 instances should be removed after a specified time period",
+        "Description": "This control checks whether any EC2 instances have been stopped for more than the allowed number of days. An EC2 instance fails this check if it is stopped for longer than the maximum allowed time period, which by default is 30 days.",
+        "Remediation": {
+            "Recommendation": {
+                "Text": "For directions on how to fix this issue, consult the AWS Security Hub Foundational Security Best Practices documentation.",
+                "Url": "https://docs.aws.amazon.com/console/securityhub/EC2.4/remediation"
+            }
+        },
+        "ProductFields": {
+            "StandardsArn": "arn:aws:securityhub:::standards/aws-foundational-security-best-practices/v/1.0.0",
+            "StandardsSubscriptionArn": "arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0",
+            "ControlId": "EC2.4",
+            "RecommendationUrl": "https://docs.aws.amazon.com/console/securityhub/EC2.4/remediation",
+            "RelatedAWSResources:0/name": "securityhub-ec2-stopped-instance-33117ff7",
+            "RelatedAWSResources:0/type": "AWS::Config::ConfigRule",
+            "StandardsControlArn": "arn:aws:securityhub:eu-central-1:123456789012:control/aws-foundational-security-best-practices/v/1.0.0/EC2.4",
+            "aws/securityhub/ProductName": "Security Hub",
+            "aws/securityhub/CompanyName": "AWS",
+            "aws/securityhub/annotation": "This finding has a compliance status of NOT AVAILABLE because AWS Config sent Security Hub a finding with a compliance state of Not Applicable. The potential reasons for a Not Applicable finding from Config are that (1) a resource has been moved out of scope of the Config rule; (2) the Config rule has been deleted; (3) the resource has been deleted; or (4) the logic of the Config rule itself includes scenarios where Not Applicable is returned. The specific reason why Not Applicable is returned is not available in the Config rule evaluation.",
+            "Resources:0/Id": "arn:aws:ec2:eu-central-1:123456789012:instance/i-00d3e8f947dc7f4e8",
+            "aws/securityhub/FindingId": "arn:aws:securityhub:eu-central-1::product/aws/securityhub/arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/EC2.4/finding/36420e30-4caa-41d9-a2d9-0276f37b82a6"
+        },
+        "Resources": [
+            {
+                "Type": "AwsEc2Instance",
+                "Id": "arn:aws:ec2:eu-central-1:123456789012:instance/i-00d3e8f947dc7f4e8",
+                "Partition": "aws",
+                "Region": "eu-central-1",
+                "Details": {
+                    "AwsEc2Instance": {
+                        "ImageId": "ami-09335ba47f03ee09f",
+                        "KeyName": "broker-keypair",
+                        "VpcId": "vpc-079c0c9fdb14180b2",
+                        "SubnetId": "subnet-099d5cc1e103bb50a",
+                        "LaunchedAt": "2023-01-01T11:22:41.000Z",
+                        "NetworkInterfaces": [
+                            {
+                                "NetworkInterfaceId": "eni-0f1e54e505f9df773"
+                            }
+                        ],
+                        "VirtualizationType": "hvm",
+                        "MetadataOptions": {
+                            "HttpEndpoint": "enabled",
+                            "HttpPutResponseHopLimit": 1,
+                            "HttpTokens": "optional"
+                        }
+                    }
+                }
+            }
+        ],
+        "Compliance": {
+            "Status": "NOT_AVAILABLE",
+            "StatusReasons": [
+                {
+                    "ReasonCode": "CONFIG_RETURNS_NOT_APPLICABLE",
+                    "Description": "This finding has a compliance status of NOT AVAILABLE because AWS Config sent Security Hub a finding with a compliance state of Not Applicable. The potential reasons for a Not Applicable finding from Config are that (1) a resource has been moved out of scope of the Config rule; (2) the Config rule has been deleted; (3) the resource has been deleted; or (4) the logic of the Config rule itself includes scenarios where Not Applicable is returned. The specific reason why Not Applicable is returned is not available in the Config rule evaluation."
+                }
+            ]
+        },
+        "WorkflowState": "NEW",
+        "Workflow": {
+            "Status": "NEW"
+        },
+        "RecordState": "ARCHIVED",
+        "FindingProviderFields": {
+            "Severity": {
+                "Label": "MEDIUM",
+                "Original": "INFORMATIONAL"
+            },
+            "Types": [
+                "Software and Configuration Checks/Industry and Regulatory Standards/AWS-Foundational-Security-Best-Practices"
+            ]
+        }
+    },
+    {
+        "SchemaVersion": "2018-10-08",
+        "Id": "arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/EC2.18/finding/e19c0175-bc63-45a2-9d11-e3419fd7e24f",
+        "ProductArn": "arn:aws:securityhub:eu-central-1::product/aws/securityhub",
+        "ProductName": "Security Hub",
+        "CompanyName": "AWS",
+        "Region": "eu-central-1",
+        "GeneratorId": "aws-foundational-security-best-practices/v/1.0.0/EC2.18",
+        "AwsAccountId": "123456789012",
+        "Types": [
+            "Software and Configuration Checks/Industry and Regulatory Standards/AWS-Foundational-Security-Best-Practices"
+        ],
+        "FirstObservedAt": "2022-09-12T13:15:43.417Z",
+        "LastObservedAt": "2023-01-03T07:07:03.614Z",
+        "CreatedAt": "2022-09-12T13:15:43.417Z",
+        "UpdatedAt": "2023-01-03T07:07:03.614Z",
+        "Severity": {
+            "Product": 0,
+            "Label": "INFORMATIONAL",
+            "Normalized": 0,
+            "Original": "INFORMATIONAL"
+        },
+        "Title": "EC2.18 Security groups should only allow unrestricted incoming traffic for authorized ports",
+        "Description": "This control checks whether the security groups allow unrestricted incoming traffic. The control fails if ports allow unrestricted traffic on ports other than 80 and 443, which are default values for parameter authorizedTcpPorts.",
+        "Remediation": {
+            "Recommendation": {
+                "Text": "For directions on how to fix this issue, consult the AWS Security Hub Foundational Security Best Practices documentation.",
+                "Url": "https://docs.aws.amazon.com/console/securityhub/EC2.18/remediation"
+            }
+        },
+        "ProductFields": {
+            "StandardsArn": "arn:aws:securityhub:::standards/aws-foundational-security-best-practices/v/1.0.0",
+            "StandardsSubscriptionArn": "arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0",
+            "ControlId": "EC2.18",
+            "RecommendationUrl": "https://docs.aws.amazon.com/console/securityhub/EC2.18/remediation",
+            "RelatedAWSResources:0/name": "securityhub-vpc-sg-open-only-to-authorized-ports-18153fcd",
+            "RelatedAWSResources:0/type": "AWS::Config::ConfigRule",
+            "StandardsControlArn": "arn:aws:securityhub:eu-central-1:123456789012:control/aws-foundational-security-best-practices/v/1.0.0/EC2.18",
+            "aws/securityhub/ProductName": "Security Hub",
+            "aws/securityhub/CompanyName": "AWS",
+            "aws/securityhub/annotation": "AWS Config evaluated your resources against the rule. The rule did not apply to the AWS resources in its scope, the specified resources were deleted, or the evaluation results were deleted.",
+            "Resources:0/Id": "arn:aws:iam::123456789012:root",
+            "aws/securityhub/FindingId": "arn:aws:securityhub:eu-central-1::product/aws/securityhub/arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/EC2.18/finding/e19c0175-bc63-45a2-9d11-e3419fd7e24f"
+        },
+        "Resources": [
+            {
+                "Type": "AwsAccount",
+                "Id": "AWS::::Account:123456789012",
+                "Partition": "aws",
+                "Region": "eu-central-1"
+            }
+        ],
+        "Compliance": {
+            "Status": "PASSED",
+            "StatusReasons": [
+                {
+                    "ReasonCode": "CONFIG_EVALUATIONS_EMPTY",
+                    "Description": "AWS Config evaluated your resources against the rule. The rule did not apply to the AWS resources in its scope, the specified resources were deleted, or the evaluation results were deleted."
+                },
+                {
+                    "ReasonCode": "NOT_UPDATED_WITHIN_THREE_DAYS",
+                    "Description": "The finding is in an ARCHIVED state because the finding was generated by a security check and it hasn't been updated in 3 days. This could be due to the resource being deleted or the control being disabled."
+                }
+            ]
+        },
+        "WorkflowState": "NEW",
+        "Workflow": {
+            "Status": "RESOLVED"
+        },
+        "RecordState": "ARCHIVED",
+        "FindingProviderFields": {
+            "Severity": {
+                "Label": "INFORMATIONAL",
+                "Original": "INFORMATIONAL"
+            },
+            "Types": [
+                "Software and Configuration Checks/Industry and Regulatory Standards/AWS-Foundational-Security-Best-Practices"
+            ]
+        }
+    },
+    {
+        "SchemaVersion": "2018-10-08",
+        "Id": "arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/EC2.18/finding/67da8a30-50bc-45d4-859d-d978c6c3c7d8",
+        "ProductArn": "arn:aws:securityhub:eu-central-1::product/aws/securityhub",
+        "ProductName": "Security Hub",
+        "CompanyName": "AWS",
+        "Region": "eu-central-1",
+        "GeneratorId": "aws-foundational-security-best-practices/v/1.0.0/EC2.18",
+        "AwsAccountId": "123456789012",
+        "Types": [
+            "Software and Configuration Checks/Industry and Regulatory Standards/AWS-Foundational-Security-Best-Practices"
+        ],
+        "FirstObservedAt": "2023-01-03T07:06:58.843Z",
+        "LastObservedAt": "2023-01-03T07:15:36.686Z",
+        "CreatedAt": "2023-01-03T07:06:58.843Z",
+        "UpdatedAt": "2023-01-03T07:15:36.739Z",
+        "Severity": {
+            "Product": 70,
+            "Label": "HIGH",
+            "Normalized": 70,
+            "Original": "HIGH"
+        },
+        "Title": "EC2.18 Security groups should only allow unrestricted incoming traffic for authorized ports",
+        "Description": "This control checks whether the security groups allow unrestricted incoming traffic. The control fails if ports allow unrestricted traffic on ports other than 80 and 443, which are default values for parameter authorizedTcpPorts.",
+        "Remediation": {
+            "Recommendation": {
+                "Text": "For directions on how to fix this issue, consult the AWS Security Hub Foundational Security Best Practices documentation.",
+                "Url": "https://docs.aws.amazon.com/console/securityhub/EC2.18/remediation"
+            }
+        },
+        "ProductFields": {
+            "StandardsArn": "arn:aws:securityhub:::standards/aws-foundational-security-best-practices/v/1.0.0",
+            "StandardsSubscriptionArn": "arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0",
+            "ControlId": "EC2.18",
+            "RecommendationUrl": "https://docs.aws.amazon.com/console/securityhub/EC2.18/remediation",
+            "RelatedAWSResources:0/name": "securityhub-vpc-sg-open-only-to-authorized-ports-18153fcd",
+            "RelatedAWSResources:0/type": "AWS::Config::ConfigRule",
+            "StandardsControlArn": "arn:aws:securityhub:eu-central-1:123456789012:control/aws-foundational-security-best-practices/v/1.0.0/EC2.18",
+            "aws/securityhub/ProductName": "Security Hub",
+            "aws/securityhub/CompanyName": "AWS",
+            "aws/securityhub/annotation": "No udp ['7524'] port is authorized to be open, according to the authorizedTcpPorts parameter.",
+            "Resources:0/Id": "arn:aws:ec2:eu-central-1:123456789012:security-group/sg-0bb59b7d72b89d316",
+            "aws/securityhub/FindingId": "arn:aws:securityhub:eu-central-1::product/aws/securityhub/arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/EC2.18/finding/67da8a30-50bc-45d4-859d-d978c6c3c7d8"
+        },
+        "Resources": [
+            {
+                "Type": "AwsEc2SecurityGroup",
+                "Id": "arn:aws:ec2:eu-central-1:123456789012:security-group/sg-0bb59b7d72b89d316",
+                "Partition": "aws",
+                "Region": "eu-central-1",
+                "Details": {
+                    "AwsEc2SecurityGroup": {
+                        "GroupName": "brokervm",
+                        "GroupId": "sg-0bb59b7d72b89d316",
+                        "OwnerId": "123456789012",
+                        "VpcId": "vpc-079c0c9fdb14180b2",
+                        "IpPermissions": [
+                            {
+                                "IpProtocol": "-1",
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.0/22"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "tcp",
+                                "FromPort": 8514,
+                                "ToPort": 8514,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.1/32"
+                                    },
+                                    {
+                                        "CidrIp": "192.0.2.2/32"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "tcp",
+                                "FromPort": 22,
+                                "ToPort": 22,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.3/32"
+                                    },
+                                    {
+                                        "CidrIp": "192.0.2.4/32"
+                                    },
+                                    {
+                                        "CidrIp": "192.0.2.5/32"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "udp",
+                                "FromPort": 2055,
+                                "ToPort": 2055,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.6/32"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "tcp",
+                                "FromPort": 7514,
+                                "ToPort": 7514,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.7/32"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "tcp",
+                                "FromPort": 443,
+                                "ToPort": 443,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.3/32"
+                                    },
+                                    {
+                                        "CidrIp": "192.0.2.4/32"
+                                    },
+                                    {
+                                        "CidrIp": "192.0.2.5/32"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "udp",
+                                "FromPort": 7524,
+                                "ToPort": 7524,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.8/0"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "udp",
+                                "FromPort": 514,
+                                "ToPort": 514,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.6/32"
+                                    }
+                                ]
+                            }
+                        ],
+                        "IpPermissionsEgress": [
+                            {
+                                "IpProtocol": "-1",
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.8/0"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "Compliance": {
+            "Status": "FAILED"
+        },
+        "WorkflowState": "NEW",
+        "Workflow": {
+            "Status": "NEW"
+        },
+        "RecordState": "ARCHIVED",
+        "FindingProviderFields": {
+            "Severity": {
+                "Label": "HIGH",
+                "Original": "HIGH"
+            },
+            "Types": [
+                "Software and Configuration Checks/Industry and Regulatory Standards/AWS-Foundational-Security-Best-Practices"
+            ]
+        }
+    },
+    {
+        "SchemaVersion": "2018-10-08",
+        "Id": "arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/EC2.18/finding/8e3bb1d4-ad0f-4ae4-899c-ca7c05af7993",
+        "ProductArn": "arn:aws:securityhub:eu-central-1::product/aws/securityhub",
+        "ProductName": "Security Hub",
+        "CompanyName": "AWS",
+        "Region": "eu-central-1",
+        "GeneratorId": "aws-foundational-security-best-practices/v/1.0.0/EC2.18",
+        "AwsAccountId": "123456789012",
+        "Types": [
+            "Software and Configuration Checks/Industry and Regulatory Standards/AWS-Foundational-Security-Best-Practices"
+        ],
+        "FirstObservedAt": "2023-01-03T07:15:28.726Z",
+        "LastObservedAt": "2023-01-03T07:18:09.742Z",
+        "CreatedAt": "2023-01-03T07:15:28.726Z",
+        "UpdatedAt": "2023-01-03T07:18:09.774Z",
+        "Severity": {
+            "Product": 70,
+            "Label": "HIGH",
+            "Normalized": 70,
+            "Original": "INFORMATIONAL"
+        },
+        "Title": "EC2.18 Security groups should only allow unrestricted incoming traffic for authorized ports",
+        "Description": "This control checks whether the security groups allow unrestricted incoming traffic. The control fails if ports allow unrestricted traffic on ports other than 80 and 443, which are default values for parameter authorizedTcpPorts.",
+        "Remediation": {
+            "Recommendation": {
+                "Text": "For directions on how to fix this issue, consult the AWS Security Hub Foundational Security Best Practices documentation.",
+                "Url": "https://docs.aws.amazon.com/console/securityhub/EC2.18/remediation"
+            }
+        },
+        "ProductFields": {
+            "StandardsArn": "arn:aws:securityhub:::standards/aws-foundational-security-best-practices/v/1.0.0",
+            "StandardsSubscriptionArn": "arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0",
+            "ControlId": "EC2.18",
+            "RecommendationUrl": "https://docs.aws.amazon.com/console/securityhub/EC2.18/remediation",
+            "RelatedAWSResources:0/name": "securityhub-vpc-sg-open-only-to-authorized-ports-18153fcd",
+            "RelatedAWSResources:0/type": "AWS::Config::ConfigRule",
+            "StandardsControlArn": "arn:aws:securityhub:eu-central-1:123456789012:control/aws-foundational-security-best-practices/v/1.0.0/EC2.18",
+            "aws/securityhub/ProductName": "Security Hub",
+            "aws/securityhub/CompanyName": "AWS",
+            "aws/securityhub/annotation": "This finding has a compliance status of NOT AVAILABLE because AWS Config sent Security Hub a finding with a compliance state of Not Applicable. The potential reasons for a Not Applicable finding from Config are that (1) a resource has been moved out of scope of the Config rule; (2) the Config rule has been deleted; (3) the resource has been deleted; or (4) the logic of the Config rule itself includes scenarios where Not Applicable is returned. The specific reason why Not Applicable is returned is not available in the Config rule evaluation.",
+            "Resources:0/Id": "arn:aws:ec2:eu-central-1:123456789012:security-group/sg-0bb59b7d72b89d316",
+            "aws/securityhub/FindingId": "arn:aws:securityhub:eu-central-1::product/aws/securityhub/arn:aws:securityhub:eu-central-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/EC2.18/finding/8e3bb1d4-ad0f-4ae4-899c-ca7c05af7993"
+        },
+        "Resources": [
+            {
+                "Type": "AwsEc2SecurityGroup",
+                "Id": "arn:aws:ec2:eu-central-1:123456789012:security-group/sg-0bb59b7d72b89d316",
+                "Partition": "aws",
+                "Region": "eu-central-1",
+                "Details": {
+                    "AwsEc2SecurityGroup": {
+                        "GroupName": "brokervm",
+                        "GroupId": "sg-0bb59b7d72b89d316",
+                        "OwnerId": "123456789012",
+                        "VpcId": "vpc-079c0c9fdb14180b2",
+                        "IpPermissions": [
+                            {
+                                "IpProtocol": "-1",
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.0/22"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "tcp",
+                                "FromPort": 8514,
+                                "ToPort": 8514,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.1/32"
+                                    },
+                                    {
+                                        "CidrIp": "192.0.2.2/32"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "tcp",
+                                "FromPort": 22,
+                                "ToPort": 22,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.3/32"
+                                    },
+                                    {
+                                        "CidrIp": "192.0.2.4/32"
+                                    },
+                                    {
+                                        "CidrIp": "192.0.2.5/32"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "udp",
+                                "FromPort": 2055,
+                                "ToPort": 2055,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.6/32"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "tcp",
+                                "FromPort": 7514,
+                                "ToPort": 7514,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.7/32"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "tcp",
+                                "FromPort": 443,
+                                "ToPort": 443,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.3/32"
+                                    },
+                                    {
+                                        "CidrIp": "192.0.2.4/32"
+                                    },
+                                    {
+                                        "CidrIp": "192.0.2.5/32"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "udp",
+                                "FromPort": 7524,
+                                "ToPort": 7524,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.5/32"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "udp",
+                                "FromPort": 514,
+                                "ToPort": 514,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.6/32"
+                                    }
+                                ]
+                            }
+                        ],
+                        "IpPermissionsEgress": [
+                            {
+                                "IpProtocol": "-1",
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "192.0.2.8/0"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "Compliance": {
+            "Status": "NOT_AVAILABLE",
+            "StatusReasons": [
+                {
+                    "ReasonCode": "CONFIG_RETURNS_NOT_APPLICABLE",
+                    "Description": "This finding has a compliance status of NOT AVAILABLE because AWS Config sent Security Hub a finding with a compliance state of Not Applicable. The potential reasons for a Not Applicable finding from Config are that (1) a resource has been moved out of scope of the Config rule; (2) the Config rule has been deleted; (3) the resource has been deleted; or (4) the logic of the Config rule itself includes scenarios where Not Applicable is returned. The specific reason why Not Applicable is returned is not available in the Config rule evaluation."
+                }
+            ]
+        },
+        "WorkflowState": "NEW",
+        "Workflow": {
+            "Status": "NEW"
+        },
+        "RecordState": "ARCHIVED",
+        "FindingProviderFields": {
+            "Severity": {
+                "Label": "HIGH",
+                "Original": "INFORMATIONAL"
+            },
+            "Types": [
+                "Software and Configuration Checks/Industry and Regulatory Standards/AWS-Foundational-Security-Best-Practices"
+            ]
+        }
+    }
+]

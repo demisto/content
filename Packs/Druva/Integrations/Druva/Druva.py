@@ -11,8 +11,8 @@ class Client(BaseClient):
     # let this stay for debugging.
     '''def __repr__(self):
         return " proxy:% s headers:% s" % (self._proxy, self._headers)
-
     def __str__(self):
+
         return "proxy:% s headers:% s" % (self._proxy, self._headers)'''
 
     def updateHeaders(self, base64String):
@@ -34,8 +34,13 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix="/realize/ransomwarerecovery/v1/quarantineranges",
                                   resp_type='response')
 
-    def get_findDevice(self, search_string):
+    def get_findFsNasDevice(self, search_string):
         params = {'hostname': search_string}
+        return self._http_request(method='GET', url_suffix="/realize/ransomwarerecovery/v1/search/backupset",
+                                  params=params, resp_type='response')
+
+    def get_findVMDevice(self, search_string):
+        params = {'hostname': search_string, 'serverTypes[]': 3}
         return self._http_request(method='GET', url_suffix="/realize/ransomwarerecovery/v1/search/backupset",
                                   params=params, resp_type='response')
 
@@ -133,14 +138,17 @@ def Druva_ListQuarantineRanges_Command(clientObj):
 
 
 def Druva_FindDevice_Command(clientObj, search_string):
-    response = clientObj.get_findDevice(search_string)
+    response = clientObj.get_findFsNasDevice(search_string)
+    responseVM = clientObj.get_findVMDevice(search_string)
     statusCode = response.status_code
     if (statusCode == 200):
         responseJson = response.json()
+        responseVMJson = responseVM.json()
+        finalResponse = responseJson.get('resources', []) + responseVMJson.get('resources', [])
         results = CommandResults(
-            readable_output=tableToMarkdown('Found Druva Devices', responseJson['resources']),
-            outputs={"Druva.Resource(val.resourceID == obj.resourceID)": responseJson['resources']},
-            raw_response=responseJson
+            readable_output=tableToMarkdown("Found Druva Devices", finalResponse),
+            outputs={"Druva.Resource(val.resourceID == obj.resourceID)": finalResponse},
+            raw_response=responseJson | responseVMJson,
         )
         return results
 
@@ -232,19 +240,14 @@ def Druva_QuarantineResource_Command(clientObj, org_id, resource_id, resource_ty
 
 
 def Druva_DeleteQuarantineRange_Command(clientObj, resource_id, range_id):
-    demisto.results("Mission Accomplished")
-    try:
-        response = clientObj.delete_quarantineRange(resource_id, range_id)
-    except Exception as e:
-        demisto.results(str(e))
-    demisto.results("Mission Accomplished")
+    response = clientObj.delete_quarantineRange(resource_id, range_id)
     statusCode = response.status_code
     demisto.results(str(statusCode))
     if statusCode == 200:
         responseJson = response.json()
         headers = ['RangeID']
         results = CommandResults(
-            readable_output=tableToMarkdown('Quarantine Range Deleted Successfully - PIYUSH', str(range_id),
+            readable_output=tableToMarkdown('Quarantine Range Deleted Successfully', str(range_id),
                                             headers=headers),
             raw_response=responseJson
         )
