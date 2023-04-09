@@ -24,7 +24,7 @@ def test_get_alert():
         Given:
             - The maximun number of events to fetch, tha date of the last fetch and the next page token.
         When:
-            - Calling to one of the commands in the event collector.
+            - Calling to get-alerts command in the event collector.
         Then:
             - The list of the events and the next page token is returned.
     """

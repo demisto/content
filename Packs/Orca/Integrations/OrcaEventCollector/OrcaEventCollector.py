@@ -35,7 +35,9 @@ class Client(BaseClient):
             'limit': max_fetch,
             'dsl_filter': "{\n\"filter\":\n[\n{\n\"field\": \"state.created_at\",\n\"range\": {\n\""
                           "gt\": \"" + last_fetch + "\"\n}\n}\n],\n\"sort\":\n[\n{\"field\":"
-                                                    "\"state.created_at\",\n\"order\":\"asc\"\n}\n]}"
+                                                    "\"state.created_at\",\n\"order\":\"asc\"\n}\n]}",
+            'show_all_statuses_alerts': True,
+            'show_informational_alerts': True,
         }
         if next_page_token:
             params['next_page_token'] = next_page_token
