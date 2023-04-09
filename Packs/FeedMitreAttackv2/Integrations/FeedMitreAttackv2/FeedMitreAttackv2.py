@@ -3,7 +3,7 @@ import logging
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import List, Dict, Set, Optional
+from typing import List, Dict, Set, Optional, Tuple
 import json
 import urllib3
 from stix2 import TAXIICollectionSource, Filter
@@ -117,6 +117,42 @@ class Client:
 
         return indicator_obj
 
+    def _process_mitre_data(self, mitre_data, id_to_name, mitre_id_to_mitre_name,
+                            limit, counter, mitre_id_list, create_relationships, is_up_to_6_2) -> \
+            Tuple[int, List, List[Dict]]:
+        mitre_relationships_list = []
+        indicators: List[Dict] = list()
+
+        for mitre_item in mitre_data:
+            if 0 < limit <= counter:
+                break
+
+            try:
+                mitre_item_json = json.loads(str(mitre_item))
+            except Exception as e:
+                demisto.debug
+                (f'Could not parse mitre_item to json. Error: {str(e)}')
+                continue
+            if mitre_item_json.get('id') not in mitre_id_list:
+                value = mitre_item_json.get('name')
+                item_type = get_item_type(mitre_item_json.get('type'), is_up_to_6_2)
+
+                if item_type == 'Relationship' and create_relationships:
+                    if mitre_item_json.get('relationship_type') == 'revoked-by':
+                        continue
+                    mitre_relationships_list.append(mitre_item_json)
+
+                else:
+                    if is_indicator_deprecated_or_revoked(mitre_item_json):
+                        continue
+                    id_to_name[mitre_item_json.get('id')] = value
+                    indicator_obj = self.create_indicator(item_type, value, mitre_item_json)
+                    add_obj_to_mitre_id_to_mitre_name(mitre_id_to_mitre_name, mitre_item_json)
+                    indicators.append(indicator_obj)
+                    counter += 1
+                mitre_id_list.add(mitre_item_json.get('id'))
+        return counter, mitre_relationships_list, indicators
+
     def build_iterator(self, create_relationships=False, is_up_to_6_2=True, limit: int = -1):
         """Retrieves all entries from the feed.
 
@@ -124,8 +160,8 @@ class Client:
             A list of objects, containing the indicators.
         """
         indicators: List[Dict] = list()
-        mitre_id_list: Set[str] = set()
         mitre_relationships_list = []
+        mitre_id_list: Set[str] = set()
         id_to_name: Dict = {}
         mitre_id_to_mitre_name: Dict = {}
         counter = 0
@@ -157,30 +193,17 @@ class Client:
                     mitre_data = tc_source.query(input_filter)
                 except Exception:
                     continue
-
-                for mitre_item in mitre_data:
-                    if 0 < limit <= counter:
-                        break
-
-                    mitre_item_json = json.loads(str(mitre_item))
-                    if mitre_item_json.get('id') not in mitre_id_list:
-                        value = mitre_item_json.get('name')
-                        item_type = get_item_type(mitre_item_json.get('type'), is_up_to_6_2)
-
-                        if item_type == 'Relationship' and create_relationships:
-                            if mitre_item_json.get('relationship_type') == 'revoked-by':
-                                continue
-                            mitre_relationships_list.append(mitre_item_json)
-
-                        else:
-                            if is_indicator_deprecated_or_revoked(mitre_item_json):
-                                continue
-                            id_to_name[mitre_item_json.get('id')] = value
-                            indicator_obj = self.create_indicator(item_type, value, mitre_item_json)
-                            add_obj_to_mitre_id_to_mitre_name(mitre_id_to_mitre_name, mitre_item_json)
-                            indicators.append(indicator_obj)
-                            counter += 1
-                        mitre_id_list.add(mitre_item_json.get('id'))
+                temp_counter, temp_mitre_relationship_list, temp_indicators = self._process_mitre_data(mitre_data,
+                                                                                                       id_to_name,
+                                                                                                       mitre_id_to_mitre_name,
+                                                                                                       limit,
+                                                                                                       counter,
+                                                                                                       mitre_id_list,
+                                                                                                       create_relationships,
+                                                                                                       is_up_to_6_2)
+                counter += temp_counter
+                mitre_relationships_list.extend(temp_mitre_relationship_list)
+                indicators.extend(temp_indicators)
 
         return indicators, mitre_relationships_list, id_to_name, mitre_id_to_mitre_name
 
@@ -627,8 +650,9 @@ def get_mitre_value_from_id(client, args):
         ])
         if attack_pattern_objects:
             attack_pattern = list(filter(lambda attack_pattern_obj:
-                                  filter_attack_pattern_object_by_attack_id(attack_id,
-                                                                            attack_pattern_obj), attack_pattern_objects))
+                                         filter_attack_pattern_object_by_attack_id(attack_id,
+                                                                                   attack_pattern_obj),
+                                         attack_pattern_objects))
             attack_pattern_name = attack_pattern[0]['name']
 
         if attack_pattern_name and len(attack_id) > 5:  # sub-technique
@@ -637,8 +661,8 @@ def get_mitre_value_from_id(client, args):
             ])
             sub_technique_attack_id = attack_id[:5]
             parent_object = list(filter(lambda attack_pattern_obj:
-                                 filter_attack_pattern_object_by_attack_id(sub_technique_attack_id,
-                                                                           attack_pattern_obj), parent_objects))
+                                        filter_attack_pattern_object_by_attack_id(sub_technique_attack_id,
+                                                                                  attack_pattern_obj), parent_objects))
             parent_name = parent_object[0]['name']
 
             attack_pattern_name = f'{parent_name}: {attack_pattern_name}'

@@ -20,6 +20,7 @@ class MockCollection:
 def mock_create_relations(original):
     def mock(item_json, id_to_name):
         return original(item_json, ID_TO_NAME)
+
     return mock
 
 
@@ -270,3 +271,24 @@ def test_attack_pattern_reputation_command(mocker):
 
     assert command_results[0].indicator.value == 'Abuse Elevation Control Mechanism'
     assert command_results[1].indicator.value == 'Active Scanning: Wordlist Scanning'
+
+
+def test_process_mitre_data_fails():
+    """
+    Given:
+        A mitre data to process in a wrong format.
+
+    When:
+        Running process_mitre_data method.
+
+    Then:
+        Verify that the method continue and dose not fails.
+    """
+    from FeedMitreAttackv2 import Client
+
+    client = Client(url="https://test.org", proxies=False, verify=False, tags=[], tlp_color=None)
+    counter, mitre_relationship_list, indicators = client._process_mitre_data(['test'], {}, {},
+                                                                              1, 0, set(), True, False)
+    assert counter == 0
+    assert mitre_relationship_list == []
+    assert indicators == []
