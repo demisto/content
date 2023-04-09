@@ -1191,7 +1191,7 @@ def test_list_whitelist_entry_command(mocker):
                                              '|Id|Value|Resource Uri|Created At|Modified At|Value Type|Notes|\n|' \
                                              '---|---|---|---|---|---|---|\n|' \
                                              ' 13 | example.com | resource_uri | 2023-02-21T19:59:02.091404 |' \
-                                             ' 2023-02-21T19:59:02.091404 | domain | example domain |\n| 12 | 1.2.3.4 |' \
+                                             ' 2023-02-21T19:59:02.091404 | domain | example domain |\n| 12 | 1.2.4.5 |' \
                                              ' resource_uri | 2023-03-14T14:28:20.110021 | 2023-03-20T11:38:26.279451 |'   \
                                              ' ip | example ip |\n| 11 | u | resource_uri | 2023-03-14T14:26:18.765256 |' \
                                              ' 2023-03-14T14:26:18.765256 | user-agent |  |\n'
@@ -1202,7 +1202,7 @@ def test_list_whitelist_entry_command(mocker):
                                       {'created_ts': '2023-03-14T14:28:20.110021', 'id': 12,
                                        'modified_ts': '2023-03-20T11:38:26.279451',
                                        'notes': 'example ip', 'resource_uri': 'resource_uri',
-                                       'value': '1.2.3.4', 'value_type': 'ip'},
+                                       'value': '1.2.4.5', 'value_type': 'ip'},
                                       {'created_ts': '2023-03-14T14:26:18.765256', 'id': 11,
                                        'modified_ts': '2023-03-14T14:26:18.765256',
                                        'notes': None, 'resource_uri': 'resource_uri', 'value': 'u', 'value_type': 'user-agent'}]
