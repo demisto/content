@@ -12,6 +12,15 @@ configuration:
   required: true
   type: 0
   section: Connect
+- defaultvalue: API v2
+  display: MS graph security version
+  name: api_version
+  required: true
+  type: 15
+  options:
+  - API V1
+  - API V2
+  section: Connect
 - name: creds_auth_id
   required: false
   type: 9
@@ -116,7 +125,7 @@ configuration:
   type: 13
   section: Connect
 - defaultvalue: 1 day
-  display: First fetch time range
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   additionalinfo: <number> <time unit>, for example 1 hour, 30 minutes
   hidden: false
   name: fetch_time
@@ -124,16 +133,24 @@ configuration:
   type: 0
   section: Collect
 - defaultvalue: '10'
-  display: How many incidents to fetch each time
+  display: Max incidents per fetch
   hidden: false
   name: fetch_limit
   required: false
   type: 0
   section: Collect
 - display: Fetch incidents of the given providers only.
-  additionalinfo: Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provioder}". If empty, incidents of all providers will be fetched.
+  additionalinfo: Used with API V1, Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provioder}". If empty, incidents of all providers will be fetched.
   hidden: false
   name: fetch_providers
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+- display: Fetch incidents of the given service sources only.
+  additionalinfo: Used with API V2, Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint","microsoftCloudAppSecurity",. If empty, incidents of all providers will be fetched.
+  hidden: false
+  name: fetch_service_sources
   required: false
   type: 0
   section: Collect

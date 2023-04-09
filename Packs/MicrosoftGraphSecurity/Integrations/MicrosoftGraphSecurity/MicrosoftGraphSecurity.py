@@ -9,7 +9,7 @@ from typing import Dict, List, Any
 urllib3.disable_warnings()
 
 APP_NAME = 'ms-graph-security'
-
+CMD_URL = 'security/alerts_v2'
 ''' HELPER FUNCTIONS '''
 
 
@@ -34,13 +34,16 @@ class MsGraphClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
-                 managed_identities_client_id: Optional[str] = None):
+                 managed_identities_client_id: Optional[str] = None, api_version: str = ""):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
             proxy=proxy, self_deployed=self_deployed, certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.graph)
+        if api_version == "API v1":
+            global CMD_URL
+            CMD_URL = 'security/alerts'
 
     def search_alerts(self, last_modified, severity, category, vendor, time_from, time_to, filter_query):
         filters = []
@@ -57,20 +60,20 @@ class MsGraphClient:
         if filter_query:
             filters.append("{}".format(filter_query))
         filters = " and ".join(filters)
-        cmd_url = 'security/alerts'
+        cmd_url = CMD_URL
         params = {'$filter': filters}
         demisto.debug(f'Fetching MS Graph Security incidents with params: {params}')
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
         return response
 
     def get_alert_details(self, alert_id):
-        cmd_url = f'security/alerts/{alert_id}'
+        cmd_url = f'{CMD_URL}/{alert_id}'
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
         return response
 
     def update_alert(self, alert_id, vendor_information, provider_information,
                      assigned_to, closed_date_time, comments, feedback, status, tags):
-        cmd_url = f'/security/alerts/{alert_id}'
+        cmd_url = f'{CMD_URL}/{alert_id}'
         data: Dict[str, Any] = {
             'vendorInformation': {
                 'provider': provider_information,
@@ -478,7 +481,7 @@ def test_function(client: MsGraphClient, args):
        Returns ok if successful.
        """
     response = client.ms_client.http_request(
-        method='GET', url_suffix='security/alerts', params={'$top': 1}, resp_type='response')
+        method='GET', url_suffix=CMD_URL, params={'$top': 1}, resp_type='response')
     try:
         data = response.json() if response.text else {}
         if not response.ok:
@@ -526,6 +529,7 @@ def main():
     private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
+    api_version: str = params.get('api_version', 'API v2')
 
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
@@ -552,7 +556,7 @@ def main():
                                               certificate_thumbprint=certificate_thumbprint,
                                               private_key=private_key,
                                               managed_identities_client_id=managed_identities_client_id,
-                                              )
+                                              api_version=api_version)
         if command == "fetch-incidents":
             fetch_time = params.get('fetch_time', '1 day')
             fetch_limit = params.get('fetch_limit', 10) or 10
