@@ -913,6 +913,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sc_req_item
       - sn_si_incident
     - description: The actual link to publish in ServiceNow ticket, in a valid URL format, for example, http://www.demisto.com.
       name: link
@@ -937,6 +938,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sc_req_item
       - sn_si_incident
     - description: Comment to add.
       name: comment
@@ -964,6 +966,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sc_req_item
       - sn_si_incident
     - description: War Room entry ID that includes the file.
       name: file_id
