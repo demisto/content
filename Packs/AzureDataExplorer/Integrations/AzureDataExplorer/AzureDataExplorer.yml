@@ -557,7 +557,7 @@ script:
       execution: false
       name: azure-data-explorer-generate-login-url
       arguments: []
-  dockerimage: demisto/azure-kusto-data:1.0.0.49635
+  dockerimage: demisto/azure-kusto-data:1.0.0.52535
   feed: false
   isfetch: false
   longRunning: false

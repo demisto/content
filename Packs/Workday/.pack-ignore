@@ -12,3 +12,7 @@ ignore=IM111
 
 [file:Workday_IAM_image.png]
 ignore=IM111
+
+[file:WorkdayIAMEventsGenerator.yml]
+ignore=BA124
+

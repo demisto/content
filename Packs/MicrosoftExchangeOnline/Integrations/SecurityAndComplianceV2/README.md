@@ -47,6 +47,12 @@ Organization Management role group). The Role Management role allows users to vi
 The username and password for the user which you intend to use for the investigation will need to be added to the *UPN/Email* and *Delegated Password* fields of the integration instance configuration.
 
 ### Enabling Client Side Basic Authentication
+Client side basic authentication is necessary for O365 - Security And Compliance V2 and is necessary for Powershell remoting.
+
+Per [Microsoft's documentation](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?source=recommendations&view=exchange-ps), Security & Compliance PowerShell still requires Basic authentication in WinRM as described Prerequisites for the Exchange Online PowerShell module. REST API cmdlets that allow you to turn off Basic authentication in WinRM are not yet available for the Connect-IPPSSession cmdlet. For more information, see Updates for the EXO V3 module).
+
+It is important to note that there are two types of basic authentication. The one that was deprecated which is the server side, and the other version which is the client side basic auth.
+What the exchange library does when client side basic auth is enabled is to instead of sending "user:pass" in the headers, it sends "Bearer xyz". The Exchange client itself, does not know the difference between the headers so when client basic auth is disabled, the bearer token can’t be sent.
 
 Please note: The use of Username and Password is not indicative of the use of basic authentication. The PowerShell session uses modern authentication as noted [here](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?view=exchange-ps#connect-to-security--compliance-powershell-without-a-login-prompt-unattended-scripts).
 
@@ -82,6 +88,14 @@ The common settings available OOTB from Microsoft can be excluded in the followi
 | Office 365 operated by 21Vianet    | https://ps.compliance.protection.partner.outlook.cn/powershell-liveid | https://login.chinacloudapi.cn    |
 
 [More information can be found here.](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?view=exchange-ps#step-2-connect-and-authenticate)
+
+### Additional Configuration/Debugging Options
+In the event that the above does not result in a successful connection to Security and Compliance, we recommend the following:
+
+1. Adding the IP address of the XSOAR server to the list of [Named Locations](https://portal.azure.com/#view/Microsoft_AAD_ConditionalAccess/NamedLocationsBlade).
+2. Configuring the IP address of the XSOAR server as an exemption for multi-factor authentication. [https://account.activedirectory.windowsazure.com/usermanagement/mfasettings.aspx?tenantid={YOUR-TENANT-ID}](https://account.activedirectory.windowsazure.com/usermanagement/mfasettings.aspx?tenantid=)
+3. Dismissing the user's risk level and state in the [Risky Users Portal](https://portal.azure.com/#view/Microsoft_AAD_IAM/RiskyUsersBlade)
+
 
 ## Configure SecurityAndComplianceV2 on Cortex XSOAR
 
