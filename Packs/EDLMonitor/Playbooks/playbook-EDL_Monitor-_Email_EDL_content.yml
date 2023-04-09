@@ -114,4 +114,5 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
+description: You can use the playbook (or a cloned copy) with a job to check the EDL on a schedule.
 fromversion: 6.0.0

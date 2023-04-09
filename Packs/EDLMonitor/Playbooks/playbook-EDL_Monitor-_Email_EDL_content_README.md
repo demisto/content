@@ -1,4 +1,4 @@
-
+You can use the playbook (or a cloned copy) with a job to check the EDL on a schedule.
 
 ## Dependencies
 
@@ -33,5 +33,3 @@ There are no outputs for this playbook.
 ## Playbook Image
 
 ---
-
-![EDL Monitor- Email EDL content](../doc_files/EDL_Monitor-_Email_EDL_content.png)

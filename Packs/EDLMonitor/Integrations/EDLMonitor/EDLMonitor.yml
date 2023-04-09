@@ -71,20 +71,22 @@ script:
       name: EDL
       required: true
       type: textArea
-    - description: EDL username, for auth to the EDL (optional)
+    - description: EDL username, for auth to the EDL (optional).
       name: EDL_username
       type: textArea
-    - description: EDL password, for auth to the EDL (optional)
+    - description: EDL password, for auth to the EDL (optional).
       name: EDL_password
       type: textArea
-    - name: Email
+    - description: Email.
+      name: Email
       type: textArea
     description: Return the response code of the EDL
     name: check-status
     outputs:
     - contextPath: ResponseCode
+      description: The response code.
       type: number
-  dockerimage: demisto/python3:3.10.10.51930
+  dockerimage: demisto/python3:3.10.10.52956
   runonce: false
   script: ''
   subtype: python3
