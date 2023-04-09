@@ -27,20 +27,20 @@ test-native-candidate:run-lint-with-native-candidate:
     - section_start "Run Lint with Native Candidate"
     - |
       mkdir ./unit-tests
-      if [[ "$NATIVE_CANDIDTAE_IMAGE" == "latest" ]]; then
+      if [[ "$NATIVE_CANDIDATE_IMAGE" == "latest" ]]; then
         echo "----------Getting tag for latest native:dev----------"
-        NATIVE_CANDIDTAE_IMAGE=$(python3 Tests/scripts/get_latest_docker_image.py -i "demisto/py3-native")
-        echo "Found latest image: $NATIVE_CANDIDTAE_IMAGE"
+        NATIVE_CANDIDATE_IMAGE=$(python3 Tests/scripts/get_latest_docker_image.py -i "demisto/py3-native")
+        echo "Found latest image: $NATIVE_CANDIDATE_IMAGE"
       fi
-      echo "----------Running lint on specific native candidate image $NATIVE_CANDIDTAE_IMAGE----------"
+      echo "----------Running lint on specific native candidate image $NATIVE_CANDIDATE_IMAGE----------"
       touch $ARTIFACTS_FOLDER/native_candidate_image.txt
-      echo "$NATIVE_CANDIDTAE_IMAGE" >> $ARTIFACTS_FOLDER/native_candidate_image.txt
+      echo "$NATIVE_CANDIDATE_IMAGE" >> $ARTIFACTS_FOLDER/native_candidate_image.txt
 
-      demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image native:target --docker-image-target "$NATIVE_CANDIDTAE_IMAGE"
+      demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image native:target --docker-image-target "$NATIVE_CANDIDATE_IMAGE"
       if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
         demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --allowed-coverage-degradation-percentage 100
       fi
-      echo "Native candidate full image name was: $NATIVE_CANDIDTAE_IMAGE"
+      echo "Native candidate full image name was: $NATIVE_CANDIDATE_IMAGE"
     - section_end "Run Lint with Native Candidate"
     - job-done
 

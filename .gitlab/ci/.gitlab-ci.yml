@@ -47,7 +47,7 @@ variables:
   SDK_REF: "master" # The default sdk branch to use
   OVERRIDE_ALL_PACKS: "false"
   TEST_UPLOAD: "true"
-  NATIVE_CANDIDTAE_IMAGE: "latest"
+  NATIVE_CANDIDATE_IMAGE: "latest"
 
 
 include:
