@@ -20,3 +20,4 @@ an example ofr the timestamp: "2023-04-09T16:30:00Z"
 
 1. Access the Cisco ADSM
 2. go Configuration -> logging -> Syslog setup
+![Server Screenshot] (https://raw.githubusercontent.com/demisto/content/8a2f8a41f73e9d9f4e20693e3b99dc6b75336321/Packs/CiscoASA/docs_imgs/CiscoASDM_timestamp.png)
