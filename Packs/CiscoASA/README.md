@@ -14,13 +14,9 @@ You can configure the specific vendor and product for this instance.
    - product as product<- ASA
 
 ### config timeformat on Cisco ASA
-In Cisco ASA product we support only iso8601 date format with timezone.
-an example ofr the timestamp: "2023-04-09T16:30:00-07:00"
+In Cisco ASA product we support only rfc 5424 date format with timezone.
+an example ofr the timestamp: "2023-04-09T16:30:00Z"
 
-1. Access the Cisco ASA command-line interface (CLI) using a console connection or SSH session.
-2. Enter privileged EXEC mode by typing ```enable``` and entering the enable password.
-3. Enter global configuration mode by typing ```conf t```.
-4. Enter the logging timestamp command to update the timestamp format to iso8601 by typeing
-```logging timestamp iso8601```
-5. Exit the logging configuration by typing ```exit```.
-6. Save the configuration changes by typing ```write memory```.
+
+1. Access the Cisco ADSM
+2. go Configuration -> logging -> Syslog setup
