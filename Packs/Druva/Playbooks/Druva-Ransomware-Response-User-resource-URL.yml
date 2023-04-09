@@ -1,7 +1,8 @@
 id: Druva-Ransomware-Response-User-resource-URL
 version: -1
 name: Druva-Ransomware-Response-User-resource-URL
-description: Automate response actions like quarantining effected resources or snapshots to stop the spread of ransomware and avoid reinfection or contamination spread.
+deprecated: true
+description: Deprecated. Use Druva-Ransomware-Response instead.
 starttaskid: "0"
 tasks:
   "0":
