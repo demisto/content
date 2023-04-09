@@ -11,5 +11,5 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/python3:3.8.6.12176
+dockerimage: demisto/python3:3.10.10.48392
 fromversion: 6.0.0
