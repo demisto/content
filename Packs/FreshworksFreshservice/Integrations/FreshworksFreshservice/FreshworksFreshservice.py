@@ -465,36 +465,7 @@ class Client(BaseClient):
                                   f'api/v2/tickets{url_suffix}',
                                   params=params)
 
-    def freshservice_ticket_create(
-        self,
-        description: str,
-        priority: int,
-        status: int,
-        subject: str,
-        urgency: int = None,
-        tags: List[str] = None,
-        sub_category: str = None,
-        source: int = None,
-        responder_id: int = None,
-        requester_id: int = None,
-        problem: int = None,
-        phone: str = None,
-        name: str = None,
-        impact: int = None,
-        group_id: int = None,
-        fr_due_by: str = None,
-        email_config_id: int = None,
-        email: str = None,
-        due_by: str = None,
-        department_id: int = None,
-        custom_fields: List[str] = None,
-        change_initiating_ticket: Dict[str, Any] = None,
-        change_initiated_by_ticket: Dict[str, Any] = None,
-        cc_emails: List[str] = None,
-        category: str = None,
-        attachments: List[Tuple] = None,
-        assets: List[str] = None,
-    ) -> Dict[str, Any]:
+    def freshservice_ticket_create(self, **kwargs) -> Dict[str, Any]:
         """ Create a new Ticket in a Freshservice account.
 
         Args:
@@ -556,9 +527,8 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        request_args = locals()
-        request_args.pop('self', None)
-        data = remove_empty_elements(request_args)
+        kwargs = locals().pop('kwargs', None)
+        data = remove_empty_elements(kwargs)
 
         return self._http_request(
             'POST',
@@ -569,33 +539,8 @@ class Client(BaseClient):
     def freshservice_ticket_update(
         self,
         ticket_id: int,
-        description: str = None,
-        priority: int = None,
-        status: int = None,
-        subject: str = None,
-        urgency: int = None,
-        tags: List[str] = None,
-        sub_category: str = None,
-        source: int = None,
-        responder_id: int = None,
-        requester_id: int = None,
-        problem: int = None,
-        phone: str = None,
-        name: str = None,
-        impact: int = None,
-        group_id: int = None,
-        fr_due_by: str = None,
-        email_config_id: int = None,
-        email: str = None,
-        due_by: str = None,
-        department_id: int = None,
-        custom_fields: List[str] = None,
-        change_initiating_ticket: int = None,
-        change_initiated_by_ticket: int = None,
-        cc_emails: List[str] = None,
-        category: str = None,
         attachments: List[Tuple] = None,
-        assets: int = None,
+        **kwargs,
     ) -> Dict[str, Any]:
         """ Update a Ticket in a Freshservice account.
 
@@ -659,11 +604,8 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        request_args = locals()
-        request_args.pop('self', None)
-        request_args.pop('ticket_id', None)
-        request_args.pop('attachments', None)
-        data = remove_empty_elements(request_args)
+        kwargs = locals().pop('kwargs', None)
+        data = remove_empty_elements(kwargs)
 
         return self._http_request('PUT',
                                   f'api/v2/tickets/{ticket_id}',
@@ -1002,25 +944,7 @@ class Client(BaseClient):
             f'api/v2/problems{get_url_suffix(problem_id)}',
             params=params)
 
-    def freshservice_problem_create(
-        self,
-        description: str,
-        priority: int,
-        status: int,
-        subject: str,
-        sub_category: str = None,
-        analysis_fields: List[str] = None,
-        agent_id: int = None,
-        requester_id: int = None,
-        impact: int = None,
-        group_id: int = None,
-        email: str = None,
-        due_by: str = None,
-        department_id: int = None,
-        custom_fields: List[str] = None,
-        category: str = None,
-        assets: int = None,
-    ) -> Dict[str, Any]:
+    def freshservice_problem_create(self, **kwargs) -> Dict[str, Any]:
         """ Create a new problem request in Freshservice.
 
         Args:
@@ -1055,9 +979,8 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        request_args = locals()
-        request_args.pop('self', None)
-        data = remove_empty_elements(request_args)
+        kwargs = locals().pop('kwargs', None)
+        data = remove_empty_elements(kwargs)
 
         return self._http_request(
             'POST',
@@ -1065,26 +988,8 @@ class Client(BaseClient):
             json_data=data,
         )
 
-    def freshservice_problem_update(
-        self,
-        ticket_id: int,
-        description: str = None,
-        priority: int = None,
-        status: int = None,
-        subject: str = None,
-        sub_category: str = None,
-        analysis_fields: List[str] = None,
-        agent_id: int = None,
-        requester_id: int = None,
-        impact: int = None,
-        group_id: int = None,
-        email: str = None,
-        due_by: str = None,
-        department_id: int = None,
-        custom_fields: List[str] = None,
-        category: str = None,
-        assets: int = None,
-    ) -> Dict[str, Any]:
+    def freshservice_problem_update(self, ticket_id: int,
+                                    **kwargs) -> Dict[str, Any]:
         """ Update an existing Problem in Freshservice.
 
         Args:
@@ -1120,10 +1025,8 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        request_args = locals()
-        request_args.pop('self', None)
-        request_args.pop('ticket_id', None)
-        data = remove_empty_elements(request_args)
+        kwargs = locals().pop('kwargs', None)
+        data = remove_empty_elements(kwargs)
         return self._http_request(
             'PUT',
             f'api/v2/problems/{ticket_id}',
@@ -1299,25 +1202,7 @@ class Client(BaseClient):
                                   f'api/v2/changes{get_url_suffix(change_id)}',
                                   params=params)
 
-    def freshservice_change_create(
-        self,
-        description: str,
-        subject: str,
-        priority: int,
-        status: int,
-        risk: int,
-        change_type: int,
-        impact: int,
-        planned_start_date: str,
-        planned_end_date: str,
-        email: str = None,
-        category: str = None,
-        sub_category: str = None,
-        requester_id: int = None,
-        department_id: int = None,
-        group_id: int = None,
-        agent_id: int = None,
-    ) -> Dict[str, Any]:
+    def freshservice_change_create(self, **kwargs) -> Dict[str, Any]:
         """ Create a new change request in Freshservice.
 
         Args:
@@ -1346,31 +1231,15 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        request_args = locals()
-        request_args.pop('self', None)
-        data = remove_empty_elements(request_args)
+        kwargs = locals().pop('kwargs', None)
+        data = remove_empty_elements(kwargs)
 
         return self._http_request('POST', 'api/v2/changes', json_data=data)
 
     def freshservice_change_update(
         self,
         ticket_id: int,
-        description: str = None,
-        subject: str = None,
-        email: str = None,
-        category: str = None,
-        sub_category: str = None,
-        priority: int = None,
-        status: int = None,
-        risk: int = None,
-        change_type: int = None,
-        impact: int = None,
-        planned_start_date: str = None,
-        planned_end_date: str = None,
-        requester_id: int = None,
-        department_id: int = None,
-        group_id: int = None,
-        agent_id: int = None,
+        **kwargs,
     ) -> Dict[str, Any]:
         """ Update an existing change request in Freshservice.
 
@@ -1401,10 +1270,8 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        request_args = locals()
-        request_args.pop('self', None)
-        request_args.pop('ticket_id', None)
-        data = remove_empty_elements(request_args)
+        kwargs = locals().pop('kwargs', None)
+        data = remove_empty_elements(kwargs)
 
         return self._http_request(
             'PUT',
@@ -1584,22 +1451,7 @@ class Client(BaseClient):
             f'api/v2/releases{get_url_suffix(release_id)}',
             params=params)
 
-    def freshservice_release_create(
-        self,
-        priority: int,
-        status: int,
-        release_type: int,
-        subject: int,
-        planned_start_date: str,
-        planned_end_date: str,
-        description: str,
-        category: str = None,
-        sub_category: str = None,
-        custom_fields: List[str] = None,
-        department_id: str = None,
-        agent_id: str = None,
-        group_id: str = None,
-    ) -> Dict[str, Any]:
+    def freshservice_release_create(self, **kwargs) -> Dict[str, Any]:
         """ Create a new release request in Freshservice.
 
         Args:
@@ -1631,28 +1483,15 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        request_args = locals()
-        request_args.pop('self', None)
-        data = remove_empty_elements(request_args)
+        kwargs = locals().pop('kwargs', None)
+        data = remove_empty_elements(kwargs)
 
         return self._http_request('POST', 'api/v2/releases', json_data=data)
 
     def freshservice_release_update(
         self,
         ticket_id: int,
-        description: str = None,
-        priority: int = None,
-        status: int = None,
-        release_type: int = None,
-        subject: int = None,
-        planned_start_date: str = None,
-        planned_end_date: str = None,
-        category: str = None,
-        sub_category: str = None,
-        custom_fields: str = None,
-        department_id: str = None,
-        agent_id: str = None,
-        group_id: str = None,
+        **kwargs,
     ) -> Dict[str, Any]:
         """ Update an existing release request in Freshservice.
 
@@ -1685,10 +1524,8 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Freshservice.
         """
-        request_args = locals()
-        request_args.pop('self', None)
-        request_args.pop('ticket_id', None)
-        data = remove_empty_elements(request_args)
+        kwargs = locals().pop('kwargs', None)
+        data = remove_empty_elements(kwargs)
 
         return self._http_request(
             'PUT',
@@ -2736,9 +2573,8 @@ def update_ticket_attachments(
         Union[Dict[str, Any], None]: Update ticket response.
     """
     response = None
-
-    if (attachments := args_for_request.get('attachments')
-        ) and command_operator == 'create':
+    attachments = args_for_request.get('attachments')
+    if attachments and command_operator == 'create':
         ticket_id = create_response['ticket']['id']
         response = client.freshservice_ticket_update(ticket_id,
                                                      attachments=attachments)
@@ -3253,12 +3089,14 @@ def get_modified_remote_data(
             response[f'{ticket_type}s'],
             TICKET_PROPERTIES_BY_TYPE[ticket_type],
         )
+        if not isinstance(modified_tickets_by_type, list):
+            raise ValueError
 
         for ticket in modified_tickets_by_type:
+            ticket_id = ticket["id"]
             ticket.update(
-                {'id': f'{TICKET_ID_PREFIX[ticket_type]}: {ticket["id"]}'})
-            modified_tickets.append(ticket['id'])
-    demisto.debug(f'****** get_modified_remote_data : {modified_tickets=}')
+                {'id': f'{TICKET_ID_PREFIX[ticket_type]}: {ticket_id}'})
+            modified_tickets.append(ticket_id)
 
     return GetModifiedRemoteDataResponse(modified_tickets)
 
@@ -3379,7 +3217,7 @@ def get_remote_data_command(
         response.get(ticket_type),
         TICKET_PROPERTIES_BY_TYPE[ticket_type],
     )
-    mirrored_ticket = response[0]
+    mirrored_ticket = response[0] if isinstance(response, list) else response
     mirrored_ticket.update(
         {'id': f'{TICKET_ID_PREFIX[ticket_type]}: {mirrored_ticket["id"]}'})
 
@@ -3455,7 +3293,7 @@ def get_last_run(args: Dict[str, Any], ticket_type: str) -> Tuple:
     else:
         last_run_time = args.get('first_fetch', '3 Days')
 
-    last_run_id = ticket_last_run.get('id')
+    last_run_id = ticket_last_run and ticket_last_run.get('id')
 
     first_fetch = arg_to_datetime(arg=last_run_time,
                                   arg_name='First fetch time',
@@ -3635,6 +3473,10 @@ def fetch_incidents(client: Client, params: dict):
             response.get(f'{ticket_type}s'),
             TICKET_PROPERTIES_BY_TYPE[ticket_type],
         )
+
+        if not isinstance(alert_list, list):
+            alert_list = [alert_list]
+
         relevant_alerts, relevant_incidents = fetch_relevant_tickets_by_ticket_type(
             client=client,
             alert_list=alert_list,
