@@ -1100,8 +1100,7 @@ def check_platform_and_version(params: dict) -> bool:
     """
     platform = demisto.demistoVersion().get("platform", 'xsoar')
     if platform in ['xsoar', 'xsoar_hosted']:
-        demisto_version = demisto.demistoVersion().get('version')
-        if Version(demisto_version) < Version('8.0.0') and not params.get('longRunningPort'):
+        if not is_demisto_version_ge('8.0.0') and not params.get('longRunningPort'):
             return True
     return False
 

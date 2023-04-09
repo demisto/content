@@ -33,6 +33,9 @@ curl -v -u test:password https://edl-my-xsiam-subdomain.us.paloaltonetworks.com/
 <~XSOAR>
 **Note**: By default, the route to access the Generic Export Indicators Service by instance name will be open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use the service with a username and password. Click **Switch to username and password** and provide the credentials that must be used to access the service.
 
+**Note**: For XSOAR version greater or equal to 8.0.0 If no `Listen Port` param was given and the test button was clicked, the test will run with the default port 1111. After pressing `save & exit` a new free port will be assigned to the `Listen Port` parameter automatically.
+For A lower than 8.0.0 XSOAR version the port parameter is a required parameter.
+
 To access the Generic Export Indicators Service by instance name, make sure *Instance execute external* is enabled.
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
