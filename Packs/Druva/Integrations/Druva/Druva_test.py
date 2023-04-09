@@ -26,6 +26,13 @@ def test_Druva_FindDevice_Command(requests_mock):
         'resourceParent': 'testUser',
         'resourceStatus': 'enabled',
         'resourceType': 'endpoint'
+    }, {
+        'orgID': '-1',
+        'resourceID': '12345',
+        'resourceName': 'test',
+        'resourceParent': 'testUser',
+        'resourceStatus': 'enabled',
+        'resourceType': 'endpoint'
     }]
 
 
