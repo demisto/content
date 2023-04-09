@@ -60,7 +60,7 @@ script:
     description: Gets events from TeamViewer.
     execution: false
     name: teamviewer-get-events
-  dockerimage: demisto/python3:3.10.10.51930
+  dockerimage: demisto/python3:3.10.10.52956
   isfetchevents: true
   runonce: false
   script: '-'

@@ -50,6 +50,8 @@ class Client(BaseClient):
             "limit": limit,
             "ordering": ordering,
             "id__gte": next_id,
+            "StartDate": "",
+            "EndDate": ""
         }
 
         while next_page and len(results) < limit:
