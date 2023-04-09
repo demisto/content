@@ -2,7 +2,7 @@
 This pack includes Cortex XSIAM content. 
 ## Configuration on Server Side
 
-To configure the Sonicwall NSv to send Syslog to XSIAM server (Broker VM), please use the steps described [here](https://www.sonicwall.com/support/knowledge-base/how-can-i-configure-a-syslog-server-on-a-sonicwall-firewall/170505984096810/).
+To configure the Sonicwall NSv to send Syslog to XSIAM server (Broker VM), use the steps described [here](https://www.sonicwall.com/support/knowledge-base/how-can-i-configure-a-syslog-server-on-a-sonicwall-firewall/170505984096810/).
 
 ## Collect Events from Vendor
 
