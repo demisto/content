@@ -31,7 +31,7 @@
             }
         ]
     },
-    "description": "Layout for Rapid7 ThreatCommand",
+    "description": "Layout for Rapid7 ThreatCommand",
     "detailsV2": {
         "tabs": [
             {
@@ -1540,8 +1540,8 @@
         ]
     },
     "group": "incident",
-    "id": "Rapid7 ThreatCommand - Layout",
-    "name": "Rapid7 ThreatCommand - Layout",
+    "id": "Rapid7 ThreatCommand - Layout",
+    "name": "Rapid7 ThreatCommand - Layout",
     "quickView": {
         "sections": [
             {

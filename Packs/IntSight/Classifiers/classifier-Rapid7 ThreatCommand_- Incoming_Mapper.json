@@ -1,9 +1,9 @@
 {
-    "description": "Rapid7 ThreatCommand - Incoming Mapper",
+    "description": "Rapid7 ThreatCommand - Incoming Mapper",
     "feed": false,
-    "id": "Rapid7 ThreatCommand - Incoming Mapper",
+    "id": "Rapid7 ThreatCommand - Incoming Mapper",
     "mapping": {
-        "Rapid7 ThreatCommand Alert": {
+        "Rapid7 ThreatCommand Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Alert ID": {
@@ -67,7 +67,7 @@
                         ]
                     }
                 },
-                "Rapid7 ThreatCommand Source Network Type": {
+                "Rapid7 ThreatCommand Source Network Type": {
                     "simple": "Source.network_type"
                 },
                 "Rapid7 ThreatCommand Status": {
@@ -116,7 +116,7 @@
                 "Rapid7 ThreatCommand Tags": {
                     "simple": "Tags.[].name"
                 },
-                "Rapid7 ThreatCommand Takedown Status": {
+                "Rapid7 ThreatCommand Takedown Status": {
                     "simple": "takedown_status"
                 },
                 "Title": {
@@ -193,7 +193,7 @@
             }
         }
     },
-    "name": "Rapid7 ThreatCommand - Incoming Mapper",
+    "name": "Rapid7 ThreatCommand - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"
