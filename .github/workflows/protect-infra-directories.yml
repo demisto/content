@@ -1,0 +1,48 @@
+name: Protect Infrastructure Directories
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  check_changes:
+    runs-on: ubuntu-latest
+    if: startsWith(github.head_ref, 'contrib')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check for changes in protected directories
+        run: |
+          # Set the list of protected directories and their exceptions
+          declare -A protected_directories
+          protected_directories=(
+            [".circleci"]=""
+            [".devcontainer"]=""
+            [".github"]=""
+            [".gitlab"]=""
+            [".guardrails"]=""
+            [".hooks"]=""
+            [".vscode"]=""
+            ["Templates"]=""
+            ["TestData"]=""
+            ["TestPlaybooks"]=""
+            ["Tests"]="conf.json"
+            ["Utils"]=""
+          )
+
+          # Get the changes made in the PR
+          git fetch origin ${{ github.base_ref }}
+          changed_files=$(git diff --name-only FETCH_HEAD...HEAD)
+
+          # Check if any protected directories have been modified
+          for dir in "${!protected_directories[@]}"; do
+            exception="${protected_directories[$dir]}"
+            if echo "$changed_files" | grep -q "^${dir}/" && \
+               ! ( [ -z "$exception" ] || echo "$changed_files" | grep -q "^${dir}/${exception}$" ); then
+              echo "Error: Changes made to protected directory: ${dir}, excluding ${dir}/${exception}"
+              exit 1
+            fi
+          done
