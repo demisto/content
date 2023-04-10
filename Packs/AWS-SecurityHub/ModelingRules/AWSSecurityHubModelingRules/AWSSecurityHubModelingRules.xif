@@ -1,0 +1,16 @@
+[MODEL: dataset="aws_security_hub_raw"]
+alter
+        outcome = json_extract_scalar(Compliance, "$.Status")
+| alter
+        xdm.alert.name = Title,
+        xdm.alert.description = Description,
+        xdm.alert.original_alert_id = Id,
+        xdm.alert.subcategory = Types,
+        xdm.source.zone = Region,
+        xdm.alert.severity = json_extract_scalar(Severity, "$.Label"),
+        xdm.target.resource.id = arraystring(arraymap(Resources -> [], json_extract_scalar("@element","$.Id")), ", "),
+        xdm.target.resource.type = arraystring(arraymap(Resources -> [], json_extract_scalar("@element","$.Type")), ", "),
+        xdm.event.outcome = if(outcome="PASSED", XDM_CONST.OUTCOME_SUCCESS, outcome="FAILED", XDM_CONST.OUTCOME_FAILED, outcome="WARNING", XDM_CONST.OUTCOME_PARTIAL , outcome="NOT_AVAILABLE", XDM_CONST.OUTCOME_UNKNOWN, to_string(outcome)),
+        xdm.observer.product = ProductName,
+        xdm.source.cloud.project = AwsAccountId,
+        xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AWS;
