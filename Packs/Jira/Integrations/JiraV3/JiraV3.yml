@@ -190,6 +190,13 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Please use issue_id or issue_key.
+      isArray: false
+      name: issueIdOrKey
+      hidden: true
+      required: false
+      secret: false
+    - default: false
       description: The issue ID (Issue ID or key is required).
       isArray: false
       name: issue_id
@@ -250,8 +257,15 @@ script:
         type: String
   - arguments:
     - default: false
-      description: If a globalId is provided and a remote issue link exists with
-        that globalId, the remote issue link is updated.
+      description: Please use global_id.
+      isArray: false
+      name: globalId
+      required: false
+      hidden: true
+      secret: false
+    - default: false
+      description: If a global_id is provided and a remote issue link exists with
+        that global_id, the remote issue link is updated.
       isArray: false
       name: global_id
       required: false
@@ -281,6 +295,13 @@ script:
       required: false
       secret: false
     - default: false
+      description: Please use issue_id or issue_key.
+      isArray: false
+      name: issueId
+      required: false
+      hidden: true
+      secret: false
+    - default: false
       description: The issue ID (Issue ID or key is required).
       isArray: false
       name: issue_id
@@ -299,11 +320,25 @@ script:
       required: false
       secret: false
     - default: false
+      description: Please use application_type.
+      isArray: false
+      name: applicationType
+      required: false
+      hidden: true
+      secret: false
+    - default: false
       description: The application name of the linked remote application. For example "My
         Confluence Instance".
       isArray: false
       name: application_name
       required: false
+      secret: false
+    - default: false
+      description: Please use application_name.
+      isArray: false
+      name: applicationName
+      required: false
+      hidden: true
       secret: false
     deprecated: false
     description: Creates (or updates) an issue link.
@@ -334,10 +369,10 @@ script:
     outputs:
     - contextPath: Jira.User.Attribute
       description: The user's attribute.
-      type: string
+      type: String
     - contextPath: Jira.User.AccountId
-      description: The user account ID.
-      type: string
+      description: The user's account ID.
+      type: String
   - arguments:
     - default: true
       description: The JQL query string.
@@ -352,6 +387,13 @@ script:
       required: false
       secret: false
     - default: false
+      description: Please ue start_at.
+      isArray: false
+      name: startAt
+      required: false
+      hidden: true
+      secret: false
+    - default: false
       description: The maximum number of users to fetch when searching for a matching
         user (default is 50). The maximum allowed value is dictated by the Jira property
         'jira.search.views.default.max'. If you specify a value greater than
@@ -361,15 +403,30 @@ script:
       required: false
       secret: false
     - default: false
+      description: Please use max_results.
+      isArray: false
+      name: maxResults
+      hidden: true
+      required: false
+      secret: false
+    - default: false
       description: Displays the headers in human readable format.
       isArray: false
       name: headers
       required: false
       secret: false
     - default: false
-      description: A CSV list of fields to return (Using the name of the fields).
+      description: "A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will
+        return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command."
       isArray: false
-      name:  specific_fields
+      name:  fields
+      required: false
+      secret: false
+    - default: false
+      description: Please use fields.
+      isArray: false
+      name:  extraFields
+      hidden: true
       required: false
       secret: false
     deprecated: false
@@ -379,32 +436,32 @@ script:
     outputs:
     - contextPath: Ticket.Id
       description: The ticket ID.
-      type: string
+      type: String
     - contextPath: Ticket.Key
       description: The ticket key.
-      type: string
+      type: String
     - contextPath: Ticket.Assignee
       description: The user assigned to the ticket.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Creator
       description: The user who created the ticket.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Summary
       description: The ticket summary.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Description
       description: The ticket's project description.
       type: String
     - contextPath: Ticket.Labels
       description: The ticket's project labels.
-      type: String
+      type: Array
     - contextPath: Ticket.Status
       description: The ticket status.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Priority
       description: The ticket priority.
       type: String
-    - contextPath: Ticket.projectName
+    - contextPath: Ticket.ProjectName
       description: The ticket project name.
       type: String
     - contextPath: Ticket.DueDate
@@ -424,10 +481,17 @@ script:
     execution: false
     name: jira-get-id-offset
     outputs:
-    - contextPath: Ticket.IdOffSet
+    - contextPath: Ticket.idOffSet
       description: The ID offset.
-      type: string
+      type: String
   - arguments:
+    - default: false
+      description: Please use issue_id or issue_key.
+      isArray: false
+      name: issueId
+      required: false
+      hidden: true
+      secret: false
     - default: false
       description: The issue ID (Issue ID or key is required).
       isArray: false
@@ -458,6 +522,13 @@ script:
     name: jira-issue-add-comment
   - arguments:
     - default: false
+      description: Please use issue_id or issue_key.
+      isArray: false
+      name: issueId
+      required: false
+      hidden: true
+      secret: false
+    - default: false
       description: The issue ID (Issue ID or key is required).
       isArray: false
       name: issue_id
@@ -476,17 +547,38 @@ script:
       required: true
       secret: false
     - default: false
+      description: Please use entry_id.
+      isArray: false
+      name: upload
+      required: false
+      hidden: true
+      secret: false
+    - default: false
       description: The attachment name to be displayed in Jira (overrides the original
         file name).
       isArray: false
       name: attachment_name
       required: false
       secret: false
+    - default: false
+      description: Please use attachment_name.
+      isArray: false
+      name: attachmentName
+      required: false
+      hidden: true
+      secret: false
     deprecated: false
     description: Uploads a file attachment to an issue.
     execution: false
     name: jira-issue-upload-file
   - arguments:
+    - default: false
+      description: Please use issue_id or issue_key.
+      isArray: false
+      name: issueId
+      required: false
+      hidden: true
+      secret: false
     - default: false
       description: The issue ID (Issue ID or key is required).
       isArray: false
@@ -545,6 +637,13 @@ script:
       - 'append'
       - 'rewrite'
     - default: false
+      description: Please use issue_id or issue_key.
+      isArray: false
+      name: issueId
+      required: false
+      hidden: true
+      secret: false
+    - default: false
       description: The issue ID (Issue ID or key is required).
       isArray: false
       name: issue_id
@@ -562,6 +661,13 @@ script:
       isArray: false
       name: issue_json
       required: false
+      secret: false
+    - default: false
+      description: Please use issue_json.
+      isArray: false
+      name: issueJson
+      required: false
+      hidden: true
       secret: false
     - default: false
       description: The issue summary.
@@ -592,6 +698,13 @@ script:
       isArray: false
       name: due_date
       required: false
+      secret: false
+    - default: false
+      description: Please use due_date.
+      isArray: false
+      name: dueDate
+      required: false
+      hidden: true
       secret: false
     - default: false
       description: The name of the assignee. Relevant for Jira Server only. If you
@@ -645,22 +758,46 @@ script:
     outputs:
     - contextPath: Ticket.Id
       description: The ticket ID.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Key
       description: The ticket key.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Assignee
       description: The user assigned to the ticket.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Creator
       description: The user who created the ticket.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Summary
       description: The ticket summary.
-      type: Unknown
+      type: String
+    - contextPath: Ticket.Description
+      description: The ticket's project description.
+      type: String
+    - contextPath: Ticket.Labels
+      description: The ticket's project labels.
+      type: Array
     - contextPath: Ticket.Status
       description: The ticket status.
-      type: Unknown
+      type: String
+    - contextPath: Ticket.Priority
+      description: The ticket priority.
+      type: String
+    - contextPath: Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
   - arguments:
     - default: false
       description: 'The issue object (in JSON format). Using this argument will override the other arguments.
@@ -670,17 +807,31 @@ script:
       required: false
       secret: false
     - default: false
+      description: Please use issue_json.
+      isArray: false
+      name: issueJson
+      required: false
+      secret: false
+      hidden: true
+    - default: false
       description: The summary of the issue.
       isArray: false
       name: summary
       required: true
       secret: false
     - default: false
-      description: The project key with which to associate the issue.
+      description: The project key with which to associate the issue (Project Key or name is required).
       isArray: false
       name: project_key
       required: false
       secret: false
+    - default: false
+      description: Please use project_key.
+      isArray: false
+      name: projectKey
+      required: false
+      secret: false
+      hidden: true
     - default: false
       description: 'Selects an issue type by name, for example: "Problem". (Issue type name or id is required)'
       isArray: false
@@ -688,17 +839,38 @@ script:
       required: false
       secret: false
     - default: false
+      description: Please use issue_type_name.
+      isArray: false
+      name: issueTypeName
+      required: false
+      secret: false
+      hidden: true
+    - default: false
       description: Selects an issue type by its numeric ID (Issue type name or id is required).
       isArray: false
       name: issue_type_id
       required: false
       secret: false
-    # - default: false
-    #   description: The project name with which to associate the issue.
-    #   isArray: false
-    #   name: project_name
-    #   required: false
-    #   secret: false
+    - default: false
+      description: Please use issue_type_id.
+      isArray: false
+      name: issueTypeId
+      required: false
+      secret: false
+      hidden: true
+    - default: false
+      description: The project name with which to associate the issue (Project Key or name is required).
+      isArray: false
+      name: project_name
+      required: false
+      secret: false
+    - default: false
+      description: Please use project_name.
+      isArray: false
+      name: projectName
+      required: false
+      secret: false
+      hidden: true
     - default: false
       description: A description of the issue.
       isArray: false
@@ -722,6 +894,13 @@ script:
       isArray: false
       name: due_date
       required: false
+      secret: false
+    - default: false
+      description: Please use due_date.
+      isArray: false
+      name: dueDate
+      required: false
+      hidden: true
       secret: false
     - default: false
       description: The name of the assignee. Relevant for Jira Server only. If you
@@ -757,10 +936,24 @@ script:
       required: false
       secret: false
     - default: false
+      description: Please use parent_issue_key.
+      isArray: false
+      name: parentIssueKey
+      required: false
+      secret: false
+      hidden: true
+    - default: false
       description: The parent issue ID (if you're creating a sub-task).
       isArray: false
       name: parent_issue_id
       required: false
+      secret: false
+    - default: false
+      description: Please use parent_issue_id.
+      isArray: false
+      name: parentIssueId
+      required: false
+      hidden: true
       secret: false
     - default: false
       description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
@@ -780,12 +973,6 @@ script:
       name: components
       required: false
       secret: false
-    # - default: false
-    #   description: The epic name, supply this argument when creating an issue of type Epic.
-    #   isArray: true
-    #   name: epic_name
-    #   required: false
-    #   secret: false
     deprecated: false
     description: Creates a new issue in Jira.
     execution: false
@@ -803,6 +990,13 @@ script:
         return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command."
       isArray: false
       name:  fields
+      required: false
+      secret: false
+    - default: false
+      description: Please use issue_id or issue_key.
+      isArray: false
+      name: issueId
+      hidden: true
       required: false
       secret: false
     - default: false
@@ -837,12 +1031,36 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
+      description: Please use get_attachments.
+      isArray: false
+      name: getAttachments
+      predefined:
+      - 'true'
+      - 'false'
+      hidden: true
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
       description: If "true", expands the issue links (The Linked issues and Subtasks).
       isArray: false
       name: expand_links
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Please use expand_links.
+      isArray: false
+      name: expandLinks
+      predefined:
+      - 'true'
+      - 'false'
+      hidden: true
       required: false
       secret: false
     deprecated: false
@@ -852,42 +1070,44 @@ script:
     outputs:
     - contextPath: Ticket.Id
       description: The ticket ID.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Key
       description: The ticket key.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Assignee
       description: The user assigned to the ticket, in the form `Username(User email address)`.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Creator
       description: The user who created the ticket.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Summary
       description: The ticket summary.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Status
       description: The ticket status.
-      type: Unknown
-    - contextPath: File.Size
-      description: The file size (Jira attachments are saved as files in Cortex
-        XSOAR).
-      type: Unknown
-    - contextPath: File.SHA256
-      description: The file SHA256 hash (Jira attachments are saved as files
-        in Cortex XSOAR).
-      type: Unknown
-    - contextPath: File.Name
-      description: The file name (Jira attachments are saved as files in Cortex
-        XSOAR).
-      type: Unknown
-    - contextPath: File.SHA1
-      description: The file SHA1 hash (Jira attachments are saved as files
-        in Cortex XSOAR).
-      type: Unknown
+      type: String
+    - contextPath: InfoFile.Name
+      description: The file name.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
+    - contextPath: InfoFile.Size
+      description: The size of the file (in bytes).
+      type: Number
+    - contextPath: InfoFile.Type
+      description: The file type, as determined by libmagic (same as displayed in file entries).
+      type: String
+    - contextPath: InfoFile.Extension
+      description: The file extension.
+      type: String
+    - contextPath: InfoFile.Info
+      description: Basic information about the file.
+      type: String
     - contextPath: Ticket.Priority
       description: The ticket priority.
       type: String
-    - contextPath: Ticket.projectName
+    - contextPath: Ticket.ProjectName
       description: The ticket project name.
       type: String
     - contextPath: Ticket.DueDate
@@ -912,6 +1132,13 @@ script:
       secret: false
       defaultValue: '50'
     - default: false
+      description: Please use issue_id or issue_key.
+      isArray: false
+      name: issueId
+      required: false
+      hidden: true
+      secret: false
+    - default: false
       description: The issue ID (Issue ID or key is required).
       isArray: false
       name: issue_id
@@ -930,25 +1157,28 @@ script:
     outputs:
     - contextPath: Ticket.Id
       description: The ID of the ticket.
-      type: string
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
     - contextPath: Ticket.Comment.Id
       description: The ID of the comment.
-      type: string
+      type: String
     - contextPath: Ticket.Comment.Comment
       description: The text of the comment.
-      type: string
+      type: String
     - contextPath: Ticket.Comment.Created
       description: The comment creation date.
-      type: string
+      type: Date
     - contextPath: Ticket.Comment.Updated
       description: The comment updated date.
-      type: string
+      type: Date
     - contextPath: Ticket.Comment.User
       description: The user that created the comment.
-      type: string
+      type: String
     - contextPath: Ticket.Comment.UpdateUser
       description: The user that updated the comment.
-      type: string
+      type: String
   - arguments:
     - default: false
       description: The authorization code retrieved from the callback URL according to the documentation.

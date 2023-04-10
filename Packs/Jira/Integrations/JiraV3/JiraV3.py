@@ -89,7 +89,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         'project_id': 'fields.project.id',
         'issue_type_name': 'fields.issuetype.name',
         'issue_type_id': 'fields.issuetype.id',
-        'project_name': 'fields.project.name',
+        # 'project_name': 'fields.project.name',  # Does not work for Jira Cloud
         'description': 'fields.description',
         'labels': 'fields.labels',
         'priority': 'fields.priority.name',
@@ -773,6 +773,20 @@ class JiraCloudClient(JiraBaseClient):
             method='GET', url_suffix='rest/api/3/search', params=query_params
         )
 
+    def run_project_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
+        """Queries projects with respect to the query_params. This method is mainly used to
+        retrieve the board id of a board, given its name.
+
+        Args:
+            query_params (Dict[str, Any]): The query parameters to send to the request.
+
+        Returns:
+            Dict[str, Any]: The results of the queried projects.
+        """
+        return self.http_request_with_access_token(
+            method='GET', url_suffix='rest/api/3/project/search', params=query_params
+        )
+
     # Board Requests
     def get_issues_from_backlog(self, board_id: str, jql_query: str | None = None,
                                 start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
@@ -1093,6 +1107,9 @@ class JiraOnPremClient(JiraBaseClient):
     def test_instance_connection(self) -> None:
         pass
 
+    def get_all_projects(self) -> List[Dict[str, Any]]:
+        ...
+
 
 class JiraIssueFieldsParser():
     """This class is in charge of parsing the issue fields returned from a response. The data of the fields are mostly
@@ -1281,6 +1298,39 @@ class JiraIssueFieldsParser():
 
 
 # Utility functions
+def get_project_id_from_name(client: JiraBaseClient, project_name: str) -> str:
+    """Returns the project id of the project with the name project_name
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        project_name (str): The project name for which we want to return the project id that corresponds
+        to it.
+
+    Raises:
+        DemistoException: If no projects were found with the respective project name.
+        DemistoException: If more than one project was found with the respective project name.
+
+    Returns:
+        str: The project id corresponding to the project name.
+    """
+    queried_projects: List[Dict[str, Any]] = []
+    if isinstance(client, JiraCloudClient):
+        query_params = {'query': f'{project_name}'}
+        cloud_res = client.run_project_query(query_params=query_params)
+        if not (queried_projects := cloud_res.get('values', [])):
+            raise DemistoException(f'No projects were found with the respective project name {project_name}')
+    elif isinstance(client, JiraOnPremClient):
+        all_projects = client.get_all_projects()
+        queried_projects = list(filter(
+            lambda project: project.get('name', '').lower() == project_name.lower(),
+            all_projects))
+        if not (all_projects or queried_projects):
+            raise DemistoException(f'No projects were found with the respective project name {project_name}')
+    if len(queried_projects) > 1:
+        raise DemistoException(f'Found more than one project with the name {project_name}')
+    return queried_projects[0].get('id', '')
+
+
 def prepare_pagination_args(page: int | None = None, page_size: int | None = None, limit: int | None = None) -> Dict[str, int]:
     """This function takes in the pagination arguments supported by XSOAR, and maps them to a corresponding pagination dictionary
     that the API supports.
@@ -1634,7 +1684,8 @@ def create_issue_md_and_outputs_dict(issue_data: Dict[str, Any],
         context outputs dictionary.
     """
     md_and_outputs_shared_issue_keys = ['id', 'key', 'summary', 'status', 'priority', 'project', 'duedate',
-                                        'created', 'labels', 'assignee', 'creator']
+                                        'created', 'labels', 'assignee', 'creator',
+                                        'description']
     issue_fields_id_to_name_mapping = issue_fields_id_to_name_mapping or {}
     issue_fields_ids = get_specific_fields_ids(issue_data=issue_data, specific_fields=specific_issue_fields or [],
                                                issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping)
@@ -1644,7 +1695,7 @@ def create_issue_md_and_outputs_dict(issue_data: Dict[str, Any],
                                                  *issue_fields_ids],
         issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping)
     markdown_dict = JiraIssueFieldsParser.get_issue_fields_context_from_id(
-        issue_data=issue_data, issue_fields_ids=['issuetype', 'self', 'reporter', 'description',
+        issue_data=issue_data, issue_fields_ids=['issuetype', 'self', 'reporter',
                                                  *md_and_outputs_shared_issue_keys],
         issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping)
 
@@ -1794,28 +1845,29 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Co
     start_at = arg_to_number(args.get('start_at', ''))
     max_results = arg_to_number(args.get('max_results', ''))
     headers = args.get('headers', '')
-    specific_fields = argToList(args.get('specific_fields', ''))
+    specific_fields = argToList(args.get('fields', ''))
     query_params = create_query_params(jql_query=jql_query, start_at=start_at, max_results=max_results)
     res = client.run_query(query_params=query_params)
-    if not res:
-        return CommandResults(readable_output='No issues matched the query.')
-    issue_fields_id_to_name_mapping = res.get('names', {}) or {}
-    command_results: List[CommandResults] = []
-    for issue in res.get('issues', []):
-        markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=issue, specific_issue_fields=specific_fields,
-                                                                  issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping)
-        command_results.append(
-            CommandResults(
-                outputs_prefix='Ticket',
-                outputs=outputs,
-                outputs_key_field='Id',
-                readable_output=tableToMarkdown(name=f'Issue {outputs.get("Key", "")}', t=markdown_dict,
-                                                headers=argToList(headers),
-                                                headerTransform=pascalToSpace),
-                raw_response=issue
-            ),
-        )
-    return command_results
+    if issues := res.get('issues', []):
+        issue_fields_id_to_name_mapping = res.get('names', {}) or {}
+        command_results: List[CommandResults] = []
+        for issue in issues:
+            markdown_dict, outputs = create_issue_md_and_outputs_dict(
+                issue_data=issue, specific_issue_fields=specific_fields,
+                issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping)
+            command_results.append(
+                CommandResults(
+                    outputs_prefix='Ticket',
+                    outputs=outputs,
+                    outputs_key_field='Id',
+                    readable_output=tableToMarkdown(name=f'Issue {outputs.get("Key", "")}', t=markdown_dict,
+                                                    headers=argToList(headers),
+                                                    headerTransform=pascalToSpace),
+                    raw_response=issue
+                ),
+            )
+        return command_results
+    return CommandResults(readable_output='No issues matched the query.')
 
 
 def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[CommandResults]:
@@ -1913,6 +1965,8 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
+    if 'project_name' in args:
+        args['project_id'] = get_project_id_from_name(client=client, project_name=args['project_name'])
     issue_fields = create_issue_fields(issue_args=args, issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
     res = client.create_issue(json_data=issue_fields)
     outputs = {'Id': res.get('id', ''), 'Key': res.get('key', '')}
@@ -2059,6 +2113,8 @@ def create_comments_command_results(comments_response: List[Dict[str, Any]],
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
+    if not comments_response:
+        raise DemistoException('The list of comments can not be empty!')
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
     comments = [extract_comment_entry_from_raw_response(comment_response) for comment_response in comments_response]
     outputs: Dict[str, Any] = {'Comment': comments}
@@ -2196,7 +2252,7 @@ def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> Com
         transition.get('name', '') for transition in res.get('transitions', [])
     ]
     readable_output = tableToMarkdown(
-        'List Transitions:', transitions_names, headers=['Transition Name']
+        'List Transitions:', transitions_names, headers=['Transition Names']
     )
     outputs: Dict[str, Any] = {'Transitions': {'transitions': transitions_names, 'ticketId': issue_id_or_key}}
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
@@ -2206,7 +2262,7 @@ def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> Com
     return CommandResults(
         outputs_prefix='Ticket',
         outputs=outputs,
-        outputs_key_field='Id',
+        outputs_key_field='Id' if is_id else 'Key',
         readable_output=readable_output,
         raw_response=res
     )
@@ -2226,13 +2282,13 @@ def get_id_offset_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comma
     query_params = create_query_params(jql_query=jql_query)
     res = client.run_query(query_params=query_params)
     if not (issues := res.get('issues', [])):
-        return CommandResults(readable_output='No ID offset was found', raw_response=res)
+        return CommandResults(readable_output='No issues found to retrieve the ID offset', raw_response=res)
     first_issue_id = issues[0].get('id', '')
     return (
         CommandResults(
             outputs_prefix='Ticket',
             readable_output=f'ID Offset: {first_issue_id}',
-            outputs={'IdOffSet': first_issue_id},
+            outputs={'idOffSet': first_issue_id},
         )
     )
 
@@ -2257,9 +2313,6 @@ def upload_file_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
     attachment_name = args.get('attachment_name', '')
     res = upload_XSOAR_attachment_to_jira(client=client, entry_id=entry_id, attachment_name=attachment_name,
                                           issue_id_or_key=issue_id_or_key)
-    # file_name, file_bytes = get_file_name_and_content(entry_id=entry_id)
-    # files = {'file': (attachment_name or file_name, file_bytes, 'application-type')}
-    # res = client.upload_attachment(issue_id_or_key=issue_id_or_key, files=files)
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
     markdown_dict: List[Dict[str, str]] = []
     for attachment_entry in res:
@@ -2436,7 +2489,8 @@ def get_id_by_attribute_command(client: JiraBaseClient, args: Dict[str, str]) ->
                       f'relevant to attribute {attribute}.')
         return CommandResults(readable_output=(f'Multiple accounts found, but it was not possible to resolve which one'
                                                f' of them is most relevant to attribute {attribute}. Please try to provide'
-                                               ' the "DisplayName" attribute if not done so before, or supply the full attribute.'))
+                                               ' the "DisplayName" attribute if not done so before, or supply the full'
+                                               ' attribute.'))
 
     elif len(account_ids) > 1:
         return CommandResults(readable_output=f'Multiple account IDs were found for attribute: {attribute}.\n'
@@ -3725,11 +3779,39 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], c
 
 
 def map_v2_args_to_v3(args: Dict[str, Any]) -> Dict[str, Any]:
+    v2_args_to_v3: Dict[str, str] = {
+        'startAt': 'start_at',
+        'maxResults': 'max_results',
+        'extraFields': 'fields',
+        'getAttachments': 'get_attachments',
+        'expandLinks': 'expand_links',
+        'issueJson': 'issue_json',
+        'projectKey': 'project_key',
+        'issueTypeName': 'issue_type_name',
+        'issueTypeId': 'issue_type_id',
+        'projectName': 'project_name',
+        'dueDate': 'due_date',
+        'parentIssueKey': 'parent_issue_key',
+        'parentIssueId': 'parent_issue_id',
+        'attachmentName': 'attachment_name',
+        'upload': 'entry_id',
+        'globalId': 'global_id',
+        'applicationType': 'application_type',
+        'applicationName': 'application_name',
+
+    }
     v3_args: Dict[str, Any] = {}
     demisto.debug(f'Got the following command arguments: {args}')
     for arg, value in args.items():
-        if arg == 'issueId':
-            v3_args['issue_id'] = value
+        if arg in ['issueId', 'issueIdOrKey']:
+            # In v2, there was no differentiation between issue id and key arguments,
+            # and in v3, we do differentiate.
+            if is_issue_id(value):
+                v3_args['issue_id'] = value
+            else:
+                v3_args['issue_key'] = value
+        elif arg in v2_args_to_v3:
+            v3_args[v2_args_to_v3[arg]] = value
         else:
             v3_args[arg] = value
     return v3_args
