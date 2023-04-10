@@ -408,6 +408,6 @@ outputs:
       description: ID of the IOC pack to download (MAEC).
       type: String
 fromversion: 5.0.0
-toversion: 6.8.0
+toversion: 6.7.9
 tests:
  -  No tests

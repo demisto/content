@@ -2,7 +2,7 @@ id: detonate_url_-_joesecurity
 version: -1
 name: Detonate URL - JoeSecurity
 fromversion: 5.0.0
-toversion: 6.8.0
+toversion: 6.7.9
 description: |-
   Deprecated. Use the joe-submit-url command instead.
 starttaskid: "0"

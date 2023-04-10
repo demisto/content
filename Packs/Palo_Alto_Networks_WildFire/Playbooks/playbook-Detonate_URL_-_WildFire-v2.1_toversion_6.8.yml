@@ -2,7 +2,7 @@ id: Detonate URL - WildFire v2.1
 version: -1
 name: Detonate URL - WildFire v2.1
 fromversion: 5.0.0
-toversion: 6.8.0
+toversion: 6.7.9
 description: |-
   Detonate a webpage or remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types:
