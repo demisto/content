@@ -2631,7 +2631,12 @@ def xml2json(xmlstring, options={}, strip_ns=1, strip=1):
        :return: The converted JSON
        :rtype: ``dict`` or ``list``
     """
-    elem = ET.fromstring(xmlstring)
+    try:
+        import defusedxml.ElementTree as defused_ET
+        elem = defused_ET.fromstring(xmlstring)
+    except ImportError:
+        demisto.debug('defused_ET is not supported, using ET instead.')
+        elem = ET.fromstring(xmlstring)
     return elem2json(elem, options, strip_ns=strip_ns, strip=strip)
 
 
@@ -9884,7 +9889,7 @@ def get_size_of_object(input_object):
     if IS_PY3 and PY_VER_MINOR >= 10:
         from collections.abc import Mapping
     else:
-        from collections import Mapping  # type: ignore[no-redef]
+        from collections import Mapping  # type: ignore[no-redef, attr-defined]
 
     from collections import deque
     from numbers import Number
@@ -10882,7 +10887,7 @@ def xsiam_api_call_with_retries(
         if status_code == 429:
             time.sleep(1)
         attempt_num += 1
-    if is_json_response:
+    if is_json_response and response:
         response = response.json()
         if response.get('error', '').lower() != 'false':
             raise DemistoException(error_msg + response.get('error'))
@@ -10902,7 +10907,7 @@ def split_data_to_chunks(data, target_chunk_size):
     :return: : An iterable of lists where each list contains events with approx size of chunk size.
     :rtype: ``collections.Iterable[list]``
     """
-    chunk = []
+    chunk = []  # type: ignore[var-annotated]
     chunk_size = 0
     if isinstance(data, str):
         data = data.split('\n')

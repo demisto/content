@@ -177,7 +177,7 @@ configuration:
   - closed
   - resolved
   hidden:
-    - marketplacev2
+  - marketplacev2
 - additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
   defaultvalue: ''
   display: Mirrored XSOAR Ticket custom close state code
@@ -1595,7 +1595,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.10.52956
   isfetch: true
   ismappable: true
   isremotesyncin: true
