@@ -2137,8 +2137,9 @@ def fetch_incidents():
                 current_fetch_info_detections['offset'] = offset + INCIDENTS_PER_FETCH
             else:
                 current_fetch_info_detections['offset'] = 0
-            detections = filter_incidents_by_duplicates_and_limit(incidents_res=detections, last_run=current_fetch_info_detections,
-                                                                 fetch_limit=fetch_limit, id_field='name')
+            detections = filter_incidents_by_duplicates_and_limit(incidents_res=detections,
+                                                                  last_run=current_fetch_info_detections,
+                                                                  fetch_limit=fetch_limit, id_field='name')
 
             for detection in detections:
                 occurred = dateparser.parse(detection["occurred"])
