@@ -20,7 +20,7 @@ PROTECTED_DIRECTORIES = [
 
 EXCEPTIONS = [
     "Tests/conf.json",
-    ".github/scripts/check_protected_directories.py"
+    ".github/scripts/check_protected_directories.py",
     ".github/workflows/protect-directories.yml"
 ]
 
