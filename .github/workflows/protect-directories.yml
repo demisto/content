@@ -37,7 +37,8 @@ jobs:
             ["Utils"]=""
           )
           echo ${{ steps.changed-files.outputs.all_changed_files }}
-          changed_files=${{ steps.changed-files.outputs.all_changed_files }}
+          changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
+          echo $changed_files
 
           # Check if any protected directories have been modified
           for dir in "${!protected_directories[@]}"; do
