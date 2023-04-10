@@ -1,6 +1,7 @@
 Absolute is an adaptive endpoint security solution that delivers device security, data security, and asset management of endpoints.
 This integration was integrated and tested with the API version 1.7 of Absolute.
 
+
 ## Configure Absolute on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
