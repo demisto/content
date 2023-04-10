@@ -3554,7 +3554,6 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
     # get_alerts:
     try:
         alerts = client.list_alerts_by_params(params=params, overwrite_rate_limit_retry=True)['value']
-        demisto.debug(f'Alerts: {alerts}')
     except DemistoException as err:
         big_query_err_msg = 'Verify that the server URL parameter is correct and that you have access to the server' \
                             ' from your host.'
