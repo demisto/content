@@ -142,7 +142,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -204,7 +204,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -351,8 +351,8 @@ tasks:
     scriptarguments:
       AlertOS:
         complex:
-          root: ${incident
-          accessor: deviceosname}
+          root: incident
+          accessor: deviceosname
           transformers:
           - operator: MapValuesTransformer
             args:
@@ -386,7 +386,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
