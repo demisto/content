@@ -403,7 +403,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW).
+      description: Relevant only for V1. User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW).
       isArray: false
       name: tags
       required: false
@@ -441,18 +441,14 @@ script:
       - unknown
       - apt
       - malware
-      - Security_personnel
-      - security_testing
-      - unwanted_software
-      - other
-      - multi_staged_attack
-      - compromised_user
       - phishing
-      - malicious_user_activity
-      - clean
-      - insufficient_data
-      - confirmed_user_activity
-      - line_of_business_application
+      - other
+      - securityPersonnel
+      - securityTesting
+      - multiStagedAttack
+      - maliciousUserActivity
+      - lineOfBusinessApplication
+      - unwantedSoftware
       required: false
       secret: false
     deprecated: false

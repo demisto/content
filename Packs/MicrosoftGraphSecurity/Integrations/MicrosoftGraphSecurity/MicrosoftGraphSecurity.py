@@ -17,12 +17,20 @@ RELEVANT_DATA_TO_UPDATE_PER_VERSION = {'API V1': {'assigned_to': 'assignedTo', '
                                                   'comments': 'comments', 'feedback': 'feedback', 'status': 'status',
                                                   'tags': 'tags'},
                                        'API V2': {'assigned_to': 'assignedTo', 'determination': 'determination',
-                                                  'classification': 'classification', 'status': 'status', 'tags': 'tags'}
+                                                  'classification': 'classification', 'status': 'status'}
                                        }
 ''' HELPER FUNCTIONS '''
 
 
 def create_search_alerts_filters(args, is_fetch=False):
+    """
+    Creates the relevant filters for the search_alerts function.
+    Args:
+        args (Dict): The command's arguments dictionary.
+        is_fetch (bool): wether the search_alerts function is being called from fetch incidents or not.
+    Returns:
+        Dict: The filter dictionary to use
+    """
     last_modified = args.get('last_modified')
     severity = args.get('severity')
     category = args.get('category')
@@ -61,7 +69,7 @@ def create_search_alerts_filters(args, is_fetch=False):
         params['$skip'] = page
     if API_VER == 'API V2':
         relevant_filters_v2 = ['classification', 'serviceSource', 'status']
-        for relevant_key in relevant_filters_v2.get(API_VER):
+        for relevant_key in relevant_filters_v2:
             if val := args.get(relevant_key):
                 filters.append(f"relevant_key eq '{val}'")
     filters = " and ".join(filters)
@@ -70,6 +78,13 @@ def create_search_alerts_filters(args, is_fetch=False):
 
 
 def create_data_to_update(args):
+    """
+    Creates the data dictionary to update alert for the update_alert function according to the configured API version.
+    Args:
+        args (Dict): The command's arguments dictionary.
+    Returns:
+        Dict: A dictionary object containing the alert's fields to update.
+    """
     status = args.get('status')
     relevant_data_to_update_per_version_dict = RELEVANT_DATA_TO_UPDATE_PER_VERSION.get(API_VER)
     if all(not args.get(key) for key in list(relevant_data_to_update_per_version_dict.keys())):
@@ -162,11 +177,19 @@ class MsGraphClient:
     def create_alert_comment(self, alert_id, params):
         cmd_url = f'{CMD_URL}/{alert_id}/comments'
         response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=params)
-        print(response)
         return response
 
 
 def create_filter_query(filter_param: str, providers_param: str, service_sources_param: str):
+    """
+    Creates the relevant filters to the query filter according to the used API ver and the user's configured filter.
+    Args:
+        filter_param (str): configured user filter.
+        providers_param (str): comma separated list of providers to fetch alerts by.
+        service_sources_param (str): comma separated list of service_sources to fetch alerts by.
+    Returns:
+        str: filter query to use
+    """
     filter_query = ""
     if filter_param:
         filter_query = filter_param
@@ -188,7 +211,19 @@ def create_filter_query(filter_param: str, providers_param: str, service_sources
 
 def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, filter: str, providers: str, service_sources: str) \
         -> list:
-
+    """
+    This function will execute each interval (default is 1 minute).
+    This function will return up to the given limit alerts according to the given filters using the search_alerts function.
+    Args:
+        client (MsGraphClient): MsGraphClient client object.
+        fetch_time (str): time interval for fetch alerts.
+        fetch_limit (int): limit for number of fetch alerts per fetch.
+        filter (str): configured user filter.
+        providers (str): comma separated list of providers to fetch alerts by.
+        service_sources (str): comma separated list of service_sources to fetch alerts by.
+    Returns:
+        List: list of fetched alerts.
+    """
     filter_query = create_filter_query(filter, providers, service_sources)
     severity_map = {'low': 1, 'medium': 2, 'high': 3, 'unknown': 0, 'informational': 0}
 
@@ -232,6 +267,16 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
 
 
 def search_alerts_command(client: MsGraphClient, args):
+    """
+    Retrieve a list of alerts filtered by the given filter arguments.
+
+    Args:
+        client (MsGraphClient): MsGraphClient client object.
+        args (Dict): The command's arguments dictionary.
+
+    Returns:
+        str, Dict, Dict: table of returned alerts, parsed outputs and request's response.
+    """
     params = create_search_alerts_filters(args, is_fetch=False)
     alerts = client.search_alerts(params)['value']
     limit = int(args.get('limit'))
@@ -264,6 +309,16 @@ def search_alerts_command(client: MsGraphClient, args):
 
 
 def get_alert_details_command(client: MsGraphClient, args):
+    """
+    Retrieve information about an alert with the given id.
+
+    Args:
+        client (MsGraphClient): MsGraphClient client object.
+        args (Dict): The command's arguments dictionary.
+
+    Returns:
+        str, Dict, Dict: Human readable output with information about the alert, parsed outputs and request's response.
+    """
     alert_id = args.get('alert_id')
     fields_to_include = args.get('fields_to_include')
     if fields_to_include:
@@ -547,6 +602,16 @@ def get_user_command(client: MsGraphClient, args):
 
 
 def create_alert_comment_command(client: MsGraphClient, args):
+    """ 
+    Adds a comment to an alert with the given id
+
+    Args:
+        client (MsGraphClient): MsGraphClient client object.
+        args (Dict): The command's arguments dictionary.
+
+    Returns:
+        str, Dict, Dict: the human readable, parsed outputs and request's response.
+    """
     alert_id = args.get('alert_id', '')
     comment = args.get('comment', '')
     params = {"comment": comment}
