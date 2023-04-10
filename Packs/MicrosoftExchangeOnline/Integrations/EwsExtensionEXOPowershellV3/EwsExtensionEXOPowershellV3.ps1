@@ -515,6 +515,7 @@ class ExchangeOnlinePowershellV3Client
             [string]$expiration_date
     )
     {
+        $response = ""
         try {
             $cmd_params = @{ }
             if ($entry)
