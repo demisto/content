@@ -3,28 +3,35 @@ commonfields:
   id: BoxEventsCollector
   version: -1
 configuration:
+- display: "Server URL"
+  name: url
+  type: 0
+  required: true
+  defaultvalue: 'https://api.box.com'
+  additionalinfo: "The url of the box api"
 - display: ""
-  displaypassword: Credentials JSON
   name: credentials_json
   type: 9
   required: true
+  displaypassword: Credentials JSON
   hiddenusername: true
 - display: Fetch Events
   name: isFetchEvents
-  type: 8
   required: false
+  type: 8
 - defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  display: |-
+    First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: created_after
   required: false
   type: 0
-- defaultvalue: 500
-  display: |
+- display: |
     The maximum amount of events to fetch for each page. 
     If you're encountering timeouts, consider decrease this value. range 500.
   name: page_size
   required: false
   type: 0
+  defaultvalue: 500
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -64,7 +71,7 @@ script:
     description: Get events.
     execution: false
     name: box-get-events
-  dockerimage: demisto/pydantic-jwt3:1.0.0.49786
+  dockerimage: demisto/pydantic-jwt3:1.0.0.53513
   feed: false
   isfetch: false
   longRunning: false

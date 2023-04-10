@@ -264,17 +264,13 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
     return True
 
 
-def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
+def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf):
     integrations = []
-    is_nightly_integration = False
     test_skipped_integration = []
     for integration in integrations_conf:
         if integration in skipped_integrations_conf.keys():
             skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
             test_skipped_integration.append(integration)
-
-        if integration in nightly_integrations:
-            is_nightly_integration = True
 
         # string description
         integrations.append({
@@ -282,7 +278,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
             'params': {}
         })
 
-    return test_skipped_integration, integrations, is_nightly_integration
+    return test_skipped_integration, integrations
 
 
 def extract_filtered_tests():
