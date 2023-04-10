@@ -43,6 +43,7 @@ class Client(BaseClient):
 
         try:
             response = self._http_request(**request_kwargs)
+            return response
         except DemistoException as err:
             if "404" in str(err):
                 return CommandResults(
@@ -61,7 +62,6 @@ class Client(BaseClient):
                     raise err
             else:
                 raise err
-        return response
 
     def identity_search(self) -> Dict[str, Any]:
         """Identity search."""

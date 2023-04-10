@@ -4,7 +4,7 @@ import unittest
 import json
 from pathlib import Path
 from unittest.mock import patch, Mock
-from IdentityRecordedFuture import Actions, Client
+from IdentityRecordedFuture import Actions, Client, main
 from CommonServerPython import CommandResults, DemistoException
 
 import vcr as vcrpy
@@ -124,10 +124,23 @@ class RFClientTest(unittest.TestCase):
         """Test _call() when error message was returned."""
 
         mock_url_suffix = "mock_url_suffix"
-        error_message = {"message": "error"}
-        mock_http_request.return_value = {"return_error": error_message}
+        error_message_res = {"message": "error"}
+        mock_error_response = Mock()
+        mock_error_response.json.return_value = error_message_res
+        mock_http_request.side_effect = DemistoException(message="", res=mock_error_response)
         self.client._call(url_suffix=mock_url_suffix)
-        return_error_mock.assert_called_once_with(**error_message)
+        return_error_mock.assert_called_once_with(**error_message_res)
+
+    @patch("IdentityRecordedFuture.BaseClient._http_request")
+    def test_call_return_error_not_json(self, mock_http_request: Mock):
+        """Test _call() when error message was returned and it is not json serializable."""
+
+        mock_url_suffix = "mock_url_suffix"
+        mock_error_response = Mock()
+        mock_error_response.json.side_effect = json.JSONDecodeError("some not json error", "some", 3)
+        mock_http_request.side_effect = DemistoException(message="", res=mock_error_response)
+        with self.assertRaises(DemistoException):
+            self.client._call(url_suffix=mock_url_suffix)
 
     @patch("IdentityRecordedFuture.CommandResults")
     @patch("IdentityRecordedFuture.BaseClient._http_request")
@@ -159,9 +172,6 @@ class RFClientTest(unittest.TestCase):
 
 class RFActioncTest(unittest.TestCase):
     def setUp(self) -> None:
-        # patcher = mock.patch("IdentityRecordedFuture.Client")
-        # patcher.start()
-        # self.addCleanup(patcher.stop)
         self.client = Mock()
         self.action = Actions(self.client)
         return super().setUp()
@@ -222,3 +232,17 @@ class RFActioncTest(unittest.TestCase):
         response = {"action_result": {"readable_output": "data"}}
         result = self.action._process_result_actions(response)
         self.assertIsInstance(result, CommandResults)
+
+
+class MainTest(unittest.TestCase):
+
+    @patch("IdentityRecordedFuture.demisto")
+    @patch("IdentityRecordedFuture.Client")
+    @patch("IdentityRecordedFuture.Actions")
+    def test_main_general(self, actions_mock: Mock, client_mock: Mock, mocked_demisto: Mock,):
+        """Test main function is it runs correctly and calling general things"""
+        main()
+        client_mock.assert_called_once()
+        mocked_demisto.params.assert_called_once_with()
+        mocked_demisto.command.assert_called_once_with()
+        actions_mock.assert_called_once_with(client_mock.return_value)

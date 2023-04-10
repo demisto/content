@@ -35,4 +35,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Identity - Lookup Identities (parent)](../doc_files/Recorded_Future_Identity_-_Lookup_Identities_(parent).png)
+![Identity - Lookup Identities (parent)](../doc_files/Recorded_Future_Identity_-_Lookup_Identities_parent.png)
