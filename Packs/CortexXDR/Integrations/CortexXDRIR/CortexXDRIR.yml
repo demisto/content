@@ -766,6 +766,12 @@ script:
       - disconnected
       - lost
       - uninstalled
+      - windows
+      - linux
+      - macos
+      - android,
+      - isolated
+      - unisolated
     - description: A comma-separated list of endpoint IDs.
       isArray: true
       name: endpoint_id_list
