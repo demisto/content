@@ -81,19 +81,19 @@ def get_token_soap_request(user, password, instance, domain=None):
     return ET.tostring(root)
 
 
-def terminate_session_soap_request(token):
-    # Create the root element
-    root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-                                        "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
-                                        "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
-    # Create the soap:Body element
-    body = ET.SubElement(root, "soap:Body")
-    # Create the TerminateSession element
-    terminate_session = ET.SubElement(body, "TerminateSession", {"xmlns": "http://archer-tech.com/webservices/"})
-    # Add the sessionToken element
-    ET.SubElement(terminate_session, "sessionToken").text = token
-
-    return ET.tostring(root)
+# def terminate_session_soap_request(token):
+#     # Create the root element
+#     root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+#                                         "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+#                                         "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+#     # Create the soap:Body element
+#     body = ET.SubElement(root, "soap:Body")
+#     # Create the TerminateSession element
+#     terminate_session = ET.SubElement(body, "TerminateSession", {"xmlns": "http://archer-tech.com/webservices/"})
+#     # Add the sessionToken element
+#     ET.SubElement(terminate_session, "sessionToken").text = token
+#
+#     return ET.tostring(root)
 
 
 def get_reports_soap_request(token):
@@ -345,7 +345,7 @@ class Client(BaseClient):
                                      resp_type='response', ok_codes=(200, 401))
             demisto.debug(f"rest status code: {res.status_code}")
             if 200 <= res.status_code <= 300:
-                return res
+                break
         return res
 
     def do_rest_request(self, method, url_suffix, data=None, params=None):
@@ -397,11 +397,11 @@ class Client(BaseClient):
         merge_integration_context({'token': token})
         return token
 
-    def destroy_token(self, token):
-        body = terminate_session_soap_request(token)
-        headers = {'SOAPAction': 'http://archer-tech.com/webservices/TerminateSession',
-                   'Content-Type': 'text/xml; charset=utf-8'}
-        self._http_request('POST', 'ws/general.asmx', headers=headers, data=body, resp_type='content')
+    # def destroy_token(self, token):
+    #     body = terminate_session_soap_request(token)
+    #     headers = {'SOAPAction': 'http://archer-tech.com/webservices/TerminateSession',
+    #                'Content-Type': 'text/xml; charset=utf-8'}
+    #     self._http_request('POST', 'ws/general.asmx', headers=headers, data=body, resp_type='content')
 
     def update_body_with_token(self, request_body_builder_function, create_new_token: bool = False, **kwargs):
         time.sleep(random.uniform(0, 5))
@@ -434,8 +434,6 @@ class Client(BaseClient):
         if res.status_code in (401, 500):
             demisto.debug("trying soap with new session")
             res = self.try_soap_request(req_data=req_data, method='POST', create_new_token=True, attempts=2, **kwargs)
-        # res = self._http_request('POST', req_data['urlSuffix'], headers=headers, data=body, resp_type='content')
-        # self.destroy_token(token)
         return extract_from_xml(res.content, req_data['outputPath']), res.content
 
     def get_level_by_app_id(self, app_id, specify_level_id=None):

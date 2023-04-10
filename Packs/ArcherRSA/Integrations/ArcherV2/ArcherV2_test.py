@@ -968,5 +968,21 @@ class TestArcherV2:
         assert demisto.results.call_args_list[0][0][0]['Contents'] == MOCK_RESULTS_SEARCH_RECORDS_BY_REPORT
 
 
-    # def test_do_rest_request(self, mocker, requests_mock):
-    #     client = Client(BASE_URL, '', '', '', '', 400)
+    @pytest.mark.parametrize('integration_context, is_login_expected, http_call_attempt_results', [
+        ({}, True, [{'status_code': 200, 'json': {}}]),
+        ({'session_id': 'test_session_id'}, False, [{'status_code': 200, 'json': {}}]),
+        ({'session_id': 'test_session_id'}, False, [{'status_code': 401, 'json': {}}, {'status_code': 200, 'json': {}}]),
+        ({'session_id': 'test_session_id'}, True, [{'status_code': 401, 'json': {}}, {'status_code': 401, 'json': {}}, {'status_code': 200, 'json': {}}]),
+    ])
+    def test_do_rest_request(self, mocker, requests_mock, integration_context, is_login_expected, http_call_attempt_results):
+        # integration_context = {'bla': 'bla'}
+        # http_call_results = [{'status_code': 401, 'json': {}}, {'status_code': 200, 'json': {}}]
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mocker.patch('ArcherV2.get_integration_context', return_value=integration_context)
+        login_mocker = requests_mock.post(BASE_URL + 'api/core/security/login', json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
+        rest_mocker = requests_mock.get(BASE_URL + 'test_requests', http_call_attempt_results)
+        dummy_response = client.do_rest_request('GET', 'test_requests')
+        if is_login_expected:
+            login_mocker.assert_called_once()
+        rest_mocker.
+        assert True
