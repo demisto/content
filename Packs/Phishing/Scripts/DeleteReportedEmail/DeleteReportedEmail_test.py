@@ -226,11 +226,12 @@ ADDED_SEARCH_ARGS = {
     'MicrosoftGraphMail': {'user_id': 'reportedemailto',
                            'odata': '"$filter=internetMessageId eq \'reportedemailmessageid\'"'},
     'SecurityAndCompliance': {'to_user_id': 'reportedemailto', 'from_user_id': 'reportedemailfrom'},
+    'SecurityAndComplianceV2': {'to_user_id': 'reportedemailto', 'from_user_id': 'reportedemailfrom'},
 }
 
 
 @pytest.mark.parametrize('brand', ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'MicrosoftGraphMail',
-                                   'SecurityAndCompliance'])
+                                   'SecurityAndCompliance', 'SecurityAndComplianceV2'])
 def test_search_args(mocker, brand):
     """
 
