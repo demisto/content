@@ -1,8 +1,8 @@
-## BaseIntegration Help
+## Team Viewer
+Use this integration to collect events automatically from Team Viewer.
+You can also use the ***teamviewer-get-events*** command to manually collect events.
 
-Markdown file for integration configuration  help snippet. In this file add:
+### Script Token
+[For instructions on how to generate your script token, click here](https://community.teamviewer.com/English/kb/articles/109647-use-the-teamviewer-api).
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.

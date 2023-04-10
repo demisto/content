@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Any, Dict, Tuple, List
+from typing import Any, Dict, Tuple, List, Optional
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -30,65 +30,41 @@ class Client(BaseClient):
     """
     Client class to interact with the service API
     """
-    def http_request(self, url_suffix=None, full_url=None, params=None):
-        if not url_suffix:
-            url_suffix = "/api/v1/EventLogging"
+    def __init__(self, base_url, verify, proxy, headers):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+
+    def http_request(self, params=None, body=None):
         return self._http_request(
-            method="POST", url_suffix=url_suffix, full_url=full_url, params=params
-        )
-
-    def search_events(
-        self, url_suffix: str, limit: int, ContinuationToken: str | None, prev_id: int = 0,
-    ) -> Tuple[int | None, List[Dict[str, Any]]]:
-        """
-        Searches for T alerts using the '/<url_suffix>' API endpoint.
-        Args:
-            url_suffix: str, The API endpoint to request.
-            limit: int, the limit of the results to return.
-            prev_id: int, The id of the first event to fetch.
-            ordering: str, The ordering of the results to return.
-        Returns:
-            int: The id of the next event to fetch.
-            list: A list containing the events
-        """
-        results: List[Dict] = []
-        next_id = ContinuationToken
-        next_page = True
-        params = {
-            "ContinuationToken": ContinuationToken   ## to check what params are needed
-        }
-
-        while next_page and len(results) < limit:
-            full_url = next_page if type(next_page) == str else ""
-            response = self.http_request(
-                url_suffix=url_suffix, full_url=full_url, params=params
-            )
-            
-
-            results += response.get("AuditEvents", [])
-
-            next_page = response.get("ContinuationToken")
-            params = {}
-
-            if results:
-                next_id = results[-1]["id"] + 1
-
-        return next_id, results[:limit]
-
-    def get_first_fetch_id(self, url_suffix, params):
-        first_log = self.http_request(
-            url_suffix=url_suffix, params={"ordering": "id", "limit": 1} | params
-        )
-
-        if first_log.get("results"):
-            next_run = first_log.get("results")[0].get("id")
-        else:
-            next_run = None
-
-        return next_run
+            method="POST", headers=self._headers, params=params, data=body)
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def search_events(client: Client, limit: int, body: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    """
+    Searches for T alerts.
+    Args:
+        continuation_token:  Optional[ByteString],
+        url_suffix: str, The API endpoint to request.
+        limit: int, the limit of the results to return.
+        body: dict, contains the time parameters.
+    Returns:
+        list: A list containing the events
+    """
+    results: List[Dict] = []
+    token_next_page = None
+    next_page = True
+    params: Dict[str, Any] = {}
+    while next_page and len(results) < limit:
+        response = client.http_request(params=params, body=body)
+        results += response.get("AuditEvents", [])
+        next_page = response.get("ContinuationToken")
+        if token_next_page := response.get("ContinuationToken"):
+            params['ContinuationToken'] = token_next_page
+        else:
+            next_page = False
+    return results[:limit]
 
 
 ''' COMMAND FUNCTIONS '''
@@ -136,14 +112,8 @@ def get_events_command(
     """
     events: List[Dict] = []
     hr = ""
-    for log_type in LOG_TYPES:
-        _, events_ = client.search_events(url_suffix=log_type, limit=limit, ContinuationToken=None)  # to check
-        if events_:
-            hr += tableToMarkdown(name=f"{log_type} Events", t=events_)
-            events += events_
-        else:
-            hr = f"No events found for {log_type}."
-
+    events = search_events(client=client, limit=limit)
+    hr = tableToMarkdown(name='Events', t=events) if events else 'No events found.'
     return events, CommandResults(readable_output=hr)
 
 
@@ -152,7 +122,7 @@ def fetch_events_command(
 ) -> Tuple[Dict[str, int], List[Dict[str, Any]]]:
     """
     Args:
-        client (Client): NetBox client to use.
+        client (Client): TeamViewer client to use.
         max_fetch (int): The maximum number of events to fetch per log type.
         last_run (dict): A dict with a keys containing the first event id to fetch for each log type.
         first_fetch_time (str): In case of first fetch, fetch events from this date.
@@ -161,37 +131,17 @@ def fetch_events_command(
         list: List of events that will be created in XSIAM.
     """
     # In the first fetch, get the ids for the first fetch time
-    params = {
+    last_fetch = last_run.get('last_fetch')
+    last_fetch = first_fetch_time if last_fetch is None else int(last_fetch)
+    # latest_created_time = cast(int, last_fetch)
+    import datetime
+    formatted_time = datetime.datetime.utcnow().strftime(DATE_FORMAT)
+    body = {
         "StartDate": first_fetch_time,
-        "EndDate": first_fetch_time
+        "EndDate": formatted_time
     }
-    for log_type in LOG_TYPES:
-        if last_run.get(log_type) is None:
-            last_run[log_type] = client.get_first_fetch_id(
-                url_suffix=log_type, params=params[log_type]
-            )
-
     next_run = last_run.copy()
-    events = []
-
-    for log_type in LOG_TYPES:
-        if last_run[log_type] is None:
-            continue
-        next_run[log_type], events_ = client.search_events(
-            url_suffix=log_type,
-            limit=max_fetch,
-            prev_id=last_run[log_type],
-        )
-        events += events_
-
-    demisto.info(
-        f'Fetched events with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in last_run.items())}.'
-    )
-
-    # Save the next_run as a dict with the last_fetch key to be stored
-    demisto.info(
-        f'Setting next run with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in next_run.items())}.'
-    )
+    events = search_events(client=client, limit=max_fetch, body=body)
     return next_run, events
 
 
@@ -221,7 +171,7 @@ def main() -> None:
     command = demisto.command()
     api_key = params.get("credentials", {}).get("Script Token")
     base_url = urljoin(params.get("url"), "/api/v1/EventLogging")
-    verify_certificate = not params.get("insecure", False)
+    verify_certificate = not params.get("insecure", True)
     proxy = params.get("proxy", False)
 
     # How much time before the first fetch to retrieve events
@@ -236,7 +186,7 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {command}")
     try:
-        headers = {"Authorization": f"Token {api_key}"}
+        headers = {"Authorization": f"Bearer {api_key}"}
         client = Client(
             base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
         )
@@ -256,6 +206,7 @@ def main() -> None:
 
             else:  # command == 'fetch-events':
                 should_push_events = True
+                demisto.debug('before last run')
                 last_run = demisto.getLastRun()
                 next_run, events = fetch_events_command(
                     client=client,
@@ -264,6 +215,7 @@ def main() -> None:
                     first_fetch_time=first_fetch_time_strftime,
                 )
                 # saves next_run for the time fetch-events is invoked
+                demisto.debug('after fetch events command')
                 demisto.setLastRun(next_run)
 
             if should_push_events:
