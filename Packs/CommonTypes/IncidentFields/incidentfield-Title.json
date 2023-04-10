@@ -39,7 +39,8 @@
   "AWS Guard Duty Malware Protection Finding",
   "AWS Guard Duty S3 Finding",
   "Exabeam Incident",
-  "AWS Security Hub Finding"
+  "AWS Security Hub Finding",
+  "Rapid7 ThreatCommand Alert"
  ],
  "associatedToAll": false,
  "unmapped": false,
