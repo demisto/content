@@ -1075,7 +1075,7 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
     status = args.get('status')
 
     if ',' in status:
-        status = status.split(',')
+        status = status.split(',') # type: ignore
 
     last_seen_gte = arg_to_timestamp(
         arg=args.get('last_seen_gte'),
