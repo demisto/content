@@ -56,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 1590,
-          "y": 760
+          "y": 860
         }
       }
     note: false
@@ -84,7 +84,7 @@ tasks:
       "no":
       - "3"
       "yes":
-      - "27"
+      - "29"
     scriptarguments:
       brandname:
         simple: JoeSecurityV2
@@ -103,31 +103,40 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
     results:
     - brandInstances
-  "25":
-    id: "25"
-    taskid: b604116e-2dfd-4aad-873a-ff7549d05757
+    continueonerrortype: ""
+  "28":
+    id: "28"
+    taskid: 603eed0e-4be1-4e78-81cc-1ee19961ac3b
     type: playbook
     task:
-      id: b604116e-2dfd-4aad-873a-ff7549d05757
+      id: 603eed0e-4be1-4e78-81cc-1ee19961ac3b
       version: -1
-      name: 2469fed6-59b7-4cfe-898c-e137e40443a0
+      name: Detonate URL - WildFire v2.1
+      playbookName: Detonate URL - WildFire v2.1
       type: playbook
       iscommand: false
       brand: ""
-      playbookId: 2469fed6-59b7-4cfe-898c-e137e40443a0
       description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "3"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
           "x": 1350,
-          "y": 590
+          "y": 690
         }
       }
     note: false
@@ -138,111 +147,30 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 100
-      wait: 1
-    scriptarguments:
-      URL:
-        complex:
-          root: inputs.URL
-  "26":
-    id: "26"
-    taskid: f685d3dd-a022-48b9-8a15-32c27b316ed6
+  "29":
+    id: "29"
+    taskid: e24eb7cd-22e4-48c7-8093-05bca0ceab7a
     type: playbook
     task:
-      id: f685d3dd-a022-48b9-8a15-32c27b316ed6
+      id: e24eb7cd-22e4-48c7-8093-05bca0ceab7a
       version: -1
-      name: 99303c17-36d6-4a7f-8da9-1b9f9527796c
+      name: Detonate URL - JoeSecurity
+      playbookName: Detonate URL - JoeSecurity
       type: playbook
       iscommand: false
       brand: ""
-      description: "This playbook uploads, detonates, and analyzes URLs for the CrowdStrike Falcon Intelligence Sandbox."
-      playbookId: 99303c17-36d6-4a7f-8da9-1b9f9527796c
-    nexttasks:
-      "#none#":
-      - "3"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 920,
-          "y": 590
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 100
-      wait: 1
-    scriptarguments:
-      AlertOS:
-        complex:
-          accessor: deviceosname}
-          root: ${incident
-          transformers:
-          - args:
-              input_values:
-                value:
-                  simple: Windows,Linux,Android
-              mapped_values:
-                value:
-                  simple: '160: Windows 10,300: Linux Ubuntu 16.04,300: Linux Ubuntu 16.04'
-            operator: MapValuesTransformer
-      EnableTor:
-        simple: "false"
-      EnvironmentID:
-        simple: '''160: Windows 10'''
-      URL:
-        complex:
-          root: inputs.URL
-  "27":
-    id: "27"
-    taskid: 6c24d9d6-eb19-477e-8e51-f1eea5d5b5b7
-    type: playbook
-    task:
-      id: 6c24d9d6-eb19-477e-8e51-f1eea5d5b5b7
-      version: -1
-      name: 614f44bb-3595-4642-89a6-86f74c36fc32
-      type: playbook
-      iscommand: false
-      brand: ""
-      playbookId: 614f44bb-3595-4642-89a6-86f74c36fc32
       description: ''
     nexttasks:
-      "#none#":
+      '#none#':
       - "3"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": 590
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 100
-      wait: 1
     scriptarguments:
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "1200"
+      URL:
+        complex:
+          root: inputs.URL
       EmailNotification:
         simple: "False"
       FastMode:
@@ -253,51 +181,58 @@ tasks:
         simple: "True"
       InternetAccess:
         simple: "True"
-      Interval:
-        simple: "1"
       LiveInteraction:
         simple: "False"
       SSLInspection:
         simple: "False"
       StartAsNormalUser:
         simple: "False"
-      Timeout:
-        simple: "1200"
-      URL:
-        complex:
-          root: inputs.URL
-  "4":
+    separatecontext: true
     continueonerrortype: ""
-    id: "4"
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 6adfc95d-487a-4753-846f-d1a4c14204b1
+    type: condition
+    task:
+      id: 6adfc95d-487a-4753-846f-d1a4c14204b1
+      version: -1
+      name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
+      description: Returns 'yes' if the CrowdStrike Falcon Intelligence Sandbox integration is available.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       "no":
       - "3"
       "yes":
-      - "26"
-    note: false
-    quietmode: 0
-    results:
-    - brandInstances
+      - "30"
     scriptarguments:
       brandname:
         simple: CrowdStrike Falcon Sandbox V2
+    results:
+    - brandInstances
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Returns 'yes' if the CrowdStrike Falcon Intelligence Sandbox integration is available.
-      id: 6adfc95d-487a-4753-846f-d1a4c14204b1
-      iscommand: false
-      name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
-      scriptName: IsIntegrationAvailable
-      type: condition
-      version: -1
-    taskid: 6adfc95d-487a-4753-846f-d1a4c14204b1
-    timertriggers: []
-    type: condition
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -305,23 +240,25 @@ tasks:
           "y": 390
         }
       }
-  "5":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                root: inputs.URL
-          operator: isNotEmpty
-          right:
-            value: {}
-      label: "yes"
-    continueonerrortype: ""
-    id: "5"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f1f3ca4a-6436-40b5-8f34-84f3328b1c6c
+    type: condition
+    task:
+      id: f1f3ca4a-6436-40b5-8f34-84f3328b1c6c
+      version: -1
+      name: Is there a URL?
+      description: Is there a URL?
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "3"
@@ -329,21 +266,19 @@ tasks:
       - "6"
       - "12"
       - "4"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Is there a URL?
-      id: f1f3ca4a-6436-40b5-8f34-84f3328b1c6c
-      iscommand: false
-      name: Is there a URL?
-      type: condition
-      version: -1
-    taskid: f1f3ca4a-6436-40b5-8f34-84f3328b1c6c
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URL
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -351,38 +286,38 @@ tasks:
           "y": 220
         }
       }
-  "6":
-    continueonerrortype: ""
-    id: "6"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 51bb2a80-7e44-44ed-8a77-24d48ecb48e9
+    type: condition
+    task:
+      id: 51bb2a80-7e44-44ed-8a77-24d48ecb48e9
+      version: -1
+      name: Is Wildfire enabled?
+      description: Returns 'yes' if the WildFire integration is available.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       "no":
       - "3"
       "yes":
-      - "25"
-    note: false
-    quietmode: 0
-    results:
-    - brandInstances
+      - "28"
     scriptarguments:
       brandname:
         simple: WildFire-v2
+    results:
+    - brandInstances
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Returns 'yes' if the WildFire integration is available.
-      id: 51bb2a80-7e44-44ed-8a77-24d48ecb48e9
-      iscommand: false
-      name: Is Wildfire enabled?
-      scriptName: IsIntegrationAvailable
-      type: condition
-      version: -1
-    taskid: 51bb2a80-7e44-44ed-8a77-24d48ecb48e9
-    timertriggers: []
-    type: condition
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -390,10 +325,74 @@ tasks:
           "y": 390
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 168a8223-f9d3-4957-87ac-5c7291406a0a
+    type: playbook
+    task:
+      id: 168a8223-f9d3-4957-87ac-5c7291406a0a
+      version: -1
+      name: Detonate URL - CrowdStrike
+      playbookName: Detonate URL - CrowdStrike
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AlertOS:
+        complex:
+          root: ${incident
+          accessor: deviceosname}
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: Windows,Linux,Android
+              mapped_values:
+                value:
+                  simple: '160: Windows 10,300: Linux Ubuntu 16.04,300: Linux Ubuntu 16.04'
+      EnableTor:
+        simple: "false"
+      EnvironmentID:
+        simple: '''160: Windows 10'''
+      URL:
+        complex:
+          root: inputs.URL
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "12_27_yes": 0.42,
       "12_3_no": 0.24,
       "4_3_no": 0.32,
       "5_3_#default#": 0.16,
@@ -402,7 +401,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 755,
+        "height": 855,
         "width": 1460,
         "x": 510,
         "y": 70
@@ -442,8 +441,6 @@ outputs:
   type: unknown
 fromversion: 6.8.0
 tests:
-- Send Investigation Summary Reports - Test
+- No tests (auto formatted)
 contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
+  contentitemfields: {}

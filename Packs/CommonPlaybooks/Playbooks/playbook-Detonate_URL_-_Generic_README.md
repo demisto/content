@@ -11,9 +11,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* 2469fed6-59b7-4cfe-898c-e137e40443a0
-* 99303c17-36d6-4a7f-8da9-1b9f9527796c
-* 614f44bb-3595-4642-89a6-86f74c36fc32
+* Detonate URL - JoeSecurity
+* Detonate URL - CrowdStrike
+* Detonate URL - WildFire v2.1
 
 ### Integrations
 
