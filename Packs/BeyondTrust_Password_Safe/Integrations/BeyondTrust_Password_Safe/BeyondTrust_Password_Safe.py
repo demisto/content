@@ -318,9 +318,9 @@ def get_credentials():
     credentials = get_credentials_request(request)
 
     response = {
-        'Password': credentials
+        'Credentials': credentials
     }
-    entry_context = {'BeyondTrust.Credentials': createContext(response)}
+    entry_context = {'BeyondTrust.Request': createContext(response)}
     return_outputs(tableToMarkdown('Passwordsafe Credentials', response), entry_context, response)
 
 
