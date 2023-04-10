@@ -1,51 +1,66 @@
-Detonate one or more files using the CrowdStrike Falcon Intelligence Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+This playbook uploads, detonates, and analyzes URLs for the CrowdStrike Falcon Intelligence Sandbox.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* CrowdStrikeFalconIntelligenceSandbox
-* CrowdStrike Falcon Intelligence Sandbox
+
+* CrowdStrikeFalconX
 
 ### Scripts
-This playbook does not use any scripts.
+
+* IsIntegrationAvailable
 
 ### Commands
-* cs-fx-get-full-report
+
 * cs-fx-submit-url
 
 ## Playbook Inputs
+
 ---
 
-| **Name**      | **Description**                                                                                    | **Default Value** | **Required** |
-|---------------|----------------------------------------------------------------------------------------------------|-------------------|--------------|
-| URL           | URL to detonate.                                                                                   | URL.Data          | Optional     |
-| EnvironmentID | Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments command. | 100               | Optional     |
-| Interval      | Polling frequency - how often the polling command should run \(minutes\)                           | 5                 | Optional     |
-| Timeout       | How much time to wait before a timeout occurs  \(minutes\)                                         | 30                | Optional     |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| URL | The details of the URL to detonate. |  | Optional |
+| AlertOS | The operating system for which the alert was raised.<br/>accepted values are Windows, Linux, Android | ${incident.deviceosname} | Optional |
+| EnableTor | Whether the sandbox analysis routes network traffic via TOR. If true, sandbox analysis routes network traffic via TOR. Relevant if the submit_file parameter is set to true. | false | Optional |
+| EnvironmentID | Sandbox environment used for analysis. | '160: Windows 10' | Optional |
+| ActionScript | Runtime script for sandbox analysis. |  | Optional |
+| CommandLine | Command line script passed to the submitted file at runtime. Max length: 2048 characters. |  | Optional |
+| DocumentPassword | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. |  | Optional |
+| SubmitName | Name of the malware sample that’s used for file type detection. and analysis. |  | Optional |
+| SystemDate | Set a custom date for the sandbox environment in the format yyyy-MM-dd. |  | Optional |
+| SystemTime | Sets a custom time for the sandbox environment in the format HH:mm. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
-| **Path**                                              | **Description**                                         | **Type** |
-|-------------------------------------------------------|---------------------------------------------------------|----------|
-| csfalconx.resource.id                                 | Analysis ID.                                            | String   |
-| csfalconx.resource.verdict                            | Analysis verdict.                                       | String   |
-| csfalconx.resource.created_timestamp                 | Analysis start time.                                    | String   |
-| csfalconx.resource.environment_id                     | Environment ID.                                         | String   |
-| csfalconx.resource.environment_description            | Environment description.                                | String   |
-| csfalconx.resource.threat_score                       | Score of the threat.                                    | Int      |
-| csfalconx.resource.submit_url                         | URL submitted for analysis.                             | String   |
-| csfalconx.resource.submission_type                    | Type of submitted artifact, for example file, URL, etc. | String   |
-| csfalconx.resource.sha256                             | SHA256 hash of the submitted file.                      | String   |
-| csfalconx.resource.ioc_report_strict_csv_artifact_id  | ID of the IOC pack to download \(CSV\).                 | String   |
-| csfalconx.resource.ioc_report_broad_csv_artifact_id   | ID of the IOC pack to download \(CSV\).                 | String   |
-| csfalconx.resource.ioc_report_strict_json_artifact_id | ID of the IOC pack to download \(JSON\).                | Int      |
-| csfalconx.resource.ioc_report_broad_json_artifact_id  | ID of the IOC pack to download \(JSON\).                | String   |
-| csfalconx.resource.ioc_report_strict_stix_artifact_id | ID of the IOC pack to download \(STIX\).                | String   |
-| csfalconx.resource.ioc_report_broad_stix_artifact_id  | ID of the IOC pack to download \(STIX\).                | Int      |
-| csfalconx.resource.ioc_report_strict_maec_artifact_id | ID of the IOC pack to download \(MAEC\).                | String   |
-| csfalconx.resource.ioc_report_broad_maec_artifact_id  | ID of the IOC pack to download \(MAEC\).                | String   |
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| DBotScore | The Dbot Score of the analyzed URL | unknown |
+| csfalconx.resource | URL analysis report info | unknown |
+| csfalconx.resource.sandbox.http_requests | URL analysis report info | unknown |
+| csfalconx.resource.sandbox | URL analysis report info | unknown |
+| csfalconx.resource.sandbox.processes | URL analysis report info | unknown |
+| csfalconx.resource.sandbox.processes.handles | URL analysis report info | unknown |
+| csfalconx.resource.sandbox.extracted_files | URL analysis report info | unknown |
+| csfalconx.resource.sandbox.file_metadata | URL analysis report info | unknown |
+| csfalconx.resource.sandbox.dns_requests | URL analysis report info | unknown |
+| csfalconx.resource.sandbox.contacted_hosts | URL analysis report info | unknown |
+| csfalconx.resource.sandbox.contacted_hosts.associated_runtime | URL analysis report info | unknown |
+| csfalconx.resource.sandbox.mitre_attacks | URL analysis report info | unknown |
+| csfalconx.resource.sandbox.mitre_attacks.parent | URL analysis report info | unknown |
+| csfalconx.resource.sandbox.signatures | URL analysis report info | unknown |
+| csfalconx.resource.intel | URL analysis report info | unknown |
+
+## Playbook Image
+
+---
+
+![Detonate URL - CrowdStrike Falcon Intelligence Sandbox](../doc_files/Detonate_URL_-_CrowdStrike_Falcon_Intelligence_Sandbox.png)
