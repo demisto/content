@@ -65,6 +65,16 @@ Follow these steps for a self-deployed configuration:
  * AdvancedHunting.Read.All - Application
  * Incident.ReadWrite.All - Application
 
+
+### Using National Cloud
+Using a national cloud endpoint is supported by setting the *Server URL* parameter to one of the following options:
+* US Government GCC Endpoint: `https://api-gcc.security.microsoft.us`
+* US Government GCC-High Endpoint: `https://api-gov.security.microsoft.us`
+* US Government Department of Defence (DoD) Endpoint: `https://dod-graph.microsoft.us`
+
+Please refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud) for more information.
+
+
 ### Azure Managed Identities Authentication
 ____
 ##### Note: This option is relevant only if the integration is running on Azure VM.
@@ -79,11 +89,3 @@ Follow one of these steps for authentication based on Azure Managed Identities:
    3. Select the **Use Azure Managed Identities** checkbox.
 
 For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
-
-
-### Using National Cloud
-Using a national cloud endpoint is supported by setting the *Server URL* parameter to one of the following options:
-* US Government GCC Endpoint: `https://api-gcc.security.microsoft.us`
-* US Government GCC-High Endpoint: `https://api-gov.security.microsoft.us`
-
-Please refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud) for more information.

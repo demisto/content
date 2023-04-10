@@ -16,7 +16,7 @@ configuration:
 - additionalinfo: |-
     The United States: api-us.security.microsoft.com
     Europe: api-eu.security.microsoft.com
-    The United Kingdom: api-uk.security.microsoft.co
+    The United Kingdom: api-uk.security.microsoft.com
   defaultvalue: https://api.security.microsoft.com
   display: Endpoint URI
   name: base_url

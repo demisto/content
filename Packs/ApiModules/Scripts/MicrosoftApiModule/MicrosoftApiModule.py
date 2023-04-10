@@ -63,6 +63,12 @@ SECURITY_BASE_ENDPOINTS = {
     'https://api-gcc.security.microsoft.us': 'gcc',
     'https://api-gov.security.microsoft.us': 'gcc-high',
 }
+SECURITY_ENDPOINTS = {
+    'com': 'https://security.microsoft.com',
+    'gcc': 'https://security.microsoft.com',
+    'gcc-high': 'https://security.microsoft.us',
+    'dod': 'https://security.apps.mil',
+}
 
 # Azure Managed Identities
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'

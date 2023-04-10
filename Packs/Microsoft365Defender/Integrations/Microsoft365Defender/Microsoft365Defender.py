@@ -37,7 +37,7 @@ class Client:
             verify=verify,
             proxy=proxy,
             ok_codes=(200, 201, 202, 204),
-            scope='offline_access https://security.microsoft.com/mtp/.default',
+            scope=f'offline_access {SECURITY_ENDPOINTS[endpoint]}/mtp/.default',
             self_deployed=True,  # We always set the self_deployed key as True because when not using a self
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
