@@ -1,4 +1,6 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 from typing import Callable, Union
 import time
 from urllib.parse import quote, unquote
@@ -6,7 +8,7 @@ from urllib.parse import quote, unquote
 seconds = time.time()
 
 EMAIL_INTEGRATIONS = ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'MicrosoftGraphMail',
-                      'SecurityAndCompliance']
+                      'SecurityAndCompliance', 'SecurityAndComplianceV2']
 
 
 class MissingEmailException(Exception):
@@ -192,7 +194,7 @@ def security_and_compliance_delete_mail(args: dict, to_user_id: str, from_user_i
 
     """
     check_demisto_version()
-    query = f'from:{from_user_id} AND subject:{email_subject}'
+    query = f'from:{from_user_id} AND subject:\"{email_subject}\" AND to:{to_user_id}'
     search_name = args.get('search_name', '')
 
     if was_email_already_deleted({'message_id': message_id}, '')[0] == 'Success':
@@ -201,12 +203,11 @@ def security_and_compliance_delete_mail(args: dict, to_user_id: str, from_user_i
         return 'Success', None
 
     if not search_name:
-        # first time entering this function, creating the search
         search_name = f'search_for_delete_{seconds}'
-        execute_command('o365-sc-new-search', {'kql': query, 'search_name': search_name, 'using-brand': using_brand,
-                                               'exchange_location': to_user_id})
-        execute_command('o365-sc-start-search', {'search_name': search_name, 'using-brand': using_brand})
-        args['search_name'] = search_name
+    execute_command('o365-sc-new-search', {'kql': query, 'search_name': search_name, 'using-brand': using_brand,
+                                            'exchange_location': to_user_id})
+    execute_command('o365-sc-start-search', {'search_name': search_name, 'using-brand': using_brand})
+    args['search_name'] = search_name
 
     # check the search status
     results = execute_command('o365-sc-get-search', {'search_name': search_name, 'using-brand': using_brand})
@@ -298,6 +299,7 @@ def get_search_args(args: dict):
         'MicrosoftGraphMail': {'user_id': user_id, 'odata': f'"$filter=internetMessageId eq '
                                                             f'\'{quote(unquote(message_id))}\'"'},
         'SecurityAndCompliance': {'to_user_id': user_id, 'from_user_id': custom_fields.get('reportedemailfrom')},
+        'SecurityAndComplianceV2': {'to_user_id': user_id, 'from_user_id': custom_fields.get('reportedemailfrom')}
     }
 
     search_args.update(additional_args.get(delete_from_brand, {}))
@@ -338,7 +340,7 @@ def main():
     delete_from_brand = search_args['using-brand']
     try:
 
-        if delete_from_brand == 'SecurityAndCompliance':
+        if delete_from_brand in ['SecurityAndCompliance', 'SecurityAndComplianceV2']:
             security_and_compliance_args = {k.replace('-', '_'): v for k, v in search_args.items()}
             result, scheduled_command = security_and_compliance_delete_mail(args, **security_and_compliance_args)
 
