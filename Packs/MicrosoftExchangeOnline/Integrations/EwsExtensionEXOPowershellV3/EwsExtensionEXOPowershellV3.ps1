@@ -313,34 +313,19 @@ class ExchangeOnlinePowershellV3Client
             [int]$limit
     )
     {
+        $this.CreateSession()
+
         $cmd_params = @{ }
-        if ($identity)
-        {
+        if ($identity) {
             $cmd_params.Identity = $identity
         }
-        $this.CreateSession()
-        if ($limit -gt 0)
-        {
-            if ($identity)
-            {
-                $results = Get-EXORecipientPermission -Identity $identity -ResultSize $limit
-            }
-            else
-            {
-                $results = Get-EXORecipientPermission -ResultSize $limit
-            }
+        if ($limit -gt 0) {
+            $cmd_params.ResultSize = $limit
+        } else  {
+            $cmd_params.ResultSize = Unliimited
         }
-        else
-        {
-            if ($identity)
-            {
-                $results = Get-EXORecipientPermission -Identity $identity -ResultSize Unlimited
-            }
-            else
-            {
-                $results = Get-EXORecipientPermission -ResultSize Unlimited
-            }
-        }
+        $results = Get-EXORecipientPermission @cmd_params
+
         $this.DisconnectSession()
         return $results
         <#
@@ -459,6 +444,9 @@ class ExchangeOnlinePowershellV3Client
             Use the New-TenantAllowBlockListItems cmdlet to add new entries to the Tenant Allow/Block Lists for your organization.
             This cmdlet returns all new entries created, details about them, and their status
 
+            .LINK
+            https://learn.microsoft.com/en-us/powershell/module/exchange/new-tenantallowblocklistitems?view=exchange-ps
+
         #>
     }
 
@@ -490,12 +478,7 @@ class ExchangeOnlinePowershellV3Client
         {
             $ids_array = $ids -split ','
         }
-        if ($ids -and -not $ids_array)
-        {
-            $ids_array += $ids
-            $cmd_params.Ids = $ids_array
-        }
-        elseif ($ids_array)
+        if ($ids_array)
         {
             $cmd_params.Ids = $ids_array
         }
@@ -516,6 +499,9 @@ class ExchangeOnlinePowershellV3Client
             Use the New-TenantAllowBlockListItems cmdlet to add new entries to the Tenant Allow/Block Lists for your organization.
             This cmdlet returns all new entries created, details about them, and their status
 
+            .LINK
+            https://learn.microsoft.com/en-us/powershell/module/exchange/remove-tenantallowblocklistitems?view=exchange-ps
+
         #>
     }
 
@@ -529,43 +515,50 @@ class ExchangeOnlinePowershellV3Client
             [string]$expiration_date
     )
     {
-        $cmd_params = @{ }
-        if ($entry)
-        {
-            $cmd_params.Entry = $entry
+        try {
+            $cmd_params = @{ }
+            if ($entry)
+            {
+                $cmd_params.Entry = $entry
+            }
+            if ($list_type)
+            {
+                $cmd_params.ListType = $list_type
+            }
+            if ($list_subtype)
+            {
+                $cmd_params.ListSubType = $list_subtype
+            }
+            if ($no_expiration)
+            {
+                $cmd_params.NoExpiration = $null
+            }
+            if ($expiration_date)
+            {
+                $cmd_params.ExpirationDate = $expiration_date
+            }
+            if ($action -eq "Block")
+            {
+                $cmd_params.Block = $null
+            }
+            if ($action -eq "Allow")
+            {
+                $cmd_params.Allow = $null
+            }
+            $this.CreateSession()
+            $results = Get-TenantAllowBlockListItems @cmd_params
         }
-        if ($list_type)
-        {
-            $cmd_params.ListType = $list_type
+        finally {
+            $this.DisconnectSession()
         }
-        if ($list_subtype)
-        {
-            $cmd_params.ListSubType = $list_subtype
-        }
-        if ($no_expiration)
-        {
-            $cmd_params.NoExpiration = $null
-        }
-        if ($expiration_date)
-        {
-            $cmd_params.ExpirationDate = $expiration_date
-        }
-        if ($action -eq "Block")
-        {
-            $cmd_params.Block = $null
-        }
-        if ($action -eq "Allow")
-        {
-            $cmd_params.Allow = $null
-        }
-        $this.CreateSession()
-        $results = Get-TenantAllowBlockListItems @cmd_params
-        $this.DisconnectSession()
         return $results
         <#
             .DESCRIPTION
             Use the Get-TenantAllowBlockListItems cmdlet to retrieve current entries in the Tenant Allow/Block Lists for your organization.
             This cmdlet returns current entries and details about them.
+
+            .LINK
+            https://learn.microsoft.com/en-us/powershell/module/exchange/get-tenantallowblocklistitems?view=exchange-ps
 
         #>
     }
@@ -716,6 +709,9 @@ class ExchangeOnlinePowershellV3Client
 
             .PARAMETER enabled
             Whether junk rule is enabled.
+
+            .PARAMETER mailbox
+            Mailbox ID.
 
             .OUTPUTS
             psobject - Raw response.
@@ -1123,6 +1119,7 @@ function GetEXORecipientPermissionCommand
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.RecipientPermission(obj.Identity === val.Identity)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
+
 function GetEXOMailBoxPermissionCommand
 {
     [CmdletBinding()]
@@ -1141,6 +1138,7 @@ function GetEXOMailBoxPermissionCommand
     }
     Write-Output $human_readable, $entry_context, $raw_response
 }
+
 function GetEXOMailBoxCommand
 {
     [CmdletBinding()]
@@ -1156,6 +1154,7 @@ function GetEXOMailBoxCommand
         "$script:INTEGRATION_ENTRY_CONTEXT.Mailbox(obj.Guid === val.Guid)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
+
 function GetEXOCASMailboxCommand
 {
     [CmdletBinding()]

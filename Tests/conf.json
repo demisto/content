@@ -3629,7 +3629,7 @@
         },
         {
             "integrations": "EWS Extension Online Powershell v3",
-            "playbookID": "playbook-O365-EWS-Extension-Powershell-Online-V2-Test",
+            "playbookID": "playbook-O365-EWS-Extension-Powershell-Online-V3-Test",
             "fromversion": "6.0.0",
             "toversion": "6.0.9",
             "timeout": 250
