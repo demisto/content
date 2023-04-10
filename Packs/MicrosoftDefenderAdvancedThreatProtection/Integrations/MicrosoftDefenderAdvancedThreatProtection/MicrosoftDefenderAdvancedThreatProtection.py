@@ -3572,21 +3572,22 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch_time:
             parsed = dateparser.parse(last_fetch_time, settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
-            demisto.debug(f'check alert {alert["id"]} with parsed time {parsed}. last alert time is {alert_time}')
+            demisto.debug(f'Checking alert {alert["id"]} with parsed time {parsed}. last alert time is {alert_time}')
             if alert_time <= parsed:  # type: ignore
                 demisto.debug(f"{INTEGRATION_NAME} - alert {str(alert)} was created at {alert['alertCreationTime']}."
                               f' Skipping.')
                 continue
-        demisto.debug(f'add alert {alert["id"]}')
+        demisto.debug(f'Adding alert {alert["id"]}')
         incidents.append({
             'rawJSON': json.dumps(alert),
             'name': f'{INTEGRATION_NAME} Alert {alert["id"]}',
-            'occurred': alert['alertCreationTime']
+            'occurred': alert['alertCreationTime'],
+            'dbotMirrorId': alert["id"]
         })
 
         # Update last run and add incident if the incident is newer than last fetch
         if alert_time > latest_created_time:  # type: ignore
-            demisto.debug(f'updated last created time to {alert_time}')
+            demisto.debug(f'Updating last created time to {alert_time}')
             latest_created_time = alert_time  # type: ignore
 
     # last alert is the newest as we ordered by it ascending
