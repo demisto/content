@@ -190,10 +190,21 @@ def create_incidents(demisto_user: dict, incidents: list) -> dict:
     return data
 
 
+def remove_private_info_from_body(object_to_sanitize: dict):
+    """
+    Some items like tenant ID are confidential and therefore should be removed from the metadata
+    """
+    if object_to_sanitize.get('conversation', {}).get('tenantId'):
+        del object_to_sanitize['conversation']['tenantId']
+    if object_to_sanitize.get('channelData', {}).get('tenant', {}).get('id'):
+        del object_to_sanitize['channelData']['tenant']['id']
+
+
 def add_req_data_to_incidents(incidents: list, request_body: dict) -> list:
     """
     Adds the request_body as a rawJSON to every created incident for further information on the incident
     """
+    remove_private_info_from_body(request_body)
     for incident in incidents:
         incident['rawJSON'] = json.dumps(request_body)
     return incidents
