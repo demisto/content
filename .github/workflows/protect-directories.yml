@@ -14,38 +14,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v14.6
 
       - name: Check for changes in protected directories
         run: |
-          # Set the list of protected directories and their exceptions
-          declare -A protected_directories
-          protected_directories=(
-            [".circleci"]=""
-            [".devcontainer"]=""
-            [".github"]=""
-            [".gitlab"]=""
-            [".guardrails"]=""
-            [".hooks"]=""
-            [".vscode"]=""
-            ["Templates"]=""
-            ["TestData"]=""
-            ["TestPlaybooks"]=""
-            ["Tests"]="conf.json"
-            ["Utils"]=""
-          )
-          echo ${{ steps.changed-files.outputs.all_changed_files }}
-          changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
-          echo $changed_files
-
-          # Check if any protected directories have been modified
-          for dir in "${!protected_directories[@]}"; do
-            exception="${protected_directories[$dir]}"
-            if echo "$changed_files" | grep -qE "^${dir}(/.*)?" && \
-               ! ( [ -z "$exception" ] || echo "$changed_files" | grep -qE "^${dir}/${exception}(/.*)?$" ); then
-              echo "Error: Changes made to protected directory: ${dir}, excluding ${dir}/${exception}"
-              exit 1
-            fi
-          done
+              python .github/scripts/check_protected_directories.py ${{ steps.changed-files.outputs.all_changed_files }}
