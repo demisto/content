@@ -2269,6 +2269,62 @@ class TestFetch:
         for incident in incidents:
             assert "\"incident_type\": \"detection\"" in incident.get('rawJSON', '')
 
+    @pytest.mark.parametrize(
+        "expected_name, fetch_incidents_or_detections,incidents_len",
+        [
+            ('Incident ID:', ['Incidents'], 2),
+            ('Detection ID:', ['Detections'], 2),
+            ('Detection ID:', ['Detections', 'Incidents'], 4)
+        ],
+    )
+    def test_fetch_returns_all_types(self, requests_mock, set_up_mocks, mocker, expected_name,
+                                     fetch_incidents_or_detections, incidents_len):
+        """
+        Tests that fetch incidents returns incidents and detections types, depends on
+        the value of fetch_incidents_or_detections.
+        Given:
+            fetch_incidents_or_detections parameter.
+        When:
+            Fetching incidents.
+        Then:
+            Validate the results contains only detection when fetch_incidents_or_detections = ['Detections'],
+            Validate the results contains only incidents when fetch_incidents_or_detections = ['Incidents']
+            Validate the results contains detection and incidents when
+             fetch_incidents_or_detections = ['Detections', 'Incidents']
+
+        """
+        from CrowdStrikeFalcon import fetch_incidents
+        mocker.patch.object(demisto, 'getLastRun', return_value=[{'time': '2020-09-04T09:16:10Z'}, {}])
+
+        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
+                           json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
+                                               {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
+
+        mocker.patch.object(
+            demisto,
+            'params',
+            return_value={
+                'url': SERVER_URL,
+                'proxy': True,
+                'incidents_per_fetch': 2,
+                'fetch_incidents_or_detections': fetch_incidents_or_detections,
+                'fetch_time': '3 days',
+            }
+        )
+
+        incidents = fetch_incidents()
+        assert len(incidents) == incidents_len
+
+        if incidents_len == 4:
+            assert 'Incident ID:' in incidents[0]['name']
+            assert 'Incident ID:' in incidents[1]['name']
+            assert 'Detection ID:' in incidents[2]['name']
+            assert 'Detection ID:' in incidents[3]['name']
+        else:
+            assert expected_name in incidents[0]['name']
+            assert expected_name in incidents[1]['name']
+
 
 class TestIncidentFetch:
     """ Test the logic of the fetch
