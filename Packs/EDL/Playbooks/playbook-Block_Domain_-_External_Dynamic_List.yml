@@ -95,8 +95,8 @@ tasks:
       id: 17febe84-45d9-41d3-8cfb-76ed203f69b3
       version: -1
       name: Update Indicator Tag for EDL
-      description: commands.local.cmd.set.indicators
-      script: Builtin|||setIndicators
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
       brand: Builtin
@@ -109,7 +109,9 @@ tasks:
           root: inputs.Domains
           transformers:
           - operator: uniq
-      tags:
+      field:
+        simple: tags
+      fieldValue:
         complex:
           root: inputs.Tag
     separatecontext: false
