@@ -49,6 +49,7 @@ class Client:
 
     def gcp_iam_tagbindings_list_request(self, parent: str, limit: int = None, page_token=None) -> dict:
         """
+        TODO UPDATE
         List projects under the specified parent.
         Args:
             parent (str): The name of the parent resource to list projects under.
@@ -62,6 +63,48 @@ class Client:
         params = assign_params(parent=parent, pageSize=limit, pageToken=page_token)
 
         request = self.cloud_resource_manager_service.tagBindings().list(**params)
+        response = request.execute()
+
+        return response
+
+
+    def gcp_iam_tagvalues_get_request(self, name: str) -> dict:
+        """
+        TODO UPDATE
+        List projects under the specified parent.
+        Args:
+            parent (str): The name of the parent resource to list projects under.
+            limit (int): The number of results to retrieve.
+            page_token (str): Pagination token returned from a previous request.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        params = assign_params(name=name)
+
+        request = self.cloud_resource_manager_service.tagValues().get(**params)
+        response = request.execute()
+
+        return response
+
+
+    def gcp_iam_tagkeys_get_request(self, name: str) -> dict:
+        """
+        TODO UPDATE
+        List projects under the specified parent.
+        Args:
+            parent (str): The name of the parent resource to list projects under.
+            limit (int): The number of results to retrieve.
+            page_token (str): Pagination token returned from a previous request.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        params = assign_params(name=name)
+
+        request = self.cloud_resource_manager_service.tagKeys().get(**params)
         response = request.execute()
 
         return response
@@ -3689,6 +3732,7 @@ def gcp_iam_folder_iam_policy_remove_command(client: Client, args: Dict[str, Any
 
 def gcp_iam_tagbindings_get_command(client: Client, args: Dict[str, Any]) -> list:
     """
+    TODO UPDATE
     List projects under the specified parent, or retrieve specific project information.
     Args:
         client (Client): GCP API client.
@@ -3705,11 +3749,21 @@ def gcp_iam_tagbindings_get_command(client: Client, args: Dict[str, Any]) -> lis
         raise Exception('One of the arguments: ''parent'' must be provided.')
     max_limit = 100
 
-    response = client.gcp_iam_tagbindings_list_request(parent=parent, limit=max_limit)
-# Next steps: 1. add other request for https://googleapis.github.io/google-api-python-client/docs/dyn/cloudresourcemanager_v3.tagValues.html#get or https://googleapis.github.io/google-api-python-client/docs/dyn/cloudresourcemanager_v3.tagValues.html#list
-#2. Might need the same for keys
-#3. Add to this command
-    return response
+    res_binding = client.gcp_iam_tagbindings_list_request(parent=parent, limit=max_limit)
+    if not res_binding:
+        #raise Exception('TODO, add better error response1')
+        return "No tag bindingds found"
+    if not res_binding.get('tagBindings')[0].get('tagValue'):
+        #raise Exception('TODO, add better error response2')
+        return "No tag bindingds found"
+    val_list = []
+    for value in res_binding.get('tagBindings'):
+        res_value = client.gcp_iam_tagvalues_get_request(name=value.get('tagValue'))
+        res_key = client.gcp_iam_tagkeys_get_request(name=res_value.get('parent'))
+        kv = {res_key['shortName']: res_value['shortName']}
+        val_list.append(kv)
+    
+    return val_list
 
 
 def test_module(service_account_key: str) -> None:
