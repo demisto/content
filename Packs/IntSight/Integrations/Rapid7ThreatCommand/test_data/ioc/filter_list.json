@@ -1,14 +1,14 @@
 {
     "content": [
         {
-            "value": "400e1f25b5e75bf2469f94d945da3889dbcd7b6185dff540af671bdea3f02740",
+            "value": "test",
             "type": "Hashes",
             "status": "Retired",
             "severity": "High",
             "score": 95.42028985507247,
-            "lastUpdateDate": "2022-12-13T06:40:06.256Z",
-            "lastSeen": "2019-10-02T08:39:28.114Z",
-            "firstSeen": "2019-10-02T08:39:28.114Z",
+            "lastUpdateDate": "content[0]_lastUpdateDate",
+            "lastSeen": "content[0]_lastSeen",
+            "firstSeen": "content[0]_firstSeen",
             "relatedMalware": [],
             "relatedCampaigns": [],
             "relatedThreatActors": [],
@@ -23,14 +23,14 @@
             "tags": []
         },
         {
-            "value": "b00c6f95f827803198d66287cad68a896f94577aa9e43199f0cb41ce7b0cfad8",
+            "value": "test",
             "type": "Hashes",
             "status": "Retired",
             "severity": "High",
             "score": 100,
-            "lastUpdateDate": "2022-12-13T06:40:19.792Z",
-            "lastSeen": "2019-10-11T19:17:39.078Z",
-            "firstSeen": "2019-10-11T08:51:59.210Z",
+            "lastUpdateDate": "content[1]_lastUpdateDate",
+            "lastSeen": "content[1]_lastSeen",
+            "firstSeen": "content[1]_firstSeen",
             "relatedMalware": [],
             "relatedCampaigns": [],
             "relatedThreatActors": [],
@@ -45,14 +45,14 @@
             "tags": []
         },
         {
-            "value": "104.16.51.111",
+            "value": "content[2]_value",
             "type": "IpAddresses",
             "status": "Retired",
             "severity": "Low",
             "score": 0,
-            "lastUpdateDate": "2022-12-13T07:40:14.740Z",
-            "lastSeen": "2021-01-17T14:03:18.731Z",
-            "firstSeen": "2019-07-26T08:35:25.755Z",
+            "lastUpdateDate": "content[2]_lastUpdateDate",
+            "lastSeen": "content[2]_lastSeen",
+            "firstSeen": "content[2]_firstSeen",
             "geolocation": "US",
             "relatedMalware": [],
             "relatedCampaigns": [],
@@ -73,5 +73,5 @@
             "tags": []
         }
     ],
-    "nextOffset": "2022-12-13T07:40:14.740Z"
+    "nextOffset": "nextOffset"
 }

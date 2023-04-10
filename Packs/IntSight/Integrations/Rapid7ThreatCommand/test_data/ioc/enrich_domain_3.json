@@ -57,9 +57,9 @@
         ],
         "RelatedThreatActors": [],
         "RelatedCampaigns": [],
-        "FirstSeen": "2018-08-22T20:06:30.890Z",
-        "LastSeen": "2023-03-27T01:14:12.789Z",
-        "UpdateDate": "2023-03-27T01:26:20.594Z",
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
         "Whitelisted": false,
         "Severity": {
             "Value": "Medium",
@@ -70,8 +70,8 @@
             {
                 "Value": "ns1.jino.ru. hostmaster.jino.ru. 2017040301 16384 2048 1048576 25600",
                 "Type": "SOA",
-                "FirstResolved": "2017-04-08T17:20:54.000Z",
-                "LastResolved": "2017-09-26T07:41:20.000Z",
+                "FirstResolved": "Data_DnsRecords[0]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[0]_LastResolved",
                 "Count": 70
             }
         ],
@@ -82,8 +82,8 @@
             "History": [],
             "Current": {
                 "RegistrationDetails": {
-                    "CreatedDate": "2011-10-05T12:13:51.000Z",
-                    "ExpiresDate": "2023-10-05T13:13:51.000Z",
+                    "CreatedDate": "Data_Whois_Current_RegistrationDetails_CreatedDate",
+                    "ExpiresDate": "Data_Whois_Current_RegistrationDetails_ExpiresDate",
                     "Statuses": [
                         "REGISTERED,",
                         "DELEGATED,",
@@ -110,12 +110,12 @@
         },
         "Resolutions": [
             {
-                "ResolvedIpAddress": "81.177.140.203",
+                "ResolvedIpAddress": "Data_Resolutions[0]_ResolvedIpAddress",
                 "Location": "RU",
                 "ASN": 8342,
                 "Operator": "JSC RTComm.RU",
-                "FirstResolved": "2017-04-08T15:14:24.000Z",
-                "LastResolved": "2017-09-26T22:47:32.000Z",
+                "FirstResolved": "Data_Resolutions[0]_FirstResolved",
+                "LastResolved": "Data_Resolutions[0]_LastResolved",
                 "ReportingSources": [
                     "Farsight",
                     "VirusTotal"
@@ -127,44 +127,11 @@
             "communicating": [
                 "19084c0bee7c21c93aba4a7f807102a07713650a8792594e75bdceac78789681",
                 "210c00b809ae45a588920a13d67c1e78146bc9ce01a09203942b9bfd0f03ee4d",
-                "21653f0952bfb453de5b3e7684d01200c8ae58cd5c3ed36a7bdc17372a246bab",
-                "2223ec5caa366ff51c305eaf9a247eefbb8d43b9cca02f106579c96233a41a57",
-                "23225264c92b3c633f08f7238b1258a898ef92142eed0be2009f7d1e3b56850f",
-                "2ec1eaa360ece96fb0056c7833f2a10ec7d22179ec8465432326438ce6b0cc9c",
-                "36a30bde448029ff8824cdc2a65b77245fd9f8c3cb9112e8240d8fd29f76d24c",
-                "3a5cab592f15a678d8b945675fd7f5043393dd6a76d416f549f8de4fc1915be7",
-                "4d1fde503c6b0be3ec704606ccaecad01f4f56f10de15a3e4c6197c9fc3275f8",
-                "5477005a308acd11e444aa11a743148cf89347d35512420ac834f48eed478399",
-                "58a9228369290c0e2054abcfbbf68fda1bb47faf21b2368deef00ff48e1f0916",
-                "6b09defbb9826b771e703bce3ecc882a420e30a45043deea84e39e790ab202dd",
-                "6b9dbb5896d8dbff07f58883708e87f892ce3956f246bdcc9d780b9e10825201",
-                "7d251345cc57940311832e4010e9ecc23e52ea57fdc08ddc40d8ebf387c736a3",
-                "82bae10a608a1ea65e3a97ce860333cfcc71951f521d2c3260df12ffab09aa1e",
-                "94303358dc5a1a20a92c7f97a135071060e649ae5d3252c20b9dfbb98452ff0b",
-                "95528b086a0a3639fcd5f63fac13be1e2d2f12ad66b898881f08db0c8162735d",
-                "9eea65940505b553d6154e2f2ff6c8c35040eb611f47eccfcd40bc03990376eb",
-                "a046ea271eb1f5238a39067b9726ce0c396ae8f1fe4354917eba9b4b60ea911b",
-                "b7ceac348655dbc9b26bf9c35d91fbf768b3b954a28280d50b868a8fe94e6f88",
-                "c7b15c36ac4d49f0a7a61638a4e909f47fc1a3b806e7284390c336dba621e874",
-                "ccafabf939b58203775c81b6a87cc27a027466e6b6319b932bd18deb4f08ca9e",
-                "e55247dc70c0408c3d0e724320736d11f0fe279bed2d84bf83a1171e5d3bdda1",
-                "e79424c7e25086f5867cdb4356b816797b73ff16e9ef22ad3a5f5e7e659b9f10",
-                "f9f259c646d315123ee6e13a15bc9077ee87799a964a0bf260f5606f9c2af1b2"
+                "test"
             ],
             "referencing": [
-                "11b2b95a27cd52555c4a986ef43c4e565f186008b78ac521ace9b06258899bc0",
-                "174e49f1d330447039ad9fc45b9f43ff4ef030bca9a2cb967bb6b42c4c998dcf",
-                "2035a6da9a5c12939e44a21f4ac5d0190bfefbd5ad90991dba6689a8791cea85",
-                "3f1f898f4bc0a6083a9dd9bf4445d9b02e7532f936de750f719c002f1180a662",
-                "55a70a794071afcbbe2ae36fe1083524754469c6d08514d41441cad8b2c4d0a1",
-                "642d804d52209393cf51a3c152fcfd983d425289a879a95d133da80728b14e74",
-                "66f23a6a9147b9b4109d30343e9236f17e82008be2ba50dfa857d5cfb56d40d9",
-                "75368b1a7a0801c0c23c86d03314841b438a1adff9235c904e9042d51060cdb8",
-                "873903a1e44f670f57c570cf079f4eff47afb32c1ad55f2f5f649b2038c7f1c2",
-                "88f4c86700a1f3e987f8f63da3114ccdd030be4f56cc69bd211de41469f815c7",
-                "9d48f647d5ad6273591604b6b454d7f23cfc83aefdcbfa61db3f9a74d68ff3bc",
-                "a512812cf894a45f3d7ad4c3bc2a913a7584b3d4c41d3aaec478dd18a316b3f3",
-                "f637f2ec94f0f448eb6a8b3b1c696c9d700fcc9739a99f1fe28c3d66f096f8e4"
+                "test",
+                "test"
             ]
         }
     }

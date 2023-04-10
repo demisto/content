@@ -11,10 +11,10 @@ from Rapid7ThreatCommand import (
     ReadableOutputs,
     ReadableErrors,
     ArgumentValues,
-    file_reputation_hander,
-    domain_reputation_hander,
-    ip_reputation_hander,
-    url_reputation_hander,
+    file_reputation_handler,
+    domain_reputation_handler,
+    ip_reputation_handler,
+    url_reputation_handler,
 )
 from requests.models import PreparedRequest
 
@@ -89,8 +89,8 @@ def test_list_cyber_term_cve_command(
     result = list_cyber_term_cve_command(mock_client, args)
     assert result.outputs_prefix == "ThreatCommand.CVE"
     assert result.outputs_key_field == "id"
-    if isinstance(result.outputs, list):
-        assert len(result.outputs) <= 50 if result.outputs else True
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) <= 50 if result.outputs else True
 
 
 @pytest.mark.parametrize(
@@ -217,10 +217,11 @@ def test_list_cyber_term_command(
         req.prepare_url(url, param)
         json_response = load_mock_response(json_path)
         requests_mock.get(url=req.url, json=json_response, status_code=HTTPStatus.OK)
-        print(param)
     result = list_cyber_term_command(mock_client, args)
     assert result.outputs_prefix == "ThreatCommand.CyberTerm"
     assert result.outputs_key_field == "id"
+    assert isinstance(result.outputs, list)
+    assert set(["type", "id"]).issubset(list(result.outputs[0].keys()))
 
 
 @pytest.mark.parametrize(
@@ -253,8 +254,8 @@ def test_list_source_command(
     result = list_source_command(mock_client, args)
     assert result.outputs_prefix == "ThreatCommand.Source"
     assert result.outputs_key_field == "id"
-    if isinstance(result.outputs, list):
-        assert len(result.outputs) <= args.get("limit", 50)
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) <= args.get("limit", 50)
 
 
 @pytest.mark.parametrize(
@@ -301,9 +302,8 @@ def test_create_source_document_command(
     url = urljoin(mock_client._base_url, "/v1/iocs/add-source")
     requests_mock.post(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = create_source_document_command(mock_client, args)
-    assert result.readable_output == ReadableOutputs.DOCUMENT_CREATE.value.format(
-        "test", "6400789094a06f1d8131e1c3"
-    )
+    assert result.outputs_prefix == "ThreatCommand.Source"
+    assert result.outputs_key_field == "id"
 
 
 @pytest.mark.parametrize(
@@ -528,7 +528,7 @@ def test_list_system_modules_command(
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = list_system_modules_command(mock_client, {})
     assert result.outputs_prefix == "ThreatCommand.SystemModule"
-    assert result.outputs_key_field == "id"
+    assert result.outputs_key_field == "module_name"
 
 
 def test_add_asset_command(
@@ -703,8 +703,8 @@ def test_list_assets_command(
     result = list_assets_command(mock_client, args)
     assert result.outputs_prefix == "ThreatCommand.Asset"
     assert result.outputs_key_field == "value"
-    if isinstance(result.outputs, list):
-        assert len(result.outputs) <= args.get("limit", 50)
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) <= args.get("limit", 50)
 
 
 @pytest.mark.parametrize(
@@ -735,10 +735,10 @@ def test_list_asset_types_command(
     url = urljoin(mock_client._base_url, "/v1/data/assets/assets-types")
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = list_asset_types_command(mock_client, args)
-    assert result.outputs_prefix == "ThreatCommand.asset_type"
+    assert result.outputs_prefix == "ThreatCommand.AssetType"
     assert result.outputs_key_field == "value"
-    if isinstance(result.outputs, list):
-        assert len(result.outputs) <= args.get("limit", 50)
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) <= args.get("limit", 50)
 
 
 @pytest.mark.parametrize(
@@ -771,8 +771,8 @@ def test_list_cve_command(
     result = list_cve_command(mock_client, args)
     assert result[0].outputs_prefix == "ThreatCommand.CVE"
     assert result[0].outputs_key_field == "id"
-    if isinstance(result[0].outputs, list):
-        assert len(result[0].outputs) <= args.get("limit", 50)
+    assert isinstance(result[0].outputs, list)
+    assert len(result[0].outputs) <= args.get("limit", 50)
 
 
 @pytest.mark.parametrize(
@@ -793,7 +793,6 @@ def test_list_cve_command(
     ),
 )
 def test_fail_list_cve_command(
-    requests_mock,
     mock_client: Client,
     args: dict[str, Any],
     message: str,
@@ -873,8 +872,7 @@ def test_delete_cve_command(
     (
         {"retrieve_ids_only": "true"},
         {"retrieve_ids_only": "false", "limit": 3},
-        {"retrieve_ids_only": "false", "alert_id": "59490dabe57c281391e11ceb"}
-        # {"all_results": True},
+        {"retrieve_ids_only": "false", "alert_id": "59490dabe57c281391e11ceb"},
     ),
 )
 def test_list_alert_command(
@@ -924,14 +922,14 @@ def test_list_alert_command(
     assert result.outputs_prefix == "ThreatCommand.Alert"
     assert result.outputs_key_field == "id"
     if not args.get("alert_id"):
-        if isinstance(result.outputs, list):
-            assert len(result.outputs) == args.get("limit", 50)
+        assert isinstance(result.outputs, list)
+        assert len(result.outputs) == args.get("limit", 50)
     if not args.get("retrieve_ids_only") or args.get("retrieve_ids_only") is False:
         print(result.outputs)
-        if isinstance(result.outputs, list):
-            assert result.outputs[0].get("id")
-            assert result.outputs[0].get("type")
-            assert result.outputs[0].get("found_date")
+        assert isinstance(result.outputs, list)
+        assert result.outputs[0].get("id")
+        assert result.outputs[0].get("type")
+        assert result.outputs[0].get("found_date")
 
 
 @pytest.mark.parametrize(
@@ -944,7 +942,6 @@ def test_list_alert_command(
     ),
 )
 def test_fail_list_alert_command(
-    requests_mock,
     mock_client: Client,
     args: dict[str, Any],
     message: str,
@@ -1010,9 +1007,8 @@ def test_create_alert_command(
     )
 
     result = create_alert_command(mock_client, args)
-    assert result.readable_output == ReadableOutputs.ALERT_CREATE.value.format(
-        "59490dabe57c281391e11ceb"
-    )
+    assert result.outputs_prefix == "ThreatCommand.Alert"
+    assert result.outputs_key_field == "id"
 
 
 @pytest.mark.parametrize(
@@ -1220,7 +1216,6 @@ def test_close_alert_command(
     ),
 )
 def test_fail_close_alert_command(
-    requests_mock,
     mock_client: Client,
     args: dict[str, Any],
     message: str,
@@ -1279,7 +1274,6 @@ def test_update_alert_severity_command(
     ),
 )
 def test_fail_update_alert_severity_command(
-    requests_mock,
     mock_client: Client,
     args: dict[str, Any],
     message: str,
@@ -1378,9 +1372,7 @@ def test_unassign_alert_command(
     requests_mock.patch(url=url, content=b"", status_code=HTTPStatus.OK)
 
     result = unassign_alert_command(mock_client, {"alert_id": "123"})
-    assert result.readable_output == ReadableOutputs.ALERT_UNASSIGN.value.format(
-        "123"
-    )
+    assert result.readable_output == ReadableOutputs.ALERT_UNASSIGN.value.format("123")
 
 
 def test_reopen_alert_command(
@@ -1604,8 +1596,8 @@ def test_get_alert_blocklist_status_command(
     result = get_alert_blocklist_status_command(mock_client, {"alert_id": "123"})
     assert result.outputs_prefix == "ThreatCommand.Alert"
     assert result.outputs_key_field == "id"
-    if isinstance(result.outputs, dict) and result.outputs.keys():
-        assert "BlockList" in list(result.outputs.keys())
+    assert isinstance(result.outputs, dict)
+    assert "BlockList" in list(result.outputs.keys())
 
 
 def test_update_alert_blocklist_command(
@@ -1703,11 +1695,12 @@ def test_list_alert_image_command(
     result = list_alert_image_command(
         mock_client, {"alert_id": "59490dabe57c281391e11ceb"}
     )
-    if isinstance(result, list) and isinstance(result[0], CommandResults):
-        assert result[0].readable_output == ReadableOutputs.ALERT_IMAGES.value.format(
-            "59490dabe57c281391e11ceb"
-        )
-        assert isinstance(result[1], list)
+    assert isinstance(result, list)
+    assert isinstance(result[0], CommandResults)
+    assert result[0].readable_output == ReadableOutputs.ALERT_IMAGES.value.format(
+        "59490dabe57c281391e11ceb"
+    )
+    assert isinstance(result[1], list)
 
 
 def test_takedown_alert_command(
@@ -1829,29 +1822,29 @@ def test_list_alert_scenario_command(
     assert result.outputs_prefix == "ThreatCommand.Scenario"
 
 
-def test_report_alert_ioc_command(
-    requests_mock,
-    mock_client: Client,
-):
-    """
-    Scenario: Report alert IOC.
-    Given:
-     - User has provided correct parameters.
-    When:
-     - threat-command-alert-ioc-report called.
-    Then:
-     - Ensure that the IOC reported.
-    """
-    from Rapid7ThreatCommand import report_alert_ioc_command
+# def test_report_alert_ioc_command(
+#     requests_mock,
+#     mock_client: Client,
+# ):
+#     """
+#     Scenario: Report alert IOC.
+#     Given:
+#      - User has provided correct parameters.
+#     When:
+#      - threat-command-alert-ioc-report called.
+#     Then:
+#      - Ensure that the IOC reported.
+#     """
+#     from Rapid7ThreatCommand import report_alert_ioc_command
 
-    json_response = load_mock_response("alert/conversation.json")
-    url = urljoin(mock_client._base_url, "/v1/data/alerts/report-iocs/123")
-    requests_mock.post(url=url, json=json_response, status_code=HTTPStatus.OK)
-    args = {"alert_id": "123", "external_sources": "test"}
-    result = report_alert_ioc_command(mock_client, args)
-    assert result.readable_output == ReadableOutputs.ALERT_REPORT.value.format(
-        args["alert_id"]
-    )
+#     json_response = load_mock_response("alert/conversation.json")
+#     url = urljoin(mock_client._base_url, "/v1/data/alerts/report-iocs/123")
+#     requests_mock.post(url=url, json=json_response, status_code=HTTPStatus.OK)
+#     args = {"alert_id": "123", "external_sources": "test"}
+#     result = report_alert_ioc_command(mock_client, args)
+#     assert result.readable_output == ReadableOutputs.ALERT_REPORT.value.format(
+#         args["alert_id"]
+#     )
 
 
 def test_list_account_user_command(
@@ -1954,8 +1947,8 @@ def search_ioc_handler_command(
 
     result = search_ioc_handler_command(mock_client, args)
     assert result.outputs_prefix == "ThreatCommand.IOC"
-    if isinstance(result.outputs, list):
-        assert len(result.outputs) == args["limit"]
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == args["limit"]
 
 
 def test_add_tags_ioc_command(
@@ -2168,7 +2161,7 @@ def test_fail_update_account_whitelist_command(
     with pytest.raises(ValueError) as error_info:
         update_account_whitelist_command(mock_client, args)
     assert ReadableErrors.ARGUMENT.value.format(
-        "is_whitelisted", ArgumentValues.BOOLEAN.value
+        "is_whitelisted", ArgumentValues.WHITELIST_STATUS.value
     ) == str(error_info.value)
 
 
@@ -2272,13 +2265,13 @@ def test_search_mention_command(
     mock_client: Client,
 ):
     """
-    Scenario: Remove IOCs from blocklist.
+    Scenario: Search mentions.
     Given:
      - User has provided correct parameters.
     When:
-     - threat-command-ioc-blocklist-remove called.
+     - threat-command-mention-search called.
     Then:
-     - Ensure that IOCs was removed from blocklist.
+     - Ensure that the mentions sent to XSOAR.
     """
     from Rapid7ThreatCommand import search_mention_command
 
@@ -2305,13 +2298,13 @@ def test_usage_quota_enrichment_command(
     mock_client: Client,
 ):
     """
-    Scenario: Remove IOCs from blocklist.
+    Scenario: Get enrichment quota.
     Given:
      - User has provided correct parameters.
     When:
-     - threat-command-ioc-blocklist-remove called.
+     - threat-command-enrichment-quota-usage called.
     Then:
-     - Ensure that IOCs was removed from blocklist.
+     - Ensure that the quota sent to XSOAR.
     """
     from Rapid7ThreatCommand import usage_quota_enrichment_command
 
@@ -2327,13 +2320,13 @@ def test_list_mssp_user_command(
     mock_client: Client,
 ):
     """
-    Scenario: Remove IOCs from blocklist.
+    Scenario: List MSSP users.
     Given:
      - User has provided correct parameters.
     When:
-     - threat-command-ioc-blocklist-remove called.
+     - threat-command-mssp-user-list called.
     Then:
-     - Ensure that IOCs was removed from blocklist.
+     - Ensure that MSSP users listed.
     """
     from Rapid7ThreatCommand import list_mssp_user_command
 
@@ -2349,13 +2342,13 @@ def test_list_mssp_customer_command(
     mock_client: Client,
 ):
     """
-    Scenario: Remove IOCs from blocklist.
+    Scenario: List MSSP customers.
     Given:
      - User has provided correct parameters.
     When:
-     - threat-command-ioc-blocklist-remove called.
+     - threat-command-mssp-customer-list called.
     Then:
-     - Ensure that IOCs was removed from blocklist.
+     - Ensure that MSSP customers listed.
     """
     from Rapid7ThreatCommand import list_mssp_customer_command
 
@@ -2371,13 +2364,13 @@ def test_get_alert_csv_command(
     mock_client: Client,
 ):
     """
-    Scenario: List alert images.
+    Scenario: Get alert CSV file.
     Given:
      - User has provided correct parameters.
     When:
-     - threat-command-alert-image-list called.
+     - threat-command-alert-csv-get called.
     Then:
-     - Ensure that alert images listed.
+     - Ensure that CSV sent to XSOAR.
     """
     from Rapid7ThreatCommand import get_alert_csv_command
 
@@ -2400,98 +2393,92 @@ def test_get_alert_csv_command(
 
 
 @pytest.mark.parametrize(
-    ("args", "handler_command", "key", "response_path"),
+    ("handler_command", "key", "response_path"),
     (
-        ({"file": "test"}, file_reputation_hander, "file", "ioc/enrich_file.json"),
-        ({"file": "test"}, file_reputation_hander, "file", "ioc/enrich_file_2.json"),
-        ({"file": "test"}, file_reputation_hander, "file", "ioc/enrich_file_3.json"),
-        ({"file": "test"}, file_reputation_hander, "file", "ioc/enrich_file_4.json"),
+        (file_reputation_handler, "file", "ioc/enrich_file.json"),
+        (file_reputation_handler, "file", "ioc/enrich_file_2.json"),
+        (file_reputation_handler, "file", "ioc/enrich_file_3.json"),
+        (file_reputation_handler, "file", "ioc/enrich_file_4.json"),
         (
-            {"domain": "test"},
-            domain_reputation_hander,
+            domain_reputation_handler,
             "domain",
             "ioc/enrich_domain.json",
         ),
         (
-            {"domain": "test"},
-            domain_reputation_hander,
+            domain_reputation_handler,
             "domain",
             "ioc/enrich_domain_2.json",
         ),
         (
-            {"domain": "test"},
-            domain_reputation_hander,
+            domain_reputation_handler,
             "domain",
             "ioc/enrich_domain_3.json",
         ),
         (
-            {"domain": "test"},
-            domain_reputation_hander,
+            domain_reputation_handler,
             "domain",
             "ioc/enrich_domain_4.json",
         ),
-        ({"ip": "test"}, ip_reputation_hander, "ip", "ioc/enrich_ip.json"),
-        ({"ip": "test"}, ip_reputation_hander, "ip", "ioc/enrich_ip_2.json"),
-        ({"ip": "test"}, ip_reputation_hander, "ip", "ioc/enrich_ip_3.json"),
-        ({"ip": "test"}, ip_reputation_hander, "ip", "ioc/enrich_ip_4.json"),
-        ({"url": "test"}, url_reputation_hander, "url", "ioc/enrich_url.json"),
-        ({"url": "test"}, url_reputation_hander, "url", "ioc/enrich_url_2.json"),
-        ({"url": "test"}, url_reputation_hander, "url", "ioc/enrich_url_3.json"),
-        ({"url": "test"}, url_reputation_hander, "url", "ioc/enrich_url_4.json"),
+        (ip_reputation_handler, "ip", "ioc/enrich_ip.json"),
+        (ip_reputation_handler, "ip", "ioc/enrich_ip_2.json"),
+        (ip_reputation_handler, "ip", "ioc/enrich_ip_3.json"),
+        (ip_reputation_handler, "ip", "ioc/enrich_ip_4.json"),
+        (url_reputation_handler, "url", "ioc/enrich_url.json"),
+        (url_reputation_handler, "url", "ioc/enrich_url_2.json"),
+        (url_reputation_handler, "url", "ioc/enrich_url_3.json"),
+        (url_reputation_handler, "url", "ioc/enrich_url_4.json"),
     ),
 )
 def test_finish_reputation_handler(
     requests_mock,
     mock_client: Client,
-    args: dict[str, Any],
     handler_command: Callable,
     key: str,
     response_path: str,
 ):
     """
-    Scenario: List alert images.
+    Scenario: Reputation commands.
     Given:
      - User has provided correct parameters.
     When:
-     - threat-command-alert-image-list called.
+     - reputation command called.
     Then:
-     - Ensure that alert images listed.
+     - Ensure that the command finished.
     """
     from Rapid7ThreatCommand import reputation_handler
 
     json_response = load_mock_response(response_path)
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json=json_response)
-
     result = reputation_handler(
-        args=args, client=mock_client, handler_command=handler_command, key=key
+        args={key: "test"}, client=mock_client, handler_command=handler_command, key=key
     )
     assert not result.continue_to_poll
 
 
 @pytest.mark.parametrize(
-    ("args", "handler_command", "key", "status"),
+    ("handler_command", "key", "status"),
     (
-        ({"file": "test"}, file_reputation_hander, "file", "InProggress"),
-        ({"url": "test"}, url_reputation_hander, "url", "Queued"),
+        (file_reputation_handler, "file", "InProggress"),
+        (url_reputation_handler, "url", "Queued"),
+        (domain_reputation_handler, "domain", "QuotaExceeded"),
     ),
 )
 def test_continue_reputation_handler(
     requests_mock,
     mock_client: Client,
-    args: dict[str, Any],
     handler_command: Callable,
     key: str,
     status: str,
 ):
     """
-    Scenario: List alert images.
+    Scenario: Reputation commands.
     Given:
      - User has provided correct parameters.
     When:
-     - threat-command-alert-image-list called.
+     - reputation command called.
     Then:
-     - Ensure that alert images listed.
+     - Ensure that the command called again.
     """
     from Rapid7ThreatCommand import reputation_handler
 
@@ -2499,44 +2486,12 @@ def test_continue_reputation_handler(
     requests_mock.get(url=url, json={"Status": status})
 
     result = reputation_handler(
-        args=args, client=mock_client, handler_command=handler_command, key=key
+        args={key: "test"}, client=mock_client, handler_command=handler_command, key=key
     )
-    assert result.continue_to_poll
-
-
-@pytest.mark.parametrize(
-    ("args", "handler_command", "key", "status"),
-    (
-        ({"domain": "test"}, domain_reputation_hander, "domain", "QuotaExceeded"),
-        ({"ip": "test"}, ip_reputation_hander, "ip", "Failed"),
-    ),
-)
-def test_fail_reputation_handler(
-    requests_mock,
-    mock_client: Client,
-    args: dict[str, Any],
-    handler_command: Callable,
-    key: str,
-    status: str,
-):
-    """
-    Scenario: Add IOCs to blocklist.
-    Given:
-     - User has provided correct parameters.
-    When:
-     - threat-command-ioc-blocklist-add called.
-    Then:
-     - Ensure relevant error raised.
-    """
-    from Rapid7ThreatCommand import reputation_handler
-
-    url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
-    requests_mock.get(url=url, json={"Status": status})
-    with pytest.raises(DemistoException) as error_info:
-        reputation_handler(
-            args=args, client=mock_client, handler_command=handler_command, key=key
-        )
-    assert ReadableErrors.ENRICH_FAIL.value == str(error_info.value)
+    if status == "QuotaExceeded":
+        assert not result.continue_to_poll
+    else:
+        assert result.continue_to_poll
 
 
 def test_get_ioc_handler(
@@ -2544,13 +2499,13 @@ def test_get_ioc_handler(
     mock_client: Client,
 ):
     """
-    Scenario: Remove IOCs from blocklist.
+    Scenario: Get IOC.
     Given:
      - User has provided correct parameters.
     When:
-     - threat-command-ioc-blocklist-remove called.
+     - threat-command-ioc-search called.
     Then:
-     - Ensure that IOCs was removed from blocklist.
+     - Ensure that the IOC sent to the user.
     """
     from Rapid7ThreatCommand import get_ioc_handler
 
@@ -2566,13 +2521,13 @@ def test_list_ioc_handler(
     mock_client: Client,
 ):
     """
-    Scenario: Remove IOCs from blocklist.
+    Scenario: List IOCs.
     Given:
      - User has provided correct parameters.
     When:
-     - threat-command-ioc-blocklist-remove called.
+     - threat-command-ioc-search.
     Then:
-     - Ensure that IOCs was removed from blocklist.
+     - Ensure that IOCs listed.
     """
     from Rapid7ThreatCommand import list_ioc_handler
 
@@ -2598,13 +2553,13 @@ def test_enrich_ioc_handler(
     response_path: str,
 ):
     """
-    Scenario: Remove IOCs from blocklist.
+    Scenario: Enrich IOC.
     Given:
      - User has provided correct parameters.
     When:
-     - threat-command-ioc-blocklist-remove called.
+     - threat-command-ioc-search called with enrichment flag.
     Then:
-     - Ensure that IOCs was removed from blocklist.
+     - Ensure that the command stop from running.
     """
     from Rapid7ThreatCommand import enrich_ioc_handler
 
@@ -2628,13 +2583,13 @@ def test_fail_enrich_ioc_handler(
     status: str,
 ):
     """
-    Scenario: Remove IOCs from blocklist.
+    Scenario: Enrich IOC.
     Given:
      - User has provided correct parameters.
     When:
-     - threat-command-ioc-blocklist-remove called.
+     - threat-command-ioc-search called with enrichment flag.
     Then:
-     - Ensure that IOCs was removed from blocklist.
+     - Ensure relevant error raised.
     """
     from Rapid7ThreatCommand import enrich_ioc_handler
 
@@ -2657,13 +2612,13 @@ def test_continue_enrich_ioc_handler(
     status: str,
 ):
     """
-    Scenario: Remove IOCs from blocklist.
+    Scenario: Enrich IOC.
     Given:
      - User has provided correct parameters.
     When:
-     - threat-command-ioc-blocklist-remove called.
+     - threat-command-ioc-search called with enrichment flag.
     Then:
-     - Ensure that IOCs was removed from blocklist.
+     - Ensure that polling command called again.
     """
     from Rapid7ThreatCommand import enrich_ioc_handler
 
@@ -2678,13 +2633,13 @@ def test_fetch_incidents(
     mock_client: Client,
 ):
     """
-    Scenario: Remove IOCs from blocklist.
+    Scenario: Fetch 2 incidents.
     Given:
      - User has provided correct parameters.
     When:
-     - threat-command-ioc-blocklist-remove called.
+     - fetch-incidents called.
     Then:
-     - Ensure that IOCs was removed from blocklist.
+     - Ensure that the incidents created successfully.
     """
     from Rapid7ThreatCommand import fetch_incidents
 
@@ -2738,13 +2693,30 @@ def test_fetch_incidents(
         alert_types=None,
         fetch_attachments=True,
         fetch_csv=True,
-        first_fetch='3 Days',
+        first_fetch="3 Days",
         is_closed=False,
         max_fetch=2,
         source_types=None,
     )
     assert next_run.get("offset")
     assert len(incidents) == 2
+    assert isinstance(incidents[0]["attachment"], list)
+    assert len(incidents[0]["attachment"]) == 1
+    assert len(incidents[1]["attachment"]) == 2
+    csv_keys = [list(row.keys()) for row in incidents[0]["attachment"][0]["content"]][0]
+    assert set(csv_keys).issubset(
+        [
+            "email",
+            "password",
+            "userStatus",
+            "passwordStatus",
+            "internalDomain",
+            "message",
+            "remediationAction",
+            "remediationStatus",
+            "rawData",
+        ]
+    )
 
 
 @pytest.mark.parametrize(

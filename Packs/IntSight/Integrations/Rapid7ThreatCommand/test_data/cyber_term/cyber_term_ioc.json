@@ -2,11 +2,11 @@
     "content": {
         "iocs": [
             {
-                "Value": "160.153.129.37",
+                "Value": "content_iocs[0]_Value",
                 "Type": "IpAddresses",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2023-03-02T00:51:14.199Z",
+                "UpdateDate": "content_iocs[0]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Cyware",
@@ -19,7 +19,7 @@
                 "Type": "Domains",
                 "Status": "Active",
                 "Severity": "Low",
-                "UpdateDate": "2022-12-21T00:41:09.000Z",
+                "UpdateDate": "content_iocs[1]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -32,7 +32,7 @@
                 "Type": "Domains",
                 "Status": "Active",
                 "Severity": "Low",
-                "UpdateDate": "2022-12-21T00:42:46.000Z",
+                "UpdateDate": "content_iocs[2]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -45,7 +45,7 @@
                 "Type": "Domains",
                 "Status": "Active",
                 "Severity": "Medium",
-                "UpdateDate": "2022-12-13T21:27:05.000Z",
+                "UpdateDate": "content_iocs[3]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -58,7 +58,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-11-28T21:57:13.000Z",
+                "UpdateDate": "content_iocs[4]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -71,7 +71,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-11-21T17:08:32.776Z",
+                "UpdateDate": "content_iocs[5]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -84,7 +84,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-11-17T19:15:10.000Z",
+                "UpdateDate": "content_iocs[6]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -93,11 +93,11 @@
                 ]
             },
             {
-                "Value": "160.153.131.187",
+                "Value": "content_iocs[7]_Value",
                 "Type": "IpAddresses",
                 "Status": "Retired",
                 "Severity": "High",
-                "UpdateDate": "2022-08-09T18:48:23.566Z",
+                "UpdateDate": "content_iocs[7]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -108,7 +108,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T08:35:31.836Z",
+                "UpdateDate": "content_iocs[8]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -117,11 +117,11 @@
                 ]
             },
             {
-                "Value": "7706df89b60a53d208cd77fdcfb2ce411926b4a2c065885d592de6d12dc411e2",
+                "Value": "test",
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T08:34:27.509Z",
+                "UpdateDate": "content_iocs[9]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -130,11 +130,11 @@
                 ]
             },
             {
-                "Value": "f0a3d4e47b098d302ad13bc4e51a03adeb9428e5c34630428222e989792f7a6d",
+                "Value": "test",
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-10-20T14:20:56.388Z",
+                "UpdateDate": "content_iocs[10]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -146,7 +146,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-10-20T14:12:43.378Z",
+                "UpdateDate": "content_iocs[11]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -157,7 +157,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-09-27T02:04:58.696Z",
+                "UpdateDate": "content_iocs[12]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Cyware",
@@ -170,7 +170,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T03:12:41.219Z",
+                "UpdateDate": "content_iocs[13]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -182,7 +182,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-09-18T12:25:53.497Z",
+                "UpdateDate": "content_iocs[14]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Cyware",
@@ -191,11 +191,11 @@
                 ]
             },
             {
-                "Value": "http://prevenzioneformazionelavoro.it/quasi-reprehenderit/documents.zip",
+                "Value": "content_iocs[15]_Value",
                 "Type": "Urls",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-09-15T21:52:10.007Z",
+                "UpdateDate": "content_iocs[15]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Cyware",
@@ -208,7 +208,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T03:29:20.357Z",
+                "UpdateDate": "content_iocs[16]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -219,7 +219,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2021-11-01T15:50:22.195Z",
+                "UpdateDate": "content_iocs[17]_UpdateDate",
                 "Whitelisted": true,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -230,7 +230,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T08:08:34.246Z",
+                "UpdateDate": "content_iocs[18]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -241,7 +241,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T06:34:40.633Z",
+                "UpdateDate": "content_iocs[19]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -252,7 +252,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T07:26:44.627Z",
+                "UpdateDate": "content_iocs[20]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -263,7 +263,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Medium",
-                "UpdateDate": "2022-08-10T02:09:55.469Z",
+                "UpdateDate": "content_iocs[21]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -274,7 +274,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T10:10:32.105Z",
+                "UpdateDate": "content_iocs[22]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -282,11 +282,11 @@
                 ]
             },
             {
-                "Value": "https://boogieproductions.com.au/jJNW2LDF/filkfht.html",
+                "Value": "content_iocs[23]_Value",
                 "Type": "Urls",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T10:10:49.594Z",
+                "UpdateDate": "content_iocs[23]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -297,7 +297,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T10:09:22.931Z",
+                "UpdateDate": "content_iocs[24]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -310,7 +310,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T10:04:01.502Z",
+                "UpdateDate": "content_iocs[25]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -318,11 +318,11 @@
                 ]
             },
             {
-                "Value": "f422fd3a413eb921a69ee5ed5a8db8ad883410eab227c87379f762dc3619f91e",
+                "Value": "test",
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T10:00:56.206Z",
+                "UpdateDate": "content_iocs[26]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -335,7 +335,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:58:30.103Z",
+                "UpdateDate": "content_iocs[27]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -347,7 +347,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:57:15.097Z",
+                "UpdateDate": "content_iocs[28]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -358,18 +358,18 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:55:57.902Z",
+                "UpdateDate": "content_iocs[29]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
                 ]
             },
             {
-                "Value": "https://oel.tg/MSOFjh0EXRR8/j.html",
+                "Value": "content_iocs[30]_Value",
                 "Type": "Urls",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:55:59.207Z",
+                "UpdateDate": "content_iocs[30]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "AlienVault OTX",
@@ -382,7 +382,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:54:38.369Z",
+                "UpdateDate": "content_iocs[31]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -395,7 +395,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:53:33.065Z",
+                "UpdateDate": "content_iocs[32]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -406,7 +406,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:53:21.579Z",
+                "UpdateDate": "content_iocs[33]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -417,7 +417,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:48:01.798Z",
+                "UpdateDate": "content_iocs[34]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -429,7 +429,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:47:01.033Z",
+                "UpdateDate": "content_iocs[35]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -441,18 +441,18 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Medium",
-                "UpdateDate": "2022-08-10T09:46:58.008Z",
+                "UpdateDate": "content_iocs[36]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
                 ]
             },
             {
-                "Value": "http://bussiness-z.ml/ze8pcntikris/pt.html",
+                "Value": "content_iocs[37]_Value",
                 "Type": "Urls",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:47:58.619Z",
+                "UpdateDate": "content_iocs[37]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -463,29 +463,29 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:45:32.824Z",
+                "UpdateDate": "content_iocs[38]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
                 ]
             },
             {
-                "Value": "https://cortinastelasytrazos.com/Yro6Atvj/sec.html...",
+                "Value": "content_iocs[39]_Value",
                 "Type": "Urls",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:46:28.496Z",
+                "UpdateDate": "content_iocs[39]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
                 ]
             },
             {
-                "Value": "fbeca78b9b844db7ad7faa714a4e1cb8b3e51b1923054961f542ef12fd26df37",
+                "Value": "test",
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:43:11.764Z",
+                "UpdateDate": "content_iocs[40]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -494,11 +494,11 @@
                 ]
             },
             {
-                "Value": "http://procatodicadelacosta.com/neque-et/documents.zip",
+                "Value": "content_iocs[41]_Value",
                 "Type": "Urls",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:42:24.562Z",
+                "UpdateDate": "content_iocs[41]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -506,11 +506,11 @@
                 ]
             },
             {
-                "Value": "http://trinitytesttubebaby.com/QR2JvfE3Sv",
+                "Value": "content_iocs[42]_Value",
                 "Type": "Urls",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:42:27.017Z",
+                "UpdateDate": "content_iocs[42]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -521,7 +521,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:39:44.786Z",
+                "UpdateDate": "content_iocs[43]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -534,7 +534,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:38:22.894Z",
+                "UpdateDate": "content_iocs[44]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -547,7 +547,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:37:24.721Z",
+                "UpdateDate": "content_iocs[45]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -558,7 +558,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:37:21.292Z",
+                "UpdateDate": "content_iocs[46]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -571,7 +571,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:36:38.841Z",
+                "UpdateDate": "content_iocs[47]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -583,7 +583,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:37:02.378Z",
+                "UpdateDate": "content_iocs[48]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -595,7 +595,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Medium",
-                "UpdateDate": "2022-08-10T09:34:40.437Z",
+                "UpdateDate": "content_iocs[49]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -607,7 +607,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:35:09.073Z",
+                "UpdateDate": "content_iocs[50]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -616,11 +616,11 @@
                 ]
             },
             {
-                "Value": "http://finejewels.com.au/w3wU4YqfP/say.html",
+                "Value": "content_iocs[51]_Value",
                 "Type": "Urls",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:34:30.012Z",
+                "UpdateDate": "content_iocs[51]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -631,7 +631,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:34:13.747Z",
+                "UpdateDate": "content_iocs[52]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -642,7 +642,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:32:50.262Z",
+                "UpdateDate": "content_iocs[53]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -653,7 +653,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:32:46.998Z",
+                "UpdateDate": "content_iocs[54]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -666,7 +666,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:51:05.691Z",
+                "UpdateDate": "content_iocs[55]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -679,7 +679,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:46:59.764Z",
+                "UpdateDate": "content_iocs[56]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -688,11 +688,11 @@
                 ]
             },
             {
-                "Value": "https://perfectdemos.com/Gv1iNAuMKZ/pt.html",
+                "Value": "content_iocs[57]_Value",
                 "Type": "Urls",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:46:17.505Z",
+                "UpdateDate": "content_iocs[57]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -705,7 +705,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:41:27.703Z",
+                "UpdateDate": "content_iocs[58]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -717,7 +717,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:37:04.006Z",
+                "UpdateDate": "content_iocs[59]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -729,7 +729,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:36:33.848Z",
+                "UpdateDate": "content_iocs[60]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -740,7 +740,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:36:48.208Z",
+                "UpdateDate": "content_iocs[61]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -751,7 +751,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:34:18.027Z",
+                "UpdateDate": "content_iocs[62]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -763,7 +763,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:32:49.233Z",
+                "UpdateDate": "content_iocs[63]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -775,7 +775,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:27:30.198Z",
+                "UpdateDate": "content_iocs[64]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -787,7 +787,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Medium",
-                "UpdateDate": "2022-08-10T09:26:58.162Z",
+                "UpdateDate": "content_iocs[65]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -795,11 +795,11 @@
                 ]
             },
             {
-                "Value": "249d9d9c4a56737b41eabf12a27e7b02dc88d567",
+                "Value": "test",
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:27:25.255Z",
+                "UpdateDate": "content_iocs[66]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -810,7 +810,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:26:08.359Z",
+                "UpdateDate": "content_iocs[67]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -822,7 +822,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:25:35.743Z",
+                "UpdateDate": "content_iocs[68]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -834,7 +834,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:23:49.231Z",
+                "UpdateDate": "content_iocs[69]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -845,18 +845,18 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:23:00.483Z",
+                "UpdateDate": "content_iocs[70]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
                 ]
             },
             {
-                "Value": "107.180.12.15",
+                "Value": "content_iocs[71]_Value",
                 "Type": "IpAddresses",
                 "Status": "Retired",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:43:03.643Z",
+                "UpdateDate": "content_iocs[71]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -867,7 +867,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:44:17.484Z",
+                "UpdateDate": "content_iocs[72]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -875,11 +875,11 @@
                 ]
             },
             {
-                "Value": "4bcef200fb69f976240e7bc43ab3783dc195eac8b350e610ed2942a78c2ba568",
+                "Value": "test",
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:44:16.351Z",
+                "UpdateDate": "content_iocs[73]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "AlienVault OTX",
@@ -892,7 +892,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:42:19.821Z",
+                "UpdateDate": "content_iocs[74]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -905,7 +905,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:41:16.325Z",
+                "UpdateDate": "content_iocs[75]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -918,7 +918,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Medium",
-                "UpdateDate": "2022-08-10T09:40:22.896Z",
+                "UpdateDate": "content_iocs[76]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -929,7 +929,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:39:18.087Z",
+                "UpdateDate": "content_iocs[77]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -940,7 +940,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:40:42.731Z",
+                "UpdateDate": "content_iocs[78]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -953,7 +953,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:40:09.911Z",
+                "UpdateDate": "content_iocs[79]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -965,7 +965,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Medium",
-                "UpdateDate": "2022-08-10T09:38:29.017Z",
+                "UpdateDate": "content_iocs[80]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -976,7 +976,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:37:47.136Z",
+                "UpdateDate": "content_iocs[81]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -987,7 +987,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Medium",
-                "UpdateDate": "2022-08-10T09:36:41.272Z",
+                "UpdateDate": "content_iocs[82]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -999,7 +999,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:36:27.994Z",
+                "UpdateDate": "content_iocs[83]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -1011,7 +1011,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:36:14.647Z",
+                "UpdateDate": "content_iocs[84]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -1024,7 +1024,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:35:42.169Z",
+                "UpdateDate": "content_iocs[85]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -1035,7 +1035,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:35:30.214Z",
+                "UpdateDate": "content_iocs[86]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -1044,11 +1044,11 @@
                 ]
             },
             {
-                "Value": "2faa8f9476e0ef8d4a2594735fd57eafbb4efb3646f7904b3671cab15e8388bc",
+                "Value": "test",
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:35:24.791Z",
+                "UpdateDate": "content_iocs[87]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -1061,7 +1061,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:34:17.207Z",
+                "UpdateDate": "content_iocs[88]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -1074,7 +1074,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:34:10.666Z",
+                "UpdateDate": "content_iocs[89]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
@@ -1085,7 +1085,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:33:58.303Z",
+                "UpdateDate": "content_iocs[90]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -1098,7 +1098,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:30:05.213Z",
+                "UpdateDate": "content_iocs[91]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -1111,18 +1111,18 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:24:01.397Z",
+                "UpdateDate": "content_iocs[92]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library"
                 ]
             },
             {
-                "Value": "4a4db98ed22f53869e60c25a27198c066e13da86362c97954f29c89bfe058f70",
+                "Value": "test",
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:14:53.391Z",
+                "UpdateDate": "content_iocs[93]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -1135,7 +1135,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:32:41.849Z",
+                "UpdateDate": "content_iocs[94]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -1148,7 +1148,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:10:45.799Z",
+                "UpdateDate": "content_iocs[95]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -1161,7 +1161,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:00:24.388Z",
+                "UpdateDate": "content_iocs[96]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -1174,7 +1174,7 @@
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
-                "UpdateDate": "2022-08-10T09:35:59.351Z",
+                "UpdateDate": "content_iocs[97]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "Threat Library",
@@ -1186,7 +1186,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:36:36.583Z",
+                "UpdateDate": "content_iocs[98]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -1199,7 +1199,7 @@
                 "Type": "Hashes",
                 "Status": "Active",
                 "Severity": "High",
-                "UpdateDate": "2022-08-10T09:36:33.598Z",
+                "UpdateDate": "content_iocs[99]_UpdateDate",
                 "Whitelisted": false,
                 "ReportingFeeds": [
                     "ThreatFox",
@@ -1208,6 +1208,6 @@
                 ]
             }
         ],
-        "nextOffset": "2022-08-10T10:42:25.077Z"
+        "nextOffset": "content_nextOffset"
     }
 }

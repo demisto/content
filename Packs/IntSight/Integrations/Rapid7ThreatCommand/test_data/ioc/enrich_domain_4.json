@@ -26,9 +26,9 @@
         ],
         "RelatedThreatActors": [],
         "RelatedCampaigns": [],
-        "FirstSeen": "2018-08-22T20:06:30.890Z",
-        "LastSeen": "2023-03-27T01:14:12.420Z",
-        "UpdateDate": "2023-03-27T01:25:50.049Z",
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
         "Whitelisted": false,
         "Severity": {
             "Value": "Medium",
@@ -89,232 +89,232 @@
             {
                 "Value": "ns1.l1v3f1r3.us.",
                 "Type": "NS",
-                "FirstResolved": "2016-11-25T02:41:36.000Z",
-                "LastResolved": "2016-12-13T09:36:52.000Z",
+                "FirstResolved": "Data_DnsRecords[10]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[10]_LastResolved",
                 "Count": 87
             },
             {
                 "Value": "ns2.l1v3f1r3.us.",
                 "Type": "NS",
-                "FirstResolved": "2016-11-25T02:41:36.000Z",
-                "LastResolved": "2016-12-13T09:36:52.000Z",
+                "FirstResolved": "Data_DnsRecords[11]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[11]_LastResolved",
                 "Count": 87
             },
             {
                 "Value": "ns3.l1v3f1r3.us.",
                 "Type": "NS",
-                "FirstResolved": "2016-11-25T02:41:36.000Z",
-                "LastResolved": "2016-12-13T09:36:52.000Z",
+                "FirstResolved": "Data_DnsRecords[12]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[12]_LastResolved",
                 "Count": 87
             },
             {
                 "Value": "ns4.l1v3f1r3.us.",
                 "Type": "NS",
-                "FirstResolved": "2016-11-25T02:41:36.000Z",
-                "LastResolved": "2016-12-13T09:36:52.000Z",
+                "FirstResolved": "Data_DnsRecords[13]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[13]_LastResolved",
                 "Count": 87
             },
             {
                 "Value": "bella.ns.cloudflare.com.",
                 "Type": "NS",
-                "FirstResolved": "2016-12-13T14:48:26.000Z",
-                "LastResolved": "2017-01-07T07:30:34.000Z",
+                "FirstResolved": "Data_DnsRecords[14]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[14]_LastResolved",
                 "Count": 117
             },
             {
                 "Value": "kanye.ns.cloudflare.com.",
                 "Type": "NS",
-                "FirstResolved": "2016-12-13T14:48:26.000Z",
-                "LastResolved": "2017-01-07T07:30:34.000Z",
+                "FirstResolved": "Data_DnsRecords[15]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[15]_LastResolved",
                 "Count": 117
             },
             {
                 "Value": "dns1.registrar-servers.com.",
                 "Type": "NS",
-                "FirstResolved": "2016-06-22T19:16:59.000Z",
-                "LastResolved": "2017-06-17T10:45:20.000Z",
+                "FirstResolved": "Data_DnsRecords[16]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[16]_LastResolved",
                 "Count": 1079
             },
             {
                 "Value": "dns2.registrar-servers.com.",
                 "Type": "NS",
-                "FirstResolved": "2016-06-22T19:16:59.000Z",
-                "LastResolved": "2017-06-17T10:45:20.000Z",
+                "FirstResolved": "Data_DnsRecords[17]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[17]_LastResolved",
                 "Count": 1079
             },
             {
                 "Value": "dns101.registrar-servers.com.",
                 "Type": "NS",
-                "FirstResolved": "2017-06-20T12:04:13.000Z",
-                "LastResolved": "2017-07-20T17:50:26.000Z",
+                "FirstResolved": "Data_DnsRecords[18]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[18]_LastResolved",
                 "Count": 42
             },
             {
                 "Value": "dns102.registrar-servers.com.",
                 "Type": "NS",
-                "FirstResolved": "2017-06-20T12:04:13.000Z",
-                "LastResolved": "2017-07-20T17:50:26.000Z",
+                "FirstResolved": "Data_DnsRecords[19]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[19]_LastResolved",
                 "Count": 42
             },
             {
                 "Value": "ns1.l1v3f1r3.us.",
                 "Type": "NS",
-                "FirstResolved": "2016-11-25T02:41:36.000Z",
-                "LastResolved": "2016-11-25T02:41:36.000Z",
+                "FirstResolved": "Data_DnsRecords[20]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[20]_LastResolved",
                 "Count": 2
             },
             {
                 "Value": "ns2.l1v3f1r3.us.",
                 "Type": "NS",
-                "FirstResolved": "2016-11-25T02:41:36.000Z",
-                "LastResolved": "2016-11-25T02:41:36.000Z",
+                "FirstResolved": "Data_DnsRecords[21]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[21]_LastResolved",
                 "Count": 2
             },
             {
                 "Value": "ns1.l1v3f1r3.us.",
                 "Type": "NS",
-                "FirstResolved": "2016-11-28T09:29:51.000Z",
-                "LastResolved": "2016-12-13T10:47:52.000Z",
+                "FirstResolved": "Data_DnsRecords[22]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[22]_LastResolved",
                 "Count": 42
             },
             {
                 "Value": "ns2.l1v3f1r3.us.",
                 "Type": "NS",
-                "FirstResolved": "2016-11-28T09:29:51.000Z",
-                "LastResolved": "2016-12-13T10:47:52.000Z",
+                "FirstResolved": "Data_DnsRecords[23]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[23]_LastResolved",
                 "Count": 42
             },
             {
                 "Value": "ns3.l1v3f1r3.us.",
                 "Type": "NS",
-                "FirstResolved": "2016-11-28T09:29:51.000Z",
-                "LastResolved": "2016-12-13T10:47:52.000Z",
+                "FirstResolved": "Data_DnsRecords[24]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[24]_LastResolved",
                 "Count": 42
             },
             {
                 "Value": "ns4.l1v3f1r3.us.",
                 "Type": "NS",
-                "FirstResolved": "2016-11-28T09:29:51.000Z",
-                "LastResolved": "2016-12-13T10:47:52.000Z",
+                "FirstResolved": "Data_DnsRecords[25]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[25]_LastResolved",
                 "Count": 42
             },
             {
                 "Value": "dns1.registrar-servers.com.",
                 "Type": "NS",
-                "FirstResolved": "2016-06-22T19:16:59.000Z",
-                "LastResolved": "2017-06-17T10:45:20.000Z",
+                "FirstResolved": "Data_DnsRecords[26]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[26]_LastResolved",
                 "Count": 496
             },
             {
                 "Value": "dns2.registrar-servers.com.",
                 "Type": "NS",
-                "FirstResolved": "2016-06-22T19:16:59.000Z",
-                "LastResolved": "2017-06-17T10:45:20.000Z",
+                "FirstResolved": "Data_DnsRecords[27]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[27]_LastResolved",
                 "Count": 496
             },
             {
                 "Value": "ns1.l1v3f1r3.us. noc.rivalhost.com. 2016112511 3600 7200 1209600 86400",
                 "Type": "SOA",
-                "FirstResolved": "2016-12-09T00:58:18.000Z",
-                "LastResolved": "2016-12-13T02:35:38.000Z",
+                "FirstResolved": "Data_DnsRecords[28]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[28]_LastResolved",
                 "Count": 25
             },
             {
                 "Value": "ns1.bitcoin-dns.com. noc.rivalhost.com. 2016112505 3600 7200 1209600 86400",
                 "Type": "SOA",
-                "FirstResolved": "2016-11-25T02:41:36.000Z",
-                "LastResolved": "2016-11-25T02:41:36.000Z",
+                "FirstResolved": "Data_DnsRecords[29]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[29]_LastResolved",
                 "Count": 5
             },
             {
                 "Value": "bella.ns.cloudflare.com. dns.cloudflare.com. 2023329793 10000 2400 604800 3600",
                 "Type": "SOA",
-                "FirstResolved": "2016-12-24T15:14:32.000Z",
-                "LastResolved": "2016-12-25T08:00:59.000Z",
+                "FirstResolved": "Data_DnsRecords[30]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[30]_LastResolved",
                 "Count": 4
             },
             {
                 "Value": "dns1.registrar-servers.com. hostmaster.registrar-servers.com. 2016062102 43200 3600 604800 3601",
                 "Type": "SOA",
-                "FirstResolved": "2016-06-22T19:16:59.000Z",
-                "LastResolved": "2016-10-16T23:49:38.000Z",
+                "FirstResolved": "Data_DnsRecords[31]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[31]_LastResolved",
                 "Count": 19
             },
             {
                 "Value": "dns1.registrar-servers.com. hostmaster.registrar-servers.com. 2017010702 43200 3600 604800 3601",
                 "Type": "SOA",
-                "FirstResolved": "2017-01-11T17:05:24.000Z",
-                "LastResolved": "2017-05-12T01:15:02.000Z",
+                "FirstResolved": "Data_DnsRecords[32]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[32]_LastResolved",
                 "Count": 872
             },
             {
                 "Value": "dns1.registrar-servers.com. hostmaster.registrar-servers.com. 2017051201 43200 3600 604800 3601",
                 "Type": "SOA",
-                "FirstResolved": "2017-05-17T13:04:35.000Z",
-                "LastResolved": "2017-06-02T08:17:38.000Z",
+                "FirstResolved": "Data_DnsRecords[33]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[33]_LastResolved",
                 "Count": 13
             },
             {
                 "Value": "0 l1v3f1r3.us.",
                 "Type": "MX",
-                "FirstResolved": "2016-12-13T01:36:56.000Z",
-                "LastResolved": "2016-12-13T01:36:56.000Z",
+                "FirstResolved": "Data_DnsRecords[34]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[34]_LastResolved",
                 "Count": 2
             },
             {
                 "Value": "10 eforward1.registrar-servers.com.",
                 "Type": "MX",
-                "FirstResolved": "2016-09-26T02:34:27.000Z",
-                "LastResolved": "2017-05-27T12:15:58.000Z",
+                "FirstResolved": "Data_DnsRecords[35]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[35]_LastResolved",
                 "Count": 10
             },
             {
                 "Value": "10 eforward2.registrar-servers.com.",
                 "Type": "MX",
-                "FirstResolved": "2016-09-26T02:34:27.000Z",
-                "LastResolved": "2017-05-27T12:15:58.000Z",
+                "FirstResolved": "Data_DnsRecords[36]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[36]_LastResolved",
                 "Count": 10
             },
             {
                 "Value": "10 eforward3.registrar-servers.com.",
                 "Type": "MX",
-                "FirstResolved": "2016-09-26T02:34:27.000Z",
-                "LastResolved": "2017-05-27T12:15:58.000Z",
+                "FirstResolved": "Data_DnsRecords[37]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[37]_LastResolved",
                 "Count": 10
             },
             {
                 "Value": "15 eforward4.registrar-servers.com.",
                 "Type": "MX",
-                "FirstResolved": "2016-09-26T02:34:27.000Z",
-                "LastResolved": "2017-05-27T12:15:58.000Z",
+                "FirstResolved": "Data_DnsRecords[38]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[38]_LastResolved",
                 "Count": 10
             },
             {
                 "Value": "20 eforward5.registrar-servers.com.",
                 "Type": "MX",
-                "FirstResolved": "2016-09-26T02:34:27.000Z",
-                "LastResolved": "2017-05-27T12:15:58.000Z",
+                "FirstResolved": "Data_DnsRecords[39]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[39]_LastResolved",
                 "Count": 10
             },
             {
                 "Value": "\"v=spf1 include:spf.efwd.registrar-servers.com ~all\"",
                 "Type": "TXT",
-                "FirstResolved": "2016-09-26T02:34:27.000Z",
-                "LastResolved": "2017-05-27T12:15:58.000Z",
+                "FirstResolved": "Data_DnsRecords[40]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[40]_LastResolved",
                 "Count": 8
             },
             {
-                "Value": "2400:cb00:2048:1::6812:2210",
+                "Value": "Data_DnsRecords[41]_Value",
                 "Type": "AAAA",
-                "FirstResolved": "2016-12-15T16:03:15.000Z",
-                "LastResolved": "2017-01-07T07:30:34.000Z",
+                "FirstResolved": "Data_DnsRecords[41]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[41]_LastResolved",
                 "Count": 20
             },
             {
-                "Value": "2400:cb00:2048:1::6812:2310",
+                "Value": "Data_DnsRecords[42]_Value",
                 "Type": "AAAA",
-                "FirstResolved": "2016-12-15T16:03:15.000Z",
-                "LastResolved": "2017-01-07T07:30:34.000Z",
+                "FirstResolved": "Data_DnsRecords[42]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[42]_LastResolved",
                 "Count": 20
             }
         ],
@@ -323,9 +323,9 @@
             "History": [
                 {
                     "RegistrationDetails": {
-                        "CreatedDate": "2016-06-19T14:48:15.000Z",
-                        "UpdatedDate": "2016-06-19T14:48:18.000Z",
-                        "ExpiresDate": "2017-06-18T23:59:59.000Z",
+                        "CreatedDate": "Data_Whois_History[0]_RegistrationDetails_CreatedDate",
+                        "UpdatedDate": "Data_Whois_History[0]_RegistrationDetails_UpdatedDate",
+                        "ExpiresDate": "Data_Whois_History[0]_RegistrationDetails_ExpiresDate",
                         "Statuses": [
                             "clientTransferProhibited"
                         ],
@@ -338,7 +338,7 @@
                         {
                             "Organization": "",
                             "Name": "John tran",
-                            "Email": "forhaters@protonmail.com",
+                            "Email": "Data_Whois_History[0]_RegistrantDetails[0]_Email",
                             "Telephone": "15142351245",
                             "Fax": "",
                             "City": "anaheim",
@@ -351,7 +351,7 @@
                         {
                             "Organization": "",
                             "Name": "John tran",
-                            "Email": "forhaters@protonmail.com",
+                            "Email": "Data_Whois_History[0]_RegistrantDetails[1]_Email",
                             "Telephone": "15142351245",
                             "Fax": "",
                             "City": "anaheim",
@@ -364,7 +364,7 @@
                         {
                             "Organization": "",
                             "Name": "John tran",
-                            "Email": "forhaters@protonmail.com",
+                            "Email": "Data_Whois_History[0]_RegistrantDetails[2]_Email",
                             "Telephone": "15142351245",
                             "Fax": "",
                             "City": "anaheim",
@@ -377,7 +377,7 @@
                         {
                             "Organization": "",
                             "Name": "John tran",
-                            "Email": "forhaters@protonmail.com",
+                            "Email": "Data_Whois_History[0]_RegistrantDetails[3]_Email",
                             "Telephone": "15142351245",
                             "Fax": "",
                             "City": "anaheim",
@@ -393,71 +393,71 @@
         },
         "Resolutions": [
             {
-                "ResolvedIpAddress": "198.54.117.212",
+                "ResolvedIpAddress": "Data_Resolutions[0]_ResolvedIpAddress",
                 "Location": "US",
                 "ASN": 22612,
                 "Operator": "Namecheap, Inc.",
-                "FirstResolved": "2017-06-20T12:04:13.000Z",
-                "LastResolved": "2017-07-20T17:50:26.000Z",
+                "FirstResolved": "Data_Resolutions[0]_FirstResolved",
+                "LastResolved": "Data_Resolutions[0]_LastResolved",
                 "ReportingSources": [
                     "Farsight"
                 ]
             },
             {
-                "ResolvedIpAddress": "185.109.146.92",
+                "ResolvedIpAddress": "Data_Resolutions[1]_ResolvedIpAddress",
                 "Location": "DE",
                 "ASN": 59790,
                 "Operator": "Marco Bungalski GmbH",
-                "FirstResolved": "2017-05-13T09:04:29.000Z",
-                "LastResolved": "2017-06-17T10:45:20.000Z",
+                "FirstResolved": "Data_Resolutions[1]_FirstResolved",
+                "LastResolved": "Data_Resolutions[1]_LastResolved",
                 "ReportingSources": [
                     "Farsight",
                     "VirusTotal"
                 ]
             },
             {
-                "ResolvedIpAddress": "104.250.127.134",
+                "ResolvedIpAddress": "Data_Resolutions[2]_ResolvedIpAddress",
                 "Location": "US",
                 "ASN": 40676,
                 "Operator": "Psychz Networks",
-                "FirstResolved": "2016-11-25T02:41:36.000Z",
-                "LastResolved": "2017-05-09T11:59:44.000Z",
+                "FirstResolved": "Data_Resolutions[2]_FirstResolved",
+                "LastResolved": "Data_Resolutions[2]_LastResolved",
                 "ReportingSources": [
                     "Farsight",
                     "VirusTotal"
                 ]
             },
             {
-                "ResolvedIpAddress": "104.18.34.16",
+                "ResolvedIpAddress": "Data_Resolutions[3]_ResolvedIpAddress",
                 "Location": "US",
                 "ASN": 13335,
                 "Operator": "Cloudflare, Inc.",
-                "FirstResolved": "2016-12-13T14:48:26.000Z",
-                "LastResolved": "2017-01-07T07:30:34.000Z",
+                "FirstResolved": "Data_Resolutions[3]_FirstResolved",
+                "LastResolved": "Data_Resolutions[3]_LastResolved",
                 "ReportingSources": [
                     "Farsight",
                     "VirusTotal"
                 ]
             },
             {
-                "ResolvedIpAddress": "104.18.35.16",
+                "ResolvedIpAddress": "Data_Resolutions[4]_ResolvedIpAddress",
                 "Location": "US",
                 "ASN": 13335,
                 "Operator": "Cloudflare, Inc.",
-                "FirstResolved": "2016-12-13T14:48:26.000Z",
-                "LastResolved": "2017-01-07T07:30:34.000Z",
+                "FirstResolved": "Data_Resolutions[4]_FirstResolved",
+                "LastResolved": "Data_Resolutions[4]_LastResolved",
                 "ReportingSources": [
                     "Farsight",
                     "VirusTotal"
                 ]
             },
             {
-                "ResolvedIpAddress": "104.145.233.152",
+                "ResolvedIpAddress": "Data_Resolutions[5]_ResolvedIpAddress",
                 "Location": "US",
                 "ASN": 36352,
                 "Operator": "ColoCrossing",
-                "FirstResolved": "2016-06-22T19:16:59.000Z",
-                "LastResolved": "2016-11-22T13:28:20.000Z",
+                "FirstResolved": "Data_Resolutions[5]_FirstResolved",
+                "LastResolved": "Data_Resolutions[5]_LastResolved",
                 "ReportingSources": [
                     "Farsight",
                     "VirusTotal"

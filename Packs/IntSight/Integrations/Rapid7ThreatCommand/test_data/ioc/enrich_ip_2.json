@@ -1,17 +1,17 @@
 {
-    "OriginalValue": "5.252.23.159",
+    "OriginalValue": "OriginalValue",
     "Status": "Done",
     "Data": {
-        "Value": "5.252.23.159",
+        "Value": "Data_Value",
         "Type": "IpAddresses",
         "Sources": [
             {
-                "Name": "TOR Project official exit nodes",
-                "ConfidenceLevel": 3
-            },
-            {
                 "Name": "Dan.me.uk Tor List",
                 "ConfidenceLevel": 1
+            },
+            {
+                "Name": "TOR Project official exit nodes",
+                "ConfidenceLevel": 3
             },
             {
                 "Name": "Cyware",
@@ -25,9 +25,9 @@
         "RelatedMalwares": [],
         "RelatedThreatActors": [],
         "RelatedCampaigns": [],
-        "FirstSeen": "2023-03-23T21:12:50.138Z",
-        "LastSeen": "2023-03-27T08:39:30.188Z",
-        "UpdateDate": "2023-03-27T08:47:35.776Z",
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
         "Whitelisted": false,
         "Severity": {
             "Value": "Low",
@@ -46,14 +46,14 @@
                     "ASSIGNED",
                     "PA"
                 ],
-                "CreatedDate": "2022-03-21T00:00:00.000Z",
-                "UpdatedDate": "2022-03-21T00:00:00.000Z"
+                "CreatedDate": "Data_Whois_NetworkDetails_CreatedDate",
+                "UpdatedDate": "Data_Whois_NetworkDetails_UpdatedDate"
             },
             "RegistrantDetails": [
                 {
                     "Organization": "STARK INDUSTRIES SOLUTIONS LTD.",
                     "Name": "STARK INDUSTRIES SOLUTIONS LTD.",
-                    "Email": "noc@stark-industries.solutions",
+                    "Email": "Data_Whois_RegistrantDetails[0]_Email",
                     "Telephone": "441234416080",
                     "Fax": "",
                     "City": "London",

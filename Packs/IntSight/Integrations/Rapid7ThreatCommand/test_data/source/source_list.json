@@ -228,7 +228,7 @@
     "Emails": [
         {
             "_id": "63fdb08bae8f108e4c4c330c",
-            "Name": "test@qmasters.co",
+            "Name": "test@test.com",
             "ConfidenceLevel": 3,
             "IsEnabled": true
         }

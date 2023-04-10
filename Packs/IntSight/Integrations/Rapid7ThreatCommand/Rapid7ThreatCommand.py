@@ -2,7 +2,7 @@ from http import HTTPStatus
 import demistomock as demisto
 from CommonServerPython import *
 from enum import Enum
-from typing import Any, Callable
+from typing import Any, Callable, cast
 import os
 import copy
 from requests import Response
@@ -10,10 +10,10 @@ import pathlib
 import re
 import csv
 
-
 DEFAULT_INTERVAL = 30
 DEFAULT_TIMEOUT = 600
 ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
+INTEGRATION_ENTRY_CONTEXT = "ThreatCommand"
 
 
 class Headers(Enum):
@@ -90,7 +90,7 @@ class ReadableOutputs(Enum):
     CREATE_ASSET = 'Asset "{0}" successfully added to "{1}" asset list.'
     DELETE_ASSET = 'Asset "{0}" successfully deleted from "{1}" asset list.'
     CREATE_IOC = 'IOC "{0}" successfully added to "{1}" document source.'
-    DOCUMENT_CREATE = 'Source document "{0}" (ID: "{1}") successfully created.'
+    DOCUMENT_CREATE = "Source document successfully created."
     DOCUMENT_DELETE = 'Source document "{0}" successfully deleted.'
     CREATE_IOC_SUCCESS = 'IOCs "{0}" successfully added to "{1}" source document.'
     CREATE_IOC_FAIL = 'Failed to add IOCs "{0}" to "{1}" source document.'
@@ -101,7 +101,7 @@ class ReadableOutputs(Enum):
     DELETE_CVE_SUCCESS = 'The "{0}" CVEs successfully deleted.'
     DELETE_CVE_FAIL = 'Failed to delete the "{0}" CVEs.'
     ALERT_LIST = "Alert list"
-    ALERT_CREATE = 'Alert "{0}" successfully created'
+    ALERT_CREATE = "Alert successfully created"
     ALERT_CLOSE = 'Alert "{0}" successfully closed'
     ALERT_SEVERITY = 'Alert "{0}" severity successfully updated to "{1}".'
     ALERT_ASSIGN = 'Alert "{0}" successfully assign to user "{1}".'
@@ -111,13 +111,15 @@ class ReadableOutputs(Enum):
     ALERT_TAG_REMOVE = 'The tag "{1}" successfully removed from "{0}" Alert.'
     ALERT_MAIL = 'The alert "{0}" successfully send to "{1}".'
     ALERT_ANALYST = 'The alert "{0}" successfully sent to the analyst.'
-    ALERT_CONVERSATION_LIST = "Alert conversation with analyst:."
+    ALERT_CONVERSATION_LIST = "Alert conversation with analyst:"
+    ALERT_NO_CONVERSATION_LIST = "There is no conversation with analyst."
     ALERT_ADD_NOTE = 'Note successfully add to alert "{0}".'
     ALERT_BLOCKLIST_GET = 'Blocklist for alert "{0}".'
     ALERT_BLOCKLIST_UPDATE = 'IOC successfully updated to status "{0}".'
     ALERT_IMAGES = 'Alert "{0}" Images list.'
     ALERT_NO_IMAGES = 'Alert "{0}" does not contain images.'
     ALERT_CSV = 'Alert "{0}" CSV file.'
+    ALERT_NO_CSV = 'Alert "{0}" does not have a CSV file.'
     ALERT_TAKEDOWN = 'Successfully sent takedown request for alert "{0}".'
     ALERT_TAKEDOWN_STATUS = 'Takedown status for alert "{0}".'
     ALERT_REPORT = 'Alert "{0}" successfully reported'
@@ -143,13 +145,15 @@ class ReadableOutputs(Enum):
         'The IOCs "{0}" successfully removed from the remediation blocklist.'
     )
     ACCOUNT_USER_LIST = "Account user list"
+    MSSP_USER_LIST = "MSSP user list"
+    MSSP_CUSTOMER_LIST = "MSSP customer list"
     SCENARIO_LIST = "Alert scenario list"
     MENTIONS = 'Mentions for "{0}" (page number {1}).'
     ENRICH_QUOTA = "Current API enrichment credits (quota)."
 
 
 class ReadableErrors(Enum):
-    MISSING_IOCS = "Missigng IOCs. Please insert."
+    MISSING_IOCS = "Missing IOCs. Please insert."
     SOURCE_NOT_EXIST = "The source does not exist."
     GENERAL = "General error with the request."
     NOT_FOUND = "The object does not exist."
@@ -168,7 +172,7 @@ class ReadableErrors(Enum):
     SOURCE_ALREADY_EXIST = "The source already exist."
     CONFIDENCE_LEVEL = "confidence_level is a number in range 1-3"
     RATE = "rate is a number in range 0-5"
-    ALERT_LIST = "You can't choose alert_id and retrive_ids_only."
+    ALERT_LIST = "You can't choose alert_id and retrieve_ids_only."
     SCENARIO_TYPES = "You have to insert scenario or type and sub-type."
     ALERT_TYPE = "You have to insert type or remove the sub_type and insert scenario."
     ALERT_SUB_TYPE = (
@@ -177,7 +181,7 @@ class ReadableErrors(Enum):
     ARGUMENT = "{0} argument should be {1}"
     NUMBER = "Please insert a valid number."
     LIMIT = "Limit has to be positive number."
-    MODULE_NOT_AVAILABLE = 'The module is not available.'
+    MODULE_NOT_AVAILABLE = "The module is not available."
     ACCOUNT_ID_HEADER = "Missing Account ID."
     IS_HIDDEN = 'You can use is_hidden=True only in case the reason is "False Positive"'
     USER_EMAIL = "The user email is invalid."
@@ -190,6 +194,9 @@ class ReadableErrors(Enum):
     ASSET_COUNTRY = "The country is invalid."
     ASSET_SECTOR = "The sector is invalid."
     ASSET_DOMAIN = "The domain is invalid."
+    TAG_EXIST = "The tag is already exist."
+    INVALID_EMAIL = "The email is invalid."
+    IOC_NOT_EXIST = "The IOC does not exist."
 
 
 ERROR_RESPONSE_MAPPER: dict[str, str] = {
@@ -208,7 +215,10 @@ ERROR_RESPONSE_MAPPER: dict[str, str] = {
     "InvalidSectorAsset": ReadableErrors.ASSET_SECTOR.value,
     "InvalidDomainAsset": ReadableErrors.ASSET_DOMAIN.value,
     "MissingAccountIdHeader": ReadableErrors.ACCOUNT_ID_HEADER.value,
-    'ModuleNotAvailable': ReadableErrors.MODULE_NOT_AVAILABLE.value,
+    "ModuleNotAvailable": ReadableErrors.MODULE_NOT_AVAILABLE.value,
+    "TagExist": ReadableErrors.TAG_EXIST.value,
+    "InvalidEmails": ReadableErrors.INVALID_EMAIL.value,
+    "IocDoesNotExist": ReadableErrors.IOC_NOT_EXIST.value,
 }
 
 
@@ -218,6 +228,23 @@ ERROR_CODE_MAPPER: dict[int, str] = {
     HTTPStatus.INTERNAL_SERVER_ERROR: ReadableErrors.GENERAL.value,
     HTTPStatus.UNAUTHORIZED: ReadableErrors.UNAUTHORIZED.value,
     HTTPStatus.NO_CONTENT: ReadableErrors.NO_CONTENT.value,
+}
+
+
+class IOCType(str, Enum):
+    FILE = "FILE"
+    URL = "URL"
+    IP = "IP"
+    HASH = "HASH"
+    EMAIL = "EMAIL"
+    DOMAIN = "DOMAIN"
+
+
+pattern_and_readable_error_by_ioc_type = {
+    IOCType.URL: (urlRegex, ReadableErrors.URL),
+    IOCType.IP: (ipv4Regex, ReadableErrors.IP),
+    IOCType.HASH: (hashRegex, ReadableErrors.HASH),
+    IOCType.EMAIL: (emailRegex, ReadableErrors.EMAIL),
 }
 
 
@@ -446,7 +473,7 @@ class Parser:
         """
         return {
             "id": obj.get("_id"),
-            "Assets": [
+            "assets": [
                 {
                     "type": asset.get("Type"),
                     "value": asset.get("Value"),
@@ -461,12 +488,12 @@ class Parser:
             "severity": dict_safe_get(obj, ["Details", "Severity"]),
             "images": dict_safe_get(obj, ["Details", "Images"]),
             "source_type": dict_safe_get(obj, ["Details", "Source", "Type"]),
-            "source_url": dict_safe_get(obj, ["Details", "Source", "URL"]),
+            "source_url": str(dict_safe_get(obj, ["Details", "Source", "URL"], "")),
             "source_email": "",
             "source_network_type": dict_safe_get(
                 obj, ["Details", "Source", "NetworkType"]
             ),
-            "source_date": dict_safe_get(obj, ["Details", "Source", "Date"]),
+            "source_date": str(dict_safe_get(obj, ["Details", "Source", "Date"], "")),
             "Tags": [
                 {
                     "created_by": tag.get("CreatedBy"),
@@ -485,13 +512,14 @@ class Parser:
         }
 
     def alert_fetch_parser(
-        self, obj: dict[str, Any], attachments: List[dict[str, Any]]
+        self, obj: dict[str, Any], attachments: List[Optional[dict[str, Any]]]
     ) -> dict[str, Any]:
         """
         Parse complete Alert response from the API to fetch XSOAR outputs.
 
         Args:
             obj (dict[str, Any]): Alert response from the API.
+            attachments (List[Optional[dict[str, Any]]]): Alert attachments.
 
         Returns:
             dict[str, Any]: fetch XSOAR outputs.
@@ -564,51 +592,53 @@ class Parser:
         Returns:
             dict[str, Any]: XSOAR outputs.
         """
-        return {
-            "rate": dict_safe_get(obj, ["AdditionalInformation", "Status", "Rate"]),
-            "type": obj.get("Type"),
-            "sub_types": obj.get("SubTypes"),
-            "initiator": obj.get("Initiator"),
-            "created_date": obj.get("CreatedDate"),
-            "update_date": obj.get("UpdateDate"),
-            "read_by": obj.get("ReadBy"),
-            "id": obj.get("_id"),
-            "tag_names": dict_safe_get(obj, ["AdditionalInformation", "TagNames"]),
-            "tag_ids": dict_safe_get(obj, ["AdditionalInformation", "TagIDs"]),
-            "Mail": {
-                "note_id": dict_safe_get(
-                    obj, ["AdditionalInformation", "Mail", "NoteId"]
-                ),
-                "question": dict_safe_get(
-                    obj, ["AdditionalInformation", "Mail", "Question"]
-                ),
-                "Replies": [
+        return remove_empty_elements(
+            {
+                "rate": dict_safe_get(obj, ["AdditionalInformation", "Status", "Rate"]),
+                "type": obj.get("Type"),
+                "sub_types": obj.get("SubTypes"),
+                "initiator": obj.get("Initiator"),
+                "created_date": obj.get("CreatedDate"),
+                "update_date": obj.get("UpdateDate"),
+                "read_by": obj.get("ReadBy"),
+                "id": obj.get("_id"),
+                "tag_names": dict_safe_get(obj, ["AdditionalInformation", "TagNames"]),
+                "tag_ids": dict_safe_get(obj, ["AdditionalInformation", "TagIDs"]),
+                "Mail": {
+                    "note_id": dict_safe_get(
+                        obj, ["AdditionalInformation", "Mail", "NoteId"]
+                    ),
+                    "question": dict_safe_get(
+                        obj, ["AdditionalInformation", "Mail", "Question"]
+                    ),
+                    "Replies": [
+                        {
+                            "email": reply.get("Email"),
+                            "token": reply.get("Token"),
+                            "date": reply.get("Date"),
+                            "read_by": reply.get("ReadBy"),
+                            "is_token_valid": reply.get("IsTokenValid"),
+                        }
+                        for reply in dict_safe_get(
+                            obj, ["AdditionalInformation", "Mail", "Replies"], []
+                        )
+                    ],
+                },
+                "Messages": [
                     {
-                        "email": reply.get("Email"),
-                        "token": reply.get("Token"),
-                        "date": reply.get("Date"),
-                        "read_by": reply.get("ReadBy"),
-                        "is_token_valid": reply.get("IsTokenValid"),
+                        "initiator_id": dict_safe_get(msg, ["Initiator", "_id"]),
+                        "initiator_is_support": dict_safe_get(
+                            msg, ["Initiator", "IsSupport"]
+                        ),
+                        "date": msg.get("Date"),
+                        "content": msg.get("Content"),
                     }
-                    for reply in dict_safe_get(
-                        obj, ["AdditionalInformation", "Mail", "Replies"], []
+                    for msg in dict_safe_get(
+                        obj, ["AdditionalInformation", "AskTheAnalyst", "Messages"], []
                     )
                 ],
-            },
-            "Messages": [
-                {
-                    "initiator_id": dict_safe_get(msg, ["Initiator", "_id"]),
-                    "initiator_is_support": dict_safe_get(
-                        msg, ["Initiator", "IsSupport"]
-                    ),
-                    "date": msg.get("Date"),
-                    "content": msg.get("Content"),
-                }
-                for msg in dict_safe_get(
-                    obj, ["AdditionalInformation", "AskTheAnalyst", "Messages"], []
-                )
-            ],
-        }
+            }
+        )
 
     def ioc_get_parser(self, obj: dict[str, Any]) -> dict[str, Any]:
         """
@@ -759,23 +789,25 @@ class Parser:
         Returns:
             dict[str, Any]: XSOAR outputs.
         """
-        return {
-            "author": obj.get("Author"),
-            "comment_number": obj.get("CommentNumber"),
-            "original_url": obj.get("OriginalUrl"),
-            "source_date": obj.get("SourceDate"),
-            "url": obj.get("Url"),
-            "insertion_date": obj.get("InsertionDate"),
-            "type": obj.get("Type"),
-            "Tags": obj.get("Tags"),
-            "id": obj.get("id"),
-            "short_content": obj.get("ShortContent"),
-            "title": obj.get("Title"),
-            "date": obj.get("Date"),
-        }
+        return remove_empty_elements(
+            {
+                "author": obj.get("Author"),
+                "comment_number": obj.get("CommentNumber"),
+                "original_url": obj.get("OriginalUrl"),
+                "source_date": obj.get("SourceDate"),
+                "url": obj.get("Url"),
+                "insertion_date": obj.get("InsertionDate"),
+                "type": obj.get("Type"),
+                "Tags": obj.get("Tags"),
+                "id": obj.get("id"),
+                "short_content": obj.get("ShortContent"),
+                "title": obj.get("Title"),
+                "date": obj.get("Date"),
+            }
+        )
 
     def file_reputation_parser(
-        self, obj: dict[str, Any], reliability, hash
+        self, obj: dict[str, Any], reliability, hash_
     ) -> dict[str, Any]:
         """
         Parse hash enrichment response from the API to XSOAR outputs.
@@ -783,14 +815,14 @@ class Parser:
         Args:
             obj (dict[str, Any]): Hash enrichment response from the API.
             reliability (_type_): Reliability of the source providing the intelligence data.
-            hash (bool): Hash value.
+            hash_ (bool): Hash value.
 
         Returns:
             dict[str, Any]: XSOAR outputs.
         """
         related_hashes = get_enrich_hashes(obj)
         is_known_ioc = dict_safe_get(obj, ["Data", "IsKnownIoc"])
-        dbot_score = get_dbotscore(reliability, hash, is_known_ioc)
+        dbot_score = get_dbotscore(reliability, hash_, is_known_ioc)
         tags = dict_safe_get(obj, ["Data", "Tags"], []) + dict_safe_get(
             obj, ["Data", "SystemTags"], []
         )
@@ -839,9 +871,9 @@ class Parser:
                 "updated_date": dict_safe_get(obj, ["Data", "UpdateDate"]),
                 "campaign": dict_safe_get(obj, ["Data", "RelatedCampaigns"]),
                 "tags": tags,
-                "whois_records": dict_safe_get(
-                    obj, ["Data", "Whois", "RegistrantDetails"]
-                ),
+                # "whois_records": dict_safe_get(
+                #     obj, ["Data", "Whois", "RegistrantDetails"]
+                # ),
                 "dbot_score": dbot_score,
             }
         )
@@ -905,18 +937,26 @@ class Parser:
         tags = dict_safe_get(obj, ["Data", "Tags"], []) + dict_safe_get(
             obj, ["Data", "SystemTags"], []
         )
-
+        dns_records: List[Common.DNSRecord] = []
+        for dns in dict_safe_get(obj, ["Data", "DnsRecords"], []):
+            dns_records.append(
+                Common.DNSRecord(
+                    dns_record_type=dns["Type"], dns_record_data=dns["Value"]
+                )
+            )
         return remove_empty_elements(
             {
                 "domain": domain,
-                "whois_records": dict_safe_get(obj, ["Data", "Whois"]),
-                "dns_records": dict_safe_get(obj, ["Data", "DnsRecords"]),
-                "updated_date": obj.get("UpdateDate"),
+                # "whois_records": dict_safe_get(obj, ["Data", "Whois"]),
+                "dns_records": dns_records,
+                "updated_date": dict_safe_get(obj, ["Data", "UpdateDate"]),
                 "tags": tags,
+                "sub_domains": dict_safe_get(obj, ["Data", "Subdomains"]),
                 "campaign": dict_safe_get(obj, ["Data", "RelatedCampaigns"]),
                 "dbot_score": dbot_score,
             }
         )
+        # ) | {"dns_records": dns_records}
 
 
 class Client(BaseClient):
@@ -945,7 +985,7 @@ class Client(BaseClient):
 
     def _http_request(self, *args, **kwargs):
         """
-        Warp to _http_request command. I use it beacuse sometimes the API response code is 200
+        Warp to _http_request command. I use it because sometimes the API response code is 200
         but there is an error with the request. The error flag located in the response body.
 
         Raises:
@@ -958,15 +998,13 @@ class Client(BaseClient):
         kwargs["error_handler"] = self.error_handler
         res = super()._http_request(*args, **kwargs)
         if isinstance(res, dict):
-            success_status = res.get("Success")
             if (
-                success_status is False
-                and res.get("Data")
-                and ERROR_RESPONSE_MAPPER.get(res.get("Data"))
+                res.get("Success") is False
+                and (data := res.get("Data"))
+                and ERROR_RESPONSE_MAPPER.get(data)
             ):
-                raise DemistoException(message=ERROR_RESPONSE_MAPPER[res["Data"]])
-            success_status = dict_safe_get(res, ["content", "success"])
-            if success_status is False:
+                raise DemistoException(message=ERROR_RESPONSE_MAPPER.get(data))
+            if dict_safe_get(res, ["content", "success"]) is False:
                 raise DemistoException(message=res)
         return res
 
@@ -983,21 +1021,20 @@ class Client(BaseClient):
             DemistoException: Error response.
             DemistoException: Error response.
         """
-        print(res)
         if isinstance(res, Response):
-            if err_msg := ERROR_RESPONSE_MAPPER.get(res.content.decode()):
-                raise DemistoException(message=err_msg)
-            if err_msg := ERROR_CODE_MAPPER.get(res.status_code):
-                raise DemistoException(message=err_msg)
-            raise DemistoException(message=str(res.content))
-        raise DemistoException(message=str(res.json()))
+            raise DemistoException(
+                ERROR_RESPONSE_MAPPER.get(res.content.decode())
+                or ERROR_CODE_MAPPER.get(res.status_code)
+                or res.text
+            )
+        raise DemistoException(message=res.text)
 
     def list_cyber_term_cve(self, cyber_term_id: str) -> dict[str, Any]:
         """
         List the Cyber-term CVEs.
 
         Args:
-            cyber_term_id (str | None): The ID of the cyber-term.
+            cyber_term_id (str): The ID of the cyber-term.
 
         Returns:
             dict[str, Any]: API response from Threat Command API.
@@ -1008,7 +1045,11 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=url_suffix)
 
     def list_cyber_term_ioc(
-        self, cyber_term_id: str, limit: int, ioc_type: str | None, offset: str | None
+        self,
+        cyber_term_id: str,
+        limit: int,
+        ioc_type: str | None,
+        offset: str | None,
     ) -> dict[str, Any]:
         """
         List the Cyber-term IOCs.
@@ -1038,7 +1079,7 @@ class Client(BaseClient):
     def list_cyber_term(
         self,
         search: str | None,
-        types: List[str] | None,
+        types_: List[str] | None,
         severities: List[str] | None,
         sectors: List[str] | None,
         countries: List[str] | None,
@@ -1053,7 +1094,7 @@ class Client(BaseClient):
 
         Args:
             search (str | None): Filter by free text, which can be the cyber term name or ID.
-            types (str | None): Filter by one or more cyber term types.
+            types_ (str | None): Filter by one or more cyber term types.
             severities (str | None): Filter by one or more cyber term severities.
             sectors (List[str] | None): Filter by one or more targeted sectors.
             countries (List[str] | None): Filter by one or more targeted countries.
@@ -1070,8 +1111,8 @@ class Client(BaseClient):
         params = remove_empty_elements(
             {
                 "search": search,
-                "type": [remove_whitespaces(type_) for type_ in types]
-                if types
+                "type": [remove_whitespaces(type_) for type_ in types_]
+                if types_
                 else None,
                 "severity": severities,
                 "target-sector": sectors,
@@ -1198,7 +1239,11 @@ class Client(BaseClient):
         payload = remove_empty_elements(
             {
                 "Iocs": map_ioc_list(
-                    domains=domains, urls=urls, ips=ips, hashes=hashes, emails=emails
+                    domains=domains,
+                    urls=urls,
+                    ips=ips,
+                    hashes=hashes,
+                    emails=emails,
                 )
             }
         )
@@ -1431,7 +1476,9 @@ class Client(BaseClient):
                 "sourceType": [remove_whitespaces(_type) for _type in source_type]
                 if source_type
                 else None,
-                "networkType": network_type if network_type else None,
+                "networkType": [remove_whitespaces(_type) for _type in network_type]
+                if network_type
+                else None,
                 "matchedAssetValue": matched_asset_value
                 if matched_asset_value
                 else None,
@@ -1473,7 +1520,7 @@ class Client(BaseClient):
         self,
         title: str,
         description: str,
-        type: str | None,
+        type_: str | None,
         sub_type: str | None,
         severity: str,
         source_type: str,
@@ -1490,7 +1537,7 @@ class Client(BaseClient):
         Args:
             title (str): Title for the alert.
             description (str): Description for the alert.
-            type (str | None): Type for the alert.
+            type_ (str | None): Type for the alert.
             sub_type (str | None): Sub-type for the alert.
             severity (str): Severity.
             source_type (str): Source type.
@@ -1510,7 +1557,7 @@ class Client(BaseClient):
                 "Details": {
                     "Title": title,
                     "Description": description,
-                    "Type": remove_whitespaces(type),
+                    "Type": remove_whitespaces(type_),
                     "SubType": sub_type,
                     "Severity": severity,
                     "Source": {
@@ -1538,7 +1585,7 @@ class Client(BaseClient):
         alert_id: str,
         reason: str,
         comment: str | None,
-        is_hidden: bool | None,
+        is_hidden: bool,
         rate: int | None,
     ) -> Response:
         """
@@ -1548,7 +1595,7 @@ class Client(BaseClient):
             alert_id (str): Alert ID.
             reason (str): Close reason.
             comment (str | None): Close comment.
-            is_hidden (bool | None): Alerts' hidden status.
+            is_hidden (bool): Alerts' hidden status.
             rate (int | None): Alert's rate
 
         Returns:
@@ -1748,7 +1795,7 @@ class Client(BaseClient):
             resp_type="response",
         )
 
-    def list_alert_conversation(self, alert_id: str) -> List[dict[str, Any]]:
+    def list_alert_conversation(self, alert_id: str) -> Response:
         """
         List alert's analyst response.
 
@@ -1756,12 +1803,17 @@ class Client(BaseClient):
             alert_id (str): Alert ID.
 
         Returns:
-            List[dict[str, Any]]: API response from Threat Command API.
+            Response: API response from Threat Command API.
         """
         url_suffix = os.path.join(
             V1_PREFIX, UrlPrefix.ALERT.value, "ask-the-analyst-conversation", alert_id
         )
-        return self._http_request(method="GET", url_suffix=url_suffix)
+        return self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            ok_codes=[HTTPStatus.OK, HTTPStatus.NO_CONTENT],
+            resp_type="response",
+        )
 
     def list_alert_activity(self, alert_id: str) -> List[dict[str, Any]]:
         """
@@ -1948,20 +2000,20 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=url_suffix)
 
     def list_alert_scenario(
-        self, type: str | None, sub_type: str | None
+        self, type_: str | None, sub_type: str | None
     ) -> List[dict[str, Any]]:
         """
         List alert scenarios.
 
         Args:
-            type (str | None): Filter by type.
+            type_ (str | None): Filter by type.
             sub_type (str | None): Filter by sub-type.
 
         Returns:
             List[dict[str, Any]]: API response from Threat Command API.
         """
         params = remove_empty_elements(
-            {"type": remove_whitespaces(type), "subType": sub_type}
+            {"type": remove_whitespaces(type_), "subType": sub_type}
         )
         url_suffix = os.path.join(
             V1_PREFIX, UrlPrefix.ALERT.value, "scenario-relations"
@@ -2388,14 +2440,14 @@ def list_cyber_term_ioc_command(client: Client, args: dict[str, Any]) -> Command
     paginated_response = auto_pagination(
         request_command=client.list_cyber_term_ioc,
         offset_path=["content", "nextOffset"],
-        limit=args.get("limit", 50),
-        page=args.get("page"),
-        page_size=args.get("page_size"),
+        limit=arg_to_number(args.get("limit", 50)),
+        page=arg_to_number(args.get("page")),
+        page_size=arg_to_number(args.get("page_size")),
         cyber_term_id=args["cyber_term_id"],
         ioc_type=args.get("ioc_type"),
     )
     mapped_response = list_parser(
-        _list=dict_safe_get(paginated_response, ["content", "iocs"]),
+        values=dict_safe_get(paginated_response, ["content", "iocs"]),
         mapper_command=client.parser.cyber_term_ioc_parser,
     )
 
@@ -2423,11 +2475,11 @@ def list_cyber_term_command(client: Client, args: dict[str, Any]) -> CommandResu
     paginated_response = auto_pagination(
         request_command=client.list_cyber_term,
         offset_path=["nextOffset"],
-        limit=args.get("limit", 50),
-        page=args.get("page"),
-        page_size=args.get("page_size"),
+        limit=arg_to_number(args.get("limit", 50)),
+        page=arg_to_number(args.get("page")),
+        page_size=arg_to_number(args.get("page_size")),
         search=args.get("search"),
-        types=argToList(args.get("types")),
+        types_=argToList(args.get("types")),
         severities=argToList(args.get("severities")),
         sectors=argToList(args.get("sectors")),
         countries=argToList(args.get("countries")),
@@ -2438,7 +2490,7 @@ def list_cyber_term_command(client: Client, args: dict[str, Any]) -> CommandResu
     )
 
     mapped_response = list_parser(
-        _list=paginated_response["content"],
+        values=paginated_response["content"],
         mapper_command=client.parser.cyber_term_parser,
     )
 
@@ -2465,7 +2517,7 @@ def list_source_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     response = client.list_source()
     fixed_response = [
-        update_dict(member, {"type": object_type})
+        member | {"type": object_type}
         for object_type in response
         for member in response[object_type]
     ]
@@ -2512,9 +2564,15 @@ def create_source_document_command(
         emails=argToList(args.get("emails")),
     )
     source_id = dict_safe_get(response, ["Data", "sourceDetails", "_id"])
-
-    return CommandResults(
-        readable_output=ReadableOutputs.DOCUMENT_CREATE.value.format(name, source_id)
+    outputs = {"Files": {"id": source_id, "name": name}}
+    return command_result_generate(
+        readable_message=ReadableOutputs.DOCUMENT_CREATE.value,
+        readable_outputs=outputs["Files"],
+        outputs=outputs,
+        headers=["id", "name"],
+        prefix="Source",
+        key_field="id",
+        raw_response=response,
     )
 
 
@@ -2570,7 +2628,7 @@ def create_source_document_ioc_command(
     )
 
 
-def list_system_modules_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def list_system_modules_command(client: Client, *_) -> CommandResults:
     """
     List system modules.
 
@@ -2584,16 +2642,15 @@ def list_system_modules_command(client: Client, args: dict[str, Any]) -> Command
     response = client.list_system_modules()
     fixed_response = dict_to_lowercase(response)
     readable_outputs = [
-        {"Module name": module, "Enable status": status}
+        {"module_name": module, "status": status}
         for module, status in fixed_response.items()
     ]
     return command_result_generate(
         readable_message=ReadableOutputs.SYSTEM_MODULES.value,
-        readable_outputs=readable_outputs,
-        outputs=fixed_response,
-        headers=["Module name", "Enable status"],
+        outputs=readable_outputs,
+        headers=["module_name", "status"],
         prefix="SystemModule",
-        key_field="id",
+        key_field="module_name",
         raw_response=response,
     )
 
@@ -2655,10 +2712,9 @@ def list_assets_command(client: Client, args: dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    asset_types = argToList(args.get("asset_types"))
-    response = client.list_assets(asset_types=asset_types)
+    response = client.list_assets(asset_types=argToList(args.get("asset_types")))
     fixed_response = [
-        update_dict({"value": asset}, {"type": object_type})
+        {"value": asset} | {"type": object_type}
         for object_type in response
         for asset in response[object_type]
     ]
@@ -2692,7 +2748,7 @@ def list_asset_types_command(client: Client, args: dict[str, Any]) -> CommandRes
         readable_message=ReadableOutputs.ASSET_TYPES.value,
         outputs=paginated_response,
         headers=["type"],
-        prefix="asset_type",
+        prefix="AssetType",
         key_field="value",
         raw_response=response,
     )
@@ -2722,7 +2778,6 @@ def list_cve_command(client: Client, args: dict[str, Any]) -> List[CommandResult
     )
     paginated_response = manual_pagination(response["content"], args)
     mapped_response = list_parser(paginated_response, client.parser.cve_parser)
-
     return remove_empty_elements(
         [
             command_result_generate(
@@ -2740,14 +2795,13 @@ def list_cve_command(client: Client, args: dict[str, Any]) -> List[CommandResult
                 key_field="id",
                 raw_response=response,
             ),
-            command_result_generate(
+            response.get("nextOffset")
+            and command_result_generate(
                 readable_message=ReadableOutputs.CVE_NEXT_OFFSET.value,
-                outputs=args["nextOffset"],
+                outputs=response["nextOffset"],
                 headers=["offset"],
                 prefix="CveNextOffset",
-            )
-            if args.get("nextOffset")
-            else None,
+            ),
         ]
     )
 
@@ -2819,22 +2873,16 @@ def list_alert_handler_command(client: Client, args: dict[str, Any]) -> CommandR
         "source_date_to": args.get("source_date_to"),
         "found_date_from": args.get("found_date_from"),
         "found_date_to": args.get("found_date_to"),
-        "assigned": argToBoolean(args.get("assigned"))
-        if args.get("assigned")
-        else None,
-        "is_flagged": argToBoolean(args.get("is_flagged"))
-        if args.get("is_flagged")
-        else None,
-        "is_closed": argToBoolean(args.get("is_closed"))
-        if args.get("is_closed")
-        else None,
-        "has_ioc": argToBoolean(args.get("has_ioc")) if args.get("has_ioc") else None,
+        "assigned": arg_to_optional_bool(args.get("assigned")),
+        "is_flagged": arg_to_optional_bool(args.get("is_flagged")),
+        "is_closed": arg_to_optional_bool(args.get("is_closed")),
+        "has_ioc": arg_to_optional_bool(args.get("has_ioc")),
     }
 
     if alert_id := args.get("alert_id"):
         return get_alert_details_command(client=client, alert_id=alert_id)
 
-    if args.get("retrieve_ids_only") and argToBoolean(args.get("retrieve_ids_only")):
+    if argToBoolean(args["retrieve_ids_only"]):
         return list_alert_command(client=client, args=args, **params)
 
     return list_alerts_details_command(client=client, args=args, **params)
@@ -2855,9 +2903,9 @@ def list_alerts_details_command(
     paginated_response = auto_pagination(
         request_command=client.list_alert,
         offset_path=["nextOffset"],
-        limit=args.get("limit", 50),
-        page=args.get("page"),
-        page_size=args.get("page_size"),
+        limit=arg_to_number(args.get("limit", 50)),
+        page=arg_to_number(args.get("page")),
+        page_size=arg_to_number(args.get("page_size")),
         **params,
     )
 
@@ -2896,14 +2944,14 @@ def list_alert_command(
     paginated_response = auto_pagination(
         request_command=client.list_alert,
         offset_path=["nextOffset"],
-        limit=args.get("limit", 50),
-        page=args.get("page"),
-        page_size=args.get("page_size"),
+        limit=arg_to_number(args.get("limit", 50)),
+        page=arg_to_number(args.get("page")),
+        page_size=arg_to_number(args.get("page_size")),
         **params,
     )
 
     mapped_response = list_parser(
-        _list=paginated_response.get("content", []),
+        values=paginated_response.get("content", []),
         mapper_command=response_obj_parser,
     )
 
@@ -2958,22 +3006,25 @@ def create_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
     response = client.create_alert(
         title=args["title"],
         description=args["description"],
-        type=args.get("type"),
+        type_=args.get("type"),
         sub_type=args.get("sub_type"),
         severity=args["severity"],
         source_type=args["source_type"],
         source_network_type=args["source_network_type"],
         source_date=args.get("source_date"),
         found_date=args.get("found_date"),
-        image_entry_ids=argToList(args.get("image_entry_ids", [])),
+        image_entry_ids=argToList(args.get("image_entry_ids")),
         scenario=args.get("scenario"),
         source_url=args.get("source_url"),
     )
-
-    return CommandResults(
-        readable_output=ReadableOutputs.ALERT_CREATE.value.format(
-            response.content.decode()
-        )
+    outputs = {"id": response.content.decode()}
+    return command_result_generate(
+        readable_message=ReadableOutputs.ALERT_CREATE.value,
+        outputs=outputs,
+        headers=["id"],
+        prefix="Alert",
+        key_field="id",
+        raw_response=outputs,
     )
 
 
@@ -2996,7 +3047,7 @@ def close_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
         alert_id=alert_id,
         reason=args["reason"],
         comment=args.get("comment"),
-        is_hidden=argToBoolean(args.get("is_hidden")),
+        is_hidden=argToBoolean(args["is_hidden"]),
         rate=arg_to_number(args.get("rate")),
     )
 
@@ -3196,7 +3247,12 @@ def list_alert_conversation_command(
     alert_id = args["alert_id"]
 
     response = client.list_alert_conversation(alert_id=alert_id)
-    mapped_response = [dict_to_lowercase(msg) for msg in response]
+    if response.status_code == HTTPStatus.NO_CONTENT:
+        return CommandResults(
+            readable_output=ReadableOutputs.ALERT_NO_CONVERSATION_LIST.value
+        )
+    response_json = response.json()
+    mapped_response = [dict_to_lowercase(msg) for msg in response_json]
     outputs = {"id": alert_id, "Message": mapped_response}
     return command_result_generate(
         readable_message=ReadableOutputs.ALERT_CONVERSATION_LIST.value,
@@ -3204,7 +3260,7 @@ def list_alert_conversation_command(
         headers=["initiator", "message", "date"],
         prefix="Alert",
         key_field="id",
-        raw_response=response,
+        raw_response=response_json,
         readable_outputs=mapped_response,
     )
 
@@ -3251,7 +3307,7 @@ def add_alert_note_command(client: Client, args: dict[str, Any]) -> CommandResul
     client.add_alert_note(
         alert_id=alert_id,
         note=args["note"],
-        file_entry_ids=argToList(args.get("entry_ids", [])),
+        file_entry_ids=argToList(args.get("entry_ids")),
     )
     return CommandResults(
         readable_output=ReadableOutputs.ALERT_ADD_NOTE.value.format(alert_id)
@@ -3469,7 +3525,7 @@ def list_alert_scenario_command(client: Client, args: dict[str, Any]) -> Command
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     response = client.list_alert_scenario(
-        type=args.get("type"), sub_type=args.get("sub_type")
+        type_=args.get("type"), sub_type=args.get("sub_type")
     )
     paginated_response = manual_pagination(response, args)
     fixed_response = [dict_to_lowercase(obj) for obj in paginated_response]
@@ -3550,7 +3606,7 @@ def search_ioc_handler_command(args: dict[str, Any], client: Client) -> PollResu
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     # validate_list_alert(args=args)
-    if argToBoolean(args["enrichment"]) is True:
+    if argToBoolean(args["enrichment"]):
         # Enrich IOC - Blocked.
         return enrich_ioc_handler(client=client, args=args)
 
@@ -3592,7 +3648,7 @@ def enrich_ioc_handler(client: Client, args: dict[str, Any]) -> PollResult:
                 readable_output=ReadableErrors.ENRICH_FAIL.value.format(status)
             )
         )
-        command_results.append(execution_metrics.metrics)
+        command_results.append(cast(CommandResults, execution_metrics.metrics))
         return PollResult(
             response=command_results,
             continue_to_poll=False,
@@ -3604,12 +3660,12 @@ def enrich_ioc_handler(client: Client, args: dict[str, Any]) -> PollResult:
                 readable_output=ReadableErrors.ENRICH_FAIL.value.format(status)
             )
         )
-        command_results.append(execution_metrics.metrics)
+        command_results.append(cast(CommandResults, execution_metrics.metrics))
         return PollResult(
             response=command_results,
             continue_to_poll=False,
         )
-    elif response["Status"] == "Done":
+    if response["Status"] == "Done":
         execution_metrics.success += 1
         filtered_response = client.parser.ioc_enrich_parser(response["Data"])
         command_results.append(
@@ -3622,13 +3678,13 @@ def enrich_ioc_handler(client: Client, args: dict[str, Any]) -> PollResult:
                 raw_response=response,
             )
         )
-        command_results.append(execution_metrics.metrics)
+        command_results.append(cast(CommandResults, execution_metrics.metrics))
         return PollResult(
             response=command_results,
             continue_to_poll=False,
         )
     return PollResult(
-        response="result['Status']",
+        response=response["Status"],
         continue_to_poll=True,
         args_for_next_run=args,
     )
@@ -3671,9 +3727,9 @@ def list_ioc_handler(client: Client, args: dict[str, Any]) -> CommandResults:
     paginated_response = auto_pagination(
         request_command=client.list_ioc,
         offset_path=["nextOffset"],
-        limit=args.get("limit", 50),
-        page=args.get("page"),
-        page_size=args.get("page_size"),
+        limit=arg_to_number(args.get("limit", 50)),
+        page=arg_to_number(args.get("page")),
+        page_size=arg_to_number(args.get("page_size")),
         last_updated_from=args.get("last_updated_from"),
         last_updated_to=args.get("last_updated_to"),
         last_seen_from=args.get("last_seen_from"),
@@ -3905,9 +3961,7 @@ def search_mention_command(client: Client, args: dict[str, Any]) -> CommandResul
     )
 
 
-def usage_quota_enrichment_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def usage_quota_enrichment_command(client: Client, *_) -> CommandResults:
     """
     Get enrichment quota.
 
@@ -3944,7 +3998,7 @@ def list_mssp_user_command(client: Client, args: dict[str, Any]) -> CommandResul
     paginated_response = manual_pagination(response, args)
     mapped_response = list_parser(paginated_response, response_obj_parser)
     return command_result_generate(
-        readable_message=ReadableOutputs.ACCOUNT_USER_LIST.value,
+        readable_message=ReadableOutputs.MSSP_USER_LIST.value,
         outputs=mapped_response,
         headers=["id", "email", "role", "is_deleted"],
         prefix="MsspUser",
@@ -3968,7 +4022,7 @@ def list_mssp_customer_command(client: Client, args: dict[str, Any]) -> CommandR
     paginated_response = manual_pagination(response, args)
     mapped_response = list_parser(paginated_response, response_obj_parser)
     return command_result_generate(
-        readable_message=ReadableOutputs.ACCOUNT_USER_LIST.value,
+        readable_message=ReadableOutputs.MSSP_CUSTOMER_LIST.value,
         outputs=mapped_response,
         headers=["id", "company_name", "status", "note"],
         prefix="MsspCustomer",
@@ -3979,7 +4033,7 @@ def list_mssp_customer_command(client: Client, args: dict[str, Any]) -> CommandR
 
 def get_alert_csv_command(
     client: Client, args: dict[str, Any]
-) -> List[CommandResults | Dict[str, Any]]:
+) -> List[CommandResults | Dict[str, Any]] | CommandResults:
     """
     Get alert CSV file if exists.
 
@@ -3988,13 +4042,15 @@ def get_alert_csv_command(
         args (Dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
-        CommandResults: outputs, readable outputs and raw response for XSOAR.
+        List[CommandResults | Dict[str, Any]] | CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     alert_id = args["alert_id"]
-    csv = client.get_alert_csv(alert_id)
-    if csv.status_code != HTTPStatus.OK:
-        raise DemistoException(message=csv.content)
-    csv_file = fileResult(filename=f"{alert_id}.csv", data=csv.content)
+    csv_response = client.get_alert_csv(alert_id)
+    if csv_response.status_code != HTTPStatus.OK:
+        return CommandResults(
+            readable_output=ReadableOutputs.ALERT_NO_CSV.value.format(alert_id)
+        )
+    csv_file = fileResult(filename=f"{alert_id}.csv", data=csv_response.content)
     return [
         CommandResults(
             readable_output=ReadableOutputs.ALERT_CSV.value.format(alert_id)
@@ -4020,7 +4076,9 @@ def file_command(args: dict[str, Any], client: Client) -> PollResult:
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
-    return reputation_handler(args, client, file_reputation_hander, "file")
+    return reputation_handler(
+        args, client, file_reputation_handler, IOCType.FILE.value.lower()
+    )
 
 
 @polling_function(
@@ -4040,7 +4098,9 @@ def ip_command(args: dict[str, Any], client: Client) -> PollResult:
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
-    return reputation_handler(args, client, ip_reputation_hander, "ip")
+    return reputation_handler(
+        args, client, ip_reputation_handler, IOCType.IP.value.lower()
+    )
 
 
 @polling_function(
@@ -4061,7 +4121,9 @@ def url_command(args: dict[str, Any], client: Client) -> PollResult:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
 
-    return reputation_handler(args, client, url_reputation_hander, "url")
+    return reputation_handler(
+        args, client, url_reputation_handler, IOCType.URL.value.lower()
+    )
 
 
 @polling_function(
@@ -4081,7 +4143,9 @@ def domain_command(args: dict[str, Any], client: Client) -> PollResult:
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
-    return reputation_handler(args, client, domain_reputation_hander, "domain")
+    return reputation_handler(
+        args, client, domain_reputation_handler, IOCType.DOMAIN.value.lower()
+    )
 
 
 def reputation_handler(
@@ -4100,31 +4164,69 @@ def reputation_handler(
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
     execution_metrics = ExecutionMetrics()
-    files: List[str] = argToList(args[key])
-    current_file = files[0]
+    execution_metrics.general_error += 1
+    ioc_values: List[str] = argToList(args[key])
+    current_file = ioc_values[0]
     response = client.enrich_ioc(ioc_value=current_file)
+    command_results = []
     if response["Status"] == "QuotaExceeded":
         execution_metrics.quota_error += 1
-        raise DemistoException(ReadableErrors.ENRICH_FAIL.value)
+        command_results.append(
+            CommandResults(
+                readable_output=ReadableErrors.ENRICH_FAIL.value.format(
+                    response["Status"]
+                )
+            )
+        )
+        command_results.append(cast(CommandResults, execution_metrics.metrics))
+        return PollResult(
+            response=command_results,
+            continue_to_poll=False,
+        )
+
     if response["Status"] == "Failed":
         execution_metrics.general_error += 1
-        raise DemistoException(ReadableErrors.ENRICH_FAIL.value)
-    elif response["Status"] == "Done":
-        execution_metrics.success += 1
-        results = handler_command(client=client, obj=response, obj_id=current_file)
-        files.remove(current_file)
-        if not files:
+        ioc_values.remove(current_file)
+        command_results.append(
+            CommandResults(
+                readable_output=ReadableErrors.ENRICH_FAIL.value.format(
+                    response["Status"]
+                )
+            )
+        )
+        command_results.append(cast(CommandResults, execution_metrics.metrics))
+        if not ioc_values:
             return PollResult(
-                response=results,
+                response=command_results,
                 continue_to_poll=False,
             )
-        args[key] = (",").join(files)
+
+        args[key] = (",").join(ioc_values)
         return PollResult(
-            response=results,
+            response=command_results,
+            args_for_next_run=args,
+            continue_to_poll=True,
+        )
+    if response["Status"] == "Done":
+        execution_metrics.success += 1
+        results = handler_command(client=client, obj=response, obj_id=current_file)
+        ioc_values.remove(current_file)
+        command_results = [results, cast(CommandResults, execution_metrics.metrics)]
+        if not ioc_values:
+            return PollResult(
+                response=command_results,
+                continue_to_poll=False,
+            )
+
+        args[key] = (",").join(ioc_values)
+
+        return PollResult(
+            response=command_results,
             partial_result=results,
             args_for_next_run=args,
             continue_to_poll=True,
         )
+
     return PollResult(
         response=response["Status"],
         continue_to_poll=True,
@@ -4135,7 +4237,7 @@ def reputation_handler(
 """ HELPER FUNCTIONS """
 
 
-def file_reputation_hander(
+def file_reputation_handler(
     client: Client, obj: dict[str, Any], obj_id: str
 ) -> CommandResults:
     """
@@ -4150,23 +4252,24 @@ def file_reputation_hander(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     command_args = client.parser.file_reputation_parser(
-        obj=obj, hash=obj_id, reliability=client.reliability
+        obj=obj, hash_=obj_id, reliability=client.reliability
     )
     file_indicator = Common.File(**command_args)
-    file_context = file_indicator.to_context().get(Common.File.CONTEXT_PATH)
-    readable_output = tableToMarkdown(
-        f"Rapid7 Threat Command - Hash Reputation for: {obj_id}", t=file_context
-    )
+    # file_context = file_indicator.to_context().get(Common.File.CONTEXT_PATH)
+    command_args.pop("dbot_score")
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix="",
-        raw_response=obj,
-        outputs_key_field="SHA256",
+        outputs_prefix=f"{INTEGRATION_ENTRY_CONTEXT}.File",
+        outputs_key_field="sha256",
         indicator=file_indicator,
+        readable_output=tableToMarkdown(
+            f"Rapid7 Threat Command - Hash Reputation for: {obj_id}", t=command_args
+        ),
+        outputs=command_args,
+        raw_response=obj,
     )
 
 
-def ip_reputation_hander(
+def ip_reputation_handler(
     client: Client, obj: Dict[str, Any], obj_id: str
 ) -> CommandResults:
     """
@@ -4184,20 +4287,20 @@ def ip_reputation_hander(
         obj=obj, ip=obj_id, reliability=client.reliability
     )
     ip_indicator = Common.IP(**command_args)
-    del command_args["dbot_score"]
+    command_args.pop("dbot_score")
     return CommandResults(
+        outputs_prefix=f"{INTEGRATION_ENTRY_CONTEXT}.IP",
+        outputs_key_field="ip",
+        indicator=ip_indicator,
         readable_output=tableToMarkdown(
             f"Rapid7 Threat Command - IP Reputation for: {obj_id}", command_args
         ),
-        outputs_prefix="ThreatCommand.IP",
-        # raw_response=obj,
         outputs=command_args,
-        outputs_key_field="ip",
-        # indicator=ip_indicator
+        raw_response=obj,
     )
 
 
-def url_reputation_hander(
+def url_reputation_handler(
     client: Client, obj: Dict[str, Any], obj_id: str
 ) -> CommandResults:
     """
@@ -4215,21 +4318,21 @@ def url_reputation_hander(
         obj=obj, url=obj_id, reliability=client.reliability
     )
     url_indicator = Common.URL(**command_args)
-    del command_args["dbot_score"]
+    command_args.pop("dbot_score")
 
     return CommandResults(
+        outputs_prefix=f"{INTEGRATION_ENTRY_CONTEXT}.URL",
+        outputs_key_field="url",
+        indicator=url_indicator,
         readable_output=tableToMarkdown(
             f"Rapid7 Threat Command - URL Reputation for: {obj_id}", command_args
         ),
-        outputs_prefix="ThreatCommand.URL",
-        # raw_response=obj,
         outputs=command_args,
-        outputs_key_field="url",
-        indicator=url_indicator,
+        raw_response=obj,
     )
 
 
-def domain_reputation_hander(
+def domain_reputation_handler(
     client: Client, obj: Dict[str, Any], obj_id: str
 ) -> CommandResults:
     """
@@ -4248,16 +4351,17 @@ def domain_reputation_hander(
     )
     domain_indicator = Common.Domain(**command_args)
     del command_args["dbot_score"]
+    del command_args["dns_records"]
     return CommandResults(
+        outputs_prefix=f"{INTEGRATION_ENTRY_CONTEXT}.Domain",
+        outputs_key_field="domain",
+        indicator=domain_indicator,
         readable_output=tableToMarkdown(
             f"Rapid7 Threat Command - domain Reputation for: {obj_id}",
             command_args,
         ),
-        outputs_prefix="ThreatCommand.Domain",
-        # raw_response=obj,
         outputs=command_args,
-        outputs_key_field="domain",
-        # indicator=domain_indicator
+        raw_response=obj,
     )
 
 
@@ -4275,10 +4379,10 @@ def get_dbotscore(
     Returns:
         Common.DBotScore: DBot Score according to the disposition.
     """
-    if is_known_ioc is True:
+    if is_known_ioc:
         score = Common.DBotScore.BAD
 
-    elif is_known_ioc is False:
+    elif is_known_ioc:
         score = Common.DBotScore.GOOD
 
     else:
@@ -4303,12 +4407,14 @@ def get_enrich_hashes(response: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: Hashes dictionary.
     """
-    data = {}
-    hashes = dict_safe_get(response, ["Data", "RelatedHashes"])
-    if isinstance(hashes, list):
-        for hash in dict_safe_get(response, ["Data", "RelatedHashes"], []):
-            data.update({hash["Type"]: hash["Value"]})
-    return data
+    return (
+        {
+            hash["Type"]: hash["Value"]
+            for hash in dict_safe_get(response, ["Data", "RelatedHashes"], [])
+        }
+        if isinstance(dict_safe_get(response, ["Data", "RelatedHashes"]), list)
+        else {}
+    )
 
 
 def get_enrich_file_nams(response: dict[str, Any]) -> List[str]:
@@ -4321,11 +4427,12 @@ def get_enrich_file_nams(response: dict[str, Any]) -> List[str]:
     Returns:
         List[str]: File names.
     """
-    detections = dict_safe_get(response, ["Data", "AntivirusDetections"], [])
     return remove_empty_elements(
         [
             detection.get("Result") if detection.get("Result") != "" else None
-            for detection in detections
+            for detection in dict_safe_get(
+                response, ["Data", "AntivirusDetections"], []
+            )
         ]
     )
 
@@ -4357,21 +4464,18 @@ def files_handler(file_ids: List[str], is_image: bool = False) -> List[dict[str,
         List[dict[str, Any]]: List of the files with data.
     """
     files_data = []
-    if file_ids:
-        for image_id in file_ids:
-            file_data = demisto.getFilePath(image_id)
-            file_type = pathlib.Path(file_data["name"]).suffix[1:]
-            with open(file_data["path"], "rb") as f:
-                files_data.append(
-                    remove_empty_elements(
-                        {
-                            "Data": base64.b64encode(f.read()).decode(),
-                            "Type": "jpeg" if file_type == "jpg" else file_type,
-                            "Name": file_data["name"] if not is_image else None,
-                        }
-                    )
-                )
-    return files_data
+    for image_id in file_ids:
+        file_data = demisto.getFilePath(image_id)
+        file_type = pathlib.Path(file_data["name"]).suffix[1:]
+        with open(file_data["path"], "rb") as f:
+            files_data.append(
+                {
+                    "Data": base64.b64encode(f.read()).decode(),
+                    "Type": "jpeg" if file_type == "jpg" else file_type,
+                    "Name": file_data["name"] if not is_image else None,
+                }
+            )
+    return remove_empty_elements(files_data)
 
 
 def command_result_generate(
@@ -4406,7 +4510,7 @@ def command_result_generate(
             headerTransform=string_to_table_header,
             removeNull=True,
         ),
-        outputs_prefix=f"ThreatCommand.{prefix}",
+        outputs_prefix=f"{INTEGRATION_ENTRY_CONTEXT}.{prefix}",
         outputs_key_field=key_field,
         outputs=outputs,
         raw_response=raw_response,
@@ -4437,25 +4541,25 @@ def manual_pagination(response: List[Any], args: dict[str, Any]) -> List[Any]:
 
 
 def list_parser(
-    _list: List[dict[str, Any]], mapper_command: Callable
+    values: List[dict[str, Any]], mapper_command: Callable
 ) -> List[dict[str, Any]]:
     """
     Handle with parse list of objects.
 
     Args:
-        _list (List[dict[str, Any]]): List of objects to map.
+        values (List[dict[str, Any]]): List of objects to map.
         mapper_command (Callable): The object parse command.
 
     Returns:
         List[dict[str, Any]]: Parsed list.
     """
-    return [mapper_command(obj) for obj in _list]
+    return [mapper_command(obj) for obj in values]
 
 
 def auto_pagination(
     request_command: Callable,
     offset_path: List[str],
-    limit: int,
+    limit: int | None,
     page: int | None,
     page_size: int | None,
     offset: str | None = None,
@@ -4480,8 +4584,6 @@ def auto_pagination(
     """
     command_args = copy.deepcopy(kwargs)
     command_args["offset"] = offset
-    page = arg_to_number(page)
-    page_size = arg_to_number(page_size)
     if page and page_size:
         if page == 1:
             command_args["limit"] = page_size
@@ -4501,31 +4603,14 @@ def auto_pagination(
                 page_size=page_size,
                 **command_args,
             )
-        if not offset:
+        if offset is None:
             raise ValueError("Error with pagination.")
 
         command_args["limit"] = page_size
         command_args["offset"] = offset
         return request_command(**command_args)
-    else:
-        command_args["limit"] = arg_to_number(limit)
-        return request_command(**command_args)
-
-
-def update_dict(dict_: dict[str, Any], dict__: dict[str, Any]) -> dict[str, Any]:
-    """
-    Update dict and return it. I use it because update() does not return the dict.
-
-
-    Args:
-        dict_ (dict[str, Any]): Dict to update.
-        dict__ (dict[str, Any]): Dict to update.
-
-    Returns:
-        dict[str, Any]: Updated dict.
-    """
-    dict_.update(dict__)
-    return dict_
+    command_args["limit"] = limit
+    return request_command(**command_args)
 
 
 def map_ioc_list(
@@ -4550,48 +4635,35 @@ def map_ioc_list(
     Returns:
         List[dict[str, Any]]: Mapped list of IOCs with types.
     """
-    mapped_domains = (
-        [
-            {
-                "Type": "Domains",
-                "Value": domain,
-            }
-            for domain in domains
-        ]
-        if domains
-        else []
-    )
+    mapped_domains = [
+        {
+            "Type": "Domains",
+            "Value": domain,
+        }
+        for domain in domains or []
+    ]
     mapped_hashes = (
         [{"Type": "Hashes", "Value": hash} for hash in hashes] if hashes else []
     )
 
-    mapped_urls = (
-        [{"Type": "URLs" if blocklist_status else "Urls", "Value": url} for url in urls]
-        if urls
-        else []
-    )
-    mapped_ips = (
-        [
-            {"Type": "IPs" if blocklist_status else "IpAddresses", "Value": ip}
-            for ip in ips
-        ]
-        if ips
-        else []
-    )
-    mapped_emails = (
-        [
-            {"Type": "EmailAddresses" if blocklist_status else "Emails", "Value": email}
-            for email in emails
-        ]
-        if emails
-        else []
-    )
+    mapped_urls = [
+        {"Type": "URLs" if blocklist_status else "Urls", "Value": url}
+        for url in urls or []
+    ]
+    mapped_ips = [
+        {"Type": "IPs" if blocklist_status else "IpAddresses", "Value": ip}
+        for ip in ips or []
+    ]
+    mapped_emails = [
+        {"Type": "EmailAddresses" if blocklist_status else "Emails", "Value": email}
+        for email in emails or []
+    ]
     mapped_iocs = (
         mapped_domains + mapped_urls + mapped_ips + mapped_hashes + mapped_emails
     )
     if blocklist_status:
         for ioc in mapped_iocs:
-            ioc.update({"BlocklistStatus": blocklist_status})
+            ioc |= {"BlocklistStatus": blocklist_status}
     return mapped_iocs
 
 
@@ -4621,22 +4693,19 @@ def handle_iocs(args: dict[str, Any]) -> List[str]:
 
     if all([not domains, not urls, not ips, not hashes, not emails]):
         raise ValueError(ReadableErrors.NO_IOCS.value)
-    if urls:
-        for url in urls:
-            if not re.match(urlRegex, url):
-                raise ValueError(ReadableErrors.URL.value.format(url))
-    if ips:
-        for ip in ips:
-            if not re.match(ipv4Regex, ip):
-                raise ValueError(ReadableErrors.IP.value.format(ip))
-    if hashes:
-        for hash in hashes:
-            if not re.match(hashRegex, hash):
-                raise ValueError(ReadableErrors.HASH.value.format(hash))
-    if emails:
-        for email in emails:
-            if not re.match(emailRegex, email):
-                raise ValueError(ReadableErrors.EMAIL.value.format(email))
+    for iocs, ioc_type in [
+        (urls, IOCType.URL),
+        (ips, IOCType.IP),
+        (hashes, IOCType.HASH),
+        (emails, IOCType.EMAIL),
+    ]:
+        for ioc in iocs:
+            if not re.match(pattern_and_readable_error_by_ioc_type[ioc_type][0], ioc):
+                raise ValueError(
+                    pattern_and_readable_error_by_ioc_type[ioc_type][1].value.format(
+                        ioc
+                    )
+                )
 
     return domains + urls + ips + hashes + emails
 
@@ -4663,8 +4732,7 @@ def validate_create_source_document(args: dict[str, Any]) -> dict[str, Any]:
         raise ValueError(ReadableErrors.CONFIDENCE_LEVEL.value)
 
     handle_iocs(args=args)
-    args.update({"confidence_level": confidence_level})
-    return args
+    return args | {"confidence_level": confidence_level}
 
 
 def multi_status_handler(
@@ -4689,8 +4757,8 @@ def multi_status_handler(
     """
     succeeded = objects
     failed = []
-    if res.get("failure") and isinstance(res["failure"], list):
-        for obj in res["failure"]:
+    if (failure := res.get("failure")) and isinstance(failure, list):
+        for obj in failure:
             reason = obj["failReason"]
             obj_id = obj[object_key]
             succeeded = list(set(succeeded) - set([obj_id]))
@@ -4722,18 +4790,20 @@ def validate_create_alert(args: dict[str, Any]):
         ValueError: In case of wrong arguments.
     """
     scenario = args.get("scenario")
-    type = args.get("type")
+    type_ = args.get("type")
     sub_type = args.get("sub_type")
 
-    if not any([scenario, type, sub_type]):
+    if any(
+        [
+            not any([scenario, type_, sub_type]),
+            all([scenario, type_, sub_type]),
+            all([scenario, sub_type]) or all([scenario, type_]),
+        ]
+    ):
         raise ValueError(ReadableErrors.SCENARIO_TYPES.value)
-    if all([scenario, type, sub_type]):
-        raise ValueError(ReadableErrors.SCENARIO_TYPES.value)
-    if all([scenario, sub_type]) or all([scenario, type]):
-        raise ValueError(ReadableErrors.SCENARIO_TYPES.value)
-    if all([type, not sub_type]):
+    if all([type_, not sub_type]):
         raise ValueError(ReadableErrors.ALERT_SUB_TYPE.value)
-    if all([not type, sub_type]):
+    if all([not type_, sub_type]):
         raise ValueError(ReadableErrors.ALERT_TYPE.value)
 
     validate_argument(args=args, key_="type", values=ArgumentValues.ALERT_TYPE.value)
@@ -4767,7 +4837,7 @@ def validate_list_alert(args: dict[str, Any]):
         args=args, key_="alert_type", values=ArgumentValues.ALERT_TYPE.value
     )
 
-    if args.get("alert_id") and args.get("retrieve_ids_only") is True:
+    if args.get("alert_id") and argToBoolean(args["retrieve_ids_only"]):
         raise ValueError(ReadableErrors.ALERT_LIST.value)
 
 
@@ -4785,15 +4855,12 @@ def validate_close_alert(args: dict[str, Any]):
         args=args, key_="reason", values=ArgumentValues.ALERT_CLOSE_REASON.value
     )
     validate_argument(args=args, key_="is_hidden", values=ArgumentValues.BOOLEAN.value)
-    if (
-        argToBoolean(args.get("is_hidden")) is True
-        and args.get("reason") != "False Positive"
-    ):
+    if argToBoolean(args["is_hidden"]) and args.get("reason") != "False Positive":
         raise ValueError(ReadableErrors.IS_HIDDEN.value)
 
-    rate = arg_to_number(args["rate"]) if args.get("rate") else None
+    rate = arg_to_number(args.get("rate"))
 
-    if rate and any([rate < 0, rate > 5]):
+    if rate and not 0 <= rate <= 5:
         raise ValueError(ReadableErrors.RATE.value)
 
 
@@ -4836,9 +4903,8 @@ def validate_list_cve(args: dict[str, Any]):
     Raises:
         ValueError: In case of wrong arguments.
     """
-    if args.get("severity_list"):
-        severity_list = argToList(args["severity_list"])
-        if not set(severity_list).issubset(set(ArgumentValues.CVE_SEVERITY.value)):
+    if severity_list := argToList(args.get("severity_list")):
+        if not set(severity_list).issubset(ArgumentValues.CVE_SEVERITY.value):
             raise ValueError(
                 ReadableErrors.ARGUMENT.value.format(
                     "severity_list", ArgumentValues.CVE_SEVERITY.value
@@ -4856,15 +4922,9 @@ def validate_list_account_user(args: dict[str, Any]):
     Raises:
         ValueError: In case of wrong arguments.
     """
-    if (
-        args.get("user_type")
-        and args["user_type"] not in ArgumentValues.USER_TYPE.value
-    ):
-        raise ValueError(
-            ReadableErrors.ARGUMENT.value.format(
-                "user_type", ArgumentValues.USER_TYPE.value
-            )
-        )
+    validate_argument(
+        args=args, key_="user_type", values=ArgumentValues.USER_TYPE.value
+    )
 
 
 def validate_alert_ioc_severity(args: dict[str, Any]):
@@ -4877,12 +4937,9 @@ def validate_alert_ioc_severity(args: dict[str, Any]):
     Raises:
         ValueError: In case of wrong arguments.
     """
-    if args["severity"] not in ArgumentValues.ALERT_IOC_SEVERITY.value:
-        raise ValueError(
-            ReadableErrors.ARGUMENT.value.format(
-                "severity", ArgumentValues.ALERT_IOC_SEVERITY.value
-            )
-        )
+    validate_argument(
+        args=args, key_="severity", values=ArgumentValues.ALERT_IOC_SEVERITY.value
+    )
 
 
 def validate_update_account_whitelist(args: dict[str, Any]):
@@ -4895,12 +4952,9 @@ def validate_update_account_whitelist(args: dict[str, Any]):
     Raises:
         ValueError: In case of wrong arguments.
     """
-    if args["is_whitelisted"] not in ArgumentValues.WHITELIST_STATUS.value:
-        raise ValueError(
-            ReadableErrors.ARGUMENT.value.format(
-                "is_whitelisted", ArgumentValues.BOOLEAN.value
-            )
-        )
+    validate_argument(
+        args=args, key_="is_whitelisted", values=ArgumentValues.WHITELIST_STATUS.value
+    )
 
 
 def validate_list_ioc(args: dict[str, Any]):
@@ -4929,36 +4983,29 @@ def validate_search_mentions(args: dict[str, Any]):
     """
     if not isinstance(arg_to_number(args["page_number"]), int):
         raise ValueError(ReadableErrors.NUMBER.value)
-    if (
-        args.get("source_type")
-        and args["source_type"] not in ArgumentValues.MENTION_SOURCE_TYPE.value
-    ):
-        raise ValueError(
-            ReadableErrors.ARGUMENT.value.format(
-                "source_type", ArgumentValues.MENTION_SOURCE_TYPE.value
-            )
-        )
-    if (
-        args.get("only_dark_web")
-        and args["only_dark_web"] not in ArgumentValues.BOOLEAN.value
-    ):
-        raise ValueError(
-            ReadableErrors.ARGUMENT.value.format(
-                "only_dark_web", ArgumentValues.BOOLEAN.value
-            )
-        )
-    if (
-        args.get("highlight_tags")
-        and args["highlight_tags"] not in ArgumentValues.BOOLEAN.value
-    ):
-        raise ValueError(
-            ReadableErrors.ARGUMENT.value.format(
-                "highlight_tags", ArgumentValues.BOOLEAN.value
-            )
-        )
+    validate_argument(
+        args=args, key_="source_type", values=ArgumentValues.MENTION_SOURCE_TYPE.value
+    )
+    validate_argument(
+        args=args, key_="only_dark_web", values=ArgumentValues.BOOLEAN.value
+    )
+    validate_argument(
+        args=args, key_="highlight_tags", values=ArgumentValues.BOOLEAN.value
+    )
 
 
 def validate_argument(args: dict[str, Any], key_: str, values: List[str]):
+    """
+    Validate for XSOAR input arguments.
+
+    Args:
+        args (dict[str, Any]): XSOAR arguments.
+        key_ (str): The key of the argument.
+        values (List[str]): Optional values.
+
+    Raises:
+        ValueError: In case that the input is wrong.
+    """
     if args.get(key_) and args[key_] not in values:
         raise ValueError(ReadableErrors.ARGUMENT.value.format(key_, values))
 
@@ -4986,23 +5033,24 @@ def alert_readable_outputs_handler(response: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: Alert readable dictionary.
     """
-    readable_outputs = copy.deepcopy(response)
-    readable_outputs.update({"Tags": [tag["name"] for tag in response.get("Tags", [])]})
-    return readable_outputs
+    return copy.deepcopy(response) | {
+        "Tags": [tag["name"] for tag in response.get("Tags", [])]
+    }
 
 
-def camel_to_snake(str_: str) -> str:
+def arg_to_optional_bool(bool_: str | None) -> bool | None:
     """
-    Change text from CamelCase to snakecase.
+    Returns the boolean value of the argument.
 
     Args:
-        str_ (str): Text.
+        bool_ (str | None): Argument value.
 
     Returns:
-        str: snakecase Text.
+        bool | None: Boolean argument.
     """
-    str_ = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", str_)
-    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", str_).lower()
+    if bool_ is None:
+        return None
+    return argToBoolean(bool_)
 
 
 def response_obj_parser(dict_: dict[str, Any]) -> dict[str, Any]:
@@ -5016,7 +5064,8 @@ def response_obj_parser(dict_: dict[str, Any]) -> dict[str, Any]:
         dict[str, Any]: Parsed dictionary.
     """
     return dict(
-        (camel_to_snake(k if k != "_id" else "id"), v) for k, v in dict_.items()
+        (camel_case_to_underscore(k if k != "_id" else "id"), v)
+        for k, v in dict_.items()
     )
 
 
@@ -5037,20 +5086,40 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_csv_handler(csv_response: Response, alert_id: str):
-    if csv_response.status_code == HTTPStatus.OK:
-        decoded_content = csv_response.content.decode()
-        cr = csv.DictReader(decoded_content.splitlines(), delimiter=",")
-        my_list = list(cr)
-        return fetch_attachment_parser(
-            file_name=f"{alert_id}.csv", data=csv_response.content, content=my_list
-        )
-    return None
+def fetch_csv_handler(csv_response: Response, alert_id: str) -> dict[str, Any] | None:
+    """
+    Handle CSV response.
+
+    Args:
+        csv_response (Response): CSV file response.
+        alert_id (str): Alert ID.
+
+    Returns:
+        dict[str, Any] | None: CSV attachment.
+    """
+    if csv_response.status_code != HTTPStatus.OK:
+        return None
+    decoded_content = csv_response.content.decode()
+    csv_data = list(csv.DictReader(decoded_content.splitlines(), delimiter=","))
+    return fetch_attachment_parser(
+        file_name=f"{alert_id}.csv", data=csv_response.content, content=csv_data
+    )
 
 
 def fetch_attachment_parser(
     file_name: str, data: bytes, content: List[dict[str, Any]] | None = None
 ) -> dict[str, Any]:
+    """
+    Prase attachment response to XSOAR incident.
+
+    Args:
+        file_name (str): File name.
+        data (bytes): The data to add.
+        content (List[dict[str, Any]] | None, optional): CSV dictionary. Defaults to None.
+
+    Returns:
+        dict[str, Any]: Parsed attachment dictionary.
+    """
     image_data = fileResult(filename=file_name, data=data)
     return remove_empty_elements(
         {
@@ -5088,7 +5157,7 @@ def fetch_incidents(
 
         alert_types (List[str], optional): Alert types to filter by.
         alert_severities (List[str], optional): Alert severities to filter by.
-        source_types (List[str], optional): Alert souece types to filter by..
+        source_types (List[str], optional): Alert source types to filter by..
         fetch_csv (bool, optional): Wether to fetch CSV file if exist.
         is_closed (bool): Wether to fetch closed alerts.
         fetch_attachments (bool, optional): Wether to fetch images if exist.
@@ -5098,13 +5167,11 @@ def fetch_incidents(
             incidents: List of incidents that will be created in XSOAR.
     """
     incidents = []
-    offset = last_run.get("offset")
-
-    try:
-        if offset:
+    if offset := last_run.get("offset"):
+        try:
             datetime.fromisoformat(offset.split("::")[0].replace("Z", "+00:00"))
-    except ValueError:
-        offset = None
+        except ValueError:
+            offset = None
 
     list_response = client.list_alert(
         offset=offset,
@@ -5115,7 +5182,7 @@ def fetch_incidents(
         source_type=source_types,
         is_closed=is_closed,
     )
-    if list_response.get("content") == []:
+    if not list_response.get("content"):
         return last_run, []
 
     alert_ids = [alert["_id"] for alert in list_response["content"]]
@@ -5128,8 +5195,7 @@ def fetch_incidents(
                 fetch_csv_handler(csv_response=csv_response, alert_id=alert_id)
             )
         if fetch_attachments is True:
-            img_ids = (dict_safe_get(alert_details, ["Details", "Images"], []),)
-            for img in img_ids[0]:
+            for img in dict_safe_get(alert_details, ["Details", "Images"], []):
                 attachments.append(
                     fetch_attachment_parser(
                         file_name=f"{img}.png", data=client.get_alert_image(img).content
@@ -5143,8 +5209,8 @@ def fetch_incidents(
                 alert=incident, attachments=remove_empty_elements(attachments)
             )
         )
-    offset_date = list_response['content'][-1].get("updateDate")
-    offset_id = list_response['content'][-1].get("_id")
+    offset_date = list_response["content"][-1].get("updateDate")
+    offset_id = list_response["content"][-1].get("_id")
     next_run = {"offset": f"{offset_date}::{offset_id}"}
     return next_run, incidents
 
@@ -5153,8 +5219,9 @@ def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
     base_url = params["base_url"]
-    account_id = params.get("credentials", {}).get("identifier")
-    api_key = params.get("credentials", {}).get("password")
+    account_id = dict_safe_get(params, ["credentials", "identifier"])
+    api_key = dict_safe_get(params, ["credentials", "password"])
+    mssp_sub_account = params.get("mssp_sub_account")
     reliability = params.get("integrationReliability", DBotScoreReliability.C)
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -5169,8 +5236,7 @@ def main() -> None:
         )
 
     command = demisto.command()
-
-    commands = {
+    commands: Dict[str, Callable] = {
         "threat-command-cyber-term-list": list_cyber_term_command,
         "threat-command-cyber-term-cve-list": list_cyber_term_cve_command,
         "threat-command-cyber-term-ioc-list": list_cyber_term_ioc_command,
@@ -5212,7 +5278,7 @@ def main() -> None:
         "threat-command-cve-delete": delete_cve_command,
         "threat-command-asset-add": add_asset_command,
         "threat-command-asset-list": list_assets_command,
-        "threat-command-asset-types-list": list_asset_types_command,
+        "threat-command-asset-type-list": list_asset_types_command,
         "threat-command-asset-delete": delete_asset_command,
         "threat-command-account-system-modules-list": list_system_modules_command,
         "threat-command-mention-search": search_mention_command,
@@ -5232,7 +5298,6 @@ def main() -> None:
     }
 
     try:
-        mssp_sub_account = params.get("mssp_sub_account")
         client: Client = Client(
             base_url=base_url,
             account_id=account_id,
@@ -5280,9 +5345,6 @@ def main() -> None:
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-            print(incidents)
-        elif command in commands:
-            return_results(commands[command](args=args, client=client))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 

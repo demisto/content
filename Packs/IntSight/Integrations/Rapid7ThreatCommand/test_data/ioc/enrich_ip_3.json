@@ -1,8 +1,8 @@
 {
-    "OriginalValue": "185.29.8.201",
+    "OriginalValue": "OriginalValue",
     "Status": "Done",
     "Data": {
-        "Value": "185.29.8.201",
+        "Value": "Data_Value",
         "Type": "IpAddresses",
         "Sources": [
             {
@@ -25,9 +25,9 @@
         "RelatedMalwares": [],
         "RelatedThreatActors": [],
         "RelatedCampaigns": [],
-        "FirstSeen": "2023-03-23T18:09:14.627Z",
-        "LastSeen": "2023-03-27T08:39:30.188Z",
-        "UpdateDate": "2023-03-27T08:47:36.016Z",
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
         "Whitelisted": false,
         "Severity": {
             "Value": "Low",
@@ -46,14 +46,14 @@
                     "ASSIGNED",
                     "PA"
                 ],
-                "CreatedDate": "2013-09-12T00:00:00.000Z",
-                "UpdatedDate": "2013-09-12T00:00:00.000Z"
+                "CreatedDate": "Data_Whois_NetworkDetails_CreatedDate",
+                "UpdatedDate": "Data_Whois_NetworkDetails_UpdatedDate"
             },
             "RegistrantDetails": [
                 {
                     "Organization": "DataClub S.A.",
                     "Name": "DataClub S.A.",
-                    "Email": "info@dataclub.biz",
+                    "Email": "Data_Whois_RegistrantDetails[0]_Email",
                     "Telephone": "34634908981",
                     "Fax": "34964784906",
                     "City": "Beliza City",
@@ -75,8 +75,8 @@
         "Resolutions": [
             {
                 "ResolvedDomain": "sicherheitservice.net",
-                "FirstResolved": "2015-09-03T19:10:05.000Z",
-                "LastResolved": "2016-08-23T09:15:57.000Z",
+                "FirstResolved": "Data_Resolutions[0]_FirstResolved",
+                "LastResolved": "Data_Resolutions[0]_LastResolved",
                 "ReportingSources": [
                     "Farsight",
                     "VirusTotal"
@@ -84,8 +84,8 @@
             },
             {
                 "ResolvedDomain": "paypal-secureservice.com",
-                "FirstResolved": "2015-09-02T14:49:16.000Z",
-                "LastResolved": "2016-08-16T23:55:03.000Z",
+                "FirstResolved": "Data_Resolutions[1]_FirstResolved",
+                "LastResolved": "Data_Resolutions[1]_LastResolved",
                 "ReportingSources": [
                     "Farsight",
                     "VirusTotal"
@@ -93,8 +93,8 @@
             },
             {
                 "ResolvedDomain": "meine-deutschebank.net",
-                "FirstResolved": "2015-09-13T03:55:06.000Z",
-                "LastResolved": "2016-08-16T03:38:44.000Z",
+                "FirstResolved": "Data_Resolutions[2]_FirstResolved",
+                "LastResolved": "Data_Resolutions[2]_LastResolved",
                 "ReportingSources": [
                     "Farsight",
                     "VirusTotal"
@@ -102,24 +102,24 @@
             },
             {
                 "ResolvedDomain": "www.meine-deutschebank.net",
-                "FirstResolved": "2015-10-17T15:40:35.000Z",
-                "LastResolved": "2016-04-21T05:42:43.000Z",
+                "FirstResolved": "Data_Resolutions[3]_FirstResolved",
+                "LastResolved": "Data_Resolutions[3]_LastResolved",
                 "ReportingSources": [
                     "Farsight"
                 ]
             },
             {
                 "ResolvedDomain": "sat2.dynns.com",
-                "FirstResolved": "2015-06-10T21:33:59.000Z",
-                "LastResolved": "2015-11-12T23:04:52.000Z",
+                "FirstResolved": "Data_Resolutions[4]_FirstResolved",
+                "LastResolved": "Data_Resolutions[4]_LastResolved",
                 "ReportingSources": [
                     "Farsight"
                 ]
             },
             {
                 "ResolvedDomain": "wwww.paypal.de.index.php.sicherheitservice.net",
-                "FirstResolved": "2015-09-06T21:18:16.000Z",
-                "LastResolved": "2015-09-21T16:21:46.000Z",
+                "FirstResolved": "Data_Resolutions[5]_FirstResolved",
+                "LastResolved": "Data_Resolutions[5]_LastResolved",
                 "ReportingSources": [
                     "Farsight",
                     "VirusTotal"
@@ -127,8 +127,8 @@
             },
             {
                 "ResolvedDomain": "paypal.sicherheitservice.net",
-                "FirstResolved": "2015-09-08T16:45:46.000Z",
-                "LastResolved": "2015-09-19T17:12:11.000Z",
+                "FirstResolved": "Data_Resolutions[6]_FirstResolved",
+                "LastResolved": "Data_Resolutions[6]_LastResolved",
                 "ReportingSources": [
                     "Farsight",
                     "VirusTotal"
@@ -136,16 +136,16 @@
             },
             {
                 "ResolvedDomain": "www.sicherheitservice.net",
-                "FirstResolved": "2015-09-04T04:58:04.000Z",
-                "LastResolved": "2015-09-04T04:58:04.000Z",
+                "FirstResolved": "Data_Resolutions[7]_FirstResolved",
+                "LastResolved": "Data_Resolutions[7]_LastResolved",
                 "ReportingSources": [
                     "Farsight"
                 ]
             },
             {
                 "ResolvedDomain": "cascading-tv.com",
-                "FirstResolved": "2015-05-11T17:25:47.000Z",
-                "LastResolved": "2015-05-16T19:30:47.000Z",
+                "FirstResolved": "Data_Resolutions[8]_FirstResolved",
+                "LastResolved": "Data_Resolutions[8]_LastResolved",
                 "ReportingSources": [
                     "Farsight"
                 ]

@@ -15,8 +15,8 @@
                     "VendorProduct": "Qualcomm Qpopper"
                 }
             ],
-            "publishedDate": "1998-07-14T04:00:00.000Z",
-            "updateDate": "2023-02-28T11:42:22.664Z",
+            "publishedDate": "content[0]_publishedDate",
+            "updateDate": "content[0]_updateDate",
             "severity": "Medium",
             "intsightsScore": 68,
             "cvssScore": 10,
@@ -32,8 +32,8 @@
                 "ClearWebCyberBlogs": 0,
                 "POC": 0
             },
-            "firstMentionDate": "1998-06-27T00:00:00.000Z",
-            "lastMentionDate": "2020-05-11T06:39:02.000Z",
+            "firstMentionDate": "content[0]_firstMentionDate",
+            "lastMentionDate": "content[0]_lastMentionDate",
             "exploitAvailability": true,
             "pocAvailability": false,
             "vulnerabilityOrigin": [
@@ -58,8 +58,8 @@
                     "VendorProduct": "Apache Http Server"
                 }
             ],
-            "publishedDate": "1997-09-01T04:00:00.000Z",
-            "updateDate": "2023-02-28T11:43:05.301Z",
+            "publishedDate": "content[1]_publishedDate",
+            "updateDate": "content[1]_updateDate",
             "severity": "Medium",
             "intsightsScore": 64,
             "cvssScore": 7.5,
@@ -75,8 +75,8 @@
                 "ClearWebCyberBlogs": 1,
                 "POC": 0
             },
-            "firstMentionDate": "2012-05-06T11:04:00.000Z",
-            "lastMentionDate": "2022-12-27T04:48:32.000Z",
+            "firstMentionDate": "content[1]_firstMentionDate",
+            "lastMentionDate": "content[1]_lastMentionDate",
             "exploitAvailability": false,
             "pocAvailability": false,
             "vulnerabilityOrigin": [
@@ -101,14 +101,14 @@
                     "VendorProduct": "Freebsd Freebsd"
                 },
                 {
-                    "Value": "cpe:2.3:o:freebsd:freebsd:1.1.5.1:*:*:*:*:*:*:*",
+                    "Value": "content[2]_cpe[1]_Value",
                     "Range": {
                         "VersionStartIncluding": "",
                         "VersionEndIncluding": "",
                         "VersionStartExcluding": "",
                         "VersionEndExcluding": ""
                     },
-                    "Title": "Freebsd 1.1.5.1",
+                    "Title": "content[2]_cpe[1]_Title",
                     "VendorProduct": "Freebsd Freebsd"
                 },
                 {
@@ -299,25 +299,25 @@
                     "VendorProduct": "Freebsd Freebsd"
                 },
                 {
-                    "Value": "cpe:2.3:o:freebsd:freebsd:2.1.6.1:*:*:*:*:*:*:*",
+                    "Value": "content[2]_cpe[19]_Value",
                     "Range": {
                         "VersionStartIncluding": "",
                         "VersionEndIncluding": "",
                         "VersionStartExcluding": "",
                         "VersionEndExcluding": ""
                     },
-                    "Title": "Freebsd 2.1.6.1",
+                    "Title": "content[2]_cpe[19]_Title",
                     "VendorProduct": "Freebsd Freebsd"
                 },
                 {
-                    "Value": "cpe:2.3:o:freebsd:freebsd:2.1.7.1:*:*:*:*:*:*:*",
+                    "Value": "content[2]_cpe[20]_Value",
                     "Range": {
                         "VersionStartIncluding": "",
                         "VersionEndIncluding": "",
                         "VersionStartExcluding": "",
                         "VersionEndExcluding": ""
                     },
-                    "Title": "Freebsd 2.1.7.1",
+                    "Title": "content[2]_cpe[20]_Title",
                     "VendorProduct": "Freebsd Freebsd"
                 },
                 {
@@ -343,8 +343,8 @@
                     "VendorProduct": "Openbsd Openbsd"
                 }
             ],
-            "publishedDate": "1999-12-30T05:00:00.000Z",
-            "updateDate": "2023-03-01T10:13:03.325Z",
+            "publishedDate": "content[2]_publishedDate",
+            "updateDate": "content[2]_updateDate",
             "severity": "Low",
             "intsightsScore": 33,
             "cvssScore": 5,
@@ -360,8 +360,8 @@
                 "ClearWebCyberBlogs": 2,
                 "POC": 0
             },
-            "firstMentionDate": "2008-12-04T04:16:00.000Z",
-            "lastMentionDate": "2021-05-12T00:37:00.000Z",
+            "firstMentionDate": "content[2]_firstMentionDate",
+            "lastMentionDate": "content[2]_lastMentionDate",
             "exploitAvailability": false,
             "pocAvailability": false,
             "vulnerabilityOrigin": [
@@ -716,8 +716,8 @@
                     "VendorProduct": "Sun Sunos"
                 }
             ],
-            "publishedDate": "1998-04-01T05:00:00.000Z",
-            "updateDate": "2023-03-01T13:02:33.234Z",
+            "publishedDate": "content[3]_publishedDate",
+            "updateDate": "content[3]_updateDate",
             "severity": "High",
             "intsightsScore": 92,
             "cvssScore": 10,
@@ -733,8 +733,8 @@
                 "ClearWebCyberBlogs": 1,
                 "POC": 0
             },
-            "firstMentionDate": "1998-08-31T00:00:00.000Z",
-            "lastMentionDate": "2020-07-07T00:00:00.000Z",
+            "firstMentionDate": "content[3]_firstMentionDate",
+            "lastMentionDate": "content[3]_lastMentionDate",
             "exploitAvailability": true,
             "pocAvailability": false,
             "vulnerabilityOrigin": [
@@ -858,8 +858,8 @@
                     "VendorProduct": "Redhat Linux"
                 }
             ],
-            "publishedDate": "1998-10-12T04:00:00.000Z",
-            "updateDate": "2023-03-01T22:17:30.328Z",
+            "publishedDate": "content[4]_publishedDate",
+            "updateDate": "content[4]_updateDate",
             "severity": "Medium",
             "intsightsScore": 71,
             "cvssScore": 10,
@@ -875,8 +875,8 @@
                 "ClearWebCyberBlogs": 1,
                 "POC": 0
             },
-            "firstMentionDate": "1998-08-28T00:00:00.000Z",
-            "lastMentionDate": "2020-05-11T06:39:02.000Z",
+            "firstMentionDate": "content[4]_firstMentionDate",
+            "lastMentionDate": "content[4]_lastMentionDate",
             "exploitAvailability": true,
             "pocAvailability": false,
             "vulnerabilityOrigin": [
@@ -912,8 +912,8 @@
                     "VendorProduct": "Netscape Messaging Server"
                 }
             ],
-            "publishedDate": "1998-07-20T04:00:00.000Z",
-            "updateDate": "2023-03-02T12:23:24.875Z",
+            "publishedDate": "content[5]_publishedDate",
+            "updateDate": "content[5]_updateDate",
             "severity": "Critical",
             "intsightsScore": 100,
             "cvssScore": 10,
@@ -929,8 +929,8 @@
                 "ClearWebCyberBlogs": 1,
                 "POC": 0
             },
-            "firstMentionDate": "1998-07-17T00:00:00.000Z",
-            "lastMentionDate": "2020-05-13T08:36:39.000Z",
+            "firstMentionDate": "content[5]_firstMentionDate",
+            "lastMentionDate": "content[5]_lastMentionDate",
             "exploitAvailability": true,
             "pocAvailability": false,
             "vulnerabilityOrigin": [
@@ -955,8 +955,8 @@
                     "VendorProduct": "Qualcomm Qpopper"
                 }
             ],
-            "publishedDate": "1998-07-14T04:00:00.000Z",
-            "updateDate": "2023-02-28T11:42:22.664Z",
+            "publishedDate": "content[6]_publishedDate",
+            "updateDate": "content[6]_updateDate",
             "severity": "Medium",
             "intsightsScore": 68,
             "cvssScore": 10,
@@ -972,8 +972,8 @@
                 "ClearWebCyberBlogs": 0,
                 "POC": 0
             },
-            "firstMentionDate": "1998-06-27T00:00:00.000Z",
-            "lastMentionDate": "2020-05-11T06:39:02.000Z",
+            "firstMentionDate": "content[6]_firstMentionDate",
+            "lastMentionDate": "content[6]_lastMentionDate",
             "exploitAvailability": true,
             "pocAvailability": false,
             "vulnerabilityOrigin": [
@@ -998,8 +998,8 @@
                     "VendorProduct": "Apache Http Server"
                 }
             ],
-            "publishedDate": "1997-09-01T04:00:00.000Z",
-            "updateDate": "2023-02-28T11:43:05.301Z",
+            "publishedDate": "content[7]_publishedDate",
+            "updateDate": "content[7]_updateDate",
             "severity": "Medium",
             "intsightsScore": 64,
             "cvssScore": 7.5,
@@ -1015,8 +1015,8 @@
                 "ClearWebCyberBlogs": 1,
                 "POC": 0
             },
-            "firstMentionDate": "2012-05-06T11:04:00.000Z",
-            "lastMentionDate": "2022-12-27T04:48:32.000Z",
+            "firstMentionDate": "content[7]_firstMentionDate",
+            "lastMentionDate": "content[7]_lastMentionDate",
             "exploitAvailability": false,
             "pocAvailability": false,
             "vulnerabilityOrigin": [
@@ -1041,14 +1041,14 @@
                     "VendorProduct": "Freebsd Freebsd"
                 },
                 {
-                    "Value": "cpe:2.3:o:freebsd:freebsd:1.1.5.1:*:*:*:*:*:*:*",
+                    "Value": "content[8]_cpe[1]_Value",
                     "Range": {
                         "VersionStartIncluding": "",
                         "VersionEndIncluding": "",
                         "VersionStartExcluding": "",
                         "VersionEndExcluding": ""
                     },
-                    "Title": "Freebsd 1.1.5.1",
+                    "Title": "content[8]_cpe[1]_Title",
                     "VendorProduct": "Freebsd Freebsd"
                 },
                 {
@@ -1239,25 +1239,25 @@
                     "VendorProduct": "Freebsd Freebsd"
                 },
                 {
-                    "Value": "cpe:2.3:o:freebsd:freebsd:2.1.6.1:*:*:*:*:*:*:*",
+                    "Value": "content[8]_cpe[19]_Value",
                     "Range": {
                         "VersionStartIncluding": "",
                         "VersionEndIncluding": "",
                         "VersionStartExcluding": "",
                         "VersionEndExcluding": ""
                     },
-                    "Title": "Freebsd 2.1.6.1",
+                    "Title": "content[8]_cpe[19]_Title",
                     "VendorProduct": "Freebsd Freebsd"
                 },
                 {
-                    "Value": "cpe:2.3:o:freebsd:freebsd:2.1.7.1:*:*:*:*:*:*:*",
+                    "Value": "content[8]_cpe[20]_Value",
                     "Range": {
                         "VersionStartIncluding": "",
                         "VersionEndIncluding": "",
                         "VersionStartExcluding": "",
                         "VersionEndExcluding": ""
                     },
-                    "Title": "Freebsd 2.1.7.1",
+                    "Title": "content[8]_cpe[20]_Title",
                     "VendorProduct": "Freebsd Freebsd"
                 },
                 {
@@ -1283,8 +1283,8 @@
                     "VendorProduct": "Openbsd Openbsd"
                 }
             ],
-            "publishedDate": "1999-12-30T05:00:00.000Z",
-            "updateDate": "2023-03-01T10:13:03.325Z",
+            "publishedDate": "content[8]_publishedDate",
+            "updateDate": "content[8]_updateDate",
             "severity": "Low",
             "intsightsScore": 33,
             "cvssScore": 5,
@@ -1300,8 +1300,8 @@
                 "ClearWebCyberBlogs": 2,
                 "POC": 0
             },
-            "firstMentionDate": "2008-12-04T04:16:00.000Z",
-            "lastMentionDate": "2021-05-12T00:37:00.000Z",
+            "firstMentionDate": "content[8]_firstMentionDate",
+            "lastMentionDate": "content[8]_lastMentionDate",
             "exploitAvailability": false,
             "pocAvailability": false,
             "vulnerabilityOrigin": [
@@ -1656,8 +1656,8 @@
                     "VendorProduct": "Sun Sunos"
                 }
             ],
-            "publishedDate": "1998-04-01T05:00:00.000Z",
-            "updateDate": "2023-03-01T13:02:33.234Z",
+            "publishedDate": "content[9]_publishedDate",
+            "updateDate": "content[9]_updateDate",
             "severity": "High",
             "intsightsScore": 92,
             "cvssScore": 10,
@@ -1673,8 +1673,8 @@
                 "ClearWebCyberBlogs": 1,
                 "POC": 0
             },
-            "firstMentionDate": "1998-08-31T00:00:00.000Z",
-            "lastMentionDate": "2020-07-07T00:00:00.000Z",
+            "firstMentionDate": "content[9]_firstMentionDate",
+            "lastMentionDate": "content[9]_lastMentionDate",
             "exploitAvailability": true,
             "pocAvailability": false,
             "vulnerabilityOrigin": [
@@ -1798,8 +1798,8 @@
                     "VendorProduct": "Redhat Linux"
                 }
             ],
-            "publishedDate": "1998-10-12T04:00:00.000Z",
-            "updateDate": "2023-03-01T22:17:30.328Z",
+            "publishedDate": "content[10]_publishedDate",
+            "updateDate": "content[10]_updateDate",
             "severity": "Medium",
             "intsightsScore": 71,
             "cvssScore": 10,
@@ -1815,8 +1815,8 @@
                 "ClearWebCyberBlogs": 1,
                 "POC": 0
             },
-            "firstMentionDate": "1998-08-28T00:00:00.000Z",
-            "lastMentionDate": "2020-05-11T06:39:02.000Z",
+            "firstMentionDate": "content[10]_firstMentionDate",
+            "lastMentionDate": "content[10]_lastMentionDate",
             "exploitAvailability": true,
             "pocAvailability": false,
             "vulnerabilityOrigin": [
@@ -1852,8 +1852,8 @@
                     "VendorProduct": "Netscape Messaging Server"
                 }
             ],
-            "publishedDate": "1998-07-20T04:00:00.000Z",
-            "updateDate": "2023-03-02T12:23:24.875Z",
+            "publishedDate": "content[11]_publishedDate",
+            "updateDate": "content[11]_updateDate",
             "severity": "Critical",
             "intsightsScore": 100,
             "cvssScore": 10,
@@ -1869,8 +1869,8 @@
                 "ClearWebCyberBlogs": 1,
                 "POC": 0
             },
-            "firstMentionDate": "1998-07-17T00:00:00.000Z",
-            "lastMentionDate": "2020-05-13T08:36:39.000Z",
+            "firstMentionDate": "content[11]_firstMentionDate",
+            "lastMentionDate": "content[11]_lastMentionDate",
             "exploitAvailability": true,
             "pocAvailability": false,
             "vulnerabilityOrigin": [

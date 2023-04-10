@@ -39,16 +39,16 @@
         ],
         "RelatedThreatActors": [],
         "RelatedCampaigns": [],
-        "FirstSeen": "2020-07-22T17:25:54.849Z",
-        "LastSeen": "2023-02-08T14:57:47.606Z",
-        "UpdateDate": "2023-02-08T15:01:27.028Z",
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
         "Whitelisted": false,
         "Severity": {
             "Value": "High",
             "Score": 100,
             "Origin": "system"
         },
-        "AntivirusScanDate": "2020-07-20T21:00:41.000Z",
+        "AntivirusScanDate": "Data_AntivirusScanDate",
         "FileName": "",
         "FileType": "Win32 EXE",
         "FileAuthor": "",
@@ -77,7 +77,7 @@
             },
             {
                 "Name": "FireEye",
-                "Version": "32.36.1.0",
+                "Version": "Data_AntivirusDetections[3]_Version",
                 "Detected": true,
                 "Result": "Generic.mg.aa268cd7c864a4f8"
             },
@@ -101,7 +101,7 @@
             },
             {
                 "Name": "Cylance",
-                "Version": "2.3.1.101",
+                "Version": "Data_AntivirusDetections[7]_Version",
                 "Detected": true,
                 "Result": "Unsafe"
             },
@@ -131,7 +131,7 @@
             },
             {
                 "Name": "Alibaba",
-                "Version": "0.3.0.5",
+                "Version": "Data_AntivirusDetections[12]_Version",
                 "Detected": false,
                 "Result": ""
             },
@@ -155,25 +155,25 @@
             },
             {
                 "Name": "Baidu",
-                "Version": "1.0.0.2",
+                "Version": "Data_AntivirusDetections[16]_Version",
                 "Detected": true,
                 "Result": "Win32.Virus.Nimnul.a"
             },
             {
                 "Name": "F-Prot",
-                "Version": "4.7.1.166",
+                "Version": "Data_AntivirusDetections[17]_Version",
                 "Detected": true,
                 "Result": "W32/Ramnit.B!Generic"
             },
             {
                 "Name": "Symantec",
-                "Version": "1.11.0.0",
+                "Version": "Data_AntivirusDetections[18]_Version",
                 "Detected": true,
                 "Result": "W32.Ramnit!inf"
             },
             {
                 "Name": "TotalDefense",
-                "Version": "37.1.62.1",
+                "Version": "Data_AntivirusDetections[19]_Version",
                 "Detected": true,
                 "Result": "Win32/Ramnit.A"
             },
@@ -191,13 +191,13 @@
             },
             {
                 "Name": "ClamAV",
-                "Version": "0.102.4.0",
+                "Version": "Data_AntivirusDetections[22]_Version",
                 "Detected": true,
                 "Result": "Win.Trojan.Ramnit-1847"
             },
             {
                 "Name": "Kaspersky",
-                "Version": "15.0.1.13",
+                "Version": "Data_AntivirusDetections[23]_Version",
                 "Detected": true,
                 "Result": "Virus.Win32.Nimnul.a"
             },
@@ -221,7 +221,7 @@
             },
             {
                 "Name": "Rising",
-                "Version": "25.0.0.26",
+                "Version": "Data_AntivirusDetections[27]_Version",
                 "Detected": true,
                 "Result": "Virus.Ramnit!1.9AA5 (CLASSIC)"
             },
@@ -245,7 +245,7 @@
             },
             {
                 "Name": "F-Secure",
-                "Version": "12.0.86.52",
+                "Version": "Data_AntivirusDetections[31]_Version",
                 "Detected": true,
                 "Result": "Malware.W32/Ramnit.CD"
             },
@@ -269,7 +269,7 @@
             },
             {
                 "Name": "Fortinet",
-                "Version": "6.2.142.0",
+                "Version": "Data_AntivirusDetections[35]_Version",
                 "Detected": true,
                 "Result": "W32/Dropper.C3FC!tr"
             },
@@ -293,13 +293,13 @@
             },
             {
                 "Name": "Ikarus",
-                "Version": "0.1.5.2",
+                "Version": "Data_AntivirusDetections[39]_Version",
                 "Detected": true,
                 "Result": "Virus.Ramnit"
             },
             {
                 "Name": "Cyren",
-                "Version": "6.3.0.2",
+                "Version": "Data_AntivirusDetections[40]_Version",
                 "Detected": true,
                 "Result": "W32/Ramnit.B!Generic"
             },
@@ -317,7 +317,7 @@
             },
             {
                 "Name": "Avira",
-                "Version": "8.3.3.8",
+                "Version": "Data_AntivirusDetections[43]_Version",
                 "Detected": true,
                 "Result": "W32/Ramnit.CD"
             },
@@ -329,7 +329,7 @@
             },
             {
                 "Name": "Antiy-AVL",
-                "Version": "3.0.0.1",
+                "Version": "Data_AntivirusDetections[45]_Version",
                 "Detected": true,
                 "Result": "Virus/Win32.Nimnul.a"
             },
@@ -377,7 +377,7 @@
             },
             {
                 "Name": "Cynet",
-                "Version": "4.0.0.24",
+                "Version": "Data_AntivirusDetections[53]_Version",
                 "Detected": true,
                 "Result": "Malicious (score: 100)"
             },
@@ -389,7 +389,7 @@
             },
             {
                 "Name": "Acronis",
-                "Version": "1.1.1.76",
+                "Version": "Data_AntivirusDetections[55]_Version",
                 "Detected": true,
                 "Result": "suspicious"
             },
@@ -401,7 +401,7 @@
             },
             {
                 "Name": "ALYac",
-                "Version": "1.1.1.5",
+                "Version": "Data_AntivirusDetections[57]_Version",
                 "Detected": true,
                 "Result": "Win32.Ramnit"
             },
@@ -425,7 +425,7 @@
             },
             {
                 "Name": "Zoner",
-                "Version": "0.0.0.0",
+                "Version": "Data_AntivirusDetections[61]_Version",
                 "Detected": true,
                 "Result": "Trojan.Win32.33102"
             },
@@ -437,19 +437,19 @@
             },
             {
                 "Name": "Tencent",
-                "Version": "1.0.0.1",
+                "Version": "Data_AntivirusDetections[63]_Version",
                 "Detected": true,
                 "Result": "Virus.Win32.Nimnul.d"
             },
             {
                 "Name": "Yandex",
-                "Version": "5.5.2.24",
+                "Version": "Data_AntivirusDetections[64]_Version",
                 "Detected": true,
                 "Result": "Win32.Ramnit.Gen.3"
             },
             {
                 "Name": "SentinelOne",
-                "Version": "4.3.0.105",
+                "Version": "Data_AntivirusDetections[65]_Version",
                 "Detected": true,
                 "Result": "DFI - Suspicious PE"
             },
@@ -479,7 +479,7 @@
             },
             {
                 "Name": "Panda",
-                "Version": "4.6.4.2",
+                "Version": "Data_AntivirusDetections[70]_Version",
                 "Detected": true,
                 "Result": "W32/Cosmu.gen"
             },
@@ -491,7 +491,7 @@
             },
             {
                 "Name": "MaxSecure",
-                "Version": "1.0.0.1",
+                "Version": "Data_AntivirusDetections[72]_Version",
                 "Detected": true,
                 "Result": "Virus.Nimnul.A"
             }

@@ -1,6 +1,6 @@
 {
     "_id": "59490d9be57c281391e11cdb",
-    "FoundDate": "2017-01-01T15:00:32.606Z",
+    "FoundDate": "FoundDate",
     "Assets": [],
     "Assignees": [],
     "Details": {
@@ -21,7 +21,7 @@
     },
     "TakedownStatus": "NotSent",
     "IsFlagged": false,
-    "UpdateDate": "2017-01-01T15:00:32.606Z",
+    "UpdateDate": "UpdateDate",
     "RelatedIocs": [],
     "RelatedThreatIDs": [],
     "Closed": {

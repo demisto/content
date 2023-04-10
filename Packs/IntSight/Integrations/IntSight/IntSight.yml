@@ -4,10 +4,11 @@ commonfields:
 sectionOrder:
 - Connect
 - Collect
-name: IntSights
-display: IntSights
+name: IntSights (Deprecated)
+display: IntSights (Deprecated)
 category: Data Enrichment & Threat Intelligence
-description: Use IntSights to manage and mitigate threats.
+description: Deprecated. Use Rapid7 Threat Command instead.
+deprecated: true
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -52,14 +53,8 @@ configuration:
   type: 8
   required: false
   section: Collect
-- display: Last date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"
-  name: fetch_delta
-  defaultvalue: 1 day
-  type: 0
-  required: false
-  section: Collect
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  defaultvalue: 7 days
+  defaultvalue: 1 day
   name: first_fetch
   required: false
   type: 0
@@ -936,7 +931,7 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.39276
+  dockerimage: demisto/python3:3.10.10.51930
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

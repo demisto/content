@@ -74,16 +74,16 @@
             "apt40"
         ],
         "RelatedCampaigns": [],
-        "FirstSeen": "2022-08-30T12:17:25.000Z",
-        "LastSeen": "2023-03-27T01:12:50.485Z",
-        "UpdateDate": "2023-03-27T01:21:51.087Z",
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
         "Whitelisted": false,
         "Severity": {
             "Value": "Low",
             "Score": 10,
             "Origin": "system"
         },
-        "AntivirusScanDate": "2022-11-04T19:11:48.000Z",
+        "AntivirusScanDate": "Data_AntivirusScanDate",
         "FileName": "",
         "FileType": "JavaScript",
         "FileAuthor": "",
@@ -112,7 +112,7 @@
             },
             {
                 "Name": "ClamAV",
-                "Version": "0.105.1.0",
+                "Version": "Data_AntivirusDetections[3]_Version",
                 "Detected": false,
                 "Result": ""
             },
@@ -136,7 +136,7 @@
             },
             {
                 "Name": "Malwarebytes",
-                "Version": "4.3.3.37",
+                "Version": "Data_AntivirusDetections[7]_Version",
                 "Detected": false,
                 "Result": ""
             },
@@ -148,7 +148,7 @@
             },
             {
                 "Name": "Sangfor",
-                "Version": "2.23.0.0",
+                "Version": "Data_AntivirusDetections[9]_Version",
                 "Detected": false,
                 "Result": ""
             },
@@ -178,13 +178,13 @@
             },
             {
                 "Name": "Cyren",
-                "Version": "6.5.1.2",
+                "Version": "Data_AntivirusDetections[14]_Version",
                 "Detected": true,
                 "Result": "JS/Agent.BKG"
             },
             {
                 "Name": "Symantec",
-                "Version": "1.19.0.0",
+                "Version": "Data_AntivirusDetections[15]_Version",
                 "Detected": true,
                 "Result": "Infostealer"
             },
@@ -208,13 +208,13 @@
             },
             {
                 "Name": "Cynet",
-                "Version": "4.0.0.27",
+                "Version": "Data_AntivirusDetections[19]_Version",
                 "Detected": false,
                 "Result": ""
             },
             {
                 "Name": "Kaspersky",
-                "Version": "21.0.1.45",
+                "Version": "Data_AntivirusDetections[20]_Version",
                 "Detected": true,
                 "Result": "HEUR:Trojan.Script.Generic"
             },
@@ -244,13 +244,13 @@
             },
             {
                 "Name": "Tencent",
-                "Version": "1.0.0.1",
+                "Version": "Data_AntivirusDetections[25]_Version",
                 "Detected": false,
                 "Result": ""
             },
             {
                 "Name": "Ad-Aware",
-                "Version": "3.0.21.193",
+                "Version": "Data_AntivirusDetections[26]_Version",
                 "Detected": true,
                 "Result": "Trojan.GenericKD.61807410"
             },
@@ -274,13 +274,13 @@
             },
             {
                 "Name": "Baidu",
-                "Version": "1.0.0.2",
+                "Version": "Data_AntivirusDetections[30]_Version",
                 "Detected": false,
                 "Result": ""
             },
             {
                 "Name": "VIPRE",
-                "Version": "6.0.0.35",
+                "Version": "Data_AntivirusDetections[31]_Version",
                 "Detected": true,
                 "Result": "Trojan.GenericKD.61807410"
             },
@@ -298,19 +298,19 @@
             },
             {
                 "Name": "FireEye",
-                "Version": "35.24.1.0",
+                "Version": "Data_AntivirusDetections[34]_Version",
                 "Detected": true,
                 "Result": "Trojan.GenericKD.61807410"
             },
             {
                 "Name": "Sophos",
-                "Version": "1.4.1.0",
+                "Version": "Data_AntivirusDetections[35]_Version",
                 "Detected": false,
                 "Result": ""
             },
             {
                 "Name": "Ikarus",
-                "Version": "6.0.31.0",
+                "Version": "Data_AntivirusDetections[36]_Version",
                 "Detected": false,
                 "Result": ""
             },
@@ -328,7 +328,7 @@
             },
             {
                 "Name": "Avira",
-                "Version": "8.3.3.16",
+                "Version": "Data_AntivirusDetections[39]_Version",
                 "Detected": false,
                 "Result": ""
             },
@@ -346,7 +346,7 @@
             },
             {
                 "Name": "Gridinsoft",
-                "Version": "1.0.99.174",
+                "Version": "Data_AntivirusDetections[42]_Version",
                 "Detected": false,
                 "Result": ""
             },
@@ -388,7 +388,7 @@
             },
             {
                 "Name": "Acronis",
-                "Version": "1.2.0.111",
+                "Version": "Data_AntivirusDetections[49]_Version",
                 "Detected": false,
                 "Result": ""
             },
@@ -400,7 +400,7 @@
             },
             {
                 "Name": "ALYac",
-                "Version": "1.1.3.1",
+                "Version": "Data_AntivirusDetections[51]_Version",
                 "Detected": true,
                 "Result": "Trojan.GenericKD.61807410"
             },
@@ -412,19 +412,19 @@
             },
             {
                 "Name": "Zoner",
-                "Version": "2.2.2.0",
+                "Version": "Data_AntivirusDetections[53]_Version",
                 "Detected": false,
                 "Result": ""
             },
             {
                 "Name": "Rising",
-                "Version": "25.0.0.27",
+                "Version": "Data_AntivirusDetections[54]_Version",
                 "Detected": false,
                 "Result": ""
             },
             {
                 "Name": "Yandex",
-                "Version": "5.5.2.24",
+                "Version": "Data_AntivirusDetections[55]_Version",
                 "Detected": false,
                 "Result": ""
             },
@@ -436,7 +436,7 @@
             },
             {
                 "Name": "MaxSecure",
-                "Version": "1.0.0.1",
+                "Version": "Data_AntivirusDetections[57]_Version",
                 "Detected": false,
                 "Result": ""
             },
@@ -454,7 +454,7 @@
             },
             {
                 "Name": "Panda",
-                "Version": "4.6.4.2",
+                "Version": "Data_AntivirusDetections[60]_Version",
                 "Detected": false,
                 "Result": ""
             }

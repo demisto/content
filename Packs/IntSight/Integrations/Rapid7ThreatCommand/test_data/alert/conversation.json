@@ -1,17 +1,17 @@
 [
     {
         "Date": "2021-03-09T14:53:46.843Z",
-        "Initiator": "sarb@qmasters.co",
+        "Initiator": "test@test.com",
         "Message": "Hi test\n"
     },
     {
         "Date": "2021-03-09T15:15:00.000Z",
         "Initiator": "Intsights",
-        "Message": "Hi Ben,\n\nPlease let us know if there is anything we can assist with.\n\n\n\nBest Regards,\n\nColin Travis\nTechnical Support & Intelligence Analyst, IntSights"
+        "Message": "test"
     },
     {
         "Date": "2021-03-09T15:18:00.000Z",
         "Initiator": "Intsights",
-        "Message": "Hi Ben,\n\nPlease let us know if there is anything we can assist with.\n\n\nBest Regards,\n\nColin Travis\nTechnical Support & Intelligence Analyst, IntSights"
+        "Message": "test"
     }
 ]

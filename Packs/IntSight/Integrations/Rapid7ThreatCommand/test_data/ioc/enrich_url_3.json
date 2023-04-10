@@ -1,8 +1,8 @@
 {
-    "OriginalValue": "https://onlinequranteaching.com/public/3bYqWOXCnfi9DhdiRJfGKRUcybtkX0Ga",
+    "OriginalValue": "OriginalValue",
     "Status": "Done",
     "Data": {
-        "Value": "https://onlinequranteaching.com/public/3bYqWOXCnfi9DhdiRJfGKRUcybtkX0Ga",
+        "Value": "Data_Value",
         "Type": "Urls",
         "Sources": [
             {
@@ -26,16 +26,16 @@
         "RelatedMalwares": [],
         "RelatedThreatActors": [],
         "RelatedCampaigns": [],
-        "FirstSeen": "2023-03-24T10:10:46.000Z",
-        "LastSeen": "2023-03-27T08:42:02.036Z",
-        "UpdateDate": "2023-03-27T08:43:54.762Z",
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
         "Whitelisted": false,
         "Severity": {
             "Value": "Medium",
             "Score": 32.093023255813954,
             "Origin": "system"
         },
-        "AntivirusScanDate": "2023-03-24T01:47:32.000Z",
+        "AntivirusScanDate": "Data_AntivirusScanDate",
         "AntivirusDetectionRatio": "22%",
         "AntivirusDetectedEngines": "19/86",
         "AntivirusDetections": [

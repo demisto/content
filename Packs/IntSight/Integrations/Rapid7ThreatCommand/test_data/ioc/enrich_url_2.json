@@ -1,8 +1,8 @@
 {
-    "OriginalValue": "http://aauattoworksilleporo.site/MyGov/index2.html",
+    "OriginalValue": "OriginalValue",
     "Status": "Done",
     "Data": {
-        "Value": "http://aauattoworksilleporo.site/MyGov/index2.html",
+        "Value": "Data_Value",
         "Type": "Urls",
         "Sources": [
             {
@@ -26,16 +26,16 @@
         "RelatedMalwares": [],
         "RelatedThreatActors": [],
         "RelatedCampaigns": [],
-        "FirstSeen": "2023-03-24T16:08:34.343Z",
-        "LastSeen": "2023-03-27T08:42:02.039Z",
-        "UpdateDate": "2023-03-27T08:43:54.642Z",
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
         "Whitelisted": false,
         "Severity": {
             "Value": "Low",
             "Score": 23.953488372093023,
             "Origin": "system"
         },
-        "AntivirusScanDate": "2023-03-24T12:05:31.000Z",
+        "AntivirusScanDate": "Data_AntivirusScanDate",
         "AntivirusDetectionRatio": "13%",
         "AntivirusDetectedEngines": "12/86",
         "AntivirusDetections": [
