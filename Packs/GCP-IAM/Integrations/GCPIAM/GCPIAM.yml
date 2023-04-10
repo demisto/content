@@ -85,27 +85,12 @@ script:
     execution: false
     name: gcp-iam-tagbindings-list
     outputs:
-    - contextPath: GCPIAM.Project.createTime
-      description: Project creation time.
-      type: Date
-    - contextPath: GCPIAM.Project.displayName
-      description: Project display name.
+    - contextPath: GCPIAM.TagBindings.key
+      description: Tag bindings key.
       type: String
-    - contextPath: GCPIAM.Project.name
-      description: The unique resource name of the project.
+    - contextPath: GCPIAM.TagBindings.value
+      description: Tag bindings value.
       type: String
-    - contextPath: GCPIAM.Project.parent
-      description: The project parent resource.
-      type: String
-    - contextPath: GCPIAM.Project.projectId
-      description: The unique, user-assigned ID of the project.
-      type: String
-    - contextPath: GCPIAM.Project.state
-      description: The project lifecycle state.
-      type: String
-    - contextPath: GCPIAM.Project.updateTime
-      description: The most recent time the project was modified.
-      type: Date
   - arguments:
     - default: false
       description: The project name for which the policy is being requested. For example,

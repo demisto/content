@@ -1,0 +1,12 @@
+{
+  "tagBindings":[
+     {
+        "inherited":true,
+        "namespacedTagKey":"111111111111/environment",
+        "namespacedTagValue":"111111111111/environment/non-production",
+        "tagKey":"tagKeys/111111111111",
+        "tagKeyParentName":"organizations/111111111111",
+        "tagValue":"tagValues/111111111111"
+     }
+  ]
+}

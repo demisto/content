@@ -1968,3 +1968,33 @@ def test_gcp_iam_organization_iam_policy_remove_command(client):
     result = GCP_IAM.gcp_iam_organization_iam_policy_remove_command(client, command_args)
 
     assert result.readable_output == f'Organization {organization_name} IAM policies updated successfully.'
+
+
+def test_gcp_iam_tagbindings_get_command(client):
+    """
+    TODO UPDATE
+    Scenario: list projects.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-project-list called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+    mock_binding = load_mock_response('tag_bindings/tag_bindings.json')
+    client.gcp_iam_tagbindings_list_request = Mock(return_value=mock_binding)
+
+    mock_keys = load_mock_response('tag_bindings/tag_keys.json')
+    client.gcp_iam_tagkeys_get_request = Mock(return_value=mock_keys)
+
+    mock_values = load_mock_response('tag_bindings/tag_values.json')
+    client.gcp_iam_tagvalues_get_request = Mock(return_value=mock_values)
+
+    parent = "folder/111111111111"
+    result = GCP_IAM.gcp_iam_tagbindings_list_command(client, {"parent": parent})
+
+    assert len(result.outputs) == 1
+    assert result.outputs_prefix == 'GCPIAM.TagBindings'
+    assert result.outputs == [{'key': 'environment', 'value': 'non-production'}]
