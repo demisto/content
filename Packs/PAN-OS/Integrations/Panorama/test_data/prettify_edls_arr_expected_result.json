@@ -1,4 +1,5 @@
 {
+  "DeviceGroup": "Lab-Devices",
   "Name": "Test",
   "Type": "url",
   "URL": "test.test.com",

@@ -6484,6 +6484,7 @@ def test_build_xpath_filter(name_match, name_contain, filters, expected_result):
     mock_result = build_xpath_filter(name_match, name_contain, filters)
     assert mock_result == expected_result
 
+
 @pytest.mark.parametrize('sample_file, expected_result_file',
                          [
                              ('test_data/prettify_edls_arr_sample.json',
