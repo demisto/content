@@ -3257,7 +3257,7 @@ def test_get_endpoint_command(requests_mock, mocker):
                 "id": "15dbb9d8f06b45fe9f61eb46e829d986",
                 "cid": "20879a8064904ecfbb62c118a6a19411",
                 "last_seen": "2022-09-03T10:48:12Z",
-                "state": "online"
+                "state": "online",
             }
         ],
         "errors": []
@@ -3280,14 +3280,13 @@ def test_get_endpoint_command(requests_mock, mocker):
         status_code=200,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'id': 'dentifier_numbe', 'hostname': 'host1,host2'})
+    mocker.patch.object(demisto, 'args', return_value={'id': 'dentifier_numbe', 'hostname': 'falcon-crowdstr'})
 
     outputs = get_endpoint_command()
     result = outputs[0].to_context()
     context = result.get('EntryContext')
 
-    assert unquote(query_mocker.last_request.query) == "filter=device_id:'dentifier_numbe'," \
-                                                       "hostname:['host1'],hostname:['host2']"
+    assert unquote(query_mocker.last_request.query) == "filter=device_id:'dentifier_numbe',hostname:'falcon-crowdstr'"
     assert context['Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'] == [endpoint_context]
 
 
