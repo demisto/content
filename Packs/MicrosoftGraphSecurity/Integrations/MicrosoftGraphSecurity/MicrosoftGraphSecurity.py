@@ -13,23 +13,29 @@ CMD_URL = 'security/alerts_v2'
 API_VER = 'API V2'
 PAGE_SIZE_LIMIT_DICT = {'API V2': 2000, 'API V1': 1000}
 API_V1_PAGE_LIMIT = 500
+RELEVANT_DATA_TO_UPDATE_PER_VERSION = {'API V1': {'assigned_to': 'assignedTo', 'closed_date_time': 'closedDateTime',
+                                                  'comments': 'comments', 'feedback': 'feedback', 'status': 'status',
+                                                  'tags': 'tags'},
+                                       'API V2': {'assigned_to': 'assignedTo', 'determination': 'determination',
+                                                  'classification': 'classification', 'status': 'status', 'tags': 'tags'}
+                                       }
 ''' HELPER FUNCTIONS '''
 
 
-def create_search_alerts_filters(args):
+def create_search_alerts_filters(args, is_fetch=False):
     last_modified = args.get('last_modified')
     severity = args.get('severity')
     category = args.get('category')
     time_from = args.get('time_from')
     time_to = args.get('time_to')
     filter_query = args.get('filter')
-    classification = args.get('classification')
-    service_source = args.get('service_source')
-    status = args.get('status')
-    page = int(args.get('page'))
-    page_size = int(args.get('page_size', 50))
+    page = args.get('page')
+    if (is_fetch and args.get('page_size')) or not is_fetch:
+        page_size = int(args.get('page_size', 50))
+    else:
+        page_size = 0
     filters = []
-    params = {}
+    params: dict[str, str] = {}
     if last_modified:
         filters.append("lastModifiedDateTime gt {}".format(get_timestamp(last_modified)))
     if category:
@@ -47,21 +53,52 @@ def create_search_alerts_filters(args):
             raise DemistoException(f"Please note that the page size limit for {API_VER} is {PAGE_SIZE_LIMIT_DICT.get(API_VER)}")
         params['$top'] = page_size
     if page:
-        page = page * page_size
+        page = int(page)
+        page = page * page_size if page_size else 0
         if API_VER == 'API V1' and API_V1_PAGE_LIMIT < page:
             raise DemistoException(f"Please note that the maximum amount of alerts you can skip in {API_VER} is"
                                    f" {API_V1_PAGE_LIMIT}")
         params['$skip'] = page
     if API_VER == 'API V2':
-        if classification:
-            filters.append(f"classification eq '{classification}'")
-        if service_source:
-            filters.append(f"serviceSource eq '{service_source}'")
-        if status:
-            filters.append(f"status eq '{status}'")
+        relevant_filters_v2 = ['classification', 'serviceSource', 'status']
+        for relevant_key in relevant_filters_v2.get(API_VER):
+            if val := args.get(relevant_key):
+                filters.append(f"relevant_key eq '{val}'")
     filters = " and ".join(filters)
     params['$filter'] = filters
     return params
+
+
+def create_data_to_update(args):
+    status = args.get('status')
+    relevant_data_to_update_per_version_dict = RELEVANT_DATA_TO_UPDATE_PER_VERSION.get(API_VER)
+    if all(not args.get(key) for key in list(relevant_data_to_update_per_version_dict.keys())):
+        return_error(f"No data relevant for {API_VER} to update was provided, please provide at least one of the following: "
+                     f"{(', ').join(list(relevant_data_to_update_per_version_dict.keys()))}.")
+    data: Dict[str, Any] = {}
+    if API_VER == 'API V1':
+        vendor_information = args.get('vendor_information')
+        provider_information = args.get('provider_information')
+        if not vendor_information or not provider_information:
+            raise DemistoException("When using API V1, both vendor_information and provider_information must be provided.")
+        if status == 'new':
+            raise DemistoException("Invalid status value. When using API V1, use newAlert instead of new.")
+        data['vendorInformation'] = {
+            'provider': provider_information,
+            'vendor': vendor_information
+        }
+    else:
+        if status == 'newAlert':
+            raise DemistoException("Invalid status value. When using API V2, use new instead of newAlert.")
+    if assigned_to := args.get('assigned_to'):
+        data['assignedTo'] = assigned_to
+    for relevant_args_key, relevant_data_key in relevant_data_to_update_per_version_dict.items():
+        if val := args.get(relevant_args_key):
+            if 'tags' == relevant_args_key or 'comments' == relevant_args_key:
+                data[relevant_data_key] = [val]
+            else:
+                data[relevant_data_key] = val
+    return data
 
 
 def get_timestamp(time_description):
@@ -108,28 +145,9 @@ class MsGraphClient:
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
         return response
 
-    def update_alert(self, alert_id, vendor_information, provider_information,
-                     assigned_to, closed_date_time, comments, feedback, status, tags):
+    def update_alert(self, alert_id, params):
         cmd_url = f'{CMD_URL}/{alert_id}'
-        data: Dict[str, Any] = {
-            'vendorInformation': {
-                'provider': provider_information,
-                'vendor': vendor_information
-            }
-        }
-        if assigned_to:
-            data['assignedTo'] = assigned_to
-        if closed_date_time:
-            data['closedDateTime'] = closed_date_time
-        if comments:
-            data['comments'] = [comments]
-        if feedback:
-            data['feedback'] = feedback
-        if status:
-            data['status'] = status
-        if tags:
-            data['tags'] = [tags]
-        self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=data, resp_type="text")
+        self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=params, resp_type="text")
 
     def get_users(self):
         cmd_url = 'users'
@@ -139,6 +157,12 @@ class MsGraphClient:
     def get_user(self, user_id):
         cmd_url = f'users/{user_id}'
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return response
+
+    def create_alert_comment(self, alert_id, params):
+        cmd_url = f'{CMD_URL}/{alert_id}/comments'
+        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=params)
+        print(response)
         return response
 
 
@@ -181,7 +205,7 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
     # Get incidents from MS Graph Security
     demisto.debug(f'Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}. Filter: {filter_query}')
     args = {'time_to': time_to, 'time_from': time_from, 'filter': filter_query}
-    params = create_search_alerts_filters(args)
+    params = create_search_alerts_filters(args, is_fetch=True)
     incidents = client.search_alerts(params)['value']
 
     if incidents:
@@ -208,7 +232,7 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
 
 
 def search_alerts_command(client: MsGraphClient, args):
-    params = create_search_alerts_filters(args)
+    params = create_search_alerts_filters(args, is_fetch=False)
     alerts = client.search_alerts(params)['value']
     limit = int(args.get('limit'))
     if limit < len(alerts):
@@ -255,6 +279,9 @@ def get_alert_details_command(client: MsGraphClient, args):
 
     hr = f'## Microsoft Security Graph Alert Details - {alert_id}\n'
     if API_VER == 'API V2':
+        ec = {
+            'MsGraph.Alert(val.id && val.id === obj.id)': context
+        }
         table_headers = ['id', 'incidentId', 'status', 'severity', 'detectionSource', 'serviceSource', 'title', 'category',
                          'createdDateTime', 'lastUpdateDateTime']
         hr += tableToMarkdown('', alert_details, table_headers, removeNull=True)
@@ -455,26 +482,18 @@ def get_alert_details_command(client: MsGraphClient, args):
             'Vendor': alert_details['vendorInformation']['vendor'],
             'Provider': alert_details['vendorInformation']['provider']
         }
-    ec = {
-        'MsGraph.Alert(val.ID && val.ID === obj.ID)': context
-    }
+        ec = {
+            'MsGraph.Alert(val.ID && val.ID === obj.ID)': context
+        }
     return hr, ec, alert_details
 
 
 def update_alert_command(client: MsGraphClient, args):
     alert_id = args.get('alert_id')
-    vendor_information = args.get('vendor_information')
-    provider_information = args.get('provider_information')
-    assigned_to = args.get('assigned_to')
-    closed_date_time = args.get('closed_date_time')
-    comments = args.get('comments')
-    feedback = args.get('feedback')
     status = args.get('status')
-    tags = args.get('tags')
-    if all(v is None for v in [assigned_to, closed_date_time, comments, feedback, status, tags]):
-        return_error('No data to update was provided')
-    client.update_alert(alert_id, vendor_information, provider_information,
-                        assigned_to, closed_date_time, comments, feedback, status, tags)
+    provider_information = args.get('provider_information')
+    params = create_data_to_update(args)
+    client.update_alert(alert_id, params)
     context = {
         'ID': alert_id
     }
@@ -484,7 +503,7 @@ def update_alert_command(client: MsGraphClient, args):
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': context
     }
     human_readable = 'Alert {} has been successfully updated.'.format(alert_id)
-    if status and provider_information in {'IPC', 'MCAS', 'Azure Sentinel'}:
+    if status and API_VER == 'API V1' and provider_information in {'IPC', 'MCAS', 'Azure Sentinel'}:
         human_readable += f'\nUpdating status for alerts from provider {provider_information} gets updated across \
 Microsoft Graph Security API integrated applications but not reflected in the provider’s management experience.\n \
         For more details, see the \
@@ -527,6 +546,24 @@ def get_user_command(client: MsGraphClient, args):
     return human_readable, ec, raw_user
 
 
+def create_alert_comment_command(client: MsGraphClient, args):
+    alert_id = args.get('alert_id', '')
+    comment = args.get('comment', '')
+    params = {"comment": comment}
+    res = client.create_alert_comment(alert_id, params)
+    comments = res.get('value', [])
+    context = {
+        'ID': alert_id,
+        'Comments': comments
+    }
+    ec = {
+        'MsGraph.AlertComment(val.ID && val.ID == obj.ID)': context
+    }
+    header = f'## Microsoft Security Graph Create Alert Comment - {alert_id}\n'
+    human_readable = tableToMarkdown(header, comments, removeNull=True)
+    return human_readable, ec, res
+
+
 def test_function(client: MsGraphClient, args):
     """
        Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -553,7 +590,7 @@ def test_function(client: MsGraphClient, args):
             time_from = parse_date_range(fetch_time, date_format=timestamp_format)[0]
             time_to = datetime.now().strftime(timestamp_format)
             args = {'time_to': time_to, 'time_from': time_from, 'filter': filter_query}
-            params = create_search_alerts_filters(args)
+            params = create_search_alerts_filters(args, is_fetch=True)
             try:
                 client.search_alerts(params)['value']
             except Exception as e:
@@ -597,7 +634,8 @@ def main():
         'msg-get-alert-details': get_alert_details_command,
         'msg-update-alert': update_alert_command,
         'msg-get-users': get_users_command,
-        'msg-get-user': get_user_command
+        'msg-get-user': get_user_command,
+        'msg-create-alert-comment': create_alert_comment_command,
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')
@@ -618,7 +656,7 @@ def main():
             fetch_filter = params.get('fetch_filter', '')
             incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=int(fetch_limit),
                                         filter=fetch_filter, providers=fetch_providers,
-                                        fetch_service_sources=fetch_service_sources)
+                                        service_sources=fetch_service_sources)
             demisto.incidents(incidents)
         else:
             human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
