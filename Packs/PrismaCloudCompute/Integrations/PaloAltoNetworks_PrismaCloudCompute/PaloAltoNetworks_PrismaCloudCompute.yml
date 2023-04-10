@@ -1639,7 +1639,7 @@ script:
     description: Get the audits for the firewall container policies
     outputs: []
   - arguments:
-    - description: The project to get the alert profiles for
+    - description: The project to get the alert profiles for.
       name: project
     description: Get the available alert alert profiles from a specific project.
     name: prisma-cloud-compute-get-alert-profiles
@@ -1651,10 +1651,10 @@ script:
       description: The credential ID.
       type: String
     - contextPath: PrismaCloudCompute.AlertProfiles.Cortex.Enabled
-      description: The alert profile status.
+      description: Whether the alert profile is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Cortex.Url
-      description: The alert profile url.
+      description: The alert profile URL.
       type: String
     - contextPath: PrismaCloudCompute.AlertProfiles.Email.CredentialId
       description: The alert profile credential ID.
@@ -1672,25 +1672,25 @@ script:
       description: The SMTP address.
       type: String
     - contextPath: PrismaCloudCompute.AlertProfiles.Email.Ssl
-      description: The Email alert profile SSL.
+      description: The email alert profile SSL.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.GcpPubsub.CredentialId
-      description: The credential Id.
+      description: The credential ID.
       type: String
     - contextPath: PrismaCloudCompute.AlertProfiles.GcpPubsub.Enabled
-      description: GCP Pub Sub setting.
+      description: Whether the GCP Pub Sub is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.GcpPubsub.Topic
       description: The GCP Pub Sub topic.
       type: String
     - contextPath: PrismaCloudCompute.AlertProfiles.Jira.BaseUrl
-      description: The Jira baseurl.
+      description: The Jira base URL.
       type: String
     - contextPath: PrismaCloudCompute.AlertProfiles.Jira.CaCert
       description: The Jira CA Cert.
       type: String
     - contextPath: PrismaCloudCompute.AlertProfiles.Jira.CredentialId
-      description: The Jira credential Id.
+      description: The Jira credential ID.
       type: String
     - contextPath: PrismaCloudCompute.AlertProfiles.Jira.Enabled
       description: Jira alert profile status.
@@ -1726,97 +1726,97 @@ script:
       description: The policy all rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Admission.Enabled
-      description: The admission enabled status.
+      description: Whether the admission is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AgentlessAppFirewall.AllRules
-      description: The Agentless App Firewall rules.
+      description: The agentless app firewall rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AgentlessAppFirewall.Enabled
-      description: The Agentless App Firewall enabled status.
+      description: Whether the agentless app firewall is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedAppFirewall.AllRules
       description: App embedded firewall rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedAppFirewall.Enabled
-      description: App embedded firewall status.
+      description: Whether the app embedded firewall is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedRuntime.AllRules
       description: App embedded runtime rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedRuntime.Enabled
-      description: App embedded runtime status.
+      description: Whether the app embedded runtime is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.CloudDiscovery.AllRules
       description: The cloud discovery rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.CloudDiscovery.Enabled
-      description: The cloud discovery status.
+      description: Whether the cloud discovery is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.CodeRepoVulnerability.AllRules
       description: The code repo vulnerability rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.CodeRepoVulnerability.Enabled
-      description: The code repo vulnerability status.
+      description: Whether the code repo vulnerability is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerAppFirewall.AllRules
       description: The container app firewall rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerAppFirewall.Enabled
-      description: The container app firewall status.
+      description: Whether the container app firewall is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerCompliance.AllRules
       description: The container compliance rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerCompliance.Enabled
-      description: The container compliance status.
+      description: Whether the container compliance is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerComplianceScan.AllRules
       description: The container compliance scan rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerComplianceScan.Enabled
-      description: The container compliance scan status.
+      description: Whether the container compliance scan is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerRuntime.AllRules
       description: The container runtime rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerRuntime.Enabled
-      description: The container runtime status.
+      description: Whether the container runtime is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerVulnerability.AllRules
       description: The container vulnerability rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerVulnerability.Enabled
-      description: The container vulnerability status.
+      description: Whether the container vulnerability is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Defender.AllRules
       description: The Defender policy rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Defender.Enabled
-      description: The Defender policy status.
+      description: Whether the Defender policy is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Docker.AllRules
       description: The Docker rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Docker.Enabled
-      description: The docker rules status.
+      description: Whether the Docker rules are enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostAppFirewall.AllRules
       description: The app host firewall rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostAppFirewall.Enabled
-      description: The host app firewall status.
+      description: Whether the host app firewall is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostCompliance.AllRules
       description: The host compliance rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostCompliance.Enabled
-      description: The host compliance status.
+      description: Whether the host compliance is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostComplianceScan.AllRules
       description: The host compliance scan rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostComplianceScan.Enabled
-      description: Whether the host compliance scans are enabled.
+      description: Whether the host compliance scan is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostRuntime.AllRules
       description: The host runtime rules.
@@ -1828,19 +1828,19 @@ script:
       description: The host vulnerability rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostVulnerability.Enabled
-      description: Whether the host vulnerability rules are enabled.
+      description: Whether the host vulnerability rule is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Incident.AllRules
       description: The policy incident rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Incident.Enabled
-      description: The policy incident status.
+      description: Whether the policy incident is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.KubernetesAudit.AllRules
       description: The K8S rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.KubernetesAudit.Enabled
-      description: The K8S status.
+      description: Whether K8S is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.NetworkFirewall.AllRules
       description: The network firewall rules.
