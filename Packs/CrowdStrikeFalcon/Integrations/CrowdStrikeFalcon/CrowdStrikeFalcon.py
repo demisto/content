@@ -1434,7 +1434,7 @@ def get_proccesses_ran_on(ioc_type, value, device_id):
     return http_request('GET', '/indicators/queries/processes/v1', payload)
 
 
-def search_device(filter_operator='AND', exact_hostname: bool = False):
+def search_device(filter_operator='AND'):
     """
         Searches for devices using the argument provided by the command execution. Returns empty
         result if no device was found
@@ -1465,10 +1465,7 @@ def search_device(filter_operator='AND', exact_hostname: bool = False):
                 for arg_elem in arg:
                     if arg_elem:
                         first_arg = '{filter},{inp_arg}'.format(filter=arg_filter, inp_arg=k) if arg_filter else k
-                        arg_elem = f"'{arg_elem}'"
-                        if k == 'hostname' and exact_hostname:
-                            arg_elem = f'[{arg_elem}]'
-                        arg_filter = "{first}:{second}".format(first=first_arg, second=arg_elem)
+                        arg_filter = "{first}:'{second}'".format(first=first_arg, second=arg_elem)
                 if arg_filter:
                     url_filter = "{url_filter}{arg_filter}".format(url_filter=url_filter + op if url_filter else '',
                                                                    arg_filter=arg_filter)
@@ -2660,11 +2657,15 @@ def get_endpoint_command():
         return create_entry_object(hr='Please add a filter argument - ip, hostname or id.')
 
     # use OR operator between filters (https://github.com/demisto/etc/issues/46353)
-    raw_res = search_device(filter_operator='OR', exact_hostname='hostname' in args)
+    raw_res = search_device(filter_operator='OR')
 
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
+
+    if hostnames := argToList(args.get('hostname')):
+        lowercase_hostnames = set(hostname.lower() for hostname in hostnames)
+        devices = [device for device in devices if (device.get('hostname') or '').lower() in lowercase_hostnames]
 
     standard_endpoints = generate_endpoint_by_contex_standard(devices)
 
