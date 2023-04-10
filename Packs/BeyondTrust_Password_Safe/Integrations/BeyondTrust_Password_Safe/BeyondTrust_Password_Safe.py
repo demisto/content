@@ -215,7 +215,6 @@ def list_release_requests():
             'AliasID': release.get('AliasID'),
             'ApplicationID': release.get('ApplicationID'),
             'ApprovedDate': release.get('ApprovedDate'),
-            'CanceledDate': release.get('CanceledDate'),
             'DomainName': release.get('DomainName'),
             'ExpiresDate': release.get('ExpiresDate'),
             'Reason': release.get('Reason'),
