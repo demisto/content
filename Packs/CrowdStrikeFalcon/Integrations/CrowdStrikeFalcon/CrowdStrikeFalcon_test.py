@@ -3313,7 +3313,7 @@ def test_get_endpoint_command(requests_mock, mocker):
                 "id": "15dbb9d8f06b45fe9f61eb46e829d986",
                 "cid": "20879a8064904ecfbb62c118a6a19411",
                 "last_seen": "2022-09-03T10:48:12Z",
-                "state": "online",
+                "state": "online"
             }
         ],
         "errors": []
