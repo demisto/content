@@ -2663,6 +2663,7 @@ def get_endpoint_command():
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
 
+    # filter hostnames that will match the exact hostnames including case-sensitive
     if hostnames := argToList(args.get('hostname')):
         lowercase_hostnames = set(hostname.lower() for hostname in hostnames)
         devices = [device for device in devices if (device.get('hostname') or '').lower() in lowercase_hostnames]
