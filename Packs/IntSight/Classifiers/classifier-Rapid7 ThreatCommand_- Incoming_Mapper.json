@@ -6,9 +6,6 @@
         "Rapid7 ThreatCommand Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                " ThreatCommand CSV2": {
-                    "simple": "attachments.content"
-                },
                 "Alert ID": {
                     "simple": "id"
                 },
@@ -21,40 +18,31 @@
                 "Last Update Time": {
                     "simple": "update_date"
                 },
-                "ThreatCommand Assets": {
+                "Rapid7 ThreatCommand Assets": {
                     "simple": "assets"
                 },
-                "ThreatCommand Attachment": {
+                "Rapid7 ThreatCommand Attachments": {
                     "simple": "attachments"
                 },
-                "ThreatCommand Attachments": {
-                    "simple": "attachments"
-                },
-                "ThreatCommand CSV": {
+                "Rapid7 ThreatCommand CSV": {
                     "simple": "attachments.content"
                 },
-                "ThreatCommand Images": {
-                    "simple": "Details.Images"
-                },
-                "ThreatCommand Related IOCs": {
+                "Rapid7 ThreatCommand Related IOCs": {
                     "simple": "related_iocs"
                 },
-                "ThreatCommand Related Threat IDs": {
+                "Rapid7 ThreatCommand Related Threat IDs": {
                     "simple": "related_threat_ids"
                 },
-                "ThreatCommand Source": {
-                    "simple": "Details.Source"
-                },
-                "ThreatCommand Source Date": {
+                "Rapid7 ThreatCommand Source Date": {
                     "simple": "Source.date"
                 },
-                "ThreatCommand Source Email": {
+                "Rapid7 ThreatCommand Source Email": {
                     "simple": "Source.email"
                 },
-                "ThreatCommand Source Type": {
+                "Rapid7 ThreatCommand Source Type": {
                     "simple": "Source.type"
                 },
-                "ThreatCommand Source URL": {
+                "Rapid7 ThreatCommand Source URL": {
                     "complex": {
                         "accessor": "url",
                         "filters": [],
@@ -79,10 +67,10 @@
                         ]
                     }
                 },
-                "ThreatCommand Source Network Type": {
+                "Rapid7 ThreatCommand Source Network Type": {
                     "simple": "Source.network_type"
                 },
-                "ThreatCommand Status": {
+                "Rapid7 ThreatCommand Status": {
                     "complex": {
                         "filters": [],
                         "root": "is_closed",
@@ -122,19 +110,13 @@
                         ]
                     }
                 },
-                "ThreatCommand Subtype": {
+                "Rapid7 ThreatCommand Subtype": {
                     "simple": "sub_type"
                 },
-                "ThreatCommand Tags": {
+                "Rapid7 ThreatCommand Tags": {
                     "simple": "Tags.[].name"
                 },
-                "ThreatCommand Title": {
-                    "simple": "Details.Title"
-                },
-                "ThreatCommand Update Date": {
-                    "simple": "UpdateDate"
-                },
-                "ThreatCommand Takedown Status": {
+                "Rapid7 ThreatCommand Takedown Status": {
                     "simple": "takedown_status"
                 },
                 "Title": {

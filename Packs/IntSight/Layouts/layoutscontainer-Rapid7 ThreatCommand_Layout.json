@@ -420,7 +420,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "threatcommandtags",
+                                "fieldId": "rapid7threatcommandtags",
                                 "height": 53,
                                 "id": "d367c290-a21c-11ed-aa4f-ad3f78bee3be",
                                 "index": 9,
@@ -446,7 +446,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "threatcommandsourcetype",
+                                "fieldId": "rapid7threatcommandsourcetype",
                                 "height": 53,
                                 "id": "6a8be350-a21c-11ed-aa4f-ad3f78bee3be",
                                 "index": 0,
@@ -455,7 +455,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "threatcommandsourcenetworktype",
+                                "fieldId": "rapid7threatcommandsourcenetworktype",
                                 "height": 53,
                                 "id": "6bbce940-a21c-11ed-aa4f-ad3f78bee3be",
                                 "index": 1,
@@ -464,7 +464,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "threatcommandsourceemail",
+                                "fieldId": "rapid7threatcommandsourceemail",
                                 "height": 53,
                                 "id": "6e7d1ab0-a21c-11ed-aa4f-ad3f78bee3be",
                                 "index": 2,
@@ -473,7 +473,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "threatcommandsourceurl",
+                                "fieldId": "rapid7threatcommandsourceurl",
                                 "height": 53,
                                 "id": "71584e30-a21c-11ed-aa4f-ad3f78bee3be",
                                 "index": 3,
@@ -482,7 +482,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "threatcommandsourcedate",
+                                "fieldId": "rapid7threatcommandsourcedate",
                                 "height": 53,
                                 "id": "67037fe0-a21c-11ed-aa4f-ad3f78bee3be",
                                 "index": 4,
@@ -507,7 +507,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "threatcommandimages",
+                                "fieldId": "rapid7threatcommandimages",
                                 "height": 53,
                                 "id": "8929b7b0-a21c-11ed-aa4f-ad3f78bee3be",
                                 "index": 0,
@@ -542,7 +542,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "threatcommandstatus",
+                                "fieldId": "rapid7threatcommandstatus",
                                 "height": 53,
                                 "id": "aa05e350-a21c-11ed-aa4f-ad3f78bee3be",
                                 "index": 0,
@@ -562,7 +562,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "threatcommandtakedownstatus",
+                                "fieldId": "rapid7threatcommandtakedownstatus",
                                 "height": 53,
                                 "id": "ab135bb0-a21c-11ed-aa4f-ad3f78bee3be",
                                 "index": 2,
@@ -587,7 +587,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "threatcommandcsv2",
+                                "fieldId": "rapid7threatcommandcsv2",
                                 "height": 106,
                                 "id": "cb7a2150-d2d1-11ed-9f3d-77738f524bff",
                                 "index": 0,
@@ -596,7 +596,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "threatcommandcsv",
+                                "fieldId": "rapid7threatcommandcsv",
                                 "height": 106,
                                 "id": "293988c0-a23b-11ed-b725-61f99d3d4b27",
                                 "index": 1,
@@ -621,7 +621,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "threatcommandrelatediocs",
+                                "fieldId": "rapid7threatcommandrelatediocs",
                                 "height": 53,
                                 "id": "07ee4340-a21d-11ed-aa4f-ad3f78bee3be",
                                 "index": 0,
@@ -647,7 +647,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "threatcommandattachment",
+                                "fieldId": "rapid7threatcommandattachment",
                                 "height": 53,
                                 "id": "80928b20-cc9e-11ed-aa8f-9da700f82537",
                                 "index": 0,
@@ -657,7 +657,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "threatcommandattachments",
+                                "fieldId": "rapid7threatcommandattachments",
                                 "height": 106,
                                 "id": "ed09fc30-cbe4-11ed-9d6c-bd7dac954ea6",
                                 "index": 1,

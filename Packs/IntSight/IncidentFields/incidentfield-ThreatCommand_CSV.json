@@ -4,7 +4,7 @@
         "Rapid7 ThreatCommand Alert"
     ],
     "caseInsensitive": true,
-    "cliName": "threatcommandcsv",
+    "cliName": "rapid7threatcommandcsv",
     "closeForm": false,
     "columns": [
         {
@@ -134,10 +134,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_threatcommandcsv",
+    "id": "incident_rapid7threatcommandcsv",
     "isReadOnly": false,
     "locked": false,
-    "name": "ThreatCommand CSV",
+    "name": "Rapid7 ThreatCommand CSV",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

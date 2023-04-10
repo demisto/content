@@ -4,7 +4,7 @@
         "Rapid7 ThreatCommand Alert"
     ],
     "caseInsensitive": true,
-    "cliName": "threatcommandassets",
+    "cliName": "rapid7threatcommandassets",
     "closeForm": false,
     "columns": [
         {
@@ -43,10 +43,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_threatcommandassets",
+    "id": "incident_rapid7threatcommandassets",
     "isReadOnly": false,
     "locked": false,
-    "name": "ThreatCommand Assets",
+    "name": "Rapid7 ThreatCommand Assets",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
