@@ -39,6 +39,16 @@
 					"id": "AD64SQ-C3VABC-8HJN6L-LF2CR999",
 					"name": "WORKGROUP\\SW-MJW-CRD-1"
 				}]
+			},
+			{
+				"environment": {
+					"id": "2FPYDD-8LP9XU-VYQAAC-YYD",
+					"name": "Ida Bear Sandbox2"
+				},
+				"assets": [{
+					"id": "AD64SQ-C3VABC-8HJN6L-LF2CR999",
+					"name": "WORKGROUP\\SW-MJW-CRD-1"
+				}]
 			}],
 			"mal_eval_result": {
 				"label": "onlinegames",
