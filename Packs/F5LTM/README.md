@@ -11,7 +11,7 @@ Go to F5 LTM and navigate to **System** -> **Logs** -> **Configuration** -> **Re
 
 Press **Add** and **Update** to apply the new configuration. 
 
-![Server Screenshot](https://raw.githubusercontent.com/demisto/content/master/Packs/F5LTM/doc_imgs/F5LTM.png)
+![Server Screenshot](https://raw.githubusercontent.com/demisto/content/03643245e711daa04f3ebcc892870ea963378587/Packs/F5LTM/doc_imgs/F5LTM.png)
 ## Collect Events from Vendor
 
 In order to use the collector, use the [Broker VM](#broker-vm) option.
