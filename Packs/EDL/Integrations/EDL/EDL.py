@@ -17,8 +17,6 @@ import dateparser
 import hashlib
 import json
 import ipaddress
-from packaging.version import Version
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()
