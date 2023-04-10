@@ -194,7 +194,7 @@ def security_and_compliance_delete_mail(args: dict, to_user_id: str, from_user_i
 
     """
     check_demisto_version()
-    query = f'from:{from_user_id} AND subject:\"{email_subject}\" AND to:{to_user_id}'
+    query = f'from:{from_user_id} AND subject:{email_subject}'
     search_name = args.get('search_name', '')
 
     if was_email_already_deleted({'message_id': message_id}, '')[0] == 'Success':
@@ -203,11 +203,12 @@ def security_and_compliance_delete_mail(args: dict, to_user_id: str, from_user_i
         return 'Success', None
 
     if not search_name:
+        # first time entering this function, creating the search
         search_name = f'search_for_delete_{seconds}'
-    execute_command('o365-sc-new-search', {'kql': query, 'search_name': search_name, 'using-brand': using_brand,
-                                            'exchange_location': to_user_id})
-    execute_command('o365-sc-start-search', {'search_name': search_name, 'using-brand': using_brand})
-    args['search_name'] = search_name
+        execute_command('o365-sc-new-search', {'kql': query, 'search_name': search_name, 'using-brand': using_brand,
+                                               'exchange_location': to_user_id})
+        execute_command('o365-sc-start-search', {'search_name': search_name, 'using-brand': using_brand})
+        args['search_name'] = search_name
 
     # check the search status
     results = execute_command('o365-sc-get-search', {'search_name': search_name, 'using-brand': using_brand})
