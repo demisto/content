@@ -1,20 +1,26 @@
-[file:playbook-Detonate_File_-_ThreatGrid.yml]
-ignore=BA101
+[file:incidentfield-FreshworksFreshservice_Risk.json]
+ignore=IF116
 
-[file:playbook-Detonate_URL_-_ThreatGrid.yml]
-ignore=BA101
+[file:incidentfield-FreshworksFreshservice_Release_Type.json]
+ignore=IF116
 
-[file:playbook-Detonate_File_-_ThreatGrid_README.md]
-ignore=RM106
+[file:incidentfield-FreshworksFreshservice_Urgency.json]
+ignore=IF116
 
-[file:playbook-Detonate_URL_-_ThreatGrid_README.md]
-ignore=RM106
+[file:incidentfield-FreshworksFreshservice_Change_Status.json]
+ignore=IF116
 
-[file:ThreatGrid.yml]
-ignore=IN145,BC102
+[file:incidentfield-FreshworksFreshservice_Impact.json]
+ignore=IF116
 
-[file:FeedCiscoSecureMalwareAnalytics_image.png]
-ignore=IM111
+[file:incidentfield-FreshworksFreshservice_Change_Type.json]
+ignore=IF116
 
-[file:ThreatGrid_image.png]
-ignore=IM111
+[file:incidentfield-FreshworksFreshservice_Priority.json]
+ignore=IF116
+
+[file:incidentfield-FreshworksFreshservice_Ticket_Status.json]
+ignore=IF116
+
+[file:incidentfield-FreshworksFreshservice_Problem_Status.json]
+ignore=IF116
