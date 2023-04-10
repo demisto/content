@@ -260,7 +260,7 @@ def get_time_range(timestamp_from, timestamp_to):
             else:
                 t_to = float(timestamp_to)
         else:
-            t_from = date_to_timestamp(timestamp_from) / 1000
+            t_from = date_to_timestamp(timestamp_from, "%Y-%m-%dT%H:%M:%S") / 1000
             if timestamp_to is None:
                 t_to = time.time()
             else:
@@ -271,7 +271,6 @@ def get_time_range(timestamp_from, timestamp_to):
             t_to = time.time()
         else:
             t_to = timestamp_to.timestamp()
-
     return (t_from, t_to)
 
 
