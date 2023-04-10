@@ -2419,5 +2419,5 @@
     "marketplaces": [
         "xsoar"
     ],
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.8.0"
 }
