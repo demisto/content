@@ -128,6 +128,8 @@ After that, the integration will fetch incidents created after the timestamp of 
 In case the **look-back** parameter is initialized with a certain value and during a time that incidents were fetched, if changing 
 the look back to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.
 If the integration was already set with look back > 0, and the look-back is not being increased at any point of time, then those incident duplications would not occur.
+Note that using a look back value that is very large (more than an hour) can lead to increase in the memory usage of the system.
+If you need to fetch incidents that need a long look-back to get fetched (for tracking issues for example) please use the mirroring feature and filter the results using the relevant tags instead of using the look-back feature. You can create a custom mapper and track the relevant fields. 
 
 ## Configure Incident Mirroring
 **This feature is compliant with XSOAR version 6.0 and above.**  
