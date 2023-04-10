@@ -5336,6 +5336,16 @@
             "fromversion": "6.8.0"
         },
         {
+            "integrations": "Rapid7 - Threat Command (IntSight)",
+            "playbookID": "playbook-Rapid7ThreatCommand_Test",
+            "fromversion": "6.8.0"
+        },
+        {
+            "integrations": "Rapid7 - Threat Command (IntSight)",
+            "playbookID": "playbook-Rapid7ThreatCommand_MSSP_Test",
+            "fromversion": "6.8.0"
+        },
+        {
             "playbookID": "Threat_Intel_Report_test",
             "fromversion": "6.5.0",
             "scripts": [
