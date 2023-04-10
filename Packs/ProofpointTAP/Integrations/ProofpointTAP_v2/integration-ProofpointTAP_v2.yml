@@ -1,0 +1,2949 @@
+category: Email
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Proofpoint TAP v2 - Test
+  version: -1
+configuration:
+- additionalinfo: e.g., https://tap-api-v2.proofpoint.com
+  defaultvalue: https://tap-api-v2.proofpoint.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- additionalinfo: The password refers to secret
+  display: Service Principal
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- additionalinfo: v1 is deprecated for new instances. The current API version is v2.
+  defaultvalue: v2
+  display: API Version
+  name: api_version
+  options:
+  - v1
+  - v2
+  required: false
+  type: 15
+  section: Connect
+  advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- additionalinfo: A string specifying which threat type to return. If empty, all threat types are returned. Can be "url", "attachment", or "messageText".
+  display: Threat type
+  name: threat_type
+  options:
+  - url
+  - attachment
+  - messageText
+  required: false
+  type: 16
+  section: Collect
+  advanced: true
+- additionalinfo: A string specifying which threat statuses to return. If empty, will return "active" and "cleared" threats. Can be "active", "cleared", or "falsePositive".
+  display: Threat status
+  name: threat_status
+  options:
+  - active
+  - cleared
+  - falsePositive
+  required: false
+  type: 16
+  section: Collect
+  advanced: true
+- defaultvalue: All
+  display: Events to fetch
+  name: events_type
+  options:
+  - All
+  - Issues
+  - Blocked Clicks
+  - Permitted Clicks
+  - Blocked Messages
+  - Delivered Messages
+  required: false
+  type: 15
+  section: Collect
+  advanced: true
+- additionalinfo: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Proofpoint supports a maximum 1 week fetch back.
+  defaultvalue: 1 hour
+  display: First fetch time range
+  name: fetch_time
+  required: false
+  type: 0
+  section: Collect
+- additionalinfo: 'The character encoding to apply on the message fetched (e.g. latin-1). Advanced configuration to be used only if instructed by XSOAR Support'
+  display: 'Advanced: Raw message encoding'
+  name: raw_json_encoding
+  required: false
+  type: 0
+  section: Collect
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+  section: Collect
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+  section: Connect
+description: Use the Proofpoint Targeted Attack Protection (TAP) integration to protect against and provide additional visibility into phishing and other malicious email attacks.
+display: Proofpoint TAP v2 - Test
+name: Proofpoint TAP v2 - Test
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'A string containing an ISO8601-formatted interval. If this interval overlaps with previous requests for data, records from the previous request might be duplicated. The minimum interval is thirty seconds. The maximum interval is one hour. Examples: * 2016-05-01T12:00:00Z/2016-05-01T13:00:00Z - an hour interval, beginning at noon UTC on 05-01-2016 * PT30M/2016-05-01T12:30:00Z - the thirty minutes beginning at noon UTC on 05-01-2016 and ending at 12:30pm * UTC 2016-05-01T05:00:00-0700/PT30M - the same interval as above, but using -0700 as the time zone'
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'A comma-separated list of the threat types to return. If empty, all threat types are returned. The following values are accepted: "url", "attachment", and "messageText".'
+      isArray: false
+      name: threatType
+      predefined:
+      - url
+      - attachment
+      - messageText
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A string specifying which threat statuses to return. If empty, active and cleared threats are returned. Can be "active", "cleared", "falsePositive".
+      isArray: false
+      name: threatStatus
+      predefined:
+      - active
+      - cleared
+      - falsePositive
+      required: false
+      secret: false
+    - default: false
+      description: 'A string containing an ISO8601 date. It represents the start of the data retrieval period. The end of the period is determined by the current API server time rounded to the nearest minute. If JSON output is selected, the end time is included in the returned result. Example: 2016-05-01T12:00:00Z.'
+      isArray: false
+      name: sinceTime
+      required: false
+      secret: false
+    - default: false
+      description: An integer representing a time window (in seconds) from the current API server time. The start of the window is the current API server time, rounded to the nearest minute, less the number of seconds provided. The end of the window is the current API server time rounded to the nearest minute. If JSON output is selected, the end time is included in the returned result.
+      isArray: false
+      name: sinceSeconds
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: All
+      description: 'Event types to return. Possible values: "All", "Issues", "Delivered Messages", "Blocked Messages", "Permitted Clicks", and "Blocked Clicks".'
+      isArray: false
+      name: eventTypes
+      predefined:
+      - All
+      - Issues
+      - Delivered Messages
+      - Blocked Messages
+      - Permitted Clicks
+      - Blocked Clicks
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetches events for all clicks and messages relating to known threats within the specified time period. Details as per clicks/blocked.
+    execution: false
+    name: proofpoint-get-events
+    outputs:
+    - contextPath: Proofpoint.MessagesDelivered.GUID
+      description: The ID of the message within PPS. It can be used to identify the message in PPS, which is unique.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.QID
+      description: The queue ID of the message within PPS. It can be used to identify the message in PPS, which is not unique.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.ccAddresses
+      description: 'A list of email addresses contained within the CC: header, excluding any friendly names.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.clusterId
+      description: The name of the PPS cluster which processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.fromAddress
+      description: 'The email address contained in the From: header, excluding any friendly name.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.headerCC
+      description: The CC header.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.headerFrom
+      description: 'The full content of the From: header, including any friendly name.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.headerReplyTo
+      description: 'If present, the full content of the Reply-To: header, including any friendly names.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.impostorScore
+      description: The impostor score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.malwareScore
+      description: The malware score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.messageId
+      description: Message-ID extracted from the headers of the email message. It can be used to look up the associated message in PPS, which is not unique.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threat
+      description: The artifact which was condemned by Proofpoint. The malicious URL, hash of the attachment threat, or email address of the impostor sender.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatId
+      description: The unique identifier associated with this threat. It can be used to query the forensics and campaign endpoints.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatStatus
+      description: The current state of the threat (active, expired, false-positive, cleared).
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatTime
+      description: The time Proofpoint assigned the threatStatus (ISO8601 format).
+      type: Date
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatType
+      description: Whether the threat was an attachment, URL, or message type.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatUrl
+      description: A link to the entry about the threat on the TAP Dashboard.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.messageTime
+      description: The time the message was delivered to the user or quarantined by PPS.
+      type: Date
+    - contextPath: Proofpoint.MessagesDelivered.modulesRun
+      description: The list of PPS modules that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.phishScore
+      description: The phishing score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.policyRoutes
+      description: The policy routes that the message matched during processing by PPS.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.quarantineFolder
+      description: The name of the folder that contains the quarantined message. This appears only for messagesBlocked.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.quarantineRule
+      description: The name of the rule that quarantined the message. This appears only for messagesBlocked events.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.recipient
+      description: A list containing the email addresses of the recipients.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.replyToAddress
+      description: 'The email address contained in the Reply-To: header, excluding any friendly name.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.sender
+      description: The email address of the SMTP (envelope) sender. The user-part is hashed. The domain-part is cleartext.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.spamScore
+      description: The spam score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.subject
+      description: The subject line of the message, if available.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.GUID
+      description: The ID of the message within PPS. It can be used to identify the message in PPS, which is unique.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.QID
+      description: The queue ID of the message within PPS. It can be used to identify the message in PPS, which is not unique.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.ccAddresses
+      description: 'A list of email addresses contained within the CC: header, excluding any friendly names.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.clusterId
+      description: The name of the PPS cluster that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.fromAddress
+      description: 'The email address contained in the From: header, excluding any friendly name.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.headerCC
+      description: The CC header.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.headerFrom
+      description: 'The full content of the From: header, including any friendly name.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.headerReplyTo
+      description: 'If present, the full content of the Reply-To: header, including any friendly names.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.impostorScore
+      description: The impostor score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.malwareScore
+      description: The malware score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.messageId
+      description: Message-ID extracted from the headers of the email message. It can be used to look up the associated message in PPS, which is not unique.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threat
+      description: The artifact which was condemned by Proofpoint. The malicious URL, hash of the attachment threat, or email address of the impostor sender.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatId
+      description: The unique identifier associated with this threat. It can be used to query the forensics and campaign endpoints.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatStatus
+      description: The current state of the threat (active, expired, false-positive, cleared).
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatTime
+      description: The time Proofpoint assigned the threatStatus (ISO8601 format).
+      type: Date
+    - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatType
+      description: Whether the threat was an attachment, URL, or message type.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatUrl
+      description: A link to the entry about the threat on the TAP dashboard.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.messageTime
+      description: The time the message was blocked to the user or quarantined by PPS.
+      type: Date
+    - contextPath: Proofpoint.MessagesBlocked.messageTime
+      description: The list of PPS modules that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.modulesRun
+      description: The list of PPS modules that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.phishScore
+      description: The phishing score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.policyRoutes
+      description: The policy routes that the message matched during processing by PPS.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.quarantineFolder
+      description: The name of the folder that contains the quarantined message. This appears only for messagesBlocked.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.quarantineRule
+      description: The name of the rule that quarantined the message. This appears only for messagesBlocked events.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.recipient
+      description: A list containing the email addresses of the recipients.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.replyToAddress
+      description: 'The email address contained in the Reply-To: header, excluding any friendly name.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.sender
+      description: The email address of the SMTP (envelope) sender. The user-part is hashed. The domain-part is cleartext.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.spamScore
+      description: The spam score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.subject
+      description: The subject line of the message, if available.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.GUID
+      description: The ID of the message within PPS. It can be used to identify the message in PPS, which is unique.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.campaignId
+      description: An identifier for the campaign of which the threat is a member, if available at the time of the query. Threats can be linked to campaigns even after these events are retrieved.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.classification
+      description: The threat category of the malicious URL.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.clickIP
+      description: The external IP address of the user who clicked the link. If the user is behind a firewall performing network address translation, the IP address of the firewall will be shown.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.clickTime
+      description: The time the user clicked the URL.
+      type: Date
+    - contextPath: Proofpoint.ClicksPermitted.messageID
+      description: The Message-ID extracted from the headers of the email message. It can be used to look up the associated message in PPS and is not unique.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.recipient
+      description: The email address of the recipient.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.sender
+      description: The email address of the sender. The user-part is hashed. The domain-part is cleartext.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatID
+      description: 'The unique identifier associated with this threat. It can be used to query the forensics and campaign endpoints.'
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatTime
+      description: The time Proofpoint identified the URL as a threat.
+      type: Date
+    - contextPath: Proofpoint.ClicksPermitted.threatURL
+      description: A link to the entry on the TAP Dashboard for the particular threat.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.url
+      description: The malicious URL which was clicked.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.userAgent
+      description: The User-Agent header from the clicker's HTTP request.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.GUID
+      description: The ID of the message within PPS. It can be used to identify the message in PPS and is guaranteed to be unique.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.campaignId
+      description: An identifier for the campaign of which the threat is a member, if available at the time of the query. Threats can be linked to campaigns even after these events are retrieved.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.classification
+      description: The threat category of the malicious URL.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.clickIP
+      description: The external IP address of the user who clicked the link. If the user is behind a firewall performing network address translation, the IP address of the firewall will be shown.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.clickTime
+      description: The time the user clicked the URL.
+      type: Date
+    - contextPath: Proofpoint.ClicksBlocked.messageID
+      description: Message-ID extracted from the headers of the email message. It can be used to look up the associated message in PPS and is not unique.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.recipient
+      description: The email address of the recipient.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.sender
+      description: The email address of the sender. The user-part is hashed. The domain-part is cleartext.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.threatID
+      description: 'The unique identifier associated with this threat. It can be used to query the forensics and campaign endpoints.'
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.threatTime
+      description: The time Proofpoint identified the URL as a threat.
+      type: Date
+    - contextPath: Proofpoint.ClicksBlocked.threatURL
+      description: A link to the entry on the TAP dashboard for the particular threat.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.url
+      description: The malicious URL that was clicked.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.userAgent
+      description: The User-Agent header from the clicker's HTTP request.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the threat (use with either threatId or campaignId).
+      isArray: false
+      name: threatId
+      required: false
+      secret: false
+    - default: false
+      description: ID of the campaign (use with either threatId or campaignId).
+      isArray: false
+      name: campaignId
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'false'
+      description: Whether to include forensic evidence for the whole campaign. Can be used with threatId only.
+      isArray: false
+      name: includeCampaignForensics
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns forensics evidence.
+    execution: false
+    name: proofpoint-get-forensics
+    outputs:
+    - contextPath: Proofpoint.Report.ID
+      description: The ID of the report.
+      type: String
+    - contextPath: Proofpoint.Report.Type
+      description: 'The threat type. Can be: "attachment", "url", or "hybrid".'
+      type: String
+    - contextPath: Proofpoint.Report.Scope
+      description: Whether the report scope covers a campaign or an individual threat.
+      type: String
+    - contextPath: Proofpoint.Report.Attachment.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.Attachment.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.Attachment.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.Attachment.SHA256
+      description: The SHA256 hash of the attachment's contents.
+      type: String
+    - contextPath: Proofpoint.Report.Attachment.MD5
+      description: The MD5 hash of the attachment's contents.
+      type: String
+    - contextPath: Proofpoint.Report.Attachment.Blacklisted
+      description: Optional. Whether the file was block listed.
+      type: Number
+    - contextPath: Proofpoint.Report.Attachment.Offset
+      description: Optional. The offset in bytes where the malicious content was found.
+      type: Number
+    - contextPath: Proofpoint.Report.Attachment.Size
+      description: Optional. The size in bytes of the attachment's contents.
+      type: Number
+    - contextPath: Proofpoint.Report.Attachment.Platform.Name
+      description: The name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Attachment.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Attachment.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Cookie.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.Cookie.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.Cookie.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.Cookie.Action
+      description: Whether the cookie was set or deleted.
+      type: String
+    - contextPath: Proofpoint.Report.Cookie.Domain
+      description: The domain that set the cookie.
+      type: String
+    - contextPath: Proofpoint.Report.Cookie.Key
+      description: The name of the cookie being set or deleted.
+      type: String
+    - contextPath: Proofpoint.Report.Cookie.Value
+      description: Optional. The content of the cookie being set.
+      type: String
+    - contextPath: Proofpoint.Report.Cookie.Platform.Name
+      description: Name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Cookie.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Cookie.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.DNS.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.DNS.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.DNS.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.DNS.Host
+      description: The hostname being resolved.
+      type: String
+    - contextPath: Proofpoint.Report.DNS.CNames
+      description: Optional. An array of CNames, which were associated with the hostname.
+      type: String
+    - contextPath: Proofpoint.Report.DNS.IP
+      description: Optional. An array of IP addresses that were resolved to the hostname.
+      type: String
+    - contextPath: Proofpoint.Report.DNS.NameServers
+      description: Optional. The nameservers responsible for the hostname's domain.
+      type: String
+    - contextPath: Proofpoint.Report.DNS.NameServersList
+      description: Optional. The nameservers responsible for the hostnames.
+      type: String
+    - contextPath: Proofpoint.Report.DNS.Platform.Name
+      description: The name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.DNS.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.DNS.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Dropper.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.Dropper.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.Dropper.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.Dropper.Path
+      description: The location of the dropper file.
+      type: String
+    - contextPath: Proofpoint.Report.Dropper.URL
+      description: Optional. The name of the static rule inside the sandbox that identified the dropper.
+      type: String
+    - contextPath: Proofpoint.Report.Dropper.Rule
+      description: Optional. The URL the dropper contacted.
+      type: String
+    - contextPath: Proofpoint.Report.Dropper.Platform.Name
+      description: The name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Dropper.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Dropper.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.File.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.File.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.File.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.File.Path
+      description: Optional. The location of the file operated on.
+      type: String
+    - contextPath: Proofpoint.Report.File.Action
+      description: Optional. The filesystem call made (create, modify, or delete).
+      type: String
+    - contextPath: Proofpoint.Report.File.Rule
+      description: Optional. The name of the static rule inside the sandbox that identified the suspicious file.
+      type: String
+    - contextPath: Proofpoint.Report.File.SHA256
+      description: Optional. The SH256 hash of the file's contents.
+      type: Unknown
+    - contextPath: Proofpoint.Report.File.MD5
+      description: Optional. The MD5 hash of the file's contents.
+      type: String
+    - contextPath: Proofpoint.Report.File.Size
+      description: Optional. The size in bytes of the file's contents.
+      type: Number
+    - contextPath: Proofpoint.Report.File.Platform.Name
+      description: The name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.File.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.File.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.IDS.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.IDS.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.IDS.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.IDS.Name
+      description: The friendly name of the IDS rule that observed the malicious traffic.
+      type: String
+    - contextPath: Proofpoint.Report.IDS.SignatureID
+      description: The identifier of the IDS rule that observed the malicious traffic.
+      type: String
+    - contextPath: Proofpoint.Report.IDS.Platform.Name
+      description: The name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.IDS.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.IDS.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Mutex.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.Mutex.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.Mutex.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.Mutex.Name
+      description: The name of the mutex.
+      type: String
+    - contextPath: Proofpoint.Report.Mutex.Path
+      description: Optional. The path to the process which spawned the mutex.
+      type: String
+    - contextPath: Proofpoint.Report.Mutex.Platform.Name
+      description: The name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Mutex.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Mutex.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Network.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.Network.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.Network.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.Network.Action
+      description: The type of network activity being initiated (connect or listen).
+      type: String
+    - contextPath: Proofpoint.Report.Network.IP
+      description: The remote IP address being contacted.
+      type: String
+    - contextPath: Proofpoint.Report.Network.Port
+      description: The remote IP port being contacted.
+      type: String
+    - contextPath: Proofpoint.Report.Network.Type
+      description: The protocol being used (tcp or udp).
+      type: String
+    - contextPath: Proofpoint.Report.Network.Platform.Name
+      description: The name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Network.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Network.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Process.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.Process.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.Process.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.Process.Action
+      description: The action performed on the process. Relevant when create is produced.
+      type: String
+    - contextPath: Proofpoint.Report.Process.Path
+      description: The location of the executable that spawned the process.
+      type: String
+    - contextPath: Proofpoint.Report.Process.Platform.Name
+      description: The name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Process.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Process.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Registry.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.Registry.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.Registry.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.Registry.Name
+      description: Optional. The name of the registry entry being created or set.
+      type: String
+    - contextPath: Proofpoint.Report.Registry.Action
+      description: The registry change made (create or set).
+      type: String
+    - contextPath: Proofpoint.Report.Registry.Key
+      description: The location of the registry key being modified.
+      type: String
+    - contextPath: Proofpoint.Report.Registry.Value
+      description: Optional. The contents of the key being created or set.
+      type: String
+    - contextPath: Proofpoint.Report.Registry.Platform.Name
+      description: The name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Registry.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Registry.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.URL.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.URL.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.URL.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.URL.URL
+      description: The URL which was observed.
+      type: String
+    - contextPath: Proofpoint.Report.URL.Blacklisted
+      description: Optional. Whether the URL appeared on a block list.
+      type: Boolean
+    - contextPath: Proofpoint.Report.URL.SHA256
+      description: Optional. The SHA256 hash of the file downloaded from the URL.
+      type: String
+    - contextPath: Proofpoint.Report.URL.MD5
+      description: Optional. The MD5 hash of the file downloaded from the URL.
+      type: String
+    - contextPath: Proofpoint.Report.URL.Size
+      description: Optional. The size in bytes of the file retrieved from the URL.
+      type: Number
+    - contextPath: Proofpoint.Report.URL.HTTPStatus
+      description: Optional. The HTTP status code that was produced when our sandbox visited the URL.
+      type: Number
+    - contextPath: Proofpoint.Report.URL.IP
+      description: Optional. The IP address that was resolved to the hostname by the sandbox.
+      type: String
+    - contextPath: Proofpoint.Report.URL.Platform.Name
+      description: The name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.URL.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.URL.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.Behavior.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.URL
+      description: The URL that was observed.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Path
+      description: The location of the executable which spawned the behavior.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Platform.Name
+      description: The name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.Behavior.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.URL
+      description: The URL that was observed.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Path
+      description: The location of the executable that spawned the behavior.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Platform.Name
+      description: The name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Screenshot.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.Screenshot.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.Screenshot.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.Screenshot.URL
+      description: The URL hosting the screenshot image.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: "Click's threat status to be retrieved. If no value is specified, active and cleared threats will be retrieved. Possible values: 'active', 'cleared', and 'falsePositive'."
+      isArray: false
+      name: threat_status
+      predefined:
+      - active
+      - cleared
+      - falsePositive
+      required: false
+      secret: false
+    - default: false
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets events for clicks to malicious URLs blocked in the specified time period. Must provide either the interval or time_range arguments.
+    execution: false
+    name: proofpoint-get-events-clicks-blocked
+    outputs:
+    - contextPath: Proofpoint.ClicksBlocked.url
+      description: The malicious URL was clicked.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.classification
+      description: The threat category of the malicious URL (Malware, Phish, or Spam)
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.clickTime
+      description: The time the user clicked the URL.
+      type: Date
+    - contextPath: Proofpoint.ClicksBlocked.threatTime
+      description: The time that Proofpoint identified the URL as a threat.
+      type: Date
+    - contextPath: Proofpoint.ClicksBlocked.userAgent
+      description: The User-Agent header from the clicker's HTTP request.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.campaignId
+      description: An identifier for the campaign of which the threat is a member.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.id
+      description: The unique ID of the click.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.clickIP
+      description: The external IP address of the user who clicked the link.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.sender
+      description: The email address of the sender. The user-part is hashed. The domain-part is cleartext.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.recipient
+      description: The email address of the recipient.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.threatID
+      description: 'The unique identifier associated with this threat.'
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.threatURL
+      description: A link to the entry on the TAP dashboard for the particular threat.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.threatStatus
+      description: The current state of the threat.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.messageID
+      description: The ID of the message that the URL belongs to.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.GUID
+      description: The ID of the message within PPS. It can be used to identify the message in PPS.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: "Click's threat status to be retrieved. If no value is specified, active and cleared threats will be retrieved. Possible values: 'active', 'cleared', and 'falsePositive'."
+      isArray: false
+      name: threat_status
+      predefined:
+      - active
+      - cleared
+      - falsePositive
+      required: false
+      secret: false
+    - default: false
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Get events for clicks to malicious URLs permitted in the specified time period.  Must provide either the interval or time_range arguments.
+    execution: false
+    name: proofpoint-get-events-clicks-permitted
+    outputs:
+    - contextPath: Proofpoint.ClicksPermitted.url
+      description: The malicious URL that was clicked.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.classification
+      description: The threat category of the malicious URL (Malware, Phish, or Spam).
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.clickTime
+      description: The time the user clicked the URL.
+      type: Date
+    - contextPath: Proofpoint.ClicksPermitted.threatTime
+      description: The time that Proofpoint identified the URL as a threat.
+      type: Date
+    - contextPath: Proofpoint.ClicksPermitted.userAgent
+      description: The User-Agent header from the clicker's HTTP request.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.campaignId
+      description: An identifier for the campaign of which the threat is a member.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.id
+      description: The unique ID of the click.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.clickIP
+      description: The external IP address of the user who clicked the link.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.sender
+      description: The email address of the sender. The user-part is hashed. The domain-part is in cleartext.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.recipient
+      description: The email address of the recipient.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatID
+      description: The unique identifier associated with this threat.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatURL
+      description: A link to the entry on the TAP dashboard for the particular threat.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatStatus
+      description: The current state of the threat.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.messageID
+      description: The ID of the message that the URL belongs to.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.GUID
+      description: The ID of the message within PPS. It can be used to identify the message in PPS.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: "Message's threat type to be retrieved. If no value is specified, all threat types will be retrieved. Possible values: 'url', 'attachment', and 'message'."
+      isArray: false
+      name: threat_type
+      predefined:
+      - url
+      - attachment
+      - message
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Message's threat status to be retrieved. If no value is specified, active and cleared threats will be retrieved. Possible values: 'active', 'cleared', and 'falsePositive'."
+      isArray: false
+      name: threat_status
+      predefined:
+      - active
+      - cleared
+      - falsePositive
+      required: false
+      secret: false
+    - default: false
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Get events for blocked messages in the specified time period. Must provide either the interval or time_range arguments.
+    execution: false
+    name: proofpoint-get-events-messages-blocked
+    outputs:
+    - contextPath: Proofpoint.MessagesBlocked.spamScore
+      description: The spam score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.phishScore
+      description: The phish score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap
+      description: 'List that contains details about detected threats within the message. Contains: campaignID, classification, threat, threatID, threatStatus,threatTime, threatType, threatUrl.'
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.messageTime
+      description: The time the message was delivered to the user or quarantined by PPS.
+      type: Date
+    - contextPath: Proofpoint.MessagesBlocked.impostorScore
+      description: The impostor score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.malwareScore
+      description: The malware score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.cluster
+      description: The name of the PPS cluster that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.subject
+      description: The subject line of the message, if available.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.quarantineFolder
+      description: The name of the folder that contains the quarantined message. This appears only for blocked messages. For delivered messages will be 'None'.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.quarantineRule
+      description: The name of the rule that quarantined the message. This appears only for messagesBlocked events.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.policyRoutes
+      description: The policy routes that the message matched during processing by PPS.
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.modulesRun
+      description: The list of PPS modules that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.messageSize
+      description: The size in bytes of the message, including headers and attachments.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.Header.headerFrom
+      description: The full content of the From header, including any friendly name.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.Header.headerReplyTo
+      description: 'If present, the full content of the Reply-To: header, including any friendly names.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.Header.fromAddress
+      description: The email address contained in the From header, excluding the friendly name.
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.Header.ccAddresses
+      description: 'A list of email addresses contained within the CC: header, excluding friendly names.'
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.Header.replyToAddress
+      description: 'The email address contained in the Reply-To: header, excluding friendly name.'
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.Header.toAddresses
+      description: 'A list of email addresses contained within the To: header, excluding friendly names.'
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.Header.xmailer
+      description: 'The content of the X-Mailer: header, if present.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.messageParts
+      description: An array of structures that contain details about parts of the message, including both message bodies and attachments.
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.completelyRewritten
+      description: The rewrite status of the message. If value is true, all instances of URL threats within the message were successfully rewritten. If the value is false, at least one instance of the threat URL was not rewritten. If the value is 'na', the message did not contain any URL-based threats.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.id
+      description: The unique ID of the message.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.sender
+      description: The email address of the SMTP (envelope) sender. The user-part is hashed. The domain-part is cleartext.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.recipient
+      description: A list containing the email addresses of the recipients.
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.messageID
+      description: 'Message-ID extracted from the headers of the email message.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.GUID
+      description: The ID of the message within PPS. It can be used to identify the message in PPS.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: "Message's threat type to be retrieved. If no value is specified, all threat types will be retrieved. Possible values: 'url', 'attachment', and 'message'."
+      isArray: false
+      name: threat_type
+      predefined:
+      - url
+      - attachment
+      - message
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Message's threat status to be retrieved. If no value is specified, active and cleared threats will be retrieved. Possible values: 'active', 'cleared', and 'falsePositive'."
+      isArray: false
+      name: threat_status
+      predefined:
+      - active
+      - cleared
+      - falsePositive
+      required: false
+      secret: false
+    - default: false
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Get events for delivered messages in the specified time period. Must provide either the interval or time_range arguments.
+    execution: false
+    name: proofpoint-get-events-messages-delivered
+    outputs:
+    - contextPath: Proofpoint.MessagesDelivered.spamScore
+      description: The spam score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.phishScore
+      description: The phish score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap
+      description: 'List that contains details about detected threats within the message. Contains: campaignID, classification, threat, threatID, threatStatus,threatTime, threatType, threatUrl.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.messageTime
+      description: The time the message was delivered to the user or quarantined by PPS.
+      type: Date
+    - contextPath: Proofpoint.MessagesDelivered.impostorScore
+      description: The impostor score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.malwareScore
+      description: The malware score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.cluster
+      description: The name of the PPS cluster that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.subject
+      description: The subject line of the message, if available.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.quarantineFolder
+      description: The name of the folder that contains the quarantined message. This appears only for blocked messages. For delivered messages will be 'None'.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.quarantineRule
+      description: The name of the rule that quarantined the message. This appears only for messagesBlocked events.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.policyRoutes
+      description: The policy routes that the message matched during processing by PPS.
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.modulesRun
+      description: The list of PPS modules that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.messageSize
+      description: The size in bytes of the message, including headers and attachments.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.Header.headerFrom
+      description: The full content of the From header, including any friendly name.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.Header.headerReplyTo
+      description: 'If present, the full content of the Reply-To: header, including any friendly names.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.Header.fromAddress
+      description: The email address contained in the From header, excluding the friendly name.
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.ccAddresses
+      description: 'A list of email addresses contained within the CC: header, excluding friendly names.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.replyToAddress
+      description: 'The email address contained in the Reply-To: header, excluding friendly name.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.toAddresses
+      description: 'A list of email addresses contained within the To: header, excluding friendly names.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.xmailer
+      description: 'The content of the X-Mailer: header, if present.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.messageParts
+      description: An array of structures that contains details about parts of the message, including both message bodies and attachments.
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.completelyRewritten
+      description: The rewrite status of the message. If value is true, all instances of URL threats within the message were successfully rewritten. If the value is false, at least one instance of the threat URL was not rewritten. If the value is 'na', the message did not contain any URL-based threats.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.id
+      description: The unique ID of the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.sender
+      description: The email address of the SMTP (envelope) sender. The user-part is hashed. The domain-part is cleartext.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.recipient
+      description: A list containing the email addresses of the recipients.
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.messageID
+      description: 'Message-ID extracted from the headers of the email message.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.GUID
+      description: The ID of the message within PPS. It can be used to identify the message in PPS and is guaranteed to be unique.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: "Event's threat type to be retrieved. If no value is specified, all threat types will be retrieved. Possible values: 'url', 'attachment', and 'message'."
+      isArray: false
+      name: threat_type
+      predefined:
+      - url
+      - attachment
+      - message
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Event's threat status to be retrieved.If no value is specified, active and cleared threats will be retrieved. Possible values: 'url', 'attachment', and 'message'."
+      isArray: false
+      name: threat_status
+      predefined:
+      - active
+      - cleared
+      - falsePositive
+      required: false
+      secret: false
+    - default: false
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Get events for clicks to malicious URLs permitted and messages delivered containing a known attachment threat within the specified time period. Must provide either the interval or time_range arguments.
+    execution: false
+    name: proofpoint-list-issues
+    outputs:
+    - contextPath: Proofpoint.ClicksPermitted.url
+      description: The malicious URL was clicked.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.classification
+      description: The threat category of the malicious URL (Malware, Phish, or Spam).
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.clickTime
+      description: The time the user clicked the URL.
+      type: Date
+    - contextPath: Proofpoint.ClicksPermitted.threatTime
+      description: The time that Proofpoint identified the URL as a threat.
+      type: Date
+    - contextPath: Proofpoint.ClicksPermitted.userAgent
+      description: The User-Agent header from the clicker's HTTP request.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.campaignId
+      description: An identifier for the campaign of which the threat is a member.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.id
+      description: The unique ID of the click.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.clickIP
+      description: The external IP address of the user who clicked the link.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.sender
+      description: The email address of the sender. The user-part is hashed. The domain-part is in cleartext.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.recipient
+      description: The email address of the recipient.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatID
+      description: The unique identifier associated with this threat.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatURL
+      description: A link to the entry on the TAP dashboard for the particular threat.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatStatus
+      description: The current state of the threat.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.messageID
+      description: The ID of the message that the URL belongs to.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.GUID
+      description: The ID of the message within PPS. It can be used to identify the message in PPS and is guaranteed to be unique.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.spamScore
+      description: The spam score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.phishScore
+      description: The phish score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap
+      description: 'List which contain details about detected threats within the message. Contains: campaignID, classification, threat, threatID, threatStatus,threatTime, threatType, threatUrl.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.messageTime
+      description: THe time the message was delivered to the user or quarantined by PPS.
+      type: Date
+    - contextPath: Proofpoint.MessagesDelivered.impostorScore
+      description: The impostor score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.malwareScore
+      description: The malware score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.cluster
+      description: The name of the PPS cluster that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.subject
+      description: The subject line of the message, if available.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.quarantineFolder
+      description: The name of the folder that contains the quarantined message. This appears only for blocked messages. For delivered messages will be 'None'.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.quarantineRule
+      description: The name of the rule that quarantined the message. This appears only for messagesBlocked events.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.policyRoutes
+      description: The policy routes that the message matched during processing by PPS.
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.modulesRun
+      description: The list of PPS modules that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.messageSize
+      description: The size in bytes of the message, including headers and attachments.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.Header.headerFrom
+      description: The full content of the From header, including any friendly name.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.Header.headerReplyTo
+      description: 'If present, the full content of the Reply-To: header, including any friendly names.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.Header.fromAddress
+      description: The email address contained in the From header, excluding any friendly name.
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.ccAddresses
+      description: 'A list of email addresses contained within the CC: header, excluding any friendly names.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.replyToAddress
+      description: 'The email address contained in the Reply-To: header, excluding any friendly name.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.toAddresses
+      description: 'A list of email addresses contained within the To: header, excluding any friendly names.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.xmailer
+      description: 'The content of the X-Mailer: header, if present.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.messageParts
+      description: An array of structures that contain details about parts of the message, including both message bodies and attachments.
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.completelyRewritten
+      description: The rewrite status of the message. If value is true, all instances of URL threats within the message were successfully rewritten. If the value is false, at least one instance of the threat URL was not rewritten. If the value is 'na', the message did not contain any URL-based threats.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.id
+      description: The unique ID of the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.sender
+      description: The email address of the SMTP (envelope) sender. The user-part is hashed. The domain-part is cleartext.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.recipient
+      description: A list containing the email addresses of the recipients
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.messageID
+      description: 'Message-ID extracted from the headers of the email message.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.GUID
+      description: The ID of the message within PPS. It can be used to identify the message in PPS and is guaranteed to be unique.
+      type: String
+  - arguments:
+    - default: false
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one day. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of campaign IDs to produce in the response. Defaults to 100 and the maximum supported value is 200.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page of results to return, in multiples of the specified size.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: 'Represents the start of the data retrieval period. For example: 1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of IDs of campaigns active in a specified time period. Must provide either the interval or time_range arguments.
+    execution: false
+    name: proofpoint-list-campaigns
+    outputs:
+    - contextPath: Proofpoint.Campaigns.id
+      description: The campaign ID.
+      type: String
+    - contextPath: Proofpoint.Campaigns.lastUpdatedAt
+      description: Last updated timestamp of the campaign.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the required campaign.
+      isArray: false
+      name: campaign_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets details for a given campaign.
+    execution: false
+    name: proofpoint-get-campaign
+    outputs:
+    - contextPath: Proofpoint.Campaign.info
+      description: The campaign information - ID,name, description, startDate, and notable.
+      type: List
+    - contextPath: Proofpoint.Campaign.actors
+      description: A list of actor objects.
+      type: List
+    - contextPath: Proofpoint.Campaign.families
+      description: A list of family objects.
+      type: List
+    - contextPath: Proofpoint.Campaign.malware
+      description: A list of malware objects.
+      type: List
+    - contextPath: Proofpoint.Campaign.techniques
+      description: A list of technique objects.
+      type: List
+    - contextPath: Proofpoint.Campaign.brands
+      description: A list of brand objects.
+      type: List
+    - contextPath: Proofpoint.Campaign.campaignMembers
+      description: A list of campaign member objects.
+      type: List
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: 'An integer indicating how many days the data should be retrieved for. Possible values: "14", "30", "90".'
+      isArray: false
+      name: window
+      predefined:
+      - '14'
+      - '30'
+      - '90'
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1000'
+      description: The maximum number of users to produce in the response.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page of results to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of the most attacked users in the organization.
+    execution: false
+    name: proofpoint-list-most-attacked-users
+    outputs:
+    - contextPath: Proofpoint.Vap.users
+      description: List of users in the organization.
+      type: List
+    - contextPath: Proofpoint.Vap.totalVapUsers
+      description: The total number of VAP users for the interval.
+      type: Number
+    - contextPath: Proofpoint.Vap.interval
+      description: An ISO8601-formatted interval showing the time the response was calculated for.
+      type: String
+    - contextPath: Proofpoint.Vap.averageAttackIndex
+      description: The average attack index value for users during the interval.
+      type: Number
+    - contextPath: Proofpoint.Vap.vapAttackIndexThreshold
+      description: This interval's attack index threshold, past which a user is considered a VAP.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: 'An integer indicating how many days the data should be retrieved for. Possible values: "14", "30", "90".'
+      isArray: false
+      name: window
+      predefined:
+      - '14'
+      - '30'
+      - '90'
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of top clickers to produce in the response.The max supported value is 200.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page of results to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of the top clickers in the organization for a specified time period.
+    execution: false
+    name: proofpoint-get-top-clickers
+    outputs:
+    - contextPath: Proofpoint.Topclickers.users
+      description: List of users in the organization.
+      type: List
+    - contextPath: Proofpoint.Topclickers.totalTopClickers
+      description: The total number of top clickers in the time interval.
+      type: int
+    - contextPath: Proofpoint.Topclickers.interval
+      description: An ISO8601-formatted interval showing the time the response was calculated for.
+      type: Date
+  - arguments:
+    - default: false
+      description: A comma-separated list of encoded URLs.
+      isArray: false
+      name: urls
+      required: true
+      secret: false
+    deprecated: false
+    description: Decodes URLs that have been rewritten by TAP to their original, target URL.
+    execution: false
+    name: proofpoint-url-decode
+    outputs:
+    - contextPath: Proofpoint.URL.encodedUrl
+      description: The original, rewritten URL supplied to the endpoint.
+      type: String
+    - contextPath: Proofpoint.URL.decodedUrl
+      description: The target URL embedded inside the rewritten link.
+      type: String
+    - contextPath: Proofpoint.URL.success
+      description: Indicates whether the URL could successfully be decoded.
+      type: Boolean
+  dockerimage: demisto/python3:3.10.10.48392
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: >
+    register_module_line('Proofpoint TAP v2', 'start', __line__())
+
+
+
+
+    from typing import Optional, Tuple, Union
+
+    from datetime import datetime, timedelta
+
+    import json
+
+    import requests
+
+    import urllib3
+
+    import dateparser
+
+
+    # Disable insecure warnings
+
+    urllib3.disable_warnings()
+
+
+    ALL_EVENTS = "All"
+
+    ISSUES_EVENTS = "Issues"
+
+    BLOCKED_CLICKS = "Blocked Clicks"
+
+    PERMITTED_CLICKS = "Permitted Clicks"
+
+    BLOCKED_MESSAGES = "Blocked Messages"
+
+    DELIVERED_MESSAGES = "Delivered Messages"
+
+
+    DEFAULT_LIMIT = 50
+
+    DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+
+
+    def get_now():
+        """ A wrapper function for datetime.now
+        helps handle tests
+        Returns:
+            datetime: time right now
+        """
+        return datetime.now()
+
+
+    def get_fetch_times(last_fetch):
+        """ Get list of every hour since last_fetch. last is now.
+        Args:
+            last_fetch (datetime or str): last_fetch time
+        Returns:
+            List[str]: list of str represents every hour since last_fetch
+        """
+        now = get_now()
+        times = list()
+        time_format = DATE_FORMAT
+        if isinstance(last_fetch, str):
+            times.append(last_fetch)
+            last_fetch = datetime.strptime(last_fetch, time_format)
+        elif isinstance(last_fetch, datetime):
+            times.append(last_fetch.strftime(time_format))
+        while now - last_fetch > timedelta(minutes=59):
+            last_fetch += timedelta(minutes=59)
+            times.append(last_fetch.strftime(time_format))
+        times.append(now.strftime(time_format))
+        return times
+
+
+    class Client:
+        def __init__(self, proofpoint_url, api_version, verify, service_principal, secret, proxies):
+            self.base_url = proofpoint_url
+            self.api_version = api_version
+            self.verify = verify
+            self.service_principal = service_principal
+            self.secret = secret
+            self.proxies = proxies
+
+        def http_request(self, method, url_suffix, params=None, data=None, forensics_api=False):
+            if forensics_api:
+                full_url = urljoin(self.base_url, '/v2/forensics')
+            else:
+                full_url = urljoin(urljoin(self.base_url, self.api_version), url_suffix)
+
+            res = requests.request(
+                method,
+                full_url,
+                verify=self.verify,
+                params=params,
+                json=data,
+                auth=(self.service_principal, self.secret),
+                proxies=self.proxies
+            )
+
+            if res.status_code not in [200, 204]:
+                raise ValueError(f'Error in API call to Proofpoint TAP {res.status_code}. Reason: {res.text}')
+
+            try:
+                return res.json()
+            except Exception:
+                raise ValueError(f"Failed to parse http response to JSON format. Original response body: \n{res.text}")
+
+        def get_events(self, interval=None, since_time=None, since_seconds=None, threat_type=None, threat_status=None,
+                       event_type_filter="All"):
+
+            if not interval and not since_time and not since_seconds:
+                raise ValueError("Required to pass interval or sinceTime or sinceSeconds.")
+
+            query_params = {
+                "format": "json"
+            }
+            query_params.update(
+                assign_params(
+                    interval=interval,
+                    sinceTime=since_time,
+                    sinceSeconds=since_seconds,
+                    threatStatus=threat_status,
+                    threatType=threat_type
+                )
+            )
+
+            url_route = {
+                "All": "/all",
+                "Issues": "/issues",
+                "Blocked Clicks": "/clicks/blocked",
+                "Permitted Clicks": "/clicks/permitted",
+                "Blocked Messages": "/messages/blocked",
+                "Delivered Messages": "/messages/delivered"
+            }[event_type_filter]
+
+            events = self.http_request("GET", urljoin('siem', url_route), params=query_params)
+
+            return events
+
+        def get_forensics(self, threat_id=None, campaign_id=None, include_campaign_forensics=None):
+            if threat_id and campaign_id:
+                raise DemistoException('threadId and campaignID supplied, supply only one of them')
+            if include_campaign_forensics and campaign_id:
+                raise DemistoException('includeCampaignForensics can be true only with threadId')
+            if campaign_id:
+                params = assign_params(campaignId=campaign_id)
+            else:
+                params = assign_params(threatId=threat_id, includeCampaignForensics=include_campaign_forensics)
+            return self.http_request('GET', None, params=params, forensics_api=True)
+
+        def get_clicks(self, clicks_type: str, interval: str, threat_status: str = None) -> dict:
+            """
+            Retrieves clicks on malicious URLs in the specified time period. Clicks can either be blocked or permitted.
+
+            Args:
+                interval (str): ISO8601-formatted interval date. The minimum interval is 30 seconds. The maximum interval is one hour.
+                threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
+                clicks_type (str): The type of the click. Can be either "blocked" or "permitted".
+
+            Returns:
+                dict: API response from ProofpointTAP.
+
+            """
+            params = remove_empty_elements({"interval": interval,
+                                            "threatStatus": threat_status,
+                                            "format": "json"})
+            return self.http_request("GET", f'/siem/clicks/{clicks_type}', params=params)
+
+        def get_messages(self, messages_type: str, interval: str, threat_status: str = None,
+                         threat_type: str = None) -> dict:
+            """
+            Retrieves events for messages in the specified time period. Messages can either be blocked or delivered.
+
+            Args:
+                interval (str): ISO8601-formatted interval date. The minimum interval is 30 seconds. The maximum interval is one hour.
+                threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
+                threat_type (str): The type of the threat. Can be: url, attachment or message.
+                messages_type (str): The type of the messages. Can be either "blocked" or "delivered"
+
+            Returns:
+                dict: API response from ProofpointTAP.
+
+            """
+            params = remove_empty_elements({"interval": interval,
+                                            "threatStatus": threat_status,
+                                            "threatType": threat_type,
+                                            "format": "json"})
+            return self.http_request("GET", f'/siem/messages/{messages_type}', params=params)
+
+        def list_campaigns(self, interval: str, page: str = None, limit: str = None) -> dict:
+            """
+            Retrieves a list of IDs of campaigns active in a time window.
+            Args:
+                interval (str): ISO8601-formatted interval date. The minimum interval is 30 seconds. The maximum interval is one day.
+                limit (str): The maximum number of campaign IDs to produce in the response.
+                page (str): The page of results to return, in multiples of the specified size.
+
+            Returns:
+                dict: API response from ProofpointTAP.
+
+            """
+            params = remove_empty_elements({"interval": interval,
+                                            "page": page,
+                                            "size": limit,
+                                            "format": "json"})
+            return self.http_request("GET", '/campaign/ids', params=params)
+
+        def get_campaign(self, campaign_id: str) -> dict:
+            """
+            Retrieves information for a given campaign.
+            Args:
+                campaign_id (str): The ID of the required campaign.
+            Returns:
+                dict: API response from ProofpointTAP.
+            """
+            return self.http_request("GET", f'/campaign/{campaign_id}')
+
+        def list_most_attacked_users(self, window: str, limit: str = None, page: str = None) -> dict:
+            """
+            Retrieves a list of the most attacked users in the organization for a given period.
+            Args:
+                window (str): The number of days for which the information will be retrieved.
+                limit (str): The maximum number of VAPs to produce.
+                page (str): The page of results to return, in multiples of the specified size.
+            Returns:
+                dict: API response from ProofpointTAP.
+            """
+            params = remove_empty_elements({"window": window,
+                                            "size": limit,
+                                            "page": page})
+            return self.http_request("GET", '/people/vap', params=params)
+
+        def get_top_clickers(self, window: str, limit: str = None, page: str = None) -> dict:
+            """
+            Retrieves a list of the top clickers in the organization for a given period.
+            Args:
+                window (str): The number of days for which the information will be retrieved.
+                limit (str): The maximum number of top clickers to produce.
+                page (str): The page of results to return, in multiples of the specified size.
+            Returns:
+                dict: API response from ProofpointTAP.
+            """
+            params = remove_empty_elements({"window": window,
+                                            "size": limit,
+                                            "page": page})
+            return self.http_request("GET", '/people/top-clickers', params=params)
+
+        def url_decode(self, url_list: list) -> dict:
+            """
+            Decode URLs that have been rewritten by TAP to their original, target URL.
+            Args:
+                url_list (list): List of encoded URLs.
+            Returns:
+                dict: API response from ProofpointTAP.
+            """
+            data = {"urls": url_list}
+            return self.http_request("POST", '/url/decode', data=data)
+
+        def list_issues(self, interval: str, threat_status: str = None, threat_type: str = None) -> dict:
+            """
+            Retrieves events for permitted clicks on malicious URLs and delivered messages in the specified time period.
+            Args:
+                interval (str): ISO8601-formatted interval date. The minimum interval is 30 seconds. The maximum interval is one hour.
+                threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
+                threat_type (str): The type of the threat. Can be: url, attachment or messageText.
+            Returns:
+                dict: API response from ProofpointTAP.
+            """
+            params = remove_empty_elements({"interval": interval,
+                                            "threatStatus": threat_status,
+                                            "threatType": threat_type,
+                                            "format": "json"})
+            return self.http_request("GET", '/siem/issues', params=params)
+
+
+    def test_module(client: Client) -> str:
+        """
+        Tests API connectivity and authentication.
+        Args:
+            client (Client): ProofpointTAP API client.
+        Returns:
+            str : 'ok' if test passed, anything else will fail the test.
+        """
+
+        try:
+            client.get_top_clickers(window='90')
+        except Exception as exception:
+            if 'Unauthorized' in str(exception) or 'authentication' in str(exception):
+                return 'Authorization Error: make sure API Credentials are correctly set'
+
+            if 'connection' in str(exception):
+                return 'Connection Error: make sure Server URL is correctly set'
+            raise exception
+
+        return 'ok'
+
+
+    def build_context_attachment(what: dict) -> dict:
+        return assign_params(
+            SHA256=what.get('sha256'),
+            MD5=what.get('md5'),
+            Blacklisted=what.get('blacklisted'),
+            Offset=what.get('offset'),
+            Size=what.get('size'),
+        )
+
+
+    def build_context_cookie(what: dict) -> dict:
+        return assign_params(
+            Action=what.get('action'),
+            Domain=what.get('domain'),
+            Key=what.get('key'),
+            Value=what.get('value'),
+        )
+
+
+    def build_context_dns(what: dict) -> dict:
+        return assign_params(
+            Host=what.get('host'),
+            CNames=what.get('cnames'),
+            IP=what.get('ips'),
+            NameServers=what.get('nameservers'),
+            NameServersList=what.get('nameserversList'),
+        )
+
+
+    def build_context_mutex(what: dict) -> dict:
+        return assign_params(
+            Name=what.get('name'),
+            Path=what.get('path')
+        )
+
+
+    def build_context_ids(what: dict) -> dict:
+        return assign_params(
+            Name=what.get('name'),
+            SignatureID=what.get('signatureId')
+        )
+
+
+    def build_context_network(what: dict) -> dict:
+        return assign_params(
+            Action=what.get('action'),
+            IP=what.get('ip'),
+            Port=what.get('port'),
+            Protocol=what.get('type')
+        )
+
+
+    def build_context_process(what: dict) -> dict:
+        return assign_params(
+            Action=what.get('action'),
+            Path=what.get('path'),
+        )
+
+
+    def build_context_dropper(what: dict) -> dict:
+        return assign_params(
+            Path=what.get('path'),
+            URL=what.get('url'),
+            Rule=what.get('rule'),
+        )
+
+
+    def build_context_registry(what: dict) -> dict:
+        return assign_params(
+            Name=what.get('name'),
+            Action=what.get('action'),
+            Key=what.get('key'),
+            Value=what.get('value'),
+        )
+
+
+    def build_context_file(what: dict) -> dict:
+        return assign_params(
+            Path=what.get('path'),
+            Action=what.get('action'),
+            SHA256=what.get('sha256'),
+            MD5=what.get('md5'),
+            Size=what.get('size'),
+        )
+
+
+    def build_context_url(what: dict) -> dict:
+        return assign_params(
+            URL=what.get('url'),
+            Blacklisted=what.get('blacklisted'),
+            SHA256=what.get('sha256'),
+            MD5=what.get('md5'),
+            Size=what.get('size'),
+            HTTPStatus=what.get('httpStatus'),
+            IP=what.get('ip'),
+        )
+
+
+    def build_context_behavior(forensics_data: dict) -> dict:
+        """
+        Build forensics behavior evidence type objects in order to update the command report context.
+        Args:
+            forensics_data (dict): Forensics data. A map of values associated with the specific evidence type.
+
+        Returns:
+            dict: Dictionary from given kwargs without empty values.
+
+        """
+        return assign_params(
+            Path=forensics_data.get('path'),
+            URL=forensics_data.get('url'),
+        )
+
+
+    def build_context_screenshot(forensics_data: dict) -> dict:
+        """
+        Build forensics screenshot evidence type objects in order to update the command report context.
+        Args:
+            forensics_data (dict): Forensics data. A map of values associated with the specific evidence type.
+
+        Returns:
+            dict: Dictionary from given kwargs without empty values.
+
+        """
+        return assign_params(
+            URL=forensics_data.get('url'),
+        )
+
+
+    def get_forensic_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
+        """
+        Args:
+            client:
+            args: demisto.args()
+        Returns:
+            Outputs
+        """
+        forensic_types = {
+            'attachment': 'Attachment',
+            'cookie': 'Cookie',
+            'dns': 'DNS',
+            'dropper': 'Dropper',
+            'file': 'File',
+            'ids': 'IDS',
+            'mutex': 'Mutex',
+            'network': 'Network',
+            'process': 'Process',
+            'registry': 'Registry',
+            'url': 'URL',
+            'behavior': 'Behavior',
+            'screenshot': 'Screenshot'
+        }
+        threat_id = args.get('threatId')
+        campaign_id = args.get('campaignId')
+        include_campaign_forensics = args.get('includeCampaignForensics') == 'true'
+        limit = args.get('limit', DEFAULT_LIMIT)
+        raw_response = client.get_forensics(
+            threat_id=threat_id,
+            campaign_id=campaign_id,
+            include_campaign_forensics=include_campaign_forensics
+        )
+        reports = raw_response.get('reports', [])
+        if len(reports) > limit:
+            reports = reports[:limit]
+        reports_context = list()
+        for report in reports:
+            report_context = assign_params(
+                Scope=report.get('scope'),
+                Type=report.get('type'),
+                ID=report.get('id')
+            )
+            for evidence in report.get('forensics', []):
+                evidence_type = evidence.get('type')
+                evidence_type = forensic_types.get(evidence_type)
+                if evidence_type:
+                    # Create list in report
+                    if evidence_type not in report_context:
+                        report_context[evidence_type] = list()
+                    what = evidence.get('what', {})
+                    basic_report = assign_params(
+                        Time=evidence.get('time'),
+                        Display=evidence.get('display'),
+                        Malicious=evidence.get('malicious'),
+                    )
+                    basic_report['Platform'] = [{
+                        'Name': platform.get('name'),
+                        'OS': platform.get('os'),
+                        'Version': platform.get('version')
+                    } for platform in evidence.get('platforms', [])]
+
+                    if evidence_type == 'Attachment':
+                        basic_report.update(build_context_attachment(what))
+                        report_context[evidence_type].append(basic_report)
+                    elif evidence_type == 'Cookie':
+                        basic_report.update(build_context_cookie(what))
+                        report_context[evidence_type].append(basic_report)
+                    elif evidence_type == 'DNS':
+                        basic_report.update(build_context_dns(what))
+                        report_context['DNS'].append(basic_report)
+                    elif evidence_type == 'Dropper':
+                        basic_report.update(build_context_dropper(what))
+                        report_context['Dropper'].append(basic_report)
+                    elif evidence_type == 'File':
+                        basic_report.update(build_context_file(what))
+                        report_context['File'].append(basic_report)
+                    elif evidence_type == 'IDS':
+                        basic_report.update(build_context_ids(what))
+                        report_context['IDS'].append(basic_report)
+                    elif evidence_type == 'Mutex':
+                        basic_report.update(build_context_mutex(what))
+                        report_context['Mutex'].append(basic_report)
+                    elif evidence_type == 'Network':
+                        basic_report.update(build_context_network(what))
+                        report_context['Network'].append(basic_report)
+                    elif evidence_type == 'Process':
+                        basic_report.update(build_context_process(what))
+                        report_context['Process'].append(basic_report)
+                    elif evidence_type == 'Registry':
+                        basic_report.update(build_context_registry(what))
+                        report_context['Registry'].append(basic_report)
+                    elif evidence_type == 'URL':
+                        basic_report.update(build_context_url(what))
+                        report_context['URL'].append(basic_report)
+                    elif evidence_type == 'Behavior':
+                        basic_report.update(build_context_behavior(what))
+                        report_context['Behavior'].append(basic_report)
+                    elif evidence_type == 'Screenshot':
+                        basic_report.update(build_context_screenshot(what))
+                        report_context['Screenshot'].append(basic_report)
+            reports_context.append(report_context)
+        outputs = {'Proofpoint.Report(var.ID === obj.ID)': reports_context}
+        readable_outputs = tableToMarkdown(
+            f'Forensic results from ProofPoint for ID: {threat_id or campaign_id}',
+            reports_context,
+            headers=['ID', 'Scope', 'Type']
+        )
+        return readable_outputs, outputs, raw_response
+
+
+    @logger
+
+    def get_events_command(client, args):
+        interval = args.get("interval")
+        threat_type = argToList(args.get("threatType"))
+        threat_status = args.get("threatStatus")
+        since_time = args.get("sinceTime")
+        since_seconds = int(args.get("sinceSeconds")) if args.get("sinceSeconds") else None
+        event_type_filter = args.get("eventTypes")
+
+        raw_events = client.get_events(interval, since_time, since_seconds, threat_type, threat_status, event_type_filter)
+
+        return (
+            tableToMarkdown("Proofpoint Events", raw_events),
+            {
+                'Proofpoint.MessagesDelivered(val.GUID == obj.GUID)': raw_events.get("messagesDelivered"),
+                'Proofpoint.MessagesBlocked(val.GUID == obj.GUID)': raw_events.get("messagesBlocked"),
+                'Proofpoint.ClicksBlocked(val.GUID == obj.GUID)': raw_events.get("clicksBlocked"),
+                'Proofpoint.ClicksPermitted(val.GUID == obj.GUID)': raw_events.get("clicksPermitted")
+            },
+            raw_events
+        )
+
+
+    def fetch_incidents(
+        client,
+        last_run,
+        first_fetch_time,
+        event_type_filter,
+        threat_type,
+        threat_status,
+        limit=DEFAULT_LIMIT,
+        integration_context=None,
+        raw_json_encoding: Optional[str] = None,
+    ) -> Tuple[dict, list, list]:
+        incidents = []
+        end_query_time = ''
+        # check if there're incidents saved in context
+        if integration_context:
+            remained_incidents = integration_context.get("incidents")
+            demisto.info(f'remained_incidents: {len(remained_incidents)}')
+            # return incidents if exists in context.
+            if remained_incidents:
+                return last_run, remained_incidents[:limit], remained_incidents[limit:]
+        # Get the last fetch time, if exists
+        start_query_time = last_run.get("last_fetch")
+        # Handle first time fetch, fetch incidents retroactively
+        if not start_query_time:
+            start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
+        fetch_times = get_fetch_times(start_query_time)
+        for i in range(len(fetch_times) - 1):
+            start_query_time = fetch_times[i]
+            end_query_time = fetch_times[i + 1]
+            demisto.info(f'{start_query_time=}  {end_query_time=}')
+            raw_events = client.get_events(interval=start_query_time + "/" + end_query_time,
+                                           event_type_filter=event_type_filter,
+                                           threat_status=threat_status, threat_type=threat_type)
+
+            message_delivered = raw_events.get("messagesDelivered", [])
+            demisto.info(f'Fetched {len(message_delivered)} messagesDelivered events')
+            for raw_event in message_delivered:
+                raw_event["type"] = "messages delivered"
+                event_guid = raw_event.get("GUID", "")
+                if raw_json_encoding:
+                    raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
+                else:
+                    raw_json = json.dumps(raw_event)
+                incident = {
+                    "name": "Proofpoint - Message Delivered - {}".format(event_guid),
+                    "rawJSON": raw_json,
+                    "occurred": raw_event["messageTime"]
+                }
+                demisto.info(f'Event Time: {incident.get("occurred")}')
+                incidents.append(incident)
+
+            message_blocked = raw_events.get("messagesBlocked", [])
+            demisto.info(f'Fetched {len(message_blocked)} messagesBlocked events')
+            for raw_event in message_blocked:
+                raw_event["type"] = "messages blocked"
+                event_guid = raw_event.get("GUID", "")
+                if raw_json_encoding:
+                    raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
+                else:
+                    raw_json = json.dumps(raw_event)
+                incident = {
+                    "name": "Proofpoint - Message Blocked - {}".format(event_guid),
+                    "rawJSON": raw_json,
+                    "occured": raw_event["messageTime"],
+                }
+                demisto.info(f'Event Time: {incident.get("occurred")}')
+                incidents.append(incident)
+
+            clicks_permitted = raw_events.get("clicksPermitted", [])
+            demisto.info(f'Fetched {len(clicks_permitted)} clicks_permitted events')
+            for raw_event in clicks_permitted:
+                raw_event["type"] = "clicks permitted"
+                event_guid = raw_event.get("GUID", "")
+                if raw_json_encoding:
+                    raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
+                else:
+                    raw_json = json.dumps(raw_event)
+                incident = {
+                    "name": "Proofpoint - Click Permitted - {}".format(event_guid),
+                    "rawJSON": raw_json,
+                    "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
+                        "threatTime"]
+                }
+                demisto.info(f'Event Time: {incident.get("occurred")}')
+                incidents.append(incident)
+
+            clicks_blocked = raw_events.get("clicksBlocked", [])
+            demisto.info(f'Fetched {len(clicks_blocked)} clicks_blocked events')
+            for raw_event in clicks_blocked:
+                raw_event["type"] = "clicks blocked"
+                event_guid = raw_event.get("GUID", "")
+                if raw_json_encoding:
+                    raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
+                else:
+                    raw_json = json.dumps(raw_event)
+                incident = {
+                    "name": "Proofpoint - Click Blocked - {}".format(event_guid),
+                    "rawJSON": raw_json,
+                    "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
+                        "threatTime"]
+                }
+                demisto.info(f'Event Time: {incident.get("occurred")}')
+                incidents.append(incident)
+
+        # Cut the milliseconds from last fetch if exists
+        end_query_time = end_query_time[:-5] + 'Z' if end_query_time[-5] == '.' else end_query_time
+        next_run = {"last_fetch": end_query_time}
+        demisto.info(f'{last_run}=')
+        return next_run, incidents[:limit], incidents[limit:]
+
+
+    def handle_interval(time_range: datetime, is_hours_interval: bool = True, is_days_interval: bool = False):
+        """
+        Create a list of interval objects from the current time over time range.
+        Most of ProofpointTAP requests required interval string in order to retrieve information from the API requests.
+        interval objects will be in the following format: '2021-04-27T09:00:00Z/2021-04-27T10:00:00Z'
+        Args:
+            time_range (datetime): Last interval time.
+            is_days_interval (bool): If True, create hours interval objects.
+            is_hours_interval (bool): If True, create days interval objects.
+        Returns:
+            list: List of hour interval items.
+        """
+
+        current_time = datetime.utcnow()
+        intervals = []
+        if current_time - time_range > timedelta(
+                days=7):  # The maximum time range of Proofpoint TAP API requests is 7 days minus one minute.
+            time_range += timedelta(minutes=1)
+
+        if is_days_interval:
+            while current_time - time_range > timedelta(days=1):
+                start = time_range.strftime(DATE_FORMAT)
+                time_range += timedelta(days=1)
+                intervals.append(f'{start}/{time_range.strftime(DATE_FORMAT)}')
+
+        if is_hours_interval:
+            while current_time - time_range > timedelta(hours=1):
+                start = time_range.strftime(DATE_FORMAT)
+                time_range += timedelta(hours=1)
+                intervals.append(f'{start}/{time_range.strftime(DATE_FORMAT)}')
+
+        return intervals
+
+
+    def get_clicks_command(client: Client, is_blocked: bool, interval: str = None, threat_status: str = None,
+                           time_range: str = None) -> CommandResults:
+        """
+        Retrieves clicks on malicious URLs in the specified time period. Clicks can either be blocked or permitted.
+        Args:
+            client (Client): ProofpointTAP API client.
+            is_blocked (bool): Indicates the clicks type.
+            interval (str): ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour.
+            threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
+            time_range (str): Time range, for example: 1 week, 2 days, 3 hours etc.
+        Returns:
+            CommandResults: raw response, outputs, and readable outputs.
+        """
+        clicks_type = 'blocked' if is_blocked else 'permitted'
+        if not (interval or time_range):
+            raise Exception('Must provide interval or time_range.')
+        if interval and time_range:
+            raise Exception('Must provide only one of the arguments interval or time_range.')
+        if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
+            raise Exception('The maximum time range is 7 days')
+        if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
+            raise Exception('The minimum time range is thirty seconds.')
+
+        if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
+            end = datetime.utcnow().strftime(DATE_FORMAT)
+            start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
+            intervals = [f'{start}/{end}']
+        else:
+            intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
+
+        outputs = []
+        raw_responses = []
+        for interval_string in intervals:
+            raw_response = client.get_clicks(clicks_type, interval_string, threat_status)
+
+            clicks_path = ['clicksBlocked'] if clicks_type == 'blocked' else ['clicksPermitted']
+            if dict_safe_get(raw_response, clicks_path):
+                outputs.extend(dict_safe_get(raw_response, clicks_path))
+                raw_responses.append(raw_response)
+
+        readable_output = tableToMarkdown(f'{clicks_type.title()} Clicks',
+                                          outputs, headers=['id', 'senderIP', 'recipient', 'classification', 'threatID',
+                                                            'threatURL', 'threatStatus', 'threatTime',
+                                                            'clickTime', 'campaignId', 'userAgent'],
+                                          headerTransform=pascalToSpace
+                                          )
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=f'Proofpoint.Clicks{clicks_type.capitalize()}',
+            outputs=outputs,
+            outputs_key_field=['GUID', 'id'],
+            raw_response=raw_responses
+        )
+
+
+    def create_messages_output(messages_list: list) -> list:
+        """
+        Creates and filters the required fields of messages output.
+        Args:
+            messages_list (list): List of retrieved messages.
+        Returns:
+            list:  List of messages with the required fields.
+        """
+        outputs = []
+        message_keys = ['spamScore', 'phishScore', 'threatsInfoMap', 'messageTime', 'impostorScore', 'malwareScore',
+                        'cluster', 'subject', 'quarantineFolder', 'quarantineRule', 'policyRoutes', 'modulesRun',
+                        'messageSize', 'messageParts', 'completelyRewritten', 'id', 'sender', 'recipient', 'senderIP',
+                        'messageID', 'GUID']
+
+        header_fields = ['headerFrom', 'headerReplyTo', 'fromAddress', 'fromAddress', 'ccAddresses',
+                         'replyToAddress', 'toAddresses', 'xmailer']
+
+        for message in messages_list:
+            message_header = {}
+            for field in header_fields:
+                message_header[field] = message[field]
+
+            message_output = {key: value for key, value in message.items() if key in message_keys}
+            message_output['Header'] = message_header
+            outputs.append(message_output)
+
+        return outputs
+
+
+    def create_threats_objects(messages: list) -> list:
+        """
+        Creates list of threats items of messages.
+
+        Args:
+            messages (list): List of messages items.
+
+        Returns:
+            list: List of threats items.
+
+        """
+        threats_info_map = []
+        message_keys = ['sender', 'recipient', 'subject']
+        for message in messages:
+            for threat in message.get('threatsInfoMap'):
+                threat_object = {key: value for key, value in message.items() if key in message_keys}
+                threat_object.update(threat)
+                threats_info_map.append(threat_object)
+
+        return threats_info_map
+
+
+    def get_messages_command(client: Client, is_blocked: bool, interval: str = None, threat_status: str = None,
+                             threat_type: str = None, time_range: str = None) -> CommandResults:
+        """
+        Retrieves events for messages in the specified time period. Messages can either be blocked or delivered.
+        Args:
+            client (Client): ProofpointTAP API client.
+            is_blocked (bool): Indicates the messages type.
+            interval (str): ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour.
+            threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
+            threat_type (str): The type of the threat. Can be: url, attachment or message.
+            time_range (str): Time range, for example: 1 week, 2 days, 3 hours etc.
+        Returns:
+            CommandResults: raw response, outputs, and readable outputs.
+        """
+        messages_type = 'blocked' if is_blocked else 'delivered'
+
+        if not (interval or time_range):
+            raise Exception('Must provide interval or time_range.')
+        if interval and time_range:
+            raise Exception('Must provide only one of the arguments interval or time_range.')
+        if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
+            raise Exception('The maximum time range is 7 days')
+        if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
+            raise Exception('The minimum time range is thirty seconds.')
+
+        if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
+            end = datetime.utcnow().strftime(DATE_FORMAT)
+            start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
+            intervals = [f'{start}/{end}']
+        else:
+            intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
+        outputs = []
+        raw_responses = []
+        for interval_string in intervals:
+            raw_response = client.get_messages(messages_type, interval_string, threat_status, threat_type)
+
+            messages_path = ['messagesBlocked'] if messages_type == 'blocked' else ['messagesDelivered']
+            if dict_safe_get(raw_response, messages_path):
+                outputs.extend(create_messages_output(dict_safe_get(raw_response, messages_path)))
+                raw_responses.append(raw_response)
+
+        threats_info_map = create_threats_objects(outputs)
+
+        messages_readable_output = tableToMarkdown(f'{messages_type.title()} Messages',
+                                                   outputs,
+                                                   headers=['senderIP', 'sender', 'recipient', 'subject', 'messageSize',
+                                                            'messageTime', 'malwareScore', 'phishScore', 'spamScore'],
+                                                   headerTransform=pascalToSpace
+                                                   )
+
+        threats_info_readable_output = tableToMarkdown(f'{messages_type.title()} Messages Threats Information',
+                                                       threats_info_map,
+                                                       headers=['sender', 'recipient', 'subject', 'classification',
+                                                                'threat', 'threatStatus', 'threatUrl', 'threatID',
+                                                                'threatTime', 'campaignID'],
+                                                       headerTransform=pascalToSpace)
+
+        readable_output = messages_readable_output + "\n" + threats_info_readable_output
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=f'Proofpoint.Messages{messages_type.capitalize()}',
+            outputs=outputs,
+            outputs_key_field=['GUID', 'id'],
+            raw_response=raw_responses
+        )
+
+
+    def list_campaigns_command(client: Client, interval: str = None, limit: str = None, page: str = None,
+                               time_range: str = None) -> CommandResults:
+        """
+        Retrieves a list of IDs of campaigns active in a time window.
+        Args:
+            client (Client): ProofpointTAP API client.
+            interval (str): ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one day.
+            limit (str): The maximum number of campaign IDs to produce in the response.
+            page (str): The page of results to return, in multiples of the specified size.
+            time_range (str): Time range, for example: 1 week, 2 days, 3 hours etc.
+        Returns:
+            CommandResults: raw response, outputs, and readable outputs.
+        """
+
+        if not (interval or time_range):
+            raise Exception('Must provide interval or time_range.')
+        if interval and time_range:
+            raise Exception('Must provide only one of the arguments interval or time_range.')
+        if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
+            raise Exception('The maximum time range is 7 days')
+        if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
+            raise Exception('The minimum time range is thirty seconds.')
+
+        if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
+            end = datetime.utcnow().strftime(DATE_FORMAT)
+            start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
+            intervals = [f'{start}/{end}']
+        else:
+            intervals = handle_interval(dateparser.parse(time_range),  # type: ignore
+                                        is_days_interval=True) if time_range else [  # type: ignore
+                interval]  # type: ignore
+
+        outputs = []
+        raw_responses = []
+        request_error = []
+        for interval_string in intervals:
+            try:
+                raw_response = client.list_campaigns(interval_string, page, limit)
+            except ValueError:  # In case there are no campaigns for the interval,  the request returns status code 404
+                # which causes an error in http_request function
+                request_error.append(
+                    {'interval': interval_string, "message": f'Not found campaigns data from {interval_string}'})
+                continue
+
+            if dict_safe_get(raw_response, ["campaigns"]):
+                outputs.extend(dict_safe_get(raw_response, ["campaigns"]))
+                raw_responses.append(raw_response)
+
+        readable_output = tableToMarkdown('Campaigns List',
+                                          outputs, headers=['id', 'lastUpdatedAt'],
+                                          headerTransform=pascalToSpace
+                                          )
+
+        if request_error:
+            readable_output += "\n" + tableToMarkdown('Errors',
+                                                      request_error, headers=['interval', 'message'],
+                                                      headerTransform=pascalToSpace
+                                                      )
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Proofpoint.Campaign',
+            outputs=outputs,
+            outputs_key_field='id',
+            raw_response=raw_responses
+        )
+
+
+    def get_campaign_command(client: Client, campaign_id: str) -> Union[CommandResults, str]:
+        """
+        Retrieves information for a given campaign.
+        Args:
+            client (Client): ProofpointTAP API client.
+            campaign_id (str): The ID of the required campaign.
+        Returns:
+            CommandResults: raw response, outputs, and readable outputs.
+        """
+        try:
+            raw_response = client.get_campaign(campaign_id)
+        except ValueError:
+            return 'Campaign Id not found'
+
+        campaign_general_fields = ['id', 'name', 'description', 'startDate', 'notable']
+        campaign_fields = ['families', 'techniques', 'actors', 'brands', 'malware']
+
+        outputs = {}
+        outputs['campaignMembers'] = dict_safe_get(raw_response, ['campaignMembers'])
+        outputs['info'] = {key: value for key, value in raw_response.items() if key in campaign_general_fields}
+        outputs.update({key: value for key, value in raw_response.items() if key in campaign_fields})
+        fields_readable_output = ""
+        for field in campaign_fields:
+            fields_readable_output += "\n" + tableToMarkdown(field.capitalize(),
+                                                             dict_safe_get(outputs, [field]), headers=['id', 'name'],
+                                                             headerTransform=pascalToSpace
+                                                             )
+
+        campaign_info_output = tableToMarkdown('Campaign Information',
+                                               outputs['info'],
+                                               headers=['id', 'name', 'description', 'startDate', 'notable'],
+                                               headerTransform=pascalToSpace
+                                               )
+        campaign_members_output = tableToMarkdown('Campaign Members',
+                                                  outputs['campaignMembers'],
+                                                  headers=['id', 'threat', 'type'],
+                                                  headerTransform=pascalToSpace
+                                                  )
+
+        readable_output = campaign_info_output + "\n" + campaign_members_output + fields_readable_output
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Proofpoint.Campaign',
+            outputs=outputs,
+            outputs_key_field='id',
+            raw_response=raw_response
+        )
+
+
+    def create_families_objects(users: list, statistics_key: str) -> list:
+        """
+        Creates list of threat families items of users.
+
+        Args:
+            statistics_key (str): Dictionary key of users statistics.
+            users (list): List of users items.
+
+        Returns:
+            list: List of threats items
+
+        """
+        threat_families = []
+        for user in users:
+            emails = dict_safe_get(user, ["identity", "emails"])
+            for family in dict_safe_get(user, [statistics_key, "families"]):
+                families_object = {'Mailbox': emails, 'Threat Family Name': family.get('name'),
+                                   'Threat Score': family.get('score')}
+                threat_families.append(families_object)
+
+        return sorted(threat_families, key=lambda x: (x.get('Threat Score', 0), x.get('Mailbox')), reverse=True)
+
+
+    def list_most_attacked_users_command(client: Client, window: str, limit: str = None,
+                                         page: str = None) -> CommandResults:
+        """
+        Retrieves a list of the most attacked users in the organization for a given period.
+        Args:
+            client (Client): ProofpointTAP API client.
+            window (str): The number of days for which the information will be retrieved.
+            limit (str): The maximum number of VAPs to produce.
+            page (str): The page of results to return, in multiples of the specified size.
+        Returns:
+            CommandResults: raw response, outputs, and readable outputs.
+        """
+
+        raw_response = client.list_most_attacked_users(window, limit, page)
+        outputs = raw_response
+        threat_families = create_families_objects(dict_safe_get(outputs, ["users"]), "threatStatistics")
+
+        most_attacked_users_output = tableToMarkdown('Most Attacked Users Information',
+                                                     outputs,
+                                                     headers=['totalVapUsers', 'interval', 'averageAttackIndex',
+                                                              'vapAttackIndexThreshold'],
+                                                     headerTransform=pascalToSpace
+                                                     )
+
+        threat_families_output = tableToMarkdown('Threat Families', threat_families,
+                                                 headers=['Mailbox', 'Threat Family Name', 'Threat Score'],
+                                                 headerTransform=pascalToSpace)
+
+        readable_output = most_attacked_users_output + "\n" + threat_families_output
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Proofpoint.Vap',
+            outputs=outputs,
+            raw_response=raw_response,
+            outputs_key_field='interval'
+        )
+
+
+    def get_top_clickers_command(client: Client, window: str, limit: str = None, page: str = None) -> CommandResults:
+        """
+        Retrieves a list of the top clickers in the organization for a given period.
+        Args:
+            client (Client): ProofpointTAP API client.
+            window (str): The number of days for which the information will be retrieved.
+            limit (str): The maximum number of top clickers to produce.
+            page (str): The page of results to return, in multiples of the specified size.
+        Returns:
+            CommandResults: raw response, outputs, and readable outputs.
+        """
+        raw_response = client.get_top_clickers(window, limit, page)
+
+        outputs = raw_response
+        threat_families = create_families_objects(dict_safe_get(outputs, ["users"]), "clickStatistics")
+
+        top_clickers_output = tableToMarkdown('Top Clickers Users Information',
+                                              outputs,
+                                              headers=['totalTopClickers', 'interval'],
+                                              headerTransform=pascalToSpace
+                                              )
+
+        threat_families_output = tableToMarkdown('Threat Families',
+                                                 threat_families,
+                                                 headers=['Mailbox', 'Threat Family Name', 'Threat Score'],
+                                                 headerTransform=pascalToSpace)
+
+        readable_output = top_clickers_output + threat_families_output
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Proofpoint.Topclickers',
+            outputs=outputs,
+            raw_response=raw_response,
+            outputs_key_field='interval'
+        )
+
+
+    def url_decode_command(client: Client, urls: str) -> CommandResults:
+        """
+        Decode URLs that have been rewritten by TAP to their original, target URL.
+        Args:
+            client (Client): ProofpointTAP API client.
+            urls (str): Encoded URLs.
+        Returns:
+            CommandResults: raw response, outputs, and readable outputs.
+        """
+        raw_response = client.url_decode(argToList(urls))
+        outputs = dict_safe_get(raw_response, ["urls"])
+
+        readable_output = tableToMarkdown('URLs decoded information',
+                                          outputs,
+                                          headers=['encodedUrl', 'decodedUrl'],
+                                          headerTransform=pascalToSpace)
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Proofpoint.URL',
+            outputs_key_field='encodedUrl',
+            outputs=outputs,
+            raw_response=raw_response
+        )
+
+
+    def list_issues_command(client: Client, interval: str = None, threat_status: str = None,
+                            threat_type: str = None, time_range: str = None) -> list:
+        """
+        Retrieves events for permitted clicks on malicious URLs and delivered messages in the specified time period.
+        Args:
+            client (Client): ProofpointTAP API client.
+            interval (str): ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour.
+            threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
+            threat_type (str): The type of the threat. Can be: url, attachment or messageText.
+            time_range (str): Time range, for example: 1 week, 2 days, 3 hours etc.
+        Returns:
+            list: List of CommandResults objects.
+        """
+
+        if not (interval or time_range):
+            raise Exception('Must provide interval or time_range.')
+        if interval and time_range:
+            raise Exception('Must provide only one of the arguments interval or time_range.')
+        if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
+            raise Exception('The maximum time range is 7 days')
+        if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
+            raise Exception('The minimum time range is thirty seconds.')
+
+        if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
+            end = datetime.utcnow().strftime(DATE_FORMAT)
+            start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
+            intervals = [f'{start}/{end}']
+        else:
+            intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
+
+        messages_outputs = []
+        messages_raw_responses = []
+        clicks_outputs = []
+        clicks_raw_responses = []
+        command_results_list = []
+
+        for interval_string in intervals:
+            raw_response = client.list_issues(interval_string, threat_status, threat_type)
+
+            messages = dict_safe_get(raw_response, ['messagesDelivered'])
+
+            if messages:
+                messages_outputs.extend(create_messages_output(messages))
+                messages_raw_responses.append(raw_response)
+
+            clicks = dict_safe_get(raw_response, ['clicksPermitted'])
+
+            if clicks:
+                clicks_outputs.extend(clicks)
+                clicks_raw_responses.append(raw_response)
+
+        threats_info_map = create_threats_objects(messages_outputs)
+
+        delivered_messages_output = tableToMarkdown('Delivered Messages',
+                                                    messages_outputs,
+                                                    headers=['senderIP', 'sender', 'recipient', 'subject', 'messageSize',
+                                                             'messageTime', 'malwareScore', 'phishScore', 'spamScore'],
+                                                    headerTransform=pascalToSpace
+                                                    )
+
+        threats_info_output = tableToMarkdown('Delivered Messages Threats Info Map:',
+                                              threats_info_map, headers=['sender', 'recipient', 'subject', 'classification',
+                                                                         'threat', 'threatStatus', 'threatUrl', 'threatID',
+                                                                         'threatTime', 'campaignID'],
+                                              headerTransform=pascalToSpace)
+
+        messages_readable_output = delivered_messages_output + "\n" + threats_info_output
+
+        command_results_list.append(CommandResults(
+            readable_output=messages_readable_output,
+            outputs_prefix='Proofpoint.MessagesDelivered',
+            outputs=messages_outputs,
+            outputs_key_field=['GUID', 'id'],
+            raw_response=messages_raw_responses
+        ))
+
+        clicks_readable_output = tableToMarkdown('Permitted click from list-issues command result:',
+                                                 clicks_outputs,
+                                                 headers=['id', 'senderIP', 'recipient', 'classification', 'threatID',
+                                                          'threatURL', 'threatStatus', 'threatTime',
+                                                          'clickTime', 'campaignId', 'userAgent'],
+                                                 headerTransform=pascalToSpace
+                                                 )
+
+        command_results_list.append(CommandResults(
+            readable_output=clicks_readable_output,
+            outputs_prefix='Proofpoint.ClicksPermitted',
+            outputs=clicks_outputs,
+            outputs_key_field=['GUID', 'id'],
+            raw_response=clicks_raw_responses
+        ))
+
+        return command_results_list
+
+
+    def main():
+        """
+        PARSE AND VALIDATE INTEGRATION PARAMS
+        """
+        params = demisto.params()
+        service_principal = params.get('credentials', {}).get('identifier')
+        secret = params.get('credentials', {}).get('password')
+
+        # Remove trailing slash to prevent wrong URL path to service
+        server_url = params['url'][:-1] if (params['url'] and params['url'].endswith('/')) else params['url']
+        api_version = params.get('api_version')
+
+        verify_certificate = not params.get('insecure', False)
+        # How many time before the first fetch to retrieve incidents
+        fetch_time = params.get('fetch_time', '60 minutes')
+
+        threat_status = argToList(params.get('threat_status'))
+
+        threat_type = argToList(params.get('threat_type'))
+
+        event_type_filter = params.get('events_type')
+
+        raw_json_encoding = params.get('raw_json_encoding')
+
+        fetch_limit = 50
+        # Remove proxy if not set to true in params
+        proxies = handle_proxy()
+
+        command = demisto.command()
+        args = demisto.args()
+        demisto.info(f'Command being called is {command}')
+        demisto.info(f'{fetch_time=}')
+        try:
+            client = Client(server_url, api_version, verify_certificate, service_principal, secret, proxies)
+            commands = {
+                'proofpoint-get-events': get_events_command,
+                'proofpoint-get-forensics': get_forensic_command
+            }
+            if command == 'test-module':
+                return_outputs(test_module(client))
+
+            elif demisto.command() == 'fetch-incidents':
+                integration_context = demisto.getIntegrationContext()
+                next_run, incidents, remained_incidents = fetch_incidents(
+                    client=client,
+                    last_run=demisto.getLastRun(),
+                    first_fetch_time=fetch_time,
+                    event_type_filter=event_type_filter,
+                    threat_status=threat_status,
+                    threat_type=threat_type,
+                    limit=fetch_limit,
+                    integration_context=integration_context,
+                    raw_json_encoding=raw_json_encoding,
+                )
+                # Save last_run, incidents, remained incidents into integration
+                demisto.setLastRun(next_run)
+                demisto.incidents(incidents)
+                # preserve context dict
+                demisto.info(f'{remained_incidents=}')
+                integration_context['incidents'] = remained_incidents
+                demisto.setIntegrationContext(integration_context)
+
+            elif command in commands:
+                return_outputs(*commands[command](client, args))
+
+            elif command == 'proofpoint-get-events-clicks-blocked':
+                return_results(get_clicks_command(client, is_blocked=True, **args))
+
+            elif command == 'proofpoint-get-events-clicks-permitted':
+                return_results(get_clicks_command(client, is_blocked=False, **args))
+
+            elif command == 'proofpoint-get-events-messages-blocked':
+                return_results(get_messages_command(client, is_blocked=True, **args))
+
+            elif command == 'proofpoint-get-events-messages-delivered':
+                return_results(get_messages_command(client, is_blocked=False, **args))
+
+            elif command == 'proofpoint-list-campaigns':
+                return_results(list_campaigns_command(client, **args))
+
+            elif command == 'proofpoint-get-campaign':
+                return_results(get_campaign_command(client, **args))
+
+            elif command == 'proofpoint-list-most-attacked-users':
+                return_results(list_most_attacked_users_command(client, **args))
+
+            elif command == 'proofpoint-get-top-clickers':
+                return_results(get_top_clickers_command(client, **args))
+
+            elif command == 'proofpoint-url-decode':
+                return_results(url_decode_command(client, **args))
+
+            elif command == 'proofpoint-list-issues':
+                return_results(list_issues_command(client, **args))
+
+        except Exception as exception:
+            if command == 'test-module':
+                return_error(str(exception))
+            return_error(f'Failed to execute {command} command. Error: {str(exception)}')
+
+
+    if __name__ in ['__main__', 'builtin', 'builtins']:
+        main()
+
+    register_module_line('Proofpoint TAP v2', 'end', __line__())
+  subtype: python3
+  type: python
+  nativeimage:
+  - '8.1'
+  - '8.2'
+  - candidate
+tests:
+- No test - no instance
+fromversion: 5.0.0
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAACHtJREFUeAHtmHls1UUQxx8KyI1AiiCHpoIkRA0QowSiIRKJyB+igChqMJEoGiNi8IBIsEgUEoxBSRS8SBQFBbWGwwO8QhBNOAppidJCoVQoFChHC6XS+vludx/Lj0d9fbYEyk74vpmdmZ3Znd3f7pZYLFCoQKhAqECoQKhAqECoQKhAqECoQKhAqECoQKhAqECoQKhAqECoQKhAqECoQKhAqECoQKhAqECoQEOsQKOGOKnInJrSHn5ZLNYf3qIyFlsPfy/iUx/N0eTsrcDkXAzLqY8kl3rMRhR57uWxWJUDO/qn81EU8ix3Ock3OsWc9zL+hQL9h6cSo3EqnS6iPh0Z6xiNtyoWOwl+Az+ej/GzwCXkKrW5TqSYsx9xzPjpnwu+rm2culhgNmqsGxAvBMlMphN+xyxghprx2xk0B0fB3+AUOBddgeFqIH/Fkv8/wCfZ5KcF3goGSa6BumOTv2K5xUnkrmNfuVtYP/lXgDhxLE+g8ZJVFMcNZwutULUGynckYi732r7sqetW7MKOWgFWE3YGGIC8hiPkKCgFW9A97qXshH2Z9Z+GvhfySvwOII+1fm3hr6DLBopTDkrw+wP9eBDdhCrIy/hs8fwP46+79Rmg4osy0K3FpwJUAsXUuDNAS+Qltj2Xdl/k7/E5DDSPv9C9AKK5taAv4puFzxGgsSr3RvTPAW1SR1PRfyegGGiV82mvBpm0+9L3bbAdHAD54H30aaA58mL88uAaeyVyrvpiuxHUG11PslO6W+CFoNjdMz4nu9u56ficlI3BrUfe7PzwGQfaoP/V6RJx+nyEXxMgaov/qkR+Tof/Z/g1xs/cgbRNgZwd/UrFQV8iHbwYFDq7z9G/qaSWWtN3hW+PytiX4qtTI4b8jbPTHGl1OdIRV2NKmBP75/hqfIc830ov1iDFqi/qSeIylwx5D4kmgYeQPwVmIHAdmT1AV+SjbqCWFzD5LGxDsc30YhWg0xc4DH2G6yc7usdADN3rnr+OxYlgGJiKzSyY9X8K3Q3gEfTHpSNnHu0h4CbQAf0+L1YJuqlgDPp5oEI2uI589/VN8/z3oX8eKPdk/A46G23VQwu8xNPdZ3WbnI4+Oo6nA+VcAPza9UQ/UHrP/0N0g8GVoN4ovsAk151zl5+JSWW6AaFXATriZxZYeuTZ6NoDmsZWZPW6X+4APk10sYi7BkN7+u+y/sqt4vo03vPXkSnqQp9j0hNjU7XK/KahNwsM57qMXxfGiG6+i4U8B2VTeJ7NfYr2CON4+udRxbH2bNQ6Qb5wMWiftcDodP04akb/7V78m61hihfDnYquT1KcuClTPj1/9nvzqel4MUTgPgiMr5qwFVPJmbQOAhWpB0XQK1efqO68XyR79BV6nQT6GtJh/UEntaEdYJWRTv9k4n9ITevfGdG/Q1Gf0ZarSO+BFUayP4xzkWsTszfydaCr1RXAv7WyY8sQim3jWrjeHppjQiKmbGs94wl0rr/UGqvIH78vV1uT+E15gRmQCnMikqPItbG3Rvbj60g67uxw/6jR5KIFkb9ZYLhetlows2GIrU2ir94n+aqPqBloBXD9TzqMR2nEq5iObjwtsbUH5h1gc/vzUFf1VxyRxqq515RbNreIiEb229LVCfkLUKuAjKYtHdzjx/Sl+u1cEOz6U0fHnyNNwJ+E7I7ULzoWFVYQnQS690w8gmhzNAU+taChwoq0+GXAzyd9ItJG0IbwSXNz49Hi6WTQfayAyh3118PK5dZYtdmSyY1b/ZKbRCpZ0unkHiCmP9syfjexElko3VeQKP42/A/IQCV6wW6JOA1Fb4qG305s64AWWaTcA4x0+mcI/vrSRPlAp4n54uE1ka6JO30HijKCWPwzP1theWCP2lA3cLuR7A9JBiMqjqgA7GXMyeQ2HZL8MRssSd+4W8oLzOz18FhApCfA3cjvwEcBnU06wjJB9CuT2dFehC/VIJYeGQsQHwS3gqdpvwY3RLxPEPaDJVLg3wT7B4gPA/mPpz0bbojN9TGCCmIWqVqb+BcH89+ZWJ8FetnPgj8pb/JWEWspok6ERdLh3xifdxHHAuUeh98cxUHWEbMQpkcgbv+b4h8Iu6Uf0W4DbWzULvAOVq4z5r+iDzID8zcuyeP/1ysZ/XSbUX8Hn7C6AnQ6Dn3qTFU2RPv7bewqsDsS02iv8+1RGfty/N3R3oP85fJBn4PePVT8V7T+w6I0Gkdt9PPoQ1dD7RBq/Jsd+w94mlMH2f+LYqQioMt2eWj2kc5SI2wbPZs7zUY6neP46+RKB6+CSUDXyTmJOaRG7NpsdusD8BxwClSB3Wy5yegzbNRydBtoZ8E3o0M8g/agHwreAgXAHENw9fuTWFPg+krdY24/7WHgDbAT6EvRl6b/Z96G/zT4/ah0b4ri+ZGzAeazqJBBjQLrMVYAzaMIzEQ3wetzCN09YBbYAfzcebRnAF1R5m3BguXSP0tApztcn7RqJt0GmmXSOcI/x9o2oXPjX0HMuUDxdezvxqbTEdFwppxwTqiribi1In3BWXRqzmB+J0t/eutr6QmagO3gAPCJzRcnDehcpIdWd6AHyxGQD84oAm2ftHOvAXpcqaj5wBUGMU6J8usLzmYeacwhj7n0wlt+4sq/ExSBc5GOSeXW3PWgkr9ZWLgjfTykMEQKsxD+WJzOupgjPervbJqjTjHVT/nErwK6OkpAnVH8iGYk6+os6vkP5B/RuaRXARskaZfVltwuc7y2/S8Ufzd+xy+UcdXpONyjI9mgnGixMn7E3b2YbN8Lyc/NQ/eZ0GCptrtX92w3oC9fC6xL/2Ik3YW678X1WNoFtOiBQgVCBUIFQgVCBUIFQgVCBUIFQgVCBUIFQgVCBUIFQgVCBUIFQgVCBUIFQgVCBUIFQgUuoQr8C4/kmRLXPZUVAAAAAElFTkSuQmCC
+detaileddescription: "To configure an instance of the integration in Cortex XSOAR, you need to supply your Service Principal and Service Secret. <br>\nWhen you configure the integration instance, enter the Service Principal in the Service Principal field, and the Service Secret in the Password field.\n\nTo create the credentials, see the Generate TAP Service Credentials section in \n1. Log in to the TAP dashboard at https://threatinsight.proofpoint.com.\n2. Navigate to **Settings > Connected Applications**.\n3. Click **Create New Credential**.\n4. Name the new credential set and click **Generate**.\n\n\n\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/proofpoint-tap-v2)"
