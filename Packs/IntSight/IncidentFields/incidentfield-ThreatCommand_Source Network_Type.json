@@ -13,7 +13,7 @@
     "id": "incident_rapid7threatcommandsourcenetworktype",
     "isReadOnly": false,
     "locked": false,
-    "name": "Rapid7 ThreatCommand Source Network Type",
+    "name": "Rapid7 ThreatCommand Source Network Type",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

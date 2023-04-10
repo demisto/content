@@ -13,7 +13,7 @@
     "id": "incident_rapid7threatcommandtakedownstatus",
     "isReadOnly": false,
     "locked": false,
-    "name": "Rapid7 ThreatCommand Takedown Status",
+    "name": "Rapid7 ThreatCommand Takedown Status",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
