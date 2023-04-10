@@ -24,7 +24,7 @@ class Client:
     def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = BASE_URL, tenant_id: str = None,
                  enc_key: str = None, client_credentials: bool = False, certificate_thumbprint: Optional[str] = None,
                  private_key: Optional[str] = None,
-                 managed_identities_client_id: Optional[str] = None):
+                 managed_identities_client_id: Optional[str] = None, endpoint='com'):
         if app_id and '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -54,7 +54,8 @@ class Client:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.security_center
+            managed_identities_resource_uri=Resources.security_center,
+            endpoint=endpoint,
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
@@ -608,6 +609,7 @@ def main() -> None:
     proxy = params.get('proxy', False)
     app_id = params.get('app_id') or params.get('_app_id')
     base_url = params.get('base_url')
+    endpoint = SECURITY_BASE_ENDPOINTS.get(base_url, 'com')
 
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
     client_credentials = params.get('client_credentials', False)
@@ -641,7 +643,8 @@ def main() -> None:
             client_credentials=client_credentials,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
-            managed_identities_client_id=managed_identities_client_id
+            managed_identities_client_id=managed_identities_client_id,
+            endpoint=endpoint,
         )
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

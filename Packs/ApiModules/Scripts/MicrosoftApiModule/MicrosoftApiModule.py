@@ -42,6 +42,7 @@ TOKEN_RETRIEVAL_ENDPOINTS = {
     'dod': 'https://login.microsoftonline.us',
     'de': 'https://login.microsoftonline.de',
     'cn': 'https://login.chinacloudapi.cn',
+    'gcc': 'https://login.microsoftonline.com',
 }
 GRAPH_ENDPOINTS = {
     'com': 'https://graph.microsoft.com',
@@ -56,6 +57,11 @@ GRAPH_BASE_ENDPOINTS = {
     'https://dod-graph.microsoft.us': 'dod',
     'https://graph.microsoft.de': 'de',
     'https://microsoftgraph.chinacloudapi.cn': 'cn'
+}
+SECURITY_BASE_ENDPOINTS = {
+    'https://api.security.microsoft.com': 'com',
+    'https://api-gcc.security.microsoft.us': 'gcc',
+    'https://api-gov.security.microsoft.us': 'gcc-high',
 }
 
 # Azure Managed Identities

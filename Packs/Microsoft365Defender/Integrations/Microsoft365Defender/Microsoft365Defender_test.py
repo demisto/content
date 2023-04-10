@@ -184,3 +184,19 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.security_center]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+@pytest.mark.parametrize('server_url, expected_endpoint', [('https://api-gcc.security.microsoft.us', 'gcc'),
+                                                           ('https://api-gov.security.microsoft.us', 'gcc-high')])
+def test_server_to_endpoint(server_url, expected_endpoint):
+    """
+    Given:
+        - Host address for national endpoints
+    When:
+        - Creating a new MsGraphClient
+    Then:
+        - Verify that the host address is translated to the correct endpoint code, i.e. com/gcc-high/dod/de/cn
+    """
+    from MicrosoftApiModule import SECURITY_BASE_ENDPOINTS
+
+    assert SECURITY_BASE_ENDPOINTS[server_url] == expected_endpoint
