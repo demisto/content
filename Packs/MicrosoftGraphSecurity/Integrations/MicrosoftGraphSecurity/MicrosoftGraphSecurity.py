@@ -180,10 +180,9 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
 
     # Get incidents from MS Graph Security
     demisto.debug(f'Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}. Filter: {filter_query}')
-    args = {'time_to': time_to, 'time_from': time_from, }
+    args = {'time_to': time_to, 'time_from': time_from, 'filter': filter_query}
     params = create_search_alerts_filters(args)
-    incidents = client.search_alerts(time_from=time_from,
-                                     time_to=time_to, filter_query=filter_query)['value']
+    incidents = client.search_alerts(params)['value']
 
     if incidents:
         count = 0
@@ -532,7 +531,7 @@ def test_function(client: MsGraphClient, args):
     """
        Performs basic GET request to check if the API is reachable and authentication is successful.
        Returns ok if successful.
-       """
+    """
     response = client.ms_client.http_request(
         method='GET', url_suffix=CMD_URL, params={'$top': 1}, resp_type='response')
     try:
@@ -553,10 +552,10 @@ def test_function(client: MsGraphClient, args):
             timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
             time_from = parse_date_range(fetch_time, date_format=timestamp_format)[0]
             time_to = datetime.now().strftime(timestamp_format)
-
+            args = {'time_to': time_to, 'time_from': time_from, 'filter': filter_query}
+            params = create_search_alerts_filters(args)
             try:
-                client.search_alerts(last_modified=None, severity=None, category=None, vendor=None, time_from=time_from,
-                                     time_to=time_to, filter_query=filter_query)['value']
+                client.search_alerts(params)['value']
             except Exception as e:
                 if 'Invalid ODATA query filter' in e.args[0]:
                     raise DemistoException("Wrong filter format, correct usage: {property} eq '{property-value}'"
@@ -618,7 +617,8 @@ def main():
             fetch_service_sources = params.get('fetch_service_sources', '')
             fetch_filter = params.get('fetch_filter', '')
             incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=int(fetch_limit),
-                                        filter=fetch_filter, providers=fetch_providers, fetch_service_sources=fetch_service_sources)
+                                        filter=fetch_filter, providers=fetch_providers,
+                                        fetch_service_sources=fetch_service_sources)
             demisto.incidents(incidents)
         else:
             human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
