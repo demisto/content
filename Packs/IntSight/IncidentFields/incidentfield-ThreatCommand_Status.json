@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Rapid7 ThreatCommand Alert"
+        "Rapid7 ThreatCommand Alert"
     ],
     "caseInsensitive": false,
     "cliName": "rapid7threatcommandstatus",
