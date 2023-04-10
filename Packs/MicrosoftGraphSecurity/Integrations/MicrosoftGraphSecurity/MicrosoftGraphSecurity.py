@@ -142,23 +142,30 @@ class MsGraphClient:
         return response
 
 
-def create_filter_query(filter_param: str, providers_param: str):
+def create_filter_query(filter_param: str, providers_param: str, service_sources_param: str):
     filter_query = ""
-    if providers_param:
-        providers_query = []
-        providers_lst = providers_param.split(',')
-        for provider in providers_lst:
-            providers_query.append(f"vendorInformation/provider eq '{provider}'")
-        filter_query = (" or ".join(providers_query))
-    if filter_param:  # overrides the providers query, if given
+    if filter_param:
         filter_query = filter_param
+    else:
+        if API_VER == 'API V1' and providers_param:
+            providers_query = []
+            providers_lst = providers_param.split(',')
+            for provider in providers_lst:
+                providers_query.append(f"vendorInformation/provider eq '{provider}'")
+            filter_query = (" or ".join(providers_query))
+        elif API_VER == 'API V2' and service_sources_param:
+            service_sources_query = []
+            service_sources_lst = service_sources_param.split(',')
+            for service_source in service_sources_lst:
+                service_sources_query.append(f"serviceSource eq '{service_source}'")
+            filter_query = (" or ".join(service_sources_query))
     return filter_query
 
 
-def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, filter: str, providers: str) \
+def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, filter: str, providers: str, service_sources: str) \
         -> list:
 
-    filter_query = create_filter_query(filter, providers)
+    filter_query = create_filter_query(filter, providers, service_sources)
     severity_map = {'low': 1, 'medium': 2, 'high': 3, 'unknown': 0, 'informational': 0}
 
     last_run = demisto.getLastRun()
@@ -173,7 +180,9 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
 
     # Get incidents from MS Graph Security
     demisto.debug(f'Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}. Filter: {filter_query}')
-    incidents = client.search_alerts(last_modified=None, severity=None, category=None, vendor=None, time_from=time_from,
+    args = {'time_to': time_to, 'time_from': time_from, }
+    params = create_search_alerts_filters(args)
+    incidents = client.search_alerts(time_from=time_from,
                                      time_to=time_to, filter_query=filter_query)['value']
 
     if incidents:
@@ -538,8 +547,9 @@ def test_function(client: MsGraphClient, args):
             fetch_time = params.get('fetch_time', '1 day')
             fetch_providers = params.get('fetch_providers', '')
             fetch_filter = params.get('fetch_filter', '')
+            fetch_service_sources = params.get('service_sources', '')
 
-            filter_query = create_filter_query(fetch_filter, fetch_providers)
+            filter_query = create_filter_query(fetch_filter, fetch_providers, fetch_service_sources)
             timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
             time_from = parse_date_range(fetch_time, date_format=timestamp_format)[0]
             time_to = datetime.now().strftime(timestamp_format)
@@ -605,9 +615,10 @@ def main():
             fetch_time = params.get('fetch_time', '1 day')
             fetch_limit = params.get('fetch_limit', 10) or 10
             fetch_providers = params.get('fetch_providers', '')
+            fetch_service_sources = params.get('fetch_service_sources', '')
             fetch_filter = params.get('fetch_filter', '')
             incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=int(fetch_limit),
-                                        filter=fetch_filter, providers=fetch_providers)
+                                        filter=fetch_filter, providers=fetch_providers, fetch_service_sources=fetch_service_sources)
             demisto.incidents(incidents)
         else:
             human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
