@@ -3,491 +3,540 @@ version: -1
 name: Detonate URL - JoeSecurity
 fromversion: 5.0.0
 description: |-
-  Deprecated. Use the joe-submit-url command instead.
+  This playbook uploads, detonates, and analyzes URLs for the JoeSecurity Sandbox.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 680422e2-0806-4f2d-8d20-bc7f2589238e
+    taskid: 9cbcdcb1-0cf1-42ce-889a-e6f6669d180a
     type: start
     task:
-      id: 680422e2-0806-4f2d-8d20-bc7f2589238e
+      id: 9cbcdcb1-0cf1-42ce-889a-e6f6669d180a
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - "3"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 50
+          "x": 445,
+          "y": 40
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
   "1":
     id: "1"
-    taskid: 172af11a-ff1d-48ba-8d65-3c6f625689c5
+    taskid: 796e163e-a268-481c-89cb-d75c3c93e632
+    type: title
+    task:
+      id: 796e163e-a268-481c-89cb-d75c3c93e632
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 445,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
+  "2":
+    id: "2"
+    taskid: e0fad0ed-2ecc-46c7-8699-a89fba59223a
+    type: condition
+    task:
+      id: e0fad0ed-2ecc-46c7-8699-a89fba59223a
+      version: -1
+      name: Is there a URL to detonate?
+      description: |-
+        Look for URL to detonate.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.URL
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
+  "3":
+    id: "3"
+    taskid: 7fd7bfb9-2d88-4ed9-862b-45d9d7871f49
+    type: condition
+    task:
+      id: 7fd7bfb9-2d88-4ed9-862b-45d9d7871f49
+      version: -1
+      name: Is JoeSecurity sandbox enabled?
+      description: "Returns 'yes' if integration brand is available. Otherwise returns 'no'."
+      type: condition
+      iscommand: false
+      brand: ""
+      scriptName: IsIntegrationAvailable
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "7"
+    scriptarguments:
+      brandname:
+        simple: JoeSecurityV2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 445,
+          "y": 215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    results:
+    - brandInstances
+    skipunavailable: false
+  "5":
+    id: "5"
+    taskid: 2d3a4187-fed2-4171-88e6-f12874a58da1
     type: regular
     task:
-      id: 172af11a-ff1d-48ba-8d65-3c6f625689c5
+      id: 2d3a4187-fed2-4171-88e6-f12874a58da1
       version: -1
-      name: JoeSecurity Upload URL
-      description: ""
-      script: Joe Security|||joe-analysis-submit-url
+      name: Check Joe Security Sandbox Quota
+      description: "Retrieve the account quota."
       type: regular
       iscommand: true
-      brand: Joe Security
+      brand: ""
+      script: '|||joe-get-account-quota'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
+      - "6"
+    quietmode: 0
+    skipunavailable: false
+  "6":
+    id: "6"
+    taskid: 56d80c66-cf21-4e32-8647-fa76a90199ed
+    type: condition
+    task:
+      id: 56d80c66-cf21-4e32-8647-fa76a90199ed
+      version: -1
+      name: Is there enough quota for submission?
+      description: Is there enough quota for submission?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Joe.AccountQuota.quota.daily.remaining
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
+  "7":
+    id: "7"
+    taskid: e291ee66-1238-4b59-82b1-a68226035c4d
+    type: regular
+    task:
+      id: e291ee66-1238-4b59-82b1-a68226035c4d
+      version: -1
+      name: Get Joe Sandbox Status
+      description: Check if the Joe Sandbox analysis backend is online or in maintenance mode.
+      type: regular
+      iscommand: true
+      brand: "JoeSecurityV2"
+      script: JoeSecurityV2|||joe-is-online
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
+  "8":
+    id: "8"
+    taskid: 98d18248-2819-4536-8814-1c3de4709bd6
+    type: condition
+    task:
+      id: 98d18248-2819-4536-8814-1c3de4709bd6
+      version: -1
+      name: Check if Joe Security is online
+      description: Check if Joe Security is online.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
       - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Joe.ServerStatus.Online
+          operator: isTrue
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
+  "4":
+    continueonerrortype: ""
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Joe Security - Submission Analysis
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
     scriptarguments:
+      archive_password:
+        complex:
+          root: inputs.ArchivePassword
+          transformers:
+          - operator: uniq
+      command_line_argument:
+        complex:
+          root: inputs.CommandLineArgument
+          transformers:
+          - operator: uniq
       comments:
         complex:
           root: inputs.Comments
-      internet-access:
+      document_password:
+        complex:
+          root: inputs.DocumentPassword
+          transformers:
+          - operator: uniq
+      email_notification:
+        complex:
+          root: inputs.EmailNotification
+      encrypt_with_password:
+        complex:
+          root: inputs.EncryptWithPassword
+          transformers:
+          - operator: uniq
+      fast_mode:
+        complex:
+          root: inputs.FastMode
+          transformers:
+          - operator: uniq
+      hybrid_code_analysis:
+        complex:
+          root: inputs.HybridCodeAnalysis
+          transformers:
+          - operator: uniq
+      internet_access:
         complex:
           root: inputs.InternetAccess
-      should_wait: {}
+          transformers:
+          - operator: uniq
+      report_type:
+        complex:
+          root: inputs.ReportFileType
+          transformers:
+          - operator: uniq
+      ssl_inspection:
+        complex:
+          root: inputs.SSLInspection
+      start_as_normal_user:
+        complex:
+          root: inputs.StartAsNormalUser
       systems:
         complex:
           root: inputs.Systems
+          transformers:
+          - operator: uniq
+      tags:
+        complex:
+          root: inputs.Tags
+          transformers:
+          - operator: uniq
+      timeout:
+        complex:
+          root: inputs.Timeout
       url:
         complex:
           root: inputs.URL
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: dba7628f-dc23-4f39-8024-fe36dcd71e94
-    type: playbook
+    skipunavailable: false
     task:
-      id: dba7628f-dc23-4f39-8024-fe36dcd71e94
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      Ids:
-        complex:
-          root: Joe.Analysis.ID
-      Interval:
-        complex:
-          root: inputs.Interval
-      PollingCommandArgName:
-        simple: webid
-      PollingCommandName:
-        simple: joe-analysis-info
-      Timeout:
-        complex:
-          root: inputs.Timeout
-      dt:
-        simple: Joe.Analysis(val.Status != 'finished').ID
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 2e8a7348-8be0-44ac-821e-66db69ba0d74
-    type: regular
-    task:
-      id: 2e8a7348-8be0-44ac-821e-66db69ba0d74
-      version: -1
-      name: JoeSecurity Get Report
-      description: ""
-      script: Joe Security|||joe-download-report
-      type: regular
+      description: Submit an URL for sandbox analysis.
+      id: b08b4eaa-129d-4d7a-85c9-f9319e70a0b5
       iscommand: true
-      brand: Joe Security
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      type:
-        complex:
-          root: inputs.ReportFileType
-      webid:
-        complex:
-          root: JoeAnalysis
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: JoeAnalysis.Status
-                iscontext: true
-              right:
-                value:
-                  simple: finished
-          accessor: ID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 8424c0cf-cc75-47b6-81f8-b4b382cb2a94
-    type: title
-    task:
-      id: 8424c0cf-cc75-47b6-81f8-b4b382cb2a94
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: c02313e8-5f5f-4612-88dd-ff62f62ba263
-    type: condition
-    task:
-      id: c02313e8-5f5f-4612-88dd-ff62f62ba263
-      version: -1
-      name: Is there a URL to detonate?
-      description: Look for URLs to detonate
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "1"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.URL
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 250f4b2f-28ad-4d9c-8db7-01e64d60fade
-    type: condition
-    task:
-      id: 250f4b2f-28ad-4d9c-8db7-01e64d60fade
-      version: -1
-      name: Is JoeSecurity sandbox enabled?
-      description: Check if integration instance is enabled
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Joe Security
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 3f645918-1a91-4ba5-8a95-5d60fb441e43
-    type: regular
-    task:
-      id: 3f645918-1a91-4ba5-8a95-5d60fb441e43
-      version: -1
-      name: JoeSecurity Get Info
-      description: Get Info
-      script: Joe Security|||joe-analysis-info
+      name: 'Detonate URL - Joe Security Sandbox '
+      script: '|||joe-submit-url'
       type: regular
-      iscommand: true
-      brand: Joe Security
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      webid:
-        complex:
-          root: Joe
-          accessor: Analysis.ID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 9c83e0a7-8cce-4a67-8320-90f35a40d2ef
-    type: regular
-    task:
-      id: 9c83e0a7-8cce-4a67-8320-90f35a40d2ef
       version: -1
-      name: Set Context
-      description: reduce context level for future filters
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      append: {}
-      key:
-        simple: JoeAnalysis
-      value:
-        complex:
-          root: Joe
-          accessor: Analysis
-    separatecontext: false
+    taskid: b08b4eaa-129d-4d7a-85c9-f9319e70a0b5
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 750,
+          "y": 1330
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
-        "width": 605,
-        "x": 50,
-        "y": 50
+        "height": 1525,
+        "width": 685,
+        "x": 445,
+        "y": 40
       }
     }
   }
 inputs:
 - key: URL
-  value:
-    complex:
-      root: URL
-      accessor: Data
+  value: {}
   required: false
-  description: URL to detonate.
+  description: The details of the URL to detonate
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
-  description: Duration for executing the pooling (in minutes)
+  description: Duration for executing the pooling (in minutes).
+  playbookInputQuery:
 - key: Timeout
   value:
-    simple: "15"
+    simple: "1200"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook (in minutes)
+  description: The duration after which to stop pooling and to resume the playbook (in minutes).
+  playbookInputQuery:
 - key: Systems
   value: {}
   required: false
-  description: 'Operating system to run the analysis on (comma-separated). Supported values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+  description: 'Comma-separated list of operating systems to run the analysis on. Supported values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+  playbookInputQuery:
 - key: Comments
   value: {}
   required: false
   description: Comments for the analysis.
+  playbookInputQuery:
 - key: InternetAccess
   value:
     simple: "True"
   required: false
   description: Enable internet access (boolean). True= internet access (default), False= no internet access.
+  playbookInputQuery:
 - key: ReportFileType
-  value:
-    simple: html
+  value: {}
   required: false
   description: 'The resource type to download. Default is html. Supported values are: html, lighthtml, executive, pdf, classhtml, xml, lightxml, classxml, clusterxml, irxml, json, jsonfixed, lightjson, lightjsonfixed, irjson, irjsonfixed, shoots (screenshots), openioc, maec, misp, graphreports, memstrings, binstrings, sample, cookbook, bins (dropped files), unpackpe (unpacked PE files), unpack, ida, pcap, pcapslim, memdumps, yara'
+  playbookInputQuery:
+- description: Uploads a cookbook together with the sample. Needs to be a file-like object or a tuple in the format (filename, file-like object).
+  key: Cookbook
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary.
+  key: FullDisplay
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "True"
+- description: A comma-separated list of tags to be added to the analysis.
+  key: Tags
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Whether to enable SSL inspection.
+  key: SSLInspection
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
+- description: Whether to enable hybrid code analysis.
+  key: HybridCodeAnalysis
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "True"
+- description: Whether to enable fast mode. Focuses on fast analysis and detection versus deep forensic analysis.
+  key: FastMode
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "false"
+- description: A command line argument is to be passed to the sample.
+  key: CommandLineArgument
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Whether to enable live interaction.
+  key: LiveInteraction
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
+- description: The document password.
+  key: DocumentPassword
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: An archive password.
+  key: ArchivePassword
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Send an email notification once the analysis completes.
+  key: EmailNotification
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
+- description: Whether to start the analysis as a normal user.
+  key: StartAsNormalUser
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
+- description: The password to encrypt the analysis with.
+  key: EncryptWithPassword
+  playbookInputQuery:
+  required: false
+  value: {}
 outputs:
-- contextPath: DBotScore.Vendor
-  description: The vendor used to calculate the score.
-  type: string
-- contextPath: Joe.Analysis.ID
-  description: Web ID
-  type: string
-- contextPath: Joe.Analysis.Status
-  description: Analysis Status
-  type: string
-- contextPath: Joe.Analysis.Comments
-  description: Analysis Comments
-  type: string
-- contextPath: Joe.Analysis.Time
-  description: Submitted Time
-  type: date
-- contextPath: Joe.Analysis.Runs
-  description: Sub-Analysis Information
-- contextPath: Joe.Analysis.Result
-  description: Analysis Results
-  type: string
-- contextPath: Joe.Analysis.Errors
-  description: Raised errors during sampling
-- contextPath: Joe.Analysis.Systems
-  description: Analysis OS
-- contextPath: Joe.Analysis.MD5
-  description: MD5 of analysis sample
-  type: string
-- contextPath: Joe.Analysis.SHA1
-  description: SHA1 of analysis sample
-  type: string
-- contextPath: Joe.Analysis.SHA256
-  description: SHA256 of analysis sample
-  type: string
-- contextPath: Joe.Analysis.SampleName
-  description: Sample Data, could be a file name or URL
-  type: string
-- contextPath: DBotScore.Indicator
-  description: The name of the sample file or URL
-  type: string
-- contextPath: DBotScore.Type
-  description: '''url'' for url samples, otherwise ''file'''
-  type: string
-- contextPath: DBotScore.Score
-  description: The actual score.
-  type: number
-- contextPath: DBotScore.Malicious.Vendor
-  description: The vendor used to calculate the score.
-  type: string
-- contextPath: DBotScore.Malicious.Detections
-  description: The sub analysis detection statuses
-  type: string
-- contextPath: DBotScore.Malicious.SHA1
-  description: The SHA1 of the file
-  type: string
-- contextPath: InfoFile.Name
-  description: FileName
-  type: string
-- contextPath: InfoFile.EntryID
-  description: The EntryID of the sample
-  type: string
-- contextPath: InfoFile.Size
-  description: File Size
-  type: number
-- contextPath: InfoFile.Type
-  description: File type e.g. "PE"
-  type: string
-- contextPath: InfoFile.Info
-  description: Basic information of the file
-  type: string
-- contextPath: File.Extension
-  description: File Extension
-  type: string
-- contextPath: InfoFile
-  description: Report file object
-  type: unknown
-- contextPath: File
-  description: File object
+- contextPath: DBotScore
+  description: The DBot score of the suspicious URL
   type: unknown
 - contextPath: Joe.Analysis
-  description: Joe analysis object
+  description: The sandbox analysis details
   type: unknown
-- contextPath: DBotScore
-  description: DBotScore object
-  type: unknown
-- contextPath: DBotScore.Malicious
-  description: DBotScore malicious object
+- contextPath: Joe.Submission.most_relevant_analysis
+  description: The URL verdict of the sandbox analysis
   type: unknown
 tests:
-- No test
-deprecated: true
+- JoeSecurityTestDetonation
