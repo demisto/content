@@ -1887,9 +1887,7 @@ async def test_handle_dm_create_with_error(mocker):
     assert demisto_user == {'id': 'demisto_id'}
     assert incident_string == 'open 123 incident'
     assert message_args == {'channel': 'ey',
-                            'icon_url': 'https://avatars.slack-edge.com/2020-05-24/1142885630851_5529c7f034d9b96ec39c_512.png',
-                            'text': 'Failed creating incidents: omg',
-                            'username': 'Cortex XSOAR'}
+                            'text': 'Failed creating incidents: omg'}
 
 
 @pytest.mark.asyncio
@@ -1946,8 +1944,7 @@ async def test_translate_create(mocker):
 
     assert SlackV3.create_incidents.call_count == 4
     assert json_args[0] == expected_res
-    assert name_args == [{'name': 'eyy', 'type': 'Unclassified',
-                          'rawJSON': raw_json_prefix + '"create incident name=eyy"}'}]
+    assert name_args == [{'name': 'eyy', 'rawJSON': raw_json_prefix + '"create incident name=eyy"}'}]
     assert name_type_args == [{'name': 'eyy', 'type': 'Access',
                                'rawJSON': raw_json_prefix + '"create incident name= eyy type= Access"}'}]
     assert type_name_args == [{'name': 'eyy', 'type': 'Access',
