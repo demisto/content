@@ -36,12 +36,14 @@ jobs:
             ["Tests"]="conf.json"
             ["Utils"]=""
           )
+          echo ${{ steps.changed-files.outputs.all_changed_files }}
+          changed_files=${{ steps.changed-files.outputs.all_changed_files }}
 
           # Check if any protected directories have been modified
           for dir in "${!protected_directories[@]}"; do
             exception="${protected_directories[$dir]}"
-            if echo "${{ steps.changed-files.outputs.all_changed_files }}" | grep -q "^${dir}/" && \
-               ! ( [ -z "$exception" ] || echo "${{ steps.changed-files.outputs.all_changed_files }}" | grep -q "^${dir}/${exception}$" ); then
+            if echo "$changed_files" | grep -qE "^${dir}(/.*)?" && \
+               ! ( [ -z "$exception" ] || echo "$changed_files" | grep -qE "^${dir}/${exception}(/.*)?$" ); then
               echo "Error: Changes made to protected directory: ${dir}, excluding ${dir}/${exception}"
               exit 1
             fi
