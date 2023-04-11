@@ -78,11 +78,17 @@ if (email) {
     addresses = addresses.concat(email.split(','));
 }
 
+var renderBody = args.renderBody;
+if (!renderBody) {
+    renderBody = false;
+}
+
 if (addresses.length > 0) {
     // prepare args and run send-mail
     emailArgs = args;
     emailArgs.to = addresses.join(',');
     emailArgs.subject = subject;
+    message += " rb:" + renderBody.toString();
     if (bodyType === 'html') {
         emailArgs.htmlBody = message;
     } else {
@@ -102,6 +108,7 @@ if (addresses.length > 0) {
     }
 
     emailArgs.bodyType = bodyType;
+    emailArgs.renderBody = renderBody;
 
     return executeCommand('send-mail', emailArgs);
 

@@ -2129,66 +2129,58 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
 
 def send_mail_command():
     args = demisto.args()
-    emailto = argToList(args.get('to'))
-    emailfrom = args.get('from')
+    return mail_command(args)
+
+
+def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
+    email_to = argToList(args.get('to'))
+    email_from = args.get('from')
     body = args.get('body')
-    subject = args.get('subject')
+    subject = f"{subject_prefix}{args.get('subject')}"
     entry_ids = argToList(args.get('attachIDs'))
     cc = argToList(args.get('cc'))
     bcc = argToList(args.get('bcc'))
-    htmlBody = args.get('htmlBody')
-    replyTo = args.get('replyTo')
+    html_body = args.get('htmlBody')
+    reply_to = args.get('replyTo')
     file_names = argToList(args.get('attachNames'))
-    attchCID = argToList(args.get('attachCIDs'))
-    transientFile = argToList(args.get('transientFile'))
-    transientFileContent = argToList(args.get('transientFileContent'))
-    transientFileCID = argToList(args.get('transientFileCID'))
-    manualAttachObj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
+    attach_cids = argToList(args.get('attachCIDs'))
+    transient_file = argToList(args.get('transientFile'))
+    transient_file_content = argToList(args.get('transientFileContent'))
+    transient_file_cid = argToList(args.get('transientFileCID'))
+    manual_attach_obj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
     additional_headers = argToList(args.get('additionalHeader'))
     template_param = args.get('templateParams')
-    body_type = args.get('bodyType')
+    render_body = argToBoolean(args.get('renderBody', False))
+    body_type = args.get('bodyType', 'Text').lower()
 
-    if emailfrom is None:
-        emailfrom = ADMIN_EMAIL
+    if email_from is None:
+        email_from = ADMIN_EMAIL
 
-    result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
-                       replyTo, file_names, attchCID, transientFile, transientFileContent,
-                       transientFileCID, manualAttachObj, additional_headers, template_param)
-    rendering_body = htmlBody if body_type == "html" else body
-    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, rendering_body, subject)
+    result = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, file_names,
+                       attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
+                       additional_headers, template_param, in_reply_to, references)
+    rendering_body = html_body if body_type == "html" else body
+
+    send_mail_result = sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, rendering_body,
+                                          subject)
+    if render_body:
+        html_result = CommandResults(
+            entry_type=EntryType.NOTE,
+            content_format=EntryFormat.HTML,
+            raw_response=html_body,
+        )
+
+        return [send_mail_result, html_result]
+
+    return send_mail_result
 
 
 def reply_mail_command():
     args = demisto.args()
-    emailto = argToList(args.get('to'))
-    emailfrom = args.get('from')
-    inReplyTo = argToList(args.get('inReplyTo'))
+    in_reply_to = argToList(args.get('in_reply_to'))
     references = argToList(args.get('references'))
-    body = args.get('body')
-    subject = 'Re: ' + args.get('subject')
-    entry_ids = argToList(args.get('attachIDs'))
-    cc = argToList(args.get('cc'))
-    bcc = argToList(args.get('bcc'))
-    htmlBody = args.get('htmlBody')
-    replyTo = args.get('replyTo')
-    file_names = argToList(args.get('attachNames'))
-    attchCID = argToList(args.get('attachCIDs'))
-    transientFile = argToList(args.get('transientFile'))
-    transientFileContent = argToList(args.get('transientFileContent'))
-    transientFileCID = argToList(args.get('transientFileCID'))
-    manualAttachObj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
-    additional_headers = argToList(args.get('additionalHeader'))
-    template_param = args.get('templateParams')
-    body_type = args.get('bodyType')
 
-    if emailfrom is None:
-        emailfrom = ADMIN_EMAIL
-
-    result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
-                       replyTo, file_names, attchCID, transientFile, transientFileContent,
-                       transientFileCID, manualAttachObj, additional_headers, template_param, inReplyTo, references)
-    rendering_body = htmlBody if body_type == "html" else body
-    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, rendering_body, subject)
+    return mail_command(args, 'Re: ', in_reply_to, references)
 
 
 def forwarding_address_add(user_id: str, forwarding_email: str) -> tuple[dict, bool, Optional[dict]]:

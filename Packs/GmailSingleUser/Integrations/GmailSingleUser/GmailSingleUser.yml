@@ -235,6 +235,23 @@ script:
       name: templateParams
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Text
+      description: Whether message response body type is text or HTML.
+      isArray: false
+      name: bodyType
+      predefined:
+      - HTML
+      - Text
+      required: false
+      secret: false
+    - default: false
+      description: Indicates whether to render the email body
+      isArray: false
+      name: renderBody
+      required: false
+      secret: false
     deprecated: false
     description: Replies to a mail using Gmail.
     execution: false
@@ -383,6 +400,23 @@ script:
                the value or a context key to retrieve the value.'
       isArray: false
       name: templateParams
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Text
+      description: Whether message response body type is text or HTML.
+      isArray: false
+      name: bodyType
+      predefined:
+      - HTML
+      - Text
+      required: false
+      secret: false
+    - default: false
+      description: Indicates whether to render the email body
+      isArray: false
+      name: renderBody
       required: false
       secret: false
     deprecated: false
