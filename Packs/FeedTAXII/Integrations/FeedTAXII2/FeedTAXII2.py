@@ -157,14 +157,20 @@ def get_indicators_command(
 
     else:
         indicators = client.build_iterator(limit=limit, added_after=added_after)
+    relationships_list: list = []
+    parsed_relationships: str = ""
+    if indicators and indicators[-1].get('value', ) == "$$DummyIndicator$$":
+        relationships_list = indicators[-1].get('relationships', )
+        parsed_relationships = f"\n\n\nRelations ships:\n{tableToMarkdown('', relationships_list)}"
+        md = f"Found {len(indicators) - 1} results:\n" \
+             f"{tableToMarkdown('', indicators[:-1], ['value', 'type'])}{parsed_relationships}"
+    else:
+        md = f"Found {len(indicators)} results:\n{tableToMarkdown('', indicators, ['value', 'type'])}{parsed_relationships}"
 
     if raw:
         demisto.results({"indicators": [x.get("rawJSON") for x in indicators]})
         return
 
-    md = f"Found {len(indicators)} results:\n" + tableToMarkdown(
-        "", indicators, ["value", "type"]
-    )
     if indicators:
         return CommandResults(
             outputs_prefix=CONTEXT_PREFIX + ".Indicators",
@@ -204,7 +210,7 @@ def reset_fetch_command(client):
     )
 
 
-def main():
+def main():  # pragma: no cover
     objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
                      'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure']
     params = demisto.params()

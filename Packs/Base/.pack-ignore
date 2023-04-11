@@ -46,6 +46,15 @@ ignore=SC101
 [file:SanePdfReport.yml]
 ignore=SC101
 
+[file:DeleteIndicatorRelationships.yml]
+ignore=BA124
+
+[file:DBotShowClusteringModelInfo.yml]
+ignore=BA124
+
+[file:DBotTrainClustering.yml]
+ignore=BA124
+
 [known_words]
 createindicatorrelationship
 commonserverpython
@@ -65,13 +74,5 @@ ssl
 appendcontext
 refang
 indicatorssearcher
-
-[file:DeleteIndicatorRelationships.yml]
-ignore=BA124
-
-[file:DBotShowClusteringModelInfo.yml]
-ignore=BA124
-
-[file:DBotTrainClustering.yml]
-ignore=BA124
-
+FeedIndicatorType
+str
