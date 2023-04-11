@@ -1970,14 +1970,13 @@ def test_gcp_iam_organization_iam_policy_remove_command(client):
     assert result.readable_output == f'Organization {organization_name} IAM policies updated successfully.'
 
 
-def test_gcp_iam_tagbindings_get_command(client):
+def test_gcp_iam_tagbindings_list_command(client):
     """
-    TODO UPDATE
-    Scenario: list projects.
+    Scenario: list tagbindings.
     Given:
      - User has provided valid credentials.
     When:
-     - gcp-iam-project-list called.
+     - gcp-iam-tagbindings-list command called.
     Then:
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
