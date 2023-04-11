@@ -63,6 +63,28 @@ script:
     description: 'Lists project under the specified parent, or retrieves a specific project''s information. One of the following arguments must be provided: "parent" or "project_name".'
     execution: false
     name: gcp-iam-projects-get
+    outputs:
+    - contextPath: GCPIAM.Project.createTime
+      description: Project creation time.
+      type: Date
+    - contextPath: GCPIAM.Project.displayName
+      description: Project display name.
+      type: String
+    - contextPath: GCPIAM.Project.name
+      description: The unique resource name of the project.
+      type: String
+    - contextPath: GCPIAM.Project.parent
+      description: The project parent resource.
+      type: String
+    - contextPath: GCPIAM.Project.projectId
+      description: The unique, user-assigned ID of the project.
+      type: String
+    - contextPath: GCPIAM.Project.state
+      description: The project lifecycle state.
+      type: String
+    - contextPath: GCPIAM.Project.updateTime
+      description: The most recent time the project was modified.
+      type: Date
   - arguments:
     - default: false
       description: The name of the resource to list tag bindings under. For example, setting this field to 'folders/1234' would list all tags directly applied to that folder.
