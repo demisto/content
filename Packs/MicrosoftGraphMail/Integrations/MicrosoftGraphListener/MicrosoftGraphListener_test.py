@@ -905,7 +905,7 @@ class TestCommandsWithLargeAttachments:
             )
             upload_query_mock = mocker.patch.object(requests, 'put', side_effect=self.upload_response_side_effect)
 
-            human_readable, ec = client.send_email_command(**args)
+            client.send_email_command(**args)
 
             # attachment 1 is an attachment bigger than 3MB
             # means the attachment should be created in the upload session

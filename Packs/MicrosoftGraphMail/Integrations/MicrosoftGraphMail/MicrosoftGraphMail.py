@@ -1797,14 +1797,13 @@ def prepare_args(command, args):
             email_body = args.get('htmlBody')
         else:
             email_body = args.get('body', '')
-        return {
+        processed_args = {
             'to_recipients': argToList(args.get('to')),
             'cc_recipients': argToList(args.get('cc')),
             'bcc_recipients': argToList(args.get('bcc')),
             'reply_to': argToList(args.get('replyTo')),
             'subject': args.get('subject', ''),
             'body': email_body,
-            'renderBody': argToBoolean(args.get('renderBody') or False),
             'body_type': args.get('bodyType', 'html'),
             'flag': args.get('flag', 'notFlagged'),
             'importance': args.get('importance', 'Normal'),
@@ -1814,6 +1813,9 @@ def prepare_args(command, args):
             'attach_cids': argToList((args.get('attachCIDs'))),
             'manual_attachments': args.get('manualAttachObj', [])
         }
+        if command == 'send-mail':
+            processed_args['renderBody'] = argToBoolean(args.get('renderBody') or False)
+        return processed_args
 
     elif command == 'reply-to':
         return {
@@ -1907,6 +1909,7 @@ def send_email_command(client: MsGraphClient, args):
     2) if there aren't any attachments larger than 3MB, just send the email as usual.
     """
     prepared_args = prepare_args('send-mail', args)
+    render_body = prepared_args.pop('renderBody', False)
     message_content = MsGraphClient.build_message(**prepared_args)
     email = args.get('from', client._mailbox_to_fetch)
 
@@ -1936,7 +1939,7 @@ def send_email_command(client: MsGraphClient, args):
         CommandResults(readable_output=tableToMarkdown('Email was sent successfully.', message_content),
                        outputs={CONTEXT_SENT_EMAIL_PATH: message_content})
     ]
-    if prepared_args['renderBody']:
+    if render_body:
         results.append(CommandResults(
             entry_type=EntryType.NOTE,
             content_format=EntryFormat.HTML,
