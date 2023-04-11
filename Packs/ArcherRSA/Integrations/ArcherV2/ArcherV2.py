@@ -334,7 +334,6 @@ class Client(BaseClient):
             session_id = self.create_session()
         else:
             session_id = context_session_id
-        demisto.debug(f'session: {session_id[:5]}...')
         headers['Authorization'] = f'Archer session-id={session_id}'
         return headers
 
@@ -410,7 +409,6 @@ class Client(BaseClient):
             token = self.generate_token()
         else:
             token = context_token
-        demisto.debug(f'token is {token[:4]}...')
         body = request_body_builder_function(token, **kwargs)
         return body
 
