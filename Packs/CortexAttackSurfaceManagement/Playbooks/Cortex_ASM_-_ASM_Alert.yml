@@ -138,7 +138,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "101"
+      - "120"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2210,48 +2210,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "101":
-    id: "101"
-    taskid: 2bdb4a9e-2e38-4560-80de-52908d6873e6
-    type: playbook
-    task:
-      id: 2bdb4a9e-2e38-4560-80de-52908d6873e6
-      version: -1
-      name: Cortex ASM - Remediation Path Rules
-      description: This playbook returns "RemediationAction" options based return from Remediation Path Rules API, or defaults to data collection task options from "Cortex ADM - Decision" subplaybook.
-      playbookName: Cortex ASM - Remediation Path Rules
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "102"
-    scriptarguments:
-      ExternallyDetectedProviders:
-        complex:
-          root: ASM.ExternalService
-          accessor: externally_detected_providers
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "102":
     id: "102"
     taskid: 4cfe6be2-06e2-4f81-82b4-a8024bf71a2f
@@ -2954,10 +2912,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "117":
     id: "117"
-    taskid: 46a8e681-4479-415f-8e31-df37d4aada6c
+    taskid: ecd767d9-f7a7-443b-83bb-b6363e3b5c83
     type: regular
     task:
-      id: 46a8e681-4479-415f-8e31-df37d4aada6c
+      id: ecd767d9-f7a7-443b-83bb-b6363e3b5c83
       version: -1
       name: Send remediation notification email to service owners
       description: Send an email to service owners about the status of automated remediation action taken.
@@ -2970,23 +2928,11 @@ tasks:
       - "11"
     scriptarguments:
       htmlBody:
-        simple: |-
-          <!DOCTYPE html>
-          <html lang="en">
-          <body>
-              <p>
-                  Infosec identified a security risk on an external service potentially owned by your
-                  team:<br><b>${alert.name}</b>
-              </p>
-              <p>
-                  <b>Alert Details:</b> ${alert.details}<br>
-                  <b>Action Taken:</b> ${alert.asmremediation.[0].Action}<br>
-                  <b>Action Outcome:</b> ${alert.asmremediation.[0].Outcome}<br>
-              </p>
-          </body>
-          </html>
+        complex:
+          root: inputs.RemediationNotificationHTMLBody
       subject:
-        simple: A new security risk was addressed on an external service owned by your team
+        complex:
+          root: inputs.RemediationNotificationSubject
       to:
         complex:
           root: alert.asmserviceowner
@@ -3048,6 +2994,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "120":
+    id: "120"
+    taskid: 03f0b59b-af2b-4ede-8bda-aa7857c79c82
+    type: playbook
+    task:
+      id: 03f0b59b-af2b-4ede-8bda-aa7857c79c82
+      version: -1
+      name: Cortex ASM - Remediation Path Rules
+      playbookName: Cortex ASM - Remediation Path Rules
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      BypassDevCheck:
+        complex:
+          root: inputs.BypassDevCheck
+      ExternallyDetectedProviders:
+        complex:
+          root: ASM.ExternalService
+          accessor: externally_detected_providers
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -3086,6 +3077,42 @@ inputs:
 
   required: true
   description: Body of the notification (email or ticket) sent to potential service owner.
+  playbookInputQuery:
+- key: RemediationNotificationSubject
+  value:
+    simple: |-
+      A new security risk was addressed on an external service owned by your team
+  required: true
+  description: Subject of the notification (email or ticket) sent to service owner after remediation.
+  playbookInputQuery:
+- key: RemediationNotificationHTMLBody
+  value:
+    simple: |-
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+          <p>
+              Infosec identified a security risk on an external service potentially owned by your
+              team:<br><b>${alert.name}</b>
+          </p>
+          <p>
+              <b>Alert Details:</b> ${alert.details}<br>
+              <b>Action Taken:</b> ${alert.asmremediation.[0].Action}<br>
+              <b>Action Outcome:</b> ${alert.asmremediation.[0].Outcome}<br>
+          </p>
+      </body>
+      </html>
+  required: true
+  description: 'Body of the notification (email or ticket) sent to service owner after remediation.'
+  playbookInputQuery:
+- key: BypassDevCheck
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Determine to bypass the Dev Check in automated remediation criteria: https://docs-cortex.paloaltonetworks.com/r/Cortex-XPANSE/Cortex-Xpanse-Expander-User-Guide/Automated-Remediation-Capabilities-Matrix
+
+    Set to "True" if you want to bypass.  Default is "False".
   playbookInputQuery:
 outputs: []
 tests:

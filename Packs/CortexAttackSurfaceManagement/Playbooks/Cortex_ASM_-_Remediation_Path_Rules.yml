@@ -220,10 +220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: feea4021-9d6c-4b15-8234-e83994ba806c
+    taskid: 09f21bd9-e1a4-4379-85a2-e94538403b85
     type: condition
     task:
-      id: feea4021-9d6c-4b15-8234-e83994ba806c
+      id: 09f21bd9-e1a4-4379-85a2-e94538403b85
       version: -1
       name: Meets automated remediation requirements?
       description: Determines if the alert meets the criteria for automated remediation.
@@ -282,6 +282,15 @@ tasks:
                 accessor: asmdevcheck
             iscontext: true
           ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BypassDevCheck
+            iscontext: true
+          right:
+            value:
+              simple: "True"
     - label: Unclaimed S3 Bucket
       condition:
       - - operator: inList
@@ -1074,6 +1083,15 @@ inputs:
   required: false
   description: Providers of external service.
   playbookInputQuery:
+- key: BypassDevCheck
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Determine to bypass the Dev Check in automated remediation criteria: https://docs-cortex.paloaltonetworks.com/r/Cortex-XPANSE/Cortex-Xpanse-Expander-User-Guide/Automated-Remediation-Capabilities-Matrix
+
+    Set to "True" if you want to bypass.  "
+  playbookInputQuery:
 outputs:
 - contextPath: RemediationAction
   description: Remediation action to be taken.
@@ -1083,4 +1101,4 @@ outputs:
   type: string
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.8.0
