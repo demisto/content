@@ -1804,6 +1804,7 @@ def prepare_args(command, args):
             'reply_to': argToList(args.get('replyTo')),
             'subject': args.get('subject', ''),
             'body': email_body,
+            'renderBody': argToBoolean(args.get('renderBody') or False),
             'body_type': args.get('bodyType', 'html'),
             'flag': args.get('flag', 'notFlagged'),
             'importance': args.get('importance', 'Normal'),
@@ -1931,10 +1932,17 @@ def send_email_command(client: MsGraphClient, args):
     message_content['replyTo'] = reply_to_recipients
 
     message_content = assign_params(**message_content)
-    human_readable = tableToMarkdown('Email was sent successfully.', message_content)
-    ec = {CONTEXT_SENT_EMAIL_PATH: message_content}
-
-    return_outputs(human_readable, ec)
+    results = [
+        CommandResults(readable_output=tableToMarkdown('Email was sent successfully.', message_content),
+                       outputs={CONTEXT_SENT_EMAIL_PATH: message_content})
+    ]
+    if prepared_args['renderBody']:
+        results.append(CommandResults(
+            entry_type=EntryType.NOTE,
+            content_format=EntryFormat.HTML,
+            raw_response=prepared_args['body'],
+        ))
+    return results
 
 
 def prepare_outputs_for_reply_mail_command(reply, email_to, message_id):

@@ -934,6 +934,12 @@ script:
       description: The contents (body) of the email to be sent.
     - name: htmlBody
       description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
+    - name: renderBody
+      default: false
+      description: Indicates whether to render the email body
+      isArray: false
+      required: false
+      secret: false
     - name: attachIDs
       description: 'A comma-separated list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
       isArray: true

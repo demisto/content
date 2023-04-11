@@ -1151,6 +1151,12 @@ script:
       name: htmlBody
       required: false
       secret: false
+    - name: renderBody
+      default: false
+      description: Indicates whether to render the email body
+      isArray: false
+      required: false
+      secret: false
     - default: false
       description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
       isArray: true

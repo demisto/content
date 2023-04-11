@@ -377,6 +377,12 @@ script:
       predefined:
       - text
       - HTML
+    - name: renderBody
+      default: false
+      description: Indicates whether to render the email body
+      isArray: false
+      required: false
+      secret: false
     - auto: PREDEFINED
       defaultValue: notFlagged
       description: 'The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged".'

@@ -139,6 +139,7 @@ def prepare_args(command, args):
             'subject': args.get('subject', ''),
             'body': email_body,
             'body_type': args.get('body_type', 'html'),
+            'renderBody': argToBoolean(args.get('renderBody') or False),
             'flag': args.get('flag', 'notFlagged'),
             'importance': args.get('importance', 'Low'),
             'internet_message_headers': argToList(args.get('headers')),
@@ -936,7 +937,7 @@ class MsGraphClient:
 
         return human_readable, ec, created_draft
 
-    def send_email_command(self, **kwargs) -> tuple[str, dict]:
+    def send_email_command(self, **kwargs) -> List[CommandResults]:
         """
         Sends email from user's mailbox, the sent message will appear in Sent Items folder.
         Sending email process:
@@ -962,9 +963,17 @@ class MsGraphClient:
         message_content.pop('attachments', None)
         message_content.pop('internet_message_headers', None)
         human_readable = tableToMarkdown('Email was sent successfully.', message_content)
-        ec = {self.CONTEXT_SENT_EMAIL_PATH: message_content}
 
-        return human_readable, ec
+        results = [
+            CommandResults(readable_output=human_readable, outputs={self.CONTEXT_SENT_EMAIL_PATH: message_content})
+        ]
+        if kwargs.get('renderBody'):
+            results.append(CommandResults(
+                entry_type=EntryType.NOTE,
+                content_format=EntryFormat.HTML,
+                raw_response=kwargs['body'],
+            ))
+        return results
 
     def send_mail(self, email, json_data):
         """
@@ -1803,8 +1812,7 @@ def main():     # pragma: no cover
             human_readable = client.send_draft_command(**args)  # pylint: disable=E1123
             return_outputs(human_readable)
         elif command == 'send-mail':
-            human_readable, ec = client.send_email_command(**args)
-            return_outputs(human_readable, ec)
+            return_results(client.send_email_command(**args))
         elif command == 'reply-mail':
             return_results(client.reply_mail_command(args))
         elif command == 'msgraph-mail-list-emails':

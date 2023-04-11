@@ -2199,7 +2199,7 @@ def get_none_empty_addresses(addresses_ls):
 
 def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None, from_mailbox=None,
-               raw_message=None, from_address=None):
+               raw_message=None, from_address=None, renderBody=False):
     if not manualAttachObj:
         manualAttachObj = []
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
@@ -2221,13 +2221,21 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
         'attachments': attachments_names
     }
 
-    return {
+    results = [{
         'Type': entryTypes['note'],
         'Contents': result_object,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Sent email', result_object),
-    }
+    }]
+    if renderBody:
+        results.append(CommandResults(
+            entry_type=EntryType.NOTE,
+            content_format=EntryFormat.HTML,
+            raw_response=htmlBody,
+        ))
+
+    return results
 
 
 def reply_email(to, inReplyTo, body="", subject="", bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",
