@@ -13,6 +13,7 @@ This is an empty structure file. Check an example at;
 https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
 
 """
+import json
 from datetime import datetime
 import typing
 import urllib.parse
@@ -38,6 +39,18 @@ XSOAR_TO_ASM_STATUS_MAP = {
     1: "open_in_progress",
     2: "closed",
     3: "closed"
+}
+
+ASM_TO_XSOAR_CLOSE_REASON_MAP = {
+    "closed_false_positive": "False Positive",
+    "closed_resolved": "Resolved",
+    "closed_duplicate": "Duplicate",
+    "closed_out_of_scope": "Other",
+    "closed_risk_accepted": "Other",
+    "closed_no_repro": "Other",
+    "closed_tracked_externally": "Other",
+    "closed": "Other",
+    "closed_benign": "Other"
 }
 
 ''' CLIENT CLASS '''
@@ -117,7 +130,7 @@ class Client(BaseClient):
         endpoint = 'user_collections'
 
         response = self.make_request('GET', endpoint,
-                                     headers={'PROJECT_ID': project_id})
+                                     headers={'PROJECT_ID': str(project_id)})
 
         if not response.get('success'):
             raise DemistoException('The ASM API was unable to return'
@@ -146,7 +159,7 @@ class Client(BaseClient):
 
         while True:
             response = self.make_request('GET', endpoint, params=params,
-                                         headers={'PROJECT_ID': self.project_id})
+                                         headers={'PROJECT_ID': str(self.project_id)})
 
             if not response.get('success'):
                 raise RuntimeError('Failed to retrieve issues from ASM')
@@ -163,7 +176,7 @@ class Client(BaseClient):
         endpoint = f'issues/{issue_id}'
 
         response = self.make_request('GET', endpoint,
-                                     headers={'PROJECT_ID': self.project_id})
+                                     headers={'PROJECT_ID': str(self.project_id)})
 
         if not response.get('success'):
             raise DemistoException('The ASM API was unable to return details for'
@@ -171,13 +184,24 @@ class Client(BaseClient):
 
         return response['result']
 
+    def set_issue_status(self,
+                         issue_id: str,
+                         issue_status: str):
+        endpoint = f'issues/{issue_id}/status'
+        response = self.make_request('POST', endpoint,
+                                     headers={'PROJECT_ID': str(self.project_id)},
+                                     json={'status': issue_status})
+
+        demisto.debug('issue statu set')
+        demisto.debug(json.dumps(response))
+
     def get_notes(self,
                   resource_type: str,
                   resource_id: str) -> dict:
         endpoint = f'notes/{resource_type}/{resource_id}'
 
         response = self.make_request('GET', endpoint,
-                                     headers={'PROJECT_ID': self.project_id})
+                                     headers={'PROJECT_ID': str(self.project_id)})
 
         if not response.get('success'):
             raise DemistoException('The ASM API was unable to return notes for'
@@ -346,14 +370,12 @@ def fetch_incidents(client: Client):
     }
 
     demisto.setLastRun(last_run)
-    demisto.incidents(parsed_issues)
+    return demisto.incidents(parsed_issues)
 
 
 def get_remote_data_command(client: Client, args: dict):
     parsed_args = GetRemoteDataArgs(args)
     last_updated: datetime = arg_to_datetime(parsed_args.last_update)
-
-    # demisto.debug(f'get-remote-data {parsed_args.last_update} {parsed_args.remote_incident_id}')
 
     try:
         masm_id = parsed_args.remote_incident_id
@@ -361,32 +383,35 @@ def get_remote_data_command(client: Client, args: dict):
         issue_details = client.get_issue_details(masm_id)
         issue_details['id'] = masm_id
         if dateutil.parser.parse(issue_details['updated_at']) < last_updated:
+            demisto.debug(f'not updating issue {masm_id} - already up-to-date')
             issue_details = {}
 
         notes = client.get_notes('issue', masm_id)
-        # demisto.debug(notes)
         notes_entries = []
         for note in notes:
             timestamp: datetime = dateutil.parser.parse(note['created_at'])
-            if timestamp.timestamp() > last_updated.timestamp():
+            if timestamp > last_updated:
                 new_note = {
                     'Type': EntryType.NOTE,
                     'Contents': note['note'],
-                    'ContentsFormat': EntryFormat.MARKDOWN,
+                    'ContentsFormat': EntryFormat.TEXT,
                     'Note': True,
+                    'Tags': ['note_from_ma_asm']
                 }
                 notes_entries.append(new_note)
-        #     else:
-        #         demisto.debug("IGNORINGNOTE")
-        #         demisto.debug(timestamp.timestamp())
-        #         demisto.debug(last_updated.timestamp())
-        #
-        # demisto.debug("SEARCHNOTES")
-        # demisto.debug(notes_entries)
-        # demisto.debug('new incident data')
-        # demisto.debug(issue_details)
-        # return GetRemoteDataResponse(issue_details, notes_entries)
-        return [{}]
+        if issue_details.get("status", "") in ASM_TO_XSOAR_CLOSE_REASON_MAP:
+            notes_entries.append({
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeNotes': "Closed by Mandiant Advantage ASM",
+                    'closeReason': ASM_TO_XSOAR_CLOSE_REASON_MAP[issue_details.get("status")]
+                },
+                'ContentsFormat': EntryFormat.JSON
+            })
+
+        # Note: Not using GetRemoteDataResponse because a non-update of the issue results in not processing the notes
+        return [issue_details] + notes_entries
     except Exception as e:
         print(e)
 
@@ -400,10 +425,6 @@ def update_remote_system_command(client: Client, args: dict):
     demisto.debug(parsed_args.inc_status)
 
     remote_incident_id = parsed_args.remote_incident_id
-    demisto.debug(parsed_args.data)
-    demisto.debug(remote_incident_id)
-
-    updated_incident = {}
 
     if not parsed_args.remote_incident_id or parsed_args.incident_changed:
         if parsed_args.remote_incident_id:
@@ -416,16 +437,11 @@ def update_remote_system_command(client: Client, args: dict):
 
         demisto.debug(json.dumps(parsed_args.data))
 
-    issue_status = parsed_args.delta.get("runStatus")
-    if issue_status:
-        demisto.debug(f"New issue status: {XSOAR_TO_ASM_STATUS_MAP[issue_status]}")
-        # TODO: Push update to XSOAR
+    issue_status = parsed_args.delta.get('runStatus')
+    if issue_status is not None:
+        client.set_issue_status(remote_incident_id, XSOAR_TO_ASM_STATUS_MAP[parsed_args.inc_status])
 
-    warroom_entries = parsed_args.entries
-    if warroom_entries:
-        for entry in warroom_entries:
-            # TODO: Identify if entry originated from ASM or XSOAR
-            demisto.debug(entry)
+    return remote_incident_id
 
 
 # TODO: REMOVE the following dummy command function
