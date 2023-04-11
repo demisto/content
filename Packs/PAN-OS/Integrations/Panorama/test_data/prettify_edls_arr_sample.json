@@ -1,0 +1,33 @@
+{
+  "@name": "Test",
+  "@admin": "edlapitest",
+  "@dirtyId": "7",
+  "@time": "2023/04/03 15:47:58",
+  "@loc": "Dev_External_Lab",
+  "type": {
+    "@admin": "edlapitest",
+    "@dirtyId": "7",
+    "@time": "2023/04/03 15:47:58",
+    "url": {
+      "@admin": "edlapitest",
+      "@dirtyId": "7",
+      "@time": "2023/04/03 15:47:58",
+      "url": {
+        "@admin": "edlapitest",
+        "@dirtyId": "7",
+        "@time": "2023/04/03 15:47:58",
+        "#text": "test.test.com"
+      },
+      "recurring": {
+        "@admin": "edlapitest",
+        "@dirtyId": "7",
+        "@time": "2023/04/03 15:47:58",
+        "five-minute": {
+          "@admin": "edlapitest",
+          "@dirtyId": "7",
+          "@time": "2023/04/03 15:47:58"
+        }
+      }
+    }
+  }
+}
