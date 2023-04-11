@@ -91,7 +91,7 @@ ERROR_DICT = {
     '421': 'Invalid arguments',
     '500': 'Internal error',
     '502': 'Bad Gateway',
-    '513': 'File upload failed'
+    '513': 'File upload failed. This may happen for unsupported files such as empty files.'
 }
 
 VERDICTS_DICT = {

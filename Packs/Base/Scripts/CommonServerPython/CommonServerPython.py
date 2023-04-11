@@ -513,6 +513,7 @@ class FeedIndicatorType(object):
     Malware = "Malware"
     Identity = "Identity"
     Location = "Location"
+    Software = "Software"
 
     @staticmethod
     def is_valid_type(_type):
@@ -535,7 +536,8 @@ class FeedIndicatorType(object):
             FeedIndicatorType.MUTEX,
             FeedIndicatorType.Malware,
             FeedIndicatorType.Identity,
-            FeedIndicatorType.Location
+            FeedIndicatorType.Location,
+            FeedIndicatorType.Software
         )
 
     @staticmethod
@@ -9889,7 +9891,7 @@ def get_size_of_object(input_object):
     if IS_PY3 and PY_VER_MINOR >= 10:
         from collections.abc import Mapping
     else:
-        from collections import Mapping  # type: ignore[no-redef]
+        from collections import Mapping  # type: ignore[no-redef, attr-defined]
 
     from collections import deque
     from numbers import Number
