@@ -37,10 +37,11 @@ class OrcaClient:
 
             # Try to get error message from response
             response = getattr(e, "res")
+            message = invalid_token_string
             if isinstance(response, Response):
-                return response.json().get("error") or invalid_token_string
+                message = response.json().get("error") or invalid_token_string
 
-            return invalid_token_string
+            return_error(message)
 
         return "ok"
 
@@ -62,8 +63,8 @@ class OrcaClient:
         params = {}
         if alert_type:
             params = {"type": alert_type}
-        else:
-            params = {"asset_unique_id": asset_unique_id}  # type: ignore[dict-item]
+        elif asset_unique_id:
+            params = {"asset_unique_id": asset_unique_id}
 
         params["limit"] = str(limit)
 
@@ -330,7 +331,7 @@ def set_alert_severity(orca_client: OrcaClient, args: Dict[str, Any]) -> Command
 
     return CommandResults(
         readable_output="Alert severity changed",
-        outputs_prefix="Orca.SetAlertSeverity",
+        outputs_prefix="Orca.Alert",
         outputs=context,
         raw_response=response
     )
@@ -370,8 +371,9 @@ def set_alert_status(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandRe
     orca_client.set_alert_status(alert_id=alert_id, status=status)
     return CommandResults(
         readable_output="Set alert status",
-        outputs_prefix="Orca.SetAlertStatus",
+        outputs_prefix="Orca.Alert",
         outputs={
+            "id": alert_id,
             "status": True
         }
     )
@@ -385,8 +387,9 @@ def verify_alert(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandResult
     orca_client.verify_alert(alert_id=alert_id)
     return CommandResults(
         readable_output="Verify alert",
-        outputs_prefix="Orca.VerifyAlert",
+        outputs_prefix="Orca.Alert",
         outputs={
+            "id": alert_id,
             "status": True
         }
     )

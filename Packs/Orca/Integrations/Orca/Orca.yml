@@ -121,14 +121,8 @@ script:
           description: The Orca Score to set. Valid range 1.0 to 10.
           required: true
       outputs:
-        - contextPath: Orca.SetAlertSeverity.id
-          description: Id of the changed alert.
-          type: string
-        - contextPath: Orca.SetAlertSeverity.details
-          description: Details of the operation
-          type: string
-        - contextPath: Orca.SetAlertSeverity.severity
-          description: Current alert severity.
+        - contextPath: Orca.Alert
+          description: Changed alert.
           type: string
     - name: orca-get-alert-event-log
       arguments:
@@ -183,8 +177,9 @@ script:
             - closed
           description: Alert status
       outputs:
-        - contextPath: Orca.SetAlertStatus
-          description: Set Alert Status result
+        - contextPath: Orca.Alert
+          description: Changed alert.
+          type: string
       description: Get alert event log
     - name: orca-verify-alert
       arguments:
@@ -192,7 +187,7 @@ script:
           required: true
           description: Alert id
       outputs:
-        - contextPath: Orca.VerifyAlert
+        - contextPath: Orca.Alert
           description: Set Verify Alert result
       description: Trigger verify alert
     - name: orca-download-malicious-file
@@ -201,8 +196,21 @@ script:
           required: true
           description: Alert id
       outputs:
-        - contextPath: File
-          description: The Malicious File
+        - contextPath: InfoFile.Name
+          description: FileName
+          type: string
+        - contextPath: InfoFile.EntryID
+          description: The EntryID of the report
+          type: string
+        - contextPath: InfoFile.Size
+          description: File Size
+          type: number
+        - contextPath: InfoFile.Type
+          description: File type e.g. "PE"
+          type: string
+        - contextPath: InfoFile.Info
+          description: Basic information of the file
+          type: string
       description: Downloads a capture file from CS Enterprise.
   dockerimage: demisto/python3:3.10.10.52956
   feed: false
