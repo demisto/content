@@ -1853,10 +1853,14 @@ def get_alert_profiles_command(client, args):
     """
     project = args.get("project")
     response = client.get_alert_profiles_request(project)
+    policies = []
+    for res in response:
+        policies.append(res.get("policy"))
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.AlertProfiles',
         outputs_key_field='_Id',
         outputs=format_context(response),
+        readable_output=tableToMarkdown("Alert Profiles", policies),
         raw_response=response
     )
 
@@ -1944,7 +1948,7 @@ def get_logs_defender_download_command(client, args):
     lines = args.get('lines')
 
     response = client.get_logs_defender_download_request(hostname, lines)
-    return fileResult(f"{hostname}-logs.tar.gz", response)
+    return fileResult(f"{hostname}-logs.tar.gz", response, entryTypes["entryInfoFile"])
 
 
 def main():
