@@ -28,4 +28,4 @@ This content pack includes the following playbooks:
 
 Automation to determine GCP project hierarchy by looking up parent objects until the organization level is reached.
 
-TODO ADD DOC LINK
+![GCPProjectHierarchy](https://raw.githubusercontent.com/demisto/content/7065e08ec9738db1ea3e2bc5d78ac643931f46d1/Packs/GCP-Enrichment-Remediation/doc_files/GCPProjecHierarchy.png)
