@@ -389,3 +389,48 @@ def test_malformed_pack_id():
 
 def test_get_pack_id_from_error_with_gcp_path():
     assert script.get_pack_id_from_error_with_gcp_path(GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY) == 'pack2'
+
+
+def test_search_and_install_packs_and_their_deprecated_dependencies(mocker):
+    """
+    Given
+    - Valid pack id with a deprecated pack dependency.
+    When
+    - Running search_and_install_packs_and_their_dependencies before and after marketplace update.
+    Then
+    - Ensure that before the marketplace update, the deprecated pack will not be installed but the script won't fail.
+    - Ensure that after the marketplace update, the deprecated pack will not be installed and the script will fail.
+    """
+    # Reset success flag.
+    script.SUCCESS_FLAG = True
+
+    def azure_is_deprecated(pack_path):
+        if pack_path == 'Packs/AzureSentinel':
+            return True
+        return False
+
+    def hello_world_depends_on_azure(client, pack_data, lock):
+        if pack_data.get('id') == 'HelloWorld':
+            return [{'id': 'AzureSentinel'}]
+
+    client = MockClient()
+
+    mocker.patch.object(script, 'install_packs')
+    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
+    mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
+    mocker.patch.object(script, 'get_pack_dependencies', side_effect=hello_world_depends_on_azure)
+    mocker.patch.object(script, 'is_pack_deprecated', side_effect=azure_is_deprecated)
+
+    installed_packs, success = script.search_and_install_packs_and_their_dependencies(['HelloWorld'],
+                                                                                      client,
+                                                                                      after_update=False)
+    assert 'HelloWorld' in installed_packs
+    assert 'AzureSentinel' not in installed_packs
+    assert script.SUCCESS_FLAG
+
+    installed_packs, success = script.search_and_install_packs_and_their_dependencies(['HelloWorld'],
+                                                                                      client,
+                                                                                      after_update=True)
+    assert 'HelloWorld' in installed_packs
+    assert 'AzureSentinel' not in installed_packs
+    assert not script.SUCCESS_FLAG

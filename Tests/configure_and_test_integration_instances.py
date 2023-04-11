@@ -323,12 +323,13 @@ class Build(ABC):
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         pass
 
-    def install_packs(self, pack_ids=None, install_packs_one_by_one=False):
+    def install_packs(self, pack_ids=None, install_packs_one_by_one=False, after_update=True):
         """
         Install pack_ids or packs from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
         Args:
             pack_ids: Packs to install on the server. If no packs provided, installs packs that was provided
             by previous step of the build.
+            after_update (bool): True if marketplace was updated, false otherwise.
             install_packs_one_by_one: Whether to install packs one by one or all together.
 
         Returns:
@@ -342,7 +343,7 @@ class Build(ABC):
                 hostname = self.cloud_machine if self.is_cloud else ''
                 _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
                                                                           install_packs_one_by_one,
-                                                                          )
+                                                                          after_update)
                 if not flag:
                     raise Exception('Failed to search and install packs.')
             except Exception:
@@ -543,7 +544,7 @@ class Build(ABC):
         """
         self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number, self.marketplace_tag_name,
                                  self.artifacts_folder, self.marketplace_buckets)
-        installed_content_packs_successfully = self.install_packs()
+        installed_content_packs_successfully = self.install_packs(after_update=True)
         return installed_content_packs_successfully
 
     def create_and_upload_test_pack(self, packs_to_install: list = None):
@@ -1884,7 +1885,7 @@ def main():
         packs_not_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_not_to_install(
             modified_packs_names, build)
         packs_to_install = modified_packs_names - packs_not_to_install_in_pre_update
-        build.install_packs(pack_ids=packs_to_install)
+        build.install_packs(pack_ids=packs_to_install, after_update=False)
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(
             packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
