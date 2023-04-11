@@ -4,12 +4,12 @@
 	"description": "Classifier for Sumo Logic Insight",
 	"feed": false,
 	"fromVersion": "6.2.0",
-	"id": "Sumo Logic Insight Classifier",
+	"id": "Sumo Logic Cloud SIEM Classifier",
 	"keyTypeMap": {
 		"INSIGHT": "Sumo Logic Insight",
 		"SIGNAL-": "Sumo Logic Signal"
 	},
-	"name": "Sumo Logic Insight Classifier",
+	"name": "Sumo Logic Cloud SIEM Classifier",
 	"transformer": {
 		"complex": {
 			"root": "readableId",
