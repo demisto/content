@@ -1962,7 +1962,9 @@ script:
     - contextPath: PrismaCloudCompute.AlertProfiles._Id
       description: The alert profile ID.
       type: String
-  - arguments: []
+  - arguments:
+    - description: The Defender hostname.
+      name: hostname
     description: Get the Defender settings.
     name: prisma-cloud-compute-get-settings-defender
     outputs:
@@ -1988,10 +1990,11 @@ script:
       description: The defender listening port.
       type: Number
   - arguments:
-    - description: The defender hostname.
+    - description: The Defender hostname.
       name: hostname
     - description: The number of log lines to fetch.
       name: lines
+      defaultValue: 10
     description: Download the Defender logs.
     name: prisma-cloud-compute-logs-defender
     outputs:
@@ -2012,6 +2015,7 @@ script:
       name: hostname
     - description: The number of log lines to fetch.
       name: lines
+      defaultValue: 100
     description: Download a zip of all Defender logs.
     name: prisma-cloud-compute-logs-defender-download
     outputs:

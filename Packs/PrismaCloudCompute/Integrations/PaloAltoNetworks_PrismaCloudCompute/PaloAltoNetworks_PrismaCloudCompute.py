@@ -365,7 +365,7 @@ class PrismaCloudComputeClient(BaseClient):
 
         return self._http_request('get', 'alert-profiles', headers=headers, params=params)
 
-    def get_settings_defender_request(self):
+    def get_settings_defender_request(self, hostname):
         """
         Get the defender settings.
 
@@ -373,8 +373,9 @@ class PrismaCloudComputeClient(BaseClient):
             dict: the defender settings
         """
         headers = self._headers
+        params = assign_params(hostname=hostname)
 
-        return self._http_request('get', 'settings/defender', headers=headers)
+        return self._http_request('get', 'settings/defender', headers=headers, params=params)
 
     def get_logs_defender_request(self, hostname, lines):
         """
@@ -1871,7 +1872,8 @@ def get_settings_defender_command(client, args):
     Returns:
         CommandResults: command-results object.
     """
-    response = client.get_settings_defender_request()
+    hostname = args.get("hostname", None)
+    response = client.get_settings_defender_request(hostname)
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.DefenderSettings',
         outputs=format_context(response),
