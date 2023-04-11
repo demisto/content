@@ -69,6 +69,8 @@ run-unittests-and-lint:
   rules:
     - if: '$BUCKET_UPLOAD == "true"'
       when: never
+    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
+      when: never
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
