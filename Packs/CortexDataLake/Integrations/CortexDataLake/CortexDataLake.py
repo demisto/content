@@ -465,6 +465,7 @@ def threat_context_transformer(row_content: dict) -> dict:
         'SourceIP': row_content.get('source_ip', {}).get('value'),
         'RuleMatched': row_content.get('rule_matched'),
         'ThreatCategory': row_content.get('threat_category', {}).get('value'),
+        'ThreatName': row_content.get('threat_name'),
         'LogSourceName': row_content.get('log_source_name'),
         'Subtype': row_content.get('sub_type', {}).get('value'),
         'Direction': row_content.get('direction_of_attack', {}).get('value'),
