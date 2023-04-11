@@ -1,7 +1,7 @@
 {
 	"defaultIncidentType": "",
 	"definitionId": "",
-	"description": "Classifier for Sumo Logic Insight",
+	"description": "Classifier for Sumo Logic Insight and Signal",
 	"feed": false,
 	"fromVersion": "6.2.0",
 	"id": "Sumo Logic Cloud SIEM Classifier",
