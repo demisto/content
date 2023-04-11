@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: RSA Archer v2_dev
+  id: RSA Archer v2
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1/rsaarcher or https://192.168.0.1/ or https://192.168.0.1/archer)
@@ -77,8 +77,8 @@ configuration:
   required: false
   type: 19
 description: The RSA Archer GRC platform provides a common foundation for managing policies, controls, risks, assessments, and deficiencies across lines of business.
-display: RSA Archer v2_dev
-name: RSA Archer v2_dev
+display: RSA Archer v2
+name: RSA Archer v2
 script:
   commands:
   - arguments:
@@ -419,7 +419,7 @@ script:
   - arguments: []
     description: Prints the Archer's integration cache.
     name: archer-print-cache
-  dockerimage: demisto/python3-deb:3.10.10.51929
+  dockerimage: demisto/python3-deb:3.10.11.54133
   isfetch: true
   runonce: false
   script: ''

@@ -971,7 +971,8 @@ class TestArcherV2:
         ({}, True, [{'status_code': 200, 'json': {'res': 'some_res'}}]),
         ({'session_id': 'test_session_id'}, False, [{'status_code': 200, 'json': {'res': 'some_res'}}]),
         ({'session_id': 'test_session_id'}, False, [{'status_code': 401}, {'status_code': 200, 'json': {'res': 'some_res'}}]),
-        ({'session_id': 'test_session_id'}, True, [{'status_code': 401}, {'status_code': 401}, {'status_code': 200, 'json': {'res': 'some_res'}}]),
+        ({'session_id': 'test_session_id'}, True, [{'status_code': 401}, {
+         'status_code': 401}, {'status_code': 200, 'json': {'res': 'some_res'}}]),
     ])
     def test_do_rest_request(self, mocker, requests_mock, integration_context, is_login_expected, http_call_attempt_results):
         """
@@ -999,7 +1000,8 @@ class TestArcherV2:
         """
         client = Client(BASE_URL, '', '', '', '', 400)
         mocker.patch('ArcherV2.get_integration_context', return_value=integration_context)
-        login_mocker = requests_mock.post(BASE_URL + 'api/core/security/login', json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
+        login_mocker = requests_mock.post(BASE_URL + 'api/core/security/login',
+                                          json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         rest_mocker = requests_mock.get(BASE_URL + 'test_requests', http_call_attempt_results)
         dummy_response = client.do_rest_request('GET', 'test_requests')
         if is_login_expected:
@@ -1013,7 +1015,8 @@ class TestArcherV2:
         ({}, True, [{'status_code': 200, 'text': SEARCH_RECORDS_RES}]),
         ({'token': 'TOKEN'}, False, [{'status_code': 200, 'text': SEARCH_RECORDS_RES}]),
         ({'token': 'TOKEN'}, False, [{'status_code': 500}, {'status_code': 200, 'text': SEARCH_RECORDS_RES}]),
-        ({'token': 'TOKEN'}, True, [{'status_code': 500}, {'status_code': 500}, {'status_code': 200, 'text': SEARCH_RECORDS_RES}]),
+        ({'token': 'TOKEN'}, True, [{'status_code': 500}, {'status_code': 500},
+         {'status_code': 200, 'text': SEARCH_RECORDS_RES}]),
     ])
     def test_do_soap_request(self, mocker, requests_mock, integration_context, is_new_token_expected, http_call_attempt_results):
         """
