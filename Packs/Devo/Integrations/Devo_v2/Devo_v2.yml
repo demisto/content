@@ -8,7 +8,7 @@ description: Use the Devo v2 integration to query Devo for alerts, lookup tables
 configuration:
   - display: Query Server Endpoint (e.g. https://apiv2-us.devo.com/search/query)
     name: reader_endpoint
-    defaultvalue: https://apiv2-us.devo.com/search/query
+    defaultvalue: https://apiv2-eu.devo.com/search/query
     type: 0
     required: true
   - display: Port (e.g. 443)
@@ -30,7 +30,7 @@ configuration:
     required: false
   - display: Devo base domain
     name: linq_link_base
-    defaultvalue: https://us.devo.com
+    defaultvalue: https://eu.devo.com
     type: 0
     required: false
   - display: Fetch incidents
@@ -54,10 +54,14 @@ configuration:
     name: fetch_incidents_filters
     type: 12
     required: false
+  - display: Deduplication parameters JSON if required
+    name: fetch_incidents_deduplication
+    type: 0
+    required: false
   - display: Fetch Incident Limit(Should be between 10 and 100. Advisable 50 for better performance.)
     name: fetch_incidents_limit
     type: 0
-    required: true
+    required: false
   - display: Incidents Fetch Interval
     name: incidentFetchInterval
     type: 19
@@ -155,6 +159,9 @@ script:
           description: Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes
         - name: to
           description: End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range.
+        - name: limit
+          description: Limit of results to return to context. 0 for no limit.
+          defaultValue: "50"
         - name: queryTimeout
           description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
           defaultValue: "60"
@@ -209,7 +216,7 @@ script:
           type: unknown
       description: Writes lookup table entry records to a specified Devo table.
       execution: true
-  dockerimage: demisto/devo:1.0.0.52755
+  dockerimage: demisto/devo:1.0.0.54308
   isfetch: true
   runonce: false
   subtype: python3
