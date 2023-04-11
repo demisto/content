@@ -1,6 +1,5 @@
 import copy
 from datetime import datetime, timezone
-from unittest.mock import call
 import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto
