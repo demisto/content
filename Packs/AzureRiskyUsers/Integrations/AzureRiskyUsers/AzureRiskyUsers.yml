@@ -236,6 +236,20 @@ script:
       - high
       required: false
       secret: false
+    - description: Filter events that created before specific time range starting, e.g. 2022-06-09T23:00:44.7420905Z.
+      isArray: false
+      name: detected_date_time_before
+    - description: Filter events that created after specific time range starting, e.g. 2022-06-09T23:00:44.7420905Z.
+      isArray: false
+      name: detected_date_time_after
+    - description: The method used to order the retrieved results.
+      isArray: false
+      name: order_by
+      defaultValue: 'detectedDateTime desc'
+      auto: PREDEFINED
+      predefined:
+      - 'detectedDateTime desc'
+      - 'detectedDateTime asc'
     deprecated: false
     description: Returns a comma-separated list of the Risk Detection objects and
       their properties.
@@ -422,7 +436,7 @@ script:
       description: 'Indicates the type of token issuer for the detected sign-in risk.
         Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
       type: String
-  dockerimage: demisto/crypto:1.0.0.47103
+  dockerimage: demisto/crypto:1.0.0.49599
   feed: false
   isfetch: false
   longRunning: false

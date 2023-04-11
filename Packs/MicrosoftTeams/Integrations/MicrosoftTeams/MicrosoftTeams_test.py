@@ -468,13 +468,7 @@ def test_send_message_with_user(mocker, requests_mock):
 
     mocker.patch.object(demisto, 'results')
 
-    mocker.patch.object(
-        demisto,
-        'params',
-        return_value={
-            'bot_id': bot_id
-        }
-    )
+    mocker.patch("MicrosoftTeams.BOT_ID", new=bot_id)
     mocker.patch.object(
         demisto,
         'args',
@@ -682,13 +676,7 @@ def test_send_message_with_adaptive_card(mocker, requests_mock):
 def test_sending_message_using_email_address(mocker, requests_mock):
     mocker.patch.object(demisto, 'results')
     # verify message is sent properly given email with uppercase letters to send to
-    mocker.patch.object(
-        demisto,
-        'params',
-        return_value={
-            'bot_id': bot_id
-        }
-    )
+    mocker.patch("MicrosoftTeams.BOT_ID", new=bot_id)
     mocker.patch.object(
         demisto,
         'args',
@@ -1447,7 +1435,8 @@ def test_direct_message_handler(mocker, requests_mock):
     mocker.patch.object(demisto, 'findUser', return_value=None)
     direct_message_handler(integration_context, request_body, conversation, message)
     assert requests_mock.request_history[0].json() == {
-        'text': 'You are not allowed to create incidents.', 'type': 'message'
+        'text': "I\'m sorry but I was unable to find you as a Cortex XSOAR user for bwillis@email.com. You're not "
+                "allowed to run any command", 'type': 'message'
     }
 
     # verify create incident successfully
@@ -1829,6 +1818,7 @@ def test_chat_create_command(mocker):
 
     mocker.patch('MicrosoftTeams.get_user', return_value=[{'id': 'user1', 'userType': "Member"}])
     mocker.patch('MicrosoftTeams.create_chat', return_value=api_response)
+    mocker.patch('MicrosoftTeams.add_bot_to_chat', return_value='')
 
     chat_create_command()
 
@@ -1884,7 +1874,7 @@ def test_message_send_to_chat_command(mocker, requests_mock):
     mock_response = test_data.get('send_message_chat')
 
     mocker.patch('MicrosoftTeams.get_chat_id_and_type', return_value=(GROUP_CHAT_ID, 'group'))
-
+    mocker.patch('MicrosoftTeams.add_bot_to_chat', return_value='')
     requests_mock.post(
         f'{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}/messages',
         json=mock_response

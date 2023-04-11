@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 sectionOrder:
 - Connect
 - Collect
@@ -23,6 +23,7 @@ configuration:
   required: true
   type: 0
   section: Connect
+  additionalinfo: In the Security Center, go to Settings > Clod Apps > About tab, where the API URL is displayed.
 - name: creds_token
   type: 9
   displaypassword: User's key to access the API (for legacy method)
@@ -1142,7 +1143,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/crypto:1.0.0.42817
+  dockerimage: demisto/crypto:1.0.0.51452
   feed: false
   isfetch: true
   longRunning: false

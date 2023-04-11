@@ -1,6 +1,2 @@
 [file:AzureSentinel.yml]
 ignore=IN126
-
-
-[file:AzureSentinel_image.png]
-ignore=IM111

@@ -101,7 +101,7 @@ script:
     - contextPath: Gra.Users.exitDate
       description: Exit Date
       type: date
-    description: Retrieve List of All Users (Identities)
+    description: Retrieve list of all users (identities).
   - name: gra-fetch-accounts
     arguments:
     - name: page
@@ -153,7 +153,7 @@ script:
     - contextPath: Gra.Accounts.updated_on
       description: Updated On
       type: date
-    description: Retrieve all Accounts Information
+    description: Retrieve list of all accounts.
   - name: gra-fetch-active-resource-accounts
     arguments:
     - name: resource_name
@@ -209,7 +209,7 @@ script:
     - contextPath: Gra.Active.Resource.Accounts.updated_on
       description: Updated On
       type: date
-    description: Retrieve List of All Active Accounts for a Given Resource
+    description: Retrieve list of all active accounts for specified resource.
   - name: gra-fetch-user-accounts
     arguments:
     - name: employee_id
@@ -264,7 +264,7 @@ script:
     - contextPath: Gra.User.Accounts.updated_on
       description: Updated On
       type: date
-    description: Retrieve List of All Active Accounts and Details for a Given User / Identity
+    description: Retrieve list of all active accounts and details for specified user identity.
   - name: gra-fetch-resource-highrisk-accounts
     arguments:
     - name: resource_name
@@ -320,7 +320,7 @@ script:
     - contextPath: Gra.Resource.Highrisk.Accounts.updated_on
       description: Updated On
       type: date
-    description: Retrieve High Risk Accounts for a Given Resource
+    description: Retrieve high risk accounts for specified resource.
   - name: gra-fetch-hpa
     arguments:
     - name: page
@@ -372,7 +372,7 @@ script:
     - contextPath: Gra.Hpa.updated_on
       description: Updated On
       type: date
-    description: Retrieve List of All High Risk Privileged Accounts
+    description: Retrieve list of all high risk privileged accounts.
   - name: gra-fetch-resource-hpa
     arguments:
     - name: resource_name
@@ -428,7 +428,7 @@ script:
     - contextPath: Gra.Resource.Hpa.updated_on
       description: Updated On
       type: date
-    description: Retrieve all High Privileged Accounts for a Given Resource
+    description: Retrieve all high privileged accounts for specified resource.
   - name: gra-fetch-orphan-accounts
     arguments:
     - name: page
@@ -480,7 +480,7 @@ script:
     - contextPath: Gra.Orphan.Accounts.updated_on
       description: Updated On
       type: date
-    description: Retrieve List of All Orphan / Rogue Accounts
+    description: Retrieve list of all orphan / rogue accounts.
   - name: gra-fetch-resource-orphan-accounts
     arguments:
     - name: resource_name
@@ -536,7 +536,7 @@ script:
     - contextPath: Gra.Resource.Orphan.Accounts.updated_on
       description: Updated On
       type: date
-    description: Retrieve All Orphan / Rogue Accounts for a Given Resource
+    description: Retrieve all orphan / rogue accounts for specified resource.
   - name: gra-user-activities
     arguments:
     - name: employee_id
@@ -570,7 +570,7 @@ script:
     - contextPath: Gra.User.Activity.risk_score
       description: Risk Score
       type: number
-    description: Retrieve User Activity for a Given User
+    description: Retrieve activity for specified user.
   - name: gra-fetch-users-details
     arguments:
     - name: employee_id
@@ -622,7 +622,7 @@ script:
     - contextPath: Gra.User.profilePicturePath
       description: Profile Picture Path
       type: string
-    description: Get details of the user
+    description: Retrieve details for specified user.
   - name: gra-highRisk-users
     arguments:
     - name: page
@@ -710,7 +710,7 @@ script:
     - contextPath: Gra.Highrisk.Users.domain
       description: Domain
       type: string
-    description: Retrieve All High Risk User Information
+    description: Retrieve list of all high risk users.
   - name: gra-cases
     arguments:
     - name: status
@@ -766,7 +766,7 @@ script:
     - contextPath: Gra.Cases.anomalies
       description: Anomalies
       type: string
-    description: Retrieve List of All Cases for a Given Status
+    description: Retrieve list of all cases for specified status.
   - name: gra-user-anomalies
     arguments:
     - name: employee_id
@@ -784,7 +784,7 @@ script:
     - contextPath: Gra.User.Anomalies.anomaly_name
       description: Anomaly Name
       type: string
-    description: Retrieve Detailed Information for a Given User
+    description: Retrieve list of anomalies for specified user.
   - name: gra-case-action
     arguments:
     - name: action
@@ -819,7 +819,7 @@ script:
     - contextPath: Gra.Case.Action.Message
       description: Message
       type: string
-    description: Closing a case and updating the anomaly status as Closed / Risk Managed / Model Reviewed.
+    description: Close a case and update the anomaly status as Closed / Risk Managed / Model Reviewed.
   - name: gra-case-action-anomaly
     arguments:
     - name: action
@@ -860,7 +860,7 @@ script:
     - contextPath: Gra.Case.Action.Anomaly.anomalyName
       description: Anomaly Name
       type: string
-    description: Closing an anomaly or anomalies within a case and updating the anomaly status as Closed / Risk Managed / Model Reviewed.
+    description: Close an anomaly or anomalies within a case and update the anomaly status as Closed / Risk Managed / Model Reviewed.
   - name: gra-investigate-anomaly-summary
     arguments:
     - name: modelName
@@ -949,8 +949,36 @@ script:
     - contextPath: Gra.Analytical.Features.Entity.Value.analyticalFeatureValues
       description: Analytical Feature Values
       type: string
-    description: Retrieve analytical features for specified entity value and model name.
-  dockerimage: demisto/python3:3.10.8.37233
+    description: Retrieve analytical features for specified entity value, model name and dates.
+  - name: gra-cases-anomaly
+    arguments:
+    - name: caseId
+      description: GRA Case Id
+      required: true
+    outputs:
+    - contextPath: Gra.Cases.anomalies.anomalyName
+      description: Cases Anomaly name
+      type: String
+    - contextPath: Gra.Cases.anomalies.riskAcceptedDate
+      description: Risk accepted date of anomaly
+      type: date
+    - contextPath: Gra.Cases.anomalies.resourceName
+      description: Resource Name
+      type: String
+    - contextPath: Gra.Cases.anomalies.riskScore
+      description: Risk score for anomaly
+      type: String
+    - contextPath: Gra.Cases.anomalies.assignee
+      description: Assignee name
+      type: String
+    - contextPath: Gra.Cases.anomalies.assigneeType
+      description: Assignee type (User/Role)
+      type: String
+    - contextPath: Gra.Cases.anomalies.status
+      description: Current status of anomaly
+      type: String
+    description: Retrieve anomalies for specified case id.
+  dockerimage: demisto/python3:3.10.10.47713
   isfetch: true
   runonce: false
   subtype: python3

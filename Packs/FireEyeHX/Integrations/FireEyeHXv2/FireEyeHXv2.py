@@ -3059,7 +3059,7 @@ FETCH INCIDENT
 def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
     last_run = demisto.getLastRun()
     alerts = []  # type: List[Dict[str, str]]
-    fetch_limit = min([int(args.get('max_fetch') or '50'), 50])
+    fetch_limit = int(args.get('max_fetch') or '50')
 
     args["sort"] = "reported_at+ascending"
     args["limit"] = fetch_limit
@@ -3115,7 +3115,7 @@ def run_polling_command(client, args, cmd, post_func, get_func, t):
             command=cmd,
             next_run_in_seconds=interval_in_secs,
             args=args,
-            timeout_in_seconds=600)
+            timeout_in_seconds=1800)
         # result with scheduled_command only - no update to the war room
         return CommandResults(readable_output=readable_output, scheduled_command=scheduled_command)
 

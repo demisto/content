@@ -1377,6 +1377,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 | raw_message | Raw email message to send. If provided, all other arguments, but to, cc and bcc, will be ignored. | Optional | 
 | from_address | The email address from which to reply. | Optional |
 | replyTo | Email addresses that need to be used to reply to the message. Supports comma-separated values. | Optional |
+| importance | Sets the importance/Priority of the email. Default value is Normal. | Optional |
 
 
 #### Context Output

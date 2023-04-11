@@ -39,6 +39,8 @@ from Tests.test_content import get_server_numeric_version
 from Tests.test_integration import __get_integration_config, test_integration_instance, disable_all_integrations
 from Tests.tools import run_with_proxy_configured
 from Tests.update_content_data import update_content
+from Tests.private_build.upload_packs_private import extract_packs_artifacts
+from tempfile import mkdtemp
 
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
@@ -873,6 +875,9 @@ class CloudBuild(Build):
             except Exception as e:
                 logging.error(f'Filed to sync marketplace. Error: {e}')
         logging.info('Finished copying successfully.')
+        sleep_time = 120
+        logging.info(f'sleeping for {sleep_time} seconds')
+        sleep(sleep_time)
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         # no need to run this concurrently since we have only one server
@@ -1791,8 +1796,9 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
                                                 that new to current marketplace)
     """
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
+
     packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
-                                                                      build.content_path, build.server_numeric_version)
+                                                                      build.server_numeric_version)
     # packs to install used in post update
     build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
 
@@ -1805,24 +1811,28 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
     return packs_not_to_install_in_pre_update, non_hidden_packs
 
 
-def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, server_numeric_version: str) -> Set[str]:
+def get_packs_with_higher_min_version(packs_names: Set[str],
+                                      server_numeric_version: str) -> Set[str]:
     """
     Return a set of packs that have higher min version than the server version.
 
     Args:
         packs_names (Set[str]): A set of packs to install.
-        content_path (str): The content root path.
         server_numeric_version (str): The server version.
 
     Returns:
         (Set[str]): The set of the packs names that supposed to be not installed because
                     their min version is greater than the server version.
     """
+    extract_content_packs_path = mkdtemp()
+    packs_artifacts_path = f'{os.getenv("ARTIFACTS_FOLDER")}/content_packs.zip'
+    extract_packs_artifacts(packs_artifacts_path, extract_content_packs_path)
+
     packs_with_higher_version = set()
     for pack_name in packs_names:
-
-        pack_metadata = get_json_file(f"{content_path}/Packs/{pack_name}/pack_metadata.json")
-        server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION, Metadata.SERVER_DEFAULT_MIN_VERSION)
+        pack_metadata = get_json_file(f"{extract_content_packs_path}/{pack_name}/metadata.json")
+        server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION,
+                                               pack_metadata.get('server_min_version', Metadata.SERVER_DEFAULT_MIN_VERSION))
 
         if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
             packs_with_higher_version.add(pack_name)

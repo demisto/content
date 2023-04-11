@@ -215,7 +215,7 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
     last_run_dict = demisto.getLastRun()
     indicators_list = last_run_dict.get(f'{indicator_type}List', [])
     if len(indicators_list) < limit:
-        last_run = last_run_dict.get(indicator_type + 'Last', first_fetch)
+        last_run = last_run_dict.get(f'{indicator_type}Last', first_fetch)
         new_indicators_list = get_new_indicators(client, last_run, indicator_type, limit)
         indicators_list += new_indicators_list
 
@@ -223,7 +223,7 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
         new_indicators_list = indicators_list[:limit]
         last_run_dict[indicator_type + 'List'] = indicators_list[limit:]
         date_key = 'last_seen' if indicator_type == 'Indicators' else 'last_updated'
-        last_run_dict[indicator_type + 'LastFetch'] = new_indicators_list[-1][date_key]
+        last_run_dict[indicator_type + 'Last'] = new_indicators_list[-1][date_key]
 
         if update_context:
             demisto.setLastRun(last_run_dict)
@@ -402,7 +402,9 @@ def create_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
               'firstseenbysource': raw_indicator.get('first_seen'),
               'lastseenbysource': raw_indicator.get('last_seen'),
               'stixid': raw_indicator.get('id'),
-              'trafficlightprotocol': client.tlp_color
+              'trafficlightprotocol': client.tlp_color,
+              'tags': [industry.get('name') for industry in  # type: ignore
+                       raw_indicator.get('industries', [])] + client.tags
               }
 
     fields = {k: v for k, v in fields.items() if v and v != 'redacted'}  # filter none and redacted values

@@ -18,7 +18,8 @@ configuration:
     both directions.
   display: Incident Mirroring Direction
   defaultvalue: Incoming and Outgoing
-  hidden: false
+  hidden:
+    - marketplacev2
   name: mirror_direction
   options:
   - None
@@ -1041,7 +1042,7 @@ script:
     - contextPath: CyCognito.Asset.discoverability
       description: Quantifies an asset's level of exposure.
       type: String
-  dockerimage: demisto/pycountry:1.0.0.44872
+  dockerimage: demisto/pycountry:1.0.0.52357
   feed: false
   isfetch: true
   isremotesyncin: true

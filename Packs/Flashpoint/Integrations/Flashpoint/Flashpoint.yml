@@ -1128,7 +1128,7 @@ script:
     - contextPath: Flashpoint.CompromisedCredential.sort
       description: Sort value of the IoC.
       type: Unknown
-  dockerimage: demisto/python3:3.10.9.46032
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: true
   longRunning: false

@@ -69,21 +69,33 @@ configuration:
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   section: Connect
   advanced: true
-- display: How many incidents to fetch each time
-  name: fetch_limit
+- display: PrivateLink service URL.
+  name: endpoint_url
   required: false
   type: 0
+  section: Connect
+  advanced: true
+- display: STS PrivateLink URL.
+  name: sts_endpoint_url
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
+- display: How many incidents to fetch each time
+  name: fetch_limit
+  type: 0
+  required: false
   defaultvalue: '10'
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch_time
   required: false
   type: 0
-  defaultvalue: 3 days
+  defaultvalue: "3 days"
 - display: Guard Duty Severity level
-  additionalinfo: 'You can set the severity level of the findings to be fetched: "Low", "Medium", "High". For example, if you set the severity level to "Medium", the integration will only fetch findings with severity level of Medium and higher.'
   name: gs_severity
-  type: 16
   required: false
+  type: 16
+  additionalinfo: 'You can set the severity level of the findings to be fetched: "Low", "Medium", "High". For example, if you set the severity level to "Medium", the integration will only fetch findings with severity level of Medium and higher.'
   section: Collect
   advanced: true
   options:
@@ -1505,7 +1517,7 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.43720
+  dockerimage: demisto/boto3py3:1.0.0.52713
   feed: false
   isfetch: true
   longRunning: false
@@ -1517,5 +1529,5 @@ script:
 tests:
 - No tests
 fromversion: 5.0.0
-defaultmapperin: AWSGuardDuty Mapper (incoming)
-defaultclassifier: AWSGuardDuty classifier
+defaultmapperin: AWSGuardDuty - Incoming Mapper
+defaultclassifier: AWSGuardDuty - Classifier

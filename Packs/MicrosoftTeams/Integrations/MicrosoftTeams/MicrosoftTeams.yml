@@ -1,4 +1,4 @@
-category: Messaging
+category: Messaging and Conferencing
 sectionOrder:
 - Connect
 - Collect
@@ -63,17 +63,26 @@ configuration:
   defaultvalue: General
   section: Connect
 - display: Certificate (Required for HTTPS)
+  name: creds_certificate
+  required: false
+  type: 9
+  section: Connect
+  advanced: true
+  displaypassword: Private Key (Required for HTTPS)
+- display: Certificate (Required for HTTPS)
   name: certificate
   required: false
   type: 12
   section: Connect
   advanced: true
+  hidden: true
 - display: Private Key (Required for HTTPS)
   name: key
   required: false
   type: 14
   section: Connect
   advanced: true
+  hidden: true
 - display: Minimum incident severity to send notifications to Teams by
   name: min_incident_severity
   required: false
@@ -729,7 +738,7 @@ script:
     execution: false
     name: microsoft-teams-generate-login-url
     arguments: []
-  dockerimage: demisto/teams:1.0.0.48135
+  dockerimage: demisto/teams:1.0.0.49653
   feed: false
   isfetch: false
   longRunning: true

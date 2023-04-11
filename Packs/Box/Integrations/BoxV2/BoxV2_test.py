@@ -34,7 +34,7 @@ class ClientTestBox:
         mocker.patch.object(Client, '_request_token', return_value=testing_auth_header)
 
         self.client = Client(
-            base_url='https://api.box.com/2.0',
+            base_url='https://api.box.com',
             verify=False,
             proxy=False,
             auth_params=test_params
@@ -751,6 +751,49 @@ def test_get_current_user_command(requests_mock, mocker):
     assert response.outputs_prefix == 'Box.User'
     assert response.outputs_key_field == 'id'
     assert response.outputs == mock_response
+
+
+def test_url_as_param(requests_mock, mocker):
+    """Assert the request url changes when url parameter changes."""
+    from BoxV2 import get_current_user_command
+
+    # Generic test client params
+    test_params = {'credentials_json': str('{"boxAppSettings": {"clientID": '
+                                           '"1234", '
+                                           '"clientSecret": '
+                                           '"1234", "appAuth": {'
+                                           '"publicKeyID": "1234", "privateKey": '
+                                           '"-----BEGIN ENCRYPTED PRIVATE KEY----------END '
+                                           'ENCRYPTED PRIVATE KEY-----", "passphrase": '
+                                           '"1234"}}, '
+                                           '"enterpriseID": "1234"}')}
+    testing_auth_header = {'Authorization': 'Bearer JWT_TOKEN'}
+    mocker.patch.object(Client, '_request_token', return_value=testing_auth_header)
+
+    mock_response = util_load_json('test_data/get_current_user.json')
+
+    # The different url
+    other_url = 'https://api.triangle.com'
+    client = Client(
+        base_url=other_url,
+        verify=False,
+        proxy=False,
+        auth_params=test_params
+    )
+
+    args = {
+        'as_user': 'sample_current_user'
+    }
+
+    mocked_request = requests_mock.get(
+        f'{other_url}/2.0/users/me/',
+        json=mock_response
+    )
+
+    get_current_user_command(client, args)
+
+    # Asset different url is used.
+    assert mocked_request.called
 
 
 def test_create_user_command(requests_mock, mocker):

@@ -1,6 +1,7 @@
 import pytest
 import os
 import json
+from urllib.parse import unquote
 
 from _pytest.python_api import raises
 
@@ -2268,6 +2269,62 @@ class TestFetch:
         for incident in incidents:
             assert "\"incident_type\": \"detection\"" in incident.get('rawJSON', '')
 
+    @pytest.mark.parametrize(
+        "expected_name, fetch_incidents_or_detections,incidents_len",
+        [
+            ('Incident ID:', ['Incidents'], 2),
+            ('Detection ID:', ['Detections'], 2),
+            ('Detection ID:', ['Detections', 'Incidents'], 4)
+        ],
+    )
+    def test_fetch_returns_all_types(self, requests_mock, set_up_mocks, mocker, expected_name,
+                                     fetch_incidents_or_detections, incidents_len):
+        """
+        Tests that fetch incidents returns incidents and detections types, depends on
+        the value of fetch_incidents_or_detections.
+        Given:
+            fetch_incidents_or_detections parameter.
+        When:
+            Fetching incidents.
+        Then:
+            Validate the results contains only detection when fetch_incidents_or_detections = ['Detections'],
+            Validate the results contains only incidents when fetch_incidents_or_detections = ['Incidents']
+            Validate the results contains detection and incidents when
+             fetch_incidents_or_detections = ['Detections', 'Incidents']
+
+        """
+        from CrowdStrikeFalcon import fetch_incidents
+        mocker.patch.object(demisto, 'getLastRun', return_value=[{'time': '2020-09-04T09:16:10Z'}, {}])
+
+        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
+                           json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
+                                               {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
+
+        mocker.patch.object(
+            demisto,
+            'params',
+            return_value={
+                'url': SERVER_URL,
+                'proxy': True,
+                'incidents_per_fetch': 2,
+                'fetch_incidents_or_detections': fetch_incidents_or_detections,
+                'fetch_time': '3 days',
+            }
+        )
+
+        incidents = fetch_incidents()
+        assert len(incidents) == incidents_len
+
+        if incidents_len == 4:
+            assert 'Incident ID:' in incidents[0]['name']
+            assert 'Incident ID:' in incidents[1]['name']
+            assert 'Detection ID:' in incidents[2]['name']
+            assert 'Detection ID:' in incidents[3]['name']
+        else:
+            assert expected_name in incidents[0]['name']
+            assert expected_name in incidents[1]['name']
+
 
 class TestIncidentFetch:
     """ Test the logic of the fetch
@@ -3227,7 +3284,7 @@ def test_search_device_command(requests_mock):
             assert context[key] == [endpoint_context]
 
 
-def test_get_endpint_command(requests_mock, mocker):
+def test_get_endpoint_command(requests_mock, mocker):
     """
     Test get_endpint_command with a successful id
     Given
@@ -3268,7 +3325,7 @@ def test_get_endpint_command(requests_mock, mocker):
         status_code=200,
     )
 
-    requests_mock.get(
+    query_mocker = requests_mock.get(
         f'{SERVER_URL}/devices/queries/devices/v1',
         json=response,
         status_code=200,
@@ -3279,12 +3336,13 @@ def test_get_endpint_command(requests_mock, mocker):
         status_code=200,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'id': 'dentifier_numbe'})
+    mocker.patch.object(demisto, 'args', return_value={'id': 'dentifier_numbe', 'hostname': 'falcon-crowdstr'})
 
     outputs = get_endpoint_command()
     result = outputs[0].to_context()
     context = result.get('EntryContext')
 
+    assert unquote(query_mocker.last_request.query) == "filter=device_id:'dentifier_numbe',hostname:'falcon-crowdstr'"
     assert context['Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'] == [endpoint_context]
 
 
@@ -3375,6 +3433,24 @@ def test_resolve_incident_invalid(status):
     from CrowdStrikeFalcon import resolve_incident_command
     with pytest.raises(DemistoException):
         resolve_incident_command(['test'], status)
+
+
+def test_update_incident_comment(requests_mock):
+    """
+    Test Update incident comment
+    Given
+     - Comment
+    When
+     - Calling update incident comment command
+    Then
+     - Update incident comment
+     """
+    from CrowdStrikeFalcon import update_incident_comment_command
+    m = requests_mock.post(
+        f'{SERVER_URL}/incidents/entities/incident-actions/v1',
+        json={})
+    update_incident_comment_command(['test'], 'comment')
+    assert m.last_request.json()['action_parameters'][0]['value'] == 'comment'
 
 
 def test_list_host_group_members(requests_mock):

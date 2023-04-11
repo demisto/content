@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: SingleConnect
   version: -1
@@ -21,11 +21,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Single Connect is a PAM product that enables enterprises to remove static
-  passwords stored in applications by instead keeping passwords in a secure password
-  vault. Single Connect provides a token-based authentication for 3rd party applications
-  when accessing the password vault. This authentication process verifies the application
-  identity and gives secure access to the password associated with that identity.
+description: Single Connect is a PAM product that enables enterprises to remove static passwords stored in applications by instead keeping passwords in a secure password vault. Single Connect provides a token-based authentication for 3rd party applications when accessing the password vault. This authentication process verifies the application identity and gives secure access to the password associated with that identity.
 display: Single Connect
 name: SingleConnect
 script:
@@ -78,8 +74,7 @@ script:
       description: ID of the user group that has access to the account
       type: String
     - contextPath: SingleConnect.SapmAccount.permissions.permission
-      description: Access permission level of the user group that has access to the
-        account
+      description: Access permission level of the user group that has access to the account
       type: String
     - contextPath: SingleConnect.SapmAccount.managers.eid
       description: Manager user group ID that approves the account
@@ -116,8 +111,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: ID of SAPM account in the database (can be retrieved from single-connect-sapm-account-list-all
-        or single-connect-sapm-account-search-with-secret-name commands' output)
+      description: ID of SAPM account in the database (can be retrieved from single-connect-sapm-account-list-all or single-connect-sapm-account-search-with-secret-name commands' output)
       isArray: false
       name: sapm_db_id
       required: true
@@ -269,8 +263,7 @@ script:
       description: ID of the user group that has access to the account
       type: String
     - contextPath: SingleConnect.SapmAccount.permissions.permission
-      description: Access permission level of the user group that has access to the
-        account
+      description: Access permission level of the user group that has access to the account
       type: String
     - contextPath: SingleConnect.SapmAccount.managers.eid
       description: Manager user group ID that approves the account
@@ -299,7 +292,7 @@ script:
     - contextPath: SingleConnect.SapmAccount.groupFullPath
       description: The full path of the SAPM group that the account is under
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.10.52956
   feed: false
   isfetch: false
   longRunning: false

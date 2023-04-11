@@ -212,6 +212,26 @@ class CoreClient(BaseClient):
         endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
 
+    def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:      # pragma: no cover
+        """
+        This func is used to set the alias name of an endpoint.
+
+        args:
+            filters: list of filters to get the endpoints
+            new_alias_name: the new alias name to set
+
+        returns: dict of the response(True if success else error message)
+        """
+
+        request_data = {'filters': filters, 'alias': new_alias_name}
+
+        return self._http_request(
+            method='POST',
+            url_suffix='/endpoints/update_agent_name/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout,
+        )
+
     def isolate_endpoint(self, endpoint_id, incident_id=None):
         request_data = {
             'endpoint_id': endpoint_id,
@@ -1058,6 +1078,9 @@ class CoreClient(BaseClient):
             timeout=self.timeout,
         )
         link = response.get('reply', {}).get('DATA')
+        # If the link is None, the API call will result in a 'Connection Timeout Error', so we raise an exception
+        if not link:
+            raise DemistoException(f'Failed getting response files for {action_id=}, {endpoint_id=}')
         return self._http_request(
             method='GET',
             full_url=link,
@@ -1213,6 +1236,21 @@ class AlertFilterArg:
         self.search_type = search_type
         self.arg_type = arg_type
         self.option_mapper = option_mapper
+
+
+def catch_and_exit_gracefully(e):
+    """
+
+    Args:
+        e: DemistoException caught while running a command.
+
+    Returns:
+        CommandResult if the error is internal XDR error, else, the exception.
+    """
+    if e.res.status_code == 500 and 'no endpoint was found for creating the requested action' in str(e).lower():
+        return CommandResults(readable_output="The operation executed is not supported on the given machine.")
+    else:
+        raise e
 
 
 def init_filter_args_options():
@@ -1582,14 +1620,17 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
         )
-    result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
+    try:
+        result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
 
-    return CommandResults(
-        readable_output=f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
-        raw_response=result
-    )
+        return CommandResults(
+            readable_output=f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
+            outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                     f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
+            raw_response=result
+        )
+    except Exception as e:
+        return catch_and_exit_gracefully(e)
 
 
 def arg_to_timestamp(arg, arg_name: str, required: bool = False):
@@ -1769,6 +1810,63 @@ def get_endpoints_command(client, args):
     )
 
 
+def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
+    # get arguments
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name_list = argToList(args.get('dist_name'))
+    ip_list = argToList(args.get('ip_list'))
+    group_name_list = argToList(args.get('group_name'))
+    platform_list = argToList(args.get('platform'))
+    alias_name_list = argToList(args.get('alias_name'))
+    isolate = args.get('isolate')
+    hostname_list = argToList(args.get('hostname'))
+    status = args.get('status')
+    scan_status = args.get('scan_status')
+    username_list = argToList(args.get('username'))
+    new_alias_name = args.get('new_alias_name')
+
+    # This is a workaround that is needed because of a specific behaviour of the system
+    # that converts an empty string to a string with double quotes.
+    if new_alias_name == '""':
+        new_alias_name = ""
+
+    first_seen_gte = arg_to_timestamp(
+        arg=args.get('first_seen_gte'),
+        arg_name='first_seen_gte'
+    )
+
+    first_seen_lte = arg_to_timestamp(
+        arg=args.get('first_seen_lte'),
+        arg_name='first_seen_lte'
+    )
+
+    last_seen_gte = arg_to_timestamp(
+        arg=args.get('last_seen_gte'),
+        arg_name='last_seen_gte'
+    )
+
+    last_seen_lte = arg_to_timestamp(
+        arg=args.get('last_seen_lte'),
+        arg_name='last_seen_lte'
+    )
+
+    # create filters
+    filters: list[dict[str, str]] = create_request_filters(
+        status=status, username=username_list, endpoint_id_list=endpoint_id_list, dist_name=dist_name_list,
+        ip_list=ip_list, group_name=group_name_list, platform=platform_list, alias_name=alias_name_list, isolate=isolate,
+        hostname=hostname_list, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
+        last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte, scan_status=scan_status
+    )
+    if not filters:
+        raise DemistoException('Please provide at least one filter.')
+    # importent: the API will return True even if the endpoint does not exist, so its a good idea to check
+    # the results by a get_endpoints command
+    client.set_endpoints_alias(filters=filters, new_alias_name=new_alias_name)
+
+    return CommandResults(
+        readable_output="The endpoint alias was changed successfully.")
+
+
 def unisolate_endpoint_command(client, args):
     endpoint_id = args.get('endpoint_id')
     incident_id = arg_to_number(args.get('incident_id'))
@@ -1942,25 +2040,29 @@ def quarantine_files_command(client, args):
     file_hash = args.get("file_hash")
     incident_id = arg_to_number(args.get('incident_id'))
 
-    reply = client.quarantine_files(
-        endpoint_id_list=endpoint_id_list,
-        file_path=file_path,
-        file_hash=file_hash,
-        incident_id=incident_id
-    )
-    output = {
-        'endpointIdList': endpoint_id_list,
-        'filePath': file_path,
-        'fileHash': file_hash,
-        'actionId': reply.get("action_id")
-    }
+    try:
+        reply = client.quarantine_files(
+            endpoint_id_list=endpoint_id_list,
+            file_path=file_path,
+            file_hash=file_hash,
+            incident_id=incident_id
+        )
+        output = {
+            'endpointIdList': endpoint_id_list,
+            'filePath': file_path,
+            'fileHash': file_hash,
+            'actionId': reply.get("action_id")
+        }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('Quarantine files', output, headers=[*output], headerTransform=pascalToSpace),
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'quarantineFiles.actionIds(val.actionId === obj.actionId)': output},
-        raw_response=reply
-    )
+        return CommandResults(
+            readable_output=tableToMarkdown('Quarantine files', output, headers=[*output],
+                                            headerTransform=pascalToSpace),
+            outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                     f'quarantineFiles.actionIds(val.actionId === obj.actionId)': output},
+            raw_response=reply
+        )
+    except Exception as e:
+        return catch_and_exit_gracefully(e)
 
 
 def restore_file_command(client, args):
@@ -3267,6 +3369,7 @@ def create_request_filters(
     first_seen_lte=None,
     last_seen_gte=None,
     last_seen_lte=None,
+    scan_status=None,
 ):
     filters = []
 
@@ -3366,6 +3469,13 @@ def create_request_filters(
             'field': 'last_seen',
             'operator': 'lte',
             'value': last_seen_lte
+        })
+
+    if scan_status:
+        filters.append({
+            'field': 'scan_status',
+            'operator': 'IN',
+            'value': [scan_status]
         })
 
     return filters

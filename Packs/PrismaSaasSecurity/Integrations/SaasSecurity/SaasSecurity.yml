@@ -36,7 +36,8 @@ configuration:
   **Outgoing** only (from Cortex XSOAR to SaaS Security), or both **Incoming And Outgoing**.'
   defaultvalue: None
   display: Incident Mirroring Direction
-  hidden: false
+  hidden:
+    - marketplacev2
   name: mirror_direction
   options:
   - None
@@ -100,7 +101,8 @@ configuration:
 - additionalinfo: If selected, when the incident closes on SaaS Security, the incident closes in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
-  hidden: false
+  hidden:
+    - marketplacev2
   name: close_incident
   required: false
   type: 8
@@ -508,7 +510,7 @@ script:
     deprecated: false
     description: Get the list of incidents that were modified since the last update.
       Note that this method is used for debugging purposes. get-modified-remote-data
-      is used as part of a Mirroring feature, which is available since version 6.1.
+      is used as part of a Mirroring feature, which is available since Cortex XSOAR version 6.1.
     execution: false
     name: get-modified-remote-data
   - deprecated: false
@@ -524,7 +526,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.11.54132
 defaultmapperin: Saas Security - Incoming Mapper
 defaultmapperout: Saas Security - Outgoing Mapper
 fromversion: 6.0.0
