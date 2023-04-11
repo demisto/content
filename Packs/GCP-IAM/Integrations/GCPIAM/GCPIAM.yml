@@ -23,17 +23,14 @@ script:
   commands:
   - arguments:
     - default: false
-      description: A comma-separated list of project names to retrieve. For example,
-        projects/415104041262. Leave empty to retrieve a list of projects under a
-        specified parent resource.
+      description: A comma-separated list of project names to retrieve. For example, projects/415104041262. Leave empty to retrieve a list of projects under a specified parent resource.
       isArray: true
       name: project_name
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1.
-        Maximum value is 100.
+      description: The maximum number of results to retrieve. Minimum value is 1. Maximum value is 100.
       isArray: false
       name: limit
       required: false
@@ -46,9 +43,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the parent resource to list projects under. For example,
-        setting this field to 'folders/1234' would list all projects directly under
-        that folder.
+      description: The name of the parent resource to list projects under. For example, setting this field to 'folders/1234' would list all projects directly under that folder.
       isArray: false
       name: parent
       required: false
@@ -56,8 +51,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: If true, projects that have been marked for deletion will also
-        be retrieved.
+      description: If true, projects that have been marked for deletion will also be retrieved.
       isArray: false
       name: show_deleted
       predefined:
@@ -66,22 +60,18 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists project under the specified parent, or retrieves a specific
-      project''s information. One of the following arguments must be provided: "parent"
-      or "project_name".'
+    description: 'Lists project under the specified parent, or retrieves a specific project''s information. One of the following arguments must be provided: "parent" or "project_name".'
     execution: false
     name: gcp-iam-projects-get
   - arguments:
     - default: false
-      description: The name of the parent resource to list projects under. For example,
-        setting this field to 'folders/1234' would list all projects directly under
-        that folder.
+      description: The name of the resource to list tag bindings under. For example, setting this field to 'folders/1234' would list all tags directly applied to that folder.
       isArray: false
       name: parent
-      required: false
+      required: true
       secret: false
     deprecated: false
-    description: 'add description later'
+    description: 'List tag bindings (key value pair) applied to a project/folder/organization object.'
     execution: false
     name: gcp-iam-tagbindings-list
     outputs:
@@ -93,19 +83,18 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The project name for which the policy is being requested. For example,
-        projects/415104041262.
+      description: The project name for which the policy is being requested. For example, projects/415104041262.
       isArray: false
       name: project_name
       required: true
       secret: false
     - default: false
-      defaultValue: '50'
       description: The maximum number of results to retrieve. Minimum value is 1.
       isArray: false
       name: limit
       required: false
       secret: false
+      defaultValue: '50'
     - default: false
       defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
@@ -125,28 +114,23 @@ script:
       description: The role that is assigned to the list of members.
       type: String
     - contextPath: GCPIAM.Policy.name
-      description: The unique resource name of the project. Note that this output
-        was added manually.
+      description: The unique resource name of the project. Note that this output was added manually.
       type: String
   - arguments:
     - default: false
-      description: The project name for which the permissions is being tested. For
-        example, projects/415104041262.
+      description: The project name for which the permissions is being tested. For example, projects/415104041262.
       isArray: false
       name: project_name
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of permission names to validate for the
-        resource.
+      description: A comma-separated list of permission names to validate for the resource.
       isArray: true
       name: permissions
       required: true
       secret: false
     deprecated: false
-    description: Returns permissions that a caller has on the specified project. The
-      permission list can be obtained by running the 'gcp-iam-testable-permission-list'
-      command.
+    description: Returns permissions that a caller has on the specified project. The permission list can be obtained by running the 'gcp-iam-testable-permission-list' command.
     execution: false
     name: gcp-iam-project-iam-permission-test
     outputs:
@@ -155,8 +139,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The resource for which the policy is being specified. For example,
-        projects/415104041262.
+      description: The resource for which the policy is being specified. For example, projects/415104041262.
       isArray: false
       name: project_name
       required: true
@@ -168,8 +151,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A comma-separated list of members to add to the policy. For example:
-        user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
+      description: 'A comma-separated list of members to add to the policy. For example: user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
       name: members
       required: true
@@ -180,22 +162,20 @@ script:
     name: gcp-iam-project-iam-member-add
   - arguments:
     - default: false
-      description: The name of the project for which the policy is being specified.
-        For example, projects/415104041262.
+      description: The name of the project for which the policy is being specified. For example, projects/415104041262.
       isArray: false
       name: project_name
       required: true
       secret: false
     - default: false
-      description: The name of the policy role.
+      description: |-
+        The name of the policy role.
       isArray: false
       name: role
       required: true
       secret: false
     - default: false
-      description: 'A comma-separated list of members to remove from the policy. For
-        example: user:mike@example.com, group:admins@example.com, domain:google.com,
-        serviceAccount:my-project-id@xsoar.gserviceaccount.com'
+      description: 'A comma-separated list of members to remove from the policy. For example: user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
       name: members
       required: true
@@ -206,8 +186,7 @@ script:
     name: gcp-iam-project-iam-member-remove
   - arguments:
     - default: false
-      description: The name of the project for which the policy is being specified.
-        For example, projects/415104041262.
+      description: The name of the project for which the policy is being specified. For example, projects/415104041262.
       isArray: false
       name: project_name
       required: true
@@ -227,8 +206,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Sets the IAM access control policy for the specified project. This
-      operation will overwrite any existing policy.
+    description: Sets the IAM access control policy for the specified project. This operation will overwrite any existing policy.
     execution: true
     name: gcp-iam-project-iam-policy-set
     outputs:
@@ -239,13 +217,11 @@ script:
       description: The role that is assigned to the list of members.
       type: String
     - contextPath: GCPIAM.Policy.name
-      description: The unique resource name of the project. Note that this output
-        was added manually.
+      description: The unique resource name of the project. Note that this output was added manually.
       type: String
   - arguments:
     - default: false
-      description: The name of the project for which the policy is being specified.
-        For example, projects/415104041262.
+      description: The name of the project for which the policy is being specified. For example, projects/415104041262.
       isArray: false
       name: project_name
       required: true
@@ -257,9 +233,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A comma-separated list of members associated with the role. For
-        example: user:mike@example.com, group:admins@example.com, domain:google.com,
-        serviceAccount:my-project-id@xsoar.gserviceaccount.com'
+      description: 'A comma-separated list of members associated with the role. For example: user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
       name: members
       required: true
@@ -270,8 +244,7 @@ script:
     name: gcp-iam-project-iam-policy-create
   - arguments:
     - default: false
-      description: The name of the project for which the policy is being specified.
-        For example, projects/415104041262.
+      description: The name of the project for which the policy is being specified. For example, projects/415104041262.
       isArray: false
       name: project_name
       required: true
@@ -283,30 +256,25 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes the policy from the project IAM policies.
+    description: 'Removes the policy from the project IAM policies.'
     execution: false
     name: gcp-iam-project-iam-policy-remove
   - arguments:
     - default: false
-      description: A comma-separated list of folder names to retrieve. For example,
-        folders/12342. Leave empty to retrieve a list of folders under a specified
-        parent resource.
+      description: A comma-separated list of folder names to retrieve. For example, folders/12342. Leave empty to retrieve a list of folders under a specified parent resource.
       isArray: true
       name: folder_name
       required: false
       secret: false
     - default: false
-      description: The name of the parent resource to list folders under. For example,
-        setting this field to 'folders/1234' would list all folder directly under
-        that folder.
+      description: The name of the parent resource to list folders under. For example, setting this field to 'folders/1234' would list all folder directly under that folder.
       isArray: false
       name: parent
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1,
-        maximum value is 100.
+      description: The maximum number of results to retrieve. Minimum value is 1, maximum value is 100.
       isArray: false
       name: limit
       required: false
@@ -321,8 +289,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: If true, folders that have been marked for deletion will also be
-        retrieved.
+      description: If true, folders that have been marked for deletion will also be retrieved.
       isArray: false
       name: show_deleted
       predefined:
@@ -331,9 +298,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists folders under the specified parent, or retrieves a specific
-      folder information. One of the arguments: ''parent'' or ''folder_name''  must
-      be provided.'
+    description: 'Lists folders under the specified parent, or retrieves a specific folder information. One of the arguments: ''parent'' or ''folder_name''  must be provided.'
     execution: false
     name: gcp-iam-folders-get
     outputs:
@@ -357,19 +322,18 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The folder name for which the policy is being requested. For example,
-        folders/12342.
+      description: The folder name for which the policy is being requested. For example, folders/12342.
       isArray: false
       name: folder_name
       required: true
       secret: false
     - default: false
-      defaultValue: '50'
       description: The maximum number of results to retrieve. Minimum value is 1.
       isArray: false
       name: limit
       required: false
       secret: false
+      defaultValue: '50'
     - default: false
       defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
@@ -389,28 +353,23 @@ script:
       description: The role that is assigned to the list of members.
       type: String
     - contextPath: GCPIAM.Policy.name
-      description: The unique resource name of the folder. Note that this output was
-        added manually.
+      description: The unique resource name of the folder. Note that this output was added manually.
       type: String
   - arguments:
     - default: false
-      description: The folder name for which the permissions is being tested. For
-        example, folders/12342.
+      description: The folder name for which the permissions is being tested. For example, folders/12342.
       isArray: false
       name: folder_name
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of permission names to validate for the
-        resource.
+      description: A comma-separated list of permission names to validate for the resource.
       isArray: true
       name: permissions
       required: true
       secret: false
     deprecated: false
-    description: Returns permissions that a caller has on the specified folder. The
-      permission list can be obtained by running the 'gcp-iam-testable-permission-list'
-      command.
+    description: Returns permissions that a caller has on the specified folder. The permission list can be obtained by running the 'gcp-iam-testable-permission-list' command.
     execution: false
     name: gcp-iam-folder-iam-permission-test
     outputs:
@@ -419,8 +378,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The resource for which the policy is being specified. For example,
-        folders/12342.
+      description: The resource for which the policy is being specified. For example, folders/12342.
       isArray: false
       name: folder_name
       required: true
@@ -432,8 +390,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A comma-separated list of members to add to the policy. For example:
-        user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
+      description: 'A comma-separated list of members to add to the policy. For example: user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
       name: members
       required: true
@@ -444,22 +401,20 @@ script:
     name: gcp-iam-folder-iam-member-add
   - arguments:
     - default: false
-      description: The name of the folder for which the policy is being specified.
-        For example, folders/12342.
+      description: The name of the folder for which the policy is being specified. For example, folders/12342.
       isArray: false
       name: folder_name
       required: true
       secret: false
     - default: false
-      description: The name of the policy role.
+      description: |-
+        The name of the policy role.
       isArray: false
       name: role
       required: true
       secret: false
     - default: false
-      description: 'A comma-separated list of members to remove from the policy. For
-        example: user:mike@example.com, group:admins@example.com, domain:google.com,
-        serviceAccount:my-project-id@xsoar.gserviceaccount.com'
+      description: 'A comma-separated list of members to remove from the policy. For example: user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
       name: members
       required: true
@@ -470,8 +425,7 @@ script:
     name: gcp-iam-folder-iam-member-remove
   - arguments:
     - default: false
-      description: The name of the folder for which the policy is being specified.
-        For example, folders/12342.
+      description: The name of the folder for which the policy is being specified. For example, folders/12342.
       isArray: false
       name: folder_name
       required: true
@@ -491,8 +445,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Sets the IAM access control policy for the specified folder. This
-      operation will overwrite any existing policy.
+    description: Sets the IAM access control policy for the specified folder. This operation will overwrite any existing policy.
     execution: true
     name: gcp-iam-folder-iam-policy-set
     outputs:
@@ -503,13 +456,11 @@ script:
       description: The role that is assigned to the list of members.
       type: String
     - contextPath: GCPIAM.Policy.name
-      description: The unique resource name of the folder. Note that this output was
-        added manually.
+      description: The unique resource name of the folder. Note that this output was added manually.
       type: String
   - arguments:
     - default: false
-      description: The name of the folder for which the policy is being specified.
-        For example, folders/12342.
+      description: The name of the folder for which the policy is being specified. For example, folders/12342.
       isArray: false
       name: folder_name
       required: true
@@ -521,9 +472,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A comma-separated list of members associated with the role. For
-        example: user:mike@example.com, group:admins@example.com, domain:google.com,
-        serviceAccount:my-project-id@xsoar.gserviceaccount.com'
+      description: 'A comma-separated list of members associated with the role. For example: user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
       name: members
       required: true
@@ -534,8 +483,7 @@ script:
     name: gcp-iam-folder-iam-policy-create
   - arguments:
     - default: false
-      description: The name of the folder for which the policy is being specified.
-        For example, folders/12342.
+      description: The name of the folder for which the policy is being specified. For example, folders/12342.
       isArray: false
       name: folder_name
       required: true
@@ -552,13 +500,12 @@ script:
     name: gcp-iam-folder-iam-policy-remove
   - arguments:
     - default: false
-      defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1,
-        maximum value is 50.
+      description: The maximum number of results to retrieve. Minimum value is 1, maximum value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
+      defaultValue: '50'
     - default: false
       defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
@@ -567,16 +514,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of organization names to retrieve. For example,
-        organizations/3456. Leave empty to retrieve a list of organizations that are
-        visible to the caller.
+      description: A comma-separated list of organization names to retrieve. For example, organizations/3456. Leave empty to retrieve a list of organizations that are visible to the caller.
       isArray: true
       name: organization_name
       required: false
       secret: false
     deprecated: false
-    description: Lists organization resources that are visible to the caller, or retrieves
-      an organization's information.
+    description: Lists organization resources that are visible to the caller, or retrieves an organization's information.
     execution: false
     name: gcp-iam-organizations-get
     outputs:
@@ -600,19 +544,18 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The organization name for which the policy is being requested.
-        For example, organizations/3456.
+      description: The organization name for which the policy is being requested. For example, organizations/3456.
       isArray: false
       name: organization_name
       required: true
       secret: false
     - default: false
-      defaultValue: '50'
       description: The maximum number of results to retrieve. Minimum value is 1.
       isArray: false
       name: limit
       required: false
       secret: false
+      defaultValue: '50'
     - default: false
       defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
@@ -632,28 +575,23 @@ script:
       description: The role that is assigned to the list of members.
       type: String
     - contextPath: GCPIAM.Policy.name
-      description: The unique resource name of the organization. Note that this output
-        was added manually.
+      description: The unique resource name of the organization. Note that this output was added manually.
       type: String
   - arguments:
     - default: false
-      description: The organization name for which the permissions is being tested.
-        For example, organizations/3456.
+      description: The organization name for which the permissions is being tested. For example, organizations/3456.
       isArray: false
       name: organization_name
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of permission names to validate for the
-        resource.
+      description: A comma-separated list of permission names to validate for the resource.
       isArray: true
       name: permissions
       required: true
       secret: false
     deprecated: false
-    description: Returns permissions that a caller has on the specified organization.
-      The permission list can be obtained by running the 'gcp-iam-testable-permission-list'
-      command.
+    description: Returns permissions that a caller has on the specified organization. The permission list can be obtained by running the 'gcp-iam-testable-permission-list' command.
     execution: false
     name: gcp-iam-organization-iam-permission-test
     outputs:
@@ -662,8 +600,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The resource for which the policy is being specified. For example,
-        organizations/3456.
+      description: The resource for which the policy is being specified. For example, organizations/3456.
       isArray: false
       name: organization_name
       required: true
@@ -675,8 +612,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A comma-separated list of members to add to the policy. For example:
-        user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
+      description: 'A comma-separated list of members to add to the policy. For example: user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
       name: members
       required: true
@@ -687,22 +623,20 @@ script:
     name: gcp-iam-organization-iam-member-add
   - arguments:
     - default: false
-      description: The name of the organization for which the policy is being specified.
-        For example, organizations/3456.
+      description: The name of the organization for which the policy is being specified. For example, organizations/3456.
       isArray: false
       name: organization_name
       required: true
       secret: false
     - default: false
-      description: The name of the policy role.
+      description: |-
+        The name of the policy role.
       isArray: false
       name: role
       required: true
       secret: false
     - default: false
-      description: 'A comma-separated list of members to remove from the policy. For
-        example: user:mike@example.com, group:admins@example.com, domain:google.com,
-        serviceAccount:my-project-id@xsoar.gserviceaccount.com'
+      description: 'A comma-separated list of members to remove from the policy. For example: user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
       name: members
       required: true
@@ -713,8 +647,7 @@ script:
     name: gcp-iam-organization-iam-member-remove
   - arguments:
     - default: false
-      description: The name of the organization for which the policy is being specified.
-        For example, organizations/3456.
+      description: The name of the organization for which the policy is being specified. For example, organizations/3456.
       isArray: false
       name: organization_name
       required: true
@@ -734,8 +667,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Sets the IAM access control policy for the specified organization.
-      This operation will overwrite any existing policy.
+    description: Sets the IAM access control policy for the specified organization. This operation will overwrite any existing policy.
     execution: true
     name: gcp-iam-organization-iam-policy-set
     outputs:
@@ -746,13 +678,11 @@ script:
       description: The role that is assigned to the list of members.
       type: String
     - contextPath: GCPIAM.Policy.name
-      description: The unique resource name of the organization. Note that this output
-        was added manually.
+      description: The unique resource name of the organization. Note that this output was added manually.
       type: String
   - arguments:
     - default: false
-      description: The name of the organization for which the policy is being specified.
-        For example, organizations/3456.
+      description: The name of the organization for which the policy is being specified. For example, organizations/3456.
       isArray: false
       name: organization_name
       required: true
@@ -764,9 +694,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A comma-separated list of members associated with the role. For
-        example: user:mike@example.com, group:admins@example.com, domain:google.com,
-        serviceAccount:my-project-id@xsoar.gserviceaccount.com'
+      description: 'A comma-separated list of members associated with the role. For example: user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
       name: members
       required: true
@@ -777,8 +705,7 @@ script:
     name: gcp-iam-organization-iam-policy-create
   - arguments:
     - default: false
-      description: The name of the organization for which the policy is being specified.
-        For example, organizations/3456.
+      description: The name of the organization for which the policy is being specified. For example, organizations/3456.
       isArray: false
       name: organization_name
       required: true
@@ -795,12 +722,7 @@ script:
     name: gcp-iam-organization-iam-policy-remove
   - arguments:
     - default: false
-      description: The parent resource of the groups to create. Must be of the form
-        identitysources/{identity_source_id} for external- identity-mapped groups
-        or customers/{customer_id} for Google Groups. The customer_id must begin with
-        "C" (for example, 'C046psxkn'). Customer ID can be obtained by running the
-        'gcp-iam-organizations-get' command. The customer ID can be found in the 'directoryCustomerId'
-        field.
+      description: The parent resource of the groups to create. Must be of the form identitysources/{identity_source_id} for external- identity-mapped groups or customers/{customer_id} for Google Groups. The customer_id must begin with "C" (for example, 'C046psxkn'). Customer ID can be obtained by running the 'gcp-iam-organizations-get' command. The customer ID can be found in the 'directoryCustomerId' field.
       isArray: false
       name: parent
       required: true
@@ -818,15 +740,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The group unique email address. There is no need to set up the
-        email in the organization, the command will do this independently.
+      description: The group unique email address. There is no need to set up the email in the organization, the command will do this independently.
       isArray: false
       name: group_email_address
       required: true
       secret: false
     deprecated: false
-    description: Create a new group. The end user making the request will be added
-      as the initial owner of the group.
+    description: Create a new group. The end user making the request will be added as the initial owner of the group.
     execution: false
     name: gcp-iam-group-create
     outputs:
@@ -843,24 +763,21 @@ script:
       description: The resource name of the group.
       type: String
     - contextPath: GCPIAM.Group.parent
-      description: The resource name of the entity under which this group resides
-        in the Cloud Identity resource hierarchy.
+      description: The resource name of the entity under which this group resides in the Cloud Identity resource hierarchy.
       type: String
     - contextPath: GCPIAM.Group.updateTime
       description: The most recent time the group was modified.
       type: Date
   - arguments:
     - default: false
-      description: The parent resource of the groups to retrieve. This parameter is
-        usually equal to the organization customer ID. For example customers/C01234.
+      description: The parent resource of the groups to retrieve. This parameter is usually equal to the organization customer ID. For example customers/C01234.
       isArray: false
       name: parent
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve.Minimum value is 1, maximum
-        value is 500.
+      description: The maximum number of results to retrieve.Minimum value is 1, maximum value is 500.
       isArray: false
       name: limit
       required: false
@@ -911,8 +828,7 @@ script:
       description: The resource name of the group.
       type: String
     - contextPath: GCPIAM.Group.parent
-      description: The resource name of the entity under which this group resides
-        in the Cloud Identity resource hierarchy.
+      description: The resource name of the entity under which this group resides in the Cloud Identity resource hierarchy.
       type: String
     - contextPath: GCPIAM.Group.updateTime
       description: The most recent time the group was modified.
@@ -930,8 +846,7 @@ script:
     name: gcp-iam-group-delete
   - arguments:
     - default: false
-      description: A comma-separated list of group names which will contain the membership.
-        Every group name must be of the form groups/{group_id}.
+      description: A comma-separated list of group names which will contain the membership. Every group name must be of the form groups/{group_id}.
       isArray: true
       name: groups_name
       required: true
@@ -942,19 +857,18 @@ script:
       name: member_email
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: MEMBER
-      description: A comma-separated list of membership roles that apply to the membership.
-        The 'MEMBER' role must be provided.
+    - default: false
+      defaultValue: 'MEMBER'
+      description: A comma-separated list of membership roles that apply to the membership. The 'MEMBER' role must be provided.
       isArray: true
       name: role
+      required: true
+      secret: false
+      auto: PREDEFINED
       predefined:
       - OWNER
       - MANAGER
       - MEMBER
-      required: true
-      secret: false
     deprecated: false
     description: Creates a group membership.
     execution: false
@@ -971,16 +885,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the group that contains the membership. Must be of
-        the form groups/{group_id}.
+      description: 'The name of the group that contains the membership. Must be of the form groups/{group_id}.'
       isArray: false
       name: group_name
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1,
-        maximum value is 500.
+      description: The maximum number of results to retrieve. Minimum value is 1, maximum value is 500.
       isArray: false
       name: limit
       required: false
@@ -1008,8 +920,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The name of the group membership to retrieve. Must be of the form:
-        groups/{group_id}/memberships/{membership_id}.'
+      description: 'The name of the group membership to retrieve. Must be of the form: groups/{group_id}/memberships/{membership_id}.'
       isArray: false
       name: membership_name
       required: true
@@ -1036,8 +947,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: 'The name of the group membership to update. Must be of the form:
-        groups/{group_id}/memberships/{membership_id}.'
+      description: 'The name of the group membership to update. Must be of the form: groups/{group_id}/memberships/{membership_id}.'
       isArray: false
       name: membership_name
       required: true
@@ -1079,8 +989,7 @@ script:
     name: gcp-iam-group-membership-role-remove
   - arguments:
     - default: false
-      description: 'A comma-separated list of resource names of the memberships to
-        delete. Must be of the form: groups/{group_id}/memberships/{membership_id}.'
+      description: 'A comma-separated list of resource names of the memberships to delete. Must be of the form: groups/{group_id}/memberships/{membership_id}.'
       isArray: true
       name: membership_names
       required: true
@@ -1091,16 +1000,13 @@ script:
     name: gcp-iam-group-membership-delete
   - arguments:
     - default: false
-      description: The name of the project associated with the service account. Must
-        be of the form projects/{project_id}.
+      description: The name of the project associated with the service account. Must be of the form projects/{project_id}.
       isArray: false
       name: project_name
       required: true
       secret: false
     - default: false
-      description: The account ID that is used to generate the service account email
-        address and a stable unique ID. It is unique within a project, must be 6-30
-        characters long, and match the regular expression [a-z]([-a-z0-9]*[a-z0-9]).
+      description: The account ID that is used to generate the service account email address and a stable unique ID. It is unique within a project, must be 6-30 characters long, and match the regular expression [a-z]([-a-z0-9]*[a-z0-9]).
       isArray: false
       name: service_account_id
       required: true
@@ -1142,14 +1048,13 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: The name of the service account to update. Must be of the form
-        projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.
+      description: 'The name of the service account to update. Must be of the form projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.'
       isArray: false
       name: service_account_name
       required: true
       secret: false
     - default: false
-      description: Human readable name for the updated service account.
+      description: 'Human readable name for the updated service account.'
       isArray: false
       name: display_name
       required: false
@@ -1160,40 +1065,36 @@ script:
       name: description
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: A comma-separated names list of the fields to update.
       isArray: false
       name: fields_to_update
+      required: true
+      secret: false
+      auto: PREDEFINED
       predefined:
       - displayName
       - description
-      required: true
-      secret: false
     deprecated: false
-    description: Updates a service account.
+    description: 'Updates a service account.'
     execution: false
     name: gcp-iam-service-account-update
   - arguments:
     - default: false
-      description: 'A comma-separated list of service accounts names to retrieve in
-        the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. Leave
-        empty to retrieve a list of service accounts under a specified project resource.'
+      description: 'A comma-separated list of service accounts names to retrieve in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. Leave empty to retrieve a list of service accounts under a specified project resource.'
       isArray: true
       name: service_account_name
       required: false
       secret: false
     - default: false
-      description: 'The name of the project associated with the service accounts to
-        retrieve, for example: projects/my-project-123.'
+      description: 'The name of the project associated with the service accounts to retrieve, for example: projects/my-project-123.'
       isArray: false
       name: project_name
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1,
-        maximum value is 100.
+      description: The maximum number of results to retrieve. Minimum value is 1, maximum value is 100.
       isArray: false
       name: limit
       required: false
@@ -1206,9 +1107,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists service accounts in project, or retrieves a specific service
-      accounts information. One of the arguments: ''service_account_name'' or ''project_name''  must
-      be provided.'
+    description: 'Lists service accounts in project, or retrieves a specific service accounts information. One of the arguments: ''service_account_name'' or ''project_name''  must be provided.'
     execution: false
     name: gcp-iam-service-accounts-get
     outputs:
@@ -1232,8 +1131,7 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: 'A comma-separated list of names of service accounts to enable.
-        Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}'
+      description: 'A comma-separated list of names of service accounts to enable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}'
       isArray: true
       name: service_account_name
       required: true
@@ -1244,8 +1142,7 @@ script:
     name: gcp-iam-service-account-enable
   - arguments:
     - default: false
-      description: 'A comma-separated list of names of service accounts to disable.
-        Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}'
+      description: 'A comma-separated list of names of service accounts to disable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}'
       isArray: true
       name: service_account_name
       required: true
@@ -1256,27 +1153,24 @@ script:
     name: gcp-iam-service-account-disable
   - arguments:
     - default: false
-      description: The name of the service account associated with the key. Must be
-        of the form projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.
+      description: 'The name of the service account associated with the key. Must be of the form projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.'
       isArray: false
       name: service_account_name
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: KEY_ALG_RSA_2048
+    - default: false
       description: The RSA key algorithm.
       isArray: false
       name: key_algorithm
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: KEY_ALG_RSA_2048
       predefined:
       - KEY_ALG_RSA_1024
       - KEY_ALG_RSA_2048
-      required: false
-      secret: false
     deprecated: false
-    description: Creates a service account key. A service account can have up to 10
-      keys. Service account keys that you create don't have an expiry date and stay
-      valid until you delete them.
+    description: 'Creates a service account key. A service account can have up to 10 keys. Service account keys that you create don''t have an expiry date and stay valid until you delete them.'
     execution: false
     name: gcp-iam-service-account-key-create
     outputs:
@@ -1309,17 +1203,13 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: 'The resource name of the service account key to retrieve. The
-        resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}.
-        Leave empty to retrieve a list of service account keys that are associated
-        with the service account resource.'
+      description: 'The resource name of the service account key to retrieve. The resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}. Leave empty to retrieve a list of service account keys that are associated with the service account resource.'
       isArray: false
       name: key_name
       required: false
       secret: false
     - default: false
-      description: The name of the service account associated with the keys. Must
-        be of the form projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.
+      description: The name of the service account associated with the keys. Must be of the form projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.
       isArray: false
       name: service_account_name
       required: false
@@ -1339,9 +1229,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists service account keys, or retrieves a specific service account
-      key information. One of the arguments: ''service_account_name'' or ''key_name''  must
-      be provided.'
+    description: 'Lists service account keys, or retrieves a specific service account key information. One of the arguments: ''service_account_name'' or ''key_name''  must be provided.'
     execution: false
     name: gcp-iam-service-account-keys-get
     outputs:
@@ -1368,9 +1256,7 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: 'A comma-separated list of names of resource name of the service
-        account key to enable. Every resource name should be in the following format:
-        projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}'
+      description: 'A comma-separated list of names of resource name of the service account key to enable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}'
       isArray: true
       name: key_name
       required: true
@@ -1381,9 +1267,7 @@ script:
     name: gcp-iam-service-account-key-enable
   - arguments:
     - default: false
-      description: 'A comma-separated list of names of resource name of the service
-        account key to disable. Every resource name should be in the following format:
-        projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}'
+      description: 'A comma-separated list of names of resource name of the service account key to disable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}'
       isArray: true
       name: key_name
       required: true
@@ -1394,9 +1278,7 @@ script:
     name: gcp-iam-service-account-key-disable
   - arguments:
     - default: false
-      description: 'A comma-separated list of names of resource name of the service
-        account key to delete. Every resource name should be in the following format:
-        projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}'
+      description: 'A comma-separated list of names of resource name of the service account key to delete. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}'
       isArray: true
       name: key_name
       required: true
@@ -1407,16 +1289,13 @@ script:
     name: gcp-iam-service-account-key-delete
   - arguments:
     - default: false
-      description: The name of the organization that contains the custom role. For
-        example organizations/1234567.
+      description: The name of the organization that contains the custom role. For example organizations/1234567.
       isArray: false
       name: organization_name
       required: true
       secret: false
     - default: false
-      description: The unique ID of the role to create. A role ID may contain alphanumeric
-        characters, underscores (_), and periods (.). It must contain a minimum of
-        3 characters and a maximum of 64 characters.
+      description: The unique ID of the role to create. A role ID may contain alphanumeric characters, underscores (_), and periods (.). It must contain a minimum of 3 characters and a maximum of 64 characters.
       isArray: false
       name: role_id
       required: true
@@ -1434,16 +1313,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions the role grants
-        when bound in an IAM policy.
+      description: A comma-separated list of names of the permissions the role grants when bound in an IAM policy.
       isArray: true
       name: permissions
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The launch stage of the role. More information can be found here:
-        https://cloud.google.com/iam/docs/reference/rest/v1/organizations.roles#rolelaunchstage'
+      description: 'The launch stage of the role. More information can be found here: https://cloud.google.com/iam/docs/reference/rest/v1/organizations.roles#rolelaunchstage'
       isArray: false
       name: stage
       predefined:
@@ -1483,9 +1360,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions the role grants
-        when bound in an IAM policy. Note that this command argument will replace
-        the existing permissions.
+      description: A comma-separated list of names of the permissions the role grants when bound in an IAM policy. Note that this command argument will replace the existing permissions.
       isArray: true
       name: permissions
       required: false
@@ -1504,8 +1379,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The launch stage of the role. More information can be found here:
-        https://cloud.google.com/iam/docs/reference/rest/v1/organizations.roles#rolelaunchstage'
+      description: 'The launch stage of the role. More information can be found here: https://cloud.google.com/iam/docs/reference/rest/v1/organizations.roles#rolelaunchstage'
       isArray: false
       name: stage
       predefined:
@@ -1529,8 +1403,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions to add to the
-        role.
+      description: A comma-separated list of names of the permissions to add to the role.
       isArray: true
       name: permissions
       required: true
@@ -1547,8 +1420,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions to remove from
-        the role.
+      description: A comma-separated list of names of the permissions to remove from the role.
       isArray: false
       name: permissions
       required: true
@@ -1559,8 +1431,7 @@ script:
     name: gcp-iam-organization-role-permission-remove
   - arguments:
     - default: false
-      description: The name of the organization that contains the custom role. For
-        example organizations/12345.
+      description: 'The name of the organization that contains the custom role. For example organizations/12345.'
       isArray: false
       name: organization_name
       required: true
@@ -1578,8 +1449,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1,
-        maximum value is 1,000.
+      description: The maximum number of results to retrieve. Minimum value is 1, maximum value is 1,000.
       isArray: false
       name: limit
       required: false
@@ -1603,18 +1473,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used to filter the retrieved roles by the rule title. The command
-        will retrieve the rules that include the provided argument in their title.
+      description: Used to filter the retrieved roles by the rule title. The command will retrieve the rules that include the provided argument in their title.
       isArray: false
       name: title_filter
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of role permissions. Used to filter the
-        retrieved roles by their permissions. The command will retrieve the rules
-        that include all the provided permissions in their permissions list. If the
-        argument is provided, the command will include the role permissions in the
-        output.
+      description: A comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules that include all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output.
       isArray: true
       name: permission_filter
       required: false
@@ -1629,8 +1494,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A comma-separated list of organization roles to retrieve. Every
-        role name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}'
+      description: 'A comma-separated list of organization roles to retrieve. Every role name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}'
       isArray: true
       name: role_name
       required: true
@@ -1645,8 +1509,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A comma-separated list of organization roles to delete. Every
-        role name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}'
+      description: 'A comma-separated list of organization roles to delete. Every role name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}'
       isArray: true
       name: role_name
       required: true
@@ -1657,15 +1520,13 @@ script:
     name: gcp-iam-organization-role-delete
   - arguments:
     - default: false
-      description: The ID of the project that contains the custom role.
+      description: 'The ID of the project that contains the custom role.'
       isArray: false
       name: project_id
       required: true
       secret: false
     - default: false
-      description: The unique ID of the role to create. A role ID may contain alphanumeric
-        characters, underscores (_), and periods (.). It must contain a minimum of
-        3 characters and a maximum of 64 characters.
+      description: The unique ID of the role to create. A role ID may contain alphanumeric characters, underscores (_), and periods (.). It must contain a minimum of 3 characters and a maximum of 64 characters.
       isArray: false
       name: role_id
       required: true
@@ -1683,16 +1544,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions the role grants
-        when bound in an IAM policy.
+      description: 'A comma-separated list of names of the permissions the role grants when bound in an IAM policy.'
       isArray: true
       name: permissions
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The launch stage of the role. More information can be found here:
-        https://cloud.google.com/iam/docs/reference/rest/v1/organizations.roles#rolelaunchstage'
+      description: 'The launch stage of the role. More information can be found here: https://cloud.google.com/iam/docs/reference/rest/v1/organizations.roles#rolelaunchstage'
       isArray: false
       name: stage
       predefined:
@@ -1732,17 +1591,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions the role grants
-        when bound in an IAM policy. Note that this command argument will replace
-        the existing permissions.
+      description: A comma-separated list of names of the permissions the role grants when bound in an IAM policy. Note that this command argument will replace the existing permissions.
       isArray: true
       name: permissions
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The launch stage of the role. More information can be found here:
-        https://cloud.google.com/iam/docs/reference/rest/v1/organizations.roles#rolelaunchstage'
+      description: 'The launch stage of the role. More information can be found here: https://cloud.google.com/iam/docs/reference/rest/v1/organizations.roles#rolelaunchstage'
       isArray: false
       name: stage
       predefined:
@@ -1778,8 +1634,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions to add to the
-        role.
+      description: A comma-separated list of names of the permissions to add to the role.
       isArray: true
       name: permissions
       required: true
@@ -1796,8 +1651,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions to remove from
-        the role.
+      description: A comma-separated list of names of the permissions to remove from the role.
       isArray: false
       name: permissions
       required: true
@@ -1808,7 +1662,7 @@ script:
     name: gcp-iam-project-role-permission-remove
   - arguments:
     - default: false
-      description: The ID of the project that contains the custom role.
+      description: 'The ID of the project that contains the custom role.'
       isArray: false
       name: project_id
       required: true
@@ -1826,8 +1680,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1,
-        maximum value is 1,000.
+      description: The maximum number of results to retrieve. Minimum value is 1, maximum value is 1,000.
       isArray: false
       name: limit
       required: false
@@ -1851,18 +1704,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used to filter the retrieved roles by the rule title. The command
-        will retrieve the rules that include the provided argument in their title.
+      description: Used to filter the retrieved roles by the rule title. The command will retrieve the rules that include the provided argument in their title.
       isArray: false
       name: title_filter
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of role permissions. Used to filter the
-        retrieved roles by their permissions. The command will retrieve the rules
-        that include all the provided permissions in their permissions list. If the
-        argument is provided, the command will include the role permissions in the
-        output.
+      description: A comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules that include all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output.
       isArray: true
       name: permission_filter
       required: false
@@ -1877,8 +1725,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A comma-separated list of project roles to retrieve. Every role
-        name should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}'
+      description: 'A comma-separated list of project roles to retrieve. Every role name should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}'
       isArray: true
       name: role_name
       required: true
@@ -1893,8 +1740,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A comma-separated list of project roles to delete. Every role
-        name should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}'
+      description: 'A comma-separated list of project roles to delete. Every role name should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}'
       isArray: true
       name: role_name
       required: true
@@ -1905,17 +1751,14 @@ script:
     name: gcp-iam-project-role-delete
   - arguments:
     - default: false
-      description: The name of the resource to query from the list of testable permissions.
-        For a project''s resource, provide "projects/project-ID", and for organizations,
-        provide "organizations/organization-ID".
+      description: 'The name of the resource to query from the list of testable permissions. For a project''''s resource, provide "projects/project-ID", and for organizations, provide "organizations/organization-ID".'
       isArray: false
       name: resource_name
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1,
-        maximum value is 1,000.
+      description: The maximum number of results to retrieve. Minimum value is 1, maximum value is 1,000.
       isArray: false
       name: limit
       required: false
@@ -1940,8 +1783,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A comma-separated list of names of service accounts to delete.
-        Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.'
+      description: 'A comma-separated list of names of service accounts to delete. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.'
       isArray: true
       name: service_account_name
       required: true
@@ -1952,17 +1794,14 @@ script:
     name: gcp-iam-service-account-delete
   - arguments:
     - default: false
-      description: The resource name to query from the list of grantable roles. For
-        a project''s resource, provide "projects/project-ID", and for organizations,
-        provide "organizations/organization-ID".
+      description: 'The resource name to query from the list of grantable roles. For a project''''s resource, provide "projects/project-ID", and for organizations, provide "organizations/organization-ID".'
       isArray: false
       name: resource_name
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1,
-        maximum value is 1,000.
+      description: The maximum number of results to retrieve. Minimum value is 1, maximum value is 1,000.
       isArray: false
       name: limit
       required: false
@@ -1975,9 +1814,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Lists roles that can be granted on a Google Cloud resource. A role
-      is grantable if the IAM policy for the resource can contain bindings to the
-      role.
+    description: Lists roles that can be granted on a Google Cloud resource. A role is grantable if the IAM policy for the resource can contain bindings to the role.
     execution: false
     name: gcp-iam-grantable-role-list
     outputs:
@@ -1986,8 +1823,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A comma-separated list of GCP IAM predefined roles to retrieve.
-        Every role name should be in the following format: roles/{ROLE_NAME}'
+      description: 'A comma-separated list of GCP IAM predefined roles to retrieve. Every role name should be in the following format: roles/{ROLE_NAME}'
       isArray: true
       name: role_name
       required: true
@@ -2014,8 +1850,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1,
-        maximum value is 1,000.
+      description: The maximum number of results to retrieve. Minimum value is 1, maximum value is 1,000.
       isArray: false
       name: limit
       required: false
@@ -2039,18 +1874,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used to filter the retrieved roles by the rule title. The command
-        will retrieve the rules that include the provided argument in their title.
+      description: Used to filter the retrieved roles by the rule title. The command will retrieve the rules that include the provided argument in their title.
       isArray: false
       name: title_filter
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of role permissions. Used to filter the
-        retrieved roles by their permissions. The command will retrieve the rules
-        that include all the provided permissions in their permissions list. If the
-        argument is provided, the command will include the role permissions in the
-        output.
+      description: A comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules that include all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output.
       isArray: true
       name: permission_filter
       required: false
@@ -2063,7 +1893,7 @@ script:
     - contextPath: GCPIAM.Role.name
       description: The resource name of the role.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.45941
+  dockerimage: demisto/google-api-py3:1.0.0.54316
   feed: false
   isfetch: false
   longRunning: false

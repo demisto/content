@@ -452,7 +452,7 @@ def test_gcp_iam_group_membership_create_command(client):
     client.gcp_iam_group_membership_create_request.side_effect = Exception('Not Found')
     result = GCP_IAM.gcp_iam_group_membership_create_command(client, command_args)
     assert result[0].readable_output == \
-           f'An error occurred while creating membership in group {group_name}.\n Not Found'
+        f'An error occurred while creating membership in group {group_name}.\n Not Found'
 
 
 def test_gcp_iam_group_membership_list_command(client):
@@ -583,7 +583,7 @@ def test_gcp_iam_group_membership_delete_request(client):
     client.gcp_iam_group_membership_delete_request.side_effect = Exception('Not Found')
     result = GCP_IAM.gcp_iam_group_membership_delete_command(client, command_args)
     assert result[0].readable_output == \
-           f'An error occurred while deleting the membership {membership_name}.\n Not Found'
+        f'An error occurred while deleting the membership {membership_name}.\n Not Found'
 
 
 def test_gcp_iam_testable_permission_list_command(client):
