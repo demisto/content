@@ -387,7 +387,8 @@ tasks:
       id: e887ba28-1bba-48ae-8ca9-3278aafff218
       version: -1
       name: Create GCP project hierarchy
-      scriptName: GCPProjectHierarchy_local
+      scriptName: GCPProjectHierarchy
+      description: Determine GCP project hierarchy by looking up parent objects until the organization level is reached.
       type: regular
       iscommand: false
       brand: ""
@@ -435,7 +436,7 @@ tasks:
       id: c9c8bcb0-8b16-4aa5-87bc-53336a7ba2e2
       version: -1
       name: Lookup tagbindings
-      description: add description later
+      description: List tag bindings (key value pair) applied to a project/folder/organization object.
       script: GCP-IAM|||gcp-iam-tagbindings-list
       type: regular
       iscommand: true
@@ -479,6 +480,7 @@ tasks:
       id: 32d47af7-892b-434a-8816-b4d2dcc9c7c8
       version: -1
       name: Was there results?
+      description: Checks if output was returned from last task.
       type: condition
       iscommand: false
       brand: ""
