@@ -262,7 +262,7 @@ def sample_submission(client: Client, args: Dict[str, Any]) -> PollResult:
 
 
 def build_reputation_result(api_reponse: Dict[str, Any]):
-    reports = api_reponse.get("reports", {})
+    reports = api_reponse.get("reports", [])
     command_res_ls = []
     for report in reports:
         command_res_ls.append(build_one_reputation_result(reports[report]))
