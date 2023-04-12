@@ -171,7 +171,7 @@ def get_fetch_time(last_run: str | None, first_fetch_param: str) -> Optional[dat
     Returns:
         Optional[datetime]: Maximum datetime value between last run from previous fetch and first fetch time parameter.
     """
-    first_fetch_param_datetime = arg_to_datetime(arg=first_fetch_param, settings={'RETURN_AS_TIMEZONE_AWARE': False})
+    first_fetch_param_datetime = arg_to_datetime(arg=first_fetch_param)
 
     # if last_run is None (first time we are fetching) -> return first_fetch_arg datetime object
     if not last_run:

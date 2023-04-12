@@ -212,20 +212,21 @@ class TestEventRelatedFunctions:
             larger_dummy_time + datetime.timedelta(milliseconds=1)).strftime(DATE_FORMAT)
 
     case_last_run_is_none = (
-        None, '2023-01-01T10:10:10.000Z',
+        None, '2023-01-01T10:10:10.000',
         arg_to_datetime(arg='2023-01-01T10:10:10.000Z', settings={'RETURN_AS_TIMEZONE_AWARE': False}))
     case_last_run_and_first_fetch_param_are_none = (None, None, None)
     case_last_run_is_bigger = (
-        '2023-01-01T12:10:10.000Z', '2023-01-01T10:10:10.000Z',
+        '2023-01-01T12:10:10.000Z', '2023-01-01T10:10:10.000',
         arg_to_datetime(arg='2023-01-01T12:10:10.000Z', settings={'RETURN_AS_TIMEZONE_AWARE': False}))
     case_first_fetch_param_is_bigger = (
-        '2023-01-01T10:10:10.000Z', '2023-01-01T12:10:10.000Z',
+        '2023-01-01T10:10:10.000Z', '2023-01-01T12:10:10.000',
         arg_to_datetime(arg='2023-01-01T12:10:10.000Z', settings={'RETURN_AS_TIMEZONE_AWARE': False}))
 
     @pytest.mark.parametrize('last_run, first_fetch_param, expected_time', [
         case_last_run_is_none,
         case_last_run_and_first_fetch_param_are_none,
-        case_last_run_is_bigger
+        case_last_run_is_bigger,
+        case_first_fetch_param_is_bigger
     ])
     def test_get_fetch_time(self, last_run, first_fetch_param, expected_time):
         """
@@ -447,7 +448,7 @@ class TestFetchEventsFlows:
     case_second_fetch_no_events = ([], [], '2023-01-01T08:10:10.001000Z', params,
                                    {'lastRun': '2023-01-01T08:10:10.001000Z'})
 
-    case_first_fetch_no_events = ([], [], '2022-12-29T10:10:10.001000Z', params, {})
+    case_first_fetch_no_events = ([], [], '2022-12-29T08:10:10.001000Z', params, {})
 
     @freeze_time('2023-01-01T08:10:10.001000Z')
     @pytest.mark.parametrize('event_list, expected_list, expected_time, params, last_run',
