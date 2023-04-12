@@ -115,7 +115,7 @@ def run(options):
                     yml_ids.append(yml_obj['commonfields']['id'])
                 except yaml.YAMLError as exc:
                     print(exc)
-    print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+    print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
     print(yml_ids)
     secret_conf = GoogleSecreteManagerModule(options.service_account)
     secrets = secret_conf.list_secrets(options.gsm_project_id, name_filter=yml_ids, with_secret=True, ignore_dev=True)
