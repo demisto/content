@@ -90,20 +90,20 @@ def run(options):
             changed_packs.append(pack_path)
     print(f'{changed_packs=}')
     for changed_pack in changed_packs:
-        print(f'changed_pack: {changed_pack}')
+        # print(f'changed_pack: {changed_pack}')
         pack_dir = changed_pack
         print(f'pack_dir: {pack_dir}')
         pack_dir_instance = pathlib.Path(pack_dir)
         pack_files = [item.name for item in pack_dir_instance.glob("*")]
-        print(branch_name)  # the branch name
+        # print(branch_name)  # the branch name
+        # print('******************************')
+        # print(f'{filesindir=}')  # the files in content
+        # print('******************************')
+        # print(f'{changed_files=}')  # the array of changed files
+        # print('******************************')
+        # print(f'{changed_pack=}')  # the path of the changed integration
         print('******************************')
-        print(f'{filesindir=}')  # the files in content
-        print('******************************')
-        print(f'{changed_files=}')  # the array of changed files
-        print('******************************')
-        print(f'{changed_pack=}')  # the path of the changed integration
-        print('******************************')
-        print(f'{pack_files=}')  # the content of the paath location
+        # print(f'{pack_files=}')  # the content of the paath location
         root_dir = Path(changed_pack)
         root_dir_instance = pathlib.Path(root_dir)
         filesindir = [item.name for item in root_dir_instance.glob("*") if str(item.name).endswith('yml')]
@@ -112,7 +112,6 @@ def run(options):
             with open(f'{changed_pack}/{yml_file}', "r") as stream:
                 try:
                     yml_obj = yaml.safe_load(stream)
-                    print(yml_obj['commonfields']['id'])
                     yml_ids.append(yml_obj['commonfields']['id'])
                 except yaml.YAMLError as exc:
                     print(exc)
@@ -122,20 +121,21 @@ def run(options):
     secrets = secret_conf.list_secrets(options.gsm_project_id, name_filter=yml_ids, with_secret=True, ignore_dev=True)
     secrets_dev = secret_conf.list_secrets(options.gsm_project_id, with_secret=True, branch_name=branch_name,
                                            ignore_dev=False)
+    print('==============================')
     print(f'secrets pre merge: {secrets}')
+    print('==============================')
     print(f'secrets_dev: {secrets_dev}')
     if secrets_dev:
         for dev_secret in secrets_dev:
             replaced = False
             for i in range(len(secrets)):
-                if dev_secret['secret_name'] == secrets[i]['secret_name']:
-                    dev_secret['test'] = 'test secret'
+                if dev_secret['name'] == secrets[i]['name']:
                     secrets[i] = dev_secret
                     replaced = True
             if not replaced:
                 secrets.append(dev_secret)
-    print('************************')
-    print(f'secrets: {secrets}')
+    print('++++++++++++++++++++++++++++++++++')
+    print(f'secrets post merge: {secrets}')
     secret_file = {
         "username": options.user,
         "userPassword": options.password,
