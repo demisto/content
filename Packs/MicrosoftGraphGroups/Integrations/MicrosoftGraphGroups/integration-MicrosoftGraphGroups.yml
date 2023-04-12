@@ -10,13 +10,13 @@ configuration:
   type: 0
 - name: creds_auth_id
   type: 9
-  display: ID or Client ID
-  hiddenpassword: true
+  displaypassword: ID or Client ID
+  hiddenusername: true
   section: Connect
 - name: creds_tenant_id
   type: 9
-  display: Token or Tenant ID
-  hiddenpassword: true
+  displaypassword: Token or Tenant ID
+  hiddenusername: true
   section: Connect
 - display: ID
   name: _auth_id
@@ -964,10 +964,13 @@ script:
 
 
     def main():
+        """
+        PARSE AND VALIDATE INTEGRATION PARAMS
+        """
         params: dict = demisto.params()
         base_url = params.get('url', '').rstrip('/') + '/v1.0/'
-        tenant = params.get('creds_tenant_id', {}).get('identifier', '') or params.get('tenant_id') or params.get('_tenant_id')
-        auth_and_token_url = params.get('creds_auth_id', {}).get('identifier', '') or params.get('auth_id') or params.get('_auth_id')
+        tenant = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id') or params.get('_tenant_id')
+        auth_and_token_url = params.get('creds_auth_id', {}).get('password', '') or params.get('auth_id') or params.get('_auth_id')
         enc_key = params.get('enc_key') or params.get('credentials', {}).get('password')
         verify = not params.get('insecure', False)
         redirect_uri = params.get('redirect_uri', '')
@@ -978,6 +981,8 @@ script:
         private_key = params.get('private_key')
         managed_identities_client_id = get_azure_managed_identities_client_id(params)
         self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
+        return_error(auth_and_token_url)
+
 
         if not managed_identities_client_id:
             if not self_deployed and not enc_key:

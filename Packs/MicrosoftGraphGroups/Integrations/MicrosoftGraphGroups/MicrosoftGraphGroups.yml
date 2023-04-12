@@ -16,7 +16,7 @@ configuration:
 - name: creds_tenant_id
   type: 9
   displaypassword: Token or Tenant ID
-  hiddenysername: true
+  hiddenusername: true
   section: Connect
 - display: ID
   name: _auth_id

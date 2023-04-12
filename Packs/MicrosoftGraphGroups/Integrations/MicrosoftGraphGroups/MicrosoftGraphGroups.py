@@ -463,6 +463,8 @@ def main():
     private_key = params.get('private_key')
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
+    return_error(auth_and_token_url)
+
 
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
