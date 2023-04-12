@@ -89,7 +89,6 @@ def not_gate(v):
 
 class BoxEventsRequestConfig(IntegrationHTTPRequest):
     # Endpoint: https://developer.box.com/reference/get-events/
-    url = parse_obj_as(AnyUrl, 'https://api.box.com/2.0/events')
     method = Method.GET
     params: BoxEventsParams   # type: ignore[assignment]
     verify: Optional[bool] = Field(True, alias='insecure')  # type: ignore[assignment]
@@ -107,17 +106,18 @@ class BoxIntegrationOptions(IntegrationOptions):
 class BoxEventsClient(IntegrationEventsClient):
     request: BoxEventsRequestConfig
     options: IntegrationOptions
-    authorization_url = parse_obj_as(
-        AnyUrl, 'https://api.box.com/oauth2/token'
-    )
 
     def __init__(
         self,
         request: BoxEventsRequestConfig,
         options: IntegrationOptions,
         box_credentials: BoxCredentials,
+        api_url: str,
         session: Optional[requests.Session] = None,
     ) -> None:
+        self.api_url: str = api_url
+        self.authorization_url = parse_obj_as(AnyUrl, urljoin(str(self.api_url), '/oauth2/token'))
+
         if session is None:
             session = requests.Session()
         self.box_credentials = box_credentials
@@ -221,12 +221,15 @@ def main(command: str, demisto_params: dict):
     box_credentials = BoxCredentials.parse_raw(
         demisto_params['credentials_json']['password']
     )
+    events_request_params = demisto_params.copy()
+    events_request_params['url'] = urljoin(demisto_params.get('url', 'https://api.box.com'), '/2.0/events')
     request = BoxEventsRequestConfig(
-        params=BoxEventsParams.parse_obj(demisto_params),
-        **demisto_params,
+        params=BoxEventsParams.parse_obj(events_request_params),
+        **events_request_params,
     )
     options = BoxIntegrationOptions.parse_obj(demisto_params)
-    client = BoxEventsClient(request, options, box_credentials)
+    client = BoxEventsClient(request, options, box_credentials,
+                             api_url=demisto_params.get('url', 'https://api.box.com'))
     get_events = BoxEventsGetter(client, options)
     if command == 'test-module':
         get_events.client.request.params.limit = 1
