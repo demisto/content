@@ -29,4 +29,8 @@ ignore=IF113
 ignore=IF113
 
 [known_words]
-PB
+pb
+
+[file:ListInstalledContentPacks.yml]
+ignore=BA124
+

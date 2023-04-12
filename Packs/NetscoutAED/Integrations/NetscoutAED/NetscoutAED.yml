@@ -1270,7 +1270,7 @@ script:
     description: Removes one or more hosts or CIDRs from the outbound allow list.
     execution: false
     name: na-ed-outbound-whitelisted-hosts-remove
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: false
   longRunning: false

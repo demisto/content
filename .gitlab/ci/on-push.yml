@@ -69,6 +69,8 @@ run-unittests-and-lint:
   rules:
     - if: '$BUCKET_UPLOAD == "true"'
       when: never
+    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
+      when: never
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
@@ -518,30 +520,30 @@ xsiam_server_ga:
     - job: mpv2-prepare-testing-bucket
       optional: true
 
-#xsoar_ng_server_ga:
-#  extends:
-#    - .test_content_on_cloud_server_instances_base
-#  rules:
-#    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-#      when: always
-#  variables:
-#    INSTANCE_ROLE: "XSIAM"
-#    GCS_QUEUE_FILE: "queue-ga"
-#    TEST_MACHINES_LIST: "test-machines-ga"
-#    GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
-#    CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
-#    CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
-#    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
-#    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-#    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
-#    GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
-#    SERVER_TYPE: "XSIAM"
-#    MARKETPLACE_NAME: "xsoar"
-#  needs:
-#    - job: xsoar-prepare-testing-bucket
-#      optional: true
-#  allow_failure: true
+xsoar_ng_server_ga:
+  extends:
+    - .test_content_on_cloud_server_instances_base
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+      when: always
+  variables:
+    INSTANCE_ROLE: "XSIAM"
+    GCS_QUEUE_FILE: "queue-ga"
+    TEST_MACHINES_LIST: "test-machines-ga"
+    GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
+    CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
+    CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
+    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
+    GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
+    SERVER_TYPE: "XSIAM"
+    MARKETPLACE_NAME: "xsoar"
+  needs:
+    - job: xsoar-prepare-testing-bucket
+      optional: true
+  allow_failure: true
 
 
 test-upload-flow:

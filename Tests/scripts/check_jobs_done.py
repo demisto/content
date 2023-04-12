@@ -6,7 +6,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 
 NIGHTLY_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
-    'run-unittests-and-lint: [native:ga,native:maintenance]',
+    'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
     'run-validations',
     'trigger-private-build',
     'mpv2-prepare-testing-bucket',
@@ -24,7 +24,8 @@ SDK_NIGHTLY_JOBS = [
     'demisto-sdk-nightly:run-end-to-end-tests',
 ]
 UPLOAD_JOBS = [
-    'run-unittests-and-lint-upload-flow',
+    'run-unittests-and-lint-upload-flow: [native:dev,from-yml]',
+    'run-unittests-and-lint-upload-flow: [native:ga,native:maintenance]',
     'run-validations-upload-flow',
     'mpv2-prepare-testing-bucket-upload-flow',
     'upload-id-set-bucket',
@@ -41,7 +42,7 @@ UPLOAD_JOBS = [
 ]
 PUSH_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
-    'run-unittests-and-lint: [native:ga,native:maintenance]',
+    'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
     'trigger-private-build',
     'validate-content-conf',
     'mpv2-prepare-testing-bucket',
