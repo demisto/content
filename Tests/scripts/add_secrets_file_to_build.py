@@ -5,6 +5,7 @@ from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerModule
 from Tests.scripts.utils import logging_wrapper as logging
 from pathlib import Path
+import pathlib
 import yaml
 
 
@@ -73,14 +74,13 @@ def get_git_diff(branch_name, repo):
 
 
 def run(options):
-    PATHS = PathManager(Path(__file__).absolute().parents[2])
-    branch_name = PATHS.content_repo.active_branch.name
-    import pathlib
+    paths = PathManager(Path(__file__).absolute().parents[2])
+    branch_name = paths.content_repo.active_branch.name
     root_dir = Path(__file__).absolute().parents[2]
     root_dir_instance = pathlib.Path(root_dir)
     filesindir = [item.name for item in root_dir_instance.glob("*")]
-    # Add Ddup
-    changed_files = get_git_diff(branch_name, PATHS.content_repo)
+    # TODO: Add Ddup
+    changed_files = get_git_diff(branch_name, paths.content_repo)
     changed_packs = []
     yml_ids = []
     for f in changed_files:
@@ -88,7 +88,7 @@ def run(options):
             pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
             pack_path = '/'.join(pack_path.split('/')[:-1])
             changed_packs.append(pack_path)
-    print(f'changed_packs: {changed_packs}')
+    print(f'{changed_packs=}')
     for changed_pack in changed_packs:
         print(f'changed_pack: {changed_pack}')
         pack_dir = changed_pack
@@ -97,34 +97,31 @@ def run(options):
         pack_files = [item.name for item in pack_dir_instance.glob("*")]
         print(branch_name)  # the branch name
         print('******************************')
-        print(filesindir)  # the files in content
+        print(f'{filesindir=}')  # the files in content
         print('******************************')
-        print(changed_files)  # the array of changed files
+        print(f'{changed_files=}')  # the array of changed files
         print('******************************')
-        print(changed_pack)  # the path of the changed integration
+        print(f'{changed_pack=}')  # the path of the changed integration
         print('******************************')
-        print(pack_files)  # the content of the paath location
+        print(f'{pack_files=}')  # the content of the paath location
         root_dir = Path(changed_pack)
         root_dir_instance = pathlib.Path(root_dir)
         filesindir = [item.name for item in root_dir_instance.glob("*") if str(item.name).endswith('yml')]
-        print(filesindir)
+        print(f'{filesindir=}')
         for yml_file in filesindir:
             with open(f'{changed_pack}/{yml_file}', "r") as stream:
                 try:
-                    d = yaml.safe_load(stream)
-                    print(d['commonfields']['id'])
-                    yml_ids.append(d['commonfields']['id'])
+                    yml_obj = yaml.safe_load(stream)
+                    print(yml_obj['commonfields']['id'])
+                    yml_ids.append(yml_obj['commonfields']['id'])
                 except yaml.YAMLError as exc:
                     print(exc)
     print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
     print(yml_ids)
-    secret_conf_prod = GoogleSecreteManagerModule(options.service_account)
-    secret_conf_dev = GoogleSecreteManagerModule(options.service_account)
-    secrets = secret_conf_prod.list_secrets(options.gsm_project_id, name_filter=yml_ids, with_secret=True,
-                                            attr_validation=('name', 'params'))
-    secrets_dev = secret_conf_dev.list_secrets(options.gsm_project_id, with_secret=True,
-                                                attr_validation=('name', 'params'), branch_name=branch_name)
-    # TODO: talk about an error output notification/handling
+    secret_conf = GoogleSecreteManagerModule(options.service_account)
+    secrets = secret_conf.list_secrets(options.gsm_project_id, name_filter=yml_ids, with_secret=True, ignore_dev=True)
+    secrets_dev = secret_conf.list_secrets(options.gsm_project_id, with_secret=True, branch_name=branch_name,
+                                           ignore_dev=False)
     print(f'secrets pre merge: {secrets}')
     print(f'secrets_dev: {secrets_dev}')
     if secrets_dev:

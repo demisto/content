@@ -29,8 +29,8 @@ class GoogleSecreteManagerModule:
             logging.error(
                 f'Secret json is malformed for: {secret_id} version: {response.name.split("/")[-1]}, got error: {e}')
 
-    def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False, attr_validation=tuple(),
-                     branch_name='') -> list:
+    def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False, branch_name='',
+                     ignore_dev: bool = True) -> list:
         secrets = []
         parent = f"projects/{project_id}"
         for secret in self.client.list_secrets(request={"parent": parent}):
@@ -44,8 +44,9 @@ class GoogleSecreteManagerModule:
             logging.debug(f'Getting the secret: {secret.name}')
             formatted_integration_search_ids = [GoogleSecreteManagerModule.convert_to_gsm_format(s.lower()) for s in
                                                 name_filter]
-            if (name_filter and not secret_pack_id and secret_pack_id not in formatted_integration_search_ids) or (
-                    branch_name and labels.get('branch') != branch_name):
+            if labels.get('ignore') or (ignore_dev and labels.get('dev')) or (
+                    name_filter and not secret_pack_id and secret_pack_id not in formatted_integration_search_ids) or (
+                    branch_name and labels.get('branch', '') != branch_name):
                 continue
             print(f'formatted_integration_search_ids:{formatted_integration_search_ids}')
             print(f'secret_pack_id:{secret_pack_id}')
@@ -53,14 +54,6 @@ class GoogleSecreteManagerModule:
                 try:
                     secret_value = self.get_secret(project_id, secret.name)
                     secret_value['secret_name'] = secret.name
-                    # We make sure that the keys we want in the dict are present
-                    missing_attrs = [attr for attr in attr_validation if attr not in secret_value]
-                    if missing_attrs:
-                        missing_attrs_str = ','.join(missing_attrs)
-                        print(
-                            # logging.error(f'Error getting the secret: {secret.name}, it\'s missing the following required attributes: {missing_attrs_str}')  # noqa: E501
-                            f'Error getting the secret: {secret.name}, it\'s missing the following required attributes: {missing_attrs_str}')  # noqa: E501
-                        continue
                     secrets.append(secret_value)
                 except Exception as e:
                     # logging.error(f'Error getting the secret: {secret.name}, got the error: {e}')
