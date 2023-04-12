@@ -33,10 +33,6 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
-- display: Use a self-deployed Azure Application
-  name: self_deployed
-  required: false
-  type: 8
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
@@ -64,6 +60,10 @@ configuration:
   type: 8
 - display: Use system proxy settings
   name: proxy
+  required: false
+  type: 8
+- display: Use a self-deployed Azure Application
+  name: self_deployed
   required: false
   type: 8
 - display: Key (received from the admin consent - see Detailed Instructions (?) (Deprecated)
