@@ -64,7 +64,7 @@ script:
     description: Manual command to fetch and display events.
     execution: false
     name: oracle-cloud-infrastructure-get-events
-  dockerimage: demisto/oci:1.0.0.53443
+  dockerimage: demisto/oci:1.0.0.54770
   isfetchevents: true
   runonce: false
   script: '-'
