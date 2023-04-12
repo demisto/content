@@ -58,7 +58,7 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(
                 'Could not create a valid OCI singer object, Please check the instance configuration parameters.',
-                exception=e,) from e
+                exception=e) from e
 
         return singer
 
@@ -147,7 +147,7 @@ def get_last_event_time(events: list, first_fetch_time: datetime) -> str:
 
     Returns:
         str: first fetch time for next fetch cycle.
-        - If the events list is not empty, return the time of the lateset event + 1 milliseconds.
+        - If the events list is not empty, return the time of the latest event + 1 milliseconds.
         - If the events list is empty, return the current first fetch time.
     """
     if not events:
@@ -171,7 +171,7 @@ def get_fetch_time(last_run: str | None, first_fetch_param: str) -> Optional[dat
     Returns:
         Optional[datetime]: Maximum datetime value between last run from previous fetch and first fetch time parameter.
     """
-    first_fetch_param_datetime = arg_to_datetime(arg=first_fetch_param)
+    first_fetch_param_datetime = arg_to_datetime(arg=first_fetch_param, settings={'RETURN_AS_TIMEZONE_AWARE': False})
 
     # if last_run is None (first time we are fetching) -> return first_fetch_arg datetime object
     if not last_run:
@@ -210,7 +210,7 @@ def audit_log_api_request(client: Client, start_time: str, next_page: str | None
         next_page (str | None, optional): next page query parameter for pagination. Defaults to None.
 
     Returns:
-        requests.Response: raw raseponse from the API.
+        requests.Response: raw response from the API.
     """
     params = {
         'compartmentId': client.compartment_id,
@@ -233,11 +233,14 @@ def add_millisecond_to_timestamp(timestamp: str) -> str:
     Returns:
         str: Timestamp with 1 millisecond added.
     """
-    timestamp_datetime = arg_to_datetime(arg=timestamp, settings={'RETURN_AS_TIMEZONE_AWARE': False})
-    if isinstance(timestamp_datetime, datetime):
-        return (timestamp_datetime + timedelta(milliseconds=1)).strftime(DATE_FORMAT)
-    else:
-        raise DemistoException('Datetime conversion failed.')
+    try:
+        timestamp_datetime = arg_to_datetime(arg=timestamp, settings={'RETURN_AS_TIMEZONE_AWARE': False})
+        if isinstance(timestamp_datetime, datetime):
+            return (timestamp_datetime + timedelta(milliseconds=1)).strftime(DATE_FORMAT)
+        else:
+            raise DemistoException('Datetime conversion failed.')
+    except Exception as e:
+        raise DemistoException(message=e) from e
 
 
 def get_events(
@@ -257,7 +260,7 @@ def get_events(
         DemistoException: If an error occurred while fetching events.
 
     Returns:
-        tuple[ list[dict[str, Any]], str]: A tuple of the events list and the last event time for next fetch cycle.
+        tuple[list[dict[str, Any]], str]: A tuple of the events list and the last event time for next fetch cycle.
     """
     try:
         response = audit_log_api_request(client=client, start_time=first_fetch_time.strftime(DATE_FORMAT))
@@ -345,9 +348,6 @@ def test_module(client: Client) -> str:
 
 
 def main():
-    """
-    main function, parses params and runs command functions
-    """
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
