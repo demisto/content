@@ -963,6 +963,9 @@ def test_module(_: Dict, params: Dict):
         1. Valid port.
         2. Valid cache_refresh_rate
     """
+    if not params.get('longRunningPort'):
+        # This is for the autogeneration port feature before port allocation.
+        params['longRunningPort'] = '1111'
     get_params_port(params)
     on_demand = params.get('on_demand', None)
     if not on_demand:
@@ -1086,6 +1089,20 @@ def initialize_edl_context(params: dict):
     set_integration_context(ctx)
 
 
+def check_platform_and_version(params: dict) -> bool:
+    """
+    Args:
+        - params: The demisto params from the integration configuratoin
+    Returns:
+        (bool): True if the platform is xsoar or xsoar hosted and no port specified, false otherwise
+    """
+    platform = demisto.demistoVersion().get("platform", 'xsoar')
+    if platform in ['xsoar', 'xsoar_hosted']:
+        if not is_demisto_version_ge('8.0.0') and not params.get('longRunningPort'):
+            return True
+    return False
+
+
 def main():
     """
     Main
@@ -1103,6 +1120,7 @@ def main():
         err_msg: str = 'If using credentials, both username and password should be provided.'
         demisto.debug(err_msg)
         raise DemistoException(err_msg)
+
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     commands = {
@@ -1112,6 +1130,9 @@ def main():
     }
 
     try:
+        if check_platform_and_version(params):
+            raise DemistoException('Please specify a Listen Port, in the integration configuration')
+
         initialize_edl_context(params)
         if command == 'long-running-execution':
             run_long_running(params)
