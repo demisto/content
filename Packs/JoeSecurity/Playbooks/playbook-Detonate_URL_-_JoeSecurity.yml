@@ -423,12 +423,6 @@ inputs:
   required: false
   description: The details of the URL to detonate
   playbookInputQuery:
-- key: Interval
-  value:
-    simple: "1"
-  required: false
-  description: Duration for executing the pooling (in minutes).
-  playbookInputQuery:
 - key: Timeout
   value:
     simple: "1200"
@@ -456,17 +450,6 @@ inputs:
   required: false
   description: 'The resource type to download. Default is html. Supported values are: html, lighthtml, executive, pdf, classhtml, xml, lightxml, classxml, clusterxml, irxml, json, jsonfixed, lightjson, lightjsonfixed, irjson, irjsonfixed, shoots (screenshots), openioc, maec, misp, graphreports, memstrings, binstrings, sample, cookbook, bins (dropped files), unpackpe (unpacked PE files), unpack, ida, pcap, pcapslim, memdumps, yara'
   playbookInputQuery:
-- description: Uploads a cookbook together with the sample. Needs to be a file-like object or a tuple in the format (filename, file-like object).
-  key: Cookbook
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary.
-  key: FullDisplay
-  playbookInputQuery:
-  required: false
-  value:
-    simple: "True"
 - description: A comma-separated list of tags to be added to the analysis.
   key: Tags
   playbookInputQuery:
@@ -495,12 +478,6 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: Whether to enable live interaction.
-  key: LiveInteraction
-  playbookInputQuery:
-  required: false
-  value:
-    simple: "False"
 - description: The document password.
   key: DocumentPassword
   playbookInputQuery:
