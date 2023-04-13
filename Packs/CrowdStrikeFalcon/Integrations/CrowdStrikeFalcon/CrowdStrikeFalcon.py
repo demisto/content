@@ -4138,7 +4138,6 @@ LOG('Command being called is {}'.format(demisto.command()))
 
 
 def main():
-    # add a comment for checking upload to xsoar marketplace
     command = demisto.command()
     args = demisto.args()
     try:

@@ -592,6 +592,7 @@ def bulk_update_command(
 
 
 def main():
+    # add a comment for checking upload to xsoar marketplace
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
