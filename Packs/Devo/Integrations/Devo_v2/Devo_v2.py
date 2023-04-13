@@ -687,7 +687,7 @@ def write_to_lookup_table_command():
         lookup.send_control('START', pHeaders, 'INC')
 
         for r in records:
-            lookup.send_data_line(key=r['key'], fields=r['values'])
+            lookup.send_data_line(key_index=0, fields=r['values'])
 
         lookup.send_control('END', pHeaders, 'INC')
     finally:
