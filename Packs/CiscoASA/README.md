@@ -23,4 +23,4 @@ The only supported date format is RFC 5424, an example: "2023-04-09T16:30:00Z"
 
 **Note** : If a different timestamp format is used, time extraction and mapping will not be supported.
 
-![Server Screenshot](https://raw.githubusercontent.com/demisto/content/8a2f8a41f73e9d9f4e20693e3b99dc6b75336321/Packs/CiscoASA/docs_imgs/CiscoASDM_timestamp.png)
+![Server Screenshot](readme_images/CiscoASDM_timestamp.png)

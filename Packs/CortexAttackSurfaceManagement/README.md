@@ -132,7 +132,7 @@ Playbook that given the IP address enriches GCP information relevant to ASM aler
 
 Playbook that given the IP address enriches Qualys information relevant to ASM alerts.
 
-![Cortex ASM - Qualys Enrichment](https://raw.githubusercontent.com/demisto/content/4a11ae583d49014d5326a74dfde7a998c4ebca70/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Qualys_Enrichment.png)
+![Cortex ASM - Qualys Enrichment](readme_images/Cortex_ASM_-_Qualys_Enrichment.png)
 
 #### Cortex ASM - Rapid7 Enrichment
 
