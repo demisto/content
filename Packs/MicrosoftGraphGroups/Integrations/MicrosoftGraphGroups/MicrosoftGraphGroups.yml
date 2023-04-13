@@ -8,18 +8,30 @@ configuration:
   name: url
   required: true
   type: 0
-- display: ID
-  name: _auth_id
+- name: creds_auth_id
+  type: 9
+  displaypassword: ID or Client ID
+  hiddenusername: true
+  section: Connect
+- name: creds_tenant_id
+  type: 9
+  displaypassword: Token or Tenant ID
+  hiddenusername: true
+  section: Connect
+- name: _auth_id
   required: false
   type: 0
+  display: ID
+  hidden: true
 - display: Token
   name: _tenant_id
   required: false
   type: 0
-- displaypassword: Key
-  name: credentials
+  hidden: true
+- name: credentials
   required: false
   type: 9
+  displaypassword: Key or Client Secret
   hiddenusername: true
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
@@ -27,21 +39,21 @@ configuration:
   required: false
   type: 4
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  display: Private Key
   name: private_key
   required: false
   type: 14
-- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
-  display: Use Azure Managed Identities
+  display: Private Key
+- display: Use Azure Managed Identities
   name: use_managed_identities
   required: false
   type: 8
-- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
-  displaypassword: Azure Managed Identities Client ID
-  name: managed_identities_client_id
+  additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
+- name: managed_identities_client_id
   required: false
-  hiddenusername: true
   type: 9
+  additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -484,7 +496,7 @@ script:
     execution: false
     name: msgraph-groups-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.51288
+  dockerimage: demisto/crypto:1.0.0.54410
   isfetch: false
   longRunning: false
   longRunningPort: false
