@@ -1,15 +1,15 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Sumo Logic Insight"
+        "Sumo Logic Signal"
     ],
-    "id": "incident_sumologiccloudsieminsightsignals",
+    "id": "incident_sumologiccloudsiemsignalentity",
     "version": -1,
-    "fromVersion": "6.2.0",
-    "name": "Sumo Logic Cloud SIEM Insight Signals",
+    "fromVersion": "6.5.0",
+    "name": "Sumo Logic Cloud SIEM Signal Entity",
     "ownerOnly": false,
-    "description": "List of Insight Signals",
-    "cliName": "sumologiccloudsieminsightsignals",
+    "description": "Entity associated with Signal",
+    "cliName": "sumologiccloudsiemsignalentity",
     "type": "grid",
     "closeForm": false,
     "editForm": false,
@@ -29,56 +29,44 @@
     "columns": [
         {
             "key": "name",
-            "displayName": "Signal Name",
+            "displayName": "name",
             "type": "shortText",
             "required": true,
             "script": "",
-            "width": 250,
+            "width": 150,
             "isDefault": true,
             "fieldCalcScript": "",
             "isReadOnly": false,
             "selectValues": null
         },
         {
-            "key": "description",
-            "displayName": "Description",
-            "type": "shortText",
-            "required": false,
-            "script": "",
-            "width": 250,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
-        },
-        {
-            "key": "tags",
-            "displayName": "Tags",
-            "type": "shortText",
-            "required": false,
-            "script": "",
-            "width": 250,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
-        },
-        {
-            "key": "ruleid",
-            "displayName": "Rule Id",
+            "key": "value",
+            "displayName": "value",
             "type": "shortText",
             "required": true,
             "script": "",
-            "width": 50,
+            "width": 150,
             "isDefault": true,
             "fieldCalcScript": "",
             "isReadOnly": false,
             "selectValues": null
         },
         {
-            "key": "sumourl",
-            "displayName": "SumoURL",
-            "type": "URL",
+            "key": "entityType",
+            "displayName": "entityType",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "hostname",
+            "displayName": "Entity Hostname",
+            "type": "shortText",
             "required": false,
             "script": "",
             "width": 150,
@@ -89,7 +77,6 @@
         }
     ],
     "defaultRows": [
-        {},
         {},
         {},
         {},
