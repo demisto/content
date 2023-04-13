@@ -15,7 +15,7 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* GCPProjectHierarchy_local
+GCPProjectHierarchy_local
 
 ### Commands
 
@@ -41,8 +41,8 @@ This playbook does not use any sub-playbooks.
 | GoogleCloudCompute.Instances | GCP VM Instances information. | unknown |
 | GoogleCloudCompute.Firewalls | GCP Firewall information | unknown |
 | GCPIAM.Policy | GCP IAM information | unknown |
-| GCPIAM.TagBindings | Project/Folder/Organization level tags | unknown |
-| GCPHierarchy | GCP project hierarchy information  | unknown |
+| GCPIAM.TagBindings | Project/Folder/Organization level tags. | unknown |
+| GCPHierarchy | GCP project hierarchy information.  | unknown |
 
 ## Playbook Image
 

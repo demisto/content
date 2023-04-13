@@ -3083,7 +3083,7 @@ inputs:
     simple: |-
       A new security risk was addressed on an external service owned by your team
   required: true
-  description: Subject of the notification (email or ticket) sent to service owner after remediation.
+  description: Subject of the notification (email or ticket) sent to the service owner after remediation.
   playbookInputQuery:
 - key: RemediationNotificationHTMLBody
   value:
@@ -3103,14 +3103,14 @@ inputs:
       </body>
       </html>
   required: true
-  description: 'Body of the notification (email or ticket) sent to service owner after remediation.'
+  description: 'Body of the notification (email or ticket) sent to the service owner after remediation.'
   playbookInputQuery:
 - key: BypassDevCheck
   value:
     simple: "False"
   required: false
   description: |-
-    Determine to bypass the Dev Check in automated remediation criteria: https://docs-cortex.paloaltonetworks.com/r/Cortex-XPANSE/Cortex-Xpanse-Expander-User-Guide/Automated-Remediation-Capabilities-Matrix
+    Determine whether to bypass the Dev Check in automated remediation criteria: https://docs-cortex.paloaltonetworks.com/r/Cortex-XPANSE/Cortex-Xpanse-Expander-User-Guide/Automated-Remediation-Capabilities-Matrix
 
     Set to "True" if you want to bypass.  Default is "False".
   playbookInputQuery:

@@ -1,5 +1,5 @@
 args:
-- description: The project id instead of the project number.  No need to supply `projects/` in the front as well.  (i.e. use `project-name` instead of `projects/project-name` or `projects/111111111111`).
+- description: The project ID instead of the project number.  No need to supply `projects/` before the ID (i.e., use `project-name` instead of `projects/project-name` or `projects/111111111111`).
   name: project_id
   required: true
 comment: Determine GCP project hierarchy by looking up parent objects until the organization level is reached.
@@ -11,7 +11,7 @@ enabled: true
 name: GCPProjectHierarchy
 outputs:
 - contextPath: GCPHierarchy.id
-  description: Id of the project/folder/organization object such as `folders/folder-name`.
+  description: ID of the project/folder/organization object such as `folders/folder-name`.
   type: string
 - contextPath: GCPHierarchy.level
   description: Level in relation to the original project such as project, 1, 2, etc.

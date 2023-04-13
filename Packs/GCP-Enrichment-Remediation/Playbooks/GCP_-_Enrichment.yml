@@ -480,7 +480,7 @@ tasks:
       id: 32d47af7-892b-434a-8816-b4d2dcc9c7c8
       version: -1
       name: Was there results?
-      description: Checks if output was returned from last task.
+      description: Checks if an output was returned from the last task.
       type: condition
       iscommand: false
       brand: ""
@@ -547,10 +547,10 @@ outputs:
   description: GCP IAM information
   type: unknown
 - contextPath: GCPIAM.TagBindings
-  description: Project/Folder/Organization level tags
+  description: Project/Folder/Organization level tags.
   type: unknown
 - contextPath: GCPHierarchy
-  description: 'GCP project hierarchy information '
+  description: GCP project hierarchy information.
   type: unknown
 tests:
 - No tests (auto formatted)
