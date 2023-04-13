@@ -11,12 +11,13 @@ Go to F5 LTM and navigate to **System** -> **Logs** -> **Configuration** -> **Re
 
 Press **Add** and **Update** to apply the new configuration. 
 
-![Server Screenshot](https://github.com/demisto/content/raw/db8cf3ad2df971f19d89a00d34cfab444b434dfb/Packs/F5LTM/doc_imgs/F5LTM.png)
+![Server Screenshot](https://raw.githubusercontent.com/demisto/content/5534b2cbce764bc75c0150c78e42863079748436/Packs/F5LTM/doc_imgs/F5LTM.png)
+
 ## Collect Events from Vendor
 
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
-### Broker VM
+### Broker VM 
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
