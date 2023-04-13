@@ -1,7 +1,7 @@
-[MODEL: dataset="hello_world_raw", model="Audit"]
-alter XDM.Audit.original_event_id = to_string(id),
-    XDM.Audit.event_timestamp = created_time,
-    XDM.Audit.original_event_description = description,
-    XDM.Audit.operation_type = json_extract_scalar(custom_details, "$.type"),
-    XDM.Audit.TriggeredBy.identity.name = json_extract_scalar(custom_details, "$.triggered_by_name"),
-    XDM.Audit.TriggeredBy.identity.uuid = json_extract_scalar(custom_details, "$.triggered_by_uuid");
+[MODEL: dataset=hello_world_raw]
+alter
+    xdm.event.id = to_string(id),
+    xdm.event.description = description,
+    xdm.event.operation_sub_type = json_extract_scalar(custom_details, "$.type"),
+    xdm.source.user.username = json_extract_scalar(custom_details, "$.triggered_by_name"),
+    xdm.source.user.identifier = json_extract_scalar(custom_details, "$.triggered_by_uuid");

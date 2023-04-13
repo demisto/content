@@ -1,12 +1,8 @@
 import uuid
-
-from requests import Response
-
 import demistomock as demisto
 from CommonServerPython import *
-import json
 import urllib3
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any, Dict, Optional
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -132,6 +128,20 @@ def fetch_events(client: Client, last_run: Dict[str, int],
 ''' MAIN FUNCTION '''
 
 
+def add_time_to_events(events):
+    """
+    Adds the _time key to the events.
+    Args:
+        events: List[Dict] - list of events to add the _time key to.
+    Returns:
+        list: The events with the _time key.
+    """
+    if events:
+        for event in events:
+            create_time = arg_to_datetime(arg=event.get('created_time'))
+            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+
+
 def main() -> None:
     """
     main function, parses params and runs command functions
@@ -143,6 +153,7 @@ def main() -> None:
     api_key = params.get('apikey', {}).get('password')
     base_url = urljoin(params.get('url'), '/api/v1')
     verify_certificate = not params.get('insecure', False)
+    next_run = None
 
     # How much time before the first fetch to retrieve events
     first_fetch_time = arg_to_datetime(
@@ -186,15 +197,17 @@ def main() -> None:
                     first_fetch_time=first_fetch_timestamp,
                     alert_status=alert_status,
                 )
-                # saves next_run for the time fetch-events is invoked
-                demisto.setLastRun(next_run)
 
             if should_push_events:
+                add_time_to_events(events)
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
                     product=PRODUCT
                 )
+                if next_run:
+                    # saves next_run for the time fetch-events is invoked
+                    demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:

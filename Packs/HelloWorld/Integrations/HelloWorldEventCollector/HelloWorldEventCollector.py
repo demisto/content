@@ -143,6 +143,7 @@ def main() -> None:
     api_key = params.get('apikey', {}).get('password')
     base_url = urljoin(params.get('url'), '/api/v1')
     verify_certificate = not params.get('insecure', False)
+    next_run = None
 
     # How much time before the first fetch to retrieve events
     first_fetch_time = arg_to_datetime(
@@ -186,8 +187,6 @@ def main() -> None:
                     first_fetch_time=first_fetch_timestamp,
                     alert_status=alert_status,
                 )
-                # saves next_run for the time fetch-events is invoked
-                demisto.setLastRun(next_run)
 
             if should_push_events:
                 send_events_to_xsiam(
@@ -195,6 +194,9 @@ def main() -> None:
                     vendor=VENDOR,
                     product=PRODUCT
                 )
+                if next_run:
+                    # saves next_run for the time fetch-events is invoked
+                    demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:
