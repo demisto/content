@@ -207,12 +207,15 @@ def main():  # pragma: no cover
                     raw_response=events,
                 )
                 return_results(command_results)
+                if argToBoolean(demisto_params.get('push_events', 'false')):
+                    demisto.debug(f'Sending {len(events)} events to XSIAM')
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             else:
-                demisto.setLastRun(get_events.get_last_run())
-                demisto_params['push_events'] = True
-            if demisto_params.get('push_events'):
+                # fetch-events
                 demisto.debug(f'Sending {len(events)} events to XSIAM')
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                demisto.setLastRun(get_events.get_last_run())
+
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
