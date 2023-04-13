@@ -1263,11 +1263,14 @@ class Client(BaseClient):
             raise DemistoException(
                 "Connection Error: Make sure server URL is set correctly."
             )
-        if res.headers.get("Content-Type") != "application/json":
+        output = {}
+        try:
+            output = res.json()
+        except requests.exceptions.JSONDecodeError:
             raise DemistoException(
                 res,
                 res=res)
-        output = res.json()
+
         error = self.get_error_data(output)
         if error_code == HTTPStatus.INTERNAL_SERVER_ERROR:
             # update & delete
