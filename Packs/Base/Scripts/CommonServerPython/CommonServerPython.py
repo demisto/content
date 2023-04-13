@@ -513,6 +513,7 @@ class FeedIndicatorType(object):
     Malware = "Malware"
     Identity = "Identity"
     Location = "Location"
+    Software = "Software"
 
     @staticmethod
     def is_valid_type(_type):
@@ -535,7 +536,8 @@ class FeedIndicatorType(object):
             FeedIndicatorType.MUTEX,
             FeedIndicatorType.Malware,
             FeedIndicatorType.Identity,
-            FeedIndicatorType.Location
+            FeedIndicatorType.Location,
+            FeedIndicatorType.Software
         )
 
     @staticmethod
@@ -6753,8 +6755,11 @@ class CommandResults:
         # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, bool, ScheduledCommand, list, int, str, List[Any]) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
-        if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
-            raise ValueError('outputs_prefix is missing')
+        if outputs is not None:
+            if not isinstance(outputs, dict) and not outputs_prefix:
+                raise ValueError('outputs_prefix is missing')
+            if outputs_prefix == '.':
+                raise ValueError('outputs_prefix cannot be a period.')
         if indicators and indicator:
             raise ValueError('indicators is DEPRECATED, use only indicator')
         if entry_type is None:
@@ -9889,7 +9894,7 @@ def get_size_of_object(input_object):
     if IS_PY3 and PY_VER_MINOR >= 10:
         from collections.abc import Mapping
     else:
-        from collections import Mapping  # type: ignore[no-redef]
+        from collections import Mapping  # type: ignore[no-redef, attr-defined]
 
     from collections import deque
     from numbers import Number
