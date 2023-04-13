@@ -756,7 +756,7 @@ def test_panorama_register_ip_tag_command_wrongful_args(mocker):
      - a proper exception is raised
     """
     from Panorama import panorama_register_ip_tag_command
-    args = {'IPs': '1.1.1.1', 'tag': 'test_tag', 'persistent': 'flase', 'timeout': '5'}
+    args = {'IPs': '1.1.1.1', 'tag': 'test_tag', 'persistent': 'false', 'timeout': '5'}
 
     mocker.patch('Panorama.get_pan_os_major_version', return_value=8)
     with pytest.raises(DemistoException,
