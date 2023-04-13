@@ -1134,6 +1134,8 @@ def main():
     # detect packs to upload
     pack_names_to_upload = get_packs_names(modified_packs_to_upload)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
+    # Copying the artifact for uploading pack-readme images
+    copy_artifact_path = shutil.copytree(extract_destination_path, 'tmp/tmp/copy_artifact')
     # list of all packs from `content_packs.zip` given from create artifacts
     all_content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name),
                               is_modified=pack_name in pack_names_to_upload)
@@ -1345,7 +1347,7 @@ def main():
     readme_images_dict, readme_urls_data_list = replace_readme_urls(index_folder_path,
                                                                     storage_base_path=storage_base_path,
                                                                     marketplace=marketplace)
-    download_readme_images_from_url_data_list(readme_urls_data_list, storage_bucket=storage_bucket)
+    download_readme_images_from_url_data_list(readme_urls_data_list, copy_artifact_path, storage_bucket=storage_bucket)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path,
