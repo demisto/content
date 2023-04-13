@@ -196,45 +196,33 @@ def search_pack(client: demisto_client,
     """
 
     try:
-        # make the search request
-        try:
-            response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                                path=f'/contentpacks/marketplace/{pack_id}',
-                                                                                method='GET',
-                                                                                accept='application/json',
-                                                                                _request_timeout=None,
-                                                                                response_type='object')
-        except ApiException as ex:
-            try:
-                logging.exception(f'Exception trying to search pack "{pack_display_name}" with ID "{pack_id}".'
-                                  f' Exception: {ex.status}, {ex.body}')
-            except Exception:
-                logging.error(f'An error occurred while parsing the marketplace error: {str(ex)}')
-                raise ex
-        except Exception as ex:
-            logging.exception(f'Exception trying to search pack "{pack_display_name}" with ID "{pack_id}".'
-                              f' Exception: {ex}')
-
+        response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                            path=f'/contentpacks/marketplace/{pack_id}',
+                                                                            method='GET',
+                                                                            accept='application/json',
+                                                                            _request_timeout=None,
+                                                                            response_type='object')
         if 200 <= status_code < 300:
-
             if response_data and response_data.get('currentVersion'):
                 logging.debug(f'Found pack "{pack_display_name}" by its ID "{pack_id}" in bucket!')
-
                 pack_data = {
                     'id': response_data.get('id'),
                     'version': response_data.get('currentVersion')
                 }
                 return pack_data
-
             else:
                 raise Exception(f'Did not find pack "{pack_display_name}" by its ID "{pack_id}" in bucket.')
         else:
-            msg = response_data.get('message', '')
             err_msg = f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed with status code ' \
-                      f'{status_code}\n{msg}'
+                      f'{status_code}\n{response_data.get("message", "")}'
             raise Exception(err_msg)
-    except Exception:
-        logging.exception(f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed.')
+
+    except ApiException as ex:
+        logging.exception(f'API Exception trying to search pack "{pack_display_name}" with ID "{pack_id}".'
+                          f' Exception: {ex.status}, {ex.body}')
+    except Exception as ex:
+        logging.exception(f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed. '
+                          f'Exception: {str(ex)}')
 
         lock.acquire()
         global SUCCESS_FLAG
