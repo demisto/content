@@ -320,13 +320,6 @@ def get_alert_details_command(client: MsGraphClient, args):
         str, Dict, Dict: Human readable output with information about the alert, parsed outputs and request's response.
     """
     alert_id = args.get('alert_id')
-    fields_to_include = args.get('fields_to_include')
-    if fields_to_include:
-        fields_list = fields_to_include.split(',')
-    else:
-        fields_list = []
-
-    show_all_fields = True if 'All' in fields_list else False
 
     alert_details = client.get_alert_details(alert_id)
 
@@ -341,6 +334,13 @@ def get_alert_details_command(client: MsGraphClient, args):
                          'createdDateTime', 'lastUpdateDateTime']
         hr += tableToMarkdown('', alert_details, table_headers, removeNull=True)
     else:
+        fields_to_include = args.get('fields_to_include')
+        if fields_to_include:
+            fields_list = fields_to_include.split(',')
+        else:
+            fields_list = []
+        show_all_fields = True if 'All' in fields_list else False
+
         basic_properties_title = 'Basic Properties'
         basic_properties = {
             'ActivityGroupName': alert_details['activityGroupName'],

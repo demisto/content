@@ -315,7 +315,7 @@ script:
       secret: false
     - default: false
       defaultValue: All
-      description: 'Fields to fetch for specified Alert apart from the basic properties, given as comma separated values, e.g. NetworkConnections,Processes. Optional values: All,NetworkConnections,Processes,RegistryKeys,UserStates,HostStates,FileStates,CloudAppStates,MalwareStates,CustomerComment,Triggers,VendorInformation,VulnerabilityStates'
+      description: 'Relevant only for V1. Fields to fetch for specified Alert apart from the basic properties, given as comma separated values, e.g. NetworkConnections,Processes. Optional values: All,NetworkConnections,Processes,RegistryKeys,UserStates,HostStates,FileStates,CloudAppStates,MalwareStates,CustomerComment,Triggers,VendorInformation,VulnerabilityStates.'
       isArray: false
       name: fields_to_include
       required: false
