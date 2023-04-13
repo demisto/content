@@ -135,6 +135,7 @@ class CollectionResult:
         except NonXsoarSupportedPackException:
             if test:
                 logger.info(f'{pack} support level != XSOAR, not collecting {test}, pack will be installed')
+                test = None
 
         except InvalidTestException as e:
             suffix = ' (pack will be installed)' if pack else ''
@@ -523,7 +524,7 @@ class TestCollector(ABC):
             # 2. allow_incompatible_marketplace=False, if True, then should be also to install
             if self.marketplace == MarketplaceVersions.MarketplaceV2 and is_xsoar_and_xsiam_pack and \
                     not allow_incompatible_marketplace:
-                collect_only_to_upload = False
+                collect_only_to_upload = True
 
             # sometimes, we want to install or upload packs that are not compatible (e.g. pack belongs to both marketplaces)
             # because they have content that IS compatible.
@@ -1296,12 +1297,6 @@ def output(result: Optional[CollectionResult]):
     """
     tests = sorted(result.tests, key=lambda x: x.lower()) if result else ()
     packs_to_install = sorted(result.packs_to_install, key=lambda x: x.lower()) if result else ()
-    packs_to_install.append('DemistoRESTAPI')
-    packs_to_install.append('EWS')
-    packs_to_install.append('DeveloperTools')
-    packs_to_install.append('rasterize')
-    packs_to_install.append('Phishing')
-    packs_to_install.append('Forcepoint')
     packs_to_upload = sorted(result.packs_to_upload, key=lambda x: x.lower()) if result else ()
     modeling_rules_to_test = sorted(
         result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()

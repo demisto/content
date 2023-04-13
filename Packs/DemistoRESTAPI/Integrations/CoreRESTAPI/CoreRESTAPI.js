@@ -3,14 +3,6 @@ if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
 }
 
-log("$$$$$$$1")
-log(serverURL)
-log(params.auth_id)
-log(JSON.stringify(params.creds_apikey)),
-log(params.creds_apikey.identifier)
-log(params.creds_apikey.password)
-log("$$$$$$$1")
-
 if (params.auth_id || (params.creds_apikey && params.creds_apikey.identifier)) {
     if (!serverURL.endsWith('/xsoar')){
         serverURL = serverURL + '/xsoar'
