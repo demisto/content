@@ -582,18 +582,19 @@ def test_test_module_success(requests_mock, orca_client: OrcaClient) -> None:
 
 
 def test_test_module_fail(requests_mock, orca_client: OrcaClient, mocker) -> None:
+    return_error_mock = mocker.patch("Orca.return_error")
+
     mock_response = {"status": "failure", "error": "There is no Automation Rule assigned to API token"}
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", status_code=200, json={"status": "failure"})
-    res = orca_client.validate_api_key()
-    assert res == "Test failed because the Orca API token that was entered is invalid, please provide a valid API token"
-
-    return_error_mock = mocker.patch("Orca.return_error")
+    orca_client.validate_api_key()
+    assert return_error_mock.call_count == 1
+    err_msg = return_error_mock.call_args[1]["message"]
+    assert err_msg == "Test failed because the Orca API token that was entered is invalid, please provide a valid API token"
 
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", status_code=400, json=mock_response)
     orca_client.validate_api_key()
-
-    assert return_error_mock.call_count == 1
-    err_msg = return_error_mock.call_args[0][0]
+    assert return_error_mock.call_count == 2
+    err_msg = err_msg = return_error_mock.call_args[1]["message"]
     assert err_msg == "There is no Automation Rule assigned to API token"
 
 
@@ -725,7 +726,7 @@ def test_orca_set_alert_status(requests_mock, orca_client: OrcaClient) -> None:
     }
     result = set_alert_status(orca_client, args)
     content = result.to_context()["Contents"]
-    assert content["status"]
+    assert content["id"] == "orca-1"
 
 
 def test_orca_verify_alert(requests_mock, orca_client: OrcaClient) -> None:

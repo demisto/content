@@ -30,8 +30,9 @@ class OrcaClient:
                 url_suffix="/rules/query/alerts", data={},
                 timeout=ORCA_API_TIMEOUT
             )
+
             if response.get("status") != "success":
-                return response.get("error") or invalid_token_string
+                return_error(message=response.get("error") or invalid_token_string)
         except Exception as e:
             demisto.debug(str(e))
 
@@ -41,7 +42,7 @@ class OrcaClient:
             if isinstance(response, Response):
                 message = response.json().get("error") or invalid_token_string
 
-            return_error(message)
+            return_error(message=message)
 
         return "ok"
 
@@ -325,9 +326,7 @@ def set_alert_severity(orca_client: OrcaClient, args: Dict[str, Any]) -> Command
             "severity": response.get("details", {}).get("severity")
         }
     if "error" in response:
-        context = {
-            "details": response.get("error")
-        }
+        raise DemistoException(response.get("error"))
 
     return CommandResults(
         readable_output="Alert severity changed",
