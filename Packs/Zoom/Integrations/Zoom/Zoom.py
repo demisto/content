@@ -48,9 +48,6 @@ filed are for a recurring meeting with a fixed time and monthly recurrence_type 
 MONTHLY_RECURRING_MISIING_ARGUMENTS = """Missing arguments. A recurring meeting with a fixed time and monthly recurrence_type
             must have the following arguments: monthly_week and monthly_week_day."""
 NOT_WEEKLY_WITH_WEEKLY_ARGUMENTS = "Weekly_days is for weekly recurrence_type only."
-EXTRA_PARAMS = """Too many fields were filled.
-You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
-OR the API Key and API Secret fields (JWT - Deprecated)."""
 RECURRING_MISSING_ARGUMENTS = """Missing arguments. A recurring meeting with a fixed
 time is missing this argument: recurrence_type."""
 
@@ -605,14 +602,6 @@ def zoom_meeting_list_command(client, **args) -> CommandResults:
         },
         raw_response=raw_data
     )
-
-
-def check_authentication_type_parameters(api_key: str, api_secret: str,
-                                         # checking if the user entered extra parameters
-                                         # at the configuration level
-                                         account_id: str, client_id: str, client_secret: str):
-    if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
-        raise DemistoException(EXTRA_PARAMS)
 
 
 def main():  # pragma: no cover
