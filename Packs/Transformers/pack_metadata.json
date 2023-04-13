@@ -1,0 +1,21 @@
+{
+    "name": "Transformers",
+    "description": "This pack contains two transformers\n1) GetValuesBasedOnIndexes - This transformer is used to get list of array elements by providing the initial range and end range indexes.\n2) ConvertUTCEpochTimeToTimeStamp - This transformer convert the Epoch or UTC timestamp to desired stamp",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Suresh A",
+    "url": "",
+    "email": "",
+    "created": "2023-04-13T10:50:31Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "suresh-a10"
+    ]
+}
