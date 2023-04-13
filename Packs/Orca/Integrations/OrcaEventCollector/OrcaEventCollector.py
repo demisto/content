@@ -111,7 +111,7 @@ def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token:
 def main() -> None:
     command = demisto.command()
     api_token = demisto.params().get('credentials', {}).get('password')
-    server_url = demisto.params().get('server_url')
+    server_url = f"{demisto.params().get('server_url')}/api"
     first_fetch = demisto.params().get('first_fetch') or '3 days'
     max_fetch = arg_to_number(demisto.params().get('max_fetch')) or 1000
     verify_certificate = not demisto.params().get('insecure', False)

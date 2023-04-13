@@ -1,0 +1,219 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "d54acdf7-5a11-4a53-85f5-cdf2623cd663",
+            "vendor": "orca",
+            "product": "security",
+            "dataset": "orca_security_raw",
+            "event_data": {
+                "group_val": "nongroup",
+                "asset_type_string": "AwsApiGatewayEndpoint",
+                "data": {
+                    "mitre_category": "best practices",
+                    "recommendation": "We recommend to use client-side SSL certificates for authentication of backend HTTP requests",
+                    "details": "details",
+                    "title": "API Gateway is not using SSL certificates",
+                    "remediation_console": [
+                        ">1. To create a new SSL client certificate",
+                        ">2. To Update the backend server or service to include the new SSL certificate"
+                    ],
+                    "mitre_technique": [
+                        "No technique"
+                    ]
+                },
+                "alert_labels": [
+                    "mitre: best practices"
+                ],
+                "configuration": {},
+                "is_compliance": false,
+                "group_type_string": "NonGroup",
+                "description": "API Gateway is not using SSL certificates",
+                "recommendation": "We recommend to use client-side SSL certificates for authentication of backend HTTP requests",
+                "source": "CreateRestApi",
+                "group_type": "AwsApiGatewayEndpoint",
+                "cluster_type": "AwsApiGatewayEndpoint",
+                "type": "apigateway_not_using_ssl_certificates",
+                "group_unique_id": "group_unique_id",
+                "cloud_account_id": "cloud_account_id",
+                "type_string": "API Gateway is not using SSL certificates",
+                "asset_name": "asset_name",
+                "account_name": "account_name (account_name)",
+                "asset_type": "AwsApiGatewayEndpoint",
+                "context": "control",
+                "details": "API Gateway CreateRestApi is not using client-side SSL certificates.",
+                "model": {
+                    "data": {
+                        "AwsApiGatewayEndpoint": {
+                            "ApiKeySource": "ApiKeySource",
+                            "Route53DNSRecords": {
+                                "models": [],
+                                "remaining": 0
+                            },
+                            "Stages": {
+                                "models": [
+                                    {
+                                        "model": {
+                                            "data": {
+                                                "AwsApiGatewayStage": {
+                                                    "DeploymentId": "DeploymentId",
+                                                    "CacheClusterStatus": "NOT_AVAILABLE",
+                                                    "TracingEnabled": false,
+                                                    "Name": "prod",
+                                                    "CacheClusterEnabled": false
+                                                },
+                                                "Inventory": {
+                                                    "NewSubCategory": "Segregation/Transport",
+                                                    "OrcaScore": 1.0,
+                                                    "Category": "Network",
+                                                    "UiUniqueField": "UiUniqueField",
+                                                    "BlastRadius": "{}",
+                                                    "NewCategory": "Network",
+                                                    "OrcaTags": "{}",
+                                                    "Name": "Name",
+                                                    "Zones": [],
+                                                    "Score": 4,
+                                                    "SubCategory": "API Gateway",
+                                                    "CreationTime": "2022-07-04T15:17:29+00:00",
+                                                    "Region": "us-east-1",
+                                                    "UpdatedTime": "2022-10-31T16:00:59+00:00",
+                                                    "Observations": [],
+                                                    "RiskLevel": "informational",
+                                                    "Tags": "{}",
+                                                    "RelatedCompliances": [],
+                                                    "AccessEndpoints": "[]"
+                                                }
+                                            },
+                                            "name": "name",
+                                            "asset_unique_id": "asset_unique_id",
+                                            "id": "id",
+                                            "type": "AwsApiGatewayStage"
+                                        }
+                                    }
+                                ],
+                                "_is_path_to_many_objects": [
+                                    true
+                                ],
+                                "remaining": 0
+                            },
+                            "EndpointConfiguration": "{}",
+                            "DisableExecuteApiEndpoint": false,
+                            "ApiId": "ApiId",
+                            "Name": "Name"
+                        },
+                        "Inventory": {
+                            "NewSubCategory": "Segregation/Transport",
+                            "OrcaScore": 3.0,
+                            "Category": "Network",
+                            "UiUniqueField": "UiUniqueField",
+                            "BlastRadius": "{}",
+                            "NewCategory": "Network",
+                            "OrcaTags": "{}",
+                            "Name": "Name",
+                            "Zones": [],
+                            "Score": 4,
+                            "SubCategory": "API Gateway",
+                            "CreationTime": "2022-07-04T15:16:18+00:00",
+                            "Region": "us-east-1",
+                            "Observations": [],
+                            "RiskLevel": "low",
+                            "Tags": "{}",
+                            "RelatedCompliances": [],
+                            "AccessEndpoints": "[]"
+                        }
+                    },
+                    "name": "CreateRestApi",
+                    "asset_unique_id": "asset_unique_id",
+                    "id": "id",
+                    "type": "AwsApiGatewayEndpoint"
+                },
+                "state": {
+                    "severity": "informational",
+                    "rule_source": "Orca",
+                    "last_updated": "2023-03-01T00:00:00+00:00",
+                    "last_seen": "2023-04-09T00:00:00+00:00",
+                    "in_verification": false,
+                    "low_since": "2022-07-31T00:00:00+00:00",
+                    "created_at": "2022-07-31T00:00:00+00:00",
+                    "score": 4,
+                    "risk_level": "informational",
+                    "orca_score": 2.3,
+                    "alert_id": "alert_id",
+                    "high_since": null,
+                    "status_time": "2022-07-31T00:00:00+00:00",
+                    "status": "open",
+                    "verification_status": null
+                },
+                "rule_query": "AwsApiGatewayEndpoint with all Stages with not ClientCertificateId",
+                "cluster_unique_id": "cluster_unique_id",
+                "cluster_name": "cluster_name",
+                "subject_type": "AwsApiGatewayEndpoint",
+                "group_name": "group_name",
+                "level": 0,
+                "tags_info_list": [],
+                "is_rule": true,
+                "cloud_provider": "aws",
+                "organization_name": "Partners",
+                "type_key": "type_key",
+                "cloud_vendor_id": "cloud_vendor_id",
+                "rule_id": "rule_id",
+                "asset_category": "Network",
+                "asset_state": "enabled",
+                "asset_tags_info_list": [],
+                "organization_id": "organization_id",
+                "asset_unique_id": "asset_unique_id",
+                "cloud_provider_id": "cloud_provider_id",
+                "category": "Network misconfigurations",
+                "cloud_account_type": "Regular",
+                "asset_vendor_id": "asset_vendor_id"
+            },
+            "expected_values": {
+                "xdm.network.tls.server_certificate.subject": null,
+                "xdm.target.resource.type": null,
+                "xdm.database.affected_rows": null,
+                "xdm.alert.description": "API Gateway CreateRestApi is not using client-side SSL certificates.",
+                "xdm.source.user.username": "account_name (account_name)",
+                "xdm.target.subnet": null,
+                "xdm.alert.mitre_tactics": "best practices",
+                "xdm.target.host.mac_addresses": null,
+                "xdm.source.user.identifier": "account_name",
+                "xdm.target.ipv4": null,
+                "xdm.target.host.device_id": null,
+                "xdm.alert.severity": "informational",
+                "xdm.network.tls.server_certificate.issuer": null,
+                "xdm.target.cloud.zone": null,
+                "xdm.database.tables": null,
+                "xdm.target.interface": null,
+                "xdm.database.name": null,
+                "xdm.logon.fingerprint": null,
+                "xdm.network.tls.server_certificate.serial": null,
+                "xdm.target.process.executable.path": null,
+                "xdm.target.user.groups": null,
+                "xdm.target.cloud.provider": "aws",
+                "xdm.target.resource.name": "Name",
+                "xdm.target.agent.version": null,
+                "xdm.target.host.hostname": null,
+                "xdm.alert.name": "API Gateway is not using SSL certificates",
+                "xdm.event.type": "API Gateway is not using SSL certificates",
+                "xdm.target.process.name": null,
+                "xdm.target.cloud.region": "us-east-1",
+                "xdm.target.process.pid": null,
+                "xdm.target.user.upn": null,
+                "xdm.target.user.identifier": null,
+                "xdm.target.application.name": null,
+                "xdm.event.duration": null,
+                "xdm.alert.subcategory": "Network misconfigurations",
+                "xdm.alert.original_alert_id": "alert_id",
+                "xdm.target.resource.id": "ApiId",
+                "xdm.network.ip_protocol": null,
+                "xdm.target.port": null,
+                "xdm.alert.mitre_techniques": null,
+                "xdm.target.user.username": null,
+                "xdm.target.url": null,
+                "xdm.target.host.ipv4_addresses": null,
+                "xdm.network.tls.client_certificate.serial": null,
+                "xdm.source.user.user_type": "REGULAR",
+                "xdm.target.location.region": null
+            }
+        }
+    ]
+}
