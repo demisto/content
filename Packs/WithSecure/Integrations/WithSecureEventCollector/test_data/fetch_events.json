@@ -1,0 +1,54 @@
+{
+    "items": [
+        {
+            "severity": "critical",
+            "engine": "edr",
+            "serverTimestamp": "2023-03-15T22:00:22.574Z",
+            "id": "test_id2",
+            "organization": {
+                "name": "Palo Alto_comp",
+                "id": "id_one"
+            },
+            "action": "created",
+            "details": {
+                "incidentPublicId": "4550314-13",
+                "initialDetectionTimestamp": "1678917621712",
+                "risk": "MEDIUM",
+                "categories": "LATERAL_MOVEMENT",
+                "clientTimestamp": "1678917514000",
+                "resolution": "UNCONFIRMED",
+                "userSam": "NT AUTHORITY\\SYSTEM"
+            },
+            "persistenceTimestamp": "2023-03-15T22:00:22.985Z",
+            "clientTimestamp": "2023-03-15T21:58:34Z",
+            "device": {
+                "name": "WIN10-TMPLT"
+            }
+        },
+        {
+            "severity": "critical",
+            "engine": "edr",
+            "serverTimestamp": "2023-03-15T14:39:13.022Z",
+            "id": "test_id",
+            "organization": {
+                "name": "Palo Alto_comp",
+                "id": "id_two"
+            },
+            "action": "created",
+            "details": {
+                "incidentPublicId": "4550314-5",
+                "initialDetectionTimestamp": "1678891152183",
+                "risk": "HIGH",
+                "categories": "SYSTEM_OR_TOOL_MISUSE",
+                "clientTimestamp": "1678888889000",
+                "resolution": "UNCONFIRMED",
+                "userSam": "A-WIN81X64-TEMP\\admin"
+            },
+            "persistenceTimestamp": "2023-03-15T14:39:15.695Z",
+            "clientTimestamp": "2023-03-15T14:01:29Z",
+            "device": {
+                "name": "A-WIN81X64-TEMP"
+            }
+        }
+    ]
+}
