@@ -27,15 +27,6 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | URL | The details of the URL to detonate. |  | Optional |
-| AlertOS | The operating system for which the alert was raised.<br/>accepted values are Windows, Linux, Android | ${incident.deviceosname} | Optional |
-| EnableTor | Whether the sandbox analysis routes network traffic via TOR. If true, sandbox analysis routes network traffic via TOR. Relevant if the submit_file parameter is set to true. | false | Optional |
-| EnvironmentID | Sandbox environment used for analysis. | '160: Windows 10' | Optional |
-| ActionScript | Runtime script for sandbox analysis. |  | Optional |
-| CommandLine | Command line script passed to the submitted file at runtime. Max length: 2048 characters. |  | Optional |
-| DocumentPassword | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. |  | Optional |
-| SubmitName | Name of the malware sample that’s used for file type detection. and analysis. |  | Optional |
-| SystemDate | Set a custom date for the sandbox environment in the format yyyy-MM-dd. |  | Optional |
-| SystemTime | Sets a custom time for the sandbox environment in the format HH:mm. |  | Optional |
 
 ## Playbook Outputs
 
