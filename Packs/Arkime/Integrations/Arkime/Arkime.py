@@ -1109,6 +1109,3 @@ def main() -> None:
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
-
-
-# add comment for checking upload Slack notification - ["xsoar","marketplacev2"]

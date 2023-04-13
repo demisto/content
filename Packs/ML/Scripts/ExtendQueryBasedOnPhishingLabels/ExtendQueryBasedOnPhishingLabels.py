@@ -55,5 +55,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-# add comment for checking upload Slack notification - ["xsoar"]
