@@ -150,8 +150,8 @@ script:
       isArray: false
       name: bodyType
       predefined:
-        - HTML
-        - Text
+      - HTML
+      - Text
       required: false
       secret: false
     - default: false
@@ -171,7 +171,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.51930
+  dockerimage: demisto/python3:3.10.11.54132
 tests:
 - Mail Sender (New) Test
 fromversion: 5.0.0

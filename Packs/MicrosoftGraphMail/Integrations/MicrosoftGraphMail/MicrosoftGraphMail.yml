@@ -53,10 +53,7 @@ configuration:
   section: Connect
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
-- additionalinfo: Relevant only if the integration is running on Azure VM. 
-    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
-    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
-    For additional information, see the Help tab.
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   required: false
@@ -1151,17 +1148,17 @@ script:
       name: htmlBody
       required: false
       secret: false
-    - name: renderBody
-      default: false
+    - default: false
       description: Indicates whether to render the email body
       isArray: false
+      name: renderBody
       required: false
       secret: false
-    - default: false
-      description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
+    - description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
       isArray: true
       name: replyTo
       required: false
+      default: false
       secret: false
     - deprecated: true
       description: flag for rate limit retry
@@ -1404,7 +1401,7 @@ script:
       - Read
       - Unread
     description: Update the status of an email to read / unread.
-  dockerimage: demisto/crypto:1.0.0.52480
+  dockerimage: demisto/crypto:1.0.0.54410
   feed: false
   isfetch: true
   longRunning: false

@@ -935,9 +935,9 @@ script:
     - name: htmlBody
       description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
     - name: renderBody
-      default: false
-      description: Indicates whether to render the email body
+      description: 'Indicates whether to render the email body'
       isArray: false
+      default: false
       required: false
       secret: false
     - name: attachIDs
@@ -950,7 +950,7 @@ script:
       description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
-  dockerimage: demisto/py3ews:1.0.0.49435
+  dockerimage: demisto/py3ews:1.0.0.54571
   feed: false
   isfetch: true
   runonce: false

@@ -1838,7 +1838,7 @@ script:
     - default: false
       description: A comma-separated list of message IDs to reply to.
       isArray: true
-      name: in_reply_to
+      name: inReplyTo
       required: true
       secret: false
     - default: false

@@ -377,9 +377,9 @@ script:
       predefined:
       - text
       - HTML
-    - name: renderBody
+    - description: 'Indicates whether to render the email body'
+      name: renderBody
       default: false
-      description: Indicates whether to render the email body
       isArray: false
       required: false
       secret: false
@@ -391,10 +391,10 @@ script:
       - notFlagged
       - complete
       - flagged
-    - auto: PREDEFINED
-      defaultValue: Low
-      description: 'The importance of the email. Can be: "Low", "Normal", or "High".'
+    - description: 'The importance of the email. Can be: "Low", "Normal", or "High".'
       name: importance
+      auto: PREDEFINED
+      defaultValue: Low
       predefined:
       - Low
       - Normal
@@ -409,8 +409,8 @@ script:
       isArray: true
       name: attach_names
     - description: A comma-separated list of CIDs to embed attachments within the actual email.
-      isArray: true
       name: attach_cids
+      isArray: true
     - description: The email address from which to reply.
       name: from
     - description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
@@ -755,7 +755,7 @@ script:
     execution: false
     name: msgraph-mail-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.49599
+  dockerimage: demisto/crypto:1.0.0.54410
   isfetch: true
   runonce: false
   script: ''
