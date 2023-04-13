@@ -464,7 +464,6 @@ def main():
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
 
-
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
             raise DemistoException('Key must be provided. For further information see '
