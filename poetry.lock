@@ -611,8 +611,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "ed8fc0e3e53d8d1d948394f0fce66aeae8e49c4e"
-resolved_reference = "ed8fc0e3e53d8d1d948394f0fce66aeae8e49c4e"
+reference = "806fec1bef8a3f7a326cb3fb1eda3c263c41be04"
+resolved_reference = "806fec1bef8a3f7a326cb3fb1eda3c263c41be04"
 
 [[package]]
 name = "deprecated"
@@ -3207,7 +3207,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-ujson"
-version = "5.7.0.2"
+version = "5.7.0.3"
 description = "Typing stubs for ujson"
 category = "dev"
 optional = false
@@ -3464,7 +3464,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "fff624faea0ac7f109a900b093711fb19b2f6ba613df026aaee027bf434c6014"
+content-hash = "f266d4e0606696244c78a7e458732984b9e44c2cef91e14edf502a1a00f264a6"
 
 [metadata.files]
 aiodns = [
@@ -6031,8 +6031,8 @@ types-tabulate = [
     {file = "types_tabulate-0.9.0.2-py3-none-any.whl", hash = "sha256:a2e41cc41b6b46bfaec78f8fd8e03058fda7a31af6f203a4b235f5482f571f6f"},
 ]
 types-ujson = [
-    {file = "types-ujson-5.7.0.2.tar.gz", hash = "sha256:638b3eff421903487e076670a3a31b79b7a5cb7a29eec50a6f0240cc3f7c4840"},
-    {file = "types_ujson-5.7.0.2-py3-none-any.whl", hash = "sha256:e6b314a81b3db602f81fa2c424caff7c8ed295676053c0a420fd9b419f39c05d"},
+    {file = "types-ujson-5.7.0.3.tar.gz", hash = "sha256:416cd9e6414ce9c2a113361f2b333345011968592cf56a15b0abd95b673859c5"},
+    {file = "types_ujson-5.7.0.3-py3-none-any.whl", hash = "sha256:68b55eb26d7687519062739c2ccc13d85d29bcc194cb6c8162daeebae3b77702"},
 ]
 types-urllib3 = [
     {file = "types-urllib3-1.26.25.10.tar.gz", hash = "sha256:c44881cde9fc8256d05ad6b21f50c4681eb20092552351570ab0a8a0653286d6"},
