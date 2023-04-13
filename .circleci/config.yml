@@ -132,6 +132,11 @@ references:
       name: Prepare Environment
       when: always
       command: |
+
+        # Merge origin/master into the current branch, to make sure we have the latest changes.
+        # If the merge fails, abort it and continue with the current branch.
+        git merge origin/master || git merge --abort
+
         poetry --version
         # Check if CircleCI's config file and poetry files files are up to date
         # if poetry isn't up-to-date, checkout from origin/master.
