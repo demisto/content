@@ -191,7 +191,7 @@ This content pack includes the [generateASMReport](#generateasmreport) script:
 
 This automation helps generate an ASM alert summary report with important information found via the playbook run.
 
-![GenerateASMReport](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/GenerateASMReport.png)
+![GenerateASMReport](readme_images/GenerateASMReport.png)
 
 #### InferWhetherServiceIsDev
 
