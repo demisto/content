@@ -1,5 +1,5 @@
 [INGEST:vendor="sonicwall", product="ns", target_dataset="sonicwall_ns_raw", no_hit=keep]
 filter _raw_log contains "UTC"
-|alter timestamp=arrayindex(regextract(_raw_log,"time\=\"([^=]+)\""),0)
+|alter timestamp=arrayindex(regextract(_raw_log,"time\=\"([^=]+)\sUTC\""),0)
 |alter _time=parse_timestamp("%Y-%m-%d %H:%M:%S", timestamp)
 |fields -timestamp;
