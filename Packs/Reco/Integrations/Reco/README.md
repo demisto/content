@@ -125,4 +125,50 @@ Get assets user has access to (optional to get only sensitive assets)
 
 #### Context Output
 
+| **Path**    | **Type** | **Description** |
+|-------------|----------|----------------|
+| Reco.Assets | string   | Assets         | 
+
+
+
+### reco-get-sensitive-assets-by-name
+
+***
+Get sensitive assets by name (optional to search by regex)
+
+#### Base Command
+
+`reco-get-sensitive-assets-by-name`
+
+#### Input
+
+| **Argument Name** | **Description**                               | **Required** |
+|-------------------|-----------------------------------------------|--------------|
+| asset_name        | Asset Name to search                          | Required     | 
+| regex_search      | Search assets by regex (Default string equal) | Optional     |
+
+
+#### Context Output
+
 There is no context output for this command.
+
+
+### reco-add-leaving-org-user-label
+
+***
+Tag a user as leaving employee in Reco
+
+#### Base Command
+
+`reco-add-leaving-org-user-label`
+
+#### Input
+
+| **Argument Name** | **Description**                                                         | **Required** |
+| --- |-------------------------------------------------------------------------| --- |
+| email_address | Email address of the user to add to the leaving org users list in Reco. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+

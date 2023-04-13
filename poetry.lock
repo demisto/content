@@ -384,18 +384,18 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.98"
+version = "1.26.99"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.26.98-py3-none-any.whl", hash = "sha256:983ec9e539431c29b5265e435b91af7c0d77a75809e173427798edb4ede1d69c"},
-    {file = "boto3-1.26.98.tar.gz", hash = "sha256:f35a42c6d0130a75e58485efa94383256d9b8c72c3a31ad872807873a8800363"},
+    {file = "boto3-1.26.99-py3-none-any.whl", hash = "sha256:536d9e7a074f4f16cc87b426f91b3079edd5c6927541a04f7e3fa28c53293532"},
+    {file = "boto3-1.26.99.tar.gz", hash = "sha256:d9fd57d6e98fd919cdbd613428f685e05b48c71477fda1aa7fbf51867262c7d1"},
 ]
 
 [package.dependencies]
-botocore = ">=1.29.98,<1.30.0"
+botocore = ">=1.29.99,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -404,14 +404,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.98"
+version = "1.29.99"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.29.98-py3-none-any.whl", hash = "sha256:ae906c1feb56063a38ffd2280232fa44d634057825470d3beed274925088cb42"},
-    {file = "botocore-1.29.98.tar.gz", hash = "sha256:b74283ff71eb4e57edfa5cf6dc36d959b1eec618a2b1e5e781643184857dd1c4"},
+    {file = "botocore-1.29.99-py3-none-any.whl", hash = "sha256:15c205e4578253da1e8cc247b9d4755042f5f873f68ac6e5fed48f4bd6f008c6"},
+    {file = "botocore-1.29.99.tar.gz", hash = "sha256:d1770b4fe5531870af7a81e9897b2092d2f89e4ba8cb7abbbaf3ab952f6b8a6f"},
 ]
 
 [package.dependencies]
@@ -981,7 +981,7 @@ files = [
 name = "defusedxml"
 version = "0.7.1"
 description = "XML bomb protection for Python stdlib modules"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
@@ -1011,7 +1011,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.11.0"
+version = "1.12.0"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -1048,9 +1048,11 @@ inflection = "^0.5.1"
 isort = "^5.10.1"
 Jinja2 = "^3.1.1"
 jsonschema = "^4.4.0"
+junitparser = "^2.8.0"
 klara = "^0.6.3"
 MarkupSafe = "^2.1.1"
 mergedeep = "^1.3.4"
+more-itertools = "^9.0.0"
 mypy = "^0.982"
 neo4j = "^5.5.0"
 networkx = "^2.7.1"
@@ -1110,8 +1112,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "add_validation_for_readme_images"
-resolved_reference = "54e70083d162c116733ca43953bed34613058654"
+reference = "1_12_0"
+resolved_reference = "7cc0a1f7f1e5327f756c51f2a00147540151bde4"
 
 [[package]]
 name = "deprecated"
@@ -1392,19 +1394,19 @@ sspi = ["requests-negotiate-sspi"]
 
 [[package]]
 name = "filelock"
-version = "3.10.3"
+version = "3.10.6"
 description = "A platform independent file lock."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "filelock-3.10.3-py3-none-any.whl", hash = "sha256:99d6282f732410d44242ca02aa49835cf5473e2dd4d6734a2a785c8889dc191e"},
-    {file = "filelock-3.10.3.tar.gz", hash = "sha256:a26bfa34d26293e04886dff13fa8dd0c8c6e1a786b723c689755fe8939297410"},
+    {file = "filelock-3.10.6-py3-none-any.whl", hash = "sha256:52f119747b2b9c4730dac715a7b1ab34b8ee70fd9259cba158ee53da566387ff"},
+    {file = "filelock-3.10.6.tar.gz", hash = "sha256:409105becd604d6b176a483f855e7e8903c5cb2873e47f2c64f66a370c046aaf"},
 ]
 
 [package.extras]
 docs = ["furo (>=2022.12.7)", "sphinx (>=6.1.3)", "sphinx-autodoc-typehints (>=1.22,!=1.23.4)"]
-testing = ["covdefaults (>=2.3)", "coverage (>=7.2.2)", "pytest (>=7.2.2)", "pytest-cov (>=4)", "pytest-timeout (>=2.1)"]
+testing = ["covdefaults (>=2.3)", "coverage (>=7.2.2)", "diff-cover (>=7.5)", "pytest (>=7.2.2)", "pytest-cov (>=4)", "pytest-mock (>=3.10)", "pytest-timeout (>=2.1)"]
 
 [[package]]
 name = "flake8"
@@ -1636,14 +1638,14 @@ uritemplate = ">=3.0.1,<5"
 
 [[package]]
 name = "google-auth"
-version = "2.16.2"
+version = "2.16.3"
 description = "Google Authentication Library"
 category = "dev"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
 files = [
-    {file = "google-auth-2.16.2.tar.gz", hash = "sha256:07e14f34ec288e3f33e00e2e3cc40c8942aa5d4ceac06256a28cd8e786591420"},
-    {file = "google_auth-2.16.2-py2.py3-none-any.whl", hash = "sha256:2fef3cf94876d1a0e204afece58bb4d83fb57228aaa366c64045039fda6770a2"},
+    {file = "google-auth-2.16.3.tar.gz", hash = "sha256:611779ce33a3aee265b94b74d4bb8c188f33010f5814761250a0ebbde94cc745"},
+    {file = "google_auth-2.16.3-py2.py3-none-any.whl", hash = "sha256:4dfcfd8ecd1cf03ddc97fddfb3b1f2973ea4f3f664aa0d8cfaf582ef9f0c60e7"},
 ]
 
 [package.dependencies]
@@ -2114,14 +2116,14 @@ pyreadline3 = {version = "*", markers = "sys_platform == \"win32\" and python_ve
 
 [[package]]
 name = "identify"
-version = "2.5.21"
+version = "2.5.22"
 description = "File identification library for Python"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "identify-2.5.21-py2.py3-none-any.whl", hash = "sha256:69edcaffa8e91ae0f77d397af60f148b6b45a8044b2cc6d99cafa5b04793ff00"},
-    {file = "identify-2.5.21.tar.gz", hash = "sha256:7671a05ef9cfaf8ff63b15d45a91a1147a03aaccb2976d4e9bd047cbbc508471"},
+    {file = "identify-2.5.22-py2.py3-none-any.whl", hash = "sha256:f0faad595a4687053669c112004178149f6c326db71ee999ae4636685753ad2f"},
+    {file = "identify-2.5.22.tar.gz", hash = "sha256:f7a93d6cf98e29bd07663c60728e7a4057615068d7a639d132dc883b2d54d31e"},
 ]
 
 [package.extras]
@@ -2336,6 +2338,21 @@ pyrsistent = ">=0.14.0,<0.17.0 || >0.17.0,<0.17.1 || >0.17.1,<0.17.2 || >0.17.2"
 [package.extras]
 format = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3987", "uri-template", "webcolors (>=1.11)"]
 format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-validator (>0.1.0)", "uri-template", "webcolors (>=1.11)"]
+
+[[package]]
+name = "junitparser"
+version = "2.8.0"
+description = "Manipulates JUnit/xUnit Result XML files"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "junitparser-2.8.0-py2.py3-none-any.whl", hash = "sha256:e1a7d41e0c92ca032c46eed07a6268c478f90ec1f411ea8a76b69f245e57cfb6"},
+    {file = "junitparser-2.8.0.tar.gz", hash = "sha256:a8d4290ab9fb93f2015e0dbef61ef93b7ea110e99099087a453f55c8e1481adf"},
+]
+
+[package.dependencies]
+future = "*"
 
 [[package]]
 name = "klara"
@@ -2616,6 +2633,18 @@ optional = false
 python-versions = "*"
 files = [
     {file = "mock-open-1.4.0.tar.gz", hash = "sha256:c3ecb6b8c32a5899a4f5bf4495083b598b520c698bba00e1ce2ace6e9c239100"},
+]
+
+[[package]]
+name = "more-itertools"
+version = "9.1.0"
+description = "More routines for operating on iterables, beyond itertools"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "more-itertools-9.1.0.tar.gz", hash = "sha256:cabaa341ad0389ea83c17a94566a53ae4c9d07349861ecb14dc6d0345cf9ac5d"},
+    {file = "more_itertools-9.1.0-py3-none-any.whl", hash = "sha256:d2bc7f02446e86a68911e58ded76d6561eea00cddfb2a91e7019bbb586c799f3"},
 ]
 
 [[package]]
@@ -3367,45 +3396,45 @@ files = [
 
 [[package]]
 name = "pikepdf"
-version = "7.1.1"
+version = "7.1.2"
 description = "Read and write PDFs with Python, powered by qpdf"
 category = "dev"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pikepdf-7.1.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:e900d2314a1019c98c9d3d50445af475ce2f16e8a54e44875201869f8561a3b2"},
-    {file = "pikepdf-7.1.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9411824a7aa477fcad209e6e01cf23f0ecbd6833805812eca2026e372c724096"},
-    {file = "pikepdf-7.1.1-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:e5bebaca43757c9c357637954b8e49c9221c21a40260394ec4c4fbafada5ee87"},
-    {file = "pikepdf-7.1.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0a0914d482aa1b80584659c44aef1b2770b473a504cedc209fa6db3f24575ef6"},
-    {file = "pikepdf-7.1.1-cp310-cp310-win32.whl", hash = "sha256:910a45cc6506dd899032638c3775f708278d99ccc9c3681fb75a57b55051d262"},
-    {file = "pikepdf-7.1.1-cp310-cp310-win_amd64.whl", hash = "sha256:a59559a1e480f4a7229f600d6fce22b1d32729df8552099542e37a95c02a572f"},
-    {file = "pikepdf-7.1.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:edea85799240a3b7534650b275bc7e87519ddf0f47ccf9bdad09b22381da5442"},
-    {file = "pikepdf-7.1.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:93d98f460eb209b89ce855a5defb059ca82326042ee52dcb692a05e1c1a24bef"},
-    {file = "pikepdf-7.1.1-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:cf912ab70313fd0f23a32811f8c3ea815a716ecfd6ee84a564c833d0c06f5483"},
-    {file = "pikepdf-7.1.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:dec854f908973c5c3760d246539c58c03b7b701a2bed45173f9a4e4d766d3eab"},
-    {file = "pikepdf-7.1.1-cp311-cp311-win32.whl", hash = "sha256:422cb31ed4b489b9e18f4a803fab7c6ea10ef6916960a5d8b5e531c5af3bfbca"},
-    {file = "pikepdf-7.1.1-cp311-cp311-win_amd64.whl", hash = "sha256:ab07529096da5ea410dea81add8d724ac91f093b982b86f503771bfe8864e48c"},
-    {file = "pikepdf-7.1.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:b90bb4e77f9ea8a21d94c5d25e1b416f08a668377ea48edf8808be49f09f906a"},
-    {file = "pikepdf-7.1.1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:260efb3c6aa44c013da2278872593bc4712facd5b766de2b2d88c53c5f524449"},
-    {file = "pikepdf-7.1.1-cp38-cp38-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:b7711e2c0ff1ad265f5c0497f519584c029c9906d72ad78e89e260c57964a5c0"},
-    {file = "pikepdf-7.1.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bf9129507b7258dda27845e1ee6c7c4121674a04c0a1a0ac1115c19e5b4a2edf"},
-    {file = "pikepdf-7.1.1-cp38-cp38-win32.whl", hash = "sha256:3af2fd5762e222bf5133acec4f7d56719dda4a9b7dd468eb1c37a10055ff64b2"},
-    {file = "pikepdf-7.1.1-cp38-cp38-win_amd64.whl", hash = "sha256:1b8dfdc2184aca33e271b104e0ec468e52ac6591ab51bcd32c2e53bc8cdeeffe"},
-    {file = "pikepdf-7.1.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:ba75e70c932830fb7253b343f43f0ce03317661971cd3df03fc27c7cdb06992e"},
-    {file = "pikepdf-7.1.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:93cd0357140dfa79e16c1d9249775d11eebb392665fcdb1528684aae71966b4e"},
-    {file = "pikepdf-7.1.1-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:3e1490beb13b2d1a509aeb98fb0669ab7dea4035abd1df0e12085393f556654a"},
-    {file = "pikepdf-7.1.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:81caa67a08fdf683c521497fafd48d9b7bdf02549625329d8a1bb8ce706ef362"},
-    {file = "pikepdf-7.1.1-cp39-cp39-win32.whl", hash = "sha256:b0f1ca24118517970cfc78f902ded681c2e399dfb21ff04745143b4156dd551e"},
-    {file = "pikepdf-7.1.1-cp39-cp39-win_amd64.whl", hash = "sha256:5aca06b88b2d53122baaf3009bcfaec291b3c408846e401cddf8b2e89a0e0fe6"},
-    {file = "pikepdf-7.1.1-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:1faed2d2553aafb6f4969f0a970958d1847869631eb1c82f5a91ef636817b93a"},
-    {file = "pikepdf-7.1.1-pp38-pypy38_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a32215111f6713c934b9ed9a6fd686940559953539e81f70bfb860efbddfe3c3"},
-    {file = "pikepdf-7.1.1-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b860c44503b6bb237b97c2ae06d47dc645140649d61d2f5dd5276438bc60e2e0"},
-    {file = "pikepdf-7.1.1-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:7eef9fe4d06cb01482486561292b3c3675d7506328f990cb60b26994dd7ac1d8"},
-    {file = "pikepdf-7.1.1-pp39-pypy39_pp73-macosx_10_9_x86_64.whl", hash = "sha256:f7f0bfa897ecabbee3f7dc2ac10a8dd954c42a6f858fbef13019d0cef1b60127"},
-    {file = "pikepdf-7.1.1-pp39-pypy39_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:4290059bdf8d05cf3a7ba185d64b5756c745f178fc102aec41bbcd4a057e02f8"},
-    {file = "pikepdf-7.1.1-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fcfd391b3a255b460a9040ca8e47dd6f36c6ea43d2b61cd00b5ecb06000a6b8f"},
-    {file = "pikepdf-7.1.1-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:80d4eb3624980c1292d7e2db66c569f146012e86004b8739a3580346ee8f69a9"},
-    {file = "pikepdf-7.1.1.tar.gz", hash = "sha256:eb310e903b9a172de352446458390ccce31a2bb19a387f63d37b135cb4cca3f1"},
+    {file = "pikepdf-7.1.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:81950bde71eeaa1fbef72164cf4c78f408250bdb2346e4a69aebe1fe0631c47b"},
+    {file = "pikepdf-7.1.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7c7b5c328dda0f0f3de4fbfbf3f1f68a85cb957eed00a4bd2f7683a465dc5b5a"},
+    {file = "pikepdf-7.1.2-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:51a9272db7a468476f74c39c0fa5dc6b501e298c709a4b8df8e4b393929d644a"},
+    {file = "pikepdf-7.1.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b21521fc51194869027edbdcaf46cf20396344518b122085133c68ddd1dd770f"},
+    {file = "pikepdf-7.1.2-cp310-cp310-win32.whl", hash = "sha256:3d88c0ecbfd0df33144cbe348a765f9a82bcc86a7cf18fb19df0d9eab6186398"},
+    {file = "pikepdf-7.1.2-cp310-cp310-win_amd64.whl", hash = "sha256:7c7b8f74b144ee0c384a7b82e34d84da89821e0d3f0cf207c5af039c563dce06"},
+    {file = "pikepdf-7.1.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:4dd60ae07332b126a4d814955230f1852fcbd905ff72f1d3dde37ab7be192dfa"},
+    {file = "pikepdf-7.1.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:641beb42fdf82cd15e079dd081ba410b54ea552ea81b884cc98885ac5541f73d"},
+    {file = "pikepdf-7.1.2-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:df2a99208cb426d675faaa578a96d6f9b76eee76cb473a267b9ae85078176443"},
+    {file = "pikepdf-7.1.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2400574cf79481683f6ce537ee5d1d7925b71ff4d863a026246cbc34be8aeef0"},
+    {file = "pikepdf-7.1.2-cp311-cp311-win32.whl", hash = "sha256:d75dfaf6df6e7394d7865878eaf9f2dca1900ebcf1ab9e681672a12d6c7b329b"},
+    {file = "pikepdf-7.1.2-cp311-cp311-win_amd64.whl", hash = "sha256:bb5ec2e06b3085413b69dbf3045a9a05a84d24ed8118221854c5465f6190ab35"},
+    {file = "pikepdf-7.1.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:de41f314fa61ab4d2368ab63b7e0f1ad72aab3115cfc90c8e123201fb5c2bcb5"},
+    {file = "pikepdf-7.1.2-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3af17fac243f6e5fef49c57dc99f858957e4210f1b408e1433aa6be29bc49dfd"},
+    {file = "pikepdf-7.1.2-cp38-cp38-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:4122e2786d8a21eeb47cb9e2eb3a6fd758280e6b3e873844f44e01a3bb5fda1a"},
+    {file = "pikepdf-7.1.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:24719a4d1a154afb5fac55920154928f4a68e9c38e30ab0218c632f4fbf448cc"},
+    {file = "pikepdf-7.1.2-cp38-cp38-win32.whl", hash = "sha256:966008bbe04ac3f282bc026e8f66903c254c048c01f8a5a06e4f55b4d36605df"},
+    {file = "pikepdf-7.1.2-cp38-cp38-win_amd64.whl", hash = "sha256:ca1a654a97d3d0f3340f934420c8c3a5522e43bb97ed25e31f06b618da9d64cd"},
+    {file = "pikepdf-7.1.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:17656a15b9ff5868869a79ff40765689a6705d2584e8ab63aff1d0365652b6f1"},
+    {file = "pikepdf-7.1.2-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e87b6a149e39598451d526493ec16f50b67ea899888ee96c14c1545eb1115c53"},
+    {file = "pikepdf-7.1.2-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:d8a8d24fef8802899f8a6aa89ab2d119da7c6acfaa978bdfdc76854854680a7f"},
+    {file = "pikepdf-7.1.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a0cca81a93b9486d98335b310fd1352ec62197bf9e3bf2774b822d5d862bde41"},
+    {file = "pikepdf-7.1.2-cp39-cp39-win32.whl", hash = "sha256:db2e4e37a226aac13f6000b22612a8ccfb5764f34ad2b48c39eb38b3bb7cfb35"},
+    {file = "pikepdf-7.1.2-cp39-cp39-win_amd64.whl", hash = "sha256:1b64ae8d9b35713b317d7a4f429c14202ff9a2c5d63c8200b4fc1401e52c7e10"},
+    {file = "pikepdf-7.1.2-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:09e142c484179873249f5c8fc50b8a5e66801feb81fc5111463b36b8396faf13"},
+    {file = "pikepdf-7.1.2-pp38-pypy38_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:e7cfd1bc95fdcece892b2506a9b9229d82a72845e74aa13c6e9578f767da41d1"},
+    {file = "pikepdf-7.1.2-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6e95d872385d7226f48ced00b2f56f1c6fd963d1729fa48baf697f6e98748163"},
+    {file = "pikepdf-7.1.2-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:5c5ec0c28b0b01aa5a306fc4be45e9948a4f9699f250c68495e279f02fdee0d0"},
+    {file = "pikepdf-7.1.2-pp39-pypy39_pp73-macosx_10_9_x86_64.whl", hash = "sha256:1937f88458f183346d863cca71d9c4ea31792db38feba331fde8342473654330"},
+    {file = "pikepdf-7.1.2-pp39-pypy39_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:98ccba51e3a0575d7ffaedc61b58fc10fca28151e2429825a36461253485f45d"},
+    {file = "pikepdf-7.1.2-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ac00e736ee8bc5e59ab7c72498bb895c43cd72bae3fa0cadc163663d578fefd4"},
+    {file = "pikepdf-7.1.2-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:e35056389134d8ed7d85dce798f9f4b498221c9b640fad4f8f2f8462aaade512"},
+    {file = "pikepdf-7.1.2.tar.gz", hash = "sha256:b177e8437fe8efdfb7a30c57f361cae1bf2054117856459ca6565c94d32cb5b5"},
 ]
 
 [package.dependencies]
@@ -3558,19 +3587,19 @@ files = [
 
 [[package]]
 name = "platformdirs"
-version = "3.1.1"
+version = "3.2.0"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "platformdirs-3.1.1-py3-none-any.whl", hash = "sha256:e5986afb596e4bb5bde29a79ac9061aa955b94fca2399b7aaac4090860920dd8"},
-    {file = "platformdirs-3.1.1.tar.gz", hash = "sha256:024996549ee88ec1a9aa99ff7f8fc819bb59e2c3477b410d90a16d32d6e707aa"},
+    {file = "platformdirs-3.2.0-py3-none-any.whl", hash = "sha256:ebe11c0d7a805086e99506aa331612429a72ca7cd52a1f0d277dc4adc20cb10e"},
+    {file = "platformdirs-3.2.0.tar.gz", hash = "sha256:d5b638ca397f25f979350ff789db335903d7ea010ab28903f57b27e1b16c2b08"},
 ]
 
 [package.extras]
 docs = ["furo (>=2022.12.7)", "proselint (>=0.13)", "sphinx (>=6.1.3)", "sphinx-autodoc-typehints (>=1.22,!=1.23.4)"]
-test = ["appdirs (==1.4.4)", "covdefaults (>=2.2.2)", "pytest (>=7.2.1)", "pytest-cov (>=4)", "pytest-mock (>=3.10)"]
+test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.2.2)", "pytest-cov (>=4)", "pytest-mock (>=3.10)"]
 
 [[package]]
 name = "pluggy"
@@ -4394,14 +4423,14 @@ future = "*"
 
 [[package]]
 name = "pytz"
-version = "2022.7.1"
+version = "2023.2"
 description = "World timezone definitions, modern and historical"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "pytz-2022.7.1-py2.py3-none-any.whl", hash = "sha256:78f4f37d8198e0627c5f1143240bb0206b8691d8d7ac6d78fee88b78733f8c4a"},
-    {file = "pytz-2022.7.1.tar.gz", hash = "sha256:01a0681c4b9684a28304615eba55d1ab31ae00bf68ec157ec3708a8182dbbcd0"},
+    {file = "pytz-2023.2-py2.py3-none-any.whl", hash = "sha256:8a8baaf1e237175b02f5c751eea67168043a749c843989e2b3015aa1ad9db68b"},
+    {file = "pytz-2023.2.tar.gz", hash = "sha256:a27dcf612c05d2ebde626f7d506555f10dfc815b3eddccfaadfc7d99b11c9a07"},
 ]
 
 [[package]]
@@ -4920,14 +4949,14 @@ test = ["asv", "gmpy2", "mpmath", "pooch", "pytest", "pytest-cov", "pytest-timeo
 
 [[package]]
 name = "selenium"
-version = "4.8.2"
+version = "4.8.3"
 description = ""
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "selenium-4.8.2-py3-none-any.whl", hash = "sha256:bd04eb41395605d9b2b65fe587f3fed21431da75512985c52772529e5e210c60"},
-    {file = "selenium-4.8.2.tar.gz", hash = "sha256:c48372905bffcc3b24bd55ab4683a07ee5e1f30fe918c59558ea5ee44cedf6c3"},
+    {file = "selenium-4.8.3-py3-none-any.whl", hash = "sha256:28430ac54a54fa59ad1f5392a1b89b169fe3ab2c2ccd1a9a10b6fe74f36cd6da"},
+    {file = "selenium-4.8.3.tar.gz", hash = "sha256:61cda3a304f82637162bc155cae7bf88fdb04c115fa2cb1c1c2e1358fcd19a9f"},
 ]
 
 [package.dependencies]
@@ -5788,14 +5817,14 @@ files = [
 
 [[package]]
 name = "tzdata"
-version = "2022.7"
+version = "2023.2"
 description = "Provider of IANA time zone data"
 category = "dev"
 optional = false
 python-versions = ">=2"
 files = [
-    {file = "tzdata-2022.7-py2.py3-none-any.whl", hash = "sha256:2b88858b0e3120792a3c0635c23daf36a7d7eeeca657c323da299d2094402a0d"},
-    {file = "tzdata-2022.7.tar.gz", hash = "sha256:fe5f866eddd8b96e9fcba978f8e503c909b19ea7efda11e52e39494bad3a7bfa"},
+    {file = "tzdata-2023.2-py2.py3-none-any.whl", hash = "sha256:905ae9e6744dd9ef5ce94d2aaa2dd00282fee38b670b2133407f23c388f110a1"},
+    {file = "tzdata-2023.2.tar.gz", hash = "sha256:c3b51b235b07f9f1889089c2264bcbeaaba260a63f89bea09e350ea4205eb95f"},
 ]
 
 [[package]]
@@ -6386,4 +6415,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "4de7dcca292ae5079f5a6646bcb99d6bda1daa185f887b1c7c467d56c3d0d38f"
+content-hash = "c062f2abb54e2fedf4634e003c1e87f640cba7fd0357adfe7bbb56b6cffb85ff"
