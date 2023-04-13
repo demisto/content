@@ -520,7 +520,7 @@ def split_notes(raw_notes, note_type, time_info):
             if retrieved_last_note:  # add to last note only in case the note was not filtered by the time filter
                 notes[-1]['value'] += '\n\n Mirrored from Cortex XSOAR'
             continue
-        note_info, note_value = note.split('\n')
+        note_info, note_value = note.split('\n', 1)
         created_on, created_by = note_info.split(' - ')
         created_by = created_by.split(' (')[0]
         if not created_on or not created_by:
