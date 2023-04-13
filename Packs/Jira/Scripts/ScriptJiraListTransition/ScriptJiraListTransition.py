@@ -42,8 +42,10 @@ def get_transitions_from_jirav3_brand(command_execution_response: List[Dict[str,
     Returns:
         List[str]: The list of transitions.
     """
-    return command_execution_response[0].get('EntryContext', {}).get('Ticket(val.Id && val.Id == obj.Id)', {}).\
-        get('Transitions', {}).get('transitions', [])
+    if not command_execution_response:
+        raise DemistoException('Got an empty list object after executing the command !jira-list-transitions')
+    transition_raw_response = command_execution_response[0].get('Contents', {})
+    return [transition.get('name', '') for transition in transition_raw_response.get('transitions', [])]
 
 
 def get_transition_names_by_source_brand(incident_id: Dict[str, Any], source_brand: str) -> Dict[str, Any]:
@@ -57,12 +59,14 @@ def get_transition_names_by_source_brand(incident_id: Dict[str, Any], source_bra
     """
     transitions_names: List[str] = []
     res: List[Dict[str, Any]] = []
-    demisto.debug(f'Got the following sourceBrand {source_brand}')
+    demisto.debug(f'Got the following source brand {source_brand}')
     if source_brand == 'Jira V3':
         res = execute_xsoar_command(args={'issue_id': incident_id, 'using-brand': source_brand})
         transitions_names = get_transitions_from_jirav3_brand(res)
     elif source_brand == 'jira-v2':
         res = execute_xsoar_command(args={"issueId": incident_id, 'using-brand': source_brand})
+        if not res:
+            raise DemistoException('Got an empty list object after executing the command !jira-list-transitions')
         transitions_names = res[0].get('Contents', [])
     else:
         raise DemistoException('No Jira instance was found, please configure the newest Jira Integration')
@@ -77,7 +81,6 @@ def main():
     output = {}
     try:
         incident = demisto.incidents()[0]
-        # incident_id = incident.get("dbotMirrorId")
         if incident_id := incident.get("dbotMirrorId"):
             output = get_transition_names_by_source_brand(incident_id=incident_id, source_brand=incident.get('sourceBrand', ''))
         else:

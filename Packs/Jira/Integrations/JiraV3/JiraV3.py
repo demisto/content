@@ -1,3 +1,4 @@
+from unittest.mock import patch
 import urllib3
 from abc import ABCMeta
 import demistomock as demisto  # noqa: F401
@@ -6,6 +7,7 @@ from typing import Callable
 from collections import defaultdict
 from bs4 import BeautifulSoup
 from datetime import timezone
+import hashlib
 urllib3.disable_warnings()
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
@@ -153,12 +155,49 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
                                   headers=request_headers)
 
     # Authorization methods
-    @abstractmethod
     def get_access_token(self) -> str:
-        """This method is in charge of returning the access token stored in the integration context
+        # CONFLUENCE Explain the process of saving and retrieving the access token from the integration's context
+        """This function is in charge of returning the access token stored in the integration's context. If the access token
+        has expired, we try to retrieve another access token using a refresh token that is configured in the integration's context
+
+        Raises:
+            DemistoException: If no access token was configured.
+            DemistoException: If no refresh token was configured.
 
         Returns:
-            str: Returns the access token
+            str: The access token to send with the requests.
+        """
+        integration_context = get_integration_context()
+        token = integration_context.get('token', '')
+        if not token:
+            raise DemistoException(('No access token was configured, please complete the authorization process'
+                                    ' as shown in the documentation'))
+        # The valid_until key stores the valid date in seconds to make it easier for comparison
+        valid_until = integration_context.get('valid_until', 0)
+        current_time = get_current_time_in_seconds()
+        if current_time >= valid_until:
+            refresh_token = integration_context.get('refresh_token', '')
+            if not refresh_token:
+                raise DemistoException(('No refresh token was configured, please complete the authorization process'
+                                        ' as shown in the documentation'))
+            # We try to retrieve a new access token and store it in the integration's context using the method bellow
+            self.oauth2_retrieve_access_token(refresh_token=refresh_token)
+            integration_context = get_integration_context()
+            token = integration_context.get('token', '')
+        return token
+
+    @abstractmethod
+    def oauth2_retrieve_access_token(self, code: str = '', refresh_token: str = '') -> None:
+        """This method is in charge of exchanging an authorization code or refresh token for an access token,
+        that is retrieved using a Jira endpoint.
+
+        Args:
+            code (str, optional): The authorization code supplied by the user, if authenticating using it. Defaults to ''.
+            refresh_token (str, optional): The refresh token that is stored in the integration's context. Defaults to ''.
+
+        Raises:
+            DemistoException: If both an authorization code and refresh token were given, only one must be supplied.
+            DemistoException: If neither an authorization code nor a refresh token were given.
         """
         pass
 
@@ -649,37 +688,6 @@ class JiraCloudClient(JiraBaseClient):
     def test_instance_connection(self) -> None:
         self.get_user_info()
 
-    def get_access_token(self) -> str:
-        # CONFLUENCE Explain the process of saving and retrieving the access token from the integration's context
-        """This function is in charge of returning the access token stored in the integration's context. If the access token
-        has expired, we try to retrieve another access token using a refresh token that is configured in the integration's context
-
-        Raises:
-            DemistoException: If no access token was configured.
-            DemistoException: If no refresh token was configured.
-
-        Returns:
-            str: The access token to send with the requests.
-        """
-        integration_context = get_integration_context()
-        token = integration_context.get('token', '')
-        if not token:
-            raise DemistoException(('No access token was configured, please complete the authorization process'
-                                    ' as shown in the documentation'))
-        # The valid_until key stores the valid date in seconds to make it easier for comparison
-        valid_until = integration_context.get('valid_until', 0)
-        current_time = get_current_time_in_seconds()
-        if current_time >= valid_until:
-            refresh_token = integration_context.get('refresh_token', '')
-            if not refresh_token:
-                raise DemistoException(('No refresh token was configured, please complete the authorization process'
-                                        ' as shown in the documentation'))
-            # We try to retrieve a new access token and store it in the integration's context using the method bellow
-            self.oauth2_retrieve_access_token(refresh_token=refresh_token)
-            integration_context = get_integration_context()
-            token = integration_context.get('token', '')
-        return token
-
     def oauth_start(self) -> str:
         return self.oauth2_start(scopes=self.scopes)
 
@@ -704,7 +712,7 @@ class JiraCloudClient(JiraBaseClient):
                                client_id=self.client_id,
                                scope=' '.join(scopes),  # Scopes are separated with spaces
                                redirect_uri=self.callback_url,
-                               state='some_state',
+                               #    state='some_state',
                                response_type='code',
                                prompt='consent')
         res_auth_url = self._http_request(method='GET',
@@ -716,17 +724,6 @@ class JiraCloudClient(JiraBaseClient):
         raise DemistoException('No URL was returned.')
 
     def oauth2_retrieve_access_token(self, code: str = '', refresh_token: str = '') -> None:
-        """This method is in charge of exchanging an authorization code or refresh token for an access token,
-        that is retrieved using a Jira endpoint
-
-        Args:
-            code (str, optional): _description_. Defaults to ''.
-            refresh_token (str, optional): _description_. Defaults to ''.
-
-        Raises:
-            DemistoException: If both an authorization code and refresh token were given, only one must be supplied.
-            DemistoException: If neither an authorization code nor a refresh token were given.
-        """
         if(code and refresh_token):
             # The code argument is used when the user authenticates using the authorization URL process
             # (which uses the callback URL), and the refresh_token is used when we want to authenticate the user using a
@@ -1104,8 +1101,124 @@ class JiraCloudClient(JiraBaseClient):
 class JiraOnPremClient(JiraBaseClient):
     # Will implement the abstract methods
 
+    def __init__(self, proxy: bool, verify: bool, client_id: str, client_secret: str,
+                 callback_url: str, server_url: str):
+        self.client_id = client_id
+        self.client_secret = client_secret
+        # TODO Need to add the scopes in the documentation (README and description)
+        self.scopes = 'WRITE'
+        super().__init__(proxy=proxy, verify=verify, callback_url=callback_url,
+                         base_url=f'{server_url}')
+
+    def oauth_start(self) -> str:
+        return self.oauth2_start(scopes=self.scopes)
+
+    def oauth2_start(self, scopes: str) -> str:
+        """This function is in charge of returning the URL that the user will use in order to authenticate
+        himself and be redirected to the callback URL in order to retrieve the authorization code.
+
+        Args:
+            scopes (List[str]): A list of the desired scopes.
+
+        Raises:
+            DemistoException: If no URL was returned from the response
+
+        Returns:
+            str: The URL that the user will use in order to authenticate
+                himself
+        """
+        # Documentation on how to use the code_verifier, and the code_challenge to authenticate using
+        # PKCE (Proof Key for Code Exchange)
+        code_verifier = base64.urlsafe_b64encode(os.urandom(40)).decode('utf-8')
+        code_verifier = re.sub('[^a-zA-Z0-9]+', '', code_verifier)
+        code_challenge = hashlib.sha256(code_verifier.encode('utf-8')).digest()
+        code_challenge = base64.urlsafe_b64encode(code_challenge).decode('utf-8')
+        code_challenge = code_challenge.replace('=', '')
+        integration_context = get_integration_context()
+        # To start the authorization process for the user, we send them to the authorization url, including the code_challenge,
+        # which was created using the code_verifier, and after retrieving the authorization code from the callback URL,
+        # we need to do a POST method to the token URL, including the code_verifier that was created above, in order to
+        # exchange them for the access token, therefore, we need to store the code_verifier in the integration's context
+        # to use it in the second part of the authorization flow.
+        new_authorization_context = {
+            'code_verifier': code_verifier,
+        }
+        integration_context |= new_authorization_context
+        set_integration_context(integration_context)
+        # state = base64.urlsafe_b64encode(os.urandom(40)).decode('utf-8')
+        # state = re.sub('[^a-zA-Z0-9]+', '', state)
+        params = assign_params(client_id=self.client_id,
+                               scope=scopes,  # Scopes are separated with spaces
+                               redirect_uri=self.callback_url,
+                               #    state=state,
+                               code_challenge=code_challenge,
+                               code_challenge_method='S256',
+                               response_type='code')
+        res_auth_url = self._http_request(method='GET',
+                                          url_suffix='rest/oauth2/latest/authorize',
+                                          params=params,
+                                          resp_type='response')
+        if(res_auth_url.url):
+            return res_auth_url.url
+        raise DemistoException('No URL was returned.')
+
+    def oauth_complete(self, code: str) -> None:
+        self.oauth2_retrieve_access_token(code=code)
+
+    def oauth2_retrieve_access_token(self, code: str = '', refresh_token: str = '') -> None:
+        if(code and refresh_token):
+            # The code argument is used when the user authenticates using the authorization URL process
+            # (which uses the callback URL), and the refresh_token is used when we want to authenticate the user using a
+            # refresh token saved in the integration's context.
+            raise DemistoException(('Both authorization code and refresh token were given to retrieve an'
+                                   ' access token, please only provide one'))
+        if(not (code or refresh_token)):
+            # If reached here, that means both the authorization code and refresh tokens were empty.
+            raise DemistoException('No authorization code or refresh token were supplied in order to authenticate.')
+        integration_context = get_integration_context()
+        # We pop the key code_verifier, since we only want to use it when the user is authenticating using an authorization code,
+        # and not a refresh token, therefore, there is no need to keep it in the integration's context throughout its lifecycle.
+        code_verifier = integration_context.pop('code_verifier', '')
+        data = assign_params(
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            code_verifier=code_verifier if code else '',
+            code=code,
+            redirect_uri=self.callback_url if code else '',  # Redirect_uri is needed only when we use an authorization code
+            refresh_token=refresh_token,
+            grant_type='authorization_code' if code else 'refresh_token',
+        )
+        res_access_token = self._http_request(
+            method='POST',
+            url_suffix='rest/oauth2/latest/token',
+            data=data,
+            resp_type='json',
+        )
+        new_authorization_context = {
+            'token': res_access_token.get('access_token', ''),
+            'scopes': res_access_token.get('scope', ''),
+            # res_access_token.get('expires_in') returns the lifetime of the access token in seconds.
+            'valid_until': get_current_time_in_seconds() + res_access_token.get('expires_in', 0),
+            'refresh_token': res_access_token.get('refresh_token', '')
+        }
+        integration_context |= new_authorization_context
+        set_integration_context(integration_context)
+
     def test_instance_connection(self) -> None:
-        pass
+        self.get_user_info()
+
+    # User Requests
+    def get_id_by_attribute(self, attribute: str, max_results: int = 50) -> List[Dict[str, Any]]:
+        query = {'username': attribute, 'maxResults': max_results}
+        return self.http_request_with_access_token(
+            method='GET', url_suffix='rest/api/2/user/search', params=query
+        )
+
+    def get_user_info(self) -> Dict[str, Any]:
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix='rest/api/2/myself'
+        )
 
     def get_all_projects(self) -> List[Dict[str, Any]]:
         ...
@@ -2983,7 +3096,8 @@ def ouath_start_command(client: JiraBaseClient, args: Dict[str, Any]) -> Command
     return CommandResults(readable_output=('In order to retrieve the authorization code, please authorize'
                                            f' yourself using the following link:\n{create_clickable_url(url)}\n'
                                            'After authorizing, you will be redirected to the configured callback url, where you'
-                                           ' will retrieve the authorization code provided as a query parameter called `code`.'))
+                                           ' will retrieve the authorization code provided as a query parameter called `code`,'
+                                           ' and insert it as an argument to the !jira-oauth-complete command'))
 
 
 def oauth_complete_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
@@ -3043,7 +3157,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
         fetch_attachments (bool): Whether to fetch the attachments or not.
         fetch_comments (bool): Whether to fetch the comments or not.
         max_fetch_incidents (int): The maximum number of incidents to fetch per fetch.
-        first_fetch_interval (str): The first fetch interval to fetch from if the fetch timestamp is empty,
+        first_fetch_interval (str): The first fetch interval to fetch from if the fetch timestamp is empty.
         and we are fetching using created time.
         mirror_direction (str): The mirroring direction.
         comment_tag_to_jira (str): The comment tag to add to an entry to mirror it as a comment in Jira.
@@ -3063,6 +3177,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     last_fetch_issue_ids: List[int] = convert_list_of_str_to_int(last_run.get('issue_ids', []))
     last_fetch_id = last_run.get('id', id_offset)
     new_fetch_created_time = last_fetch_created_time = last_run.get('created_date', '')
+    new_fetch_updated_time = last_fetch_updated_time = last_run.get('updated_date', '')
     incidents: List[Dict[str, Any]] = []
     demisto.debug('Creating the fetch query')
     fetch_incidents_query = create_fetch_incidents_query(
@@ -3070,6 +3185,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
         fetch_query=fetch_query,
         last_fetch_id=last_fetch_id,
         last_fetch_created_time=last_fetch_created_time,
+        last_fetch_updated_time=last_fetch_updated_time,
         first_fetch_interval=convert_string_date_to_specific_format(
             string_date=first_fetch_interval),
         issue_ids_to_exclude=last_fetch_issue_ids)
@@ -3080,11 +3196,13 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     if query_res := client.run_query(query_params=query_params):
         for issue in query_res.get('issues', []):
             issue_id: int = issue.get('id')  # The ID returned by the API is an integer
+            demisto.debug(f'Creating an incident for Jira issue with ID: {issue_id}')
             new_issue_ids.append(issue_id)
             last_fetch_id = issue_id
             new_fetch_created_time = convert_string_date_to_specific_format(
                 string_date=demisto.get(issue, 'fields.created') or '')
-            demisto.debug(f'Creating an incident for Jira issue with ID: {issue_id}')
+            new_fetch_updated_time = convert_string_date_to_specific_format(
+                string_date=demisto.get(issue, 'fields.updated') or '')
             remove_empty_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
             incidents.append(create_incident_from_issue(
                 client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
@@ -3093,17 +3211,20 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
                 comment_tag_to_jira=comment_tag_to_jira,
                 attachment_tag_from_jira=attachment_tag_from_jira,
                 attachment_tag_to_jira=attachment_tag_to_jira))
-    # If we did no progress in terms of time (the created time stayed the same as the last fetch), we should keep the
+    # If we did no progress in terms of time (the created, or updated time stayed the same as the last fetch), we should keep the
     # ids of the last fetch until progress is made, so we exclude them in the next fetch.
     if (
-        issue_field_to_fetch_from == 'created date'
-        and new_fetch_created_time == last_fetch_created_time
+        (issue_field_to_fetch_from == 'created date'
+         and new_fetch_created_time == last_fetch_created_time)
+        or (issue_field_to_fetch_from == 'updated date'
+            and new_fetch_updated_time == last_fetch_updated_time)
     ):
         new_issue_ids.extend(last_fetch_issue_ids)
     demisto.setLastRun({
         'issue_ids': new_issue_ids or last_fetch_issue_ids,
         'id': last_fetch_id,
         'created_date': new_fetch_created_time or last_fetch_created_time,
+        'updated_date': new_fetch_updated_time or last_fetch_updated_time,
     })
     return incidents
 
@@ -3157,8 +3278,8 @@ def convert_list_of_str_to_int(list_to_convert: List[str] | List[int]) -> List[i
     return converted_list
 
 
-def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: str,
-                                 last_fetch_id: int, last_fetch_created_time: str,
+def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: str, last_fetch_id: int,
+                                 last_fetch_created_time: str, last_fetch_updated_time: str,
                                  first_fetch_interval: str, issue_ids_to_exclude: List[int]) -> str:
     """This is in charge of returning the query to use to fetch the appropriate incidents.
     NOTE: It is important to add 'ORDER BY {the issue field to fetch from} ASC' in order to retrieve the data in ascending order,
@@ -3169,6 +3290,7 @@ def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: st
         fetch_query (str): The fetch query configured.
         last_fetch_id (str): The id of the last fetched issue.
         last_fetch_created_time (str): The created time of the last fetch issue.
+        last_fetch_updated_time (str): The updated time of the last fetch issue.
         first_fetch_interval (str): The first fetch interval to fetch from if the fetch timestamp is empty,
         and we are fetching using created time.
         issue_ids_to_exclude (List[int]): The ids of the issues that we want to exclude.
@@ -3185,6 +3307,9 @@ def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: st
     if issue_field_to_fetch_from == 'created date':
         return (f'{fetch_query} AND created >= "{last_fetch_created_time or first_fetch_interval}" {exclude_issue_ids_query}'
                 ' ORDER BY created ASC')
+    elif issue_field_to_fetch_from == 'updated date':
+        return (f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}" {exclude_issue_ids_query}'
+                ' ORDER BY updated ASC')
     raise DemistoException('Could not create the proper fetch query')
 
 
@@ -3405,7 +3530,7 @@ def get_jira_issue_severity(issue_field_priority: Dict[str, Any]) -> int:
             severity = 3
         elif issue_priority_name == 'Medium':
             severity = 2
-        elif issue_priority_name == 'Low':
+        elif issue_priority_name in ['Low', 'Lowest']:
             severity = 1
     return severity
 
@@ -3535,11 +3660,12 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         # Get raw response for issue ID
         issue = client.get_issue(issue_id_or_key=issue_id)
         demisto.debug(f'Got remote data for incident {issue_id}')
+        remove_empty_custom_fields(issue=issue,
+                                   issue_fields_id_to_name_mapping=issue.get('names', {}) or {})
+        demisto.debug(f"\n\nRaw issue response: {issue}\n\n")
         issue['parsedDescription'] = JiraIssueFieldsParser.get_description_context(
             issue).get('Description') or ''
         add_extracted_data_to_incident(issue=issue)
-        remove_empty_custom_fields(issue=issue,
-                                   issue_fields_id_to_name_mapping=issue.get('names', {}) or {})
         user_timezone_name = get_user_timezone(client=client)
         _ = get_system_timezone()
         demisto.debug(f'Issue modified date in Jira: {dateparser.parse(demisto.get(issue, "fields.updated"))}')
@@ -3556,8 +3682,7 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         if parsed_entries:
             demisto.debug(f'Update the next entries: {parsed_entries}')
         else:
-            demisto.debug('The last update time of the incident, or the updated time of the corresponding Jira issue'
-                          'were not in correct datetime format')
+            demisto.debug('No new entries to update.')
 
         return GetRemoteDataResponse(updated_incident, parsed_entries)
 
@@ -3607,7 +3732,6 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
     parsed_entries: List[Dict[str, Any]] = []
     demisto.debug((f"\nUpdate incident:\n\tIncident name: Jira issue {issue.get('id')}\n\t"
                   f"Reason: Issue modified in remote.\n"))
-    demisto.debug(f"\n\nRaw issue response: {issue}\n\n")
     if mirror_resolved_issue:
         if closed_issue := handle_incoming_resolved_issue(
             updated_incident
@@ -3745,6 +3869,7 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], c
             ):
                 demisto.debug(f'Updating the issue with the following issue fields: {issue_fields}')
                 client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields)
+                demisto.debug('Updated the fields of the remote system successfully')
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_id}] '
@@ -3770,7 +3895,7 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], c
                         'body': text_to_adf(text=f'{entry.get("contents", "")}\n\n{COMMENT_MIRRORED_FROM_XSOAR}')
                     }
                     client.add_comment(issue_id_or_key=remote_id, json_data=payload)
-        demisto.debug('Updated the remote system successfully')
+            demisto.debug('Updated the entries (attachments and/or comments) of the remote system successfully')
     except Exception as e:
         demisto.error(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")
@@ -3817,6 +3942,7 @@ def map_v2_args_to_v3(args: Dict[str, Any]) -> Dict[str, Any]:
     return v3_args
 
 
+@patch.object(JiraOnPremClient, '__abstractmethods__', set())
 def main() -> None:
     params: Dict[str, Any] = demisto.params()
     # args: Dict[str, Any] = demisto.args()
@@ -3840,7 +3966,7 @@ def main() -> None:
     fetch_comments = argToBoolean(params.get('fetch_comments', False))
     max_fetch = params.get('max_fetch', DEFAULT_FETCH_LIMIT)
     fetch_interval = params.get('incidentFetchInterval', DEFAULT_FETCH_INTERVAL)  # in minutes
-    # This is used for when issue_field_to_fetch_from is either, update date, created date, or status category change date,
+    # This is used in the first fetch of an instance, when issue_field_to_fetch_from is either, update date, or created date,
     # it holds values such as: 3 days, 1 minute, 5 hours,...
     first_fetch_interval = params.get('first_fetch', DEFAULT_FIRST_FETCH_INTERVAL)
     mirror_direction = params.get('mirror_direction', 'None')
@@ -3910,7 +4036,15 @@ def main() -> None:
         else:
             # Configure JiraOnPremClient
             # urljoin(url, '/')
-            pass
+            client = JiraOnPremClient(
+                verify=verify_certificate,
+                proxy=proxy,
+                client_id=client_id,
+                client_secret=client_secret,
+                callback_url=callback_url,
+                server_url=server_url)
+            # client.oauth_start()
+        demisto.debug(f'The configured Jira client is: {type(client)}')
         # else:
         #     raise DemistoException('Cloud ID and Server URL cannot be configured at the same time')
 
@@ -3962,3 +4096,5 @@ def main() -> None:
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
+
+# project=COMPANYSA AND key in (COMPANYSA-35)

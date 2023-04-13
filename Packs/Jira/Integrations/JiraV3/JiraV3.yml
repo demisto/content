@@ -46,7 +46,7 @@ configuration:
   options:
   - id
   - created date
-  # - updated date
+  - updated date
   type: 15
 - display: Issue index to start fetching incidents from
   additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch from". This will

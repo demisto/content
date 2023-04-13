@@ -32,23 +32,18 @@ def execute_xsoar_command(args: Dict[str, Any]) -> List[Dict[str, Any]]:
                                f' {type(res)}. The response is: {res}'))
 
 
-def get_transitions_from_jirav3_brand(command_execution_response: List[Dict[str, Any]]) -> List[str]:
-    """Gets the list of transitions from the CommandResults object returned by the command !jira-list-transitions when
+def extract_statuses_from_transition_response(command_execution_response: List[Dict[str, Any]]) -> List[str]:
+    """Gets the list of statuses from the CommandResults object returned by the command !jira-list-transitions when
     using the brand Jira V3.
 
     Args:
         command_execution_response (List[Dict[str, Any]]): The response of the command !jira-list-transitions.
 
     Returns:
-        List[str]: The list of transitions.
+        List[str]: The list of statuses.
     """
-    return command_execution_response[0].get('EntryContext', {}).get('Ticket(val.Id && val.Id == obj.Id)', {}).\
-        get('Transitions', {}).get('transitions', [])
-
-
-def extract_statuses_from_transition_response(command_execution_response: List[Dict[str, Any]]) -> List[str] | Any:
     if not command_execution_response:
-        raise DemistoException('Got an empty list after executing the command !jira-list-transitions')
+        raise DemistoException('Got an empty list object after executing the command !jira-list-transitions')
     transition_raw_response = command_execution_response[0].get('Contents', {})
     return [transition.get('to', {}).get('name', '') for transition in transition_raw_response.get('transitions', {})]
 
@@ -65,7 +60,7 @@ def get_status_names_by_source_brand(incident_id: Dict[str, Any], source_brand: 
     statuses_names: List[str] = []
     res: List[Dict[str, Any]] = []
     args = {}
-    demisto.debug(f'Got the following sourceBrand {source_brand}')
+    demisto.debug(f'Got the following source brand {source_brand}')
     if source_brand == 'Jira V3':
         args = {'issue_id': incident_id, 'using-brand': source_brand}
     elif source_brand == 'jira-v2':
@@ -85,7 +80,6 @@ def main():
     output = {}
     try:
         incident = demisto.incidents()[0]
-        # incident_id = incident.get("dbotMirrorId")
         if incident_id := incident.get("dbotMirrorId"):
             output = get_status_names_by_source_brand(incident_id=incident_id, source_brand=incident.get('sourceBrand', ''))
         else:
