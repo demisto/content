@@ -1074,9 +1074,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
 def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResults:
     status = args.get('status')
 
-    if ',' in status:  # type: ignore
-        status = status.split(',')  # type: ignore
-
+   status = argToList(status)
     last_seen_gte = arg_to_timestamp(
         arg=args.get('last_seen_gte'),
         arg_name='last_seen_gte'
