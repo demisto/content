@@ -380,25 +380,6 @@ def create_publications(cve: dict) -> list:
     return publications
 
 
-def build_ids_params(ids: list) -> str:
-    """
-        Gets a list of IDs and return a string to use as a query param in the requests of exclusion entities.
-        For example: ['1234', '5678'] => '?ids=1234&ids=5678'
-
-        Args:
-            ids: List of exclusion IDs.
-        Returns:
-            String to use as a query param in the requests of exclusion.
-    """
-    params = f'?ids={ids[0]}'
-
-    if (ids_length := len(ids)) > 1:
-        for i in range(1, ids_length):
-            params += f'&ids={ids[i]}'
-
-    return params
-
-
 def build_query_params(query_params: dict) -> str:
     """
         Gets a dict of {property: value} and return a string to use as a query param in the requests of exclusion entities.
@@ -1794,7 +1775,7 @@ def delete_exclusion(exclusion_type: str, exclusion_ids: list) -> dict:
             Info about the deleted exclusion.
     """
     return http_request(method='DELETE',
-                        url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{build_ids_params(exclusion_ids)}')
+                        url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{"?ids=" + "&ids=".join(exclusion_ids)}')
 
 
 def get_exclusions(exclusion_type: str, filter_query: str | None, params: dict) -> dict:
@@ -1823,7 +1804,7 @@ def get_exclusion_entities(exclusion_type: str, exclusion_ids: List) -> dict:
             List of exclusions.
     """
     return http_request(method='GET',
-                        url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{build_ids_params(exclusion_ids)}')
+                        url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{"?ids=" + "&ids=".join(exclusion_ids)}')
 
 
 def list_quarantined_files_id(files_filter: dict | None, query: dict, pagination: dict) -> dict:
