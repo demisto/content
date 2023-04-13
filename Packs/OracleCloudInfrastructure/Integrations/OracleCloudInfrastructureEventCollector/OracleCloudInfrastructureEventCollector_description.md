@@ -1,6 +1,6 @@
 #### OCI Related Parameters
-Oracle Cloud Infrastructure SDKs and CLI require basic configuration information, which achieved by using configuration parameters either with a configuration file or a runtime defined configuration dictionary. This integration uses the runtime defined configuration dictionary.
-More about OCI configuration [here](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm).
+Oracle Cloud Infrastructure SDKs and CLI require basic configuration information, which is achieved by using configuration parameters either with a configuration file or a runtime defined configuration dictionary. This integration uses the runtime defined configuration dictionary.
+Read more about OCI configuration [here](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm).
 
 | **Parameter**                                                           | **Description**                                                                           |
 |-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|

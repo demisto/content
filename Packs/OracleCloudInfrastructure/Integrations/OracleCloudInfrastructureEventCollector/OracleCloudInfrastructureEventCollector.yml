@@ -45,7 +45,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Collects Audit log events from Oracle Cloud Infrastructure resources.
+description: Collects audit log events from Oracle Cloud Infrastructure resources.
 display: Oracle Cloud Infrastructure Event Collector
 name: OracleCloudInfrastructureEventCollector
 script:
@@ -53,7 +53,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Set this argument to True in order to create events, otherwise the command will only display them. Default is False.
+      description: Set this argument to true in order to create events, otherwise the command will only display them. Default is false.
       isArray: false
       name: should_push_events
       predefined:
