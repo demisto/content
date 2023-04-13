@@ -1,6 +1,7 @@
 import json
 import io
 import pytest
+import requests_mock
 
 import demistomock as demisto
 from lxml import etree
@@ -6511,3 +6512,56 @@ def test_prettify_edls_arr(sample_file, expected_result_file):
 
     mock_result = prettify_edls_arr(sample)
     assert mock_result == expected_result
+
+
+def test_panorama_list_rules():
+    import Panorama
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    mock_version_xml = """
+    <response status="success" code="19">
+        <result total-count="1" count="1">
+            <entry name="hehe 2">
+                <to>
+                    <member>any</member>
+                </to>
+                <from>
+                    <member>any</member>
+                </from>
+                <source>
+                    <member>any</member>
+                </source>
+                <destination>
+                    <member>any</member>
+                </destination>
+                <source-user>
+                    <member>any</member>
+                </source-user>
+                <category>
+                    <member>any</member>
+                </category>
+                <application>
+                    <member>dns</member>
+                    <member>http</member>
+                </application>
+                <service>
+                    <member>application-default</member>
+                </service>
+                <hip-profiles>
+                    <member>any</member>
+                </hip-profiles>
+                <action>allow</action>
+            </entry>
+        </result>
+    </response>
+    """
+    xpath = "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry"
+    query = "(application/member eq 'dns')"
+
+    with requests_mock.Mocker() as m:
+        mock_request = m.get('https://1.1.1.1:443', text=mock_version_xml, status_code=200)
+        rules = Panorama.panorama_list_rules(xpath, query=query)
+
+    assert rules['application']['member'][0] == 'dns'
+    assert mock_request.last_request.qs['xpath'][0] == \
+           "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry[(application/member = 'dns')]"
