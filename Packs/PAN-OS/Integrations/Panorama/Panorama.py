@@ -4640,8 +4640,6 @@ def panorama_register_ip_tag_command(args: dict):
 
     major_version = get_pan_os_major_version()
 
-    # if timeout and persistent == '1':
-    #     raise DemistoException('When the persistent argument is true, you can not use the timeout argument.')
     if major_version <= 8 and timeout:
         raise DemistoException('The timeout argument is only applicable on 9.x PAN-OS versions or higher.')
 
