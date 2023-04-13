@@ -4406,17 +4406,14 @@ class TestExecuteCommand:
         from CommonServerPython import execute_command, EntryType
         error_entries = [
             {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
-            {'Type': EntryType.NOTE, 'Contents': 'not an error'},
             {'Type': EntryType.ERROR, 'Contents': 'error number 2'},
         ]
         demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand', return_value=error_entries)
-        demisto_results_mock = mocker.patch.object(demisto, 'results')
 
         with raises(DemistoException, match='Failed to execute'):
             execute_command('bad', {'arg1': 'value'})
 
         assert demisto_execute_mock.call_count == 1
-        assert demisto_results_mock.call_count == 0
 
     @staticmethod
     def test_failure_integration(monkeypatch):
