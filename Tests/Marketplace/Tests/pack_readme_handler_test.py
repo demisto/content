@@ -130,8 +130,12 @@ def test_download_readme_images_from_url_data_list(mocker):
         }, {'download': False, 'extract': False})
     ]
     for test in args_and_expected_for_test:
-        mock_download = mocker.patch('Tests.Marketplace.pack_readme_handler.download_readme_image_from_url_and_upload_to_gcs')
-        mock_extracting = mocker.patch('Tests.Marketplace.pack_readme_handler.extracting_readme_image_from_pack_and_upload_to_gcs')
+        mock_download = mocker.patch(
+            'Tests.Marketplace.pack_readme_handler.download_readme_image_from_url_and_upload_to_gcs'
+        )
+        mock_extracting = mocker.patch(
+            'Tests.Marketplace.pack_readme_handler.extracting_readme_image_from_pack_and_upload_to_gcs'
+        )
         download_readme_images_from_url_data_list([test[0]], 'test', 'test')
 
         assert bool(mock_download.call_count) == test[1]['download']
