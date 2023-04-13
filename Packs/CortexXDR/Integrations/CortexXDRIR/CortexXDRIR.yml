@@ -758,7 +758,7 @@ script:
       - 'true'
       - 'false'
   - arguments:
-    - description: The status of the endpoint to filter.
+    - description: A comma-separated list of endpoint statuses to filter.
       name: status
       auto: PREDEFINED
       predefined:
