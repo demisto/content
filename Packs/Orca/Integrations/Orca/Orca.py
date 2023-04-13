@@ -367,13 +367,13 @@ def set_alert_status(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandRe
     assert alert_id and status
     demisto.debug(f"Set alert status {alert_id=} {status=}")
 
-    orca_client.set_alert_status(alert_id=alert_id, status=status)
+    response = orca_client.set_alert_status(alert_id=alert_id, status=status)
     return CommandResults(
         readable_output="Set alert status",
         outputs_prefix="Orca.Alert",
         outputs={
             "id": alert_id,
-            "status": True
+            "status": response["data"]["details"]["to"]
         }
     )
 
@@ -383,13 +383,13 @@ def verify_alert(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandResult
     assert alert_id
     demisto.debug(f"Trigger verify alert {alert_id=}")
 
-    orca_client.verify_alert(alert_id=alert_id)
+    response = orca_client.verify_alert(alert_id=alert_id)
     return CommandResults(
         readable_output="Verify alert",
         outputs_prefix="Orca.Alert",
         outputs={
             "id": alert_id,
-            "status": True
+            "status": response["status"]
         }
     )
 

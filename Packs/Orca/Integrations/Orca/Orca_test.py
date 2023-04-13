@@ -655,7 +655,7 @@ def test_orca_set_alert_severity(requests_mock, orca_client: OrcaClient) -> None
         "alert_id": alert_id,
         "score": 6
     })
-    assert response.to_context()['Contents']['alert_id'] == alert_id
+    assert response.to_context()["Contents"]["details"]["severity"] == "Hazardous"
 
 
 def test_orca_get_alert_event_log(requests_mock, orca_client: OrcaClient) -> None:
@@ -726,7 +726,7 @@ def test_orca_set_alert_status(requests_mock, orca_client: OrcaClient) -> None:
     }
     result = set_alert_status(orca_client, args)
     content = result.to_context()["Contents"]
-    assert content["id"] == "orca-1"
+    assert content["status"] == "open"
 
 
 def test_orca_verify_alert(requests_mock, orca_client: OrcaClient) -> None:
@@ -741,7 +741,7 @@ def test_orca_verify_alert(requests_mock, orca_client: OrcaClient) -> None:
     }
     result = verify_alert(orca_client, args)
     content = result.to_context()["Contents"]
-    assert content["status"]
+    assert content["status"] == "scanning"
 
 
 def test_orca_download_malicious_file(requests_mock, orca_client) -> None:
