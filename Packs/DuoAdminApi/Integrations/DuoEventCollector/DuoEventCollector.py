@@ -207,7 +207,7 @@ def main():  # pragma: no cover
                     raw_response=events,
                 )
                 return_results(command_results)
-                if demisto_params.get('push_events'):
+                if argToBoolean(demisto_params.get('push_events', 'false')):
                     demisto.debug(f'Sending {len(events)} events to XSIAM')
                     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             else:
