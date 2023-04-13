@@ -1,9 +1,17 @@
 # SonicWall NSv
 This pack includes Cortex XSIAM content. 
-## Configuration on Server Side
 
+## Configuration on Server Side
+You need to configure Sonicwall to forward logs in Syslog format and in UTC timezone.
+
+### Configure Syslog forwarding
 To configure the Sonicwall NSv to send Syslog to XSIAM server (Broker VM), use the steps described [here](https://www.sonicwall.com/support/knowledge-base/how-can-i-configure-a-syslog-server-on-a-sonicwall-firewall/170505984096810/).
 
+### Configure Time zone
+To configure Sonicwall to send logs in UTC formats please do the following:
+1. Navigate to "Logs" -> "Syslog" -> "Syslog Settings"
+2. Turn on "Display Syslog Timestamp in UTC"
+   
 ## Collect Events from Vendor
 
 In order to use the collector, use the [Broker VM](#broker-vm) option.
