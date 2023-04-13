@@ -769,7 +769,7 @@ script:
       - windows
       - linux
       - macos
-      - android,
+      - android
       - isolated
       - unisolated
     - description: A comma-separated list of endpoint IDs.
