@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: HelloWorldEventCollectorTESTING
+  id: HelloWorldEventCollector
   version: -1
 configuration:
 - defaultvalue: https://some_url.com
@@ -36,8 +36,8 @@ configuration:
   required: false
   type: 8
 description: This is the Hello World event collector integration for XSIAM.
-display: HelloWorld Event Collector TESTING
-name: HelloWorldEventCollectorTESTING
+display: HelloWorld Event Collector
+name: HelloWorldEventCollector
 script:
   commands:
   - arguments:
