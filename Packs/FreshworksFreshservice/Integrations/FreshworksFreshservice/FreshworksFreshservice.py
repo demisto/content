@@ -2053,7 +2053,8 @@ def delete_freshservice_ticket_command(
         ]:
             readable_output = f'{output_prefix} {entity_id_value} does not exist'
         else:
-            raise  # if there's a different HTTP status code, it's not an expected behavior.
+            # if there's a different HTTP status code, it's not an expected behavior.
+            raise Exception(f'Got the following error: {exc.message}')
 
     return CommandResults(readable_output=readable_output)
 
@@ -2195,7 +2196,8 @@ def delete_freshservice_ticket_task_command(
         ]:
             readable_output = f'Task {task_id} does not exist'
         else:
-            raise  # if there's a different HTTP status code, it's not an expected behavior.
+            # if there's a different HTTP status code, it's not an expected behavior.
+            raise Exception(f'Got the following error: {exc.message}')
 
     return CommandResults(readable_output=readable_output)
 
@@ -2407,7 +2409,8 @@ def delete_freshservice_ticket_conversation_command(
         ]:
             readable_output = 'Conversation does not exist'
         else:
-            raise  # if there's a different HTTP status code, it's not an expected behavior.
+            # if there's a different HTTP status code, it's not an expected behavior.
+            raise Exception(f'Got the following error: {exc.message}')
 
     return CommandResults(readable_output=readable_output)
 
