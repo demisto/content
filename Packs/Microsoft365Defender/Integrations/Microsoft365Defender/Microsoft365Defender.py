@@ -507,7 +507,6 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
                 if redirect_id := incident.get('redirectIncidentId'):
                     grouped_incident = client.get_incident(incident_id=redirect_id, timeout=timeout)
                     incident.update(grouped_incident)
-                   
                 incident.update(_get_meta_data_for_incident(incident))
 
             incidents += [{
