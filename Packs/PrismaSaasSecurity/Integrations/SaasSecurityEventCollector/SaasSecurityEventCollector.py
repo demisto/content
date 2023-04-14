@@ -141,7 +141,7 @@ def validate_limit(limit: Optional[int]):
     """
     if limit:
         if limit % 10 != 0:  # max limit must be a multiplier of 10 (SaaS api limit)
-            raise DemistoException(f'fetch limit parameter should be divisible by 10')
+            raise DemistoException('fetch limit parameter should be divisible by 10')
 
         if limit <= 0:
             raise DemistoException('fetch limit parameter cannot be negative number or zero')
