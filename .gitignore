@@ -14,7 +14,7 @@ Integrations/SymantecMSS/test_data/SymantecXML.txt
 CommonServerPython.py
 *Module.py
 !Packs/ApiModules/Scripts/*/*Module.py
-Packs/Microsoft365Defender/integration/*/integration-*.yml
+Packs/Microsoft365Defender/Integration/*/integration-*.yml
 !Packs/Base/Scripts/CommonServerPython/CommonServerPython.py
 !Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
 CommonServerUserPython.py
