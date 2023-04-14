@@ -9,12 +9,11 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-MAX_EVENTS_PER_REQUEST = 1000
 VENDOR = 'paloaltonetworks'
 PRODUCT = 'saassecurity'
-MAX_ITERATIONS = 50
 
-DEFAULT_LIMIT = 100
+MAX_ITERATIONS = 50
+MAX_EVENTS_PER_REQUEST = 1000
 MAX_LIMIT = 5000
 
 ''' CLIENT CLASS '''
@@ -245,7 +244,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     args = demisto.args()
-    max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch'))
+    max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch')) or MAX_LIMIT
     # do not allow max limit of more than 5000 per single fetch to avoid timeouts
     if max_fetch and max_fetch > MAX_LIMIT:
         max_fetch = MAX_LIMIT
