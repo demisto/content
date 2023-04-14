@@ -16,4 +16,4 @@ This pack can help you streamline your security processes by allowing you to use
 - Add events to User Timelines in KMSAT.
 - Delete events from User Timelines in KMSAT.
 
-For more information, see KnowBe4’s [How to Integrate Cortex XSOAR with Your KMSAT Console article](https://support.knowbe4.com/hc/en-us/articles/13654988560275). 
+For more information, see KnowBe4’s [How to Integrate Cortex XSOAR with Your KMSAT Console article](https://support.knowbe4.com/hc/en-us/articles/13654988560275).
