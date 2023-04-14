@@ -6,13 +6,6 @@ commonfields:
   id: Microsoft 365 Defender
   version: -1
 configuration:
-- additionalinfo: The API key to use to connect.
-  defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
-  display: Application ID
-  name: _app_id
-  required: false
-  type: 0
-  section: Connect
 - additionalinfo: |-
     The United States: api-us.security.microsoft.com
     Europe: api-eu.security.microsoft.com
@@ -23,6 +16,24 @@ configuration:
   required: true
   type: 0
   section: Connect
+- name: creds_client_id
+  type: 9
+  displaypassword: ID or Client ID
+  hiddenusername: true
+  section: Connect
+- name: creds_tenant_id
+  type: 9
+  displaypassword: Token or Tenant ID
+  hiddenusername: true
+  section: Connect
+- additionalinfo: The API key to use to connect.
+  defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
+  display: Application ID
+  name: _app_id
+  required: false
+  type: 0
+  section: Connect
+  hidden: true
 - additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
   display: Use Client Credentials Authorization Flow
   name: client_credentials
@@ -34,6 +45,7 @@ configuration:
   required: false
   type: 0
   section: Connect
+  hidden: true
 - display: Client Secret (for Client Credentials mode)
   hiddenusername: true
   name: credentials

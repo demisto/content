@@ -504,6 +504,10 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
             response = client.incidents_list(from_date=last_run, skip=offset, timeout=timeout)
             raw_incidents = response.get('value')
             for incident in raw_incidents:
+                if redirect_id := incident.get('redirectIncidentId'):
+                    grouped_incident = client.get_incident(incident_id=redirect_id, timeout=timeout)
+                    incident.update(grouped_incident)
+                   
                 incident.update(_get_meta_data_for_incident(incident))
 
             incidents += [{
@@ -606,10 +610,10 @@ def main() -> None:
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
-    app_id = params.get('app_id') or params.get('_app_id')
+    app_id = params.get('creds_client_id', {}).get('password', '') or params.get('app_id') or params.get('_app_id')
     base_url = params.get('base_url')
 
-    tenant_id = params.get('tenant_id') or params.get('_tenant_id')
+    tenant_id = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id') or params.get('_tenant_id')
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \

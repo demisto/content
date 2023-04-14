@@ -1,0 +1,2025 @@
+category: Network Security
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Microsoft 365 Defender (dev)
+  version: -1
+configuration:
+- additionalinfo: |-
+    The United States: api-us.security.microsoft.com
+    Europe: api-eu.security.microsoft.com
+    The United Kingdom: api-uk.security.microsoft.co
+  defaultvalue: https://api.security.microsoft.com
+  display: Endpoint URI
+  name: base_url
+  required: true
+  type: 0
+  section: Connect
+- name: creds_client_id
+  type: 9
+  displaypassword: ID or Client ID
+  hiddenusername: true
+  section: Connect
+- name: creds_tenant_id
+  type: 9
+  displaypassword: Token or Tenant ID
+  hiddenusername: true
+  section: Connect
+- additionalinfo: The API key to use to connect.
+  defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
+  display: Application ID
+  name: _app_id
+  required: false
+  type: 0
+  section: Connect
+  hidden: true
+- additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
+  display: Use Client Credentials Authorization Flow
+  name: client_credentials
+  required: false
+  type: 8
+  section: Connect
+- display: Tenant ID (for Client Credentials mode)
+  name: _tenant_id
+  required: false
+  type: 0
+  section: Connect
+  hidden: true
+- display: Client Secret (for Client Credentials mode)
+  hiddenusername: true
+  name: credentials
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: Client Secret
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: creds_certificate
+  type: 9
+  displaypassword: Private Key
+  section: Connect
+  advanced: true
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+  section: Connect
+  advanced: true
+  hidden: true
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
+  section: Connect
+  advanced: true
+  hidden: true
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
+  section: Connect
+  advanced: true
+- defaultvalue: 12 hours
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
+- additionalinfo: The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit.
+  defaultvalue: '30'
+  display: Fetch incidents timeout
+  name: fetch_timeout
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+- additionalinfo: Due to API limitations, the maximum is 100.
+  defaultvalue: '10'
+  display: Number of incidents for each fetch.
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+- defaultvalue: Microsoft 365 Defender Incident
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+  section: Connect
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+  section: Collect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Application ID (Deprecated)
+  hidden: true
+  name: app_id
+  required: false
+  type: 4
+  section: Connect
+  advanced: true
+- display: Tenant ID (for Client Credentials mode) (Deprecated)
+  hidden: true
+  name: tenant_id
+  required: false
+  type: 4
+  section: Connect
+  advanced: true
+- display: Client Secret (for Client Credentials mode) (Deprecated)
+  hidden: true
+  name: enc_key
+  required: false
+  type: 4
+  section: Connect
+  advanced: true
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+  section: Connect
+  advanced: true
+description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.
+display: Microsoft 365 Defender (dev)
+name: Microsoft 365 Defender (dev)
+script:
+  commands:
+  - arguments: []
+    description: Run this command to start the authorization process and follow the instructions in the command results. (for device-code mode)
+    name: microsoft-365-defender-auth-start
+  - arguments: []
+    description: Run this command to complete the authorization process. Should be used after running the microsoft-365-defender-auth-start command. (for device-code mode)
+    name: microsoft-365-defender-auth-complete
+  - arguments: []
+    description: Run this command if you need to rerun the authentication process. (for device-code mode)
+    name: microsoft-365-defender-auth-reset
+  - arguments: []
+    description: Tests the connectivity to the Microsoft 365 Defender.
+    name: microsoft-365-defender-auth-test
+  - arguments:
+    - auto: PREDEFINED
+      description: Categorize incidents (as Active, Resolved, or Redirected).
+      name: status
+      predefined:
+      - Active
+      - Resolved
+      - Redirected
+    - description: Owner of the incident.
+      name: assigned_to
+    - defaultValue: '100'
+      description: Number of incidents in the list. Maximum is 100.
+      name: limit
+    - description: Number of entries to skip.
+      name: offset
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    - description: 'Filter incidents using odata query: https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-list-incidents?view=o365-worldwide. Example: `{"$filter":"lastUpdateTime gt 2022-08-29T06:00:00.29Z"}`'
+      name: odata
+    description: Get the most recent incidents.
+    name: microsoft-365-defender-incidents-list
+    outputs:
+    - contextPath: Microsoft365Defender.Incident.incidentId
+      description: Incident's ID.
+      type: Number
+    - contextPath: Microsoft365Defender.Incident.redirectIncidentId
+      description: Only populated in case an incident is grouped together with another incident, as part of the incident processing logic.
+      type: Unknown
+    - contextPath: Microsoft365Defender.Incident.incidentName
+      description: The name of the incident.
+      type: String
+    - contextPath: Microsoft365Defender.Incident.createdTime
+      description: The date and time (in UTC) the incident was created.
+      type: Date
+    - contextPath: Microsoft365Defender.Incident.lastUpdateTime
+      description: The date and time (in UTC) the incident was last updated.
+      type: Date
+    - contextPath: Microsoft365Defender.Incident.assignedTo
+      description: Owner of the incident.
+      type: String
+    - contextPath: Microsoft365Defender.Incident.classification
+      description: 'Specification of the incident. Possible values are: Unknown, FalsePositive, and TruePositive.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.determination
+      description: 'The determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.status
+      description: 'The current status of the incident. Possible values are: Active, Resolved, and Redirected.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.severity
+      description: 'Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.alerts
+      description: List of alerts relevant for the incidents.
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      description: Categorize incidents (as Active, Resolved, or Redirected).
+      name: status
+      predefined:
+      - Active
+      - Resolved
+      - Redirected
+      - InProgress
+    - description: Owner of the incident.
+      name: assigned_to
+    - description: Incident's ID.
+      name: id
+      required: true
+    - auto: PREDEFINED
+      description: The specification for the incident.
+      name: classification
+      predefined:
+      - Unknown
+      - FalsePositive
+      - TruePositive
+      - InformationalExpectedActivity
+    - description: Comment to be added to the incident.
+      name: comment
+    - auto: PREDEFINED
+      description: Determination of the incident.
+      name: determination
+      predefined:
+      - NotAvailable
+      - Malware
+      - SecurityTesting
+      - UnwantedSoftware
+      - MultiStagedAttack
+      - MaliciousUserActivity
+      - CompromisedAccount
+      - Phishing
+      - LineOfBusinessApplication
+      - ConfirmedActivity
+      - NotMalicious
+      - Other
+    - description: 'A comma-separated list of custom tags associated with an incident. For example: tag1,tag2,tag3.'
+      isArray: true
+      name: tags
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Update the incident with the given ID.
+    name: microsoft-365-defender-incident-update
+    outputs:
+    - contextPath: Microsoft365Defender.Incident.incidentId
+      description: Incident's ID.
+      type: Number
+    - contextPath: Microsoft365Defender.Incident.redirectIncidentId
+      description: Only populated in case an incident is grouped together with another incident, as part of the incident processing logic.
+      type: Unknown
+    - contextPath: Microsoft365Defender.Incident.incidentName
+      description: The name of the incident.
+      type: String
+    - contextPath: Microsoft365Defender.Incident.createdTime
+      description: The date and time (in UTC) the incident was created.
+      type: Date
+    - contextPath: Microsoft365Defender.Incident.lastUpdateTime
+      description: The date and time (in UTC) the incident was last updated.
+      type: Date
+    - contextPath: Microsoft365Defender.Incident.assignedTo
+      description: Owner of the incident.
+      type: String
+    - contextPath: Microsoft365Defender.Incident.classification
+      description: 'Specification of the incident. Possible values are: Unknown, FalsePositive, and TruePositive.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.determination
+      description: 'The determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.severity
+      description: 'Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.status
+      description: 'The current status of the incident. Possible values are: Active, Resolved, and Redirected.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.alerts
+      description: List of alerts relevant for the incidents.
+      type: Unknown
+  - arguments:
+    - description: Advanced hunting query.
+      name: query
+      required: true
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    - defaultValue: '50'
+      description: Number of entries.  Enter -1 for unlimited query.
+      name: limit
+      required: true
+    description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+    name: microsoft-365-defender-advanced-hunting
+    outputs:
+    - contextPath: Microsoft365Defender.Hunt.query
+      description: The query used, also acted as a key.
+      type: String
+    - contextPath: Microsoft365Defender.Hunt.results.
+      description: The results of the query.
+      type: Unknown
+  - arguments:
+    - description: Incident's ID.
+      name: id
+      required: true
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Gets the incident with the given ID.
+    name: microsoft-365-defender-incident-get
+    outputs:
+    - contextPath: Microsoft365Defender.Incident.incidentId
+      description: Incident's ID.
+      type: number
+    - contextPath: Microsoft365Defender.Incident.redirectIncidentId
+      description: Only populated in case an incident is grouped together with another incident, as part of the incident processing logic.
+    - contextPath: Microsoft365Defender.Incident.incidentName
+      description: The name of the incident.
+      type: string
+    - contextPath: Microsoft365Defender.Incident.createdTime
+      description: The date and time (in UTC) the incident was created.
+      type: date
+    - contextPath: Microsoft365Defender.Incident.lastUpdateTime
+      description: The date and time (in UTC) the incident was last updated.
+      type: date
+    - contextPath: Microsoft365Defender.Incident.assignedTo
+      description: Owner of the incident.
+      type: string
+    - contextPath: Microsoft365Defender.Incident.classification
+      description: 'Specification of the incident. Possible values are: Unknown, FalsePositive, and TruePositive.'
+      type: string
+    - contextPath: Microsoft365Defender.Incident.determination
+      description: 'The determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other.'
+      type: string
+    - contextPath: Microsoft365Defender.Incident.severity
+      description: 'Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High.'
+      type: string
+    - contextPath: Microsoft365Defender.Incident.status
+      description: 'The current status of the incident. Possible values are: Active, Resolved, and Redirected.'
+      type: string
+    - contextPath: Microsoft365Defender.Incident.alerts
+      description: List of alerts relevant for the incidents.
+  dockerimage: demisto/crypto:1.0.0.49599
+  isfetch: true
+  runonce: false
+  script: >
+    register_module_line('Microsoft 365 Defender (dev)', 'start', __line__())
+
+    import json
+
+    from typing import Dict
+
+
+
+    import urllib3
+
+
+
+    # Disable insecure warnings
+
+    urllib3.disable_warnings()
+
+
+    ''' CONSTANTS '''
+
+
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+
+
+    MAX_ENTRIES = 100
+
+    TIMEOUT = '30'
+
+    BASE_URL = "https://api.security.microsoft.com"
+
+
+    ''' CLIENT CLASS '''
+
+
+
+    class Client:
+        @logger
+        def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = BASE_URL, tenant_id: str = None,
+                     enc_key: str = None, client_credentials: bool = False, certificate_thumbprint: Optional[str] = None,
+                     private_key: Optional[str] = None,
+                     managed_identities_client_id: Optional[str] = None):
+            if app_id and '@' in app_id:
+                app_id, refresh_token = app_id.split('@')
+                integration_context = get_integration_context()
+                integration_context.update(current_refresh_token=refresh_token)
+                set_integration_context(integration_context)
+
+            self.client_credentials = client_credentials
+            client_args = assign_params(
+                base_url=base_url,
+                verify=verify,
+                proxy=proxy,
+                ok_codes=(200, 201, 202, 204),
+                scope='offline_access https://security.microsoft.com/mtp/.default',
+                self_deployed=True,  # We always set the self_deployed key as True because when not using a self
+                # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
+                # flow and most of the same arguments should be set, as we're !not! using OProxy.
+
+                auth_id=app_id,
+                grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
+
+                # used for device code flow
+                resource='https://api.security.microsoft.com' if not client_credentials else None,
+                token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token' if not client_credentials else None,
+                # used for client credentials flow
+                tenant_id=tenant_id,
+                enc_key=enc_key,
+                certificate_thumbprint=certificate_thumbprint,
+                private_key=private_key,
+                managed_identities_client_id=managed_identities_client_id,
+                managed_identities_resource_uri=Resources.security_center
+            )
+            self.ms_client = MicrosoftClient(**client_args)  # type: ignore
+
+        @logger
+        def incidents_list(self, timeout: int, limit: int = MAX_ENTRIES, status: Optional[str] = None,
+                           assigned_to: Optional[str] = None, from_date: Optional[datetime] = None,
+                           skip: Optional[int] = None, odata: Optional[dict] = None) -> Dict:
+            """
+            GET request from the client using OData operators:
+                - $top: how many incidents to receive, maximum value is 100
+                - $filter: OData query to filter the the list on the properties:
+                                                                    lastUpdateTime, createdTime, status, and assignedTo
+            Args:
+                limit (int): how many incidents to receive, the maximum value is 100
+                status (str): filter list to contain only incidents with the given status (Active, Resolved, or Redirected)
+                assigned_to (str): Owner of the incident, or None if no owner is assigned
+                timeout (int): The amount of time (in seconds) that a request will wait for a client to
+                    establish a connection to a remote machine before a timeout occurs.
+                from_date (datetime): get incident with creation date more recent than from_date
+                skip (int): how many entries to skip
+                odata (dict): alternative method for listing incidents, accepts dictionary of URI parameters
+
+            Returns (Dict): request results as dict:
+                        { '@odata.context',
+                          'value': list of incidents,
+                          '@odata.nextLink'
+                        }
+
+            """
+            params = {}
+
+            if odata:
+                params = odata
+            else:
+                filter_query = ''
+                params = {'$top': limit}
+                if status:
+                    filter_query += 'status eq ' + "'" + status + "'"
+
+                if assigned_to:
+                    filter_query += ' and ' if filter_query else ''
+                    filter_query += f"assignedTo eq '{assigned_to}'"
+
+                # fetch incidents
+                if from_date:
+                    filter_query += ' and ' if filter_query else ''
+                    filter_query += f"createdTime gt {from_date}"
+
+                if filter_query:
+                    params['$filter'] = filter_query  # type: ignore
+
+                if skip:
+                    params['$skip'] = skip
+
+            return self.ms_client.http_request(method='GET', url_suffix='api/incidents', timeout=timeout,
+                                               params=params)
+
+        @logger
+        def update_incident(self, incident_id: int, status: Optional[str], assigned_to: Optional[str],
+                            classification: Optional[str],
+                            determination: Optional[str], tags: Optional[List[str]], timeout: int, comment: str) -> Dict:
+            """
+            PATCH request to update single incident.
+            Args:
+                incident_id (int): incident's id
+                status (str): Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
+                assigned_to (str): Owner of the incident.
+                classification (str): Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
+                determination (str):  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
+                                     Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.
+                tags (list): Custom tags associated with an incident. Separated by commas without spaces (CSV)
+                     for example: tag1,tag2,tag3.
+                timeout (int): The amount of time (in seconds) that a request will wait for a client to
+                    establish a connection to a remote machine before a timeout occurs.
+                comment (str): Comment to be added to the incident
+           Returns( Dict): request results as dict:
+                        { '@odata.context',
+                          'value': updated incident,
+                        }
+
+            """
+            body = assign_params(status=status, assignedTo=assigned_to, classification=classification,
+                                 determination=determination, tags=tags, comment=comment)
+            if assigned_to == "":
+                body['assignedTo'] = ""
+            updated_incident = self.ms_client.http_request(method='PATCH', url_suffix=f'api/incidents/{incident_id}',
+                                                           json_data=body, timeout=timeout)
+            return updated_incident
+
+        @logger
+        def get_incident(self, incident_id: int, timeout: int) -> Dict:
+            """
+            GET request to get single incident.
+            Args:
+                incident_id (int): incident's id
+                timeout (int): waiting time for command execution
+
+
+           Returns( Dict): request results as dict:
+                        { '@odata.context',
+                          'value': updated incident,
+                        }
+
+            """
+            incident = self.ms_client.http_request(
+                method='GET', url_suffix=f'api/incidents/{incident_id}', timeout=timeout)
+            return incident
+
+        @logger
+        def advanced_hunting(self, query: str, timeout: int):
+            """
+            POST request to the advanced hunting API:
+            Args:
+                query (str): query advanced hunting query language
+                timeout (int): The amount of time (in seconds) that a request will wait for a client to
+                         establish a connection to a remote machine before a timeout occurs.
+
+            Returns:
+                The response object contains three top-level properties:
+
+                    Stats - A dictionary of query performance statistics.
+                    Schema - The schema of the response, a list of Name-Type pairs for each column.
+                    Results - A list of advanced hunting events.
+            """
+            return self.ms_client.http_request(method='POST', url_suffix='api/advancedhunting/run',
+                                               json_data={"Query": query}, timeout=timeout)
+
+
+    @logger
+
+    def start_auth(client: Client) -> CommandResults:
+        result = client.ms_client.start_auth('!microsoft-365-defender-auth-complete')
+        return CommandResults(readable_output=result)
+
+
+    @logger
+
+    def complete_auth(client: Client) -> CommandResults:
+        client.ms_client.get_access_token()
+        return CommandResults(readable_output='✅ Authorization completed successfully.')
+
+
+    @logger
+
+    def reset_auth() -> CommandResults:
+        set_integration_context({})
+        return CommandResults(readable_output='Authorization was reset successfully. You can now run '
+                                              '**!microsoft-365-defender-auth-start** and **!microsoft-365-defender-auth-complete**.')
+
+
+    @logger
+
+    def test_connection(client: Client) -> CommandResults:
+        test_context_for_token(client)
+        client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+        return CommandResults(readable_output='✅ Success!')
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+
+    def test_context_for_token(client: Client) -> None:
+        """test_context_for_token
+        Checks if the user acquired token via the authentication process.
+        Args:
+        Returns:
+
+        """
+        if client.client_credentials or client.ms_client.managed_identities_client_id:
+            return
+        if not (get_integration_context().get('access_token') or get_integration_context().get('current_refresh_token')):
+            raise DemistoException(
+                "This integration does not have a test module. Please run !microsoft-365-defender-auth-start and "
+                "!microsoft-365-defender-auth-complete and check the connection using !microsoft-365-defender-auth-test")
+
+
+    def test_module(client: Client) -> str:
+        """Tests API connectivity and authentication'
+
+        Returning 'ok' indicates that the integration works like it is supposed to.
+        Connection to the service is successful.
+        Raises exceptions if something goes wrong.
+
+        :type client: ``Client``
+        :param Client: client to use
+
+        :return: 'ok' if test passed.
+        :rtype: ``str``
+        """
+        # This  should validate all the inputs given in the integration configuration panel,
+        # either manually or by using an API that uses them.
+        if client.client_credentials:
+            raise DemistoException("When using a self-deployed configuration, run the !microsoft-365-defender-auth-test "
+                                   "command in order to test the connection")
+
+        test_connection(client)
+
+        return "ok"
+
+
+    def _get_meta_data_for_incident(raw_incident: Dict) -> Dict:
+        """
+        Calculated metadata for the gicen incident
+        Args:
+            raw_incident (Dict): The incident as received from microsoft 365 defender
+
+        Returns: Dictionary with the calculated data
+
+        """
+        if not raw_incident:
+            raw_incident = {}
+
+        alerts_list = raw_incident.get('alerts', [])
+
+        alerts_status = [alert.get('status') for alert in alerts_list if alert.get('status')]
+        first_activity_list = [alert.get('firstActivity') for alert in alerts_list]
+        last_activity_list = [alert.get('lastActivity') for alert in alerts_list]
+
+        return {
+            'Categories': [alert.get('category', '') for alert in alerts_list],
+            'Impacted entities': list({(entity.get('domainName', ''))
+                                       for alert in alerts_list
+                                       for entity in alert.get('entities') if entity.get('entityType') == 'User'}),
+            'Active alerts': f'{alerts_status.count("Active") + alerts_status.count("New")} / {len(alerts_status)}',
+            'Service sources': list({alert.get('serviceSource', '') for alert in alerts_list}),
+            'Detection sources': list({alert.get('detectionSource', '') for alert in alerts_list}),
+            'First activity': str(min(first_activity_list,
+                                      key=lambda x: dateparser.parse(x))) if alerts_list else '',  # type: ignore
+            'Last activity': str(max(last_activity_list,
+                                     key=lambda x: dateparser.parse(x))) if alerts_list else '',  # type: ignore
+            'Devices': [{'device name': device.get('deviceDnsName', ''),
+                         'risk level': device.get('riskScore', ''),
+                         'tags': ','.join(device.get('tags', []))
+                         } for alert in alerts_list
+                        for device in alert.get('devices', [])]
+        }
+
+
+    def convert_incident_to_readable(raw_incident: Dict) -> Dict:
+        """
+        Converts incident received from microsoft 365 defender to readable format
+        Args:
+            raw_incident (Dict): The incident as received from microsoft 365 defender
+
+        Returns: new dictionary with keys mapping.
+
+        """
+        if not raw_incident:
+            raw_incident = {}
+
+        incident_meta_data = _get_meta_data_for_incident(raw_incident)
+        device_groups = {device.get('device name') for device in incident_meta_data.get('Devices', [])
+                         if device.get('device name')}
+        return {
+            'Incident name': raw_incident.get('incidentName'),
+            'Tags': ', '.join(raw_incident.get('tags', [])),
+            'Severity': raw_incident.get('severity'),
+            'Incident ID': raw_incident.get('incidentId'),
+            # investigation state - relevant only for alerts.
+            'Categories': ', '.join(set(incident_meta_data.get('Categories', []))),
+            'Impacted entities': ', '.join(incident_meta_data.get('Impacted entities', [])),
+            'Active alerts': incident_meta_data.get('Active alerts', []),
+            'Service sources': ', '.join(incident_meta_data.get('Service sources', [])),
+            'Detection sources': ', '.join(incident_meta_data.get('Detection sources', [])),
+            # Data sensitivity - is not relevant
+            'First activity': incident_meta_data.get('First activity', ''),
+            'Last activity': incident_meta_data.get('Last activity', ''),
+            'Status': raw_incident.get('status'),
+            'Assigned to': raw_incident.get('assignedTo', 'Unassigned'),
+            'Classification': raw_incident.get('classification', 'Not set'),
+            'Device groups': ', '.join(device_groups),
+        }
+
+
+    ''' COMMAND FUNCTIONS '''
+
+
+
+    @logger
+
+    def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) -> CommandResults:
+        """
+        Returns list of the latest incidents in microsoft 365 defender in readable table.
+        The list can be filtered using the following arguments:
+            - limit (int) - number of incidents in the list, integer between 0 to 100.
+            - status (str) - fetch only incidents with the given status.
+        Args:
+            client(Client): Microsoft 365 Defender's client to preform the API calls.
+            args(Dict): Demisto arguments:
+                  - limit (int) - integer between 0 to 100
+                  - status (str) - get incidents with the given status (Active, Resolved or Redirected)
+                  - assigned_to (str) - get incidents assigned to the given user
+                  - offset (int) - skip the first N entries of the list
+                  - odata (str) - json dictionary containing odata uri parameters
+        Returns: CommandResults
+
+        """
+        limit = arg_to_number(args.get('limit', MAX_ENTRIES), arg_name='limit', required=True)
+        status = args.get('status')
+        assigned_to = args.get('assigned_to')
+        offset = arg_to_number(args.get('offset'))
+        timeout = arg_to_number(args.get('timeout', TIMEOUT))
+        odata = args.get('odata')
+
+        if odata:
+            try:
+                odata = json.loads(odata)
+            except json.JSONDecodeError:
+                return_error(f"Can't parse odata argument as JSON array.\nvalue: {odata}")
+
+        response = client.incidents_list(limit=limit, status=status, assigned_to=assigned_to,
+                                         skip=offset, timeout=timeout, odata=odata)
+
+        raw_incidents = response.get('value')
+        readable_incidents = [convert_incident_to_readable(incident) for incident in raw_incidents]
+        if readable_incidents:
+            headers = list(readable_incidents[0].keys())  # the table headers are the incident keys.
+            human_readable = tableToMarkdown(name="Incidents:", t=readable_incidents, headers=headers)
+
+        else:
+            human_readable = "No incidents found"
+
+        return CommandResults(outputs_prefix='Microsoft365Defender.Incident', outputs_key_field='incidentId',
+                              outputs=raw_incidents, readable_output=human_readable)
+
+
+    @logger
+
+    def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -> CommandResults:
+        """
+        Update an incident.
+        Args:
+            client(Client): Microsoft 365 Defender's client to preform the API calls.
+            args(Dict): Demisto arguments:
+                  - id (int) - incident's id (required)
+                  - status (str) - Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
+                  - assigned_to (str) - Owner of the incident.
+                  - classification (str) - Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
+                  - determination (str) -  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
+                                     Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.
+                  - tags - Custom tags associated with an incident. Separated by commas without spaces (CSV)
+                           for example: tag1,tag2,tag3.
+
+        Returns: CommandResults
+        """
+        raw_tags = args.get('tags')
+        tags = raw_tags.split(',') if raw_tags else None
+        status = args.get('status')
+        assigned_to = args.get('assigned_to')
+        classification = args.get('classification')
+        determination = args.get('determination')
+        incident_id = arg_to_number(args.get('id'))
+        timeout = arg_to_number(args.get('timeout', TIMEOUT))
+        comment = args.get('comment')
+
+        updated_incident = client.update_incident(incident_id=incident_id, status=status, assigned_to=assigned_to,
+                                                  classification=classification, determination=determination, tags=tags,
+                                                  timeout=timeout, comment=comment)
+        if updated_incident.get('@odata.context'):
+            del updated_incident['@odata.context']
+
+        readable_incident = convert_incident_to_readable(updated_incident)
+        human_readable_table = tableToMarkdown(name=f"Updated incident No. {incident_id}:", t=readable_incident,
+                                               headers=list(readable_incident.keys()))
+
+        return CommandResults(outputs_prefix='Microsoft365Defender.Incident', outputs_key_field='incidentId',
+                              outputs=updated_incident, readable_output=human_readable_table)
+
+
+    @logger
+
+    def microsoft_365_defender_incident_get_command(client: Client, args: Dict) -> CommandResults:
+        """
+        Get an incident.
+        Args:
+            client(Client): Microsoft 365 Defender's client to preform the API calls.
+            args(Dict): Demisto arguments:
+                  - id (int)        - incident's id (required)
+                  - timeout (int)   - waiting time for command execution
+
+        Returns: CommandResults
+        """
+        incident_id = arg_to_number(args.get('id'))
+        timeout = arg_to_number(args.get('timeout', TIMEOUT))
+
+        incident = client.get_incident(incident_id=incident_id, timeout=timeout)
+        if incident.get('@odata.context'):
+            del incident['@odata.context']
+
+        readable_incident = convert_incident_to_readable(incident)
+        human_readable_table = tableToMarkdown(name=f"Incident No. {incident_id}:", t=readable_incident,
+                                               headers=list(readable_incident.keys()))
+
+        return CommandResults(outputs_prefix='Microsoft365Defender.Incident', outputs_key_field='incidentId',
+                              outputs=incident, readable_output=human_readable_table)
+
+
+    @logger
+
+    def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[Dict]:
+        """
+        Uses to fetch incidents into Demisto
+        Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
+
+        Due to API limitations (The incidents are not ordered and there is a limit of 100 incident for each request),
+        We get all the incidents newer than last_run/first_fetch_time and saves them in a queue. The queue is sorted by
+        creation date of each incident.
+
+        As long as the queue has more incidents than fetch_limit the function will return the oldest incidents in the queue.
+        If the queue is smaller than fetch_limit we fetch more incidents with the same logic described above.
+
+
+        Args:
+            client(Client): Microsoft 365 Defender's client to preform the API calls.
+            first_fetch_time(str): From when to fetch if first time, e.g. `3 days`.
+            fetch_limit(int): The number of incidents in each fetch.
+            timeout(int): The time limit in seconds for this function to run.
+                Note: exceeding the time doesnt kill the function just prevents the next api call.
+        Returns:
+            incidents, new last_run
+        """
+        start_time = time.time()
+        test_context_for_token(client)
+
+        last_run_dict = demisto.getLastRun()
+
+        last_run = last_run_dict.get('last_run')
+        if not last_run:  # this is the first run
+            first_fetch_date_time = dateparser.parse(first_fetch_time)
+            assert first_fetch_date_time is not None, f'could not parse {first_fetch_time}'
+            last_run = first_fetch_date_time.strftime(DATE_FORMAT)
+
+        # creates incidents queue
+        incidents_queue = last_run_dict.get('incidents_queue', [])
+
+        if len(incidents_queue) < fetch_limit:
+
+            incidents = list()
+
+            # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
+            # incident we skip (offset) the number of incidents we already fetched.
+            offset = 0
+
+            # This loop fetches all the incidents that had been created after last_run, due to API limitations the fetching
+            # occurs in batches. If timeout was given, exceeding the time will result an error.
+            # Note: Because the list is cannot be ordered by creation date, reaching timeout will force to re-run this
+            #       function from the start.
+
+            while True:
+                time_delta = time.time() - start_time
+                if timeout and time_delta > timeout:
+                    raise DemistoException(
+                        "Fetch incidents - Time out. Please change first_fetch parameter to be more recent one")
+
+                # HTTP request
+                response = client.incidents_list(from_date=last_run, skip=offset, timeout=timeout)
+                raw_incidents = response.get('value')
+                for incident in raw_incidents:
+                    if redirect_id := incident.get('redirectIncidentId'):
+                        grouped_incident = client.get_incident(incident_id=redirect_id, timeout=timeout)
+                        incident.update(grouped_incident)
+                       
+                    incident.update(_get_meta_data_for_incident(incident))
+
+                incidents += [{
+                    "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
+                    "occurred": incident.get('createdTime'),
+                    "rawJSON": json.dumps(incident)
+                } for incident in raw_incidents]
+
+                # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
+                if len(raw_incidents) < int(MAX_ENTRIES):
+                    break
+                offset += int(MAX_ENTRIES)
+
+            # sort the incidents by the creation time
+            incidents.sort(key=lambda x: dateparser.parse(x['occurred']))  # type: ignore
+            incidents_queue += incidents
+
+        oldest_incidents = incidents_queue[:fetch_limit]
+        new_last_run = incidents_queue[-1]["occurred"] if oldest_incidents else last_run  # newest incident creation time
+        demisto.setLastRun({'last_run': new_last_run,
+                            'incidents_queue': incidents_queue[fetch_limit:]})
+        return oldest_incidents
+
+
+    def _query_set_limit(query: str, limit: int) -> str:
+        """
+        Add limit to given query. If the query has limit, changes it.
+        Args:
+            query: the original query
+            limit: new limit value, if the value is negative return the original query.
+        Returns: query with limit parameters
+        """
+        if limit < 0:
+            return query
+
+        # the query has the structure of "section | section | section ..."
+        query_list = query.split('|')
+
+        # split the query to sections and find limit sections
+        changed = False
+        for i, section in enumerate(query_list):
+            section_list = section.split()
+            # 'take' and 'limit' are synonyms.
+            if section_list and section_list[0] == 'limit' or section_list[0] == 'take':
+                query_list[i] = f" limit {limit} "
+                changed = True
+
+        # if the query have not been changed than limit is added to the query
+        if not changed:
+            query_list.append(f" limit {limit} ")
+
+        fixed_query = '|'.join(query_list)
+        return fixed_query
+
+
+    @logger
+
+    def microsoft_365_defender_advanced_hunting_command(client: Client, args: Dict) -> CommandResults:
+        """
+        Sends a query for the advanced hunting tool.
+        Args:
+            client(Client): Microsoft 365 Defender's client to preform the API calls.
+            args(Dict): Demisto arguments:
+                  - query (str) - The query to run (required)
+                  - limit (int) - number of entries in the result, -1 for no limit.
+        Returns:
+
+        """
+        query = args.get('query', '')
+        limit = arg_to_number(args.get('limit', '-1'))
+        timeout = arg_to_number(args.get('timeout', TIMEOUT))
+
+        query = _query_set_limit(query, limit)  # type: ignore
+
+        response = client.advanced_hunting(query=query, timeout=timeout)
+        results = response.get('Results')
+        schema = response.get('Schema', {})
+        headers = [item.get('Name') for item in schema]
+        context_result = {'query': query, 'results': results}
+        human_readable_table = tableToMarkdown(name=f" Result of query: {query}:", t=results,
+                                               headers=headers)
+        return CommandResults(outputs_prefix='Microsoft365Defender.Hunt', outputs_key_field='query', outputs=context_result,
+                              readable_output=human_readable_table)
+
+
+    ''' MAIN FUNCTION '''
+
+
+
+    def main() -> None:
+        """main function, parses params and runs command functions
+
+        :return:
+        :rtype:
+        """
+        params = demisto.params()
+        # if your Client class inherits from BaseClient, SSL verification is
+        # handled out of the box by it, just pass ``verify_certificate`` to
+        # the Client constructor
+        verify_certificate = not params.get('insecure', False)
+
+        # if your Client class inherits from BaseClient, system proxy is handled
+        # out of the box by it, just pass ``proxy`` to the Client constructor
+        proxy = params.get('proxy', False)
+        app_id = params.get('creds_client_id', {}).get('password', '') or params.get('app_id') or params.get('_app_id')
+        base_url = params.get('base_url')
+
+        tenant_id = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id') or params.get('_tenant_id')
+        client_credentials = params.get('client_credentials', False)
+        enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
+        certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
+            params.get('certificate_thumbprint', '')
+
+        private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
+                       or params.get('private_key', ''))
+        managed_identities_client_id = get_azure_managed_identities_client_id(params)
+
+        first_fetch_time = params.get('first_fetch', '3 days').strip()
+        fetch_limit = arg_to_number(params.get('max_fetch', 10))
+        fetch_timeout = arg_to_number(params.get('fetch_timeout', TIMEOUT))
+        demisto.debug(f'Command being called is {demisto.command()}')
+
+        command = demisto.command()
+        args = demisto.args()
+
+        try:
+            if not managed_identities_client_id and not app_id:
+                raise Exception('Application ID must be provided.')
+
+            client = Client(
+                app_id=app_id,
+                verify=verify_certificate,
+                base_url=base_url,
+                proxy=proxy,
+                tenant_id=tenant_id,
+                enc_key=enc_key,
+                client_credentials=client_credentials,
+                certificate_thumbprint=certificate_thumbprint,
+                private_key=private_key,
+                managed_identities_client_id=managed_identities_client_id
+            )
+            if demisto.command() == 'test-module':
+                # This is the call made when pressing the integration Test button.
+                return_results(test_module(client))
+
+            elif command == 'microsoft-365-defender-auth-start':
+                return_results(start_auth(client))
+
+            elif command == 'microsoft-365-defender-auth-complete':
+                return_results(complete_auth(client))
+
+            elif command == 'microsoft-365-defender-auth-reset':
+                return_results(reset_auth())
+
+            elif command == 'microsoft-365-defender-auth-test':
+                return_results(test_connection(client))
+
+            elif command == 'microsoft-365-defender-incidents-list':
+                test_context_for_token(client)
+                return_results(microsoft_365_defender_incidents_list_command(client, args))
+
+            elif command == 'microsoft-365-defender-incident-update':
+                test_context_for_token(client)
+                return_results(microsoft_365_defender_incident_update_command(client, args))
+
+            elif command == 'microsoft-365-defender-advanced-hunting':
+                test_context_for_token(client)
+                return_results(microsoft_365_defender_advanced_hunting_command(client, args))
+
+            elif command == 'microsoft-365-defender-incident-get':
+                test_context_for_token(client)
+                return_results(microsoft_365_defender_incident_get_command(client, args))
+
+            elif command == 'fetch-incidents':
+                fetch_limit = arg_to_number(fetch_limit)
+                fetch_timeout = arg_to_number(fetch_timeout) if fetch_timeout else None
+                incidents = fetch_incidents(client, first_fetch_time, fetch_limit, fetch_timeout)
+                demisto.incidents(incidents)
+            else:
+                raise NotImplementedError
+        # Log exceptions and return errors
+        except Exception as e:
+            return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
+
+
+    ### GENERATED CODE ###: from MicrosoftApiModule import *  # noqa: E402
+
+    # This code was inserted in place of an API module.
+
+    register_module_line('MicrosoftApiModule', 'start', __line__(), wrapper=-3)
+
+    # pylint: disable=E9010, E9011
+
+    import traceback
+
+
+
+
+
+    import requests
+
+    import re
+
+    import base64
+
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+    from typing import Dict, Tuple, List, Optional
+
+
+
+    class Scopes:
+        graph = 'https://graph.microsoft.com/.default'
+        security_center = 'https://api.securitycenter.windows.com/.default'
+        security_center_apt_service = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
+        management_azure = 'https://management.azure.com/.default'
+
+
+    class Resources:
+        graph = 'https://graph.microsoft.com/'
+        security_center = 'https://api.securitycenter.microsoft.com/'
+        management_azure = 'https://management.azure.com/'
+        manage_office = 'https://manage.office.com/'
+
+
+    # authorization types
+
+    OPROXY_AUTH_TYPE = 'oproxy'
+
+    SELF_DEPLOYED_AUTH_TYPE = 'self_deployed'
+
+
+    # grant types in self-deployed authorization
+
+    CLIENT_CREDENTIALS = 'client_credentials'
+
+    AUTHORIZATION_CODE = 'authorization_code'
+
+    REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
+
+    DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
+
+    REGEX_SEARCH_URL = r'(?P<url>https?://[^\s]+)'
+
+    SESSION_STATE = 'session_state'
+
+    TOKEN_RETRIEVAL_ENDPOINTS = {
+        'com': 'https://login.microsoftonline.com',
+        'gcc-high': 'https://login.microsoftonline.us',
+        'dod': 'https://login.microsoftonline.us',
+        'de': 'https://login.microsoftonline.de',
+        'cn': 'https://login.chinacloudapi.cn',
+    }
+
+    GRAPH_ENDPOINTS = {
+        'com': 'https://graph.microsoft.com',
+        'gcc-high': 'https://graph.microsoft.us',
+        'dod': 'https://dod-graph.microsoft.us',
+        'de': 'https://graph.microsoft.de',
+        'cn': 'https://microsoftgraph.chinacloudapi.cn'
+    }
+
+    GRAPH_BASE_ENDPOINTS = {
+        'https://graph.microsoft.com': 'com',
+        'https://graph.microsoft.us': 'gcc-high',
+        'https://dod-graph.microsoft.us': 'dod',
+        'https://graph.microsoft.de': 'de',
+        'https://microsoftgraph.chinacloudapi.cn': 'cn'
+    }
+
+
+    # Azure Managed Identities
+
+    MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
+
+    MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
+
+
+
+    class MicrosoftClient(BaseClient):
+        def __init__(self, tenant_id: str = '',
+                     auth_id: str = '',
+                     enc_key: Optional[str] = '',
+                     token_retrieval_url: str = '{endpoint}/{tenant_id}/oauth2/v2.0/token',
+                     app_name: str = '',
+                     refresh_token: str = '',
+                     refresh_token_param: Optional[str] = '',
+                     auth_code: str = '',
+                     scope: str = '{graph_endpoint}/.default',
+                     grant_type: str = CLIENT_CREDENTIALS,
+                     redirect_uri: str = 'https://localhost/myapp',
+                     resource: Optional[str] = '',
+                     multi_resource: bool = False,
+                     resources: List[str] = None,
+                     verify: bool = True,
+                     self_deployed: bool = False,
+                     timeout: Optional[int] = None,
+                     azure_ad_endpoint: str = '{endpoint}',
+                     endpoint: str = 'com',
+                     certificate_thumbprint: Optional[str] = None,
+                     retry_on_rate_limit: bool = False,
+                     private_key: Optional[str] = None,
+                     managed_identities_client_id: Optional[str] = None,
+                     managed_identities_resource_uri: Optional[str] = None,
+                     *args, **kwargs):
+            """
+            Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
+            It also provides common logic to handle responses from Microsoft.
+            Args:
+                tenant_id: If self deployed it's the tenant for the app url, otherwise (oproxy) it's the token
+                auth_id: If self deployed it's the client id, otherwise (oproxy) it's the auth id and may also
+                contain the token url
+                enc_key: If self deployed it's the client secret, otherwise (oproxy) it's the encryption key
+                refresh_token: The current used refresh token.
+                refresh_token_param: The refresh token from the integration's parameters (i.e instance configuration).
+                scope: The scope of the application (only if self deployed)
+                resource: The resource of the application (only if self deployed)
+                multi_resource: Where or not module uses a multiple resources (self-deployed, auth_code grant type only)
+                resources: Resources of the application (for multi-resource mode)
+                verify: Demisto insecure parameter
+                self_deployed: Indicates whether the integration mode is self deployed or oproxy
+                certificate_thumbprint: Certificate's thumbprint that's associated to the app
+                private_key: Private key of the certificate
+                managed_identities_client_id: The Azure Managed Identities client id
+                managed_identities_resource_uri: The resource uri to get token for by Azure Managed Identities
+                retry_on_rate_limit: If the http request returns with a 429 - Rate limit reached response,
+                                     retry the request using a scheduled command.
+            """
+            super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
+            self.endpoint = endpoint
+            self.retry_on_rate_limit = retry_on_rate_limit
+            if retry_on_rate_limit and (429 not in self._ok_codes):
+                self._ok_codes = self._ok_codes + (429,)
+            if not self_deployed:
+                auth_id_and_token_retrieval_url = auth_id.split('@')
+                auth_id = auth_id_and_token_retrieval_url[0]
+                if len(auth_id_and_token_retrieval_url) != 2:
+                    self.token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
+                else:
+                    self.token_retrieval_url = auth_id_and_token_retrieval_url[1]
+
+                self.app_name = app_name
+                self.auth_id = auth_id
+                self.enc_key = enc_key
+                self.tenant_id = tenant_id
+                self.refresh_token = refresh_token
+                self.refresh_token_param = refresh_token_param
+
+            else:
+                self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id,
+                                                                      endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.endpoint])
+                self.client_id = auth_id
+                self.client_secret = enc_key
+                self.tenant_id = tenant_id
+                self.auth_code = auth_code
+                self.grant_type = grant_type
+                self.resource = resource
+                self.scope = scope.format(graph_endpoint=GRAPH_ENDPOINTS[self.endpoint])
+                self.redirect_uri = redirect_uri
+                if certificate_thumbprint and private_key:
+                    try:
+                        import msal  # pylint: disable=E0401
+                        self.jwt = msal.oauth2cli.assertion.JwtAssertionCreator(
+                            private_key,
+                            'RS256',
+                            certificate_thumbprint
+                        ).create_normal_assertion(audience=self.token_retrieval_url, issuer=self.client_id)
+                    except ModuleNotFoundError:
+                        raise DemistoException('Unable to use certificate authentication because `msal` is missing.')
+                else:
+                    self.jwt = None
+
+            self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
+            self.verify = verify
+            self.azure_ad_endpoint = azure_ad_endpoint.format(endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.endpoint])
+            self.timeout = timeout  # type: ignore
+
+            self.multi_resource = multi_resource
+            if self.multi_resource:
+                self.resources = resources if resources else []
+                self.resource_to_access_token: Dict[str, str] = {}
+
+            # for Azure Managed Identities purpose
+            self.managed_identities_client_id = managed_identities_client_id
+            self.managed_identities_resource_uri = managed_identities_resource_uri
+
+        def is_command_executed_from_integration(self):
+            ctx = demisto.callingContext.get('context', {})
+            executed_commands = ctx.get('ExecutedCommands', [{'moduleBrand': 'Scripts'}])
+
+            if executed_commands:
+                return executed_commands[0].get('moduleBrand', "") != 'Scripts'
+
+            return True
+
+        def http_request(
+                self, *args, resp_type='json', headers=None,
+                return_empty_response=False, scope: Optional[str] = None,
+                resource: str = '', overwrite_rate_limit_retry=False, **kwargs):
+            """
+            Overrides Base client request function, retrieves and adds to headers access token before sending the request.
+
+            Args:
+                resp_type: Type of response to return. will be ignored if `return_empty_response` is True.
+                headers: Headers to add to the request.
+                return_empty_response: Return the response itself if the return_code is 206.
+                scope: A scope to request. Currently will work only with self-deployed app.
+                resource (str): The resource identifier for which the generated token will have access to.
+                overwrite_rate_limit_retry : Skip rate limit retry
+            Returns:
+                Response from api according to resp_type. The default is `json` (dict or list).
+            """
+            if 'ok_codes' not in kwargs and not self._ok_codes:
+                kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
+            token = self.get_access_token(resource=resource, scope=scope)
+            default_headers = {
+                'Authorization': f'Bearer {token}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+
+            if headers:
+                default_headers.update(headers)
+
+            if self.timeout:
+                kwargs['timeout'] = self.timeout
+
+            should_http_retry_on_rate_limit = self.retry_on_rate_limit and not overwrite_rate_limit_retry
+            if should_http_retry_on_rate_limit and not kwargs.get('error_handler'):
+                kwargs['error_handler'] = self.handle_error_with_metrics
+
+            response = super()._http_request(  # type: ignore[misc]
+                *args, resp_type="response", headers=default_headers, **kwargs)
+
+            if should_http_retry_on_rate_limit and self.is_command_executed_from_integration():
+                self.create_api_metrics(response.status_code)
+            # 206 indicates Partial Content, reason will be in the warning header.
+            # In that case, logs with the warning header will be written.
+            if response.status_code == 206:
+                demisto.debug(str(response.headers))
+            is_response_empty_and_successful = (response.status_code == 204)
+            if is_response_empty_and_successful and return_empty_response:
+                return response
+
+            # Handle 404 errors instead of raising them as exceptions:
+            if response.status_code == 404:
+                try:
+                    error_message = response.json()
+                except Exception:
+                    error_message = 'Not Found - 404 Response'
+                raise NotFoundError(error_message)
+
+            if should_http_retry_on_rate_limit and response.status_code == 429 and is_demisto_version_ge('6.2.0'):
+                command_args = demisto.args()
+                ran_once_flag = command_args.get('ran_once_flag')
+                demisto.info(f'429 MS rate limit for command {demisto.command()}, where ran_once_flag is {ran_once_flag}')
+                # We want to retry on rate limit only once
+                if ran_once_flag:
+                    try:
+                        error_message = response.json()
+                    except Exception:
+                        error_message = 'Rate limit reached on retry - 429 Response'
+                    demisto.info(f'Error in retry for MS rate limit - {error_message}')
+                    raise DemistoException(error_message)
+
+                else:
+                    demisto.info(f'Scheduling command {demisto.command()}')
+                    command_args['ran_once_flag'] = True
+                    return_results(self.run_retry_on_rate_limit(command_args))
+                    sys.exit(0)
+
+            try:
+                if resp_type == 'json':
+                    return response.json()
+                if resp_type == 'text':
+                    return response.text
+                if resp_type == 'content':
+                    return response.content
+                if resp_type == 'xml':
+                    try:
+                        import defusedxml.ElementTree as defused_ET
+                        defused_ET.fromstring(response.text)
+                    except ImportError:
+                        demisto.debug('defused_ET is not supported, using ET instead.')
+                        ET.fromstring(response.text)
+                return response
+            except ValueError as exception:
+                raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
+
+        def get_access_token(self, resource: str = '', scope: Optional[str] = None) -> str:
+            """
+            Obtains access and refresh token from oproxy server or just a token from a self deployed app.
+            Access token is used and stored in the integration context
+            until expiration time. After expiration, new refresh token and access token are obtained and stored in the
+            integration context.
+
+            Args:
+                resource (str): The resource identifier for which the generated token will have access to.
+                scope (str): A scope to get instead of the default on the API.
+
+            Returns:
+                str: Access token that will be added to authorization header.
+            """
+            integration_context = get_integration_context()
+            refresh_token = integration_context.get('current_refresh_token', '')
+            # Set keywords. Default without the scope prefix.
+            access_token_keyword = f'{scope}_access_token' if scope else 'access_token'
+            valid_until_keyword = f'{scope}_valid_until' if scope else 'valid_until'
+
+            if self.multi_resource:
+                access_token = integration_context.get(resource)
+            else:
+                access_token = integration_context.get(access_token_keyword)
+
+            valid_until = integration_context.get(valid_until_keyword)
+
+            if access_token and valid_until:
+                if self.epoch_seconds() < valid_until:
+                    return access_token
+
+            if self.auth_type == OPROXY_AUTH_TYPE:
+                if self.multi_resource:
+                    for resource_str in self.resources:
+                        access_token, expires_in, refresh_token = self._oproxy_authorize(resource_str)
+                        self.resource_to_access_token[resource_str] = access_token
+                        self.refresh_token = refresh_token
+                else:
+                    access_token, expires_in, refresh_token = self._oproxy_authorize(scope=scope)
+
+            else:
+                access_token, expires_in, refresh_token = self._get_self_deployed_token(
+                    refresh_token, scope, integration_context)
+            time_now = self.epoch_seconds()
+            time_buffer = 5  # seconds by which to shorten the validity period
+            if expires_in - time_buffer > 0:
+                # err on the side of caution with a slightly shorter access token validity period
+                expires_in = expires_in - time_buffer
+            valid_until = time_now + expires_in
+            integration_context.update({
+                access_token_keyword: access_token,
+                valid_until_keyword: valid_until,
+                'current_refresh_token': refresh_token
+            })
+
+            # Add resource access token mapping
+            if self.multi_resource:
+                integration_context.update(self.resource_to_access_token)
+
+            set_integration_context(integration_context)
+
+            if self.multi_resource:
+                return self.resource_to_access_token[resource]
+
+            return access_token
+
+        def _raise_authentication_error(self, oproxy_response: requests.Response):
+            """
+            Raises an exception for authentication error with the Oproxy server.
+            Args:
+                oproxy_response: Raw response from the Oproxy server to parse.
+            """
+            msg = 'Error in authentication. Try checking the credentials you entered.'
+            try:
+                demisto.info('Authentication failure from server: {} {} {}'.format(
+                    oproxy_response.status_code, oproxy_response.reason, oproxy_response.text))
+                err_response = oproxy_response.json()
+                server_msg = err_response.get('message')
+                if not server_msg:
+                    title = err_response.get('title')
+                    detail = err_response.get('detail')
+                    if title:
+                        server_msg = f'{title}. {detail}'
+                    elif detail:
+                        server_msg = detail
+                if server_msg:
+                    msg += ' Server message: {}'.format(server_msg)
+            except Exception as ex:
+                demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+            raise Exception(msg)
+
+        def _oproxy_authorize_build_request(self, headers: Dict[str, str], content: str,
+                                            scope: Optional[str] = None, resource: str = ''
+                                            ) -> requests.Response:
+            """
+            Build the Post request sent to the Oproxy server.
+            Args:
+                headers: The headers of the request.
+                content: The content for the request (usually contains the refresh token).
+                scope: A scope to add to the request. Do not use it.
+                resource: Resource to get.
+
+            Returns: The response from the Oproxy server.
+
+            """
+            return requests.post(
+                self.token_retrieval_url,
+                headers=headers,
+                json={
+                    'app_name': self.app_name,
+                    'registration_id': self.auth_id,
+                    'encrypted_token': self.get_encrypted(content, self.enc_key),
+                    'scope': scope,
+                    'resource': resource
+                },
+                verify=self.verify
+            )
+
+        def _oproxy_authorize(self, resource: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
+            """
+            Gets a token by authorizing with oproxy.
+            Args:
+                scope: A scope to add to the request. Do not use it.
+                resource: Resource to get.
+            Returns:
+                tuple: An access token, its expiry and refresh token.
+            """
+            content = self.refresh_token or self.tenant_id
+            headers = self._add_info_headers()
+            oproxy_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
+
+            if not oproxy_response.ok:
+                # Try to send request to the Oproxy server with the refresh token from the integration parameters
+                # (instance configuration).
+                # Relevant for cases where the user re-generated his credentials therefore the refresh token was updated.
+                if self.refresh_token_param:
+                    demisto.error('Error in authentication: Oproxy server returned error, perform a second attempt'
+                                  ' authorizing with the Oproxy, this time using the refresh token from the integration'
+                                  ' parameters (instance configuration).')
+                    content = self.refresh_token_param
+                    oproxy_second_try_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
+
+                    if not oproxy_second_try_response.ok:
+                        demisto.error('Authentication failure from server (second attempt - using refresh token from the'
+                                      ' integration parameters: {} {} {}'.format(oproxy_second_try_response.status_code,
+                                                                                 oproxy_second_try_response.reason,
+                                                                                 oproxy_second_try_response.text))
+                        self._raise_authentication_error(oproxy_response)
+
+                    else:  # Second try succeeded
+                        oproxy_response = oproxy_second_try_response
+
+                else:  # no refresh token for a second auth try
+                    self._raise_authentication_error(oproxy_response)
+
+            # Oproxy authentication succeeded
+            try:
+                gcloud_function_exec_id = oproxy_response.headers.get('Function-Execution-Id')
+                demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
+                parsed_response = oproxy_response.json()
+            except ValueError:
+                raise Exception(
+                    'There was a problem in retrieving an updated access token.\n'
+                    'The response from the Oproxy server did not contain the expected content.'
+                )
+
+            return (parsed_response.get('access_token', ''), parsed_response.get('expires_in', 3595),
+                    parsed_response.get('refresh_token', ''))
+
+        def _get_self_deployed_token(self,
+                                     refresh_token: str = '',
+                                     scope: Optional[str] = None,
+                                     integration_context: Optional[dict] = None
+                                     ) -> Tuple[str, int, str]:
+            if self.managed_identities_client_id:
+
+                if not self.multi_resource:
+                    return self._get_managed_identities_token()
+
+                expires_in = -1  # init variable as an int
+                for resource in self.resources:
+                    access_token, expires_in, refresh_token = self._get_managed_identities_token(resource=resource)
+                    self.resource_to_access_token[resource] = access_token
+                return '', expires_in, refresh_token
+
+            if self.grant_type == AUTHORIZATION_CODE:
+                if not self.multi_resource:
+                    return self._get_self_deployed_token_auth_code(refresh_token, scope=scope)
+                else:
+                    expires_in = -1  # init variable as an int
+                    for resource in self.resources:
+                        access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token,
+                                                                                                          resource)
+                        self.resource_to_access_token[resource] = access_token
+
+                    return '', expires_in, refresh_token
+            elif self.grant_type == DEVICE_CODE:
+                return self._get_token_device_code(refresh_token, scope, integration_context)
+            else:
+                # by default, grant_type is CLIENT_CREDENTIALS
+                if self.multi_resource:
+                    expires_in = -1  # init variable as an int
+                    for resource in self.resources:
+                        access_token, expires_in, refresh_token = self._get_self_deployed_token_client_credentials(
+                            resource=resource)
+                        self.resource_to_access_token[resource] = access_token
+                    return '', expires_in, refresh_token
+                return self._get_self_deployed_token_client_credentials(scope=scope)
+
+        def _get_self_deployed_token_client_credentials(self, scope: Optional[str] = None,
+                                                        resource: Optional[str] = None) -> Tuple[str, int, str]:
+            """
+            Gets a token by authorizing a self deployed Azure application in client credentials grant type.
+
+            Args:
+                scope: A scope to add to the headers. Else will get self.scope.
+                resource: A resource to add to the headers. Else will get self.resource.
+            Returns:
+                tuple: An access token and its expiry.
+            """
+            data = {
+                'client_id': self.client_id,
+                'client_secret': self.client_secret,
+                'grant_type': CLIENT_CREDENTIALS
+            }
+
+            if self.jwt:
+                data.pop('client_secret', None)
+                data['client_assertion_type'] = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+                data['client_assertion'] = self.jwt
+
+            # Set scope.
+            if self.scope or scope:
+                data['scope'] = scope if scope else self.scope
+
+            if self.resource or resource:
+                data['resource'] = resource or self.resource  # type: ignore
+
+            response_json: dict = {}
+            try:
+                response = requests.post(self.token_retrieval_url, data, verify=self.verify)
+                if response.status_code not in {200, 201}:
+                    return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                                 f' body: {self.error_parser(response)}')
+                response_json = response.json()
+            except Exception as e:
+                return_error(f'Error in Microsoft authorization: {str(e)}')
+
+            access_token = response_json.get('access_token', '')
+            expires_in = int(response_json.get('expires_in', 3595))
+
+            return access_token, expires_in, ''
+
+        def _get_self_deployed_token_auth_code(
+                self, refresh_token: str = '', resource: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
+            """
+            Gets a token by authorizing a self deployed Azure application.
+            Returns:
+                tuple: An access token, its expiry and refresh token.
+            """
+            data = assign_params(
+                client_id=self.client_id,
+                client_secret=self.client_secret,
+                resource=self.resource if not resource else resource,
+                redirect_uri=self.redirect_uri
+            )
+
+            if self.jwt:
+                data.pop('client_secret', None)
+                data['client_assertion_type'] = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+                data['client_assertion'] = self.jwt
+
+            if scope:
+                data['scope'] = scope
+
+            refresh_token = refresh_token or self._get_refresh_token_from_auth_code_param()
+            if refresh_token:
+                data['grant_type'] = REFRESH_TOKEN
+                data['refresh_token'] = refresh_token
+            else:
+                if SESSION_STATE in self.auth_code:
+                    raise ValueError('Malformed auth_code parameter: Please copy the auth code from the redirected uri '
+                                     'without any additional info and without the "session_state" query parameter.')
+                data['grant_type'] = AUTHORIZATION_CODE
+                data['code'] = self.auth_code
+
+            response_json: dict = {}
+            try:
+                response = requests.post(self.token_retrieval_url, data, verify=self.verify)
+                if response.status_code not in {200, 201}:
+                    return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                                 f' body: {self.error_parser(response)}')
+                response_json = response.json()
+            except Exception as e:
+                return_error(f'Error in Microsoft authorization: {str(e)}')
+
+            access_token = response_json.get('access_token', '')
+            expires_in = int(response_json.get('expires_in', 3595))
+            refresh_token = response_json.get('refresh_token', '')
+
+            return access_token, expires_in, refresh_token
+
+        def _get_managed_identities_token(self, resource=None):
+            """
+            Gets a token based on the Azure Managed Identities mechanism
+            in case user was configured the Azure VM and the other Azure resource correctly
+            """
+            try:
+                # system assigned are restricted to one per resource and is tied to the lifecycle of the Azure resource
+                # see https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview
+                use_system_assigned = (self.managed_identities_client_id == MANAGED_IDENTITIES_SYSTEM_ASSIGNED)
+                resource = resource or self.managed_identities_resource_uri
+
+                demisto.debug('try to get Managed Identities token')
+
+                params = {'resource': resource}
+                if not use_system_assigned:
+                    params['client_id'] = self.managed_identities_client_id
+
+                response_json = requests.get(MANAGED_IDENTITIES_TOKEN_URL, params=params, headers={'Metadata': 'True'}).json()
+                access_token = response_json.get('access_token')
+                expires_in = int(response_json.get('expires_in', 3595))
+                if access_token:
+                    return access_token, expires_in, ''
+
+                err = response_json.get('error_description')
+            except Exception as e:
+                err = f'{str(e)}'
+
+            return_error(f'Error in Microsoft authorization with Azure Managed Identities: {err}')
+
+        def _get_token_device_code(
+                self, refresh_token: str = '', scope: Optional[str] = None, integration_context: Optional[dict] = None
+        ) -> Tuple[str, int, str]:
+            """
+            Gets a token by authorizing a self deployed Azure application.
+
+            Returns:
+                tuple: An access token, its expiry and refresh token.
+            """
+            data = {
+                'client_id': self.client_id,
+                'scope': scope
+            }
+
+            if refresh_token:
+                data['grant_type'] = REFRESH_TOKEN
+                data['refresh_token'] = refresh_token
+            else:
+                data['grant_type'] = DEVICE_CODE
+                if integration_context:
+                    data['code'] = integration_context.get('device_code')
+
+            response_json: dict = {}
+            try:
+                response = requests.post(self.token_retrieval_url, data, verify=self.verify)
+                if response.status_code not in {200, 201}:
+                    return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                                 f' body: {self.error_parser(response)}')
+                response_json = response.json()
+            except Exception as e:
+                return_error(f'Error in Microsoft authorization: {str(e)}')
+
+            access_token = response_json.get('access_token', '')
+            expires_in = int(response_json.get('expires_in', 3595))
+            refresh_token = response_json.get('refresh_token', '')
+
+            return access_token, expires_in, refresh_token
+
+        def _get_refresh_token_from_auth_code_param(self) -> str:
+            refresh_prefix = "refresh_token:"
+            if self.auth_code.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly
+                demisto.debug("Using refresh token set as auth_code")
+                return self.auth_code[len(refresh_prefix):]
+            return ''
+
+        def run_retry_on_rate_limit(self, args_for_next_run: dict):
+            return CommandResults(readable_output="Rate limit reached, rerunning the command in 1 min",
+                                  scheduled_command=ScheduledCommand(command=demisto.command(), next_run_in_seconds=60,
+                                                                     args=args_for_next_run))
+
+        def handle_error_with_metrics(self, res):
+            self.create_api_metrics(res.status_code)
+            self.client_error_handler(res)
+
+        def create_api_metrics(self, status_code):
+            execution_metrics = ExecutionMetrics()
+            ok_codes = (200, 201, 202, 204, 206)
+
+            if not execution_metrics.is_supported() or demisto.command() in ['test-module', 'fetch-incidents']:
+                return
+            if status_code == 429:
+                execution_metrics.quota_error += 1
+            elif status_code in ok_codes:
+                execution_metrics.success += 1
+            else:
+                execution_metrics.general_error += 1
+            return_results(execution_metrics.metrics)
+
+        @staticmethod
+        def error_parser(error: requests.Response) -> str:
+            """
+
+            Args:
+                error (requests.Response): response with error
+
+            Returns:
+                str: string of error
+
+            """
+            try:
+                response = error.json()
+                demisto.error(str(response))
+                inner_error = response.get('error', {})
+                if isinstance(inner_error, dict):
+                    err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
+                else:
+                    err_str = inner_error
+                if err_str:
+                    return err_str
+                # If no error message
+                raise ValueError
+            except ValueError:
+                return error.text
+
+        @staticmethod
+        def epoch_seconds(d: datetime = None) -> int:
+            """
+            Return the number of seconds for given date. If no date, return current.
+
+            Args:
+                d (datetime): timestamp
+            Returns:
+                 int: timestamp in epoch
+            """
+            if not d:
+                d = MicrosoftClient._get_utcnow()
+            return int((d - MicrosoftClient._get_utcfromtimestamp(0)).total_seconds())
+
+        @staticmethod
+        def _get_utcnow() -> datetime:
+            return datetime.utcnow()
+
+        @staticmethod
+        def _get_utcfromtimestamp(_time) -> datetime:
+            return datetime.utcfromtimestamp(_time)
+
+        @staticmethod
+        def get_encrypted(content: str, key: Optional[str]) -> str:
+            """
+            Encrypts content with encryption key.
+            Args:
+                content: Content to encrypt
+                key: encryption key from oproxy
+
+            Returns:
+                timestamp: Encrypted content
+            """
+
+            def create_nonce():
+                return os.urandom(12)
+
+            def encrypt(string, enc_key):
+                """
+                Encrypts string input with encryption key.
+                Args:
+                    string: String to encrypt
+                    enc_key: Encryption key
+
+                Returns:
+                    bytes: Encrypted value
+                """
+                # String to bytes
+                try:
+                    enc_key = base64.b64decode(enc_key)
+                except Exception as err:
+                    return_error(f"Error in Microsoft authorization: {str(err)}"
+                                 f" Please check authentication related parameters.", error=traceback.format_exc())
+
+                # Create key
+                aes_gcm = AESGCM(enc_key)
+                # Create nonce
+                nonce = create_nonce()
+                # Create ciphered data
+                data = string.encode()
+                ct = aes_gcm.encrypt(nonce, data, None)
+                return base64.b64encode(nonce + ct)
+
+            now = MicrosoftClient.epoch_seconds()
+            encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
+            return encrypted
+
+        @staticmethod
+        def _add_info_headers() -> Dict[str, str]:
+            # pylint: disable=no-member
+            headers = {}
+            try:
+                headers = get_x_content_info_headers()
+            except Exception as e:
+                demisto.error('Failed getting integration info: {}'.format(str(e)))
+
+            return headers
+
+        def device_auth_request(self) -> dict:
+            response_json = {}
+            try:
+                response = requests.post(
+                    url=f'{self.azure_ad_endpoint}/organizations/oauth2/v2.0/devicecode',
+                    data={
+                        'client_id': self.client_id,
+                        'scope': self.scope
+                    },
+                    verify=self.verify
+                )
+                if not response.ok:
+                    return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                                 f' body: {self.error_parser(response)}')
+                response_json = response.json()
+            except Exception as e:
+                return_error(f'Error in Microsoft authorization: {str(e)}')
+            set_integration_context({'device_code': response_json.get('device_code')})
+            return response_json
+
+        def start_auth(self, complete_command: str) -> str:
+            response = self.device_auth_request()
+            message = response.get('message', '')
+            re_search = re.search(REGEX_SEARCH_URL, message)
+            url = re_search.group('url') if re_search else None
+            user_code = response.get('user_code')
+
+            return f"""### Authorization instructions
+    1. To sign in, use a web browser to open the page [{url}]({url})
+
+    and enter the code **{user_code}** to authenticate.
+
+    2. Run the **{complete_command}** command in the War Room."""
+
+
+
+    class NotFoundError(Exception):
+        """Exception raised for 404 - Not Found errors.
+
+        Attributes:
+            message -- explanation of the error
+        """
+
+        def __init__(self, message):
+            self.message = message
+
+
+    def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
+        """"extract the Azure Managed Identities from the demisto params
+
+        Args:
+            params (dict): the demisto params
+
+        Returns:
+            Optional[str]: if the use_managed_identities are True
+            the managed_identities_client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+            will return, otherwise - None
+
+        """
+        auth_type = params.get('auth_type') or params.get('authentication_type')
+        if params and (argToBoolean(params.get('use_managed_identities') or auth_type == 'Azure Managed Identities')):
+            client_id = params.get('managed_identities_client_id', {}).get('password')
+            return client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+        return None
+
+
+    def generate_login_url(client: MicrosoftClient) -> CommandResults:
+
+        assert client.tenant_id \
+            and client.scope \
+            and client.client_id \
+            and client.redirect_uri, 'Please make sure you entered the Authorization configuration correctly.'
+
+        login_url = f'https://login.microsoftonline.com/{client.tenant_id}/oauth2/v2.0/authorize?' \
+                    f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}' \
+                    f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}'
+
+        result_msg = f"""### Authorization instructions
+    1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+
+    You will be automatically redirected to a link with the following structure:
+
+    ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+
+    2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+
+    and paste it in your instance configuration under the **Authorization code** parameter.
+        """
+        return CommandResults(readable_output=result_msg)
+
+    register_module_line('MicrosoftApiModule', 'end', __line__(), wrapper=1)
+
+    ### END GENERATED CODE ###
+
+
+    ''' ENTRY POINT '''
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+
+    register_module_line('Microsoft 365 Defender (dev)', 'end', __line__())
+  subtype: python3
+  type: python
+  nativeimage:
+  - '8.1'
+  - '8.2'
+  - candidate
+fromversion: 5.5.0
+tests:
+- No tests
+defaultmapperin: Microsoft 365 Defender - Incoming Mapper
+image: data:image/png;base64,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
+detaileddescription: "## Methods to Authenticate Microsoft 365 Defender\nYou can use the following methods to authenticate Microsoft 365 Defender.\n- Device Code Flow\n- Client Credentials Flow\n- Azure Managed Identities\n\n### Device Code Flow\n___\n\nUse the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)\nto link Microsoft 365 Defender with Cortex XSOAR.\n\nTo connect to the Microsoft 365 Defender:\n1. Fill in the required parameters.\n2. Run the ***!microsoft-365-defender-auth-start*** command. \n3. Follow the instructions that appear.\n4. Run the ***!microsoft-365-defender-auth-complete*** command.\n\nAt the end of the process you'll see a message that you've logged in successfully.\n\n#### Cortex XSOAR App\n\nIn order to use the Cortex XSOAR application, use the default application ID.\n```9093c354-630a-47f1-b087-6768eb9427e6```\n\n#### Self-Deployed Application - Device Code Flow\n\nTo use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. For more details, follow [Self Deployed Application - Device Code Flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow).\n\n#### Required Permissions\n* microsoft-365-defender-incidents-list:\n    * offline_access - Delegated \n    * AdvancedQuery.Read.All - Application - can be found under WindowsDefenderATP on the \"APIs my organization uses\" section.\n      \n      And one of the following:\n      * Incident.Read.All\t- Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)\n      * AdvancedHunting.Read.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)\n    \n\n* microsoft-365-defender-incident-update:\n   * offline_access - Delegated\n   * AdvancedQuery.Read.All - Application - can be found under WindowsDefenderATP on the \"APIs my organization uses\" section.\n   * Incident.ReadWrite.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)\n\n\n\n* microsoft-365-defender-advanced-hunting:\n    * offline_access - Delegated   \n    * AdvancedHunting.Read.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)\n\n\n\n### Client Credentials Flow\n___\nFollow these steps for a self-deployed configuration:\n\n1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.\n2. In the instance configuration, select the ***Use Client Credentials Authorization Flow*** checkbox.\n3. Enter your Client/Application ID in the ***Application ID*** parameter. \n4. Enter your Client Secret in the ***Client Secret*** parameter.\n5. Enter your Tenant ID in the ***Tenant ID*** parameter.\n6. Run the ***microsoft-365-defender-auth-test*** command to test the connection and the authorization process.\n\n#### Required Permissions\n * AdvancedHunting.Read.All - Application\n * Incident.ReadWrite.All - Application\n\n### Azure Managed Identities Authentication\n____\n##### Note: This option is relevant only if the integration is running on Azure VM.\nFollow one of these steps for authentication based on Azure Managed Identities:\n\n- ##### To use System Assigned Managed Identity\n   - Select the **Use Azure Managed Identities** checkbox and leave the **Azure Managed Identities Client ID** field empty.\n\n- ##### To use User Assigned Managed Identity\n   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**.\n   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities Client ID** field in the instance settings.\n   3. Select the **Use Azure Managed Identities** checkbox.\n\nFor more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).\n\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-365-defender-dev)"
