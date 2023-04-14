@@ -190,6 +190,39 @@ class TestFetchEvents:
             create_events(start_id=1, end_id=300, should_dump=False)
         ),
         (
+            400,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
+                MockedResponse(status_code=204),
+                MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400))
+            ],
+            create_events(start_id=1, end_id=300, should_dump=False)
+        ),
+        (
+            10000,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=705)),
+                MockedResponse(status_code=200, text=create_events(start_id=706, end_id=950)),
+                MockedResponse(status_code=200, text=create_events(start_id=951, end_id=1678)),
+                MockedResponse(status_code=204)
+            ],
+            create_events(start_id=1, end_id=1678, should_dump=False)
+        ),
+        (
+            10000,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=1000)),
+                MockedResponse(status_code=200, text=create_events(start_id=1001, end_id=2000)),
+                MockedResponse(status_code=200, text=create_events(start_id=2001, end_id=3000)),
+                MockedResponse(status_code=200, text=create_events(start_id=3001, end_id=4000)),
+                MockedResponse(status_code=200, text=create_events(start_id=4001, end_id=4512)),
+                MockedResponse(status_code=204)
+            ],
+            create_events(start_id=1, end_id=4512, should_dump=False)
+        ),
+        (
             None,
             [
                 MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
@@ -441,7 +474,7 @@ def test_validate_limit(limit):
        - a limit parameter which is not divisible by 100/negative limit.
 
     When -
-        executing the validate limit
+        executing validate_limit function
 
     Then
       - make sure an exception is raised

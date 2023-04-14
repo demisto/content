@@ -14,6 +14,7 @@ VENDOR = 'paloaltonetworks'
 PRODUCT = 'saassecurity'
 MAX_ITERATIONS = 50
 
+DEFAULT_LIMIT = 100
 MAX_LIMIT = 5000
 
 ''' CLIENT CLASS '''
@@ -246,8 +247,8 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch'))
     # do not allow max limit of more than 5000 per single fetch to avoid timeouts
-    if max_fetch > MAX_LIMIT:
-        limit = MAX_LIMIT
+    if max_fetch and max_fetch > MAX_LIMIT:
+        max_fetch = MAX_LIMIT
     validate_limit(max_fetch)
     max_iterations = arg_to_number(params.get('max_iterations')) or MAX_ITERATIONS
 
