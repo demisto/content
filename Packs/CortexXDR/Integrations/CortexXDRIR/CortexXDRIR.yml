@@ -758,20 +758,9 @@ script:
       - 'true'
       - 'false'
   - arguments:
-    - description: A comma-separated list of endpoint statuses to filter.
+    - description: A comma-separated list of endpoint statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated
       name: status
-      auto: PREDEFINED
-      predefined:
-      - connected
-      - disconnected
-      - lost
-      - uninstalled
-      - windows
-      - linux
-      - macos
-      - android
-      - isolated
-      - unisolated
+      isArray: true
     - description: A comma-separated list of endpoint IDs.
       isArray: true
       name: endpoint_id_list
