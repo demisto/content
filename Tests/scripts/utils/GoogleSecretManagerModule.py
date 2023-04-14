@@ -45,8 +45,8 @@ class GoogleSecreteManagerModule:
             logging.debug(f'Getting the secret: {secret.name}')
             formatted_integration_search_ids = [GoogleSecreteManagerModule.convert_to_gsm_format(s.lower()) for s in
                                                 name_filter]
-            if labels.get('ignore') or (ignore_dev and labels.get('dev')) or (
-                    name_filter and not secret_pack_id and secret_pack_id not in formatted_integration_search_ids) or (
+            if not secret_pack_id or labels.get('ignore') or (ignore_dev and labels.get('dev')) or (
+                    formatted_integration_search_ids and secret_pack_id not in formatted_integration_search_ids) or (
                     branch_name and labels.get('branch', '') != branch_name):
                 continue
             # print(f'formatted_integration_search_ids:{formatted_integration_search_ids}')
