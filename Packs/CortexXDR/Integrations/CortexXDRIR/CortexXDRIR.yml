@@ -758,7 +758,7 @@ script:
       - 'true'
       - 'false'
   - arguments:
-    - description: A comma-separated list of endpoint statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated
+    - description: A comma separated list of enpoint statuses to filter.
       name: status
       isArray: true
     - description: A comma-separated list of endpoint IDs.
@@ -2689,15 +2689,10 @@ script:
       description: The integration name of the endpoint vendor.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      description: The status of the endpoint to filter.
+    - description: The status of the endpoint to filter.
       name: status
-      predefined:
-      - connected
-      - disconnected
-      - lost
-      - uninstalled
       required: true
+      isArray: true
     - description: |-
         All the agents that were last seen before {last_seen_gte}. Supported
                 values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"
