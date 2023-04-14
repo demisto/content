@@ -199,14 +199,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.112"
+version = "1.26.113"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.29.112,<1.30.0"
+botocore = ">=1.29.113,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -215,7 +215,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.112"
+version = "1.29.113"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
@@ -611,8 +611,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "806fec1bef8a3f7a326cb3fb1eda3c263c41be04"
-resolved_reference = "806fec1bef8a3f7a326cb3fb1eda3c263c41be04"
+reference = "b8b8e1cdfa442c38594d9779781b42c4a28e26ef"
+resolved_reference = "b8b8e1cdfa442c38594d9779781b42c4a28e26ef"
 
 [[package]]
 name = "deprecated"
@@ -799,7 +799,7 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "exchangelib"
-version = "5.0.1"
+version = "5.0.2"
 description = "Client for Microsoft Exchange Web Services (EWS)"
 category = "dev"
 optional = false
@@ -3342,7 +3342,7 @@ python-versions = "*"
 
 [[package]]
 name = "webdriver-manager"
-version = "3.8.5"
+version = "3.8.6"
 description = "Library provides the way to automatically manage drivers for different browsers"
 category = "dev"
 optional = false
@@ -3464,7 +3464,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "f266d4e0606696244c78a7e458732984b9e44c2cef91e14edf502a1a00f264a6"
+content-hash = "6735121962c93ac0ebe3e8837e17cc637b65254e40dac0e57722a65acf2d0bcc"
 
 [metadata.files]
 aiodns = [
@@ -3651,12 +3651,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.26.112-py3-none-any.whl", hash = "sha256:03c2e1ddd29d993a6ab9b8a8fe184027957fc32bd405c496ad0c30311445925f"},
-    {file = "boto3-1.26.112.tar.gz", hash = "sha256:4ea3319bba2e8ff7cd9560259ae64f073c7fb6312158aa375777687231cabe69"},
+    {file = "boto3-1.26.113-py3-none-any.whl", hash = "sha256:631db554cf9d98a2d29c0533a7020cf967b6800437be36e4335e654a480dfcdf"},
+    {file = "boto3-1.26.113.tar.gz", hash = "sha256:0de50b90e14e1dc3037d302f45edbf7b342ba2540f464e9ce60bad12651f02e1"},
 ]
 botocore = [
-    {file = "botocore-1.29.112-py3-none-any.whl", hash = "sha256:2cbaddb09b46dcb0a05490724d51acb224d3a8df433c347f995b4d78bfb02c8a"},
-    {file = "botocore-1.29.112.tar.gz", hash = "sha256:1f52d9371d7b5ee30a53dcef7954c3cf22e04b131cfab5268035f3299ccde9e1"},
+    {file = "botocore-1.29.113-py3-none-any.whl", hash = "sha256:d927c1fbf5f5caf7937b5f53eb158c708bcbe3b6aa6d46e1fbd353241f21b5b0"},
+    {file = "botocore-1.29.113.tar.gz", hash = "sha256:acfee1faaa3ef2a6931fe574c092f596afb48f3c49e054aec7cfa8494227c031"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -4027,8 +4027,8 @@ exceptiongroup = [
     {file = "exceptiongroup-1.1.1.tar.gz", hash = "sha256:d484c3090ba2889ae2928419117447a14daf3c1231d5e30d0aae34f354f01785"},
 ]
 exchangelib = [
-    {file = "exchangelib-5.0.1-py2.py3-none-any.whl", hash = "sha256:d126edbceb7428eef6ec46fd4040a738ee6274a7c44c069e5f172c73c8e49932"},
-    {file = "exchangelib-5.0.1.tar.gz", hash = "sha256:df0812934d463dbdd399d0dbdd4e802da50b590bd6c5de842cb6441a4007afa7"},
+    {file = "exchangelib-5.0.2-py2.py3-none-any.whl", hash = "sha256:79b47908ad476b87b94952859fea83156f9dbe4ee1a8ab1ceede26890b2196be"},
+    {file = "exchangelib-5.0.2.tar.gz", hash = "sha256:1c85a405550c49be4eef29cefb8a679250a060618e54a2ae7956cab527fb9253"},
 ]
 filelock = [
     {file = "filelock-3.11.0-py3-none-any.whl", hash = "sha256:f08a52314748335c6460fc8fe40cd5638b85001225db78c2aa01c8c0db83b318"},
@@ -6146,8 +6146,8 @@ wcwidth = [
     {file = "wcwidth-0.2.6.tar.gz", hash = "sha256:a5220780a404dbe3353789870978e472cfe477761f06ee55077256e509b156d0"},
 ]
 webdriver-manager = [
-    {file = "webdriver_manager-3.8.5-py2.py3-none-any.whl", hash = "sha256:2d807ec270d2d990022b86efabd4096053e0a1e7a34c6174f9937320dfdc6826"},
-    {file = "webdriver_manager-3.8.5.tar.gz", hash = "sha256:e671f3b738af52351341d6df6674c2f0b959db0fe978e9a7135cfa36d1ad9560"},
+    {file = "webdriver_manager-3.8.6-py2.py3-none-any.whl", hash = "sha256:7d3aa8d67bd6c92a5d25f4abd75eea2c6dd24ea6617bff986f502280903a0e2b"},
+    {file = "webdriver_manager-3.8.6.tar.gz", hash = "sha256:ee788d389b8f45222a8a62f6f39b579360a1f87be46dad6da89918354af3ce73"},
 ]
 websocket-client = [
     {file = "websocket-client-1.5.1.tar.gz", hash = "sha256:3f09e6d8230892547132177f575a4e3e73cfdf06526e20cc02aa1c3b47184d40"},
