@@ -102,7 +102,7 @@ class Client(BaseClient):
         token_response = self._http_request('POST', url_suffix='/oauth/token', params=params, headers=headers)
         return token_response.get('access_token'), token_response.get('expires_in')
 
-    def get_events_request(self):
+    def get_events_request(self, size: int = MAX_EVENTS_PER_REQUEST):
         """
         Get up to 100 event logs.
         """
@@ -111,7 +111,7 @@ class Client(BaseClient):
             url_suffix='/api/v1/log_events_bulk',
             resp_type='response',
             ok_codes=[200, 204],
-            params={"size": MAX_EVENTS_PER_REQUEST}
+            params={"size": size}
         )
 
 
