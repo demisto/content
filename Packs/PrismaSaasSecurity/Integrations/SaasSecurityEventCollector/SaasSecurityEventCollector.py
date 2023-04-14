@@ -9,11 +9,12 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-MAX_EVENTS_PER_REQUEST = 100
+MAX_EVENTS_PER_REQUEST = 1000
 VENDOR = 'paloaltonetworks'
 PRODUCT = 'saassecurity'
-MAX_ITERATIONS = 100
+MAX_ITERATIONS = 50
 
+MAX_LIMIT = 5000
 
 ''' CLIENT CLASS '''
 
@@ -110,6 +111,7 @@ class Client(BaseClient):
             url_suffix='/api/v1/log_events_bulk',
             resp_type='response',
             ok_codes=[200, 204],
+            params={"size": MAX_EVENTS_PER_REQUEST}
         )
 
 
@@ -138,8 +140,8 @@ def validate_limit(limit: Optional[int]):
     a negative number.
     """
     if limit:
-        if limit % MAX_EVENTS_PER_REQUEST != 0:
-            raise DemistoException(f'fetch limit parameter should be divisible by {MAX_EVENTS_PER_REQUEST}')
+        if limit % 10 != 0:  # max limit must be a multiplier of 10 (SaaS api limit)
+            raise DemistoException(f'fetch limit parameter should be divisible by 10')
 
         if limit <= 0:
             raise DemistoException('fetch limit parameter cannot be negative number or zero')
@@ -243,6 +245,9 @@ def main() -> None:  # pragma: no cover
     proxy = params.get('proxy', False)
     args = demisto.args()
     max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch'))
+    # do not allow max limit of more than 5000 per single fetch to avoid timeouts
+    if max_fetch > MAX_LIMIT:
+        limit = MAX_LIMIT
     validate_limit(max_fetch)
     max_iterations = arg_to_number(params.get('max_iterations')) or MAX_ITERATIONS
 
