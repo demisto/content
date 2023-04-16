@@ -243,10 +243,15 @@ def test_get_indicator_list_two_iterations(mocker):
 
 def test_different_datetimes():
     import pytz
-    utc=pytz.UTC
     try:
-        start_date = arg_to_datetime("2022-02-26T22:05:32.000Z")
-        earliest_fetch = utc.localize(arg_to_datetime('90 days ago'))
+        # start_date = arg_to_datetime("2022-02-26T22:05:32.000Z")
+        start_date = arg_to_datetime('60 days ago')
+        earliest_fetch = arg_to_datetime('90 days ago')
+        # earliest_fetch_using_localize = pytz.UTC.localize(arg_to_datetime('90 days ago'))
+        # earliest_fetch_using_replace = arg_to_datetime('90 days ago').replace(tzinfo=pytz.utc)
+        earliest_fetch_using_astimezone = earliest_fetch.astimezone(start_date.tzinfo)
+        a = earliest_fetch_using_astimezone.tzinfo
+        b = start_date.tzinfo
         start_date = max(earliest_fetch, start_date)  # type:ignore
     except Exception as e:
         print(e)

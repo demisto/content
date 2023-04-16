@@ -32,7 +32,6 @@ MAP_INDICATORS_TYPE = {'fqdn': FeedIndicatorType.Domain,
                        'sha1': FeedIndicatorType.File,
                        'sha256': FeedIndicatorType.File,
                        'url': FeedIndicatorType.URL}
-UTC = pytz.UTC
 
 ''' CLIENT CLASS '''
 
@@ -185,7 +184,20 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
     params = {}
     if indicator_type == 'Indicators':
         # for indicator type the earliest time to fetch is 90 days ago
-        earliest_fetch = UTC.localize(arg_to_datetime('90 days ago'))  # type:ignore
+        earliest_fetch = arg_to_datetime('90 days ago')
+        if start_date and not start_date.tzinfo:
+            earliest_fetch = earliest_fetch
+        else:
+            earliest_fetch = pytz.UTC.localize(earliest_fetch)  # type:ignore
+        # earliest_fetch_using_localize = pytz.UTC.localize(arg_to_datetime('90 days ago'))
+        # earliest_fetch_using_replace = arg_to_datetime('90 days ago').replace(tzinfo=pytz.utc)
+        # earliest_fetch_using_astimezone = earliest_fetch.astimezone(start_date.tzinfo)
+        # demisto.info(f"{earliest_fetch_using_localize=}")
+        # demisto.info(f"{earliest_fetch_using_replace=}")
+        # demisto.info(f"{earliest_fetch_using_astimezone=}")
+        # demisto.info(f"{earliest_fetch_using_localize.tzinfo=}")
+        # demisto.info(f"{earliest_fetch_using_replace.tzinfo=}")
+        # demisto.info(f"{earliest_fetch_using_astimezone.tzinfo=}")
         start_date = max(earliest_fetch, start_date)  # type:ignore
         params = {'start_epoch': int(start_date.timestamp()), 'limit': limit}  # type:ignore
 
