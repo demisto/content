@@ -10467,23 +10467,23 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
     :type fetch_limit: ``int``
     :param fetch_limit: The incidents limit to return
 
-    :type id_field: ``str``
+    :type id_field: ``str``מה
     :param id_field: The incident id field
 
     :return: List of incidents after filtering duplicates when len(incidents) <= limit
     :rtype: ``list``
     """
-    demisto.debug('filtering incidents by duplicates and limit')
+    demisto.debug('Filtering incidents by duplicates and limit')
     found_incidents = last_run.get('found_incident_ids', {})
 
     incidents = []
     
-    demisto.debug(f'number of incidents before filtering: {len(incidents_res)}')
+    demisto.debug('Number of incidents before filtering: {}, their ids: {}'.format(len(incidents_res), [incident_res[id_field] for incident_res in incidents_res]))
     for incident in incidents_res:
         if incident[id_field] not in found_incidents:
             incidents.append(incident)
 
-    demisto.debug(f'number of incidents after filtering: {len(incidents)}')
+    demisto.debug('Number of incidents after filtering: {}, their ids: {}'.format(len(incidents_res), [incident[id_field] for incident in incidents]))
     return incidents[:fetch_limit]
 
 
@@ -10518,6 +10518,7 @@ def get_latest_incident_created_time(incidents, created_time_field, date_format=
     if increase_last_run_time:
         latest_incident_time = latest_incident_time + timedelta(milliseconds=1)
 
+    demisto.debug("latest_incident_time is {}".format(latest_incident_time))
     return latest_incident_time.strftime(date_format)
 
 
@@ -10547,7 +10548,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
         if current_time - addition_time < deletion_threshold_in_seconds:
             new_found_incidents_ids[inc_id] = addition_time
 
-    demisto.debug(f'Number of new found ids: {len(new_found_incidents_ids)}')
+    demisto.debug('Number of new found ids: {}, their ids: {}'.format(len(new_found_incidents_ids), new_found_incidents_ids.keys()))
     return new_found_incidents_ids
 
 
@@ -10619,16 +10620,15 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :return: The new LastRun object
     :rtype: ``Dict``
     """
-    demisto.debug("Create updated last run object")
+    demisto.debug("Create updated last run object, len(incidents) is {}," \
+                  "look_back is {}, fetch_limit is {}".format(len(incidents), look_back, fetch_limit))
     remove_incident_ids = True
 
     if len(incidents) == 0:
-        demisto.debug('len(incidents) == 0')
         new_last_run = {
             'time': end_fetch_time,
         }
     elif len(incidents) < fetch_limit or look_back == 0:
-        demisto.debug('len(incidents) < fetch_limit or look_back == 0')
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
                                                                         increase_last_run_time)
         new_last_run = {
@@ -10645,7 +10645,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     else:
         new_last_run['limit'] = fetch_limit
     
-    demisto.debug(f"The new_last_run is: {new_last_run}")
+    demisto.debug("The new_last_run is: {}, the remove_incident_ids is: {}".format(new_last_run, remove_incident_ids))
 
     return new_last_run, remove_incident_ids
 
