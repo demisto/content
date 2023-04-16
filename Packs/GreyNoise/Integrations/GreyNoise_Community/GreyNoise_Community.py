@@ -299,9 +299,10 @@ def main() -> None:
         packs = []
 
     pack_version = "1.2.0"
-    for pack in packs:
-        if pack["name"] == "GreyNoise":
-            pack_version = pack["currentVersion"]
+    if packs:
+        for pack in packs:
+            if pack["name"] == "GreyNoise":
+                pack_version = pack["currentVersion"]
 
     api_key = demisto.params().get("api_key")
     proxy = demisto.params().get("proxy", False)
