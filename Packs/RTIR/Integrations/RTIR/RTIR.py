@@ -484,7 +484,6 @@ def edit_ticket():
             value = cf[equal_index + 1:]
             content += '\n' + key + value
 
-
     if arguments_given:
         encoded = "content=" + urllib.parse.quote_plus(content.encode('utf-8'))
         edited_ticket = edit_ticket_request(ticket_id, encoded)
