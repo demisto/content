@@ -1254,8 +1254,23 @@ class Client(BaseClient):
             DemistoException: There is a problem with one or more arguments.
             DemistoException: One or more of the specified fields are invalid. Please validate them.
         """
-        output = res.json()
         error_code = res.status_code
+        if res.status_code == HTTPStatus.UNAUTHORIZED:
+            raise DemistoException(
+                "Authorization Error: make sure Username and Password are set correctly."
+            )
+        if res.status_code == HTTPStatus.NOT_FOUND:
+            raise DemistoException(
+                "Connection Error: Make sure server URL is set correctly."
+            )
+        output = {}
+        try:
+            output = res.json()
+        except requests.exceptions.JSONDecodeError:
+            raise DemistoException(
+                res,
+                res=res)
+
         error = self.get_error_data(output)
         if error_code == HTTPStatus.INTERNAL_SERVER_ERROR:
             # update & delete
@@ -2390,7 +2405,8 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2.
         """
-        endpoint = f"ServerObjects/ProtectedHostnames/ProtectedHostnames/{group_name}/ProtectedHostnamesNewHost/{member_id}"
+        endpoint = \
+            f"ServerObjects/ProtectedHostnames/ProtectedHostnames/{group_name}/ProtectedHostnamesNewHost/{member_id}"
         return self._http_request(method="DELETE", url_suffix=endpoint)
 
     def protected_hostname_member_list_request(
