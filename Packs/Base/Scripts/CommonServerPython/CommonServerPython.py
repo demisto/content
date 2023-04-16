@@ -6755,8 +6755,11 @@ class CommandResults:
         # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, bool, ScheduledCommand, list, int, str, List[Any]) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
-        if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
-            raise ValueError('outputs_prefix is missing')
+        if outputs is not None:
+            if not isinstance(outputs, dict) and not outputs_prefix:
+                raise ValueError('outputs_prefix is missing')
+            if outputs_prefix == '.':
+                raise ValueError('outputs_prefix cannot be a period.')
         if indicators and indicator:
             raise ValueError('indicators is DEPRECATED, use only indicator')
         if entry_type is None:
