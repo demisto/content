@@ -32,7 +32,7 @@ script:
   dockerimage: demisto/python3:3.10.11.54132
   runonce: false
   commands:
-    - name: filescan-scan-url
+    - name: opswat-filescan-scan-url
       description: Scan URL resource.
       polling: true
       arguments:
@@ -137,7 +137,7 @@ script:
           description: The type of the submission
           type: String
 
-    - name: filescan-scan-file
+    - name: opswat-filescan-scan-file
       description: Scan file resource.
       polling: true
       arguments:
@@ -241,32 +241,28 @@ script:
           description: The type of the submission
           type: String
 
-    - name: filescan-search-query
+    - name: opswat-filescan-search-query
       description: Search for reports. Finds reports and uploaded files by various tokens.
       arguments:
         - name: query
           required: true
           default: true
           description: The query string
+        - name: page
+          required: false
+          description: Page number, starting from 1
+        - name: page_size
+          required: false
+          description: Page size. Can be 5, 10 or 20
+          auto: PREDEFINED
+          predefined:
+          - 5
+          - 10
+          - 20
+        - name: limit
+          required: false
+          description: Number of total results. Maximum 50. (If page and page_size was also provided, then it will be ignored.)
       outputs:
-        - contextPath: DBotScore.Indicator
-          description: The indicator that was tested.
-          type: String
-        - contextPath: DBotScore.Score
-          description: The actual score.
-          type: Number
-        - contextPath: DBotScore.Type
-          description: The indicator type.
-          type: String
-        - contextPath: DBotScore.Vendor
-          description: The vendor used to calculate the score.
-          type: String
-        - contextPath: File.Name
-          description: The full file name.
-          type: String
-        - contextPath: File.SHA256
-          description: The SHA256 hash of the file.
-          type: String
         - contextPath: OPSWAT.Filescan.Analysis.id
           description: The analysis id
           type: String

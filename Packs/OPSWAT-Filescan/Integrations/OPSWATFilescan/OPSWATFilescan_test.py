@@ -52,14 +52,8 @@ def test_search_query_command_hash_badfile(mocker, client):
 
     mocker.patch.object(client, "get_search_query", return_value=raw_response)
     response = OPSWAT_Filescan.search_query_command(client, {})
-
-    assert response[0].indicator.dbot_score.indicator == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
-    assert response[0].indicator.dbot_score.score == 3
-    assert response[0].indicator.dbot_score.integration_name == "OPSWAT Filescan"
-    assert response[0].indicator.name == "bad_file.exe"
-    assert response[0].indicator.sha256 == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
-    assert response[0].outputs['SHA256'] == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
-    assert response[0].outputs['Verdict'] == "malicious"
+    assert response.outputs[0]['file']['sha256'] == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+    assert response.outputs[0]['verdict'] == "malicious"
 
 
 def test_search_query_command_hash_cleanfile(mocker, client):
@@ -68,13 +62,8 @@ def test_search_query_command_hash_cleanfile(mocker, client):
     mocker.patch.object(client, "get_search_query", return_value=raw_response)
     response = OPSWAT_Filescan.search_query_command(client, {})
 
-    assert response[0].indicator.dbot_score.indicator == "a33a6ee82144b97bf75728a7ec302dd88ae2fa54389caeb8442839580b259b85"
-    assert response[0].indicator.dbot_score.score == 1
-    assert response[0].indicator.dbot_score.integration_name == "OPSWAT Filescan"
-    assert response[0].indicator.name == "e0e1a581-1c69-414f-8c50-22fa3afc34ae_1010%40e0e1a581-1c69-414f-8c50-22fa3afc34ae"
-    assert response[0].indicator.sha256 == "a33a6ee82144b97bf75728a7ec302dd88ae2fa54389caeb8442839580b259b85"
-    assert response[0].outputs['SHA256'] == "a33a6ee82144b97bf75728a7ec302dd88ae2fa54389caeb8442839580b259b85"
-    assert response[0].outputs['Verdict'] == "informational"
+    assert response.outputs[0]['file']['sha256'] == "a33a6ee82144b97bf75728a7ec302dd88ae2fa54389caeb8442839580b259b85"
+    assert response.outputs[0]['verdict'] == "informational"
 
 
 def test_search_query_command_url(mocker, client):
@@ -83,23 +72,28 @@ def test_search_query_command_url(mocker, client):
     mocker.patch.object(client, "get_search_query", return_value=raw_response)
     response = OPSWAT_Filescan.search_query_command(client, {})
 
-    assert len(response) == 10 + 1  # 1-1 separately and a summarize
+    assert len(response.outputs) == 10
 
-    assert response[0].indicator.dbot_score.indicator == "5302e0de83c841169f0543eaf5f9a2b7313d49d35d9f3ecbeed4e6b353b5a2c8"
-    assert response[0].indicator.dbot_score.score == 1
-    assert response[0].indicator.dbot_score.integration_name == "OPSWAT Filescan"
-    assert response[0].indicator.name == "UNKNOW.EXE"
-    assert response[0].indicator.sha256 == "5302e0de83c841169f0543eaf5f9a2b7313d49d35d9f3ecbeed4e6b353b5a2c8"
-    assert response[0].outputs['SHA256'] == "5302e0de83c841169f0543eaf5f9a2b7313d49d35d9f3ecbeed4e6b353b5a2c8"
-    assert response[0].outputs['Verdict'] == "informational"
+    assert response.outputs[0]['file']['sha256'] == "5302e0de83c841169f0543eaf5f9a2b7313d49d35d9f3ecbeed4e6b353b5a2c8"
+    assert response.outputs[0]['verdict'] == "informational"
+    assert response.outputs[1]['file']['sha256'] == "3a136f9524a2a1235a8cdd1b9fb229e20a04c2788b58a58f6904e256fa1ba0c4"
+    assert response.outputs[1]['verdict'] == "malicious"
 
-    assert response[1].indicator.dbot_score.indicator == "3a136f9524a2a1235a8cdd1b9fb229e20a04c2788b58a58f6904e256fa1ba0c4"
-    assert response[1].indicator.dbot_score.score == 3
-    assert response[1].indicator.dbot_score.integration_name == "OPSWAT Filescan"
-    assert response[1].indicator.name == "Snaptube_20230323.apk"
-    assert response[1].indicator.sha256 == "3a136f9524a2a1235a8cdd1b9fb229e20a04c2788b58a58f6904e256fa1ba0c4"
-    assert response[1].outputs['SHA256'] == "3a136f9524a2a1235a8cdd1b9fb229e20a04c2788b58a58f6904e256fa1ba0c4"
-    assert response[1].outputs['Verdict'] == "malicious"
+
+@pytest.mark.parametrize("args, outputs", [
+    ({"limit": "-1"}, DemistoException),
+    ({"limit": "100"}, DemistoException),
+    ({"limit": "a"}, DemistoException),
+    ({"page": "-1"}, DemistoException),
+    ({"page": "a"}, DemistoException),
+    ({"page_size": "1"}, DemistoException),
+    ({"page_size": "a"}, DemistoException)
+])
+def test_search_query_command_argument_check(mocker, client, args, outputs):
+    mocker.patch.object(client, "get_search_query", return_value={})
+    with pytest.raises(Exception) as e:
+        OPSWAT_Filescan.search_query_command(client, args)
+    assert isinstance(e.value, outputs)
 
 
 def test_scan_command_url_polling_waiting(requests_mock, mocker, client):

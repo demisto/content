@@ -22,7 +22,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
-### filescan-scan-url
+### opswat-filescan-scan-url
 
 ***
 Scan URL with OPSWAT Filescan
@@ -31,7 +31,7 @@ Scan URL with OPSWAT Filescan
 
 #### Base Command
 
-`filescan-scan-url`
+`opswat-filescan-scan-url`
 
 #### Input
 
@@ -75,7 +75,7 @@ Scan URL with OPSWAT Filescan
 
 #### Command example
 
-```!filescan-scan-url url=https://www.test.com```
+```!opswat-filescan-scan-url url=https://www.test.com```
 
 #### Context Example
 
@@ -234,14 +234,14 @@ Scan URL with OPSWAT Filescan
 >|---|---|---|---|---|---|
 >| 1111111111111111111111111111111111111111111111111111111111111111 | https://www.test.com | other | BENIGN | osint, url-render, domain-resolve | html, png |
 
-### filescan-scan-file
+### opswat-filescan-scan-file
 
 ***
 Scan File with OPSWAT Filescan
 
 #### Base Command
 
-`filescan-scan-file`
+`opswat-filescan-scan-file`
 
 #### Input
 
@@ -285,7 +285,7 @@ Scan File with OPSWAT Filescan
 
 #### Command example
 
-```!filescan-scan-file  entry_id=1234@abcd-efgh-ijkl-mnop-xyz```
+```!opswat-filescan-scan-file  entry_id=1234@abcd-efgh-ijkl-mnop-xyz```
 
 #### Context Example
 
@@ -435,32 +435,29 @@ Scan File with OPSWAT Filescan
 >|---|---|---|---|---|---|
 >| 1111111111111111111111111111111111111111111111111111111111111111 | 1234@abcd-efgh-ijkl-mnop-xyz | pe | MALICIOUS | visualization, osint, domain-resolve | html, peexe |
 
-### filescan-search-query
+### opswat-filescan-search-query
 
 ***
 Search for reports. Finds reports and uploaded files by various tokens.
 
 #### Base Command
 
-`filescan-search-query`
+`opswat-filescan-search-query`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The query string | Required |
+| limit | Number of total results. Maximum 50 | Optional |
+| page | Page number, starting from 1 | Optional |
+| page_size | The page size. Can be 5, 10 or 20 | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator that was tested. |
-| DBotScore.Type | String | The indicator type. |
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. |
-| File.Name | String | The full file name. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
 | OPSWAT.Filescan.Analysis.id | String | The analysis id. | 
 | OPSWAT.Filescan.Analysis.file.name | String | The name of the file. | 
 | OPSWAT.Filescan.Analysis.file.sha256 | String | The SHA256 of the file. | 
@@ -473,29 +470,12 @@ Search for reports. Finds reports and uploaded files by various tokens.
 
 #### Command example
 
-```!!filescan-search-query query="834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"```
+```!opswat-filescan-search-query query="834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"```
 
 #### Context Example
 
 ```json
 {
-{
-    "DBotScore":
-    [
-        {
-            "Indicator": "1111111111111111111111111111111111111111111111111111111111111111",
-            "Score": 1,
-            "Type": "file",
-            "Vendor": "Opswat Filescan"
-        }
-    ],
-    "File":
-    [
-        {
-            "Name": "1234@abcd-efgh-ijkl-mnop-xyz",
-            "SHA256": "1111111111111111111111111111111111111111111111111111111111111111"
-        }
-    ],
     "OPSWAT":
     {
         "Filescan":
@@ -538,16 +518,6 @@ Search for reports. Finds reports and uploaded files by various tokens.
 ```
 
 #### Human Readable Output
-
->### File Result:
->|File Name | SHA256 | Verdict |
->|---|---|---|
->| bad_file.exe | 834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc | MALICIOUS |
-
->### File Result:
->|File Name | SHA256 | Verdict |
->|---|---|---|
->| bad_file.exe | 834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc | UNKNOWN |
 
 >### Analysis Result:
 >| Id | SampleName | SHA256 | Verdict | State | Date |

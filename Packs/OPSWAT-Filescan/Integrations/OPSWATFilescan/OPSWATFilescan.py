@@ -94,11 +94,11 @@ class Client(BaseClient):
 
         return response
 
-    def get_search_query(self, query_str: str) -> Dict[str, Any]:
+    def get_search_query(self, query_string: str, page: int, page_size: int) -> Dict[str, Any]:
         return self._http_request(
             method="GET",
             ok_codes=([200]),
-            params={"query": query_str, "page_size": 10, "page": 1},
+            params={"query": query_string, "page_size": page_size, "page": page},
             url_suffix="/reports/search",
         )
 
@@ -156,7 +156,7 @@ def build_one_reputation_result(report: Dict[str, Any]):
 
 
 def build_serach_query_result(
-    query_str: str, raw_result: Dict[str, Any]
+    query_str: str, analyses: List[Dict]
 ) -> List[CommandResults]:
     def build_analysis_hr(analysis: Dict[str, Any]) -> Dict[str, Any]:
         file_result = analysis.get("file", {})
@@ -198,17 +198,9 @@ def build_serach_query_result(
             dbot_score=dbot_score,
         )
 
-        headers = ["File Name", "SHA256", "Verdict"]
-        hr = {
-            "File Name": analysis_file.get("name"),
-            "SHA256": analysis_file.get("sha256"),
-            "Verdict": verdict,
-        }
         results = CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Analysis",
             outputs_key_field="sha256",
-            outputs=hr,
-            readable_output=tableToMarkdown("File Result:", hr, headers),
             indicator=file,
         )
         return results
@@ -225,14 +217,10 @@ def build_serach_query_result(
         "Tags",
     ]
 
-    command_res_ls = []
     hr_analysis_ls = []
-
-    analyses = raw_result.get("items", {})
 
     for analysis in analyses:
         hr_analysis_ls.append(build_analysis_hr(analysis))
-        command_res_ls.append(build_indicator_object(analysis))
 
     command_result = CommandResults(
         outputs=analyses,
@@ -240,8 +228,7 @@ def build_serach_query_result(
         outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Analysis",
     )
 
-    command_res_ls.append(command_result)
-    return command_res_ls
+    return command_result
 
 
 def sample_submission(client: Client, args: Dict[str, Any]) -> PollResult:
@@ -334,10 +321,47 @@ def scan_command(client: Client, args: Dict[str, Any]):
 
 
 def search_query_command(client: Client, args: Dict[str, Any]):
+    def validate_args():
+        if page_size and (not page_size.isdigit() or int(page_size) not in [5, 10, 20]):
+            raise DemistoException(f"\nPage size value must be 5, 10 or 20")
+        if page and (not page.isdigit() or int(page) <= 0):
+            raise DemistoException(f"\nPage must be an integer and grater than 0")
+        if limit and (not limit.isdigit() or int(limit) <= 0 or int(limit) > 50):
+            raise DemistoException(f"\Limit must be an integer and between 1 and 50")
+
+    items = []
     query_string = args.get("query", "")
-    result = client.get_search_query(query_string)
-    if result:
-        return build_serach_query_result(query_string, result)
+    page_size = args.get("page_size")
+    page = args.get("page")
+    limit = args.get("limit")
+
+    validate_args()
+
+    if page_size and not page:
+        page = 1
+        page_size = int(page_size)
+    elif not page_size and page:
+        page_size = 10
+        page = int(page)
+    elif not limit:
+        limit = 10
+
+    if page_size and page:
+        items = client.get_search_query(query_string, page, page_size).get("items", [])
+    else:
+        page_size = 20
+        page = 1
+        limit = int(limit)
+        continue_query = True
+        while continue_query:
+            actual_items = client.get_search_query(query_string, page, page_size).get("items", [])
+            if len(actual_items) < 20 or len(items) >= limit:
+                continue_query = False
+            items += actual_items
+        items = items[0:limit]
+
+    if items:
+        return build_serach_query_result(query_string, items)
     return CommandResults(readable_output="No Results were found.")
 
 
@@ -362,11 +386,11 @@ def main():
 
         if command == "test-module":
             return_results(test_module_command(client))
-        elif command == "filescan-scan-url":
+        elif command == "opswat-filescan-scan-url":
             return_results(scan_command(client, args))
-        elif command == "filescan-scan-file":
+        elif command == "opswat-filescan-scan-file":
             return_results(scan_command(client, args))
-        elif command == "filescan-search-query":
+        elif command == "opswat-filescan-search-query":
             return_results(search_query_command(client, args))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
