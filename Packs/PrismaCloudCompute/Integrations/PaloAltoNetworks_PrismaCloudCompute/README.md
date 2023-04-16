@@ -3216,17 +3216,13 @@ Download a zip of all Defender logs.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.EntryID | String | The EntryID of the log bundle. | 
-| File.Extension | String | The extension of the log bundle. | 
-| File.Info | String | The file info. | 
-| File.MD5 | String | The MD5 of the log bundle. | 
-| File.Name | String | The name of the log bundle. | 
-| File.SHA1 | String | The SHA1 of the log bundle. | 
-| File.SHA256 | String | The SHA256 of the log bundle. | 
-| File.SHA512 | String | The SHA512 of the log bundle. | 
-| File.SSDeep | String | The SSDeep of the log bundle. | 
-| File.Size | Number | The file size. | 
-| File.Type | String | The type of the file. | 
+| InfoFile.Name | String | The file name. | 
+| InfoFile.EntryID | String | The File entry ID. | 
+| InfoFile.Size | Number | The file size. | 
+| InfoFile.Type | String | The file type. | 
+| InfoFile.Info | String | Basic information of the file. | 
+| InfoFile.Extension | String | File extension. | 
+
 
 #### Command example
 ```!prisma-cloud-compute-logs-defender-download hostname=`test-host.internal` lines=2```
