@@ -1,5 +1,5 @@
 
-Remember that time when couldn't login to your system because you forgot your password? Ever needed the help of IT just after they left for lunch?
+Remember that time when you couldn't log in to your system because you forgot your password? Ever needed the help of IT just after they left for lunch?
 Does a Slack channel full of messages asking to reset passwords sound familiar?
 
 Well, this pack provides you with the perfect solution - resetting passwords automatically using a chatbot.
