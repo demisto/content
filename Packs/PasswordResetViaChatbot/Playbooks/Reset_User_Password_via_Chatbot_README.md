@@ -1,5 +1,5 @@
 This playbook resets the password of an Active Directory or Okta user. The process is as follows:
-1. A user requests a password reset using a chatbot on Slack or on Microsoft Teams.
+1. A user requests a password reset using a chatbot in Slack or in Microsoft Teams.
 2. The playbook optionally seeks approval to reset the user's password from the relevant stakeholder, or from the user's manager.
 3. If the reset was approved, the playbook optionally verifies the user using 2-factor authentication, from the user's available 2FA methods on Okta.
 4. If the reset is verified, a new password will be created while meeting the complexity requirements of the organization.
