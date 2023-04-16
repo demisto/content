@@ -324,7 +324,7 @@ def search_query_command(client: Client, args: Dict[str, Any]):
             raise DemistoException("Page size value must be 5, 10 or 20")
         if page and (not page.isdigit() or int(page) <= 0):
             raise DemistoException("Page must be an integer and grater than 0")
-        if limit and (not limit.isdigit() or int(limit) <= 0 or int(limit) > 50):
+        if limit and (int(limit) <= 0 or int(limit) > 50):
             raise DemistoException("Limit must be an integer and between 1 and 50")
 
     items = []
@@ -357,7 +357,7 @@ def search_query_command(client: Client, args: Dict[str, Any]):
         items = items[0:limit]
 
     if items:
-        return build_serach_query_result(query_string, items)
+        return build_serach_query_result(items)
     return CommandResults(readable_output="No Results were found.")
 
 

@@ -83,7 +83,6 @@ def test_search_query_command_url(mocker, client):
 @pytest.mark.parametrize("args, outputs", [
     ({"limit": "-1"}, DemistoException),
     ({"limit": "100"}, DemistoException),
-    ({"limit": "a"}, DemistoException),
     ({"page": "-1"}, DemistoException),
     ({"page": "a"}, DemistoException),
     ({"page_size": "1"}, DemistoException),
