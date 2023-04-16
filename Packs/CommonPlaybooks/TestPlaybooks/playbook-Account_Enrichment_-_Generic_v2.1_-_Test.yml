@@ -249,7 +249,7 @@ tasks:
         - AWS IAM
 
         Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
-      playbookName: Account Enrichment - Generic v2.1_copy
+      playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
       brand: ""
@@ -291,7 +291,7 @@ tasks:
         - AWS IAM
 
         Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
-      playbookName: Account Enrichment - Generic v2.1_copy
+      playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
       brand: ""
@@ -301,22 +301,6 @@ tasks:
     scriptarguments:
       Domain:
         simple: '@demisto.local'
-      Username:
-        complex:
-          root: Account
-          accessor: Username
-          transformers:
-          - operator: uniq
-          - operator: RegexReplace
-            args:
-              action_dt: {}
-              ignore_case: {}
-              multi_line: {}
-              output_format: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: '[\w.0-9]*\\'
     separatecontext: true
     continueonerrortype: ""
     loop:

@@ -26,11 +26,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -45,7 +45,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "1":
     id: "1"
     taskid: e65d46a0-7fec-4864-8764-502a22d3032a
@@ -79,6 +78,7 @@ tasks:
             value:
               simple: inputs.Username
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -93,7 +93,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "3":
     id: "3"
     taskid: b5a047e4-ca2a-4881-8a80-de3d0886ea64
@@ -105,8 +104,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -121,7 +120,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "4":
     id: "4"
     taskid: 9b07e7c9-ff70-410d-881c-02389fbf4c1e
@@ -130,7 +128,8 @@ tasks:
       id: 9b07e7c9-ff70-410d-881c-02389fbf4c1e
       version: -1
       name: Is Active Directory Query v2 enabled?
-      description: Checks if there’s an active instance of the Active Directory Query v2 integration enabled.
+      description: Checks if there’s an active instance of the Active Directory Query
+        v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -166,6 +165,7 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -180,7 +180,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "5":
     id: "5"
     taskid: 279df40d-49df-4bd1-8e4c-72f678bba913
@@ -189,7 +188,8 @@ tasks:
       id: 279df40d-49df-4bd1-8e4c-72f678bba913
       version: -1
       name: Get account info from Active Directory
-      description: Queries Active Directory and returns information for the specified username.
+      description: Queries Active Directory and returns information for the specified
+        username.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -205,6 +205,7 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -219,7 +220,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "9":
     id: "9"
     taskid: 148faf68-5ced-41f4-82c0-f98fa9d82037
@@ -231,11 +231,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "18"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -250,7 +250,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "11":
     id: "11"
     taskid: 58620334-72c1-4be6-87a2-84ed544c4a8a
@@ -262,11 +261,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "20"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -281,7 +280,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "16":
     id: "16"
     taskid: b5887cbc-9c89-47ba-8802-86c66ed0c85a
@@ -293,11 +291,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -312,7 +310,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "18":
     id: "18"
     taskid: 93b0d852-2215-4504-8179-64a62951fbcc
@@ -321,7 +318,8 @@ tasks:
       id: 93b0d852-2215-4504-8179-64a62951fbcc
       version: -1
       name: Is SailPoint IdentityIQ Integration Enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -337,6 +335,7 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -351,7 +350,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "20":
     id: "20"
     taskid: 82adaccd-d799-44ae-85ec-ee4ca516aab6
@@ -360,7 +358,8 @@ tasks:
       id: 82adaccd-d799-44ae-85ec-ee4ca516aab6
       version: -1
       name: Is PingOne Integration Enabled
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -376,6 +375,7 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -390,7 +390,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "29":
     id: "29"
     taskid: c710fdc9-d697-47b3-8413-8f8f2934c701
@@ -399,7 +398,8 @@ tasks:
       id: c710fdc9-d697-47b3-8413-8f8f2934c701
       version: -1
       name: Get account info from IdentityIQ
-      description: Search identities by search/filter parameters (ID, email, risk & active) using IdentityIQ SCIM APIs.
+      description: Search identities by search/filter parameters (ID, email, risk
+        & active) using IdentityIQ SCIM APIs.
       script: '|||identityiq-search-identities'
       type: regular
       iscommand: true
@@ -414,6 +414,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -428,7 +429,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "31":
     id: "31"
     taskid: d424680a-a74d-4de6-8478-a1d328d09b5e
@@ -437,7 +437,8 @@ tasks:
       id: d424680a-a74d-4de6-8478-a1d328d09b5e
       version: -1
       name: Get account info from PingOne
-      description: Returns a PingOne user. One of the following has to be given - username or userId.
+      description: Returns a PingOne user. One of the following has to be given -
+        username or userId.
       script: '|||pingone-get-user'
       type: regular
       iscommand: true
@@ -452,6 +453,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -466,7 +468,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "32":
     id: "32"
     taskid: 4e5ba461-1f35-4898-8f03-940b3e3dd950
@@ -478,11 +479,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "33"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -497,7 +498,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "33":
     id: "33"
     taskid: e0b7f17c-70f7-4330-8f06-c3729e226adb
@@ -506,7 +506,8 @@ tasks:
       id: e0b7f17c-70f7-4330-8f06-c3729e226adb
       version: -1
       name: Is OKTA v2 integration enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -522,6 +523,7 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -536,7 +538,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "34":
     id: "34"
     taskid: 517ce622-efbe-409c-883b-ea4d1521a3e4
@@ -545,7 +546,8 @@ tasks:
       id: 517ce622-efbe-409c-883b-ea4d1521a3e4
       version: -1
       name: Get account info from OKTA v2
-      description: Fetches information for a single user. You must enter one or more parameters for the command to run.
+      description: Fetches information for a single user. You must enter one or more
+        parameters for the command to run.
       script: '|||okta-get-user'
       type: regular
       iscommand: true
@@ -560,6 +562,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -574,7 +577,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "42":
     id: "42"
     taskid: ced5695a-76e7-4f6a-81b8-598925a8ea9d
@@ -586,11 +588,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "43"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -605,7 +607,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "43":
     id: "43"
     taskid: 0f630de1-9988-461a-883a-6113d3dd6d2a
@@ -614,7 +615,8 @@ tasks:
       id: 0f630de1-9988-461a-883a-6113d3dd6d2a
       version: -1
       name: Is AWS integration enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -630,6 +632,7 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -644,7 +647,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "44":
     id: "44"
     taskid: 263e355a-c219-4c49-833f-5b67b66bdc17
@@ -653,7 +655,8 @@ tasks:
       id: 263e355a-c219-4c49-833f-5b67b66bdc17
       version: -1
       name: Get account info from AWS
-      description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
+      description: Retrieves information about the specified IAM user, including the
+        user's creation date, path, unique ID, and ARN.
       script: '|||aws-iam-get-user'
       type: regular
       iscommand: true
@@ -668,6 +671,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -682,7 +686,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "48":
     id: "48"
     taskid: 4f4d3e42-0ec6-4b22-89b2-0b275eedc3c5
@@ -694,11 +697,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "63"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -713,7 +716,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "50":
     id: "50"
     taskid: 61ad53d6-a0fd-4e1e-8608-1c8a9596d965
@@ -725,11 +727,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "51"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -744,7 +746,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "51":
     id: "51"
     taskid: 21d70bb7-8b40-4f49-80ca-b78cb05b24aa
@@ -753,7 +754,8 @@ tasks:
       id: 21d70bb7-8b40-4f49-80ca-b78cb05b24aa
       version: -1
       name: Is SailPoint IdentityNow integration enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -769,6 +771,7 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -783,7 +786,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "52":
     id: "52"
     taskid: 918ad3f9-eb0a-42c0-8c0f-f13cb77b8fe6
@@ -807,6 +809,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -821,7 +824,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "53":
     id: "53"
     taskid: f1700d16-6e63-4a56-8157-42cecfc24657
@@ -873,7 +875,8 @@ tasks:
       id: 04fff51c-4e58-4c1e-8625-1247f537d5b4
       version: -1
       name: Active Directory - Get User Manager Details
-      description: Takes an email address or a username of a user account in Active Directory, and returns the email address of the user's manager.
+      description: Takes an email address or a username of a user account in Active
+        Directory, and returns the email address of the user's manager.
       playbookName: Active Directory - Get User Manager Details
       type: playbook
       iscommand: false
@@ -928,7 +931,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "56"
@@ -956,7 +958,8 @@ tasks:
       id: be533930-e327-4945-8fb7-c47ada329a2f
       version: -1
       name: Is Azure Active Directory Users integration enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1146,12 +1149,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 5b39223e-b592-430e-8029-081d27a9d851
+    taskid: 484e6c54-1d8c-4c94-8fbb-228e86896b60
     type: regular
     task:
-      id: 5b39223e-b592-430e-8029-081d27a9d851
+      id: 484e6c54-1d8c-4c94-8fbb-228e86896b60
       version: -1
-      name: IAM Get User - Without specifying Domain
+      name: IAM Get User - Without specifying a domain
       description: Retrieves a single user resource.
       script: '|||iam-get-user'
       type: regular
@@ -1165,6 +1168,16 @@ tasks:
         complex:
           root: inputs.Username
           transformers:
+          - operator: RegexReplace
+            args:
+              action_dt: {}
+              ignore_case: {}
+              multi_line: {}
+              output_format: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[\w.0-9]*\\'
           - operator: concat
             args:
               prefix:
@@ -1195,12 +1208,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: e3cecee4-49a7-4ca2-8592-63ca78ee09e3
+    taskid: abf098f6-14b8-48f7-89ce-a5ff06d33d28
     type: regular
     task:
-      id: e3cecee4-49a7-4ca2-8592-63ca78ee09e3
+      id: abf098f6-14b8-48f7-89ce-a5ff06d33d28
       version: -1
-      name: IAM Get User
+      name: IAM Get User - with a domain
       description: Retrieves a single user resource.
       script: '|||iam-get-user'
       type: regular
@@ -1214,6 +1227,16 @@ tasks:
         complex:
           root: inputs.Username
           transformers:
+          - operator: RegexReplace
+            args:
+              action_dt: {}
+              ignore_case: {}
+              multi_line: {}
+              output_format: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[\w.0-9]*\\'
           - operator: concat
             args:
               prefix:
@@ -1252,14 +1275,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 927e69d3-b9c5-4010-801f-44e47e650080
+    taskid: e3d4077b-a586-494b-86b3-65e1f408c83a
     type: condition
     task:
-      id: 927e69d3-b9c5-4010-801f-44e47e650080
+      id: e3d4077b-a586-494b-86b3-65e1f408c83a
       version: -1
-      name: Is there a Domain?
+      name: Was a domain provided?
       type: condition
-      description: Validates if a Domain was specified in the playbook inputs.
       iscommand: false
       brand: ""
     nexttasks:
@@ -1276,6 +1298,8 @@ tasks:
             value:
               simple: inputs.Domain
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1321,16 +1345,6 @@ inputs:
       accessor: Username
       transformers:
       - operator: uniq
-      - operator: RegexReplace
-        args:
-          action_dt: {}
-          ignore_case: {}
-          multi_line: {}
-          output_format: {}
-          period_matches_newline: {}
-          regex:
-            value:
-              simple: '[\w.0-9]*\\'
   required: false
   description: The username to enrich.
   playbookInputQuery:
