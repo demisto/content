@@ -47,7 +47,6 @@ def parser(date_str, date_formats=None, languages=None, locales=None, region=Non
 
 
 def get_token_soap_request(user, password, instance, domain=None):
-
     if domain:
         # Create the root element
         root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance",
@@ -79,21 +78,6 @@ def get_token_soap_request(user, password, instance, domain=None):
         ET.SubElement(create_user_session, "password").text = password
 
     return ET.tostring(root)
-
-
-# def terminate_session_soap_request(token):
-#     # Create the root element
-#     root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-#                                         "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
-#                                         "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
-#     # Create the soap:Body element
-#     body = ET.SubElement(root, "soap:Body")
-#     # Create the TerminateSession element
-#     terminate_session = ET.SubElement(body, "TerminateSession", {"xmlns": "http://archer-tech.com/webservices/"})
-#     # Add the sessionToken element
-#     ET.SubElement(terminate_session, "sessionToken").text = token
-#
-#     return ET.tostring(root)
 
 
 def get_reports_soap_request(token):
@@ -324,8 +308,16 @@ class Client(BaseClient):
 
     def get_headers(self, create_new_session: bool = False):
         """
+        This function returns the relevant headers dict which also contains session id. In case the session exists in
+        context or the create_new_session flag is given, the session will ge re-generated using create_session().
+        In order to support some level of concurrency when running tasks simultaneously, the function has a small
+        sleeping mechanism to allow tasks to first try and use existing session before moving forward to create a new
+        one.
         Args:
             create_new_session (bool): whether to force creation of a new session
+
+        Returns:
+             dict: the dictionary containing the headers together with the session id.
         """
         time.sleep(random.uniform(0, 5))
         headers = REQUEST_HEADERS
@@ -338,6 +330,23 @@ class Client(BaseClient):
         return headers
 
     def try_rest_request(self, method, url_suffix, data=None, params=None, create_new_session=False, attempts=1):
+        """
+        This function perform several attempts to extract the necessary headers and call the Base client http request
+        function. If the create_new_session flag is given it will enforce the creation of a new session, otherwise it
+        will try to use the existing one.
+
+        Args:
+            method: (str) the HTTP method to use
+            url_suffix: (str) the url_suffix to use
+            data: (str) the to send in the json body
+            params: (str) the url parameters to send
+            create_new_session: (bool) whether to enforce creation of new session (will be true in case previous calls
+                returned 401)
+            attempts: (int) number of attempts to try with the given session extraction/method.
+
+        Returns:
+            requets.Response: the response object
+        """
         for _ in range(attempts):
             headers = self.get_headers(create_new_session=create_new_session)
             res = self._http_request(method, url_suffix, headers=headers, json_data=data, params=params,
@@ -348,6 +357,22 @@ class Client(BaseClient):
         return res
 
     def do_rest_request(self, method, url_suffix, data=None, params=None):
+        """
+        This function manages the REST API calls by calling the *try_rest_request* function twice:
+            - First without the *create_new_session* flag (this will cause *try_rest_request* to try and use exiting
+            session id if exists).
+            - In case of bad session (401), another call will be made with the *create_new_session* flag set to true
+            which performs force update of the session id.
+
+        Args:
+            method: (str) the HTTP method to use
+            url_suffix: (str) the url_suffix to use
+            data: (dict) the data to send in the json body
+            params: (dict) the url parameters to send
+
+        Returns:
+            dict: the response json object
+        """
         res = self.try_rest_request(method=method, url_suffix=url_suffix, data=data, params=params, attempts=2)
         if res.status_code == 401:
             demisto.debug("trying rest with new session")
@@ -396,13 +421,21 @@ class Client(BaseClient):
         merge_integration_context({'token': token})
         return token
 
-    # def destroy_token(self, token):
-    #     body = terminate_session_soap_request(token)
-    #     headers = {'SOAPAction': 'http://archer-tech.com/webservices/TerminateSession',
-    #                'Content-Type': 'text/xml; charset=utf-8'}
-    #     self._http_request('POST', 'ws/general.asmx', headers=headers, data=body, resp_type='content')
-
     def update_body_with_token(self, request_body_builder_function, create_new_token: bool = False, **kwargs):
+        """
+        This function returns the updated body dict which also contains api token. In case the token exists in
+        context or the create_new_token flag is given, the token will be re-generated using generate_token().
+        In order to support some level of concurrency when running tasks simultaneously, the function has a small
+        sleeping mechanism to allow tasks to first try and use existing session before moving forward to create a new
+        one.
+        Args:
+            request_body_builder_function (function): function to build the relevant request body
+            create_new_token (bool): whether to force creation of a new session
+            kwargs: (dict) dict of additional parameters relevant to the soap request.
+
+        Returns:
+             dict: the dictionary containing the necessary body together with the api token.
+        """
         time.sleep(random.uniform(0, 5))
         context_token = get_integration_context().get('token')
         if create_new_token or not context_token:
@@ -413,6 +446,22 @@ class Client(BaseClient):
         return body
 
     def try_soap_request(self, req_data, method, create_new_token=False, attempts=1, **kwargs):
+        """
+        This function perform several attempts to read/generate api token and call the Base client http request
+        function. If the create_new_token flag is given it will enforce the creation of a new token, otherwise it
+        will try to use the existing one.
+
+        Args:
+            method: (str) the HTTP method to use
+            req_data: (dict) dictionary containing API info relevant to the specific API request
+            create_new_token: (bool) whether to enforce creation of new session (will be true in case previous calls
+                returned 401)
+            attempts: (int) number of attempts to try with the given session extraction/method.
+            kwargs: (dict) dict of additional parameters relevant to the soap request.
+
+        Returns:
+            requets.Response: the response object
+        """
         headers = {'SOAPAction': req_data['soapAction'], 'Content-Type': 'text/xml; charset=utf-8'}
         request_body_builder_function = req_data['soapBody']
         url_suffix = req_data['urlSuffix']
@@ -427,9 +476,24 @@ class Client(BaseClient):
         return res
 
     def do_soap_request(self, command, **kwargs):
+        """
+        This function manages the SOAP API calls by calling the *try_soap_request* function twice:
+            - First without the *create_new_token* flag (this will cause *try_soap_request* to try and use exiting
+            token if exists).
+            - In case of bad session (40, 5001), another call will be made with the *create_new_token* flag set to true
+            which performs force update of the token.
+
+        Args:
+            command: (str) the name of the command to use
+            kwargs: (dict) dict of additional parameters relevant to the soap request.
+
+        Returns:
+            dict: the relevant dict containing the data in the relevant path of the xml response
+            bytes: res.content
+        """
         req_data = SOAP_COMMANDS[command]
         res = self.try_soap_request(req_data=req_data, method='POST', attempts=2, **kwargs)
-        if res.status_code in (401, 500):
+        if res.status_code == 500:
             demisto.debug("trying soap with new session")
             res = self.try_soap_request(req_data=req_data, method='POST', create_new_token=True, attempts=2, **kwargs)
         return extract_from_xml(res.content, req_data['outputPath']), res.content
