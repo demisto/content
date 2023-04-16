@@ -84,9 +84,6 @@ tasks:
       scan_name:
         complex:
           root: inputs.ScanName
-      snappable_id:
-        complex:
-          root: inputs.snappable_id
       start_date:
         complex:
           root: RubrikPolaris

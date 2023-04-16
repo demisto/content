@@ -54,7 +54,7 @@ tasks:
       - "14"
     scriptarguments:
       activity_type:
-        simple: Anomaly
+        simple: ANOMALY
       cluster_id:
         complex:
           root: incident
@@ -66,9 +66,9 @@ tasks:
           root: incident
           accessor: rubrikpolarisobjectname
       sort_by:
-        simple: StartTime
+        simple: START_TIME
       sort_order:
-        simple: Asc
+        simple: ASC
       start_date:
         complex:
           root: incident
@@ -115,7 +115,7 @@ tasks:
       AdditionalPollingCommandArgNames:
         simple: activity_type,cluster_id,start_date,limit,sort_by,sort_order
       AdditionalPollingCommandArgValues:
-        simple: Anomaly,${incident.rubrikcdmclusterid},${incident.rubrikpolarisstarttime},1,StartTime,Asc
+        simple: ANOMALY,${incident.rubrikcdmclusterid},${incident.rubrikpolarisstarttime},1,START_TIME,ASC
       Ids:
         complex:
           root: incident
@@ -195,7 +195,7 @@ tasks:
       - "17"
     scriptarguments:
       activity_type:
-        simple: Anomaly
+        simple: ANOMALY
       cluster_id:
         complex:
           root: incident
@@ -207,9 +207,9 @@ tasks:
           root: incident
           accessor: rubrikpolarisobjectname
       sort_by:
-        simple: StartTime
+        simple: START_TIME
       sort_order:
-        simple: Asc
+        simple: ASC
       start_date:
         complex:
           root: incident

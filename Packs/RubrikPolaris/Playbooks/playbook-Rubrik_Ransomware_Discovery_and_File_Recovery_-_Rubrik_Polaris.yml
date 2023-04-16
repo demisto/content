@@ -322,6 +322,8 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
+      close_code:
+        simple: Closed/Resolved by Caller
       close_notes:
         simple: Resolved
       id:
