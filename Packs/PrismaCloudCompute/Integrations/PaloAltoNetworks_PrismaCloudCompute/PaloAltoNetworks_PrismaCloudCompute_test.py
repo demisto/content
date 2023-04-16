@@ -1383,7 +1383,7 @@ def test_get_audit_firewall_container_alerts(mocker):
     assert get_audit_firewall_container_alerts(client, args).raw_response == d
 
 
-def test_get_alert_profiles_command(mocker):
+def test_get_alert_profiles_command(requests_mock):
     """
     Given:
         - An app client object
@@ -1397,14 +1397,14 @@ def test_get_alert_profiles_command(mocker):
     with open("test_data/get_alert_profiles.json") as f:
         d = json.load(f)
 
-    mocker.patch.object(PrismaCloudComputeClient, 'get_alert_profiles_request', return_value=d)
+    requests_mock.get(url=BASE_URL + '/alert-profiles', json=d)
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
     args = {}
 
     assert get_alert_profiles_command(client, args).raw_response == d
 
 
-def test_get_backups_command(mocker):
+def test_get_backups_command(requests_mock):
     """
     Given:
         - An app client object
@@ -1418,14 +1418,14 @@ def test_get_backups_command(mocker):
     with open("test_data/backups.json") as f:
         d = json.load(f)
 
-    mocker.patch.object(PrismaCloudComputeClient, 'get_backups_request', return_value=d)
+    requests_mock.get(url=BASE_URL + '/backups', json=d)
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
     args = {}
 
     assert get_backups_command(client, args).raw_response == d
 
 
-def test_get_defender_logs_command(mocker):
+def test_get_defender_logs_command(requests_mock):
     """
     Given:
         - An app client object
@@ -1441,7 +1441,7 @@ def test_get_defender_logs_command(mocker):
     with open("test_data/defender_logs.json") as f:
         d = json.load(f)
 
-    mocker.patch.object(PrismaCloudComputeClient, 'get_logs_defender_request', return_value=d)
+    requests_mock.get(url=BASE_URL + '/logs/defender', json=d)
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
     args = {
         "hostname": "test.internal",
@@ -1454,7 +1454,7 @@ def test_get_defender_logs_command(mocker):
     assert get_logs_defender_command(client, args).outputs.get("Hostname") == args.get("hostname")
 
 
-def test_get_defender_settings_command(mocker):
+def test_get_defender_settings_command(requests_mock):
     """
     Given:
         - An app client object
@@ -1468,14 +1468,14 @@ def test_get_defender_settings_command(mocker):
     with open("test_data/defender_settings.json") as f:
         d = json.load(f)
 
-    mocker.patch.object(PrismaCloudComputeClient, 'get_settings_defender_request', return_value=d)
+    requests_mock.get(url=BASE_URL + '/settings/defender', json=d)
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
     args = {}
 
     assert get_settings_defender_command(client, args).raw_response == d
 
 
-def test_get_logs_defender_download_command(mocker):
+def test_get_logs_defender_download_command(requests_mock):
     """
     Given:
         - An app client object
@@ -1491,7 +1491,8 @@ def test_get_logs_defender_download_command(mocker):
         d = json.load(f)
 
     data = json.dumps(d).encode("utf-8")
-    mocker.patch.object(PrismaCloudComputeClient, 'get_logs_defender_download_request', return_value=data)
+    requests_mock.get(url=BASE_URL + '/logs/defender/download', content=data)
+
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
     args = {
         "hostname": "test.internal",
