@@ -60,7 +60,6 @@ configuration:
 - additionalinfo: Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
   display: Listen Port
   name: longRunningPort
-  required: true
   type: 0
   section: Connect
 - additionalinfo: For use with HTTPS - the certificate that the service should use.
@@ -540,7 +539,7 @@ script:
     deprecated: false
     description: Updates values stored in the List (only available On-Demand).
     execution: false
-  dockerimage: demisto/flask-nginx:1.0.0.49636
+  dockerimage: demisto/flask-nginx:1.0.0.54562
   feed: false
   isfetch: false
   longRunning: true
