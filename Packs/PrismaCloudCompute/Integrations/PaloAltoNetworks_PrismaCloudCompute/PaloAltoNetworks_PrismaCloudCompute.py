@@ -385,7 +385,6 @@ class PrismaCloudComputeClient(BaseClient):
             list: the defender logs
         """
         params = assign_params(hostname=hostname, lines=lines)
-
         headers = self._headers
 
         return self._http_request('get', 'logs/defender', params=params, headers=headers)
@@ -1839,7 +1838,7 @@ def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: 
     )
 
 
-def get_alert_profiles_command(client, args):
+def get_alert_profiles_command(client: PrismaCloudComputeClient, args: dict):
     """
     Get the alert profiles.
 
@@ -1864,7 +1863,7 @@ def get_alert_profiles_command(client, args):
     )
 
 
-def get_settings_defender_command(client, args):
+def get_settings_defender_command(client: PrismaCloudComputeClient, args: dict):
     """
     Get the defender settings.
 
@@ -1875,7 +1874,7 @@ def get_settings_defender_command(client, args):
     Returns:
         CommandResults: command-results object.
     """
-    hostname = args.get("hostname", None)
+    hostname = args.get("hostname")
     response = client.get_settings_defender_request(hostname)
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.DefenderSettings',
@@ -1884,7 +1883,7 @@ def get_settings_defender_command(client, args):
     )
 
 
-def get_logs_defender_command(client, args):
+def get_logs_defender_command(client: PrismaCloudComputeClient, args: dict):
     """
     Get the defender logs.
 
@@ -1912,7 +1911,7 @@ def get_logs_defender_command(client, args):
     )
 
 
-def get_backups_command(client, args):
+def get_backups_command(client: PrismaCloudComputeClient, args: dict):
     """
     Get the defender backups.
 
@@ -1933,7 +1932,7 @@ def get_backups_command(client, args):
     )
 
 
-def get_logs_defender_download_command(client, args):
+def get_logs_defender_download_command(client: PrismaCloudComputeClient, args: dict):
     """
     Get the defender logs download bundle.
 
