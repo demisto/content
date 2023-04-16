@@ -308,7 +308,7 @@ class Client(BaseClient):
 
     def get_headers(self, create_new_session: bool = False):
         """
-        This function returns the relevant headers dict which also contains session id. In case the session exists in
+        This function returns the relevant headers dict which also contains session id. In case the session doesn't exist in
         context or the create_new_session flag is given, the session will ge re-generated using create_session().
         In order to support some level of concurrency when running tasks simultaneously, the function has a small
         sleeping mechanism to allow tasks to first try and use existing session before moving forward to create a new
