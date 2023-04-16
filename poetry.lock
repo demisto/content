@@ -991,14 +991,14 @@ files = [
 
 [[package]]
 name = "demisto-py"
-version = "3.2.8"
+version = "3.2.9"
 description = "A Python library for the Demisto API"
 category = "dev"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "demisto-py-3.2.8.tar.gz", hash = "sha256:d67ec51d5a4a6c10f3b0a40151730bfe5f8a4f11b3b863154e2415f709ed769c"},
-    {file = "demisto_py-3.2.8-py3-none-any.whl", hash = "sha256:ddf90a1166e85b8bd7f1542a5a3c9c6383f9a19c7ff34f197eee3eb9420180c1"},
+    {file = "demisto-py-3.2.9.tar.gz", hash = "sha256:afdc08684eddb7704e0cf31f59191926794b72ae715113d89e9aae72ae7d459b"},
+    {file = "demisto_py-3.2.9-py3-none-any.whl", hash = "sha256:25ec36ad517635cb79f60f6edc2a43b5a5e009d6c2d0709bc91739c54067e9a4"},
 ]
 
 [package.dependencies]
@@ -1032,11 +1032,10 @@ coverage = "^7.2.1"
 cryptography = "^36.0.2"
 dateparser = "^1.1.1"
 decorator = "^5.1.1"
-demisto-py = "^3.2.6"
+demisto-py = "^3.2.9"
 dictdiffer = "^0.9.0"
 dictor = "^0.1.9"
 docker = "^5.0.3"
-flake8 = "^4.0.1"
 flatten-dict = "^0.4.2"
 gitdb = "^4.0.9"
 GitPython = "^3.1.27,<3.1.31"
@@ -1045,7 +1044,6 @@ google-cloud-storage = "^2.2.1"
 imagesize = "^1.3.0"
 importlib-resources = "^5.6.0"
 inflection = "^0.5.1"
-isort = "^5.10.1"
 Jinja2 = "^3.1.1"
 jsonschema = "^4.4.0"
 junitparser = "^2.8.0"
@@ -1112,8 +1110,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "1_12_0"
-resolved_reference = "7cc0a1f7f1e5327f756c51f2a00147540151bde4"
+reference = "multiple_APIModules_bug"
+resolved_reference = "2e33e70a66f10d11a8451698f56ce22ce5c651a2"
 
 [[package]]
 name = "deprecated"
@@ -6416,4 +6414,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "c062f2abb54e2fedf4634e003c1e87f640cba7fd0357adfe7bbb56b6cffb85ff"
+content-hash = "074094c542bc770665b6f582057357d49e6fdddd7f5f1e35e33edd07ca307811"
