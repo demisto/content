@@ -2019,38 +2019,23 @@ script:
     description: Download a zip of all Defender logs.
     name: prisma-cloud-compute-logs-defender-download
     outputs:
-    - contextPath: File.EntryID
-      description: The EntryID of the log bundle.
+    - contextPath: InfoFile.Name
+      description: The file name.
       type: String
-    - contextPath: File.Extension
-      description: The extension of the log bundle.
+    - contextPath: InfoFile.EntryID
+      description: The File entry ID.
       type: String
-    - contextPath: File.Info
-      description: The file info.
-      type: String
-    - contextPath: File.MD5
-      description: The MD5 of the log bundle.
-      type: String
-    - contextPath: File.Name
-      description: The name of the log bundle.
-      type: String
-    - contextPath: File.SHA1
-      description: The SHA1 of the log bundle.
-      type: String
-    - contextPath: File.SHA256
-      description: The SHA256 of the log bundle.
-      type: String
-    - contextPath: File.SHA512
-      description: The SHA512 of the log bundle.
-      type: String
-    - contextPath: File.SSDeep
-      description: The SSDeep of the log bundle.
-      type: String
-    - contextPath: File.Size
+    - contextPath: InfoFile.Size
       description: The file size.
       type: Number
-    - contextPath: File.Type
-      description: The type of the file.
+    - contextPath: InfoFile.Type
+      description: The file type.
+      type: String
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: String
+    - contextPath: InfoFile.Extension
+      description: File extension.
       type: String
   - arguments:
     - description: The project to retrieve the backups from.
