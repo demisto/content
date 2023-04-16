@@ -3240,10 +3240,6 @@ Download a zip of all Defender logs.
 }
 ```
 
-#### Human Readable Output
-
-
-
 ### prisma-cloud-compute-get-backups
 
 ***
