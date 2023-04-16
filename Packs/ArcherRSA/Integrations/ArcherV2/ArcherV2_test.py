@@ -1,6 +1,5 @@
 import copy
 from datetime import datetime, timezone
-
 import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto
@@ -489,13 +488,13 @@ class TestArcherV2:
         mocker.patch.object(demisto, 'results')
         client = Client(BASE_URL, '', '', '', '', 400)
         if is_successful:
-            client.update_session()
+            client.create_session()
             assert demisto.results.call_count == 0
         else:
             with pytest.raises(SystemExit) as e:
                 # in case login wasn't successful, return_error will exit with a reason (for example, LoginNotValid)
                 # return_error reached
-                client.update_session()
+                client.create_session()
             assert e
 
     def test_update_session_fail_parsing(self, mocker):
@@ -514,7 +513,7 @@ class TestArcherV2:
                                                                                   "</body></html>"))
         client = Client(BASE_URL, '', '', '', '', 400)
         with pytest.raises(DemistoException) as e:
-            client.update_session()
+            client.create_session()
         assert "Check the given URL, it can be a redirect issue" in str(e.value)
 
     def test_generate_field_contents(self):
@@ -961,8 +960,99 @@ class TestArcherV2:
         client = Client(BASE_URL, '', '', '', '', 400)
         mocker.patch.object(client, 'do_soap_request',
                             return_value=[SEARCH_RECORDS_BY_REPORT_RES, SEARCH_RECORDS_BY_REPORT_RES])
-        mocker.patch.object(client, 'do_request', return_value=GET_LEVEL_RES_2)
+        mocker.patch.object(client, 'do_rest_request', return_value=GET_LEVEL_RES_2)
         mocker.patch.object(demisto, 'results')
         search_records_by_report_command(client, mock_args)
         assert demisto.results.call_args_list[0][0][0]['HumanReadable'] == MOCK_READABLE_SEARCH_RECORDS_BY_REPORT
         assert demisto.results.call_args_list[0][0][0]['Contents'] == MOCK_RESULTS_SEARCH_RECORDS_BY_REPORT
+
+    @pytest.mark.parametrize('integration_context, is_login_expected, http_call_attempt_results', [
+        ({}, True, [{'status_code': 200, 'json': {'res': 'some_res'}}]),
+        ({'session_id': 'test_session_id'}, False, [{'status_code': 200, 'json': {'res': 'some_res'}}]),
+        ({'session_id': 'test_session_id'}, False, [{'status_code': 401}, {'status_code': 200, 'json': {'res': 'some_res'}}]),
+        ({'session_id': 'test_session_id'}, True, [{'status_code': 401}, {
+         'status_code': 401}, {'status_code': 200, 'json': {'res': 'some_res'}}]),
+    ])
+    def test_do_rest_request(self, mocker, requests_mock, integration_context, is_login_expected, http_call_attempt_results):
+        """
+        Test for the do_rest_request function.
+        Given:
+            Case 1: Empty integration context (no cached session_id).
+            Case 2: Integration context with cached session_id.
+            Case 3: Integration context with cached session_id.
+            Case 4: Integration context with cached session_id.
+
+        When:
+            Case 1: rest API request succeed on first run with newly generated session_id.
+            Case 2: rest API request succeed on first run with cached the session_id.
+            Case 3: rest API request fails on first attempt and succeed on second run with the cached session_id.
+            Case 4: rest API request fails on two first attempts with the cached session_id and succeed on third run
+                after creating new session_id.
+
+        Then:
+            Case 1: Ensure new session_id was generated, and only one call to the search API was done (success).
+            Case 2: Ensure no new session_id was generated, and only one call to the search API was done (success).
+            Case 3: Ensure no new session_id was generated, and two calls to the search API were done (failure and
+                success).
+            Case 3: Ensure new session_id was generated, and three calls to the search API were done (failure, failure
+                and success).
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mocker.patch('ArcherV2.get_integration_context', return_value=integration_context)
+        login_mocker = requests_mock.post(BASE_URL + 'api/core/security/login',
+                                          json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
+        rest_mocker = requests_mock.get(BASE_URL + 'test_requests', http_call_attempt_results)
+        dummy_response = client.do_rest_request('GET', 'test_requests')
+        if is_login_expected:
+            assert login_mocker.called_once
+        else:
+            assert not login_mocker.called
+        assert rest_mocker.call_count == len(http_call_attempt_results)
+        assert dummy_response
+
+    @pytest.mark.parametrize('integration_context, is_new_token_expected, http_call_attempt_results', [
+        ({}, True, [{'status_code': 200, 'text': SEARCH_RECORDS_RES}]),
+        ({'token': 'TOKEN'}, False, [{'status_code': 200, 'text': SEARCH_RECORDS_RES}]),
+        ({'token': 'TOKEN'}, False, [{'status_code': 500}, {'status_code': 200, 'text': SEARCH_RECORDS_RES}]),
+        ({'token': 'TOKEN'}, True, [{'status_code': 500}, {'status_code': 500},
+         {'status_code': 200, 'text': SEARCH_RECORDS_RES}]),
+    ])
+    def test_do_soap_request(self, mocker, requests_mock, integration_context, is_new_token_expected, http_call_attempt_results):
+        """
+        Test for the do_soap_request function.
+        (we use the archer-search-records template as test case, but it doesn't really matter)
+        Given:
+            Case 1: Empty integration context (no cached token).
+            Case 2: Integration context with cached token.
+            Case 3: Integration context with cached token.
+            Case 4: Integration context with cached token.
+
+        When:
+            Case 1: Soap API request succeed on first run with newly generated the token.
+            Case 2: Soap API request succeed on first run with cached the token.
+            Case 3: Soap API request fails on first attempt and succeed on second run with the cached token.
+            Case 4: Soap API request fails on two first attempts and succeed on third run after creating new token.
+
+        Then:
+            Case 1: Ensure new token was generated, and only one call to the search API was done (success).
+            Case 2: Ensure no new token was generated, and only one call to the search API was done (success).
+            Case 3: Ensure no new token was generated, and two calls to the search API were done (failure and success).
+            Case 3: Ensure new token was generated, and three calls to the search API were done (failure, failure and
+            success).
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mocker.patch('ArcherV2.get_integration_context', return_value=integration_context)
+        new_token_mocker = requests_mock.post(BASE_URL + 'ws/general.asmx', text=GET_TOKEN_SOAP)
+        soap_mocker = requests_mock.post(BASE_URL + 'ws/search.asmx', http_call_attempt_results)
+
+        search_commands_args = {'app_id': 1, 'display_fields': '<DisplayField name="External Links">1</DisplayField>'
+                                                               '<DisplayField name="Device Name">2</DisplayField>',
+                                'field_id': '', 'field_name': '', 'field_to_search_by_id': '', 'numeric_operator': '',
+                                'date_operator': '', 'search_value': '', 'max_results': 10, 'sort_type': 'Ascending',
+                                'level_id': 123}
+        client.do_soap_request('archer-search-records', **search_commands_args)
+        if is_new_token_expected:
+            assert new_token_mocker.called_once
+        else:
+            assert not new_token_mocker.called
+        assert soap_mocker.call_count == len(http_call_attempt_results)
