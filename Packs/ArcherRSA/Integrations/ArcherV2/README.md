@@ -8,7 +8,7 @@ The RSA Archer GRC platform provides a common foundation for managing policies, 
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | url | Server URL (for example https://example.net, https://example.net/rsaarcher, https://example.net/archer) | True |
+    | url | Server URL (for example <https://example.net>, <https://example.net/rsaarcher>, <https://example.net/archer>) | True |
     | api_endpoint | API Endpoint<br/>Warning: Change only if you have another API endpoint. | True |
     | credentials | Username | True |
     | isFetch | Fetch incidents | False |
@@ -26,14 +26,17 @@ The RSA Archer GRC platform provides a common foundation for managing policies, 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI as part of an automation or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### archer-search-applications
+
 ***
 Gets application details or list of all applications.
 
 #### Base Command
+
 `archer-search-applications`
 
 #### Input
@@ -53,9 +56,11 @@ Gets application details or list of all applications.
 | Archer.Application.Name | String | The application name. | 
 
 #### Command Example
+
 ```!archer-search-applications applicationId=75```
 
 #### Context Example
+
 ```
 {
     "Archer": {
@@ -74,16 +79,19 @@ Gets application details or list of all applications.
 #### Human Readable Output
 
 >### Search applications results
+
 >|Guid|Id|LanguageId|Name|Status|Type|
 >|---|---|---|---|---|---|
 >| 982fc3be-7c43-4d79-89a1-858ed262b930 | 75 | 1 | Incidents | 1 | 2 |
 
 
 ### archer-get-application-fields
+
 ***
 Gets all application fields by application ID.
 
 #### Base Command
+
 `archer-get-application-fields`
 
 #### Input
@@ -102,9 +110,11 @@ Gets all application fields by application ID.
 | Archer.ApplicationField.LevelID | Number | The field level ID. | 
 
 #### Command Example
+
 ```!archer-get-application-fields applicationId=75```
 
 #### Context Example
+
 ```
 {
     "Archer": {
@@ -153,6 +163,7 @@ Gets all application fields by application ID.
 #### Human Readable Output
 
 >### Application fields
+
 >|FieldId|FieldName|FieldType|LevelID|
 >|---|---|---|---|
 >| 296 | Incident ID | TrackingID | 67 |
@@ -163,6 +174,7 @@ Gets all application fields by application ID.
 >| 304 | Priority | Values List | 67 |
 
 ### archer-get-field
+
 ***
 Returns a mapping from list value name to list value ID.
 
@@ -186,9 +198,11 @@ Returns a mapping from list value name to list value ID.
 | Archer.ApplicationField.LevelID | Number | The field level ID. | 
 
 #### Command Example
+
 ```!archer-get-field fieldID=350```
 
 #### Context Example
+
 ```
 {
     "Archer": {
@@ -205,11 +219,13 @@ Returns a mapping from list value name to list value ID.
 #### Human Readable Output
 
 >### Application field
+
 >|FieldId|FieldName|FieldType|LevelID|
 >|---|---|---|---|
 >| 350 | Reported to Police | Values List | 67 |
 
 ### archer-get-mapping-by-level
+
 ***
 Returns a mapping of fields by level ID.
 
@@ -234,9 +250,11 @@ Returns a mapping of fields by level ID.
 | Archer.LevelMapping.LevelId | Number | The field level ID. | 
 
 #### Command Example
+
 ```!archer-get-mapping-by-level level=67```
 
 #### Context Example
+
 ```
 {
     "Archer": {
@@ -273,6 +291,7 @@ Returns a mapping of fields by level ID.
 #### Human Readable Output
 
 >### Level mapping for level 67
+
 >|Id|LevelId|Name|Type|
 >|---|---|---|---|
 >| 296 | 67 | Incident ID | TrackingID |
@@ -281,6 +300,7 @@ Returns a mapping of fields by level ID.
 >| 302 | 67 | Status | Values List |
 
 ### archer-get-record
+
 ***
 Gets information about a content record in the given application.
 
@@ -302,9 +322,11 @@ Gets information about a content record in the given application.
 | Archer.Record.Id | Number | The unique ID of the content record. | 
 
 #### Command Example
+
 ```!archer-get-record applicationId=75 contentId=227602```
 
 #### Context Example
+
 ```
 {
     "Archer": {
@@ -386,15 +408,18 @@ Gets information about a content record in the given application.
 #### Human Readable Output
 
 >### Record details
+
 >|Current Status|Date/Time Occurred|Date/Time Reported|Days Open|Default Record Permissions|Google Map|Id|Incident Details|Incident Result|Incident Summary|Is BSA (Bank Secrecy Act) reporting required in the US?|Notify Incident Owner|Override Rejected Submission|Status|Status Change|Supporting Documentation|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| ValuesListIds: 6412<br/>OtherText: null | 2018-03-23T07:00:00 | 2018-03-26T10:03:32.243 | 805.0 | UserList: <br/>GroupList: {'Id': 50, 'HasRead': True, 'HasUpdate': True, 'HasDelete': True},<br/>{'Id': 51, 'HasRead': True, 'HasUpdate': False, 'HasDelete': False} | <a target='_new' href='http://maps.google.com/maps?f=q&ie=UTF8&om=1&hl=en&q=, , , '>Google Map</a> | 227602 | Incident Details | ValuesListIds: 531<br/>OtherText: null | Summary... | ValuesListIds: 835<br/>OtherText: null | ValuesListIds: 6422<br/>OtherText: null | ValuesListIds: 9565<br/>OtherText: null | ValuesListIds: 466<br/>OtherText: null | ValuesListIds: 156<br/>OtherText: null | 125 |
 
 ### archer-create-record
+
 ***
 Creates a new content record in the given application.
 
 Note: When creating a new record, make sure the values are sent through the *fieldsToValues* argument properly.
+
 - Example for the *Values List* field type: {"Type": ["Switch"], fieldname: [value1, value2]}
 - Example for the *External Links* field type: {"Patch URL": [{"value":"github", "link": "https://github.com"}]}
 - Example for the *Users/Groups List* field type: {"Policy Owner":{"users": [20],"groups": [30]}}
@@ -407,6 +432,7 @@ To determine the appropriate field type value, use the `archer-get-application-f
 #### Base Command
 
 `archer-create-record`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -421,9 +447,11 @@ To determine the appropriate field type value, use the `archer-get-application-f
 | Archer.Record.Id | Number | The unique ID of the content record. | 
 
 #### Command Example
+
 `!archer-create-record applicationId=75 fieldsToValues={"Incident Summary":"This is the incident summary","Priority":["High"]}`
 
 #### Context Example
+
 ```
 {
     "Archer": {
@@ -439,12 +467,14 @@ To determine the appropriate field type value, use the `archer-get-application-f
 >Record created successfully, record id: 239643
 
 ### archer-delete-record
+
 ***
 Deletes an existing content record in the given application.
 
 #### Base Command
 
 `archer-delete-record`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -456,9 +486,11 @@ Deletes an existing content record in the given application.
 There is no context output for this command.
 
 #### Command Example
+
 ```!archer-delete-record contentId=239642```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -468,6 +500,7 @@ There is no context output for this command.
 >Record 239642 deleted successfully
 
 ### archer-update-record
+
 ***
 Updates an existing content record in the given application.
 Note: When updating a record, make sure the values are sent through the *fieldsToValues* argument properly. For more details see the archer-create-record description.
@@ -475,6 +508,7 @@ Note: When updating a record, make sure the values are sent through the *fieldsT
 #### Base Command
 
 `archer-update-record`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -489,9 +523,11 @@ Note: When updating a record, make sure the values are sent through the *fieldsT
 There is no context output for this command.
 
 #### Command Example
+
 `!archer-update-record applicationId=75 contentId=239326 fieldsToValues={"Priority":["High"]}`
 
 #### Context Example
+
 ```
 {}
 ```
@@ -501,6 +537,7 @@ There is no context output for this command.
 >Record 239326 updated successfully
 
 ### archer-execute-statistic-search-by-report
+
 ***
 Performs statistic search by report GUID.
 
@@ -520,9 +557,11 @@ Performs statistic search by report GUID.
 There is no context output for this command.
 
 #### Command Example
+
 ```!archer-execute-statistic-search-by-report maxResults=100 reportGuid=e4b18575-52c0-4f70-b41b-3ff8b6f13b1c```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -560,6 +599,7 @@ There is no context output for this command.
 >}
 
 ### archer-get-reports
+
 ***
 Gets all reports from Archer.
 
@@ -576,9 +616,11 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```archer-get-reports```
 
 #### Context Example
+
 ```
 {
     "Archer": {
@@ -598,6 +640,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 ### archer-get-search-options-by-guid
+
 ***
 Returns search criteria by report GUID.
 
@@ -617,9 +660,11 @@ Returns search criteria by report GUID.
 There is no context output for this command.
 
 #### Command Example
+
 ```!archer-get-search-options-by-guid reportGuid=bce4222c-ecfe-4cef-a556-fe746e959f12```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -671,6 +716,7 @@ There is no context output for this command.
 >}
 
 ### archer-reset-cache
+
 ***
 Resets Archer's integration cache. This cache is maintained in XSOAR based on previous search results and must be cleared when field mappings no longer make sense. Run this command if you change the fields of your Archer application, the Archer v2 integration's settings, or if the target Archer user moves between environments or settings.
 
@@ -687,9 +733,11 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!archer-reset-cache```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -698,6 +746,7 @@ There is no context output for this command.
 
 
 ### archer-get-valuelist
+
 ***
 Returns a list of values for a specified field, for example, fieldID=16114. This command only works for value list fields (type 4).
 
@@ -721,9 +770,11 @@ Returns a list of values for a specified field, for example, fieldID=16114. This
 
 
 #### Command Example
+
 ```!archer-get-valuelist fieldID=302```
 
 #### Context Example
+
 ```
 {
     "Archer": {
@@ -764,6 +815,7 @@ Returns a list of values for a specified field, for example, fieldID=16114. This
 #### Human Readable Output
 
 >### Value list for field 302
+
 >|Id|IsSelectable|Name|
 >|---|---|---|
 >| 466 | true | New |
@@ -773,8 +825,10 @@ Returns a list of values for a specified field, for example, fieldID=16114. This
 >| 470 | true | Closed |
 
 ### archer-upload-file
+
 ***
 Uploads a file to Archer. You can associate the file to a record by providing all of the following arguments:
+
 - applicationId
 - contentId
 - associatedField
@@ -797,9 +851,11 @@ Uploads a file to Archer. You can associate the file to a record by providing al
 There is no context output for this command.
 
 #### Command Example
+
 ```!archer-upload-file entryId=16695@b32fdf18-1c65-43af-8918-7f85a1fab951```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -810,6 +866,7 @@ There is no context output for this command.
 
 
 ### archer-get-file
+
 ***
 Downloads a file from Archer to Cortex XSOAR War Room context.
 
@@ -828,9 +885,11 @@ Downloads a file from Archer to Cortex XSOAR War Room context.
 There is no context output for this command.
 
 #### Command Example
+
 ```!archer-get-file fileId=125```
 
 #### Context Example
+
 ```
 {
     "File": {
@@ -852,6 +911,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 ### archer-list-users
+
 ***
 Gets details for a user or a list of all users.
 
@@ -879,9 +939,11 @@ Gets details for a user or a list of all users.
 | Archer.User.UserName | String | The username associated with the account. | 
 
 #### Command Example
+
 ```!archer-list-users```
 
 #### Context Example
+
 ```
 {
     "Archer": {
@@ -902,11 +964,13 @@ Gets details for a user or a list of all users.
 #### Human Readable Output
 
 >### Users list
+
 >|AccountStatus|DisplayName|FirstName|Id|LastLoginDate|LastName|MiddleName|UserName|
 >|---|---|---|---|---|---|---|---|
 >| Locked | cash, johnny | johnny | 202 | 2018-09-03T07:56:51.027 | cash |  | johnnyCash |
 
 ### archer-search-records
+
 ***
 Search for records inside the given application
 
@@ -940,9 +1004,11 @@ Search for records inside the given application
 
 
 #### Command Example
+
 ```!archer-search-records applicationId=75 fullData=False fieldsToDisplay=`Date/Time Occurred,Days Open` fieldsToGet=`Date/Time Occurred,Days Open` fieldToSearchOn=`Date/Time Occurred` dateOperator=GreaterThan searchValue=2018-06-23T07:00:00Z maxResults=100```
 
 #### Context Example
+
 ```
 {
     "Archer": {
@@ -958,12 +1024,14 @@ Search for records inside the given application
 #### Human Readable Output
 
 >### Search records results
+
 >|Date/Time Occurred|Days Open|
 >|---|---|
 >| 2018-07-10T08:00:00Z | 30 |
 
 
 ### archer-search-records-by-report
+
 ***
 Searches records by report GUID.
 
@@ -988,9 +1056,11 @@ Searches records by report GUID.
 
 
 #### Command Example
+
 ```!archer-search-records-by-report reportGuid=bce4222c-ecfe-4cef-a556-fe746e959f12```
 
 #### Context Example
+
 ```
 {
     "Archer": {
@@ -1035,6 +1105,7 @@ Searches records by report GUID.
 #### Human Readable Output
 
 >### Search records by report results
+
 >|Description|Id|Procedure Name|Threat Category|Tracking ID|
 >|---|---|---|---|---|
 >| <p> test_procedure_0</p> | 227528 | test_procedure_0 | Malware | 227528 |
@@ -1044,12 +1115,14 @@ Searches records by report GUID.
 
 
 ### archer-print-cache
+
 ***
 Prints the Archer's integration cache.
 
 #### Base Command
 
 `archer-print-cache`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1059,9 +1132,11 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!archer-print-cache```
 
 #### Context Example
+
 ```
 {}
 ```
