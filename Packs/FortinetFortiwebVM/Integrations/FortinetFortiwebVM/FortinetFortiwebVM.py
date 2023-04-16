@@ -1267,9 +1267,10 @@ class Client(BaseClient):
         try:
             output = res.json()
         except requests.exceptions.JSONDecodeError:
-            raise DemistoException(
-                res,
-                res=res)
+            msg = f"[{res.status_code}]"
+            if res.text:
+                msg += f" {res.text}"
+            raise DemistoException(msg, res=res)
 
         error = self.get_error_data(output)
         if error_code == HTTPStatus.INTERNAL_SERVER_ERROR:
