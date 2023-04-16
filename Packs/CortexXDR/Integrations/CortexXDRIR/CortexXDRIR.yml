@@ -2689,7 +2689,7 @@ script:
       description: The integration name of the endpoint vendor.
       type: String
   - arguments:
-    - description: The status of the endpoint to filter.
+    - description: 'A comma-separated list of enpoint statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated'
       name: status
       required: true
       isArray: true
