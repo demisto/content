@@ -10468,7 +10468,7 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
     :type fetch_limit: ``int``
     :param fetch_limit: The incidents limit to return
 
-    :type id_field: ``str``מה
+    :type id_field: ``str``
     :param id_field: The incident id field
 
     :return: List of incidents after filtering duplicates when len(incidents) <= limit
