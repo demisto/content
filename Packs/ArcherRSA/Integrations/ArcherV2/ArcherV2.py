@@ -455,7 +455,7 @@ class Client(BaseClient):
             method: (str) the HTTP method to use
             req_data: (dict) dictionary containing API info relevant to the specific API request
             create_new_token: (bool) whether to enforce creation of new session (will be true in case previous calls
-                returned 401)
+                returned 500)
             attempts: (int) number of attempts to try with the given session extraction/method.
             kwargs: (dict) dict of additional parameters relevant to the soap request.
 
