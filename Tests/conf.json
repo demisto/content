@@ -2733,7 +2733,7 @@
         {
             "playbookID": "Account Enrichment - Generic v2.1 - Test",
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja",
+            "instance_names": "active_directory_80k",
             "has_api": false
         },
         {
