@@ -28,7 +28,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: All
-  display: 'Ticket type to fetch as incidents. '
+  display: Ticket type to fetch as incidents.
   name: ticket_type
   options:
   - All
