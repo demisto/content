@@ -1579,13 +1579,5 @@ outputs:
 - contextPath: MSGraphUserManager.Manager.UserPrincipalName
   description: User's principal name.
 tests:
-- Calculate Severity - Generic v2 - Test
-- Detonate URL - Generic Test
 - Account Enrichment - Generic v2.1 - Test
-- URL Enrichment - Generic v2 - Test
-- Endpoint Enrichment - Generic v2.1 - Test
-- Wait Until Datetime - Test
-- Domain Enrichment - Generic v2 - Test
-- Email Address Enrichment - Generic v2.1 - Test
-- File Enrichment - Generic v2 - Test
 fromversion: 6.5.0
