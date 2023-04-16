@@ -10,7 +10,7 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     get_hosts_scan_list, get_impacted_resources
 )
 
-from CommonServerPython import DemistoException
+from CommonServerPython import *
 
 BASE_URL = 'https://test.com'
 
@@ -1381,3 +1381,121 @@ def test_get_audit_firewall_container_alerts(mocker):
     }
 
     assert get_audit_firewall_container_alerts(client, args).raw_response == d
+
+
+def test_get_alert_profiles_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-get-alert-profiles' command
+    Then:
+        -  Ensure the outputs of requesting the alert profiles equals the raw_response object which is mocked
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_alert_profiles_command, PrismaCloudComputeClient
+    with open("test_data/get_alert_profiles.json") as f:
+        d = json.load(f)
+
+    mocker.patch.object(PrismaCloudComputeClient, 'get_alert_profiles_request', return_value=d)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {}
+
+    assert get_alert_profiles_command(client, args).raw_response == d
+
+
+def test_get_backups_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-get-backups' command
+    Then:
+        -  Ensure the outputs of requesting the defenders backup equals the raw_response object which is mocked
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_backups_command, PrismaCloudComputeClient
+    with open("test_data/backups.json") as f:
+        d = json.load(f)
+
+    mocker.patch.object(PrismaCloudComputeClient, 'get_backups_request', return_value=d)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {}
+
+    assert get_backups_command(client, args).raw_response == d
+
+
+def test_get_defender_logs_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-logs-defender' command
+    Then:
+        -  Ensure the outputs of requesting the defenders logs equals the raw_response object which is mocked
+        -  Ensure the number of logs requests equals the number of logs received
+        -  Ensure the hostname argument equals the hostname received in the context object which is mocked
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_logs_defender_command, PrismaCloudComputeClient
+    with open("test_data/defender_logs.json") as f:
+        d = json.load(f)
+
+    mocker.patch.object(PrismaCloudComputeClient, 'get_logs_defender_request', return_value=d)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {
+        "hostname": "test.internal",
+        "lines": 2
+    }
+
+    assert get_logs_defender_command(client, args).raw_response == d
+
+    assert len(get_logs_defender_command(client, args).outputs.get("Logs")) == args.get('lines')
+    assert get_logs_defender_command(client, args).outputs.get("Hostname") == args.get("hostname")
+
+
+def test_get_defender_settings_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-get-settings-defender' command
+    Then:
+        -  Ensure the outputs of requesting the defenders settings equals the raw_response object which is mocked
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_settings_defender_command, PrismaCloudComputeClient
+    with open("test_data/defender_settings.json") as f:
+        d = json.load(f)
+
+    mocker.patch.object(PrismaCloudComputeClient, 'get_settings_defender_request', return_value=d)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {}
+
+    assert get_settings_defender_command(client, args).raw_response == d
+
+
+def test_get_logs_defender_download_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-logs-defender-download' command
+    Then:
+        -  Ensure a File is returned named 'logs.tar.gz'
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_logs_defender_download_command, PrismaCloudComputeClient
+       
+    with open("test_data/defender_logs.json") as f:
+        d = json.load(f)
+
+    data = json.dumps(d).encode("utf-8")
+    mocker.patch.object(PrismaCloudComputeClient, 'get_logs_defender_download_request', return_value=data)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {
+        "hostname": "test.internal",
+        "lines": 2
+    }
+    r = get_logs_defender_download_command(client, args) 
+    assert r["File"] == f"{args.get('hostname')}-logs.tar.gz"

@@ -350,6 +350,89 @@ class PrismaCloudComputeClient(BaseClient):
             method="GET", url_suffix="audits/firewall/app/container", params=params
         )
 
+    def get_alert_profiles_request(self, project):
+        """
+        Get the alert profiles.
+
+        Args:
+            project (str): The project name
+
+        Returns:
+            dict: the alert profiles
+        """
+        params = assign_params(project=project)
+        headers = self._headers
+
+        return self._http_request('get', 'alert-profiles', headers=headers, params=params)
+
+    def get_settings_defender_request(self, hostname):
+        """
+        Get the defender settings.
+
+        Returns:
+            dict: the defender settings
+        """
+        headers = self._headers
+        params = assign_params(hostname=hostname)
+
+        return self._http_request('get', 'settings/defender', headers=headers, params=params)
+
+    def get_logs_defender_request(self, hostname, lines):
+        """
+        Get the defender logs.
+
+        Returns:
+            list: the defender logs
+        """
+        params = assign_params(hostname=hostname, lines=lines)
+
+        headers = self._headers
+
+        return self._http_request('get', 'logs/defender', params=params, headers=headers)
+
+
+    def get_backups_request(self, project):
+        """
+        Get the defender backups.
+
+        Args:
+            project (str): The project name
+
+        Returns:
+            list: the defender backups
+        """
+        params = assign_params(project=project)
+        headers = self._headers
+
+        return self._http_request('get', 'backups', headers=headers, params=params)
+
+
+    def get_logs_defender_download_request(self, hostname, lines):
+        """
+        Download all logs for a certain defender
+
+        Args:
+            hostname (str): The hostname to get the logs for
+            lines (int): The number of logs to return
+
+        Returns:
+            list: the logs to download
+        """
+        params = assign_params(hostname=hostname, lines=lines)
+
+        headers = self._headers
+        return self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type="content")
+
+
+def format_context(context):
+    """
+    Format the context keys
+    """
+    if context and isinstance(context, dict):
+        context = {pascalToSpace(key).replace(" ", ""): format_context(value) for key, value in context.items()}
+    elif context and isinstance(context, list):
+        context = [format_context(item) for item in context]
+    return context
 
 def str_to_bool(s):
     """
@@ -1757,6 +1840,117 @@ def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: 
     )
 
 
+def get_alert_profiles_command(client, args):
+    """
+    Get the alert profiles.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-alert-profiles command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    project = args.get("project")
+    response = client.get_alert_profiles_request(project)
+    policies = []
+    for res in response:
+        policies.append(res.get("policy"))
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.AlertProfiles',
+        outputs_key_field='_Id',
+        outputs=format_context(response),
+        readable_output=tableToMarkdown("Alert Profiles", policies),
+        raw_response=response
+    )
+
+
+def get_settings_defender_command(client, args):
+    """
+    Get the defender settings.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-settings-defender command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    hostname = args.get("hostname", None)
+    response = client.get_settings_defender_request(hostname)
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.DefenderSettings',
+        outputs=format_context(response),
+        raw_response=response
+    )
+
+def get_logs_defender_command(client, args):
+    """
+    Get the defender logs.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-logs-defender command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    hostname = args.get('hostname', '')
+    lines = args.get('lines')
+
+    response = client.get_logs_defender_request(hostname, lines) or []
+    entry = {
+        "Hostname": hostname,
+        "Logs": response
+    }
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.Defenders',
+        outputs=format_context(entry),
+        outputs_key_field='Hostname',
+        raw_response=response,
+        readable_output=tableToMarkdown("Logs", entry.get("Logs"))
+    )
+
+
+def get_backups_command(client, args):
+    """
+    Get the defender backups.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-backups command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    project = args.get("project")
+    response = client.get_backups_request(project) or []
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.Backups',
+        outputs_key_field='Id',
+        outputs=format_context(response),
+        raw_response=response
+    )
+
+
+def get_logs_defender_download_command(client, args):
+    """
+    Get the defender logs download bundle.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-logs-defender-download command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    hostname = args.get('hostname')
+    lines = args.get('lines')
+
+    response = client.get_logs_defender_download_request(hostname, lines)
+    return fileResult(f"{hostname}-logs.tar.gz", response, entryTypes["entryInfoFile"])
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1860,6 +2054,16 @@ def main():
             return_results(update_waas_policies(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-get-audit-firewall-container-alerts':
             return_results(results=get_audit_firewall_container_alerts(client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-get-alert-profiles": 
+            return_results(results=get_alert_profiles_command(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-get-settings-defender":
+            return_results(results=get_settings_defender_command(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-logs-defender":
+            return_results(results=get_logs_defender_command(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-get-backups":
+            return_results(results=get_backups_command(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-logs-defender-download":
+            return_results(results=get_logs_defender_download_command(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')
