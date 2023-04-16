@@ -1121,10 +1121,13 @@ class CoreClient(BaseClient):
     def get_endpoints_by_status(self, status, last_seen_gte=None, last_seen_lte=None):
         filters = []
 
+        if not isinstance(status, list):
+            status = [status]
+
         filters.append({
             'field': 'endpoint_status',
             'operator': 'IN',
-            'value': [status]
+            'value': status
         })
 
         if last_seen_gte:
