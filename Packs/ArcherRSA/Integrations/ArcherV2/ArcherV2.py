@@ -480,7 +480,7 @@ class Client(BaseClient):
         This function manages the SOAP API calls by calling the *try_soap_request* function twice:
             - First without the *create_new_token* flag (this will cause *try_soap_request* to try and use exiting
             token if exists).
-            - In case of bad session (40, 5001), another call will be made with the *create_new_token* flag set to true
+            - In case of bad session (500), another call will be made with the *create_new_token* flag set to true
             which performs force update of the token.
 
         Args:
