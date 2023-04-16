@@ -535,18 +535,6 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_statuses(self, issue_id_or_key: str) -> Dict[str, Any]:
-        """This method is in charge of returning the available statuses of a specific issue.
-
-        Args:
-            issue_id_or_key (str): The issue id or key.
-
-        Returns:
-            Dict[str, Any]: The result of the API, which will hold available statuses.
-        """
-        pass
-
-    @abstractmethod
     def create_issue(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
         """This method is in charge of creating a new issue.
 
@@ -622,11 +610,14 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_attachment_content(self, attachment_id: str) -> str:
+    def get_attachment_content(self, attachment_id: str = '', attachment_content_url: str = '') -> str:
         """This method is in charge of returning the content for an attachment.
 
         Args:
-            attachment_id (str): The attachment id.
+            attachment_id (str): The attachment id, this is used to retrieve
+            the content of the attachment on Jira Cloud. Default value is an empty string.
+            attachment_content_url (str): The url of the attachment's content, this is used to retrieve
+            the content of the attachment on Jira OnPrem. Default value is an empty string.
 
         Returns:
             Dict[str, Any]: The results of the API, which will hold the content of the attachment.
@@ -762,7 +753,7 @@ class JiraCloudClient(JiraBaseClient):
     # Query Requests
     def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
         # We supply the renderedFields query parameter to retrieve some content in HTML format, since Jira uses a format
-        # called ADF, and it is easier to parse the content in HTML format, rather than ADF.
+        # called ADF, and it is easier to parse the content in HTML format, using a 3rd party package, rather than ADF.
         # We also supply the fields: *all to return all the fields from an issue (specifically the field that holds
         # data about the attachments in the issue), otherwise, it won't get returned in the query.
         query_params |= {'expand': 'renderedFields,transitions,names', 'fields': ['*all']}
@@ -945,7 +936,7 @@ class JiraCloudClient(JiraBaseClient):
     def transition_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
         return self.http_request_with_access_token(
             method='POST',
-            url_suffix=f'rest/api/latest/issue/{issue_id_or_key}/transitions',
+            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/transitions',
             json_data=json_data,
             resp_type='response',
         )
@@ -953,7 +944,7 @@ class JiraCloudClient(JiraBaseClient):
     def add_link(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
         return self.http_request_with_access_token(
             method='POST',
-            url_suffix=f'rest/api/latest/issue/{issue_id_or_key}/remotelink',
+            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/remotelink',
             json_data=json_data,
         )
 
@@ -1018,12 +1009,6 @@ class JiraCloudClient(JiraBaseClient):
             url_suffix=f'rest/api/3/issue/{issue_id_or_key}/transitions',
         )
 
-    def get_statuses(self, issue_id_or_key: str) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/transitions',
-        )
-
     def add_comment(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
         query_params = {'expand': 'renderedBody'}
         return self.http_request_with_access_token(
@@ -1077,7 +1062,7 @@ class JiraCloudClient(JiraBaseClient):
             method='GET', url_suffix=f'rest/api/3/attachment/{attachment_id}'
         )
 
-    def get_attachment_content(self, attachment_id: str) -> str:
+    def get_attachment_content(self, attachment_id: str = '', attachment_content_url: str = '') -> str:
         return self.http_request_with_access_token(
             method='GET',
             url_suffix=f'rest/api/3/attachment/content/{attachment_id}',
@@ -1207,6 +1192,113 @@ class JiraOnPremClient(JiraBaseClient):
     def test_instance_connection(self) -> None:
         self.get_user_info()
 
+    # Query Requests
+    def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
+        # We supply the renderedFields query parameter to retrieve some content in HTML format, since, by default, Jira
+        # returns the content in a complex way, which would then require further parsing. Retrieving them in HTML format
+        # makes it easier to extract the important information needed using a 3rd-party package.
+        # We also supply the fields: *all to return all the fields from an issue (specifically the field that holds
+        # data about the attachments in the issue), otherwise, it won't get returned in the query.
+        query_params |= {'expand': 'renderedFields,transitions,names', 'fields': ['*all']}
+        return self.http_request_with_access_token(
+            method='GET', url_suffix='rest/api/2/search', params=query_params
+        )
+
+    #  Issue Requests
+    def get_comments(self, issue_id_or_key: str, max_results: int = 50) -> Dict[str, Any]:
+        query_params = {'expand': 'renderedBody', 'maxResults': max_results}
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/comment',
+            params=query_params,
+        )
+
+    def get_issue(self, issue_id_or_key: str = '', full_issue_url: str = '') -> Dict[str, Any]:
+        query_params = {'expand': 'renderedFields,transitions,names'}
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/api/2/issue/{issue_id_or_key}',
+            params=query_params,
+            full_url=full_issue_url,
+        )
+
+    def edit_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
+        return self.http_request_with_access_token(
+            method='PUT',
+            url_suffix=f'rest/api/2/issue/{issue_id_or_key}',
+            json_data=json_data,
+            resp_type='response',
+        )
+
+    def delete_issue(self, issue_id_or_key: str) -> requests.Response:
+        query_params = {'deleteSubtasks': 'true'}
+        return self.http_request_with_access_token(
+            method='DELETE',
+            url_suffix=f'rest/api/2/issue/{issue_id_or_key}',
+            params=query_params,
+            resp_type='response',
+        )
+
+    def create_issue(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
+        return self.http_request_with_access_token(
+            method='POST', url_suffix='rest/api/2/issue', json_data=json_data
+        )
+
+    def get_transitions(self, issue_id_or_key: str) -> Dict[str, Any]:
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/transitions',
+        )
+
+    def transition_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/transitions',
+            json_data=json_data,
+            resp_type='response',
+        )
+
+    def add_comment(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+        query_params = {'expand': 'renderedBody'}
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/comment',
+            json_data=json_data,
+            params=query_params,
+        )
+
+    def add_link(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/remotelink',
+            json_data=json_data,
+        )
+
+    # Attachments Requests
+    def upload_attachment(self, issue_id_or_key: str, files: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
+        headers = {
+            'X-Atlassian-Token': 'no-check',
+        }
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/attachments',
+            files=files,
+            headers=headers,
+        )
+
+    def get_attachment_metadata(self, attachment_id: str) -> Dict[str, Any]:
+        return self.http_request_with_access_token(
+            method='GET', url_suffix=f'rest/api/2/attachment/{attachment_id}'
+        )
+
+    def get_attachment_content(self, attachment_id: str = '', attachment_content_url: str = '') -> str:
+        return self.http_request_with_access_token(
+            method='GET',
+            full_url=attachment_content_url,
+            # url_suffix=f'jira/attachments/{attachment_id}',
+            resp_type='content',
+        )
+
     # User Requests
     def get_id_by_attribute(self, attribute: str, max_results: int = 50) -> List[Dict[str, Any]]:
         query = {'username': attribute, 'maxResults': max_results}
@@ -1221,7 +1313,15 @@ class JiraOnPremClient(JiraBaseClient):
         )
 
     def get_all_projects(self) -> List[Dict[str, Any]]:
-        ...
+        """Returns all projects which are found in the Jira instance
+
+        Returns:
+            List[Dict[str, Any]]: A list of all the projects found in the Jira instance.
+        """
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix='rest/api/2/project'
+        )
 
 
 class JiraIssueFieldsParser():
@@ -1380,7 +1480,8 @@ class JiraIssueFieldsParser():
         'description': get_description_context,
         'creator': get_creator_context,
         'reporter': get_reporter_context,
-        'assignee': get_assignee_context
+        'assignee': get_assignee_context,
+        'components': get_components_context,
     }
 
     @classmethod
@@ -1536,7 +1637,9 @@ def create_file_info_from_attachment(client: JiraBaseClient, attachment_id: str,
     if not attachment_file_name:
         res_attachment_metadata = client.get_attachment_metadata(attachment_id=attachment_id)
         attachment_file_name = res_attachment_metadata.get('filename', '')
-    res_attachment_content = client.get_attachment_content(attachment_id=attachment_id)
+    res_attachment_content = client.get_attachment_content(
+        attachment_id=attachment_id if isinstance(client, JiraCloudClient) else '',
+        attachment_content_url=res_attachment_metadata.get('content', '') if isinstance(client, JiraOnPremClient) else '')
     return fileResult(filename=attachment_file_name, data=res_attachment_content, file_type=EntryType.ENTRY_INFO_FILE)
 
 
@@ -1569,10 +1672,13 @@ def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_s
     return nested_dict
 
 
-def create_issue_fields(issue_args: Dict[str, str], issue_fields_mapper: Dict[str, str]) -> Dict[str, Any]:
+def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
+                        issue_fields_mapper: Dict[str, str]) -> Dict[str, Any]:
     """This will create the issue fields object that will be sent to the API in order to create a new Jira issue.
 
     Args:
+        client (JiraBaseClient): The Jira client, which is necessary since constructing the data that will be sent to
+        the API endpoint can vary, according to the Jira instance.
         issue_args (Dict[str, str]): The issue arguments supplied by the user
         issue_fields_mapper (Dict[str, str]): A mapper that will map between the issue fields arguments that is supplied by
         the user, and the path of them in the issue fields object when creating a new issue, in dotted string format,
@@ -1600,7 +1706,7 @@ def create_issue_fields(issue_args: Dict[str, str], issue_fields_mapper: Dict[st
         elif issue_arg == 'components':
             parsed_value = [{"name": component} for component in argToList(value)]
         elif issue_arg in ['description', 'environment']:
-            parsed_value = text_to_adf(value)
+            parsed_value = text_to_adf(value) if isinstance(client, JiraCloudClient) else value
         dotted_string = issue_fields_mapper.get(issue_arg, '')
         if not dotted_string and issue_arg.startswith('customfield'):  # TODO Check where we need this during mirroring
             dotted_string = f'fields.{issue_arg}'
@@ -1677,8 +1783,8 @@ def create_issue_fields_for_update(issue_args: Dict[str, str], issue_update_mapp
             issue_fields=issue_fields, dotted_string=dotted_string, value=parsed_value or value)
     if not issue_fields:
         raise DemistoException(('Please check that you gave the correct arguments with their correct action,'
-                                ' the arguments: summary, description, priority, due_date, assignee, assignee_id,'
-                                ' environment, and security do not support the action append.'))
+                                ' the arguments components, and labels, are the only arguments that support the,'
+                                ' action append.'))
     return issue_fields
 
 
@@ -1700,7 +1806,8 @@ def extract_issue_id_from_comment_url(comment_url: str) -> str:
 
 def text_to_adf(text: str) -> Dict[str, Any]:
     """This function receives a text and converts the text to Atlassian Document Format (ADF),
-    which is used in order to send data to the API (such as, summary, content, when creating an issue for instance.)
+    which is used in order to send data to the API (such as, summary, content, when creating an issue for instance).
+    This format is only currently used for Jira Cloud.
 
     Args:
         text (str): A text to convert to ADF.
@@ -1804,7 +1911,8 @@ def create_issue_md_and_outputs_dict(issue_data: Dict[str, Any],
                                                issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping)
     # The `*` is used to unpack the content of a list into another list.
     context_outputs = JiraIssueFieldsParser.get_issue_fields_context_from_id(
-        issue_data=issue_data, issue_fields_ids=['lastViewed', 'updated', 'attachment', *md_and_outputs_shared_issue_keys,
+        issue_data=issue_data, issue_fields_ids=['lastViewed', 'updated', 'attachment', 'components',
+                                                 *md_and_outputs_shared_issue_keys,
                                                  *issue_fields_ids],
         issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping)
     markdown_dict = JiraIssueFieldsParser.get_issue_fields_context_from_id(
@@ -2057,14 +2165,11 @@ def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any],
             client.get_issue(full_issue_url=sub_task.get('self', ''))
             for sub_task in issue.get('fields', {}).get('subtasks', [])
         )
-        responses.extend(
-            client.get_issue(
-                full_issue_url=link_issue.get('inwardIssue', {}).get(
-                    'self', ''
-                )
-            )
-            for link_issue in issue.get('fields', {}).get('issuelinks', [])
-        )
+        for linked_issues in issue.get('fields', {}).get('issuelinks', []):
+            if inward_issue := linked_issues.get('inwardIssue'):
+                responses.append(client.get_issue(full_issue_url=inward_issue.get('self', '')))
+            elif outward_issue := linked_issues.get('outwardIssue'):
+                responses.append(client.get_issue(full_issue_url=outward_issue.get('self', '')))
     return responses
 
 
@@ -2080,7 +2185,9 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     """
     if 'project_name' in args:
         args['project_id'] = get_project_id_from_name(client=client, project_name=args['project_name'])
-    issue_fields = create_issue_fields(issue_args=args, issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
+    issue_fields = create_issue_fields(client=client, issue_args=args,
+                                       issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
+    demisto.log(f'{issue_fields}')
     res = client.create_issue(json_data=issue_fields)
     outputs = {'Id': res.get('id', ''), 'Key': res.get('key', '')}
     markdown_dict = outputs | {'Ticket Link': res.get('self', ''),
@@ -2124,7 +2231,8 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     action = args.get('action', 'rewrite')
     issue_fields = {}
     if action == 'rewrite':
-        issue_fields = create_issue_fields(issue_args=args, issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
+        issue_fields = create_issue_fields(client=client, issue_args=args,
+                                           issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
     else:
         # That means the action was `append`
         issue_fields = create_issue_fields_for_update(
@@ -2326,7 +2434,7 @@ def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
     comment = args.get('comment', '')
     visibility = args.get('visibility', )
     payload = {
-        'body': text_to_adf(text=comment)
+        'body': text_to_adf(text=comment) if isinstance(client, JiraCloudClient) else comment
     }
     if(visibility):
         payload['visibility'] = {
@@ -3864,6 +3972,7 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], c
             delta = {k: remote_args.data.get(k) for k in delta.keys()}
             demisto.debug(f'Sending the following data to edit the issue with: {delta}')
             if issue_fields := create_issue_fields(
+                client=client,
                 issue_args=delta,
                 issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER,
             ):

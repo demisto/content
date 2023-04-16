@@ -346,8 +346,8 @@ script:
     name: jira-issue-add-link
   - arguments:
     - default: false
-      description: The user attribute value. For Jira Cloud, this value can be the display name or email address,
-        and for Jira OnPrem, it's as Jira Cloud with the addition of the username.
+      description: The user attribute value. For Jira Cloud, this value can be the display name, or email address,
+        and for Jira OnPrem, this value can be the display name, email address, or username.
       isArray: false
       name: attribute
       required: true
@@ -450,10 +450,13 @@ script:
       description: The ticket summary.
       type: String
     - contextPath: Ticket.Description
-      description: The ticket's project description.
+      description: The ticket's description.
       type: String
     - contextPath: Ticket.Labels
-      description: The ticket's project labels.
+      description: The ticket's labels.
+      type: Array
+    - contextPath: Ticket.Components
+      description: The ticket's components.
       type: Array
     - contextPath: Ticket.Status
       description: The ticket status.
@@ -613,13 +616,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The parent issue key (if you're editing a sub-task).
+      description: The parent issue key (if you're editing a sub-task). This argument is only relevant for Jira Cloud.
       isArray: false
       name: parent_issue_key
       required: false
       secret: false
     - default: false
-      description: The parent issue ID (if you're editing a sub-task).
+      description: The parent issue ID (if you're editing a sub-task). This argument is only relevant for Jira Cloud.
       isArray: false
       name: parent_issue_id
       required: false
@@ -745,8 +748,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of components. For example components="component1,component2". The entered components must be
-        already exist if the action is append.
+      description: A CSV list of components. For example components="component1,component2". When using a Jira OnPrem
+        instance, or using the action append, the entered components must already exist.
       isArray: true
       name: components
       required: false
@@ -890,7 +893,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The due date for the issue (in the format: 2018-03-11).'
+      description: The due date for the issue (in the format yyyy-mm-dd).
       isArray: false
       name: due_date
       required: false
@@ -968,7 +971,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The component names of the issue. For example components="component1,component2".
+      description: The component names of the issue. For example components="component1,component2". When using a Jira OnPrem
+        instance, then the entered components must already exist.
       isArray: true
       name: components
       required: false
@@ -1089,6 +1093,12 @@ script:
     - contextPath: InfoFile.Name
       description: The file name.
       type: String
+    - contextPath: Ticket.Labels
+      description: The ticket's labels.
+      type: Array
+    - contextPath: Ticket.Components
+      description: The ticket's components.
+      type: Array
     - contextPath: InfoFile.EntryID
       description: The ID for locating the file in the War Room.
       type: String
