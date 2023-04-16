@@ -154,17 +154,6 @@ def main() -> None:
 
             if command == 'fetch-events':
                 should_push_events = True
-                current_last_run = {
-                    'next_page_token': next_page_token
-                }
-                if next_page_token:
-                    current_last_run['lastRun'] = last_fetch
-                else:
-                    last_updated = arg_to_datetime(arg=alerts[-1].get('state', {}).get('created_at')) if alerts else None
-                    current_last_run['lastRun'] = last_updated.strftime(DATE_FORMAT) if last_updated else last_fetch
-
-                demisto.setLastRun(current_last_run)
-                demisto.debug(f'{current_last_run=}')
 
             else:  # command == 'orca-security-get-events'
                 should_push_events = argToBoolean(demisto.args().get('should_push_events', False))
@@ -180,6 +169,18 @@ def main() -> None:
                 demisto.debug(f'before send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}')
                 send_events_to_xsiam(alerts, VENDOR, PRODUCT)
                 demisto.debug(f'after send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}')
+
+            current_last_run = {
+                'next_page_token': next_page_token
+            }
+            if next_page_token:
+                current_last_run['lastRun'] = last_fetch
+            else:
+                last_updated = arg_to_datetime(arg=alerts[-1].get('state', {}).get('created_at')) if alerts else None
+                current_last_run['lastRun'] = last_updated.strftime(DATE_FORMAT) if last_updated else last_fetch
+
+            demisto.setLastRun(current_last_run)
+            demisto.debug(f'{current_last_run=}')
 
         else:
             raise NotImplementedError('This command is not implemented yet.')
