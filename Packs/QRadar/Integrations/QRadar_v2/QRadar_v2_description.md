@@ -12,7 +12,7 @@ To start fetching incidents, enable the parameter `Long running instance` - this
 Depending on the system load, **the initial fetch might take a long time**.
 
 #### Query to fetch offenses
-You can apply additional (optional) filters for the fetch-incident query using the `Query to fetch offenses` integration parameter. For more information on how to use the filter syntax, see the [QRadar filter documentation](https://www.ibm.com/docs/en/qradar-common?topic=versions-filter-syntax) and [QRadar offense documentation](https://www.ibm.com/docs/en/qradar-common?topic=card-offenses).
+You can apply additional (optional) filters for the fetch-incident query using the `Query to fetch offenses` integration parameter. For more information on how to use the filter syntax, see the [QRadar filter documentation](https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.3/com.ibm.qradar.doc/c_rest_api_filtering.html) and [QRadar offense documentation](https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.2/com.ibm.qradar.doc/11.0--siem-offenses-GET.html).
 * Incident IP Enrichment - When enabled, fetched incidents IP values (local source addresses and local destination addresses) will be fetched from QRadar instead of their ID values.
 * Incident Asset Enrichment - When enabled, fetched offenses will also contain correlated assets.
 
