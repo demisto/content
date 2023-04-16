@@ -1111,7 +1111,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk"
 reference = "fix_ut_astroid"
-resolved_reference = "64219124429d3c125c36e02918246a3e0523be71"
+resolved_reference = "27cbeaa1e0fd7a6fddc6efc5f8720b7b1f412f17"
 
 [[package]]
 name = "deprecated"
