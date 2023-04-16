@@ -20,8 +20,6 @@ MAX_RECORDS_PER_PAGE = 300
 INVALID_CREDENTIALS = 'Invalid credentials. Please verify that your credentials are valid.'
 INVALID_API_SECRET = 'Invalid API Secret. Please verify that your API Secret is valid.'
 INVALID_ID_OR_SECRET = 'Invalid Client ID or Client Secret. Please verify that your ID and Secret is valid.'
-EXTRA_PARAMS = """Too many fields were filled. You should fill the Account ID, Client ID, and Client Secret fields (
-OAuth)"""
 
 '''CLIENT CLASS'''
 
@@ -144,11 +142,3 @@ def get_jwt_token(apiKey: str, apiSecret: str) -> str:
     }
     encoded = jwt.encode(payload, apiSecret, algorithm='HS256')
     return encoded
-
-
-def check_authentication_type_parameters(api_key: str, api_secret: str,
-                                         # checking if the user entered extra parameters
-                                         # at the configuration level
-                                         account_id: str, client_id: str, client_secret: str):
-    if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
-        raise DemistoException(EXTRA_PARAMS)
