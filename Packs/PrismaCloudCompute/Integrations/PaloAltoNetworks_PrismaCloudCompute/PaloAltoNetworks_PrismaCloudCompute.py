@@ -390,7 +390,6 @@ class PrismaCloudComputeClient(BaseClient):
 
         return self._http_request('get', 'logs/defender', params=params, headers=headers)
 
-
     def get_backups_request(self, project):
         """
         Get the defender backups.
@@ -405,7 +404,6 @@ class PrismaCloudComputeClient(BaseClient):
         headers = self._headers
 
         return self._http_request('get', 'backups', headers=headers, params=params)
-
 
     def get_logs_defender_download_request(self, hostname, lines):
         """
@@ -433,6 +431,7 @@ def format_context(context):
     elif context and isinstance(context, list):
         context = [format_context(item) for item in context]
     return context
+
 
 def str_to_bool(s):
     """
@@ -1884,6 +1883,7 @@ def get_settings_defender_command(client, args):
         raw_response=response
     )
 
+
 def get_logs_defender_command(client, args):
     """
     Get the defender logs.
@@ -2054,7 +2054,7 @@ def main():
             return_results(update_waas_policies(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-get-audit-firewall-container-alerts':
             return_results(results=get_audit_firewall_container_alerts(client, args=demisto.args()))
-        elif requested_command == "prisma-cloud-compute-get-alert-profiles": 
+        elif requested_command == "prisma-cloud-compute-get-alert-profiles":
             return_results(results=get_alert_profiles_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-get-settings-defender":
             return_results(results=get_settings_defender_command(client=client, args=demisto.args()))

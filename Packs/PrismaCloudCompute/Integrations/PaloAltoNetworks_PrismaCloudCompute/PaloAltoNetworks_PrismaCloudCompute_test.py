@@ -1486,7 +1486,7 @@ def test_get_logs_defender_download_command(mocker):
         -  Ensure a File is returned named 'logs.tar.gz'
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_logs_defender_download_command, PrismaCloudComputeClient
-       
+
     with open("test_data/defender_logs.json") as f:
         d = json.load(f)
 
@@ -1497,5 +1497,5 @@ def test_get_logs_defender_download_command(mocker):
         "hostname": "test.internal",
         "lines": 2
     }
-    r = get_logs_defender_download_command(client, args) 
+    r = get_logs_defender_download_command(client, args)
     assert r["File"] == f"{args.get('hostname')}-logs.tar.gz"
