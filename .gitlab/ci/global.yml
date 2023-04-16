@@ -267,7 +267,7 @@
         if [[ -n $BUCKET_UPLOAD ]]; then
           demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
         else
-          if [[ "$CI_COMMIT_BRANCH" =! "master" ]]
+          if [[ "$CI_COMMIT_BRANCH" != "master" ]]
             # skip running `lint -g` on master
             demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
           fi
