@@ -32,17 +32,17 @@ AWS - Security Group Remediation playbook replaces current security groups assoc
 #### AWS - Security Group Remediation v2
 The AWS - Security Group Remediation v2 playbook more selectively determines which security groups are over-permissive, copies them and removes only the over-permissive portions.
 
-![AWS - Security Group Remediation v2](https://raw.githubusercontent.com/demisto/content/575733d345d562597711727c4f8f4b603ef49096/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Security_Group_Remediation_v2.png)
+![AWS - Security Group Remediation v2](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Security_Group_Remediation_v2.png)
 
 #### AWS - Unclaimed S3 Bucket Validation
 AWS - Unclaimed S3 Bucket Validation playbook validates the unclaimed S3 bucket details.
 
-![AWS - Unclaimed S3 Bucket Validation](https://raw.githubusercontent.com/demisto/content/f0d7512f35321b195b59e8e677fbe7b2e1319c74/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Unclaimed_S3_Bucket_Validation.png)
+![AWS - Unclaimed S3 Bucket Validation](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Unclaimed_S3_Bucket_Validation.png)
 
 #### AWS - Unclaimed S3 Bucket Remediation
 AWS - Unclaimed S3 Bucket Remediation playbook creates the unclaimed S3 bucket so other vectors can't claim the bucket.
 
-![AWS - Unclaimed S3 Bucket Remediation](https://raw.githubusercontent.com/demisto/content/7f3e223a86964eda5689a9c3e1f22511021c5f40/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Unclaimed_S3_Bucket_Remediation.png)
+![AWS - Unclaimed S3 Bucket Remediation](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Unclaimed_S3_Bucket_Remediation.png)
 
 ### Automation Scripts
 
