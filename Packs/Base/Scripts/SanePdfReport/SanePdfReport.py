@@ -114,6 +114,7 @@ def startServer():
     SERVER_OBJECT.serve_forever()
 
 
+
 def main():
     try:
         sane_json_b64 = demisto.args().get('sane_pdf_report_base64', '').encode(
