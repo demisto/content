@@ -155,9 +155,7 @@ def build_one_reputation_result(report: Dict[str, Any]):
     return results
 
 
-def build_serach_query_result(
-    query_str: str, analyses: List[Dict]
-) -> List[CommandResults]:
+def build_serach_query_result(analyses: List[Dict]) -> CommandResults:
     def build_analysis_hr(analysis: Dict[str, Any]) -> Dict[str, Any]:
         file_result = analysis.get("file", {})
         hr_analysis = {
@@ -323,17 +321,17 @@ def scan_command(client: Client, args: Dict[str, Any]):
 def search_query_command(client: Client, args: Dict[str, Any]):
     def validate_args():
         if page_size and (not page_size.isdigit() or int(page_size) not in [5, 10, 20]):
-            raise DemistoException(f"\nPage size value must be 5, 10 or 20")
+            raise DemistoException("Page size value must be 5, 10 or 20")
         if page and (not page.isdigit() or int(page) <= 0):
-            raise DemistoException(f"\nPage must be an integer and grater than 0")
+            raise DemistoException("Page must be an integer and grater than 0")
         if limit and (not limit.isdigit() or int(limit) <= 0 or int(limit) > 50):
-            raise DemistoException(f"\Limit must be an integer and between 1 and 50")
+            raise DemistoException("Limit must be an integer and between 1 and 50")
 
     items = []
     query_string = args.get("query", "")
     page_size = args.get("page_size")
     page = args.get("page")
-    limit = args.get("limit")
+    limit = args.get("limit", 10)
 
     validate_args()
 
@@ -343,8 +341,6 @@ def search_query_command(client: Client, args: Dict[str, Any]):
     elif not page_size and page:
         page_size = 10
         page = int(page)
-    elif not limit:
-        limit = 10
 
     if page_size and page:
         items = client.get_search_query(query_string, page, page_size).get("items", [])
