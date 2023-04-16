@@ -14,7 +14,7 @@ By automating password resets, organizations can also ensure that password polic
 2. Seeks approval for password resets from the relevant stakeholder.
 3. Verifies the user using 2-factor authentication.
 4. Creates a new password for the user, meeting the password complexity criteria of the organization.
-5. Sets the new password for the user, requiring the user will to change their password on next login.
+5. Sets the new password for the user, requiring the user to change their password on next login.
 6. Sends the new password to the user in a protected ZIP file, by email.
 7. Sends the password to the ZIP file, containing the user's new password, to the user through Slack or Teams.
 
