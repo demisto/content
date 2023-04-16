@@ -1,8 +1,7 @@
 id: Launch And Fetch Scheduled Report - Qualys
 version: -1
 name: Launch And Fetch Scheduled Report - Qualys
-description: Launches a scheduled report and fetches the report when it's
-  ready.
+description: Launches a scheduled report and fetches the report when it's ready.
 starttaskid: "0"
 tasks:
   "0":
@@ -201,7 +200,11 @@ inputs:
   required: true
   description: Scheduled report ID. Can be found by running the command qualys-scheduled-report-list.
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: Qualys.Report.VM.Launched.KEY
+  description: Key name of launched VM scan, either ID or a REFERENCE.
+- contextPath: Qualys.Report.VM.Launched.VALUE
+  description: Value of the key.
 tests:
 - QualysVulnerabilityManagement-Test
 fromversion: 5.5.0
