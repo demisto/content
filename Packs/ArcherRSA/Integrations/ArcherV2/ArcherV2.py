@@ -423,7 +423,7 @@ class Client(BaseClient):
 
     def update_body_with_token(self, request_body_builder_function, create_new_token: bool = False, **kwargs):
         """
-        This function returns the updated body dict which also contains api token. In case the token exists in
+        This function returns the updated body dict which also contains api token. In case the token doesn't exist in
         context or the create_new_token flag is given, the token will be re-generated using generate_token().
         In order to support some level of concurrency when running tasks simultaneously, the function has a small
         sleeping mechanism to allow tasks to first try and use existing session before moving forward to create a new
