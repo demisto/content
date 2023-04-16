@@ -1,5 +1,5 @@
 Freshservice is a service management solution that allows customers to manage service requests, incidents, change requests tasks, and problem investigation. 
-This integration was integrated and tested with version xx of FreshworksFreshservice
+This integration was integrated and tested with version 2 of FreshworksFreshservice
 
 ## Configure Freshworks Freshservice on Cortex XSOAR
 
@@ -17,7 +17,7 @@ This integration was integrated and tested with version xx of FreshworksFreshser
     | First fetch timestamp | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
     | Maximum incidents per fetch | Maximum number of incidents per fetch. Default is 50. The maximum is 100. | False |
     | Ticket type to fetch as incidents.  |  | False |
-    | None | Incident priorities to fetch. The default is All. You can choose multiple. | False |
+    | None | Incident priorities to fetch. The default is All. You can choose multiple priorities. | False |
     | Ticket Impact | Incident impacts to fetch. The default is All. You can choose multiple. | False |
     | Ticket Status | The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type\(s\). | False |
     | Ticket Risk | The risk of the tickets to fetch. Available only for the 'Change Request' ticket type. | False |

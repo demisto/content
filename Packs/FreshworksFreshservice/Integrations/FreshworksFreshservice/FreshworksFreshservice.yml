@@ -38,7 +38,7 @@ configuration:
   - Release Request
   required: false
   type: 16
-- additionalinfo: Incident priorities to fetch. The default is All. You can choose multiple.
+- additionalinfo: Incident priorities to fetch. The default is All. You can choose multiple priorities.
   defaultvalue: All
   name: ticket_priority
   options:
