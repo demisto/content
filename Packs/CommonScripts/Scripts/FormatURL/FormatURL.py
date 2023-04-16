@@ -1,4 +1,5 @@
 import ipaddress
+import tldextract
 import urllib.parse
 from CommonServerPython import *
 from typing import Match
@@ -503,6 +504,8 @@ class URLCheck(object):
             URLError if the domain is invalid
         """
 
+        no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=())
+
         if host.endswith("."):
             host = host.rstrip(".")
 
@@ -510,6 +513,9 @@ class URLCheck(object):
             raise URLError(f"Invalid domain {host}")
 
         elif len(host.split(".")[-1]) < 2:
+            raise URLError(f"Invalid tld for {host}")
+
+        elif not no_fetch_extract(host).suffix:
             raise URLError(f"Invalid tld for {host}")
 
         else:
