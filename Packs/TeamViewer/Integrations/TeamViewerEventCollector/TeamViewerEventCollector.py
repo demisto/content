@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
+from datetime import datetime
 import urllib3
 from typing import Any, Dict, Tuple, List, Optional
 
@@ -41,7 +41,8 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def search_events(client: Client, limit: int, body: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+def search_events(client: Client, limit: int, body: Optional[Dict[str, Any]] = None
+                  ) -> Tuple[List[Dict[str, Any]], CommandResults]:
     """
     Searches for T alerts.
     Args:
@@ -64,7 +65,9 @@ def search_events(client: Client, limit: int, body: Optional[Dict[str, Any]] = N
             params['ContinuationToken'] = token_next_page
         else:
             next_page = False
-    return results[:limit]
+    events: List[Dict[str, Any]] = results[:limit]
+    hr = tableToMarkdown(name='Events', t=events) if events else 'No events found.'
+    return events, CommandResults(readable_output=hr)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -98,28 +101,9 @@ def test_module(client: Client) -> str:
     return message
 
 
-def get_events_command(
-    client: Client, limit: int
-) -> Tuple[List[Dict[str, Any]], CommandResults]:
-    """
-    Gets all the events from the teamviewer API for each log type.
-    Args:
-        client (Client): teamviewer client to use.
-        limit: int, the limit of the results to return per log_type.
-    Returns:
-        list: A list containing the events
-        CommandResults: A CommandResults object that contains the events in a table format.
-    """
-    events: List[Dict] = []
-    hr = ""
-    events = search_events(client=client, limit=limit)
-    hr = tableToMarkdown(name='Events', t=events) if events else 'No events found.'
-    return events, CommandResults(readable_output=hr)
-
-
 def fetch_events_command(
-    client: Client, max_fetch: int, last_run: Dict[str, int], first_fetch_time: str
-) -> Tuple[Dict[str, int], List[Dict[str, Any]]]:
+    client: Client, max_fetch: int, last_run: Dict[str, Any], first_fetch_time: datetime
+) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     """
     Args:
         client (Client): TeamViewer client to use.
@@ -132,16 +116,13 @@ def fetch_events_command(
     """
     # In the first fetch, get the ids for the first fetch time
     last_fetch = last_run.get('last_fetch')
-    last_fetch = first_fetch_time if last_fetch is None else int(last_fetch)
-    # latest_created_time = cast(int, last_fetch)
-    import datetime
-    formatted_time = datetime.datetime.utcnow().strftime(DATE_FORMAT)
+    last_fetch = first_fetch_time if last_fetch is None else datetime.strptime(last_fetch, DATE_FORMAT)
     body = {
-        "StartDate": first_fetch_time,
-        "EndDate": formatted_time
+        "StartDate": (last_fetch + timedelta(milliseconds=1)).strftime(DATE_FORMAT),
+        "EndDate": datetime.utcnow().strftime(DATE_FORMAT)
     }
-    next_run = last_run.copy()
-    events = search_events(client=client, limit=max_fetch, body=body)
+    events, _ = search_events(client=client, limit=max_fetch, body=body)
+    next_run = {'last_fetch': max(events, key=lambda x: x['Timestamp'])['Timestamp']}
     return next_run, events
 
 
@@ -180,9 +161,6 @@ def main() -> None:
         arg_name="First fetch time",
         required=True,
     )  # type: ignore   # datetime.datetime(2022, 1, 1, 00, 00, 00, 0)
-    first_fetch_time_strftime = first_fetch_time.strftime(
-        DATE_FORMAT
-    )  # 2022-01-01T00:00:00Z
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -190,7 +168,6 @@ def main() -> None:
         client = Client(
             base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
         )
-
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
@@ -199,28 +176,26 @@ def main() -> None:
         elif command in ("teamviewer-get-events", "fetch-events"):
             if command == "teamviewer-get-events":
                 should_push_events = argToBoolean(args.get("should_push_events"))
-                events, results = get_events_command(
+                events, results = search_events(
                     client, limit=arg_to_number(args.get("limit", DEFAULT_LIMIT))  # type: ignore
                 )
                 return_results(results)
 
             else:  # command == 'fetch-events':
                 should_push_events = True
-                demisto.debug('before last run')
                 last_run = demisto.getLastRun()
                 next_run, events = fetch_events_command(
                     client=client,
                     max_fetch=arg_to_number(params.get("max_fetch", DEFAULT_LIMIT)),  # type: ignore
                     last_run=last_run,
-                    first_fetch_time=first_fetch_time_strftime,
+                    first_fetch_time=first_fetch_time,
                 )
                 # saves next_run for the time fetch-events is invoked
-                demisto.debug('after fetch events command')
-                demisto.setLastRun(next_run)
 
             if should_push_events:
                 events = add_time_key_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:
