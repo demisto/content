@@ -57,12 +57,12 @@ def create_search_alerts_filters(args, is_fetch=False):
     if filter_query:
         filters.append("{}".format(filter_query))
     if page_size:
-        if PAGE_SIZE_LIMIT_DICT.get(API_VER) < page_size:
+        if PAGE_SIZE_LIMIT_DICT.get(API_VER, 1000) < page_size:
             raise DemistoException(f"Please note that the page size limit for {API_VER} is {PAGE_SIZE_LIMIT_DICT.get(API_VER)}")
-        params['$top'] = page_size
-    if page:
+        params['$top'] = str(page_size)
+    if page and page_size:
         page = int(page)
-        page = page * page_size if page_size else 0
+        page = page * page_size
         if API_VER == 'API V1' and API_V1_PAGE_LIMIT < page:
             raise DemistoException(f"Please note that the maximum amount of alerts you can skip in {API_VER} is"
                                    f" {API_V1_PAGE_LIMIT}")
@@ -86,10 +86,10 @@ def create_data_to_update(args):
         Dict: A dictionary object containing the alert's fields to update.
     """
     status = args.get('status')
-    relevant_data_to_update_per_version_dict = RELEVANT_DATA_TO_UPDATE_PER_VERSION.get(API_VER)
+    relevant_data_to_update_per_version_dict: dict = RELEVANT_DATA_TO_UPDATE_PER_VERSION.get(API_VER, {})
     if all(not args.get(key) for key in list(relevant_data_to_update_per_version_dict.keys())):
-        return_error(f"No data relevant for {API_VER} to update was provided, please provide at least one of the following: "
-                     f"{(', ').join(list(relevant_data_to_update_per_version_dict.keys()))}.")
+        raise DemistoException(f"No data relevant for {API_VER} to update was provided, please provide at least one of the"
+                               f" following: {(', ').join(list(relevant_data_to_update_per_version_dict.keys()))}.")
     data: Dict[str, Any] = {}
     if API_VER == 'API V1':
         vendor_information = args.get('vendor_information')

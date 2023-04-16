@@ -255,7 +255,7 @@ script:
       - resolved
       required: false
       secret: false
-    - description: Page number to return. The maximum number of alerts that can be skipped for API V1 is 500.
+    - description: Page number to return, zero indexed. The maximum number of alerts that can be skipped for API V1 is 500 (i.e page * page_size must be <= 500).
       isArray: false
       name: page
       required: false

@@ -1,182 +1,44 @@
+from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, search_alerts_command, \
+    get_users_command, fetch_incidents, get_alert_details_command, main, MANAGED_IDENTITIES_TOKEN_URL, \
+    Resources, create_data_to_update
+from CommonServerPython import DemistoException
 import pytest
-from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters
+import json
+import io
+import demistomock as demisto
+import re
 
-# msg-get-user data:
-RAW_USERS_DATA = {'@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#users', 'value': [
-    {'businessPhones': [], 'displayName': 'Graph Test', 'givenName': None, 'jobTitle': 'Test',
-     'mail': "Test@demistodev.onmicrosoft.com", 'mobilePhone': None, 'officeLocation': None, 'preferredLanguage': None,
-     'surname': None, 'userPrincipalName': '0e3f5d4140cc4448a857e565a4d228e1@demistodev.onmicrosoft.com',
-     'id': '5bfe522c-d817-4ea8-b52c-cc959e10e623'},
-    {'businessPhones': ['0525399091'], 'displayName': 'Test Graph 2', 'givenName': 'Test',
-     'jobTitle': 'Staff Software Developer', 'mail': 'test2@demistodev.onmicrosoft.com', 'mobilePhone': '0525399091',
-     'officeLocation': None, 'preferredLanguage': None, 'surname': None,
-     'userPrincipalName': 'test2@demistodev.onmicrosoft.com', 'id': '00df702c-cdae-460d-a442-46db6cecca29'}]}
-EXPECTED_USER_CONTEXT = {'MsGraph.User(val.ID && val.ID === obj.ID)': [
-    {'Name': 'Graph Test', 'Title': 'Test', 'Email': 'Test@demistodev.onmicrosoft.com',
-     'ID': '5bfe522c-d817-4ea8-b52c-cc959e10e623'},
-    {'Name': 'Test Graph 2', 'Title': 'Staff Software Developer', 'Email': 'test2@demistodev.onmicrosoft.com',
-     'ID': '00df702c-cdae-460d-a442-46db6cecca29'}]}
-EXPECTED_USER_HUMAN_READABLE = \
-    '### Microsoft Graph Users\n|Name|Title|Email|ID|\n|---|---|---|---|\n' \
-    '| Graph Test | Test | Test@demistodev.onmicrosoft.com | 5bfe522c-d817-4ea8-b52c-cc959e10e623 |\n' \
-    '| Test Graph 2 | Staff Software Developer | test2@demistodev.onmicrosoft.com | ' \
-    '00df702c-cdae-460d-a442-46db6cecca29 |\n'
-
-# msg-search-alerts data:
-SEARCH_ALERTS_RAW_RESPONSE_V1 = {'@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#Security/alerts', 'value': [{
-    'id': 'da637229984903196572_-755436942', 'azureTenantId': '<azureTenantId>',
-    'azureSubscriptionId': None, 'riskScore': None, 'tags': [], 'activityGroupName': None,
-    'assignedTo': None,
-    'category': 'None', 'closedDateTime': None, 'comments': [], 'confidence': None,
-    'createdDateTime': '2020-04-20T16:54:50.2722072Z', 'description': 'Created for test',
-    'detectionIds': [],
-    'eventDateTime': '2020-04-20T16:34:28.061101Z', 'feedback': None,
-    'lastModifiedDateTime': '2020-04-20T16:54:51.57Z', 'recommendedActions': [],
-    'severity': 'medium',
-    'sourceMaterials': [
-        'https://securitycenter.microsoft.com/alert/da637229984903196572_-755436942'],
-    'status': 'newAlert', 'title': 'test alert',
-    'vendorInformation': {'provider': 'Microsoft Defender ATP', 'providerVersion': None,
-                          'subProvider': 'MicrosoftDefenderATP', 'vendor': 'Microsoft'},
-    'cloudAppStates': [],
-    'fileStates': [],
-    'hostStates': [
-        {'fqdn': 'desktop-s2455r8', 'isAzureAdJoined': True, 'isAzureAdRegistered': None,
-         'isHybridAzureDomainJoined': None, 'netBiosName': None, 'os': 'Windows10',
-         'privateIpAddress': '127.0.0.1', 'publicIpAddress': '127.0.0.1',
-         'riskScore': 'High'}],
-    'historyStates': [], 'malwareStates': [], 'networkConnections': [], 'processes': [],
-    'registryKeyStates': [],
-    'triggers': [], 'userStates': [], 'vulnerabilityStates': []},
-    {'id': 'da637218501473413212_-1554891308', 'azureTenantId': '<azureTenantId>',
-     'azureSubscriptionId': None, 'riskScore': None, 'tags': [], 'activityGroupName': None,
-     'assignedTo': None,
-     'category': 'None', 'closedDateTime': None, 'comments': [], 'confidence': None,
-     'createdDateTime': '2020-04-07T09:55:47.3413212Z', 'description': 'Created for test',
-     'detectionIds': [],
-     'eventDateTime': '2020-04-07T09:37:43.0372259Z', 'feedback': None,
-     'lastModifiedDateTime': '2020-04-20T13:54:13.7933333Z', 'recommendedActions': [],
-     'severity': 'medium',
-     'sourceMaterials': [
-         'https://securitycenter.microsoft.com/alert/da637218501473413212_-1554891308'],
-     'status': 'newAlert', 'title': 'test alert',
-     'vendorInformation': {'provider': 'Microsoft Defender ATP', 'providerVersion': None,
-                           'subProvider': 'MicrosoftDefenderATP', 'vendor': 'Microsoft'},
-     'cloudAppStates': [],
-     'fileStates': [],
-     'hostStates': [
-         {'fqdn': 'desktop-s2455r8', 'isAzureAdJoined': True, 'isAzureAdRegistered': None,
-          'isHybridAzureDomainJoined': None, 'netBiosName': None, 'os': 'Windows10',
-          'privateIpAddress': '127.0.0.1', 'publicIpAddress': '127.0.0.1',
-          'riskScore': 'High'}], 'historyStates': [], 'malwareStates': [],
-     'networkConnections': [], 'processes': [], 'registryKeyStates': [], 'triggers': [],
-     'userStates': [],
-     'vulnerabilityStates': []},
-    {'id': 'da637226278996299656_1986871053', 'azureTenantId': '<azureTenantId>',
-     'azureSubscriptionId': None, 'riskScore': None, 'tags': [], 'activityGroupName': None,
-     'assignedTo': 'Automation',
-     'category': 'None', 'closedDateTime': '2020-04-19T07:09:16.2118771Z',
-     'comments': ['testing', 'testing'],
-     'confidence': None, 'createdDateTime': '2020-04-16T09:58:19.4253561Z',
-     'description': 'Created for test',
-     'detectionIds': [], 'eventDateTime': '2020-04-15T15:27:53.8499648Z', 'feedback': None,
-     'lastModifiedDateTime': '2020-04-20T12:34:46.29Z', 'recommendedActions': [],
-     'severity': 'medium',
-     'sourceMaterials': [
-         'https://securitycenter.microsoft.com/alert/da637226278996299656_1986871053'],
-     'status': 'resolved', 'title': 'test alert',
-     'vendorInformation': {'provider': 'Microsoft Defender ATP', 'providerVersion': None,
-                           'subProvider': 'MicrosoftDefenderATP', 'vendor': 'Microsoft'},
-     'cloudAppStates': [],
-     'fileStates': [],
-     'hostStates': [
-         {'fqdn': 'desktop-s2455r8', 'isAzureAdJoined': True, 'isAzureAdRegistered': None,
-          'isHybridAzureDomainJoined': None, 'netBiosName': None, 'os': 'Windows10',
-          'privateIpAddress': '127.0.0.1', 'publicIpAddress': '127.0.0.1',
-          'riskScore': 'High'}], 'historyStates': [], 'malwareStates': [],
-     'networkConnections': [], 'processes': [], 'registryKeyStates': [], 'triggers': [],
-     'userStates': [],
-     'vulnerabilityStates': []}]}
-EXPECTED_SEARCH_ALERTS_OUTPUT_V1 = {'MsGraph.Alert(val.ID && val.ID === obj.ID)': [
-    {'ID': 'da637229984903196572_-755436942', 'Title': 'test alert', 'Category': 'None', 'Severity': 'medium',
-     'CreatedDate': '2020-04-20T16:54:50.2722072Z', 'EventDate': '2020-04-20T16:34:28.061101Z', 'Status': 'newAlert',
-     'Vendor': 'Microsoft', 'Provider': 'Microsoft Defender ATP'},
-    {'ID': 'da637218501473413212_-1554891308', 'Title': 'test alert', 'Category': 'None', 'Severity': 'medium',
-     'CreatedDate': '2020-04-07T09:55:47.3413212Z', 'EventDate': '2020-04-07T09:37:43.0372259Z', 'Status': 'newAlert',
-     'Vendor': 'Microsoft', 'Provider': 'Microsoft Defender ATP'},
-    {'ID': 'da637226278996299656_1986871053', 'Title': 'test alert', 'Category': 'None', 'Severity': 'medium',
-     'CreatedDate': '2020-04-16T09:58:19.4253561Z', 'EventDate': '2020-04-15T15:27:53.8499648Z', 'Status': 'resolved',
-     'Vendor': 'Microsoft', 'Provider': 'Microsoft Defender ATP'}]}
-EXPECTED_SEARCH_ALERTS_HR_V1 = '### Microsoft Security Graph Alerts\n|ID|Vendor|Provider|Title|Category|Severity|CreatedDate|' \
-                               'EventDate|Status|\n|---|---|---|---|---|---|---|---|---|\n| da637229984903196572_-755436942 |' \
-                               ' Microsoft | Microsoft Defender ATP | test alert | None | medium | 2020-04-20T16:54:50.2722072Z' \
-                               ' | 2020-04-20T16:34:28.061101Z | newAlert |\n| da637218501473413212_-1554891308 | Microsoft | ' \
-                               'Microsoft Defender ATP | test alert | None | medium | 2020-04-07T09:55:47.3413212Z | ' \
-                               '2020-04-07T09:37:43.0372259Z | newAlert |\n| da637226278996299656_1986871053 | Microsoft | ' \
-                               'Microsoft Defender ATP | test alert | None | medium | 2020-04-16T09:58:19.4253561Z | ' \
-                               '2020-04-15T15:27:53.8499648Z | resolved |\n'
-
-RAW_ALERT_DETAILS_V2: dict = {"@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/alerts_v2/$entity",
-                              "actorDisplayName": None,
-                              "alertWebUrl": "https://security.microsoft.com/alerts/alert_id?tid=tid", "assignedTo": None,
-                              "category": "SuspiciousActivity", "classification": None, "comments": [],
-                              "createdDateTime": "2022-10-16T01:48:05.8655909Z",
-                              "description": "Some description about the alert.", "detectionSource": "automatedInvestigation",
-                              "detectorId": "aaa", "determination": None, "id": "alert_id", "incidentId": "incidentId",
-                              "severity": "informational", "status": "resolved", "serviceSource": "microsoftDefenderForEndpoint",
-                              "title": "Automated", "lastUpdateDateTime": "2022-10-16T02:08:57.1233333Z"
-                              }
-EXPECTED_ALERT_DETAILS_HR_V2 = '## Microsoft Security Graph Alert Details - alert_id\n' \
-                               '|id|incidentId|status|severity|detectionSource|serviceSource|title|category|createdDateTime|' \
-                               'lastUpdateDateTime|\n|---|---|---|---|---|---|---|---|---|---|\n| alert_id | incidentId |' \
-                               ' resolved | informational | automatedInvestigation | microsoftDefenderForEndpoint | Automated ' \
-                               '| SuspiciousActivity | 2022-10-16T01:48:05.8655909Z | 2022-10-16T02:08:57.1233333Z |\n'
-
-
-EXPECTED_ALERT_DETAILS_HR_FILE_STATE = \
-    '## Microsoft Security Graph Alert Details - alert_id\n' \
-    '### Basic Properties\n' \
-    '|AzureTenantID|Category|CreatedDate|Description|EventDate|LastModifiedDate|Severity|Status' \
-    '|Title|\n' \
-    '|---|---|---|---|---|---|---|---|---|\n' \
-    '| <tenant id> | Malware | 2020-04-16T01:24:13.0578348Z | Backdoors are malicious remote ' \
-    'access tools that allow attackers to access and control infected machines. Backdoors can ' \
-    'also be used to exfiltrate data.<br><br>A malware is considered active if it is found ' \
-    'running on the machine or it already has persistence mechanisms in place. Active malware ' \
-    'detections are assigned higher severity ratings.<br><br>Because this malware was active, ' \
-    'take precautionary measures and check for residual signs of infection. | ' \
-    '2020-04-16T01:22:39.3222427Z | 2020-04-16T01:22:39.3222427Z | medium | ' \
-    "newAlert | An active 'Wintapp' backdoor was detected |\n" \
-    "### File Security States for Alert\n" \
-    "|FileHash|Name|Path|\n" \
-    "|---|---|---|\n" \
-    "| f809b926576cab647125a3907ef9265bdb130a0a | <file_name> | <file_path> |\n"
 
 client_mocker = MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
                               base_url='url', verify='use_ssl', proxy='proxy', self_deployed='self_deployed')
 
 
+def load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.load(f)
+
+
 def test_get_users_command(mocker):
-    from MicrosoftGraphSecurity import get_users_command
-    mocker.patch.object(client_mocker, "get_users", return_value=RAW_USERS_DATA)
+    test_data = load_json("./test_data/test_get_users_command.json")
+    mocker.patch.object(client_mocker, "get_users", return_value=test_data.get('raw_user_data'))
     hr, ec, _ = get_users_command(client_mocker, {})
-    assert hr == EXPECTED_USER_HUMAN_READABLE
-    assert ec == EXPECTED_USER_CONTEXT
+    assert hr == test_data.get('expected_hr')
+    assert ec == test_data.get('expected_ec')
+
+
+def mock_request(method, url_suffix, params):
+    return params
 
 
 @pytest.mark.parametrize(
     'test_case', [
-        ("test_case_1"),
-        # (EXPECTED_ALERT_DETAILS_HR_FILE_STATE, 'API V1',
-        #  EXPECTED_ALERT_DETAILS_CONTEXT),
-        # ({"alert_id": 'alert_id', "fields_to_include": "FileStates"}, EXPECTED_ALERT_DETAILS_HR_V2, 'API V2',
-        #  RAW_ALERT_DETAILS_V2, {'MsGraph.Alert(val.id && val.id === obj.id)': RAW_ALERT_DETAILS_V2})
-
+        "test_case_1", "test_case_2", "test_case_3"
     ])
 def test_get_alert_details_command(mocker, test_case):
     """
         Given:
-        - args including alert_id and fields_to_include, response mock, expected hr and ec outputs, and api version.
+        - test case that point to the relevant test case in the json test data which include:
+          args including alert_id and fields_to_include, response mock, expected hr and ec outputs, and api version.
         - Case 1: args with all fields to include in fields_to_include, response of a v1 alert and, api version 1 flag.
         - Case 2: args with only FileStates to include in fields_to_include, response of a v1 alert and, api version 1 flag.
         - Case 3: args with only FileStates to include in fields_to_include, response of a v1 alert and, api version 2 flag.
@@ -193,9 +55,7 @@ def test_get_alert_details_command(mocker, test_case):
         - Case 3: Should ignore the the fields_to_include argument and parse all the response information into the HR,
                   and all fields from the response into the ec.
     """
-    from MicrosoftGraphSecurity import get_alert_details_command
-    from test_data.test_get_alert_details_command import test_get_alert_details_command_mock_data
-    test_data = test_get_alert_details_command_mock_data.get(test_case)
+    test_data = load_json("./test_data/test_get_alert_details_command.json").get(test_case)
     mocker.patch.object(client_mocker, 'get_alert_details', return_value=test_data.get('mock_response'))
     mocker.patch('MicrosoftGraphSecurity.API_VER', test_data.get('api_version'))
     hr, ec, _ = get_alert_details_command(client_mocker, test_data.get('args'))
@@ -204,49 +64,58 @@ def test_get_alert_details_command(mocker, test_case):
 
 
 @pytest.mark.parametrize(
-    'args, api_ver, mock_response, expected_ec, expected_hr', [
-        ({'severity': 'medium', 'limit': '50'}, 'API V1', SEARCH_ALERTS_RAW_RESPONSE_V1, EXPECTED_SEARCH_ALERTS_OUTPUT_V1,
-         EXPECTED_SEARCH_ALERTS_HR_V1),
-
+    'test_case', [
+        "test_case_1", "test_case_2",
     ])
-def test_search_alerts_command(mocker, args, api_ver, mock_response, expected_ec, expected_hr):
+def test_search_alerts_command(mocker, test_case):
     """
         Given:
-        - args, api version, response mock, expected hr and ec outputs.
-        - Case 1: args with medium severity and limit of 50 incidents, response of a v1 search_alert, and a V1 api version flag.
+        - test case that point to the relevant test case in the json test data which include:
+          args, api version, response mock, expected hr and ec outputs.
+        - Case 1: args with medium severity and limit of 50 incidents, response of a v1 search_alert command results,
+                  and a V1 api version flag.
+        - Case 2: args with limit of 1 incident, response of a v1 search_alert command results with 2 alerts,
+                  and a V2 api version flag.
 
         When:
         - Running search_alerts_command.
 
         Then:
         - Ensure that the response was parsed correctly and right HR and EC outputs are returned.
-        - Case 1: Should parse all the response information into the HR and only the relevant fields from the response into the ec.
+        - Case 1: Should parse all the response information into the HR,
+                  and only the relevant fields from the response into the ec.
+        - Case 2: Should concat the second incident from the response,
+                  parse all only the first incident response information into the HR,
+                  and all fields from the first incident response into the ec.
     """
-    from MicrosoftGraphSecurity import search_alerts_command
-    mocker.patch.object(client_mocker, 'search_alerts', return_value=mock_response)
-    mocker.patch('MicrosoftGraphSecurity.API_VER', api_ver)
-    hr, ec, _ = search_alerts_command(client_mocker, args)
-    assert ec == expected_ec
-    assert hr == expected_hr
+    test_data = load_json("./test_data/test_search_alerts_command.json").get(test_case)
+    mocker.patch.object(client_mocker, 'search_alerts', return_value=test_data.get('mock_response'))
+    mocker.patch('MicrosoftGraphSecurity.API_VER', test_data.get('api_version'))
+    hr, ec, _ = search_alerts_command(client_mocker, test_data.get('args'))
+    assert hr == test_data.get('expected_hr')
+    assert ec == test_data.get('expected_ec')
 
 
-def test_fetch_incidents_command(mocker):
+@pytest.mark.parametrize(
+    'test_case', [
+        "test_case_1",
+    ])
+def test_fetch_incidents_command(mocker, test_case):
     """
-    Unit test
-    Given
-    - fetch incidents command
-    - command args
-    - command raw response
-    When
-    - mock the parse_date_range.
-    - mock the Client's search_alerts command.
-    Then
-    - run the fetch incidents command using the Client.
-    Validate the length of the results and the different fields of the fetched incidents.
+        Given:
+        - test case that point to the relevant test case in the json test data which include a response mock.
+        - Case 1: Response of a v1 search_alert command results.
+
+        When:
+        - Running fetch_incidents.
+
+        Then:
+        - Ensure that the length of the results and the different fields of the fetched incidents are returned correctly.
+        - Case 1: Ensure that the len of the incidents returned in the first iteration is 3, then 1 and then 0.
     """
-    from MicrosoftGraphSecurity import fetch_incidents
     mocker.patch('MicrosoftGraphSecurity.parse_date_range', return_value=("2020-04-19 08:14:21", 'never mind'))
-    mocker.patch.object(client_mocker, 'search_alerts', return_value=SEARCH_ALERTS_RAW_RESPONSE_V1)
+    test_data = load_json("./test_data/test_fetch_incidents_command.json").get(test_case)
+    mocker.patch.object(client_mocker, 'search_alerts', return_value=test_data.get('mock_response'))
     incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=10, providers='', filter='', service_sources='')
     assert len(incidents) == 3
     assert incidents[0].get('severity') == 2
@@ -260,24 +129,67 @@ def test_fetch_incidents_command(mocker):
     assert len(incidents) == 0
 
 
-def mock_request(method, url_suffix, params):
-    return params
-
-
-@pytest.mark.parametrize('filter_query, expected_filter_query', [
-    ("Category eq 'Malware' and Severity eq 'High'", "Category eq 'Malware' and Severity eq 'High'"),
-    ("Severity eq 'High'", "Severity eq 'High'"),
-    ("Category eq 'Malware'", "Category eq 'Malware'")
+@pytest.mark.parametrize('args, expected_params, is_fetch, api_version', [
+    ({'filter': "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
+     {'$filter': "Category eq 'Malware' and Severity eq 'High'"}, True, "API V1"),
+    ({'filter': "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
+     {'$filter': "Category eq 'Malware' and Severity eq 'High' and relevant_key eq 'resolved'"}, True, "API V2"),
+    ({'filter': "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
+     {'$top': 50, '$filter': "Category eq 'Malware' and Severity eq 'High'"}, False, "API V1"),
+    ({'page': "2"}, {'$top': 50, '$skip': 100, '$filter': ''}, False, "API V1")
 ])
-def test_filter_query(filter_query, expected_filter_query, mocker):
-    from MicrosoftGraphSecurity import MicrosoftClient
-    mocker.patch.object(MicrosoftClient, 'http_request', side_effect=mock_request)
+def test_create_search_alerts_filters(mocker, args, expected_params, is_fetch, api_version):
+    """
+        Given:
+        - args, expected_params results, is_fetch flag, and a api_version flag.
+        - Case 1: args with filter and status (relevant only for v2) fields, is_fetch is True and API version flag is V1.
+        - Case 2: args with filter and status (relevant only for v2) fields, is_fetch is True and API version flag is V2.
+        - Case 3: args with filter and status (relevant only for v2) fields, is_fetch is False and API version flag is V1.
+        - Case 4: args with only page field, is_fetch is False and API version flag is V1.
 
-    args = {'filter': filter_query}
-    params = create_search_alerts_filters(args, is_fetch=True)
-    response = client_mocker.search_alerts(params=params)
+        When:
+        - Running create_search_alerts_filters.
 
-    assert response.get('$filter') == expected_filter_query
+        Then:
+        - Ensure that the right fields were parsed into the query.
+        - Case 1: Should include only the value of the filter field from the args.
+        - Case 2: Should include both the value of the filter field from the args and the status.
+        - Case 3: Should include only the value of the filter field from the args in the $filter field in the params,
+          and 50 in the $top field.
+        - Case 4: Should return a params dict with empty $filter field, 50 in the $top field, and 100 in the $skip field.
+    """
+    mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
+    params = create_search_alerts_filters(args, is_fetch=is_fetch)
+    assert params == expected_params
+
+
+# @pytest.mark.parametrize('args, expected_error, api_version', [
+#     ({'page_size': "1001"}, "", "API V1"),
+#     ({'page_size': "1000", "page": "3"}, "", "API V1")
+#     ({'page_size': "2001"}, "", "API V2")
+# ])
+# def test_create_search_alerts_filters_errors(mocker, args, expected_error, api_version):
+#     """
+#         Given:
+#         - args, expected_error, and a api_version flag.
+#         - Case 1: args with only assigned_to field, and API version flag is V1.
+#         - Case 2: args with vendor_information, provider information, and status set to 'new' (valid only for v2) fields,
+#                   and API version flag is V1.
+#         - Case 3: args with only status field set to 'newAlert' (valid only for v1) and API version flag is V2.
+
+#         When:
+#         - Running create_data_to_update.
+
+#         Then:
+#         - Ensure that the right error was thrown.
+#         - Case 1: Should throw an error for missing vendor and provider information
+#         - Case 2: Should throw an error for wrong status value.
+#         - Case 3: Should throw an error for wrong status value.
+#     """
+#     mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
+#     with pytest.raises(DemistoException) as e:
+#         create_search_alerts_filters(args, is_fetch=False)
+#     assert str(e.value.message) == expected_error
 
 
 @pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
@@ -290,11 +202,6 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
         Then:
             - Ensure the output are as expected.
     """
-
-    from MicrosoftGraphSecurity import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
-    import demistomock as demisto
-    import re
-
     mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
     get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
     requests_mock.get(re.compile(f'^{Resources.graph}.*'), json={'value': []})
@@ -316,3 +223,72 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.graph]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+@pytest.mark.parametrize('args, expected_results, api_version', [
+    ({'vendor_information': 'vendor_information', 'provider_information': 'provider_information', 'assigned_to': 'someone'},
+     {'vendorInformation': {'provider': 'provider_information', 'vendor': 'vendor_information'}, 'assignedTo': 'someone'},
+     'API V1'),
+    ({'vendor_information': 'vendor_information', 'provider_information': 'provider_information', 'comments': 'comment'},
+     {'vendorInformation': {'provider': 'provider_information', 'vendor': 'vendor_information'}, 'comments': ['comment']},
+     'API V1'),
+    ({'comments': 'comment', 'status': 'new'}, {'status': 'new'}, 'API V2')
+])
+def test_create_data_to_update(mocker, args, expected_results, api_version):
+    """
+        Given:
+        - args, expected_results, and a api_version flag.
+        - Case 1: args with vendor_information, provider information, and assigned_to fields, and API version flag is V1.
+        - Case 2: args with vendor_information, provider information, and comment (relevant only for v1) fields,
+                  and API version flag is V1.
+        - Case 3: args with status ('new' which is supported only by v2) and comment (relevant only for v1) fields,
+                  and API version flag is V2.
+
+        When:
+        - Running create_data_to_update.
+
+        Then:
+        - Ensure that the right fields were parsed into the data dict.
+        - Case 1: Should parse vendor_information and provider information fields into an inner dictionary,
+                  and add the assigned_to as assignedTo into the data dict.
+        - Case 2: Should parse vendor_information and provider information fields into an inner dictionary,
+                  and add the comments as a list into the data dict.
+        - Case 3: Should parse only status into the data dict.
+    """
+    mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
+    data = create_data_to_update(args)
+    assert data == expected_results
+
+
+@pytest.mark.parametrize('args, expected_error, api_version', [
+    ({'assigned_to': 'someone'}, 'When using API V1, both vendor_information and provider_information must be provided.',
+     'API V1'),
+    ({'vendor_information': 'vendor_information', 'provider_information': 'provider_information', 'status': 'new'},
+     "Invalid status value. When using API V1, use newAlert instead of new.",
+     'API V1'),
+    ({'status': 'newAlert'}, "Invalid status value. When using API V2, use new instead of newAlert.", 'API V2'),
+    ({}, "No data relevant for API V2 to update was provided, please provide at least one of the following:"
+        " assigned_to, determination, classification, status.", 'API V2')
+])
+def test_create_data_to_update_errors(mocker, args, expected_error, api_version):
+    """
+        Given:
+        - args, expected_error, and a api_version flag.
+        - Case 1: args with only assigned_to field, and API version flag is V1.
+        - Case 2: args with vendor_information, provider information, and status set to 'new' (valid only for v2) fields,
+                  and API version flag is V1.
+        - Case 3: args with only status field set to 'newAlert' (valid only for v1) and API version flag is V2.
+
+        When:
+        - Running create_data_to_update.
+
+        Then:
+        - Ensure that the right error was thrown.
+        - Case 1: Should throw an error for missing vendor and provider information
+        - Case 2: Should throw an error for wrong status value.
+        - Case 3: Should throw an error for wrong status value.
+    """
+    mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
+    with pytest.raises(DemistoException) as e:
+        create_data_to_update(args)
+    assert str(e.value.message) == expected_error
