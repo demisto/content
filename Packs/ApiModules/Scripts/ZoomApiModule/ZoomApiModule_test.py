@@ -144,3 +144,57 @@ def test_http_request___when_raising_invalid_token_message(mocker):
         pass
     assert m.call_count == 2
     assert generate_token_mock.called
+
+
+def test_check_authentication_type_parameters_with_extra_jwt_member(mocker):
+    """
+        Given -
+           client
+        When -
+            creating a client with an extra authentication type argument
+        Then -
+            Validate that the error wil raise as excepted
+    """
+    import ZoomApiModule
+    with pytest.raises(DemistoException) as e:
+        ZoomApiModule.check_authentication_type_parameters(account_id="mockaccount",
+                                                           client_id="mockclient", client_secret="mocksecret",
+                                                           api_key="blabla", api_secret="")
+    assert e.value.message == """Too many fields were filled.
+You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
+OR the API Key and API Secret fields (JWT - Deprecated)."""
+
+
+def test_check_authentication_type_parameters__with_extra_AOuth_member():
+    """
+        Given -
+
+        When -
+            creating a client with an extra authentication type argument
+        Then -
+            Validate that the error wil raise as excepted
+    """
+    import ZoomApiModule
+    with pytest.raises(DemistoException) as e:
+        ZoomApiModule.check_authentication_type_parameters(account_id="",
+                                                           client_id="", client_secret="mocksecret",
+                                                           api_key="blabla", api_secret="ertert")
+    assert e.value.message == """Too many fields were filled.
+You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
+OR the API Key and API Secret fields (JWT - Deprecated)."""
+
+
+@freeze_time("1988-03-03T11:00:00")
+def test_get_jwt_token__encoding_format_check():
+    """
+        Given -
+
+        When -
+            creating a jwt token
+        Then -
+            Validate that the token is in the right format
+    """
+    import ZoomApiModule
+    encoded_token = ZoomApiModule.get_jwt_token(apiKey="blabla", apiSecret="blabla")
+    # 124 is the expected token length based on parameters given
+    assert len(encoded_token) == 124

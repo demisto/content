@@ -1,5 +1,4 @@
 from Zoom import Client
-from freezegun import freeze_time
 import Zoom
 import pytest
 from CommonServerPython import DemistoException
@@ -514,57 +513,6 @@ def test_manual_meeting_list_pagination__large_limit(mocker):
     manual_meeting_list_pagination(client=client, user_id="bla", next_page_token=None,
                                    limit=limit, type="all")
     assert zoom_meeting_list_mocker.call_args[1].get('page_size') == 300
-
-
-def test_check_authentication_type_parameters_with_extra_jwt_member(mocker):
-    """
-        Given -
-           client
-        When -
-            creating a client with an extra authentication type argument
-        Then -
-            Validate that the error wil raise as excepted
-    """
-    with pytest.raises(DemistoException) as e:
-        Zoom.check_authentication_type_parameters(account_id="mockaccount",
-                                                  client_id="mockclient", client_secret="mocksecret",
-                                                  api_key="blabla", api_secret="")
-    assert e.value.message == """Too many fields were filled.
-You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
-OR the API Key and API Secret fields (JWT - Deprecated)."""
-
-
-def test_check_authentication_type_parameters__with_extra_AOuth_member():
-    """
-        Given -
-
-        When -
-            creating a client with an extra authentication type argument
-        Then -
-            Validate that the error wil raise as excepted
-    """
-    with pytest.raises(DemistoException) as e:
-        Zoom.check_authentication_type_parameters(account_id="",
-                                                  client_id="", client_secret="mocksecret",
-                                                  api_key="blabla", api_secret="ertert")
-    assert e.value.message == """Too many fields were filled.
-You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
-OR the API Key and API Secret fields (JWT - Deprecated)."""
-
-
-@freeze_time("1988-03-03T11:00:00")
-def test_get_jwt_token__encoding_format_check():
-    """
-        Given -
-
-        When -
-            creating a jwt token
-        Then -
-            Validate that the token is in the right format
-    """
-    encoded_token = Zoom.get_jwt_token(apiKey="blabla", apiSecret="blabla")
-    # 124 is the expected token length based on parameters given
-    assert len(encoded_token) == 124
 
 
 def test_zoom_user_list_command__when_user_id(mocker):

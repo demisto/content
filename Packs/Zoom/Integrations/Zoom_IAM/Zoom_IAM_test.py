@@ -159,42 +159,6 @@ def test_enable_user_command__non_existing_user(mocker):
     assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
 
 
-def test_check_authentication_type_arguments__with_extra_jwt_member(mocker):
-    """
-        Given -
-           client
-        When -
-            creating a client with an extra authentication type argument
-        Then -
-            Validate that the error wil raise as excepted
-    """
-    with pytest.raises(DemistoException) as e:
-        Zoom_IAM.check_authentication_type_arguments(account_id="mockaccount",
-                                                     client_id="mockclient", client_secret="mocksecret",
-                                                     api_key="blabla", api_secret="")
-    assert e.value.message == """Too many fields were filled.
-                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
-                                   OR the API Key and API Secret fields (JWT - Deprecated)"""
-
-
-def test_check_authentication_type_arguments__with_extra_AOuth_member(mocker):
-    """
-        Given -
-           client
-        When -
-            creating a client with an extra authentication type argument
-        Then -
-            Validate that the error wil raise as excepted
-    """
-    with pytest.raises(DemistoException) as e:
-        Zoom_IAM.check_authentication_type_arguments(account_id="",
-                                                     client_id="", client_secret="mocksecret",
-                                                     api_key="blabla", api_secret="ertert")
-    assert e.value.message == """Too many fields were filled.
-                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
-                                   OR the API Key and API Secret fields (JWT - Deprecated)"""
-
-
 def test_test_moudle__reciving_errors(mocker):
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
@@ -233,31 +197,3 @@ def test_test_moudle__reciving_errors_3(mocker):
 
     from Zoom_IAM import test_module
     assert test_module(client=client) == 'Problem reaching Zoom API, check your credentials. Error message: mockerror'
-
-
-def test_http_request___when_raising_invalid_token_message(mocker):
-    """
-  Given -
-     client
-  When -
-      asking for a connection when the first try fails, and return an
-      'Invalid access token' error messoge
-  Then -
-      Validate that a retry to connect with a new token has been done
-    """
-
-    m = mocker.patch.object(Zoom_IAM.BaseClient, "_http_request",
-                            side_effect=DemistoException('Invalid access token'))
-    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token", return_value="mock")
-    mocker.patch.object(Zoom_IAM, "get_integration_context",
-                        return_value={'token_info': {"generation_time": "1988-03-03T10:50:00",
-                                      'oauth_token': "old token"}})
-    try:
-        client = Client(base_url='https://test.com', account_id="mockaccount",
-                        client_id="mockclient", client_secret="mocksecret")
-        # a command that uses http_request
-        client.test()
-    except Exception:
-        pass
-    assert m.call_count == 2
-    assert generate_token_mock.called
