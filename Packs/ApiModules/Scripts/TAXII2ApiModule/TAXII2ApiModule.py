@@ -60,6 +60,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "md5": FeedIndicatorType.File,
     "sha-1": FeedIndicatorType.File,
     "sha-256": FeedIndicatorType.File,
+    "sha-512": FeedIndicatorType.File,
     "file:hashes": FeedIndicatorType.File,
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malware": ThreatIntel.ObjectsNames.MALWARE,
@@ -352,7 +353,7 @@ class Taxii2FeedClient:
         """
         Tries to initialize `collection_to_fetch` if possible
         """
-        if collection_to_fetch is None and isinstance(self.collection_to_fetch, str):
+        if not collection_to_fetch and isinstance(self.collection_to_fetch, str):
             # self.collection_to_fetch will be changed from str -> Union[v20.Collection, v21.Collection]
             collection_to_fetch = self.collection_to_fetch
         if not self.collections:
@@ -461,6 +462,16 @@ class Taxii2FeedClient:
 
     """ PARSING FUNCTIONS"""
 
+    @staticmethod
+    def get_tlp(indicator_json: dict) -> str:
+        object_marking_definition_list = indicator_json.get('object_marking_refs', '')
+        tlp_color: str = ''
+        for object_marking_definition in object_marking_definition_list:
+            if tlp := MARKING_DEFINITION_TO_TLP.get(object_marking_definition):
+                tlp_color = tlp
+                break
+        return tlp_color
+
     def set_default_fields(self, obj_to_parse):
         fields = {
             'stixid': obj_to_parse.get('id', ''),
@@ -469,11 +480,9 @@ class Taxii2FeedClient:
             'description': obj_to_parse.get('description', ''),
         }
 
-        tlp_color = self.tlp_color
-        for object_marking in obj_to_parse.get('object_marking_refs', []):
-            if tlp := MARKING_DEFINITION_TO_TLP.get(object_marking):
-                tlp_color = tlp
-                break
+        tlp_from_marking_refs = self.get_tlp(obj_to_parse)
+        tlp_color = tlp_from_marking_refs if tlp_from_marking_refs else self.tlp_color
+
         if tlp_color:
             fields['trafficlightprotocol'] = tlp_color
 
@@ -970,13 +979,15 @@ class Taxii2FeedClient:
                     continue
 
             a_threat_intel_type = relationships_object.get('source_ref', '').split('--')[0]
-            a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type, '')  # type: ignore
+            a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(
+                a_threat_intel_type, '') or STIX_2_TYPES_TO_CORTEX_TYPES.get(a_threat_intel_type, '')  # type: ignore
             if a_threat_intel_type == 'indicator':
                 id = relationships_object.get('source_ref', '')
                 a_type = self.get_ioc_type(id, self.id_to_object)
 
             b_threat_intel_type = relationships_object.get('target_ref', '').split('--')[0]
-            b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type, '')  # type: ignore
+            b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(
+                b_threat_intel_type, '') or STIX_2_TYPES_TO_CORTEX_TYPES.get(b_threat_intel_type, '')  # type: ignore
             if b_threat_intel_type == 'indicator':
                 b_type = self.get_ioc_type(relationships_object.get('target_ref', ''), self.id_to_object)
 
@@ -1222,9 +1233,9 @@ class Taxii2FeedClient:
                 tags.append(field_tag)
 
         fields["tags"] = tags
-
-        if self.tlp_color and not fields.get('trafficlightprotocol'):
-            fields["trafficlightprotocol"] = self.tlp_color
+        if not fields.get('trafficlightprotocol'):
+            tlp_from_marking_refs = self.get_tlp(ioc_obj_copy)
+            fields["trafficlightprotocol"] = tlp_from_marking_refs if tlp_from_marking_refs else self.tlp_color
 
         indicator["fields"] = fields
         return indicator
@@ -1273,14 +1284,11 @@ class Taxii2FeedClient:
         """
         ioc_obj = id_to_obj.get(ioc)
         if ioc_obj:
-            if ioc_obj.get('type') == 'report':
-                return ioc_obj.get('name')
-            elif ioc_obj.get('type') == 'attack-pattern':
-                return ioc_obj.get('name')
-            elif "file:hashes.'SHA-256' = '" in ioc_obj.get('name'):
+            name = ioc_obj.get('name', '') or ioc_obj.get('value', '')
+            if "file:hashes.'SHA-256' = '" in name:
                 return Taxii2FeedClient.get_ioc_value_from_ioc_name(ioc_obj)
             else:
-                return ioc_obj.get('name')
+                return name
 
     @staticmethod
     def get_ioc_value_from_ioc_name(ioc_obj):

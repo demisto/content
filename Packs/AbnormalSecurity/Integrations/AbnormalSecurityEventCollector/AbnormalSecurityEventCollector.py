@@ -13,6 +13,24 @@ class Client(BaseClient):
         return self._http_request('GET', url_suffix=f'threats/{threat_id}')
 
 
+def format_messages(messages: list):
+    """change the messages into the desired form
+        1. change the toAddresses value to a list.
+
+    Args:
+      messages(list): the messages list to check.
+
+    Returns:
+      list: the reorganised messages.
+
+    """
+    for message in messages:
+        to_addresses = message.get('toAddresses')
+        if isinstance(to_addresses, str):
+            message['toAddresses'] = argToList(to_addresses)
+    return messages
+
+
 def get_events(client: Client, after: str):
     """Retrieves messages by time range & ordered by datetime
 
@@ -30,7 +48,7 @@ def get_events(client: Client, after: str):
     messages = []
     if threats_ids:
         for threat in reversed(threats_ids):
-            messages += get_messages_by_datetime(client, threat.get('threatId'), after, before)
+            messages += format_messages(get_messages_by_datetime(client, threat.get('threatId'), after, before))
         ordered_messages = sorted(messages, key=lambda d: d['receivedTime'])
         return ordered_messages, before
     return [], before

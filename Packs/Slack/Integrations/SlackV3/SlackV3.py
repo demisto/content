@@ -55,6 +55,7 @@ OBJECTS_TO_KEYS = {
 }
 SYNC_CONTEXT = True
 PROFILING_DUMP_ROWS_LIMIT = 20
+MAX_SAMPLES = 10
 
 ''' GLOBALS '''
 
@@ -114,6 +115,10 @@ def test_module():
     if not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) > 0:
         return_error(
             "When 'Types of Notifications to Send' is populated, a dedicated channel is required.")
+    if not BOT_TOKEN.startswith("xoxb"):
+        return_error("Invalid Bot Token.")
+    if not APP_TOKEN.startswith("xapp"):
+        return_error("Invalid App Token.")
     elif not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) == 0:
         CLIENT.auth_test()  # type: ignore
     else:
@@ -991,7 +996,7 @@ def extract_entitlement(entitlement: str, text: str) -> Tuple[str, str, str, str
 class SlackLogger(IntegrationLogger):
     def __init__(self):
         super().__init__()
-        self.level = logging.DEBUG
+        self.level = logging.INFO
 
     def info(self, message):
         text = self.encode(message)
@@ -1009,6 +1014,12 @@ class SlackLogger(IntegrationLogger):
         text = self.encode(message)
         self.messages.append(text)
 
+    def set_logging_level(self, debug: bool = True):
+        if debug:
+            self.level = logging.DEBUG
+        else:
+            self.level = logging.INFO
+
 
 SlackLog = SlackLogger()
 
@@ -1018,6 +1029,7 @@ async def slack_loop():
         exception_await_seconds = 1
         while True:
             SlackLog.set_buffering(state=True)
+            SlackLog.set_logging_level(debug=EXTENSIVE_LOGGING)
             client = SocketModeClient(
                 app_token=APP_TOKEN,
                 web_client=ASYNC_CLIENT,
@@ -1125,6 +1137,29 @@ async def handle_dm(user: dict, text: str, client: AsyncWebClient):
     await send_slack_request_async(client, 'chat.postMessage', body=body)
 
 
+def update_integration_context_samples(incidents: list, max_samples: int = MAX_SAMPLES):
+    """
+    Updates the integration context samples with the newly created incident.
+    If the size of the samples has reached `MAX_SAMPLES`, will pop out the latest sample.
+    Args:
+        incidents (list): The list of the newly created incidents.
+        max_samples (int): Max samples size.
+    """
+    ctx = get_integration_context()
+    updated_samples_list: List[Dict] = incidents + ctx.get('samples', [])
+    ctx['samples'] = updated_samples_list[:max_samples]
+    set_integration_context(ctx)
+
+
+def add_req_data_to_incidents(incidents: list, request_fields: dict) -> list:
+    """
+    Adds the request_fields as a rawJSON to every created incident for further information on the incident
+    """
+    for incident in incidents:
+        incident['rawJSON'] = json.dumps(request_fields)
+    return incidents
+
+
 async def translate_create(message: str, user_name: str, user_email: str, demisto_user: dict) -> str:
     """
     Processes an incident creation message
@@ -1145,6 +1180,8 @@ async def translate_create(message: str, user_name: str, user_email: str, demist
     created_incident = None
     data = ''
     user_demisto_id = ''
+    request_fields = {'ReporterEmail': user_email, 'Message': message}
+    incidents = []
     if demisto_user:
         user_demisto_id = demisto_user.get('id', '')
 
@@ -1156,6 +1193,7 @@ async def translate_create(message: str, user_name: str, user_email: str, demist
             incidents = json.loads(incidents_json.replace('“', '"').replace('”', '"'))
             if not isinstance(incidents, list):
                 incidents = [incidents]
+            add_req_data_to_incidents(incidents, request_fields)
             created_incident = await create_incidents(incidents, user_name, user_email, user_demisto_id)
 
             if not created_incident:
@@ -1177,12 +1215,14 @@ async def translate_create(message: str, user_name: str, user_email: str, demist
             incident_type = incident_type or INCIDENT_TYPE
             if incident_type:
                 incident['type'] = incident_type
-
+            incidents = add_req_data_to_incidents([incident], request_fields)
             created_incident = await create_incidents([incident], user_name, user_email, user_demisto_id)
             if not created_incident:
                 data = 'Failed creating incidents.'
 
     if created_incident:
+        demisto.debug(f'Created {len(incidents)} incidents')
+        update_integration_context_samples(incidents)
         if isinstance(created_incident, list):
             created_incident = created_incident[0]
         server_links = demisto.demistoUrls()
@@ -1238,9 +1278,9 @@ def is_bot_message(data: dict) -> bool:
     event: dict = data.get('event', {})
     if subtype == 'bot_message' or message_bot_id or event.get('bot_id', None):
         return True
-    elif data.get('event', {}).get('subtype') == 'bot_message':
+    elif event.get('subtype') == 'bot_message':
         return True
-    elif data.get('event', {}).get('bot_id', '') == BOT_ID:
+    elif data.get('authorizations', [{}])[0].get('is_bot', False):
         return True
     else:
         return False
@@ -2546,7 +2586,7 @@ def long_running_main():
     Starts the long running thread.
     """
     try:
-        asyncio.run(start_listening(), debug=True)
+        asyncio.run(start_listening(), debug=EXTENSIVE_LOGGING)
     except Exception as e:
         demisto.error(f"The Loop has failed to run {str(e)}")
     finally:
@@ -2593,7 +2633,7 @@ def init_globals(command_name: str = ''):
     MAX_LIMIT_TIME = int(demisto.params().get('max_limit_time', '60'))
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
     ENABLE_DM = demisto.params().get('enable_dm', True)
-    DEFAULT_PERMITTED_NOTIFICATION_TYPES = ['externalAskSubmit']
+    DEFAULT_PERMITTED_NOTIFICATION_TYPES = ['externalAskSubmit', 'externalFormSubmit']
     CUSTOM_PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
     PERMITTED_NOTIFICATION_TYPES = DEFAULT_PERMITTED_NOTIFICATION_TYPES + CUSTOM_PERMITTED_NOTIFICATION_TYPES
     MIRRORING_ENABLED = demisto.params().get('mirroring', True)
@@ -2704,6 +2744,15 @@ def slack_get_integration_context_statistics():
     return context_statistics, integration_context
 
 
+def fetch_samples():
+    """
+    The integration fetches incidents in the long-running-execution command. Fetch incidents is called
+    only when "Pull From Instance" is clicked in create new classifier section in Cortex XSOAR.
+    The fetch incidents returns samples of incidents generated by the long-running-execution.
+    """
+    demisto.incidents(get_integration_context().get('samples'))
+
+
 def main() -> None:
     """
     Main
@@ -2712,6 +2761,7 @@ def main() -> None:
 
     commands = {
         'test-module': test_module,
+        'fetch-incidents': fetch_samples,
         'long-running-execution': long_running_main,
         'mirror-investigation': mirror_investigation,
         'send-notification': slack_send,

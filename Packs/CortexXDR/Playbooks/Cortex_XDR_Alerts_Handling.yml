@@ -470,8 +470,8 @@ tasks:
     task:
       id: 819510f8-39d8-4237-82e5-fb57fd806749
       version: -1
-      name: Cortex XDR - Cloud Cryptojacking
-      playbookName: Cortex XDR - Cloud Cryptojacking
+      name: Cortex XDR - XCloud Cryptojacking
+      playbookName: Cortex XDR - XCloud Cryptojacking
       type: playbook
       iscommand: false
       brand: ""

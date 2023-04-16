@@ -3,6 +3,7 @@ import MailSenderNew
 import demistomock as demisto
 import pytest
 import hmac
+import hashlib
 
 RETURN_ERROR_TARGET = 'MailSenderNew.return_error'
 
@@ -66,7 +67,7 @@ def test_hmac(mocker):
         'credentials': {'identifier': u'user', 'password': u'pass'}
     })
     user, password = MailSenderNew.get_user_pass()
-    res = user + hmac.HMAC(password, 'test').hexdigest()
+    res = user + hmac.HMAC(str.encode(password), b'test', hashlib.sha256).hexdigest()
     assert len(res) > 0
 
 
@@ -99,3 +100,26 @@ def test_template_params(mocker, template_params_arg):
         assert actual_params == {'name': 'value_from_context'}
     else:
         assert actual_params == {'name': 'hello3'}
+
+
+def test_attachments(mocker):
+    mocker.patch.object(demisto, 'args', return_value={
+        "attachIDs": "123456",
+        "attachNames": "attach.txt",
+        "body": "this is a test by UT",
+        "subject": "special test via UT",
+        "to": "admin@test.com",
+        "transientFile": "test1.txt,test2.txt",
+        "transientFileContent": "content1,content2"
+    })
+    mocker.patch.object(demisto, 'params', return_value={'from': 'test@test.com'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={
+        'path': 'test_data/attachment.txt',
+        'name': 'attachment.txt'
+    })
+
+    result = MailSenderNew.create_msg()
+    decode_files_content = ['Y29udGVudA==', 'Y29udGVudDE=', 'Y29udGVudDI=']
+
+    assert all([file_name in result[0] for file_name in ['attach.txt', 'test1.txt', 'test2.txt']])
+    assert all([decode_file_content in result[0] for decode_file_content in decode_files_content])

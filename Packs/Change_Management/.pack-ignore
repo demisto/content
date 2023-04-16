@@ -8,7 +8,11 @@ ignore=PB106
 ignore=PB106
 
 [known_words]
-Jira
+jira
 afetch
-CSV
-FW
+csv
+fw
+
+[file:IncidentState.yml]
+ignore=BA124
+

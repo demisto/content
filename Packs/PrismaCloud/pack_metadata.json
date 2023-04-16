@@ -2,15 +2,21 @@
     "name": "Prisma Cloud by Palo Alto Networks",
     "description": "Automate and unify security incident response across your cloud environments, while still giving a degree of control to dedicated cloud teams.",
     "support": "xsoar",
-    "currentVersion": "3.0.0",
+    "currentVersion": "3.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "videos": [
+        "https://www.youtube.com/watch?v=MtLHCiV_1Wo"
+    ],
     "categories": [
         "Cloud Services"
     ],
     "tags": [
         "Palo Alto Networks Products"
+    ],
+    "itemPrefix": [
+        "Prisma Cloud"
     ],
     "created": "2020-05-11T18:00:53Z",
     "useCases": [],
@@ -59,6 +65,18 @@
         "AzureKubernetesServices": {
             "mandatory": false,
             "display_name": "Azure Kubernetes Services"
+        },
+        "AzureSQLManagement": {
+            "mandatory": false,
+            "display_name": "Azure SQL Management (Beta)"
+        },
+        "AzureNetworkSecurityGroups": {
+            "mandatory": false,
+            "display_name": "Azure Network Security Group"
+        },
+        "AzureStorage": {
+            "mandatory": false,
+            "display_name": "Azure Storage Management"
         }
     },
     "marketplaces": [
