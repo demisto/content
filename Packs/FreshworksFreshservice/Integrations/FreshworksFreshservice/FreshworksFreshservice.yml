@@ -49,7 +49,7 @@ configuration:
   - Urgent
   required: false
   type: 16
-- additionalinfo: "Incident impacts to fetch. The default is All. You can choose multiple."
+- additionalinfo: Incident impacts to fetch. The default is All. You can choose multiple impacts.
   defaultvalue: All
   display: Ticket Impact
   name: ticket_impact
