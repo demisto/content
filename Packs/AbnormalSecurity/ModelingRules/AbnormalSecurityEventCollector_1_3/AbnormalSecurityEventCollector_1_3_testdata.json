@@ -1,0 +1,72 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "092e3a28-1ab4-481d-9745-fbdbd0740e94",
+            "vendor": "abnormal",
+            "product": "security_email_protection",
+            "dataset": "abnormal_security_email_protection_raw",
+            "event_data": {
+              "threatId": "184712ab-6d8b-47b3-89d3-a314efef79e2",
+              "abxMessageId": 4551618356913732000,
+              "abxPortalUrl": "https://portal.abnormalsecurity.com",
+              "subject": "Phishing Email",
+              "fromAddress": "support@email.org",
+              "fromName": "Support",
+              "senderDomain": "secure-reply.org",
+              "toAddresses": "example@example.com, another@example.com",
+              "recipientAddress": "example@example.com",
+              "receivedTime": "2020-06-09T17:42:59Z",
+              "sentTime": "2020-06-09T17:42:59Z",
+              "internetMessageId": "<5edfca1c.1c69fb81.4b055.8fd5@mx.google.com>",
+              "autoRemediated": true,
+              "postRemediated": true,
+              "attackType": "Extortion",
+              "attackStrategy": "Name Impersonation",
+              "remediationStatus": "Post Remediated",
+              "returnPath": "support@email.org",
+              "replyToEmails": [
+                "reply-to@example.com"
+              ],
+              "ccEmails": [
+                "cc@example.com"
+              ],
+              "senderIpAddress": "8.8.8.8",
+              "impersonatedParty": "None / Others",
+              "attackVector": "Text",
+              "attachmentNames": [
+                "attachment.pdf"
+              ],
+              "attachmentCount": 0,
+              "urls": [
+                "https://www.google.com/"
+              ],
+              "urlCount": 0,
+              "summaryInsights": [
+                "Bitcoin Topics",
+                "Personal Information Theft",
+                "Unusual Sender"
+              ],
+              "remediationTimestamp": "2020-06-09T17:42:59Z",
+              "isRead": true,
+              "attackedParty": "VIP"
+            },
+            "expected_values": {
+                "xdm.email.return_path": "support@email.org",
+                "xdm.alert.category": "Extortion",
+                "xdm.observer.unique_identifier": "4551618356913732000",
+                "xdm.source.ipv6": null,
+                "xdm.alert.name": "Name Impersonation",
+                "xdm.email.message_id": "<5edfca1c.1c69fb81.4b055.8fd5@mx.google.com>",
+                "xdm.email.recipients": null,
+                "xdm.source.ipv4": "8.8.8.8",
+                "xdm.email.attachment.filename": "attachment.pdf",
+                "xdm.event.outcome": "SUCCESS",
+                "xdm.email.sender": "support@email.org",
+                "xdm.email.cc": null,
+                "xdm.alert.description": "Bitcoin Topics,Personal Information Theft,Unusual Sender",
+                "xdm.event.id": "184712ab-6d8b-47b3-89d3-a314efef79e2",
+                "xdm.email.subject": "Phishing Email"
+            }
+        }
+    ]
+}
