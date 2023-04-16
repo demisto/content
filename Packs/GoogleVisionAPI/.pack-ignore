@@ -1,5 +1,6 @@
 [file:GoogleVisionAPI.yml]
-ignore=IN145
+ignore=IN145,BA124
 
 [file:GoogleVisionAPI_image.png]
 ignore=IM111
+

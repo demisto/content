@@ -202,7 +202,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: false
   longRunning: false

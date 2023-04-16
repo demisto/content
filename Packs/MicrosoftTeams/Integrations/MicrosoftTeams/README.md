@@ -1,7 +1,10 @@
 Use the Microsoft Teams integration to send messages and notifications to your team members and create meetings.
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
-**Note:** For use cases where it is only need to send messages to a specific channel, we recommend checking the [Microsoft Teams via Webhook Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams-via-webhook), which has a simpler setup.
+**Note::** 
+- The integration has the ability to run built-in Cortex XSOAR commands, through a mirrored channel. Make sure to pass the command in the chat exactly as typed in the CORTEX XSOAR CLI. For example: `!DeleteContext all=yes`. Use the command `mirror-investigation` to mirror/create a mirrored channel.
+
+- For use cases where it is only needed to send messages to a specific channel, we recommend checking the [Microsoft Teams via Webhook Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams-via-webhook), which has a simpler setup.
 
 ## Integration Architecture
 Data is passed between Microsoft Teams and Cortex XSOAR through the bot that you will configure in Microsoft Teams. A webhook (that you will configure) receives the data from Teams and passes it to the messaging endpoint. The web server on which the integration runs in Cortex XSOAR listens to the messaging endpoint and processes the data from Teams. You can use an engine for communication between Teams and the Cortex XSOAR server. In order to mirror messages from Teams to Cortex XSOAR, the bot must be mentioned, using the @ symbol, in the message.
@@ -348,6 +351,7 @@ https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=
 - Posting a message or adaptive card to a private/shared channel is currently not supported in the ***send-notification*** command. Thus, also the ***mirror_investigation*** command does not support private/shared channels. For more information, see [Microsoft General known issues and limitations](https://learn.microsoft.com/en-us/connectors/teams/#general-known-issues-and-limitations).
 - In case of multiple chats/users sharing the same name, the first one will be taken.
 - See Microsoft documentation for [Limits and specifications for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/limits-specifications-teams).
+- If a non-Cortex XSOAR user ran the `new incident` command in the chat with the bot, the owner of the created incident would be the logged in Cortex XSOAR user, not the external user who ran the command.
 
 
 ## Commands
@@ -392,6 +396,8 @@ Message was sent successfully.
 ### mirror-investigation
 ***
 Mirrors the Cortex XSOAR investigation to the specified Microsoft Teams channel. Supports only standard channels.
+
+**Note**: Mirrored channels could be used to run Cortex XSOAR built-in commands.
 
 
 ##### Base Command
@@ -706,7 +712,7 @@ Retrieves a list of members from a channel.
 ```!microsoft-teams-channel-user-list channel_name="example channel" team=DemistoTeam```
 
 ##### Human Readable Output
-### Channel 'example channel' Members List:
+##### Channel 'example channel' Members List:
 | User Id                              | Email          | Tenant Id                            | Membership id                                                                                        | User roles | Display Name | Start DateTime       |
 |--------------------------------------|----------------|--------------------------------------|------------------------------------------------------------------------------------------------------|------------|--------------|----------------------|
 | 359d2c3c-162b-414c-b2eq-386461e5l050 | test@gmail.com | pbae9ao6-01ql-249o-5me3-4738p3e1m941 | MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJkMTQ= | owner      | itayadmin    | 0001-01-01T00:00:00Z |
@@ -724,6 +730,10 @@ Note: Only one oneOnOne chat can exist between two members. If a oneOnOne chat a
 ##### Required Permissions
 `Chat.Create` - Delegated, Application
 `Chat.ReadWrite` - Delegated
+`TeamsAppInstallation.ReadWriteForChat` - Delegated
+`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated
+`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application               
+`TeamsAppInstallation.ReadWriteForChat.All` - Application
 
 ##### Input
 
@@ -752,7 +762,7 @@ Note: Only one oneOnOne chat can exist between two members. If a oneOnOne chat a
 ```!microsoft-teams-chat-create chat_type=group member="itayadmin, Bruce Willis" chat_name="example chat"```
 
 ##### Human Readable Output
-### The chat 'example chat' was created successfully
+##### The chat 'example chat' was created successfully
 | Chat Id                                       | Chat name    | Created Date Time       | Last Updated Date Time  | webUrl | Tenant Id                            |
 |-----------------------------------------------|--------------|-------------------------|-------------------------|--------|--------------------------------------|
 | 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | example chat | 2023-01-08T07:51:53.07Z | 2023-01-08T07:51:53.07Z | webUrl | pbae9ao6-01ql-249o-5me3-4738p3e1m941 |
@@ -769,6 +779,10 @@ Sends a new chat message in the specified chat.
 ##### Required Permissions
 `ChatMessage.Send` - Delegated
 `Chat.ReadWrite` - Delegated
+`TeamsAppInstallation.ReadWriteForChat` - Delegated
+`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated
+`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application               
+`TeamsAppInstallation.ReadWriteForChat.All` - Application
 
 ##### Input
 
@@ -1101,6 +1115,8 @@ You can send the message `help` in order to see the supported commands:
 
 ![image](https://raw.githubusercontent.com/demisto/content/c7d516e68459f04102fd31ebfadd6574d775f436/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/dm.png)
 
+Note: To enrich an incident created via the Demisto BOT (`new incident` command) with extra information received with the request, as in regular `fetch-incidents` process users may create custom mappers and map the desired values.  
+
 ## Troubleshooting
 
 1. The integration works by spinning up a web server that listens to events and data posted to it from Microsoft Teams.
@@ -1129,6 +1145,8 @@ You can send the message `help` in order to see the supported commands:
     If you're working with secured communication (HTTPS), make sure that you provided a valid certificate, run `openssl s_client -connect <domain.com>:443` command, verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
     
     Try inserting your configured message endpoint in a browser tap, click `Enter`, if `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message.
+
+    In some cases, a connection is not created between Teams and the messaging endpoint, when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to (the bot should be already added to the team). This will trigger a connection and solve the issue. You can then remove the member that was added.
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, then it means the AAD application has insufficient permissions.
 

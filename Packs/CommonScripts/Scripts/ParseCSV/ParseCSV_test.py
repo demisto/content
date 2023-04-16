@@ -124,7 +124,8 @@ class TestParseCSV:
             "parseAll": "no",
             "codec": "utf-8",
             "ips": "1",
-            "domains": "1"
+            "domains": "1",
+            "hashes": "1"
         }
         file_obj = self.create_file_object("./test_data/IOCs.csv")
         self.mock_demisto(mocker, args_value=args, file_obj=file_obj)

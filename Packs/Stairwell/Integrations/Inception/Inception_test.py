@@ -53,6 +53,22 @@ def test_file_enrichment_command(requests_mock):
 
     results = file_enrichment_command(test_client, TEST_FILE_HASH)
     assert results
+    assert results.outputs['data']['attributes']['mal_eval_result']['label'] == "onlinegames"
+    assert results.outputs['data']['attributes']['mal_eval_result']['probability_bucket'] == "PROBABILITY_VERY_HIGH"
+    assert "Seen_Assets: Ida Bear Sandbox(1), Ida Bear Sandbox2(1)" not in results.readable_output
+    assert "Seen Assets: Ida Bear Sandbox(1)" in results.readable_output
+
+
+def test_file_enrichment_command_multiple_occurrences(requests_mock):
+    mock_response = util_load_json('test_data/file_enrichment_command_result_multiple_occurrences.json')
+
+    requests_mock.get("https://fakeapi.stairwelldemo.com/" + TEST_FILE_HASH, json=mock_response)
+
+    results = file_enrichment_command(test_client, TEST_FILE_HASH)
+    assert results
+    assert results.outputs['data']['attributes']['mal_eval_result']['label'] == "onlinegames"
+    assert results.outputs['data']['attributes']['mal_eval_result']['probability_bucket'] == "PROBABILITY_VERY_HIGH"
+    assert "Seen_Assets: Ida Bear Sandbox(1), Ida Bear Sandbox2(1)" in results.readable_output
 
 
 def test_file_enrichment_command_notfound(requests_mock):

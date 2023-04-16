@@ -89,7 +89,6 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
     # get packs that their minServerVersion is higher than the server version
     packs_with_higher_server_version = get_packs_with_higher_min_version(
         packs_names=packs_to_install,
-        content_path=content_path,
         server_numeric_version=server_version
     )
     logging.info(f'packs with minServerVersion that is higher than server version {packs_with_higher_server_version}')

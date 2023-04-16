@@ -15,6 +15,7 @@ import requests
 from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
+from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
@@ -87,6 +88,25 @@ USER_TYPE_TO_USER_ROLE = {
 GROUP_CHAT_ID_SUFFIX = "@thread.v2"
 ONEONONE_CHAT_ID_SUFFIX = "@unq.gbl.spaces"
 MAX_ITEMS_PER_RESPONSE = 50
+
+EXTERNAL_FORM = "external/form"
+MAX_SAMPLES = 10
+
+
+class Handler:
+    @staticmethod
+    def write(msg: str):
+        demisto.info(msg)
+
+
+class ErrorHandler:
+    @staticmethod
+    def write(msg: str):
+        demisto.error(f'wsgi error: {msg}')
+
+
+DEMISTO_LOGGER: Handler = Handler()
+ERROR_LOGGER: ErrorHandler = ErrorHandler()
 
 ''' HELPER FUNCTIONS '''
 
@@ -170,11 +190,32 @@ def create_incidents(demisto_user: dict, incidents: list) -> dict:
     return data
 
 
-def process_incident_create_message(demisto_user: dict, message: str) -> str:
+def remove_private_info_from_body(object_to_sanitize: dict):
+    """
+    Some items like tenant ID are confidential and therefore should be removed from the metadata
+    """
+    if object_to_sanitize.get('conversation', {}).get('tenantId'):
+        del object_to_sanitize['conversation']['tenantId']
+    if object_to_sanitize.get('channelData', {}).get('tenant', {}).get('id'):
+        del object_to_sanitize['channelData']['tenant']['id']
+
+
+def add_req_data_to_incidents(incidents: list, request_body: dict) -> list:
+    """
+    Adds the request_body as a rawJSON to every created incident for further information on the incident
+    """
+    remove_private_info_from_body(request_body)
+    for incident in incidents:
+        incident['rawJSON'] = json.dumps(request_body)
+    return incidents
+
+
+def process_incident_create_message(demisto_user: dict, message: str, request_body: dict) -> str:
     """
     Processes an incident creation message
     :param demisto_user: The Demisto user associated with the message (if exists)
     :param message: The creation message
+    :param request_body: The original API request body
     :return: Creation result
     """
     json_pattern: str = r'(?<=json=).*'
@@ -191,7 +232,9 @@ def process_incident_create_message(demisto_user: dict, message: str) -> str:
             incidents: Union[dict, list] = json.loads(incidents_json.replace('“', '"').replace('”', '"'))
             if not isinstance(incidents, list):
                 incidents = [incidents]
-            created_incident = create_incidents(demisto_user, incidents)
+
+            add_req_data_to_incidents(incidents, request_body)  # type: ignore[arg-type]
+            created_incident = create_incidents(demisto_user, incidents)    # type: ignore[arg-type]
             if not created_incident:
                 data = 'Failed creating incidents.'
     else:
@@ -212,11 +255,12 @@ def process_incident_create_message(demisto_user: dict, message: str) -> str:
             if incident_type:
                 incident['type'] = incident_type
 
-            created_incident = create_incidents(demisto_user, [incident])
+            incidents = add_req_data_to_incidents([incident], request_body)
+            created_incident = create_incidents(demisto_user, incidents)
             if not created_incident:
                 data = 'Failed creating incidents.'
-
     if created_incident:
+        update_integration_context_samples(incidents)   # type: ignore[arg-type]
         if isinstance(created_incident, list):
             created_incident = created_incident[0]
         created_incident = cast(Dict[Any, Any], created_incident)
@@ -252,7 +296,11 @@ def urlify_hyperlinks(message: str) -> str:
     # URLify markdown hyperlinks
     urls = re.findall(URL_REGEX, message)
     for url in urls:
-        formatted_message = formatted_message.replace(url, f'[{url}]({url})')
+        # is the url is a survey link coming from Data Collection task
+        if EXTERNAL_FORM in url:
+            formatted_message = formatted_message.replace(url, f'[Microsoft Teams Form]({url})')
+        else:
+            formatted_message = formatted_message.replace(url, f'[{url}]({url})')
     return formatted_message
 
 
@@ -1274,6 +1322,40 @@ def channel_user_list_command():
     return_results(result)
 
 
+def is_bot_in_chat(chat_id: str) -> bool:
+    """
+    check if the bot is already in the chat.
+    """
+
+    url_suffix = f"v1.0/chats/{chat_id}/installedApps"
+    res = http_request('GET', urljoin(GRAPH_BASE_URL, url_suffix),
+                       params={"$expand": "teamsApp,teamsAppDefinition",
+                               "$filter": f"teamsApp/externalId eq '{BOT_ID}'"})
+    return bool(res.get('value'))   # type: ignore
+
+
+def add_bot_to_chat(chat_id: str):
+    """
+    Add the Dbot to a chat.
+    :param chat_id: chat id which to add the bot to.
+    """
+
+    demisto.debug(f'adding bot with id {BOT_ID} to chat')
+
+    # bot is already part of the chat
+    if is_bot_in_chat(chat_id):
+        return
+    res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps",
+                       params={"$filter": f"externalId eq '{BOT_ID}'"})
+    app_data = res.get('value')[0]      # type: ignore
+    bot_internal_id = app_data.get('id')
+
+    request_json = {"teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_internal_id}"}
+    http_request('POST', f'{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/installedApps', json_=request_json)
+
+    demisto.debug(f"Bot {app_data.get('displayName')} with {BOT_ID} ID was added to chat successfully")
+
+
 def chat_create_command():
     """
     Create a new chat object.
@@ -1303,6 +1385,8 @@ def chat_create_command():
     chat_data.pop('@odata.context', '')
     chat_data['chatId'] = chat_data.pop('id', '')
 
+    add_bot_to_chat(chat_data.get("chatId", ''))
+
     hr_title = f"The chat '{chat_name}' was created successfully" if chat_type == 'group' else \
         f'The chat with "{members[0]}" was created successfully'
 
@@ -1331,6 +1415,8 @@ def message_send_to_chat_command():
     message_type: str = args.get('message_type', 'message')
     chat: str = args.get('chat', '')
     chat_id, _ = get_chat_id_and_type(chat)
+
+    add_bot_to_chat(chat_id)
 
     message_data: dict = send_message_in_chat(content, message_type, chat_id, content_type)
     message_data.pop('@odata.context', '')
@@ -1829,6 +1915,7 @@ def send_message():
         raise ValueError('Given adaptive card is not in valid JSON format.')
 
     if message_type == MESSAGE_TYPES['mirror_entry'] and ENTRY_FOOTER in original_message:
+        demisto.debug(f"the message '{message}' was already mirrored, skipping it")
         # Got a message which was already mirrored - skipping it
         return
     channel_name: str = demisto.args().get('channel', '')
@@ -2114,6 +2201,29 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
     set_integration_context(integration_context)
 
 
+def handle_external_user(user_identifier: str, allow_create_incident: bool, create_incident: bool) -> str:
+    """
+    Handles message from non xsoar user
+    :param user_identifier: the user name or email
+    :param allow_create_incident: if external user is allowed to create incidents or not
+    :param create_incident: if the message (command) sent by the user is "new incident"
+    :return: data: the response from the bot the user
+    """
+    # external user is not allowed to run any command
+    if not allow_create_incident:
+        data = f"I'm sorry but I was unable to find you as a Cortex XSOAR user " \
+               f"for {user_identifier}. You're not allowed to run any command"
+
+    # allowed creating new incident, but the command sent is not new incident
+    elif not create_incident:
+        data = "As a non Cortex XSOAR user, you're only allowed to run command:\nnew incident [details]"
+    # allowed to create incident, and tried to create incident
+    else:
+        data = ""
+
+    return data
+
+
 def direct_message_handler(integration_context: dict, request_body: dict, conversation: dict, message: str):
     """
     Handles a direct message sent to the bot
@@ -2129,9 +2239,13 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
     user_id: str = from_property.get('id', '')
 
     team_member: dict = get_team_member(integration_context, user_id)
+    if team_member:
+        # enrich our data with the sender info
+        request_body['from'].update(team_member)
 
     username: str = team_member.get('username', '')
     user_email: str = team_member.get('user_email', '')
+    demisto_user = demisto.findUser(email=user_email) if user_email else demisto.findUser(username=username)
 
     formatted_message: str = str()
 
@@ -2142,34 +2256,34 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
     allow_external_incidents_creation: bool = demisto.params().get('allow_external_incidents_creation', False)
 
     lowered_message = message.lower()
-    if lowered_message.find('incident') != -1 and (lowered_message.find('create') != -1
-                                                   or lowered_message.find('open') != -1
-                                                   or lowered_message.find('new') != -1):
-        if user_email:
-            demisto_user = demisto.findUser(email=user_email)
-        else:
-            demisto_user = demisto.findUser(username=username)
-
-        if not demisto_user and not allow_external_incidents_creation:
-            data = 'You are not allowed to create incidents.'
-        else:
-            data = process_incident_create_message(demisto_user, message)
+    # the command is to create new incident
+    create_incident = 'incident' in lowered_message and ('create' in lowered_message
+                                                         or 'open' in lowered_message
+                                                         or 'new' in lowered_message)
+    data = ("" if demisto_user else handle_external_user(user_email or username,
+                                                         allow_external_incidents_creation,
+                                                         create_incident,))
+    # internal user or external who's trying to create incident
+    if not data:
+        if create_incident:
+            data = process_incident_create_message(demisto_user, message, request_body)
             formatted_message = urlify_hyperlinks(data)
-    else:
-        try:
-            data = demisto.directMessage(message, username, user_email, allow_external_incidents_creation)
-            return_card = True
-            if data.startswith('`'):  # We got a list of incidents/tasks:
-                data_by_line: list = data.replace('```', '').strip().split('\n')
+        else:   # internal user running any command except for new incident
+            try:
+                data = demisto.directMessage(message, username, user_email, allow_external_incidents_creation)
                 return_card = True
-                if data_by_line[0].startswith('Task'):
-                    attachment = process_tasks_list(data_by_line)
-                else:
-                    attachment = process_incidents_list(data_by_line)
-            else:  # Mirror investigation command / unknown direct message
-                attachment = process_mirror_or_unknown_message(data)
-        except Exception as e:
-            data = str(e)
+                if data.startswith('`'):  # We got a list of incidents/tasks:
+                    data_by_line: list = data.replace('```', '').strip().split('\n')
+                    return_card = True
+                    if data_by_line[0].startswith('Task'):
+                        attachment = process_tasks_list(data_by_line)
+                    else:
+                        attachment = process_incidents_list(data_by_line)
+                else:  # Mirror investigation command / unknown direct message
+                    attachment = process_mirror_or_unknown_message(data)
+            except Exception as e:
+                data = str(e)
+
     if return_card:
         conversation = {
             'type': 'message',
@@ -2247,9 +2361,11 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
                             investigation_id: str = mirrored_channel.get('investigation_id', '')
                             username: str = from_property.get('name', '')
                             user_email: str = get_team_member(integration_context, team_member_id).get('user_email', '')
+                            demisto.debug(f"Adding Entry {message} to investigation {investigation_id}")
                             demisto.addEntry(
                                 id=investigation_id,
-                                entry=message,
+                                # when pasting the message into the chat, it contains leading and trailing whitespaces
+                                entry=message.strip(),
                                 username=username,
                                 email=user_email,
                                 footer=f'\n**{ENTRY_FOOTER}**'
@@ -2263,6 +2379,7 @@ def messages() -> Response:
     Main handler for messages sent to the bot
     """
     try:
+        demisto.debug("Microsoft Teams Integration received a message from Teams")
         demisto.debug('Processing POST query...')
         headers: dict = cast(Dict[Any, Any], request.headers)
 
@@ -2394,6 +2511,20 @@ def ring_user():
     return_outputs(f"Calling {username_to_call}", {}, response)
 
 
+def update_integration_context_samples(incidents: list, max_samples: int = MAX_SAMPLES):
+    """
+    Updates the integration context samples with the newly created incident.
+    If the size of the samples has reached `MAX_SAMPLES`, will pop out the latest sample.
+    Args:
+        incidents (list): The list of the newly created incidents.
+        max_samples (int): Max samples size.
+    """
+    ctx = get_integration_context()
+    updated_samples_list: List[Dict] = incidents + ctx.get('samples', [])
+    ctx['samples'] = updated_samples_list[:max_samples]
+    set_integration_context(ctx)
+
+
 def long_running_loop():
     """
     The infinite loop which runs the mirror loop and the bot app in two different threads
@@ -2427,21 +2558,27 @@ def long_running_loop():
                 certificate_path = certificate_file.name
                 certificate_file.write(bytes(certificate, 'utf-8'))
                 certificate_file.close()
-                ssl_args['certfile'] = certificate_path
 
                 private_key_file = NamedTemporaryFile(delete=False)
                 private_key_path = private_key_file.name
                 private_key_file.write(bytes(private_key, 'utf-8'))
                 private_key_file.close()
-                ssl_args['keyfile'] = private_key_path
+
+                context = SSLContext(PROTOCOL_TLSv1_2)
+                context.load_cert_chain(certificate_path, private_key_path)
+                ssl_args['ssl_context'] = context
 
                 demisto.info('Starting HTTPS Server')
             else:
                 demisto.info('Starting HTTP Server')
 
-            server = WSGIServer(('0.0.0.0', port), APP, **ssl_args)
+            server = WSGIServer(('0.0.0.0', port), APP, log=DEMISTO_LOGGER, error_log=ERROR_LOGGER, **ssl_args)
             demisto.updateModuleHealth('')
             server.serve_forever()
+        except SSLError as e:
+            ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
+            demisto.error(ssl_err_message)
+            raise ValueError(ssl_err_message)
         except Exception as e:
             error_message = str(e)
             demisto.error(f'An error occurred in long running loop: {error_message} - {format_exc()}')
@@ -2517,7 +2654,16 @@ and paste it in your instance configuration under the **Authorization code** par
     return_results(CommandResults(readable_output=result_msg))
 
 
-def main():
+def fetch_samples():
+    """
+    The integration fetches incidents in the long-running-execution command. Fetch incidents is called
+    only when "Pull From Instance" is clicked in create new classifier section in Cortex XSOAR.
+    The fetch incidents returns samples of incidents generated by the long-running-execution.
+    """
+    demisto.incidents(get_integration_context().get('samples'))
+
+
+def main():   # pragma: no cover
     """ COMMANDS MANAGER / SWITCH PANEL """
     demisto.debug("Main started...")
     commands: dict = {
@@ -2529,6 +2675,7 @@ def main():
         'microsoft-teams-integration-health': integration_health,
         'create-channel': create_channel_command,
         'add-user-to-channel': add_user_to_channel_command,
+        'fetch-incidents': fetch_samples,
         # 'microsoft-teams-create-team': create_team,
         # 'microsoft-teams-send-file': send_file,
         'microsoft-teams-ring-user': ring_user,
