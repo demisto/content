@@ -8,7 +8,7 @@ Builds A JSON array based on the values provided by the user for the 'threatstre
 | --- | --- |
 | Script Type | python3 |
 | Tags | basescript |
-| Cortex XSOAR Version | 6.0.0 |
+| Cortex XSOAR Version | 6.8.0 |
 
 ## Inputs
 
@@ -55,3 +55,19 @@ Note: If both a query (indicator_query) and values (e.g., email_values) are prov
 ### Human Readable Output
 
 >{'objects': [{'value': 'my.domain1.com', 'itype': 'mal_domain'}, {'value': 'my.domain2.com', 'itype': 'mal_domain'}]}
+
+### Example command
+
+```!ThreatstreamBuildIocImportJson indicator_query="type: Domain" domain_indicator_type=spam_domain```
+
+### Context Example
+
+```json
+{
+    "ThreatstreamBuildIocImportJson": "{'objects': [{'value': 'my.domain1.com', 'itype': 'spam_domain'}, {'value': 'my.domain2.com', 'itype': 'spam_domain'}]}"
+}
+```
+
+### Human Readable Output
+
+>{'objects': [{'value': 'my.domain1.com', 'itype': 'spam_domain'}, {'value': 'my.domain2.com', 'itype': 'spam_domain'}]}

@@ -1,22 +1,15 @@
-import json
-import io
 import pytest
 import demistomock as demisto
 from CommonServerPython import DemistoException
 
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
-
-
 @pytest.mark.parametrize('args, indicators_types, expected_result', [
     ({"domain_indicator_type": 'spam_domain',
-      "domain_values": 'my.domain1.com',
+      "domain_values": 'my.domain1.com,my.domain2.com',
       "email_indicator_type": 'spam_email',
       "email_values": 'test@test.com',
       "ip_indicator_type": 'actor_ip',
-      "ip_values": '1.1.1.1',
+      "ip_values": '1.1.1.1,1.2.4.5',
       "md5_indicator_type": 'phish_md5',
       "md5_values": '00000000000000000000000000000000',
       "url_indicator_type": 'parked_url',
@@ -25,8 +18,10 @@ def util_load_json(path):
      [{'value': 'test@test.com', 'itype': 'spam_email'},
       {'value': '00000000000000000000000000000000', 'itype': 'phish_md5'},
       {'value': '1.1.1.1', 'itype': 'actor_ip'},
+      {'value': '1.2.4.5', 'itype': 'actor_ip'},
       {'value': 'https://test.com', 'itype': 'parked_url'},
-      {'value': 'my.domain1.com', 'itype': 'spam_domain'}]),
+      {'value': 'my.domain1.com', 'itype': 'spam_domain'},
+      {'value': 'my.domain2.com', 'itype': 'spam_domain'}]),
     ({"domain_values": 'my.domain1.com',
       "email_values": 'test@test.com',
       "ip_values": '1.1.1.1',
@@ -40,9 +35,17 @@ def util_load_json(path):
       {'value': 'my.domain1.com', 'itype': 'mal_domain'}])
 ])
 def test_get_indicators_from_user(args, indicators_types, expected_result):
-    """Tests get_indicators_from_user function.
+    """
 
-    Checks the output of the command function with the expected output.
+    Given:
+        - args, indicators_types
+
+    When:
+        - Call get_indicators_from_user function.
+
+    Then:
+        - Validates that the function's outputs matches the expected result.
+
     """
     from ThreatstreamBuildIocImportJson import get_indicators_from_user
     response = get_indicators_from_user(args, indicators_types)
@@ -57,14 +60,21 @@ def test_get_indicators_from_user(args, indicators_types, expected_result):
     ([], [], [], [], ['domain'], 'Invalid indicators values: domain'),
 ])
 def test_validate_indicators(email_list, md5_list, ip_list, url_list, domain_list, expected_result):
-    """Tests validate_indicators function.
+    """
 
-    Checks that an error message raised.
+    Given:
+        - email_list, md5_list, ip_list, url_list, domain_list
+
+    When:
+        - Call validate_indicators function.
+
+    Then:
+        - Validates that the function's exception matches the expected result.
+
     """
     from ThreatstreamBuildIocImportJson import validate_indicators
     with pytest.raises(DemistoException) as de:
         validate_indicators(email_list, md5_list, ip_list, url_list, domain_list)
-
     assert de.value.message == expected_result
 
 
@@ -76,9 +86,17 @@ def test_validate_indicators(email_list, md5_list, ip_list, url_list, domain_lis
      [{'value': '1.2.4.5', 'itype': 'mal_ip'}, {'value': 'my.domain1.com', 'itype': 'mal_domain'}]),
 ])
 def test_execute_get_indicators_by_query(mocker, query, indicators_types, return_value, expected_result):
-    """Tests execute_get_indicators_by_query function.
+    """
 
-    Checks the output of the command function with the expected output.
+    Given:
+        - query, indicators_types
+
+    When:
+        - Call execute_get_indicators_by_query function.
+
+    Then:
+        - Validates that the function's response matches the expected result.
+
     """
     from ThreatstreamBuildIocImportJson import execute_get_indicators_by_query
     mocker.patch.object(demisto, 'executeCommand', return_value=return_value)
@@ -115,9 +133,17 @@ def test_execute_get_indicators_by_query(mocker, query, indicators_types, return
      "{'value': 'my.domain1.com', 'itype': 'spam_domain'}]}")
 ])
 def test_get_indicators_and_build_json(mocker, args, return_value, expected_outputs, expected_readable):
-    """Tests get_indicators_and_build_json function.
+    """
 
-    Checks the output of the command function with the expected output.
+    Given:
+        - args
+
+    When:
+        - Call get_indicators_and_build_json function.
+
+    Then:
+        - Validates that the function's response matches the expected result.
+
     """
     from ThreatstreamBuildIocImportJson import get_indicators_and_build_json
     mocker.patch.object(demisto, 'executeCommand', return_value=return_value)
