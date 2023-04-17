@@ -2142,7 +2142,7 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     bcc = argToList(args.get('bcc'))
     html_body = args.get('htmlBody')
     reply_to = args.get('replyTo')
-    file_names = argToList(args.get('attachNames'))
+    attach_names = argToList(args.get('attachNames'))
     attach_cids = argToList(args.get('attachCIDs'))
     transient_file = argToList(args.get('transientFile'))
     transient_file_content = argToList(args.get('transientFileContent'))
@@ -2153,7 +2153,7 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     render_body = argToBoolean(args.get('renderBody', False))
     body_type = args.get('bodyType', 'Text').lower()
 
-    result = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, file_names,
+    result = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, attach_names,
                        attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
                        additional_headers, template_param, in_reply_to, references)
     rendering_body = html_body if body_type == "html" else body

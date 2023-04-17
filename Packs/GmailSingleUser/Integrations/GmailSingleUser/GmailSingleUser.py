@@ -1014,7 +1014,7 @@ def mail_command(client, args, email_from, send_as, subject_prefix='', in_reply_
     bcc = args.get('bcc')
     html_body = args.get('htmlBody')
     reply_to = args.get('replyTo')
-    file_names = argToList(args.get('attachNames'))
+    attach_names = argToList(args.get('attachNames'))
     attach_cids = argToList(args.get('attachCIDs'))
     transient_file = argToList(args.get('transientFile'))
     transient_file_content = argToList(args.get('transientFileContent'))
@@ -1028,7 +1028,7 @@ def mail_command(client, args, email_from, send_as, subject_prefix='', in_reply_
     rendering_body = html_body if body_type == "html" else body
 
     result = client.send_mail(email_to, email_from, send_as, cc, bcc, subject, body, html_body, entry_ids, reply_to,
-                              file_names, attach_cids, manual_attach_obj, transient_file, transient_file_content,
+                              attach_names, attach_cids, manual_attach_obj, transient_file, transient_file_content,
                               transient_file_cid, additional_headers, template_param, in_reply_to, references)
     send_mail_result = client.sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, html_body,
                                                  rendering_body, subject)
