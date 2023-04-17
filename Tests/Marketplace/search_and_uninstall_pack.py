@@ -146,7 +146,7 @@ def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 6
 
     """
     retry = 0
-    sleep_duration = 120
+    sleep_duration = 150
     try:
         installed_packs = get_all_installed_packs(client)
         while len(installed_packs) > 1:
