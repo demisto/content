@@ -1281,6 +1281,7 @@ tasks:
       id: e3d4077b-a586-494b-86b3-65e1f408c83a
       version: -1
       name: Was a domain provided?
+      description: Was a domain provided?
       type: condition
       iscommand: false
       brand: ""
