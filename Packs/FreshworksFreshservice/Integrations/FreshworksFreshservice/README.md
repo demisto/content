@@ -1,4 +1,4 @@
-Freshservice is a service management solution that allows customers to manage service requests, incidents, change requests tasks, and problem investigation. 
+Freshservice is a service management solution that allows customers to manage service requests, incidents, change requests tasks, and problem investigation.
 This integration was integrated and tested with version 2 of FreshworksFreshservice
 
 ## Configure Freshworks Freshservice on Cortex XSOAR
@@ -18,10 +18,10 @@ This integration was integrated and tested with version 2 of FreshworksFreshserv
     | Maximum incidents per fetch | Maximum number of incidents per fetch. Default is 50. The maximum is 100. | False |
     | Ticket type to fetch as incidents.  |  | False |
     | None | Incident priorities to fetch. The default is All. You can choose multiple priorities. | False |
-    | Ticket Impact | Incident impacts to fetch. The default is All. You can choose multiple. | False |
+    | Ticket Impact | Incident impacts to fetch. The default is All. You can choose multiple impacts. | False |
     | Ticket Status | The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type\(s\). | False |
     | Ticket Risk | The risk of the tickets to fetch. Available only for the 'Change Request' ticket type. | False |
-    | Ticket Urgency | The urgency of the tickets to fetch. Available only for the 'Incident/Service Request' ticket type. The default is All. You can choose multiple. | False |
+    | Ticket Urgency | The urgency of the tickets to fetch. Available only for the 'Incident/Service Request' ticket type. The default is All. You can choose multiple urgencies. | False |
     | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Freshservice to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Freshservice\), or Incoming and Outgoing \(from/to Cortex XSOAR and Freshservice\). | False |
     | Close Mirrored XSOAR Incident | When selected, closing the Freshservice ticket is mirrored in Cortex XSOAR. | False |
     | Close Mirrored Freshservice Ticket | When selected, closing the Cortex XSOAR incident is mirrored in Freshservice. | False |
@@ -38,7 +38,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### freshservice-ticket-list
 
 ***
-Retrieve all existing tickets or the specific Ticket by specified Ticket ID. By default, only tickets that have been created within the past 30 days will be returned. For older tickets, use the updated_since filter. You can specify 'query' argument, 'filter' argument or any filter arguments, not all of them together. When providing multiple filter arguments the connection between them will be "AND".
+Retrieve all existing tickets or a specific ticket by specifying the ticket ID. By default, only tickets that have been created within the past 30 days will be returned. For older tickets, use the updated_since filter. You can specify the 'query' argument, 'filter' argument or any filter arguments, but not all of them together. When providing multiple filter arguments the connection between them will be "AND".
 
 #### Base Command
 
@@ -48,59 +48,59 @@ Retrieve all existing tickets or the specific Ticket by specified Ticket ID. By 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. Only for fetching a list of tickets. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| ticket_id | The Ticket ID. If not provided, return all existing tickets. | Optional | 
-| include | Extra Ticket information to include. Just the 'stats', 'requester','requested_for' values are available for fetching a list of tickets. Use 'include' to embed additional details in the response. Each include will consume an additional 2 credits. For example, if you embed the stats information you will be charged a total of 3 API credits (1 credit for the API call, and 2 credits for the additional stats embedding). Possible values are: conversations, requester, requested_for, stats, department, tags. | Optional | 
-| filter | Ticket filter. You can specify 'query' argument, 'filter' argument or any filter arguments, not all of them together. Possible values are: open, watching, spam, deleted. | Optional | 
-| requester_id | Ticket requester ID (use freshservice-agent-list to get the agent ID). | Optional | 
-| email | Ticket requester email. | Optional | 
-| updated_since | Ticket update since (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). | Optional | 
-| type | Ticket type. Possible values are: Incident, Service Request. | Optional | 
-| order_type | Tickets order type (order by ticket ID). Possible values are: asc, desc. | Optional | 
-| agent_id | Filter by agent ID. Use freshservice-agent-list to get the agent ID. | Optional | 
-| group_id | Filter Tickets by group ID. Use freshservice-agent-group-list to get the agent group ID. | Optional | 
-| priority | Filter Tickets by priority. Possible values are: Low, Medium, High, Urgent. | Optional | 
-| status | Filter Tickets by status. Possible values are: Open, Pending, Resolved, Closed. | Optional | 
-| impact | Filter Tickets by impact. Possible values are: Low, Medium, High. | Optional | 
-| urgency | Filter Tickets by urgency. Possible values are: Low, Medium, High. | Optional | 
-| tag | Filter Tickets by tag. | Optional | 
-| due_by | Filter Tickets by due by, (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). | Optional | 
-| fr_due_by | Filter Tickets by fr due by, (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). | Optional | 
-| created_at | Filter Tickets by created at, (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). | Optional | 
-| query | Query to fetch tickets. You can specify 'query' argument, 'filter' argument or any filter arguments, not all of them together. For example "priority:3 AND group_id:21000478054 AND status:2" (Logical operators AND, OR along with parentheses () can be used to group conditions). | Optional | 
+| page | Page number of paginated results. Minimum value: 1. Only for fetching a list of tickets. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| ticket_id | The ticket ID. If not provided, return all existing tickets. | Optional |
+| include | Extra ticket information to include. Just the 'stats', 'requester','requested_for' values are available for fetching a list of tickets. Use 'include' to embed additional details in the response. Each include will consume an additional 2 credits. For example, if you embed the stats information you will be charged a total of 3 API credits (1 credit for the API call, and 2 credits for the additional stats embedding). Possible values are: conversations, requester, requested_for, stats, department, tags. | Optional |
+| filter | Ticket filter. You can specify the 'query' argument, 'filter' argument or any filter arguments, but not all of them together. Possible values are: open, watching, spam, deleted. | Optional |
+| requester_id | Ticket requester ID (use freshservice-agent-list to get the agent ID). | Optional |
+| email | Ticket requester email. | Optional |
+| updated_since | Timestamp of when the ticket was last updated (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). | Optional |
+| type | Ticket type. Possible values are: Incident, Service Request. | Optional |
+| order_type | Tickets order type (order by ticket ID). Possible values are: asc, desc. | Optional |
+| agent_id | Filter by agent ID. Use freshservice-agent-list to get the agent ID. | Optional |
+| group_id | Filter tickets by group ID. Use freshservice-agent-group-list to get the agent group ID. | Optional |
+| priority | Filter tickets by priority. Possible values are: Low, Medium, High, Urgent. | Optional |
+| status | Filter tickets by status. Possible values are: Open, Pending, Resolved, Closed. | Optional |
+| impact | Filter tickets by impact. Possible values are: Low, Medium, High. | Optional |
+| urgency | Filter tickets by urgency. Possible values are: Low, Medium, High. | Optional |
+| tag | Filter tickets by tag. | Optional |
+| due_by | Filter Tickets by due by, (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). | Optional |
+| fr_due_by | Filter Tickets by fr due by, (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). | Optional |
+| created_at | Filter Tickets by created at, (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). | Optional |
+| query | Query to fetch tickets. You can specify the 'query' argument, 'filter' argument or any filter arguments, but not all of them together. For example "priority:3 AND group_id:21000478054 AND status:2" (Logical operators AND, OR along with parentheses () can be used to group conditions). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Ticket.subject | String | Ticket subject. | 
-| Freshservice.Ticket.group_id | Number | Ticket group ID. | 
-| Freshservice.Ticket.department_id | Number | Ticket department ID. | 
-| Freshservice.Ticket.category | String | Ticket category. | 
-| Freshservice.Ticket.sub_category | String | Ticket subcategory. | 
-| Freshservice.Ticket.item_category | String | Ticket item category. | 
-| Freshservice.Ticket.requester_id | Number | Ticket requester ID. | 
-| Freshservice.Ticket.responder_id | Number | Ticket responder ID. | 
-| Freshservice.Ticket.due_by | Date | Ticket due by. | 
-| Freshservice.Ticket.fr_escalated | Boolean | Ticket fr escalated. | 
-| Freshservice.Ticket.deleted | Boolean | Ticket deleted. | 
-| Freshservice.Ticket.spam | Boolean | Ticket spam. | 
-| Freshservice.Ticket.email_config_id | Number | Ticket email config ID. | 
-| Freshservice.Ticket.is_escalated | Boolean | Ticket is escalated. | 
-| Freshservice.Ticket.fr_due_by | Date | Ticket fr due by. | 
-| Freshservice.Ticket.id | Number | Ticket ID. | 
-| Freshservice.Ticket.priority | Number | Ticket priority. | 
-| Freshservice.Ticket.status | Number | Ticket status. | 
-| Freshservice.Ticket.source | Number | Ticket source. | 
-| Freshservice.Ticket.created_at | Date | Ticket created at. | 
-| Freshservice.Ticket.updated_at | Date | Ticket updated at. | 
-| Freshservice.Ticket.requested_for_id | Number | Ticket requested for ID. | 
-| Freshservice.Ticket.to_emails | Number | Ticket to emails. | 
-| Freshservice.Ticket.type | String | Ticket type. | 
-| Freshservice.Ticket.description | String | Ticket description. | 
-| Freshservice.Ticket.workspace_id | Number | Ticket workspace ID. | 
+| Freshservice.Ticket.subject | String | Ticket subject. |
+| Freshservice.Ticket.group_id | Number | Ticket group ID. |
+| Freshservice.Ticket.department_id | Number | Ticket department ID. |
+| Freshservice.Ticket.category | String | Ticket category. |
+| Freshservice.Ticket.sub_category | String | Ticket subcategory. |
+| Freshservice.Ticket.item_category | String | Ticket item category. |
+| Freshservice.Ticket.requester_id | Number | Ticket requester ID. |
+| Freshservice.Ticket.responder_id | Number | Ticket responder ID. |
+| Freshservice.Ticket.due_by | Date | The timestamp that denotes when the ticket is due to be resolved.  |
+| Freshservice.Ticket.fr_escalated | Boolean | Whether the ticket first request was escalated. |
+| Freshservice.Ticket.deleted | Boolean | Ticket deleted. |
+| Freshservice.Ticket.spam | Boolean | Ticket spam. |
+| Freshservice.Ticket.email_config_id | Number | Ticket email config ID. |
+| Freshservice.Ticket.is_escalated | Boolean | Whether the ticket is escalated. |
+| Freshservice.Ticket.fr_due_by | Date | Indicates when the first response is due. |
+| Freshservice.Ticket.id | Number | Ticket ID. |
+| Freshservice.Ticket.priority | Number | Ticket priority. |
+| Freshservice.Ticket.status | Number | Ticket status. |
+| Freshservice.Ticket.source | Number | Ticket source. |
+| Freshservice.Ticket.created_at | Date | Ticket creation time. |
+| Freshservice.Ticket.updated_at | Date | Ticket updated at. |
+| Freshservice.Ticket.requested_for_id | Number | Ticket requested for ID. |
+| Freshservice.Ticket.to_emails | Number | Email addresses to which the ticket was originally sent. |
+| Freshservice.Ticket.type | String | Ticket type. |
+| Freshservice.Ticket.description | String | Ticket description. |
+| Freshservice.Ticket.workspace_id | Number | Ticket workspace ID. |
 
 #### Command example
 ```!freshservice-ticket-list```
@@ -1210,7 +1210,7 @@ Retrieve all existing tickets or the specific Ticket by specified Ticket ID. By 
 #### Human Readable Output
 
 >### Ticket
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|Description Text|Requester Id|Type|Subject|Status|Source|Impact|Priority|Custom Fields|Category|Created At|Updated At|Due By|Fr Due By|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -1262,62 +1262,62 @@ type 'incident'.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | HTML content of the ticket. | Required | 
-| name | Name of the requester. | Optional | 
-| requester_id | User ID of the requester. For existing contacts, the 'requester_id' can be passed instead of the requester's email. In case specified both 'email' and 'requester ID', the requester ID will be override 'email' field. If 'requester_id' is not provided, 'email' must be specified. | Optional | 
-| email | Default identifier. If 'email' is not provided - 'requester_id' must be specified. In case specified both 'email' and 'requester ID', the requester ID will be override 'email' field. Email address of the requester. If no contact exists with this email address in Freshservice, it will be added as a new contact. | Optional | 
-| phone | Phone number of the requester. The 'phone' can be passed instead of the requester's email. If no contact exists with this phone number in Freshservice, it will be added as a new contact. The name attribute is mandatory if the phone number is set and the email address is not. | Optional | 
-| status | Status of the Ticket (Open=2, Pending=3, Resolved=4, Closed=5). Possible values are: Open, Pending, Resolved, Closed. | Required | 
-| priority | Priority of the Ticket (Low=1, Medium=2, High=3, Urgent=4). Possible values are: Low, Medium, High, Urgent. | Required | 
-| subject | The subject of the ticket. | Required | 
-| source | The channel through which the Ticket was created. The default value is 'Portal'. (Email=1, Portal=2, Phone=3, Chat=4, Feedback widget=5, Yammer=6, AWS Cloudwatch=7, Pagerduty=8, Walkup=9, Slack=10). Possible values are: Email, Portal, Phone, Chat, Feedback widget, Yammer, AWS Cloudwatch, Pagerduty, Walkup, Slack. | Optional | 
-| tags | Tags that have been associated with the ticket. | Optional | 
-| department_id | Department ID of the requester. Use freshservice-department-list to get the department ID. | Optional | 
-| category | Ticket category. Possible values are: Hardware, Software, Network, Office Applications, Talent Management, Travel, Employee Records and Documents, Office Furniture, Office Equipment, Employee Benefits, Employee Onboarding/Offboarding, Employee Relations, Workplace Access and Security, Building and Grounds Maintenance, Vendor Document Review, Payroll, Vendor Payment, Customer Payment, Reimbursements and Advances, Legal Document Creation, Legal Review - Vendor Documents, Legal Review - Customer Documents, Other. | Optional | 
-| sub_category | Ticket subcategory. Note that each category has a different predefined subcategory. | Optional | 
-| assets | Assets that have to be associated with the ticket (the asset display_id). | Optional | 
-| urgency | Ticket urgency. Possible values are: Low, Medium, High. | Optional | 
-| impact | Ticket impact. Possible values are: Low, Medium, High. | Optional | 
-| problem | The problem that needs to be associated with the Ticket  (use freshservice-problem-list to get the problem ID). | Optional | 
-| change_initiating_ticket | Change causing the Ticket that needs to be associated with the Ticket (use freshservice-change-list to get the change ID). | Optional | 
-| change_initiated_by_ticket | Change needed for the Ticket to be fixed that needs to be associated with the Ticket (use freshservice-change-list to get the change ID). | Optional | 
-| responder_id | The ID of the agent to whom the Ticket has been assigned (use freshservice-agent-list to get the agent ID). | Optional | 
-| attachments | Ticket attachments. The total size of these attachments cannot exceed 15MB. Please upload the file to XSOAR and provide the file ID for attaching the file to Freshservice tickets. | Optional | 
-| cc_emails | Email address added in the 'cc' field of the incoming Ticket email. | Optional | 
-| custom_fields | Key value pairs containing the names and values of custom fields. For example 'key1=value1, key2=value2'. | Optional | 
-| due_by | The timestamp that denotes when the Ticket is due to be resolved. Has to be greater than ticket creation time. | Optional | 
-| email_config_id | The ID of the email config which is used for this ticket. (i.e., support@yourcompany.com/sales@yourcompany.com). | Optional | 
-| fr_due_by | The timestamp that denotes when the first response is due. Has to be greater than ticket creation time. It should not be blank if due_by is given. (for example YYYY-MM-DDThh:mm). | Optional | 
-| group_id | The ID of the group to which the Ticket has been assigned. The default value is the ID of the group that is associated with the given email config ID. Use freshservice-agent-group-list to get the agent group ID. | Optional | 
+| description | HTML content of the ticket. | Required |
+| name | Name of the requester. | Optional |
+| requester_id | User ID of the requester. For existing contacts, the 'requester_id' can be passed instead of the requester's email. In case both 'email' and 'requester ID' are specified, the requester ID will override the 'email' field. If 'requester_id' is not provided, 'email' must be specified. | Optional |
+| email | Email address of the requester. If 'email' is not provided, 'requester_id' must be specified. In case both 'email' and 'requester ID' are specified, the requester ID will override the 'email' field. If no contact exists with this email address in Freshservice, it will be added as a new contact. | Optional |
+| phone | Phone number of the requester. The 'phone' can be passed instead of the requester's email. If no contact exists with this phone number in Freshservice, it will be added as a new contact. The name attribute is mandatory if the phone number is set and the email address is not. | Optional |
+| status | Status of the ticket. Possible values are: Open, Pending, Resolved, Closed. | Required |
+| priority | Priority of the ticket. Possible values are: Low, Medium, High, Urgent. | Required |
+| subject | The subject of the ticket. | Required |
+| source | The channel through which the ticket was created. The default value is 'Portal'. (Email=1, Portal=2, Phone=3, Chat=4, Feedback widget=5, Yammer=6, AWS Cloudwatch=7, Pagerduty=8, Walkup=9, Slack=10). Possible values are: Email, Portal, Phone, Chat, Feedback widget, Yammer, AWS Cloudwatch, Pagerduty, Walkup, Slack. | Optional |
+| tags | Tags that have been associated with the ticket. | Optional |
+| department_id | Department ID of the requester. Use freshservice-department-list to get the department ID. | Optional |
+| category | Ticket category. Possible values are: Hardware, Software, Network, Office Applications, Talent Management, Travel, Employee Records and Documents, Office Furniture, Office Equipment, Employee Benefits, Employee Onboarding/Offboarding, Employee Relations, Workplace Access and Security, Building and Grounds Maintenance, Vendor Document Review, Payroll, Vendor Payment, Customer Payment, Reimbursements and Advances, Legal Document Creation, Legal Review - Vendor Documents, Legal Review - Customer Documents, Other. | Optional |
+| sub_category | Ticket subcategory. Note that each category has a different predefined subcategory. | Optional |
+| assets | Assets that have to be associated with the ticket (the asset display_id). | Optional |
+| urgency | Ticket urgency. Possible values are: Low, Medium, High. | Optional |
+| impact | Ticket impact. Possible values are: Low, Medium, High. | Optional |
+| problem | The problem that needs to be associated with the ticket (use freshservice-problem-list to get the problem ID). | Optional |
+| change_initiating_ticket | Change causing the Ticket that needs to be associated with the Ticket (use freshservice-change-list to get the change ID). | Optional |
+| change_initiated_by_ticket | Change needed for the Ticket to be fixed that needs to be associated with the Ticket (use freshservice-change-list to get the change ID). | Optional |
+| responder_id | The ID of the agent to whom the ticket has been assigned (use freshservice-agent-list to get the agent ID). | Optional |
+| attachments | Ticket attachments. The total size of these attachments cannot exceed 15MB. Upload the file to Cortex XSOAR and provide the file ID for attaching the file to Freshservice tickets. | Optional |
+| cc_emails | Email address added in the 'cc' field of the incoming ticket email. | Optional |
+| custom_fields | Key value pairs containing the names and values of custom fields. For example 'key1=value1, key2=value2'. | Optional |
+| due_by | The timestamp that denotes when the ticket is due to be resolved. The value must be greater than the ticket creation time. | Optional |
+| email_config_id | The ID of the email config which is used for this ticket. (i.e., support@yourcompany.com/sales@yourcompany.com). | Optional |
+| fr_due_by | The timestamp that denotes when the first response is due. Has to be greater than ticket creation time. It should not be blank if due_by is given. (for example YYYY-MM-DDThh:mm). | Optional |
+| group_id | The ID of the group to which the Ticket has been assigned. The default value is the ID of the group that is associated with the given email config ID. Use freshservice-agent-group-list to get the agent group ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Ticket.fr_escalated | Boolean | Ticket fr escalated. | 
-| Freshservice.Ticket.spam | Boolean | Ticket spam. | 
-| Freshservice.Ticket.email_config_id | Number | Ticket email config ID. | 
-| Freshservice.Ticket.group_id | Number | Ticket group ID. | 
-| Freshservice.Ticket.priority | Number | Ticket priority. | 
-| Freshservice.Ticket.requester_id | Date | Ticket requester ID. | 
-| Freshservice.Ticket.requested_for_id | Date | Ticket requested for ID. | 
-| Freshservice.Ticket.responder_id | Number | Ticket responder ID. | 
-| Freshservice.Ticket.source | Number | Ticket source. | 
-| Freshservice.Ticket.status | Number | Ticket status. | 
-| Freshservice.Ticket.subject | String | Ticket subject. | 
-| Freshservice.Ticket.to_emails | String | Ticket to emails. | 
-| Freshservice.Ticket.department_id | Number | Ticket department ID. | 
-| Freshservice.Ticket.id | Number | Ticket ID. | 
-| Freshservice.Ticket.type | String | Ticket type. | 
-| Freshservice.Ticket.due_by | Date | Ticket due by. | 
-| Freshservice.Ticket.fr_due_by | Date | Ticket fr due by. | 
-| Freshservice.Ticket.is_escalated | Boolean | Ticket is escalated. | 
-| Freshservice.Ticket.description | String | Ticket description. | 
-| Freshservice.Ticket.category | String | Ticket category. | 
-| Freshservice.Ticket.sub_category | String | Ticket subcategory. | 
-| Freshservice.Ticket.item_category | String | Ticket item category. | 
-| Freshservice.Ticket.created_at | Date | Ticket created at. | 
-| Freshservice.Ticket.updated_at | Date | Ticket updated at. | 
+| Freshservice.Ticket.fr_escalated | Boolean | Whether the ticket first request was escalated. |
+| Freshservice.Ticket.spam | Boolean | Ticket spam. |
+| Freshservice.Ticket.email_config_id | Number | Ticket email config ID. |
+| Freshservice.Ticket.group_id | Number | Ticket group ID. |
+| Freshservice.Ticket.priority | Number | Ticket priority. |
+| Freshservice.Ticket.requester_id | Date | Ticket requester ID. |
+| Freshservice.Ticket.requested_for_id | Date | Ticket requested for ID. |
+| Freshservice.Ticket.responder_id | Number | Ticket responder ID. |
+| Freshservice.Ticket.source | Number | Ticket source. |
+| Freshservice.Ticket.status | Number | Ticket status. |
+| Freshservice.Ticket.subject | String | Ticket subject. |
+| Freshservice.Ticket.to_emails | String | Email addresses to which the ticket was originally sent. |
+| Freshservice.Ticket.department_id | Number | Ticket department ID. |
+| Freshservice.Ticket.id | Number | Ticket ID. |
+| Freshservice.Ticket.type | String | Ticket type. |
+| Freshservice.Ticket.due_by | Date | The timestamp that denotes when the ticket is due to be resolved.  |
+| Freshservice.Ticket.fr_due_by | Date | Indicates when the first response is due. |
+| Freshservice.Ticket.is_escalated | Boolean | Whether the ticket is escalated. |
+| Freshservice.Ticket.description | String | Ticket description. |
+| Freshservice.Ticket.category | String | Ticket category. |
+| Freshservice.Ticket.sub_category | String | Ticket subcategory. |
+| Freshservice.Ticket.item_category | String | Ticket item category. |
+| Freshservice.Ticket.created_at | Date | Ticket creation time. |
+| Freshservice.Ticket.updated_at | Date | Ticket updated at. |
 
 #### Command example
 ```!freshservice-ticket-create description=description email=liors@qmasters.co status=Open priority=Low subject=subject```
@@ -1387,63 +1387,63 @@ Update an existing Ticket in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket_id | The Ticket ID to update (use freshservice-ticket-list to get ticket ID). | Required | 
-| description | HTML content of the ticket. | Optional | 
-| name | Name of the requester. | Optional | 
-| requester_id | User ID of the requester (use freshservice-agent-list to get the agent ID). For existing contacts, the requester_id can be passed instead of the requester's email. | Optional | 
-| email | Email address of the requester. If no contact exists with this email address in Freshservice, it will be added as a new contact. | Optional | 
-| phone | Phone number of the requester. If no contact exists with this phone number in Freshservice, it will be added as a new contact. The name attribute is mandatory if the phone number is set and the email address is not. | Optional | 
-| status | Status of the Ticket (Open=2, Pending=3, Resolved=4, Closed=5). Possible values are: Open, Pending, Resolved, Closed. | Optional | 
-| priority | Priority of the Ticket (Low=1, Medium=2, High=3, Urgent=4). Possible values are: Low, Medium, High, Urgent. | Optional | 
-| subject | The subject of the ticket. | Optional | 
-| source | The channel through which the Ticket was created. The default value is 2. (Email=1, Portal=2, Phone=3, Chat=4, Feedback widget=5, Yammer=6, AWS Cloudwatch=7, Pagerduty=8, Walkup=9, Slack=10). Possible values are: Email, Portal, Phone, Chat, Feedback widget, Yammer, AWS Cloudwatch, Pagerduty, Walkup, Slack. | Optional | 
-| tags | Tags that have been associated with the ticket (replace the exist value). | Optional | 
-| department_id | Department ID of the requester. Use freshservice-department-list to get the department ID. | Optional | 
-| category | Ticket category. Possible values are: Hardware, Software, Network, Office Applications, Talent Management, Travel, Employee Records and Documents, Office Furniture, Office Equipment, Employee Benefits, Employee Onboarding/Offboarding, Employee Relations, Workplace Access and Security, Building and Grounds Maintenance, Vendor Document Review, Payroll, Vendor Payment, Customer Payment, Reimbursements and Advances, Legal Document Creation, Legal Review - Vendor Documents, Legal Review - Customer Documents, Other. | Optional | 
-| sub_category | Ticket subcategory.  Note that each category has a different predefined subcategory. | Optional | 
-| assets | Assets that have to be associated with the ticket (the asset display_id. Replace the exist value). | Optional | 
-| urgency | Ticket urgency. Possible values are: Low, Medium, High. | Optional | 
-| impact | Ticket impact. Possible values are: Low, Medium, High. | Optional | 
-| problem | The problem that needs to be associated with the Ticket  (use freshservice-problem-list to get the problem ID). | Optional | 
-| change_initiating_ticket | Change causing the Ticket that needs to be associated with the Ticket (use freshservice-change-list to get the change ID). | Optional | 
-| change_initiated_by_ticket | Change needed for the Ticket to be fixed that needs to be associated with the Ticket (use freshservice-change-list to get the change ID). | Optional | 
-| responder_id | The ID of the agent to whom the Ticket has been assigned (use freshservice-agent-list to get the agent ID). | Optional | 
-| attachments | Ticket attachments. The total size of these attachments cannot exceed 15MB. Please upload the file to XSOAR and provide the file ID for attaching the file to Freshservice tickets. | Optional | 
-| cc_emails | Email address added in the 'cc' field of the incoming Ticket email. | Optional | 
-| custom_fields | Key value pairs containing the names and values of custom fields. Read more here. | Optional | 
-| due_by | Timestamp that denotes when the Ticket is due to be resolved (for example YYYY-MM-DDThh:mm).. | Optional | 
-| email_config_id | The ID of the email config which is used for this ticket. (i.e., support@yourcompany.com/sales@yourcompany.com). | Optional | 
-| fr_due_by | Timestamp that denotes when the first response is due (for example YYYY-MM-DDThh:mm). | Optional | 
-| group_id | The ID of the group to which the Ticket has been assigned. The default value is the ID of the group that is associated with the given email_config_id. Use freshservice-agent-group-list to get the agent group ID. | Optional | 
+| ticket_id | The Ticket ID to update (use freshservice-ticket-list to get ticket ID). | Required |
+| description | HTML content of the ticket. | Optional |
+| name | Name of the requester. | Optional |
+| requester_id | User ID of the requester (use freshservice-agent-list to get the agent ID). For existing contacts, the requester_id can be passed instead of the requester's email. | Optional |
+| email | Email address of the requester. If no contact exists with this email address in Freshservice, it will be added as a new contact. | Optional |
+| phone | Phone number of the requester. If no contact exists with this phone number in Freshservice, it will be added as a new contact. The name attribute is mandatory if the phone number is set and the email address is not. | Optional |
+| status | Status of the ticket. Possible values are: Open, Pending, Resolved, Closed. | Optional |
+| priority | Priority of the ticket. Possible values are: Low, Medium, High, Urgent. | Optional |
+| subject | The subject of the ticket. | Optional |
+| source | The channel through which the Ticket was created. The default value is 2. (Email=1, Portal=2, Phone=3, Chat=4, Feedback widget=5, Yammer=6, AWS Cloudwatch=7, Pagerduty=8, Walkup=9, Slack=10). Possible values are: Email, Portal, Phone, Chat, Feedback widget, Yammer, AWS Cloudwatch, Pagerduty, Walkup, Slack. | Optional |
+| tags | Tags that have been associated with the ticket (replace the exist value). | Optional |
+| department_id | Department ID of the requester. Use freshservice-department-list to get the department ID. | Optional |
+| category | Ticket category. Possible values are: Hardware, Software, Network, Office Applications, Talent Management, Travel, Employee Records and Documents, Office Furniture, Office Equipment, Employee Benefits, Employee Onboarding/Offboarding, Employee Relations, Workplace Access and Security, Building and Grounds Maintenance, Vendor Document Review, Payroll, Vendor Payment, Customer Payment, Reimbursements and Advances, Legal Document Creation, Legal Review - Vendor Documents, Legal Review - Customer Documents, Other. | Optional |
+| sub_category | Ticket subcategory.  Note that each category has a different predefined subcategory. | Optional |
+| assets | Assets that have to be associated with the ticket (the asset display_id. Replace the exist value). | Optional |
+| urgency | Ticket urgency. Possible values are: Low, Medium, High. | Optional |
+| impact | Ticket impact. Possible values are: Low, Medium, High. | Optional |
+| problem | The problem that needs to be associated with the ticket (use freshservice-problem-list to get the problem ID). | Optional |
+| change_initiating_ticket | Change causing the Ticket that needs to be associated with the Ticket (use freshservice-change-list to get the change ID). | Optional |
+| change_initiated_by_ticket | Change needed for the Ticket to be fixed that needs to be associated with the Ticket (use freshservice-change-list to get the change ID). | Optional |
+| responder_id | The ID of the agent to whom the ticket has been assigned (use freshservice-agent-list to get the agent ID). | Optional |
+| attachments | Ticket attachments. The total size of these attachments cannot exceed 15MB. Upload the file to Cortex XSOAR and provide the file ID for attaching the file to Freshservice tickets. | Optional |
+| cc_emails | Email address added in the 'cc' field of the incoming ticket email. | Optional |
+| custom_fields | Key value pairs containing the names and values of custom fields. Read more here. | Optional |
+| due_by | Timestamp that denotes when the Ticket is due to be resolved (for example YYYY-MM-DDThh:mm). | Optional |
+| email_config_id | The ID of the email config which is used for this ticket. (i.e., support@yourcompany.com/sales@yourcompany.com). | Optional |
+| fr_due_by | Timestamp that denotes when the first response is due (for example YYYY-MM-DDThh:mm). | Optional |
+| group_id | The ID of the group to which the Ticket has been assigned. The default value is the ID of the group that is associated with the given email_config_id. Use freshservice-agent-group-list to get the agent group ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Ticket.spam | Boolean | Ticket spam. | 
-| Freshservice.Ticket.email_config_id | Number | Ticket email config ID. | 
-| Freshservice.Ticket.fr_escalated | Boolean | Ticket fr escalated. | 
-| Freshservice.Ticket.group_id | Number | Ticket group ID. | 
-| Freshservice.Ticket.priority | Number | Ticket priority. | 
-| Freshservice.Ticket.requester_id | Date | Ticket requester ID. | 
-| Freshservice.Ticket.requested_for_id | Date | Ticket requested for ID. | 
-| Freshservice.Ticket.responder_id | Number | Ticket responder ID. | 
-| Freshservice.Ticket.source | Number | Ticket source. | 
-| Freshservice.Ticket.status | Number | Ticket status. | 
-| Freshservice.Ticket.subject | String | Ticket subject. | 
-| Freshservice.Ticket.description | String | Ticket description. | 
-| Freshservice.Ticket.category | String | Ticket category. | 
-| Freshservice.Ticket.sub_category | String | Ticket sub-category. | 
-| Freshservice.Ticket.item_category | String | Ticket item category. | 
-| Freshservice.Ticket.id | Number | Ticket ID. | 
-| Freshservice.Ticket.type | String | Ticket type. | 
-| Freshservice.Ticket.to_emails | String | Ticket to emails. | 
-| Freshservice.Ticket.department_id | Number | Ticket department ID. | 
-| Freshservice.Ticket.is_escalated | Boolean | Ticket is escalated. | 
-| Freshservice.Ticket.due_by | Date | Ticket due by. | 
-| Freshservice.Ticket.fr_due_by | Date | Ticket fr due by. | 
-| Freshservice.Ticket.created_at | Date | Ticket created at. | 
-| Freshservice.Ticket.updated_at | Date | Ticket updated at. | 
+| Freshservice.Ticket.spam | Boolean | Ticket spam. |
+| Freshservice.Ticket.email_config_id | Number | Ticket email config ID. |
+| Freshservice.Ticket.fr_escalated | Boolean | Whether the ticket first request was escalated. |
+| Freshservice.Ticket.group_id | Number | Ticket group ID. |
+| Freshservice.Ticket.priority | Number | Ticket priority. |
+| Freshservice.Ticket.requester_id | Date | Ticket requester ID. |
+| Freshservice.Ticket.requested_for_id | Date | Ticket requested for ID. |
+| Freshservice.Ticket.responder_id | Number | Ticket responder ID. |
+| Freshservice.Ticket.source | Number | Ticket source. |
+| Freshservice.Ticket.status | Number | Ticket status. |
+| Freshservice.Ticket.subject | String | Ticket subject. |
+| Freshservice.Ticket.description | String | Ticket description. |
+| Freshservice.Ticket.category | String | Ticket category. |
+| Freshservice.Ticket.sub_category | String | Ticket sub-category. |
+| Freshservice.Ticket.item_category | String | Ticket item category. |
+| Freshservice.Ticket.id | Number | Ticket ID. |
+| Freshservice.Ticket.type | String | Ticket type. |
+| Freshservice.Ticket.to_emails | String | Email addresses to which the ticket was originally sent. |
+| Freshservice.Ticket.department_id | Number | Ticket department ID. |
+| Freshservice.Ticket.is_escalated | Boolean | Whether the ticket is escalated. |
+| Freshservice.Ticket.due_by | Date | The timestamp that denotes when the ticket is due to be resolved.  |
+| Freshservice.Ticket.fr_due_by | Date | Indicates when the first response is due. |
+| Freshservice.Ticket.created_at | Date | Ticket creation time. |
+| Freshservice.Ticket.updated_at | Date | Ticket updated at. |
 
 #### Command example
 ```!freshservice-ticket-update ticket_id=245 description=description```
@@ -1515,7 +1515,7 @@ Delete an existing Ticket in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket_id | The Ticket ID to delete (use freshservice-ticket-list to get ticket ID). | Required | 
+| ticket_id | The Ticket ID to delete (use freshservice-ticket-list to get ticket ID). | Required |
 
 #### Context Output
 
@@ -1539,28 +1539,28 @@ Retrieve tasks list (or a specific task) on a Ticket with the given ID from Fres
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| ticket_id | The Ticket ID (use freshservice-ticket-list to get ticket ID). | Required | 
-| task_id | The Ticket task ID. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| ticket_id | The Ticket ID (use freshservice-ticket-list to get ticket ID). | Required |
+| task_id | The Ticket task ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Ticket.Task.id | Number | Task ID. | 
-| Freshservice.Ticket.Task.agent_id | Number | Task agent ID. | 
-| Freshservice.Ticket.Task.status | Number | Task status. | 
-| Freshservice.Ticket.Task.due_date | Date | Task due date. | 
-| Freshservice.Ticket.Task.notify_before | Number | Task notify before. | 
-| Freshservice.Ticket.Task.title | String | Task title. | 
-| Freshservice.Ticket.Task.description | String | Task description. | 
-| Freshservice.Ticket.Task.created_at | Date | Task created at. | 
-| Freshservice.Ticket.Task.updated_at | Date | Task updated at. | 
-| Freshservice.Ticket.Task.closed_at | Date | Task closed at. | 
-| Freshservice.Ticket.Task.group_id | Number | Task group ID. | 
-| Freshservice.Ticket.Task.deleted | Boolean | Task deleted. | 
+| Freshservice.Ticket.Task.id | Number | Task ID. |
+| Freshservice.Ticket.Task.agent_id | Number | Task agent ID. |
+| Freshservice.Ticket.Task.status | Number | Task status. |
+| Freshservice.Ticket.Task.due_date | Date | Task due date. |
+| Freshservice.Ticket.Task.notify_before | Number | Task notify before. |
+| Freshservice.Ticket.Task.title | String | Task title. |
+| Freshservice.Ticket.Task.description | String | Task description. |
+| Freshservice.Ticket.Task.created_at | Date | Task creation time. |
+| Freshservice.Ticket.Task.updated_at | Date | Task updated at. |
+| Freshservice.Ticket.Task.closed_at | Date | Task closed at. |
+| Freshservice.Ticket.Task.group_id | Number | Task group ID. |
+| Freshservice.Ticket.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
 ```!freshservice-ticket-task-list ticket_id=2```
@@ -1596,7 +1596,7 @@ Retrieve tasks list (or a specific task) on a Ticket with the given ID from Fres
 #### Human Readable Output
 
 >### Ticket
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|Description|Title|Notify Before|Status|Deleted|Closed At|Created At|Updated At|Due Date|
 >|---|---|---|---|---|---|---|---|---|---|
@@ -1616,29 +1616,29 @@ Create a new task on a Ticket request in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Required | 
-| notify_before | Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc).. | Required | 
-| title | Task title. | Required | 
-| description | Task description. | Required | 
-| status | Task status, default is 'Open'. Possible values are: Open, In Progress, Completed. | Optional | 
-| ticket_id | The Ticket ID to add a task for (use freshservice-ticket-list to get ticket ID). | Required | 
+| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Required |
+| notify_before | Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc). | Required |
+| title | Task title. | Required |
+| description | Task description. | Required |
+| status | Task status, default is 'Open'. Possible values are: Open, In Progress, Completed. | Optional |
+| ticket_id | The Ticket ID to add a task for (use freshservice-ticket-list to get ticket ID). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Ticket.Task.id | Number | Task ID. | 
-| Freshservice.Ticket.Task.agent_id | Number | Task agent ID. | 
-| Freshservice.Ticket.Task.status | Number | Task status. | 
-| Freshservice.Ticket.Task.due_date | Date | Task due date. | 
-| Freshservice.Ticket.Task.notify_before | Number | Task notify before. | 
-| Freshservice.Ticket.Task.title | String | Task title. | 
-| Freshservice.Ticket.Task.description | String | Task description. | 
-| Freshservice.Ticket.Task.created_at | Date | Task created at. | 
-| Freshservice.Ticket.Task.updated_at | Date | Task updated at. | 
-| Freshservice.Ticket.Task.closed_at | Date | Task closed at. | 
-| Freshservice.Ticket.Task.group_id | Number | Task group ID. | 
-| Freshservice.Ticket.Task.deleted | Boolean | Task deleted. | 
+| Freshservice.Ticket.Task.id | Number | Task ID. |
+| Freshservice.Ticket.Task.agent_id | Number | Task agent ID. |
+| Freshservice.Ticket.Task.status | Number | Task status. |
+| Freshservice.Ticket.Task.due_date | Date | Task due date. |
+| Freshservice.Ticket.Task.notify_before | Number | Task notify before. |
+| Freshservice.Ticket.Task.title | String | Task title. |
+| Freshservice.Ticket.Task.description | String | Task description. |
+| Freshservice.Ticket.Task.created_at | Date | Task creation time. |
+| Freshservice.Ticket.Task.updated_at | Date | Task updated at. |
+| Freshservice.Ticket.Task.closed_at | Date | Task closed at. |
+| Freshservice.Ticket.Task.group_id | Number | Task group ID. |
+| Freshservice.Ticket.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
 ```!freshservice-ticket-task-create due_date="2020-04-03T10:26:13.067Z" notify_before="2020-05-03T10:26:13.067Z" title=title description=description status=Open ticket_id=2```
@@ -1693,30 +1693,30 @@ Update an existing task on an existing Ticket in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Optional | 
-| notify_before | Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc). | Optional | 
-| title | Task title. | Optional | 
-| description | Task description. | Optional | 
-| status | Task status, default is 'Open'. Possible values are: Open, In Progress, Completed. | Optional | 
-| ticket_id | The Ticket ID to update a task for (use freshservice-ticket-list to get ticket ID). | Required | 
-| task_id | The Task ID for an update (use freshservice-ticket-task-list to get the task ID). | Required | 
+| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Optional |
+| notify_before | Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc). | Optional |
+| title | Task title. | Optional |
+| description | Task description. | Optional |
+| status | Task status, default is 'Open'. Possible values are: Open, In Progress, Completed. | Optional |
+| ticket_id | The Ticket ID to update a task for (use freshservice-ticket-list to get ticket ID). | Required |
+| task_id | The Task ID for an update (use freshservice-ticket-task-list to get the task ID). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Ticket.Task.id | Number | Task ID. | 
-| Freshservice.Ticket.Task.agent_id | Number | Task agent ID. | 
-| Freshservice.Ticket.Task.status | Number | Task status. | 
-| Freshservice.Ticket.Task.due_date | Date | Task due date. | 
-| Freshservice.Ticket.Task.notify_before | Number | Task notify before. | 
-| Freshservice.Ticket.Task.title | String | Task title. | 
-| Freshservice.Ticket.Task.description | String | Task description. | 
-| Freshservice.Ticket.Task.created_at | Date | Task created at. | 
-| Freshservice.Ticket.Task.updated_at | Date | Task updated at. | 
-| Freshservice.Ticket.Task.closed_at | Date | Task closed at. | 
-| Freshservice.Ticket.Task.group_id | Number | Task group ID. | 
-| Freshservice.Ticket.Task.deleted | Boolean | Task deleted. | 
+| Freshservice.Ticket.Task.id | Number | Task ID. |
+| Freshservice.Ticket.Task.agent_id | Number | Task agent ID. |
+| Freshservice.Ticket.Task.status | Number | Task status. |
+| Freshservice.Ticket.Task.due_date | Date | Task due date. |
+| Freshservice.Ticket.Task.notify_before | Number | Task notify before. |
+| Freshservice.Ticket.Task.title | String | Task title. |
+| Freshservice.Ticket.Task.description | String | Task description. |
+| Freshservice.Ticket.Task.created_at | Date | Task creation time. |
+| Freshservice.Ticket.Task.updated_at | Date | Task updated at. |
+| Freshservice.Ticket.Task.closed_at | Date | Task closed at. |
+| Freshservice.Ticket.Task.group_id | Number | Task group ID. |
+| Freshservice.Ticket.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
 ```!freshservice-ticket-task-update description=updated ticket_id=220 task_id=183```
@@ -1771,8 +1771,8 @@ Delete the task on a Ticket with the given ID from Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticket_id | Ticket ID (use freshservice-ticket-list to get ticket ID). | Required | 
-| task_id | Task ID to delete (use freshservice-ticket-task-list to get the task ID). | Required | 
+| ticket_id | Ticket ID (use freshservice-ticket-list to get ticket ID). | Required |
+| task_id | Task ID to delete (use freshservice-ticket-task-list to get the task ID). | Required |
 
 #### Context Output
 
@@ -1796,29 +1796,29 @@ Retrieve all Conversations of a Ticket. Conversations consist of replies as well
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| ticket_id | The Ticket ID (use freshservice-ticket-list to get ticket ID). | Required | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| ticket_id | The Ticket ID (use freshservice-ticket-list to get ticket ID). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Ticket.Conversation.id | Date | Conversation ID. | 
-| Freshservice.Ticket.Conversation.user_id | Date | Conversation user ID. | 
-| Freshservice.Ticket.Conversation.to_emails | String | Conversation to emails. | 
-| Freshservice.Ticket.Conversation.body | String | Conversation body. | 
-| Freshservice.Ticket.Conversation.body_text | String | Conversation body text. | 
-| Freshservice.Ticket.Conversation.ticket_id | Number | Conversation ticket ID. | 
-| Freshservice.Ticket.Conversation.created_at | Date | Conversation created at. | 
-| Freshservice.Ticket.Conversation.updated_at | Date | Conversation updated at. | 
-| Freshservice.Ticket.Conversation.incoming | Boolean | Conversation incoming. | 
-| Freshservice.Ticket.Conversation.private | Boolean | Conversation private. | 
-| Freshservice.Ticket.Conversation.support_email | String | Conversation support email. | 
-| Freshservice.Ticket.Conversation.source | Number | Conversation source. | 
-| Freshservice.Ticket.Conversation.from_email | String | Conversation from email. | 
-| Freshservice.Ticket.Conversation.meta.count | Number | Conversation meta count. | 
+| Freshservice.Ticket.Conversation.id | Date | Conversation ID. |
+| Freshservice.Ticket.Conversation.user_id | Date | Conversation user ID. |
+| Freshservice.Ticket.Conversation.to_emails | String | Conversation to emails. |
+| Freshservice.Ticket.Conversation.body | String | Conversation body. |
+| Freshservice.Ticket.Conversation.body_text | String | Conversation body text. |
+| Freshservice.Ticket.Conversation.ticket_id | Number | Conversation ticket ID. |
+| Freshservice.Ticket.Conversation.created_at | Date | Conversation creation time. |
+| Freshservice.Ticket.Conversation.updated_at | Date | Conversation updated at. |
+| Freshservice.Ticket.Conversation.incoming | Boolean | Conversation incoming. |
+| Freshservice.Ticket.Conversation.private | Boolean | Conversation private. |
+| Freshservice.Ticket.Conversation.support_email | String | Conversation support email. |
+| Freshservice.Ticket.Conversation.source | Number | Conversation source. |
+| Freshservice.Ticket.Conversation.from_email | String | Conversation from email. |
+| Freshservice.Ticket.Conversation.meta.count | Number | Conversation meta count. |
 
 #### Command example
 ```!freshservice-ticket-conversation-list ticket_id=6```
@@ -2629,7 +2629,7 @@ Retrieve all Conversations of a Ticket. Conversations consist of replies as well
 #### Human Readable Output
 
 >### Ticket conversations
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|User Id|Body Text|To Emails|Incoming|Private|Source|Created At|Updated At|
 >|---|---|---|---|---|---|---|---|---|
@@ -2685,27 +2685,27 @@ Create a new reply for an existing Ticket Conversation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| body | Content of the note. | Required | 
-| attachments | Attachments. The total size of all the Ticket attachments (not just this note) cannot exceed 15MB. Please upload the file to XSOAR and provide the file ID for attaching the file to Freshservice tickets. | Optional | 
-| from_email | The email address from which the reply is sent. By default, the global support email will be used. | Optional | 
-| user_id | The ID of the agent/user who is adding the note (use freshservice-agent-list to get the agent ID). | Optional | 
-| cc_emails | Email address added in the 'cc' field of the outgoing Ticket email. | Optional | 
-| bcc_emails | Email address added in the 'bcc' field of the outgoing Ticket email. | Optional | 
-| ticket_id | Ticket ID (use freshservice-ticket-list to get ticket ID). | Required | 
+| body | Content of the note. | Required |
+| attachments | Attachments. The total size of all the Ticket attachments (not just this note) cannot exceed 15MB. Please upload the file to XSOAR and provide the file ID for attaching the file to Freshservice tickets. | Optional |
+| from_email | The email address from which the reply is sent. By default, the global support email will be used. | Optional |
+| user_id | The ID of the agent/user who is adding the note (use freshservice-agent-list to get the agent ID). | Optional |
+| cc_emails | Email address added in the 'cc' field of the outgoing Ticket email. | Optional |
+| bcc_emails | Email address added in the 'bcc' field of the outgoing Ticket email. | Optional |
+| ticket_id | Ticket ID (use freshservice-ticket-list to get ticket ID). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Ticket.Conversation.Reply.id | Number | Ticket Conversation Reply ID. | 
-| Freshservice.Ticket.Conversation.Reply.user_id | Number | Ticket Conversation Reply user ID. | 
-| Freshservice.Ticket.Conversation.Reply.to_emails | String | Ticket Conversation Reply to emails. | 
-| Freshservice.Ticket.Conversation.Reply.body | String | Ticket Conversation Reply body. | 
-| Freshservice.Ticket.Conversation.Reply.body_text | String | Ticket Conversation Reply body text. | 
-| Freshservice.Ticket.Conversation.Reply.ticket_id | Number | Ticket Conversation Reply ticket ID. | 
-| Freshservice.Ticket.Conversation.Reply.created_at | Date | Ticket Conversation Reply created at. | 
-| Freshservice.Ticket.Conversation.Reply.updated_at | Date | Ticket Conversation Reply updated at. | 
-| Freshservice.Ticket.Conversation.Reply.from_email | String | Ticket Conversation Reply from email. | 
+| Freshservice.Ticket.Conversation.Reply.id | Number | Ticket Conversation Reply ID. |
+| Freshservice.Ticket.Conversation.Reply.user_id | Number | Ticket Conversation Reply user ID. |
+| Freshservice.Ticket.Conversation.Reply.to_emails | String | Ticket Conversation Reply to emails. |
+| Freshservice.Ticket.Conversation.Reply.body | String | Ticket Conversation Reply body. |
+| Freshservice.Ticket.Conversation.Reply.body_text | String | Ticket Conversation Reply body text. |
+| Freshservice.Ticket.Conversation.Reply.ticket_id | Number | Ticket Conversation Reply ticket ID. |
+| Freshservice.Ticket.Conversation.Reply.created_at | Date | Ticket conversation reply creation time. |
+| Freshservice.Ticket.Conversation.Reply.updated_at | Date | Ticket Conversation Reply updated at. |
+| Freshservice.Ticket.Conversation.Reply.from_email | String | Ticket Conversation Reply from email. |
 
 #### Command example
 ```!freshservice-ticket-conversation-reply-create body=body ticket_id=6```
@@ -2757,28 +2757,28 @@ Create a new note for an existing Ticket Conversation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| attachments | Attachments. The total size of all the Ticket attachments (not just this note) cannot exceed 15MB. Please upload the file to XSOAR and provide the file ID for attaching the file to Freshservice tickets. | Optional | 
-| body | Content of the note. | Required | 
-| incoming | Set to true if a particular note should appear as being created from the outside (i.e., not through the web portal). The default value is false. Possible values are: true, false. | Optional | 
-| notify_emails | Email addresses of agents/users who need to be notified about this note. | Optional | 
-| private | Set to false if the note is not private. The default value is true. Possible values are: true, false. | Optional | 
-| user_id | The ID of the agent/user who is adding the note (use freshservice-agent-list to get the agent ID). | Optional | 
-| ticket_id | Ticket ID (use freshservice-ticket-list to get ticket ID). | Required | 
+| attachments | Attachments. The total size of all the Ticket attachments (not just this note) cannot exceed 15MB. Please upload the file to XSOAR and provide the file ID for attaching the file to Freshservice tickets. | Optional |
+| body | Content of the note. | Required |
+| incoming | Set to true if a particular note should appear as being created from the outside (i.e., not through the web portal). The default value is false. Possible values are: true, false. | Optional |
+| notify_emails | Email addresses of agents/users who need to be notified about this note. | Optional |
+| private | Set to false if the note is not private. The default value is true. Possible values are: true, false. | Optional |
+| user_id | The ID of the agent/user who is adding the note (use freshservice-agent-list to get the agent ID). | Optional |
+| ticket_id | Ticket ID (use freshservice-ticket-list to get ticket ID). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Ticket.Conversation.Note.id | Date | Ticket Conversation Note ID. | 
-| Freshservice.Ticket.Conversation.Note.user_id | Date | Ticket Conversation Note user ID. | 
-| Freshservice.Ticket.Conversation.Note.body | String | Ticket Conversation Note body. | 
-| Freshservice.Ticket.Conversation.Note.body_text | String | Ticket Conversation Note body text. | 
-| Freshservice.Ticket.Conversation.Note.ticket_id | Number | Ticket Conversation Note ticket ID. | 
-| Freshservice.Ticket.Conversation.NoteCreate.Created_at | Date | Ticket Conversation Note created at. | 
-| Freshservice.Ticket.Conversation.Note.updated_at | Date | Ticket Conversation Note updated at. | 
-| Freshservice.Ticket.Conversation.Note.incoming | Boolean | Ticket Conversation Note incoming. | 
-| Freshservice.Ticket.Conversation.Note.private | Boolean | Ticket Conversation Note private. | 
-| Freshservice.Ticket.Conversation.Note.support_email | String | Ticket Conversation Note support email. | 
+| Freshservice.Ticket.Conversation.Note.id | Date | Ticket Conversation Note ID. |
+| Freshservice.Ticket.Conversation.Note.user_id | Date | Ticket Conversation Note user ID. |
+| Freshservice.Ticket.Conversation.Note.body | String | Ticket Conversation Note body. |
+| Freshservice.Ticket.Conversation.Note.body_text | String | Ticket Conversation Note body text. |
+| Freshservice.Ticket.Conversation.Note.ticket_id | Number | Ticket Conversation Note ticket ID. |
+| Freshservice.Ticket.Conversation.NoteCreate.Created_at | Date | Ticket conversation note creation time. |
+| Freshservice.Ticket.Conversation.Note.updated_at | Date | Ticket Conversation Note updated at. |
+| Freshservice.Ticket.Conversation.Note.incoming | Boolean | Ticket Conversation Note incoming. |
+| Freshservice.Ticket.Conversation.Note.private | Boolean | Ticket Conversation Note private. |
+| Freshservice.Ticket.Conversation.Note.support_email | String | Ticket Conversation Note support email. |
 
 #### Command example
 ```!freshservice-ticket-conversation-note-create body=body ticket_id=6```
@@ -2828,25 +2828,25 @@ Update an existing Conversation on an existing Ticket in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| body | Conversation content to update. | Required | 
-| conversation_id | The Conversation ID (use freshservice-ticket-conversation-list to get the conversation ID). | Required | 
-| name | Conversation name. | Optional | 
-| attachment | Conversation attachment. | Optional | 
+| body | Conversation content to update. | Required |
+| conversation_id | The Conversation ID (use freshservice-ticket-conversation-list to get the conversation ID). | Required |
+| name | Conversation name. | Optional |
+| attachment | Conversation attachment. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Ticket.Conversation.id | Date | Conversation ID. | 
-| Freshservice.Ticket.Conversation.user_id | Date | Conversation user ID. | 
-| Freshservice.Ticket.Conversation.body | String | Conversation body. | 
-| Freshservice.Ticket.Conversation.body_text | String | Conversation body text. | 
-| Freshservice.Ticket.Conversation.ticket_id | Number | Conversation ticket ID. | 
-| Freshservice.Ticket.Conversation.created_at | Date | Conversation created at. | 
-| Freshservice.Ticket.Conversation.updated_at | Date | Conversation updated at. | 
-| Freshservice.Ticket.Conversation.incoming | Boolean | Conversation incoming. | 
-| Freshservice.Ticket.Conversation.private | Boolean | Conversation private. | 
-| Freshservice.Ticket.Conversation.support_email | String | Conversation support email. | 
+| Freshservice.Ticket.Conversation.id | Date | Conversation ID. |
+| Freshservice.Ticket.Conversation.user_id | Date | Conversation user ID. |
+| Freshservice.Ticket.Conversation.body | String | Conversation body. |
+| Freshservice.Ticket.Conversation.body_text | String | Conversation body text. |
+| Freshservice.Ticket.Conversation.ticket_id | Number | Conversation ticket ID. |
+| Freshservice.Ticket.Conversation.created_at | Date | Conversation creation time. |
+| Freshservice.Ticket.Conversation.updated_at | Date | Conversation updated at. |
+| Freshservice.Ticket.Conversation.incoming | Boolean | Conversation incoming. |
+| Freshservice.Ticket.Conversation.private | Boolean | Conversation private. |
+| Freshservice.Ticket.Conversation.support_email | String | Conversation support email. |
 
 #### Command example
 ```!freshservice-ticket-conversation-update body=body conversation_id=21009603527```
@@ -2896,7 +2896,7 @@ Delete the Conversation on a Ticket with the given ID from Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| conversation_id | The conversation ID to delete (use freshservice-ticket-conversation-list to get the conversation ID). | Required | 
+| conversation_id | The conversation ID to delete (use freshservice-ticket-conversation-list to get the conversation ID). | Required |
 
 #### Context Output
 
@@ -2920,32 +2920,32 @@ Retrieve a list of all Problems or a specific problem with the given ID from Fre
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| problem_id | The Problem request ID. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| problem_id | The Problem request ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Problem.id | Number | Problem ID. | 
-| Freshservice.Problem.agent_id | Number | Problem agent ID. | 
-| Freshservice.Problem.description | String | Problem description. | 
-| Freshservice.Problem.requester_id | Date | Problem requester ID. | 
-| Freshservice.Problem.subject | String | Problem subject. | 
-| Freshservice.Problem.group_id | Date | Problem group ID. | 
-| Freshservice.Problem.priority | Number | Problem priority. | 
-| Freshservice.Problem.impact | Number | Problem impact. | 
-| Freshservice.Problem.status | Number | Problem status. | 
-| Freshservice.Problem.due_by | Date | Problem due by. | 
-| Freshservice.Problem.known_error | Boolean | Problem known error. | 
-| Freshservice.Problem.department_id | Number | Problem department ID. | 
-| Freshservice.Problem.category | String | Problem category. | 
-| Freshservice.Problem.sub_category | String | Problem sub-category. | 
-| Freshservice.Problem.item_category | String | Problem item category. | 
-| Freshservice.Problem.created_at | Date | Problem created at. | 
-| Freshservice.Problem.updated_at | Date | Problem updated at. | 
+| Freshservice.Problem.id | Number | Problem ID. |
+| Freshservice.Problem.agent_id | Number | Problem agent ID. |
+| Freshservice.Problem.description | String | Problem description. |
+| Freshservice.Problem.requester_id | Date | Problem requester ID. |
+| Freshservice.Problem.subject | String | Problem subject. |
+| Freshservice.Problem.group_id | Date | Problem group ID. |
+| Freshservice.Problem.priority | Number | Problem priority. |
+| Freshservice.Problem.impact | Number | Problem impact. |
+| Freshservice.Problem.status | Number | Problem status. |
+| Freshservice.Problem.due_by | Date | The timestamp that denotes when the problem is due to be resolved.  |
+| Freshservice.Problem.known_error | Boolean | Problem known error. |
+| Freshservice.Problem.department_id | Number | Problem department ID. |
+| Freshservice.Problem.category | String | Problem category. |
+| Freshservice.Problem.sub_category | String | Problem sub-category. |
+| Freshservice.Problem.item_category | String | Problem item category. |
+| Freshservice.Problem.created_at | Date | Problem creation time |
+| Freshservice.Problem.updated_at | Date | Problem updated at. |
 
 #### Command example
 ```!freshservice-problem-list```
@@ -3917,7 +3917,7 @@ Retrieve a list of all Problems or a specific problem with the given ID from Fre
 #### Human Readable Output
 
 >### Problem
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|Description Text|Requester Id|Subject|Impact|Status|Priority|Group Id|Known Error|Category|Created At|Updated At|Due By|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -3967,44 +3967,44 @@ Create a new problem request in Freshservice. Creating a problem required one of
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | Problem request description. | Required | 
-| subject | Problem request subject. | Required | 
-| email | Requester email. If not specified - must provide 'requester_id'. | Optional | 
-| requester_id | Requester ID (use freshservice-agent-list to get the agent ID). If not specified - must provide 'email'. | Optional | 
-| priority | Priority of the Problem. Possible values are: Low, Medium, High, Urgent. | Required | 
-| status | Status identifier of the Problem. Possible values are: Open, Change Requested, Closed. | Required | 
-| due_by | Timestamp at which Problem due ends (for example YYYY-MM-DDThh:mm). | Required | 
-| impact | Impact of the Problem. Possible values are: Low, Medium, High. | Required | 
-| department_id | Unique ID of the department initiating the Problem. Use freshservice-department-list to get the department ID. | Optional | 
-| category | Category of the Problem. Possible values are: Hardware, Software, Network, Office Applications, Talent Management, Travel, Employee Records and Documents, Office Furniture, Office Equipment, Employee Benefits, Employee Onboarding/Offboarding, Employee Relations, Workplace Access and Security, Building and Grounds Maintenance, Vendor Document Review, Payroll, Vendor Payment, Customer Payment, Reimbursements and Advances, Legal Document Creation, Legal Review - Vendor Documents, Legal Review - Customer Documents, Other. | Optional | 
-| sub_category | The sub-category of the Problem. | Optional | 
-| custom_fields | Key value pairs containing the names and values of custom fields. | Optional | 
-| analysis_fields | Key value pairs containing the names and values of the Problem Cause, Problem Symptom, and Problem Impact. | Optional | 
-| assets | List of assets associated with the problem (the asset display_id). | Optional | 
-| agent_id | Unique identifier of the agent to whom the Problem is assigned. Use freshservice-agent-list to get the agent ID. | Optional | 
-| group_id | Unique identifier of the agent group to which the Problem is assigned. Use freshservice-agent-group-list to get the agent group ID. | Optional | 
+| description | Problem request description. | Required |
+| subject | Problem request subject. | Required |
+| email | Requester email. If not specified - must provide 'requester_id'. | Optional |
+| requester_id | Requester ID (use freshservice-agent-list to get the agent ID). If not specified - must provide 'email'. | Optional |
+| priority | Priority of the Problem. Possible values are: Low, Medium, High, Urgent. | Required |
+| status | Status identifier of the Problem. Possible values are: Open, Change Requested, Closed. | Required |
+| due_by | Timestamp at which Problem due ends (for example YYYY-MM-DDThh:mm). | Required |
+| impact | Impact of the Problem. Possible values are: Low, Medium, High. | Required |
+| department_id | Unique ID of the department initiating the Problem. Use freshservice-department-list to get the department ID. | Optional |
+| category | Category of the Problem. Possible values are: Hardware, Software, Network, Office Applications, Talent Management, Travel, Employee Records and Documents, Office Furniture, Office Equipment, Employee Benefits, Employee Onboarding/Offboarding, Employee Relations, Workplace Access and Security, Building and Grounds Maintenance, Vendor Document Review, Payroll, Vendor Payment, Customer Payment, Reimbursements and Advances, Legal Document Creation, Legal Review - Vendor Documents, Legal Review - Customer Documents, Other. | Optional |
+| sub_category | The sub-category of the Problem. | Optional |
+| custom_fields | Key value pairs containing the names and values of custom fields. | Optional |
+| analysis_fields | Key value pairs containing the names and values of the Problem Cause, Problem Symptom, and Problem Impact. | Optional |
+| assets | List of assets associated with the problem (the asset display_id). | Optional |
+| agent_id | Unique identifier of the agent to whom the Problem is assigned. Use freshservice-agent-list to get the agent ID. | Optional |
+| group_id | Unique identifier of the agent group to which the Problem is assigned. Use freshservice-agent-group-list to get the agent group ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Problem.id | Number | Problem ID. | 
-| Freshservice.Problem.agent_id | Unknown | Problem agent ID. | 
-| Freshservice.Problem.description | String | Problem description. | 
-| Freshservice.Problem.requester_id | Date | Problem requester ID. | 
-| Freshservice.Problem.subject | String | Problem subject. | 
-| Freshservice.Problem.group_id | Date | Problem group ID. | 
-| Freshservice.Problem.priority | Number | Problem priority. | 
-| Freshservice.Problem.impact | Number | Problem impact. | 
-| Freshservice.Problem.status | Number | Problem status. | 
-| Freshservice.Problem.due_by | Date | Problem due by. | 
-| Freshservice.Problem.known_error | Boolean | Problem known error. | 
-| Freshservice.Problem.department_id | Date | Problem department ID. | 
-| Freshservice.Problem.category | String | Problem category. | 
-| Freshservice.Problem.sub_category | String | Problem sub-category. | 
-| Freshservice.Problem.item_category | String | Problem item category. | 
-| Freshservice.Problem.created_at | Date | Problem created at. | 
-| Freshservice.Problem.updated_at | Date | Problem updated at. | 
+| Freshservice.Problem.id | Number | Problem ID. |
+| Freshservice.Problem.agent_id | Unknown | Problem agent ID. |
+| Freshservice.Problem.description | String | Problem description. |
+| Freshservice.Problem.requester_id | Date | Problem requester ID. |
+| Freshservice.Problem.subject | String | Problem subject. |
+| Freshservice.Problem.group_id | Date | Problem group ID. |
+| Freshservice.Problem.priority | Number | Problem priority. |
+| Freshservice.Problem.impact | Number | Problem impact. |
+| Freshservice.Problem.status | Number | Problem status. |
+| Freshservice.Problem.due_by | Date | The timestamp that denotes when the problem is due to be resolved.  |
+| Freshservice.Problem.known_error | Boolean | Problem known error. |
+| Freshservice.Problem.department_id | Date | Problem department ID. |
+| Freshservice.Problem.category | String | Problem category. |
+| Freshservice.Problem.sub_category | String | Problem sub-category. |
+| Freshservice.Problem.item_category | String | Problem item category. |
+| Freshservice.Problem.created_at | Date | Problem creation time |
+| Freshservice.Problem.updated_at | Date | Problem updated at. |
 
 #### Command example
 ```!freshservice-problem-create description=description subject=subject email=sample@freshservice.com priority=Low status=Open due_by="2023-07-20T16:18:46Z" impact=Low```
@@ -4063,44 +4063,44 @@ Update an existing Problem in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| problem_id | The problem ID for an update (use freshservice-problem-list to get the problem request ID). | Required | 
-| description | Problem request description. | Optional | 
-| subject | Problem request subject. | Optional | 
-| email | Requester email. | Optional | 
-| priority | Priority of the Problem. Possible values are: Low, Medium, High, Urgent. | Optional | 
-| status | Status identifier of the Problem. Possible values are: Open, Change Requested, Closed. | Optional | 
-| due_by | Timestamp at which Problem due ends (for example YYYY-MM-DDThh:mm). | Optional | 
-| impact | Impact of the Problem. Possible values are: Low, Medium, High. | Optional | 
-| department_id | Unique ID of the department initiating the Problem. Use freshservice-department-list to get the department ID. | Optional | 
-| category | Category of the Problem. Possible values are: Hardware, Software, Network, Office Applications, Talent Management, Travel, Employee Records and Documents, Office Furniture, Office Equipment, Employee Benefits, Employee Onboarding/Offboarding, Employee Relations, Workplace Access and Security, Building and Grounds Maintenance, Vendor Document Review, Payroll, Vendor Payment, Customer Payment, Reimbursements and Advances, Legal Document Creation, Legal Review - Vendor Documents, Legal Review - Customer Documents, Other. | Optional | 
-| sub_category | The sub-category of the Problem. | Optional | 
-| custom_fields | Key value pairs containing the names and values of custom fields. | Optional | 
-| analysis_fields | Key value pairs containing the names and values of the Problem Cause, Problem Symptom, and Problem Impact. | Optional | 
-| assets | List of assets associated with the problem (replace the exist value). | Optional | 
-| group_id | Unique identifier of the agent group to which the Problem is assigned. Use freshservice-agent-group-list to get the agent group ID. | Optional | 
-| agent_id | Unique identifier of the agent to whom the Problem is assigned. Use freshservice-agent-list to get the agent ID. | Optional | 
+| problem_id | The problem ID for an update (use freshservice-problem-list to get the problem request ID). | Required |
+| description | Problem request description. | Optional |
+| subject | Problem request subject. | Optional |
+| email | Requester email. | Optional |
+| priority | Priority of the Problem. Possible values are: Low, Medium, High, Urgent. | Optional |
+| status | Status identifier of the Problem. Possible values are: Open, Change Requested, Closed. | Optional |
+| due_by | Timestamp at which Problem due ends (for example YYYY-MM-DDThh:mm). | Optional |
+| impact | Impact of the Problem. Possible values are: Low, Medium, High. | Optional |
+| department_id | Unique ID of the department initiating the Problem. Use freshservice-department-list to get the department ID. | Optional |
+| category | Category of the Problem. Possible values are: Hardware, Software, Network, Office Applications, Talent Management, Travel, Employee Records and Documents, Office Furniture, Office Equipment, Employee Benefits, Employee Onboarding/Offboarding, Employee Relations, Workplace Access and Security, Building and Grounds Maintenance, Vendor Document Review, Payroll, Vendor Payment, Customer Payment, Reimbursements and Advances, Legal Document Creation, Legal Review - Vendor Documents, Legal Review - Customer Documents, Other. | Optional |
+| sub_category | The sub-category of the Problem. | Optional |
+| custom_fields | Key value pairs containing the names and values of custom fields. | Optional |
+| analysis_fields | Key value pairs containing the names and values of the Problem Cause, Problem Symptom, and Problem Impact. | Optional |
+| assets | List of assets associated with the problem (replace the exist value). | Optional |
+| group_id | Unique identifier of the agent group to which the Problem is assigned. Use freshservice-agent-group-list to get the agent group ID. | Optional |
+| agent_id | Unique identifier of the agent to whom the Problem is assigned. Use freshservice-agent-list to get the agent ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Problem.id | Number | Problem ID. | 
-| Freshservice.Problem.agent_id | Unknown | Problem agent ID. | 
-| Freshservice.Problem.description | String | Problem description. | 
-| Freshservice.Problem.requester_id | Date | Problem requester ID. | 
-| Freshservice.Problem.subject | String | Problem subject. | 
-| Freshservice.Problem.group_id | Date | Problem group ID. | 
-| Freshservice.Problem.priority | Number | Problem priority. | 
-| Freshservice.Problem.impact | Number | Problem impact. | 
-| Freshservice.Problem.status | Number | Problem status. | 
-| Freshservice.Problem.due_by | Date | Problem due by. | 
-| Freshservice.Problem.known_error | Boolean | Problem known error. | 
-| Freshservice.Problem.department_id | Date | Problem department ID. | 
-| Freshservice.Problem.category | String | Problem category. | 
-| Freshservice.Problem.sub_category | Unknown | Problem sub-category. | 
-| Freshservice.Problem.item_category | Unknown | Problem item category. | 
-| Freshservice.Problem.created_at | Date | Problem created at. | 
-| Freshservice.Problem.updated_at | Date | Problem updated at. | 
+| Freshservice.Problem.id | Number | Problem ID. |
+| Freshservice.Problem.agent_id | Unknown | Problem agent ID. |
+| Freshservice.Problem.description | String | Problem description. |
+| Freshservice.Problem.requester_id | Date | Problem requester ID. |
+| Freshservice.Problem.subject | String | Problem subject. |
+| Freshservice.Problem.group_id | Date | Problem group ID. |
+| Freshservice.Problem.priority | Number | Problem priority. |
+| Freshservice.Problem.impact | Number | Problem impact. |
+| Freshservice.Problem.status | Number | Problem status. |
+| Freshservice.Problem.due_by | Date | The timestamp that denotes when the problem is due to be resolved.  |
+| Freshservice.Problem.known_error | Boolean | Problem known error. |
+| Freshservice.Problem.department_id | Date | Problem department ID. |
+| Freshservice.Problem.category | String | Problem category. |
+| Freshservice.Problem.sub_category | Unknown | Problem sub-category. |
+| Freshservice.Problem.item_category | Unknown | Problem item category. |
+| Freshservice.Problem.created_at | Date | Problem creation time |
+| Freshservice.Problem.updated_at | Date | Problem updated at. |
 
 #### Command example
 ```!freshservice-problem-update problem_id=38 description=description```
@@ -4159,7 +4159,7 @@ Delete the Problem with the given ID from Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| problem_id | The problem ID to delete (use freshservice-problem-list to get the problem request ID). | Required | 
+| problem_id | The problem ID to delete (use freshservice-problem-list to get the problem request ID). | Required |
 
 #### Context Output
 
@@ -4183,28 +4183,28 @@ Retrieve the tasks on a Problem with the given ID from Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| problem_id | Problem ID. | Required | 
-| task_id | The change request task ID. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| problem_id | Problem ID. | Required |
+| task_id | The change request task ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Problem.Task.id | Number | Task ID. | 
-| Freshservice.Problem.Task.agent_id | Unknown | Task agent ID. | 
-| Freshservice.Problem.Task.status | Number | Task status. | 
-| Freshservice.Problem.Task.due_date | Date | Task due date. | 
-| Freshservice.Problem.Task.notify_before | Number | Task notify before. | 
-| Freshservice.Problem.Task.title | String | Task title. | 
-| Freshservice.Problem.Task.description | String | Task description. | 
-| Freshservice.Problem.Task.created_at | Date | Task created at. | 
-| Freshservice.Problem.Task.updated_at | Date | Task updated at. | 
-| Freshservice.Problem.Task.closed_at | Unknown | Task closed at. | 
-| Freshservice.Problem.Task.group_id | Unknown | Task group ID. | 
-| Freshservice.Problem.Task.deleted | Boolean | Task deleted. | 
+| Freshservice.Problem.Task.id | Number | Task ID. |
+| Freshservice.Problem.Task.agent_id | Unknown | Task agent ID. |
+| Freshservice.Problem.Task.status | Number | Task status. |
+| Freshservice.Problem.Task.due_date | Date | Task due date. |
+| Freshservice.Problem.Task.notify_before | Number | Task notify before. |
+| Freshservice.Problem.Task.title | String | Task title. |
+| Freshservice.Problem.Task.description | String | Task description. |
+| Freshservice.Problem.Task.created_at | Date | Task creation time. |
+| Freshservice.Problem.Task.updated_at | Date | Task updated at. |
+| Freshservice.Problem.Task.closed_at | Unknown | Task closed at. |
+| Freshservice.Problem.Task.group_id | Unknown | Task group ID. |
+| Freshservice.Problem.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
 ```!freshservice-problem-task-list problem_id=2```
@@ -4320,7 +4320,7 @@ Retrieve the tasks on a Problem with the given ID from Freshservice.
 #### Human Readable Output
 
 >### Problem
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|Description|Title|Notify Before|Status|Deleted|Closed At|Created At|Updated At|Due Date|
 >|---|---|---|---|---|---|---|---|---|---|
@@ -4345,29 +4345,29 @@ Create a new task on a problem in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Required | 
-| notify_before | Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc). | Required | 
-| title | Task title. | Required | 
-| description | Task description. | Required | 
-| status | Task status, default is 'Open'. Possible values are: Open, In Progress, Completed. | Optional | 
-| problem_id | The problem ID to add a task for (use freshservice-problem-list to get the problem request ID). | Required | 
+| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Required |
+| notify_before | Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc). | Required |
+| title | Task title. | Required |
+| description | Task description. | Required |
+| status | Task status, default is 'Open'. Possible values are: Open, In Progress, Completed. | Optional |
+| problem_id | The problem ID to add a task for (use freshservice-problem-list to get the problem request ID). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Problem.Task.id | Number | Task ID. | 
-| Freshservice.Problem.Task.agent_id | Unknown | Task agent ID. | 
-| Freshservice.Problem.Task.status | Number | Task status. | 
-| Freshservice.Problem.Task.due_date | Date | Task due date. | 
-| Freshservice.Problem.Task.notify_before | Number | Task notify before. | 
-| Freshservice.Problem.Task.title | String | Task title. | 
-| Freshservice.Problem.Task.description | String | Task description. | 
-| Freshservice.Problem.Task.created_at | Date | Task created at. | 
-| Freshservice.Problem.Task.updated_at | Date | Task updated at. | 
-| Freshservice.Problem.Task.closed_at | Unknown | Task closed at. | 
-| Freshservice.Problem.Task.group_id | Unknown | Task group ID. | 
-| Freshservice.Problem.Task.deleted | Boolean | Task deleted. | 
+| Freshservice.Problem.Task.id | Number | Task ID. |
+| Freshservice.Problem.Task.agent_id | Unknown | Task agent ID. |
+| Freshservice.Problem.Task.status | Number | Task status. |
+| Freshservice.Problem.Task.due_date | Date | Task due date. |
+| Freshservice.Problem.Task.notify_before | Number | Task notify before. |
+| Freshservice.Problem.Task.title | String | Task title. |
+| Freshservice.Problem.Task.description | String | Task description. |
+| Freshservice.Problem.Task.created_at | Date | Task creation time. |
+| Freshservice.Problem.Task.updated_at | Date | Task updated at. |
+| Freshservice.Problem.Task.closed_at | Unknown | Task closed at. |
+| Freshservice.Problem.Task.group_id | Unknown | Task group ID. |
+| Freshservice.Problem.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
 ```!freshservice-problem-task-create due_date="2020-04-03T10:26:13.067Z" notify_before="2020-05-03T10:26:13.067Z" title=title description=description status=Open problem_id=2```
@@ -4422,30 +4422,30 @@ Update an existing task on an existing Problem in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Optional | 
-| notify_before | Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc). | Optional | 
-| title | Task title. | Optional | 
-| description | Task description. | Optional | 
-| status | Task status, default is 'Open'. Possible values are: Open, In Progress, Completed. | Optional | 
-| problem_id | The problem ID to update a task for (use freshservice-problem-list to get the problem request ID). | Required | 
-| task_id | The Task ID for an update (use freshservice-problem-task-list to get the task ID). | Required | 
+| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Optional |
+| notify_before | Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc). | Optional |
+| title | Task title. | Optional |
+| description | Task description. | Optional |
+| status | Task status, default is 'Open'. Possible values are: Open, In Progress, Completed. | Optional |
+| problem_id | The problem ID to update a task for (use freshservice-problem-list to get the problem request ID). | Required |
+| task_id | The Task ID for an update (use freshservice-problem-task-list to get the task ID). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Problem.Task.id | Number | Task ID. | 
-| Freshservice.Problem.Task.agent_id | Unknown | Task agent ID. | 
-| Freshservice.Problem.Task.status | Number | Task status. | 
-| Freshservice.Problem.Task.due_date | Date | Task due date. | 
-| Freshservice.Problem.Task.notify_before | Number | Task notify before. | 
-| Freshservice.Problem.Task.title | String | Task title. | 
-| Freshservice.Problem.Task.description | String | Task description. | 
-| Freshservice.Problem.Task.created_at | Date | Task created at. | 
-| Freshservice.Problem.Task.updated_at | Date | Task updated at. | 
-| Freshservice.Problem.Task.closed_at | Unknown | Task closed at. | 
-| Freshservice.Problem.Task.group_id | Unknown | Task group ID. | 
-| Freshservice.Problem.Task.deleted | Boolean | Task deleted. | 
+| Freshservice.Problem.Task.id | Number | Task ID. |
+| Freshservice.Problem.Task.agent_id | Unknown | Task agent ID. |
+| Freshservice.Problem.Task.status | Number | Task status. |
+| Freshservice.Problem.Task.due_date | Date | Task due date. |
+| Freshservice.Problem.Task.notify_before | Number | Task notify before. |
+| Freshservice.Problem.Task.title | String | Task title. |
+| Freshservice.Problem.Task.description | String | Task description. |
+| Freshservice.Problem.Task.created_at | Date | Task creation time. |
+| Freshservice.Problem.Task.updated_at | Date | Task updated at. |
+| Freshservice.Problem.Task.closed_at | Unknown | Task closed at. |
+| Freshservice.Problem.Task.group_id | Unknown | Task group ID. |
+| Freshservice.Problem.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
 ```!freshservice-problem-task-update description=description problem_id=2 task_id=185```
@@ -4500,8 +4500,8 @@ Delete the task on a Problem with the given ID from Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| problem_id | The problem ID (use freshservice-problem-list to get problem request ID). | Required | 
-| task_id | The task ID for delete (use freshservice-problem-task-list to get the task ID). | Required | 
+| problem_id | The problem ID (use freshservice-problem-list to get problem request ID). | Required |
+| task_id | The task ID for delete (use freshservice-problem-task-list to get the task ID). | Required |
 
 #### Context Output
 
@@ -4525,36 +4525,36 @@ Retrieve a list of all Change requests or the Change request with the given ID f
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| change_id | Change request ID. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| change_id | Change request ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Change.agent_id | Unknown | Change agent ID. | 
-| Freshservice.Change.group_id | Unknown | Change group ID. | 
-| Freshservice.Change.priority | Number | Change priority. | 
-| Freshservice.Change.impact | Number | Change impact. | 
-| Freshservice.Change.status | Number | Change status. | 
-| Freshservice.Change.risk | Number | Change risk. | 
-| Freshservice.Change.change_type | Number | Change type. | 
-| Freshservice.Change.planned_start_date | Date | Change planned start date. | 
-| Freshservice.Change.planned_end_date | Date | Change planned end date. | 
-| Freshservice.Change.subject | String | Change subject. | 
-| Freshservice.Change.department_id | Unknown | Change department ID. | 
-| Freshservice.Change.category | Unknown | Change category. | 
-| Freshservice.Change.sub_category | Unknown | Change sub-category. | 
-| Freshservice.Change.item_category | Unknown | Change item category. | 
-| Freshservice.Change.description | String | Change description. | 
-| Freshservice.Change.id | Number | Change ID. | 
-| Freshservice.Change.requester_id | Date | Change requester ID. | 
-| Freshservice.Change.approval_status | Number | Change approval status. | 
-| Freshservice.Change.change_window_id | Unknown | Change window ID. | 
-| Freshservice.Change.created_at | Date | Change created at. | 
-| Freshservice.Change.updated_at | Date | Change updated at. | 
+| Freshservice.Change.agent_id | Unknown | Change agent ID. |
+| Freshservice.Change.group_id | Unknown | Change group ID. |
+| Freshservice.Change.priority | Number | Change priority. |
+| Freshservice.Change.impact | Number | Change impact. |
+| Freshservice.Change.status | Number | Change status. |
+| Freshservice.Change.risk | Number | Change risk. |
+| Freshservice.Change.change_type | Number | Change type. |
+| Freshservice.Change.planned_start_date | Date | Change planned start date. |
+| Freshservice.Change.planned_end_date | Date | Change planned end date. |
+| Freshservice.Change.subject | String | Change subject. |
+| Freshservice.Change.department_id | Unknown | Change department ID. |
+| Freshservice.Change.category | Unknown | Change category. |
+| Freshservice.Change.sub_category | Unknown | Change sub-category. |
+| Freshservice.Change.item_category | Unknown | Change item category. |
+| Freshservice.Change.description | String | Change description. |
+| Freshservice.Change.id | Number | Change ID. |
+| Freshservice.Change.requester_id | Date | Change requester ID. |
+| Freshservice.Change.approval_status | Number | Change approval status. |
+| Freshservice.Change.change_window_id | Unknown | Change window ID. |
+| Freshservice.Change.created_at | Date | Change creation time |
+| Freshservice.Change.updated_at | Date | Change updated at. |
 
 #### Command example
 ```!freshservice-change-list```
@@ -4827,7 +4827,7 @@ Retrieve a list of all Change requests or the Change request with the given ID f
 #### Human Readable Output
 
 >### Change
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|Description Text|Requester Id|Subject|Risk|Impact|Status|Priority|Change Type|Category|Created At|Updated At|Planned Start Date|Planned End Date|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -4852,48 +4852,48 @@ Create a new Change request in Freshservice. Creating a ticket required one of t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | The content of the change. | Required | 
-| priority | Priority of the change. Possible values are: Low, Medium, High, Urgent. | Required | 
-| impact | Impact of the change (Low-1, Medium-2, High-3). Possible values are: Low, Medium, High. | Required | 
-| status | Status of the change (Open-1,Planning-2,Approval-3,Pending Release-4,Pending Review-5,closed-6). Possible values are: Open, Planning, Approval, Pending Release, Pending Review, closed. | Required | 
-| risk | Risk of the change (Low-1, Medium-2, High-3, Very High-4). Possible values are: Low, Medium, High, Very High. | Required | 
-| change_type | Type of the change. Possible values are: Minor, Standard, Major, Emergency. | Required | 
-| planned_start_date | Timestamp at which change is starting (for example YYYY-MM-DDThh:mm). | Required | 
-| planned_end_date | Timestamp at which change is ending (for example YYYY-MM-DDThh:mm). | Required | 
-| subject | The subject of the change. | Required | 
-| email | Requester email. If not specified - must provide 'requester_id'. | Optional | 
-| requester_id | Requester ID (use freshservice-agent-list to get the agent ID). If not specified - must provide 'email'. | Optional | 
-| agent_id | Unique identifier of the agent to whom the change is assigned. Use freshservice-agent-list to get the agent ID. | Optional | 
-| group_id | Unique identifier of the agent group to which the change is assigned. Use freshservice-agent-group-list to get the agent group ID. | Optional | 
-| department_id | Unique ID of the department initiating the change. Use freshservice-department-list to get the department ID. | Optional | 
-| category | Category of the Problem. Possible values are: Hardware, Software, Network, Office Applications, Talent Management, Travel, Employee Records and Documents, Office Furniture, Office Equipment, Employee Benefits, Employee Onboarding/Offboarding, Employee Relations, Workplace Access and Security, Building and Grounds Maintenance, Vendor Document Review, Payroll, Vendor Payment, Customer Payment, Reimbursements and Advances, Legal Document Creation, Legal Review - Vendor Documents, Legal Review - Customer Documents, Other. | Optional | 
-| sub_category | The sub-category of the Problem. | Optional | 
+| description | The content of the change. | Required |
+| priority | Priority of the change. Possible values are: Low, Medium, High, Urgent. | Required |
+| impact | Impact of the change (Low-1, Medium-2, High-3). Possible values are: Low, Medium, High. | Required |
+| status | Status of the change (Open-1,Planning-2,Approval-3,Pending Release-4,Pending Review-5,closed-6). Possible values are: Open, Planning, Approval, Pending Release, Pending Review, closed. | Required |
+| risk | Risk of the change (Low-1, Medium-2, High-3, Very High-4). Possible values are: Low, Medium, High, Very High. | Required |
+| change_type | Type of the change. Possible values are: Minor, Standard, Major, Emergency. | Required |
+| planned_start_date | Timestamp at which change is starting (for example YYYY-MM-DDThh:mm). | Required |
+| planned_end_date | Timestamp at which change is ending (for example YYYY-MM-DDThh:mm). | Required |
+| subject | The subject of the change. | Required |
+| email | Requester email. If not specified - must provide 'requester_id'. | Optional |
+| requester_id | Requester ID (use freshservice-agent-list to get the agent ID). If not specified - must provide 'email'. | Optional |
+| agent_id | Unique identifier of the agent to whom the change is assigned. Use freshservice-agent-list to get the agent ID. | Optional |
+| group_id | Unique identifier of the agent group to which the change is assigned. Use freshservice-agent-group-list to get the agent group ID. | Optional |
+| department_id | Unique ID of the department initiating the change. Use freshservice-department-list to get the department ID. | Optional |
+| category | Category of the Problem. Possible values are: Hardware, Software, Network, Office Applications, Talent Management, Travel, Employee Records and Documents, Office Furniture, Office Equipment, Employee Benefits, Employee Onboarding/Offboarding, Employee Relations, Workplace Access and Security, Building and Grounds Maintenance, Vendor Document Review, Payroll, Vendor Payment, Customer Payment, Reimbursements and Advances, Legal Document Creation, Legal Review - Vendor Documents, Legal Review - Customer Documents, Other. | Optional |
+| sub_category | The sub-category of the Problem. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Change.agent_id | Unknown | Change agent ID. | 
-| Freshservice.Change.group_id | Unknown | Change group ID. | 
-| Freshservice.Change.priority | Number | Change priority. | 
-| Freshservice.Change.impact | Number | Change impact. | 
-| Freshservice.Change.status | Number | Change status. | 
-| Freshservice.Change.risk | Number | Change risk. | 
-| Freshservice.Change.change_type | Number | Change change_type. | 
-| Freshservice.Change.planned_start_date | Date | Change planned start date. | 
-| Freshservice.Change.planned_end_date | Date | Change planned end date. | 
-| Freshservice.Change.subject | String | Change subject. | 
-| Freshservice.Change.department_id | Unknown | Change department ID. | 
-| Freshservice.Change.category | Unknown | Change category. | 
-| Freshservice.Change.sub_category | Unknown | Change sub-category. | 
-| Freshservice.Change.item_category | Unknown | Change item category. | 
-| Freshservice.Change.description | String | Change description. | 
-| Freshservice.Change.id | Number | Change ID. | 
-| Freshservice.Change.requester_id | Date | Change requester ID. | 
-| Freshservice.Change.approval_status | Number | Change approval status. | 
-| Freshservice.Change.change_window_id | Unknown | Change window ID. | 
-| Freshservice.Change.created_at | Date | Change created at. | 
-| Freshservice.Change.updated_at | Date | Change updated at. | 
+| Freshservice.Change.agent_id | Unknown | Change agent ID. |
+| Freshservice.Change.group_id | Unknown | Change group ID. |
+| Freshservice.Change.priority | Number | Change priority. |
+| Freshservice.Change.impact | Number | Change impact. |
+| Freshservice.Change.status | Number | Change status. |
+| Freshservice.Change.risk | Number | Change risk. |
+| Freshservice.Change.change_type | Number | Change change_type. |
+| Freshservice.Change.planned_start_date | Date | Change planned start date. |
+| Freshservice.Change.planned_end_date | Date | Change planned end date. |
+| Freshservice.Change.subject | String | Change subject. |
+| Freshservice.Change.department_id | Unknown | Change department ID. |
+| Freshservice.Change.category | Unknown | Change category. |
+| Freshservice.Change.sub_category | Unknown | Change sub-category. |
+| Freshservice.Change.item_category | Unknown | Change item category. |
+| Freshservice.Change.description | String | Change description. |
+| Freshservice.Change.id | Number | Change ID. |
+| Freshservice.Change.requester_id | Date | Change requester ID. |
+| Freshservice.Change.approval_status | Number | Change approval status. |
+| Freshservice.Change.change_window_id | Unknown | Change window ID. |
+| Freshservice.Change.created_at | Date | Change creation time |
+| Freshservice.Change.updated_at | Date | Change updated at. |
 
 #### Command example
 ```!freshservice-change-create description=description priority=Low impact=Low status=Open risk=Low change_type=Minor planned_start_date="2019-03-20T16:18:46Z" planned_end_date="2019-03-23T16:18:46Z" subject=subject email=sample@freshservice.com```
@@ -4960,48 +4960,48 @@ Update an existing Change request in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | The content of the change. | Optional | 
-| change_id | The change ID (use freshservice-change-list to get the change request ID). | Required | 
-| priority | Priority of the change. Possible values are: Low, Medium, High, Urgent. | Optional | 
-| impact | Impact of the change (Low-1, Medium-2, High-3). Possible values are: Low, Medium, High. | Optional | 
-| status | Status of the change (Open-1,Planning-2,Approval-3,Pending Release-4,Pending Review-5,closed-6). Possible values are: Open, Planning, Approval, Pending Release, Pending Review, closed. | Optional | 
-| risk | Risk of the change (Low-1, Medium-2, High-3, Very High-4). Possible values are: Low, Medium, High, Very High. | Optional | 
-| change_type | Type of the change. Possible values are: Minor, Standard, Major, Emergency. | Optional | 
-| planned_start_date | Timestamp at which change is starting (for example YYYY-MM-DDThh:mm). | Optional | 
-| planned_end_date | Timestamp at which change is ending (for example YYYY-MM-DDThh:mm). | Optional | 
-| subject | The subject of the change. | Optional | 
-| email | requester email. | Optional | 
-| agent_id | Unique identifier of the agent to whom the change is assigned. Use freshservice-agent-list to get the agent ID. | Optional | 
-| group_id | Unique identifier of the agent group to which the change is assigned. Use freshservice-agent-group-list to get the agent group ID. | Optional | 
-| department_id | Unique ID of the department initiating the change. Use freshservice-department-list to get the department ID. | Optional | 
-| category | Category of the Problem. Possible values are: Hardware, Software, Network, Office Applications, Talent Management, Travel, Employee Records and Documents, Office Furniture, Office Equipment, Employee Benefits, Employee Onboarding/Offboarding, Employee Relations, Workplace Access and Security, Building and Grounds Maintenance, Vendor Document Review, Payroll, Vendor Payment, Customer Payment, Reimbursements and Advances, Legal Document Creation, Legal Review - Vendor Documents, Legal Review - Customer Documents, Other. | Optional | 
-| sub_category | The sub-category of the Problem. | Optional | 
+| description | The content of the change. | Optional |
+| change_id | The change ID (use freshservice-change-list to get the change request ID). | Required |
+| priority | Priority of the change. Possible values are: Low, Medium, High, Urgent. | Optional |
+| impact | Impact of the change (Low-1, Medium-2, High-3). Possible values are: Low, Medium, High. | Optional |
+| status | Status of the change (Open-1,Planning-2,Approval-3,Pending Release-4,Pending Review-5,closed-6). Possible values are: Open, Planning, Approval, Pending Release, Pending Review, closed. | Optional |
+| risk | Risk of the change (Low-1, Medium-2, High-3, Very High-4). Possible values are: Low, Medium, High, Very High. | Optional |
+| change_type | Type of the change. Possible values are: Minor, Standard, Major, Emergency. | Optional |
+| planned_start_date | Timestamp at which change is starting (for example YYYY-MM-DDThh:mm). | Optional |
+| planned_end_date | Timestamp at which change is ending (for example YYYY-MM-DDThh:mm). | Optional |
+| subject | The subject of the change. | Optional |
+| email | requester email. | Optional |
+| agent_id | Unique identifier of the agent to whom the change is assigned. Use freshservice-agent-list to get the agent ID. | Optional |
+| group_id | Unique identifier of the agent group to which the change is assigned. Use freshservice-agent-group-list to get the agent group ID. | Optional |
+| department_id | Unique ID of the department initiating the change. Use freshservice-department-list to get the department ID. | Optional |
+| category | Category of the Problem. Possible values are: Hardware, Software, Network, Office Applications, Talent Management, Travel, Employee Records and Documents, Office Furniture, Office Equipment, Employee Benefits, Employee Onboarding/Offboarding, Employee Relations, Workplace Access and Security, Building and Grounds Maintenance, Vendor Document Review, Payroll, Vendor Payment, Customer Payment, Reimbursements and Advances, Legal Document Creation, Legal Review - Vendor Documents, Legal Review - Customer Documents, Other. | Optional |
+| sub_category | The sub-category of the Problem. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Change.agent_id | Unknown | Change agent ID. | 
-| Freshservice.Change.group_id | Unknown | Change group ID. | 
-| Freshservice.Change.priority | Number | Change priority. | 
-| Freshservice.Change.impact | Number | Change impact. | 
-| Freshservice.Change.status | Number | Change status. | 
-| Freshservice.Change.risk | Number | Change risk. | 
-| Freshservice.Change.change_type | Number | Change change_type. | 
-| Freshservice.Change.planned_start_date | Date | Change planned start date. | 
-| Freshservice.Change.planned_end_date | Date | Change planned end date. | 
-| Freshservice.Change.subject | String | Change subject. | 
-| Freshservice.Change.department_id | Unknown | Change department ID. | 
-| Freshservice.Change.category | Unknown | Change category. | 
-| Freshservice.Change.sub_category | Unknown | Change sub-category. | 
-| Freshservice.Change.item_category | Unknown | Change item category. | 
-| Freshservice.Change.description | String | Change description. | 
-| Freshservice.Change.id | Number | Change ID. | 
-| Freshservice.Change.requester_id | Date | Change requester ID. | 
-| Freshservice.Change.approval_status | Number | Change approval status. | 
-| Freshservice.Change.change_window_id | Unknown | Change window ID. | 
-| Freshservice.Change.created_at | Date | Change created at. | 
-| Freshservice.Change.updated_at | Date | Change updated at. | 
+| Freshservice.Change.agent_id | Unknown | Change agent ID. |
+| Freshservice.Change.group_id | Unknown | Change group ID. |
+| Freshservice.Change.priority | Number | Change priority. |
+| Freshservice.Change.impact | Number | Change impact. |
+| Freshservice.Change.status | Number | Change status. |
+| Freshservice.Change.risk | Number | Change risk. |
+| Freshservice.Change.change_type | Number | Change change_type. |
+| Freshservice.Change.planned_start_date | Date | Change planned start date. |
+| Freshservice.Change.planned_end_date | Date | Change planned end date. |
+| Freshservice.Change.subject | String | Change subject. |
+| Freshservice.Change.department_id | Unknown | Change department ID. |
+| Freshservice.Change.category | Unknown | Change category. |
+| Freshservice.Change.sub_category | Unknown | Change sub-category. |
+| Freshservice.Change.item_category | Unknown | Change item category. |
+| Freshservice.Change.description | String | Change description. |
+| Freshservice.Change.id | Number | Change ID. |
+| Freshservice.Change.requester_id | Date | Change requester ID. |
+| Freshservice.Change.approval_status | Number | Change approval status. |
+| Freshservice.Change.change_window_id | Unknown | Change window ID. |
+| Freshservice.Change.created_at | Date | Change creation time |
+| Freshservice.Change.updated_at | Date | Change updated at. |
 
 #### Command example
 ```!freshservice-change-update description=description change_id=28 subject=subject```
@@ -5068,7 +5068,7 @@ Delete the Change request with the given ID from Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| change_id | The change ID to delete (use freshservice-change-list to get the change request ID). | Required | 
+| change_id | The change ID to delete (use freshservice-change-list to get the change request ID). | Required |
 
 #### Context Output
 
@@ -5092,28 +5092,28 @@ Retrieve the tasks on a Change request with the given ID from Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| change_id | Change request ID (use freshservice-change-list to get the change request ID). | Required | 
-| task_id | The change request task ID. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| change_id | Change request ID (use freshservice-change-list to get the change request ID). | Required |
+| task_id | The change request task ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Change.Task.id | Number | Task ID. | 
-| Freshservice.Change.Task.agent_id | Unknown | Task agent ID. | 
-| Freshservice.Change.Task.status | Number | Task status. | 
-| Freshservice.Change.Task.due_date | Date | Task due date. | 
-| Freshservice.Change.Task.notify_before | Number | Task notify before. | 
-| Freshservice.Change.Task.title | String | Task title. | 
-| Freshservice.Change.Task.description | String | Task description. | 
-| Freshservice.Change.Task.created_at | Date | Task created at. | 
-| Freshservice.Change.Task.updated_at | Date | Task updated at. | 
-| Freshservice.Change.Task.closed_at | Unknown | Task closed at. | 
-| Freshservice.Change.Task.group_id | Unknown | Task group ID. | 
-| Freshservice.Change.Task.deleted | Boolean | Task deleted. | 
+| Freshservice.Change.Task.id | Number | Task ID. |
+| Freshservice.Change.Task.agent_id | Unknown | Task agent ID. |
+| Freshservice.Change.Task.status | Number | Task status. |
+| Freshservice.Change.Task.due_date | Date | Task due date. |
+| Freshservice.Change.Task.notify_before | Number | Task notify before. |
+| Freshservice.Change.Task.title | String | Task title. |
+| Freshservice.Change.Task.description | String | Task description. |
+| Freshservice.Change.Task.created_at | Date | Task creation time. |
+| Freshservice.Change.Task.updated_at | Date | Task updated at. |
+| Freshservice.Change.Task.closed_at | Unknown | Task closed at. |
+| Freshservice.Change.Task.group_id | Unknown | Task group ID. |
+| Freshservice.Change.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
 ```!freshservice-change-task-list change_id=2```
@@ -5261,7 +5261,7 @@ Retrieve the tasks on a Change request with the given ID from Freshservice.
 #### Human Readable Output
 
 >### Change
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|Description|Title|Notify Before|Status|Deleted|Closed At|Created At|Updated At|Due Date|
 >|---|---|---|---|---|---|---|---|---|---|
@@ -5288,29 +5288,29 @@ Create a new task on a change request in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Required | 
-| notify_before | Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc). | Required | 
-| title | Task title. | Required | 
-| description | Task description. | Required | 
-| status | Task status, default is 'Open'. Possible values are: Open, In Progress, Completed. | Optional | 
-| change_id | The change ID to add a task for (use freshservice-change-list to get the change request ID). | Required | 
+| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Required |
+| notify_before | Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc). | Required |
+| title | Task title. | Required |
+| description | Task description. | Required |
+| status | Task status, default is 'Open'. Possible values are: Open, In Progress, Completed. | Optional |
+| change_id | The change ID to add a task for (use freshservice-change-list to get the change request ID). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Change.Task.id | Number | Task ID. | 
-| Freshservice.Change.Task.agent_id | Unknown | Task agent ID. | 
-| Freshservice.Change.Task.status | Number | Task status. | 
-| Freshservice.Change.Task.due_date | Date | Task due date. | 
-| Freshservice.Change.Task.notify_before | Number | Task notify before. | 
-| Freshservice.Change.Task.title | String | Task title. | 
-| Freshservice.Change.Task.description | String | Task description. | 
-| Freshservice.Change.Task.created_at | Date | Task created at. | 
-| Freshservice.Change.Task.updated_at | Date | Task updated at. | 
-| Freshservice.Change.Task.closed_at | Unknown | Task closed at. | 
-| Freshservice.Change.Task.group_id | Unknown | Task group ID. | 
-| Freshservice.Change.Task.deleted | Boolean | Task deleted. | 
+| Freshservice.Change.Task.id | Number | Task ID. |
+| Freshservice.Change.Task.agent_id | Unknown | Task agent ID. |
+| Freshservice.Change.Task.status | Number | Task status. |
+| Freshservice.Change.Task.due_date | Date | Task due date. |
+| Freshservice.Change.Task.notify_before | Number | Task notify before. |
+| Freshservice.Change.Task.title | String | Task title. |
+| Freshservice.Change.Task.description | String | Task description. |
+| Freshservice.Change.Task.created_at | Date | Task creation time. |
+| Freshservice.Change.Task.updated_at | Date | Task updated at. |
+| Freshservice.Change.Task.closed_at | Unknown | Task closed at. |
+| Freshservice.Change.Task.group_id | Unknown | Task group ID. |
+| Freshservice.Change.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
 ```!freshservice-change-task-create due_date="2020-04-03T10:26:13.067Z" notify_before="2020-05-03T10:26:13.067Z" title=title description=description status=Open change_id=2```
@@ -5365,30 +5365,30 @@ Update an existing task on an existing Change request in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Optional | 
-| notify_before | Task notify before (For example 30 minutes, 7 hours and etc). | Optional | 
-| title | Task title. | Optional | 
-| description | Task description. | Optional | 
-| status | Task status, default is 'Open'. Possible values are: Open, In Progress, Completed. | Optional | 
-| change_id | The change ID to update a task (use freshservice-change-list to get the change request ID). | Required | 
-| task_id | The Task ID for an update (use freshservice-change-task-list to get the task ID). | Required | 
+| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Optional |
+| notify_before | Task notify before (For example 30 minutes, 7 hours and etc). | Optional |
+| title | Task title. | Optional |
+| description | Task description. | Optional |
+| status | Task status, default is 'Open'. Possible values are: Open, In Progress, Completed. | Optional |
+| change_id | The change ID to update a task (use freshservice-change-list to get the change request ID). | Required |
+| task_id | The Task ID for an update (use freshservice-change-task-list to get the task ID). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Change.Task.id | Number | Task ID. | 
-| Freshservice.Change.Task.agent_id | Unknown | Task agent ID. | 
-| Freshservice.Change.Task.status | Number | Task status. | 
-| Freshservice.Change.Task.due_date | Date | Task due date. | 
-| Freshservice.Change.Task.notify_before | Number | Task notify before. | 
-| Freshservice.Change.Task.title | String | Task title. | 
-| Freshservice.Change.Task.description | String | Task description. | 
-| Freshservice.Change.Task.created_at | Date | Task created at. | 
-| Freshservice.Change.Task.updated_at | Date | Task updated at. | 
-| Freshservice.Change.Task.closed_at | Unknown | Task closed at. | 
-| Freshservice.Change.Task.group_id | Unknown | Task group ID. | 
-| Freshservice.Change.Task.deleted | Boolean | Task deleted. | 
+| Freshservice.Change.Task.id | Number | Task ID. |
+| Freshservice.Change.Task.agent_id | Unknown | Task agent ID. |
+| Freshservice.Change.Task.status | Number | Task status. |
+| Freshservice.Change.Task.due_date | Date | Task due date. |
+| Freshservice.Change.Task.notify_before | Number | Task notify before. |
+| Freshservice.Change.Task.title | String | Task title. |
+| Freshservice.Change.Task.description | String | Task description. |
+| Freshservice.Change.Task.created_at | Date | Task creation time. |
+| Freshservice.Change.Task.updated_at | Date | Task updated at. |
+| Freshservice.Change.Task.closed_at | Unknown | Task closed at. |
+| Freshservice.Change.Task.group_id | Unknown | Task group ID. |
+| Freshservice.Change.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
 ```!freshservice-change-task-update description=description change_id=2 task_id=188```
@@ -5443,8 +5443,8 @@ Delete the task on a Change request with the given ID from Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| change_id | Change ID (use freshservice-change-list to get the change request ID). | Required | 
-| task_id | Task ID (use freshservice-change-task-list to get the task ID). | Required | 
+| change_id | Change ID (use freshservice-change-list to get the change request ID). | Required |
+| task_id | Task ID (use freshservice-change-task-list to get the task ID). | Required |
 
 #### Context Output
 
@@ -5468,35 +5468,35 @@ Retrieve a list of all Releases (or specific by ID) in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| release_id | The release ID. | Optional | 
-| filter_name | Filters to view only specific releases (which match only the criteria you choose). Possible values are: all, my_open, unassigned, completed, incompleted, deleted. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| release_id | The release ID. | Optional |
+| filter_name | Filters to view only specific releases (which match only the criteria you choose). Possible values are: all, my_open, unassigned, completed, incompleted, deleted. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Release.id | Number | release ID. | 
-| Freshservice.Release.agent_id | Unknown | release agent ID. | 
-| Freshservice.Release.description | String | release description. | 
-| Freshservice.Release.group_id | Unknown | release group ID. | 
-| Freshservice.Release.department_id | Unknown | release department ID. | 
-| Freshservice.Release.subject | String | release subject. | 
-| Freshservice.Release.category | Unknown | release category. | 
-| Freshservice.Release.sub_category | Unknown | release sub-category. | 
-| Freshservice.Release.item_category | Unknown | release item category. | 
-| Freshservice.Release.planned_start_date | Date | release planned start date. | 
-| Freshservice.Release.planned_end_date | Date | release planned end date. | 
-| Freshservice.Release.status | Number | release status. | 
-| Freshservice.Release.priority | Number | release priority. | 
-| Freshservice.Release.release_type | Number | release release_type. | 
-| Freshservice.Release.work_start_date | Date | release work start date. | 
-| Freshservice.Release.work_end_date | Date | release work end date. | 
-| Freshservice.Release.created_at | Date | release created at. | 
-| Freshservice.Release.updated_at | Date | release updated at. | 
-| Freshservice.Release.associated_change_ids | Number | release associated change IDs. | 
+| Freshservice.Release.id | Number | release ID. |
+| Freshservice.Release.agent_id | Unknown | release agent ID. |
+| Freshservice.Release.description | String | release description. |
+| Freshservice.Release.group_id | Unknown | release group ID. |
+| Freshservice.Release.department_id | Unknown | release department ID. |
+| Freshservice.Release.subject | String | release subject. |
+| Freshservice.Release.category | Unknown | release category. |
+| Freshservice.Release.sub_category | Unknown | release sub-category. |
+| Freshservice.Release.item_category | Unknown | release item category. |
+| Freshservice.Release.planned_start_date | Date | release planned start date. |
+| Freshservice.Release.planned_end_date | Date | release planned end date. |
+| Freshservice.Release.status | Number | release status. |
+| Freshservice.Release.priority | Number | release priority. |
+| Freshservice.Release.release_type | Number | release release_type. |
+| Freshservice.Release.work_start_date | Date | release work start date. |
+| Freshservice.Release.work_end_date | Date | release work end date. |
+| Freshservice.Release.created_at | Date | release creation time. |
+| Freshservice.Release.updated_at | Date | release updated at. |
+| Freshservice.Release.associated_change_ids | Number | release associated change IDs. |
 
 #### Command example
 ```!freshservice-release-list```
@@ -5650,7 +5650,7 @@ Retrieve a list of all Releases (or specific by ID) in Freshservice.
 #### Human Readable Output
 
 >### Release
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|Description Text|Subject|Release Type|Status|Priority|Group Id|Known Error|Category|Created At|Updated At|Planned Start Date|Planned End Date|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -5673,42 +5673,42 @@ Create a new Release request in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| priority | Priority of the Release. Possible values are: Low, Medium, High, Urgent. | Required | 
-| status | Status identifier of the Release. (1-Open, 2-On hold, 3-In Progress, 4-Incomplete, 5-Completed). Possible values are: Open, On hold, In Progress, Incomplete, Completed. | Required | 
-| release_type | Type of the Release (1-minor, 2-standard, 3-major, 4-emergency). Possible values are: Minor, Standard, Major, Emergency. | Required | 
-| subject | The subject of the Release. | Required | 
-| description | Description of the release. | Required | 
-| planned_start_date | Timestamp at which the release is starting (for example YYYY-MM-DDThh:mm). | Required | 
-| planned_end_date | Timestamp at which release is ending (for example YYYY-MM-DDThh:mm). | Required | 
-| category | Category of the Release. Possible values are: Hardware, Software, Network, Office Applications, Talent Management, Travel, Employee Records and Documents, Office Furniture, Office Equipment, Employee Benefits, Employee Onboarding/Offboarding, Employee Relations, Workplace Access and Security, Building and Grounds Maintenance, Vendor Document Review, Payroll, Vendor Payment, Customer Payment, Reimbursements and Advances, Legal Document Creation, Legal Review - Vendor Documents, Legal Review - Customer Documents, Other. | Optional | 
-| custom_fields | Key value pairs containing the names and values of custom fields. | Optional | 
-| agent_id | Unique identifier of the agent to whom the Release is assigned. Use freshservice-agent-list to get the agent ID. | Optional | 
-| group_id | Unique identifier of the agent group to which the Release is assigned. Use freshservice-agent-group-list to get the agent group ID. | Optional | 
-| department_id | Unique ID of the department initiating the Release. Use freshservice-department-list to get the department ID. | Optional | 
-| sub_category | The sub-category of the Release. | Optional | 
+| priority | Priority of the Release. Possible values are: Low, Medium, High, Urgent. | Required |
+| status | Status identifier of the Release. (1-Open, 2-On hold, 3-In Progress, 4-Incomplete, 5-Completed). Possible values are: Open, On hold, In Progress, Incomplete, Completed. | Required |
+| release_type | Type of the Release (1-minor, 2-standard, 3-major, 4-emergency). Possible values are: Minor, Standard, Major, Emergency. | Required |
+| subject | The subject of the Release. | Required |
+| description | Description of the release. | Required |
+| planned_start_date | Timestamp at which the release is starting (for example YYYY-MM-DDThh:mm). | Required |
+| planned_end_date | Timestamp at which release is ending (for example YYYY-MM-DDThh:mm). | Required |
+| category | Category of the Release. Possible values are: Hardware, Software, Network, Office Applications, Talent Management, Travel, Employee Records and Documents, Office Furniture, Office Equipment, Employee Benefits, Employee Onboarding/Offboarding, Employee Relations, Workplace Access and Security, Building and Grounds Maintenance, Vendor Document Review, Payroll, Vendor Payment, Customer Payment, Reimbursements and Advances, Legal Document Creation, Legal Review - Vendor Documents, Legal Review - Customer Documents, Other. | Optional |
+| custom_fields | Key value pairs containing the names and values of custom fields. | Optional |
+| agent_id | Unique identifier of the agent to whom the Release is assigned. Use freshservice-agent-list to get the agent ID. | Optional |
+| group_id | Unique identifier of the agent group to which the Release is assigned. Use freshservice-agent-group-list to get the agent group ID. | Optional |
+| department_id | Unique ID of the department initiating the Release. Use freshservice-department-list to get the department ID. | Optional |
+| sub_category | The sub-category of the Release. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Release.id | Number | Release ID. | 
-| Freshservice.Release.agent_id | Unknown | Release agent ID. | 
-| Freshservice.Release.description | String | Release description. | 
-| Freshservice.Release.group_id | Unknown | Release group ID. | 
-| Freshservice.Release.department_id | Unknown | Release department ID. | 
-| Freshservice.Release.subject | String | Release subject. | 
-| Freshservice.Release.category | String | Release category. | 
-| Freshservice.Release.sub_category | Unknown | Release sub-category. | 
-| Freshservice.Release.item_category | Unknown | Release item category. | 
-| Freshservice.Release.planned_start_date | Date | Release planned start date. | 
-| Freshservice.Release.planned_end_date | Date | Release planned end date. | 
-| Freshservice.Release.status | Number | Release status. | 
-| Freshservice.Release.priority | Number | Release priority. | 
-| Freshservice.Release.release_type | Number | Release type. | 
-| Freshservice.Release.work_start_date | Date | Release work start date. | 
-| Freshservice.Release.work_end_date | Date | Release work end date. | 
-| Freshservice.Release.created_at | Date | Release created at. | 
-| Freshservice.Release.updated_at | Date | Release updated at. | 
+| Freshservice.Release.id | Number | Release ID. |
+| Freshservice.Release.agent_id | Unknown | Release agent ID. |
+| Freshservice.Release.description | String | Release description. |
+| Freshservice.Release.group_id | Unknown | Release group ID. |
+| Freshservice.Release.department_id | Unknown | Release department ID. |
+| Freshservice.Release.subject | String | Release subject. |
+| Freshservice.Release.category | String | Release category. |
+| Freshservice.Release.sub_category | Unknown | Release sub-category. |
+| Freshservice.Release.item_category | Unknown | Release item category. |
+| Freshservice.Release.planned_start_date | Date | Release planned start date. |
+| Freshservice.Release.planned_end_date | Date | Release planned end date. |
+| Freshservice.Release.status | Number | Release status. |
+| Freshservice.Release.priority | Number | Release priority. |
+| Freshservice.Release.release_type | Number | Release type. |
+| Freshservice.Release.work_start_date | Date | Release work start date. |
+| Freshservice.Release.work_end_date | Date | Release work end date. |
+| Freshservice.Release.created_at | Date | release creation time. |
+| Freshservice.Release.updated_at | Date | Release updated at. |
 
 #### Command example
 ```!freshservice-release-create priority=Low status=Open release_type=Minor subject=subject description=description planned_start_date="2019-03-20T16:18:46Z" planned_end_date="2019-03-23T16:18:46Z"```
@@ -5768,42 +5768,42 @@ Update an existing Release in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| priority | Priority of the Release. Possible values are: Low, Medium, High, Urgent. | Optional | 
-| status | Status identifier of the Release. (1-Open, 2-On hold, 3-In Progress, 4-Incomplete, 5-Completed). Possible values are: Open, On hold, In Progress, Incomplete, Completed. | Optional | 
-| release_type | Type of the Release (1-minor, 2-standard, 3-major, 4-emergency). Possible values are: Minor, Standard, Major, Emergency. | Optional | 
-| subject | The subject of the Release. | Optional | 
-| description | Description of the release. | Optional | 
-| planned_start_date | Timestamp at which release is starting (for example YYYY-MM-DDThh:mm). | Optional | 
-| planned_end_date | Timestamp at which release is ending (for example YYYY-MM-DDThh:mm). | Optional | 
-| release_id | The release ID (use freshservice-release-list to get the release request ID). | Required | 
-| sub_category | Sub-category of the Release. | Optional | 
-| department_id | Unique ID of the department initiating the Release. Use freshservice-department-list to get the department ID. | Optional | 
-| agent_id | Unique identifier of the agent to whom the Release is assigned. Use freshservice-agent-list to get the agent ID. | Optional | 
-| group_id | Unique identifier of the agent group to which the Release is assigned. Use freshservice-agent-group-list to get the agent group ID. | Optional | 
-| custom_fields | Key value pairs containing the names and values of custom fields. | Optional | 
+| priority | Priority of the Release. Possible values are: Low, Medium, High, Urgent. | Optional |
+| status | Status identifier of the Release. (1-Open, 2-On hold, 3-In Progress, 4-Incomplete, 5-Completed). Possible values are: Open, On hold, In Progress, Incomplete, Completed. | Optional |
+| release_type | Type of the Release (1-minor, 2-standard, 3-major, 4-emergency). Possible values are: Minor, Standard, Major, Emergency. | Optional |
+| subject | The subject of the Release. | Optional |
+| description | Description of the release. | Optional |
+| planned_start_date | Timestamp at which release is starting (for example YYYY-MM-DDThh:mm). | Optional |
+| planned_end_date | Timestamp at which release is ending (for example YYYY-MM-DDThh:mm). | Optional |
+| release_id | The release ID (use freshservice-release-list to get the release request ID). | Required |
+| sub_category | Sub-category of the Release. | Optional |
+| department_id | Unique ID of the department initiating the Release. Use freshservice-department-list to get the department ID. | Optional |
+| agent_id | Unique identifier of the agent to whom the Release is assigned. Use freshservice-agent-list to get the agent ID. | Optional |
+| group_id | Unique identifier of the agent group to which the Release is assigned. Use freshservice-agent-group-list to get the agent group ID. | Optional |
+| custom_fields | Key value pairs containing the names and values of custom fields. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Release.id | Number | Release ID. | 
-| Freshservice.Release.agent_id | Unknown | Release agent ID. | 
-| Freshservice.Release.description | String | Release description. | 
-| Freshservice.Release.group_id | Unknown | Release group ID. | 
-| Freshservice.Release.department_id | Unknown | Release department ID. | 
-| Freshservice.Release.subject | String | Release subject. | 
-| Freshservice.Release.category | String | Release category. | 
-| Freshservice.Release.sub_category | Unknown | Release sub-category. | 
-| Freshservice.Release.item_category | Unknown | Release item category. | 
-| Freshservice.Release.planned_start_date | Date | Release planned start date. | 
-| Freshservice.Release.planned_end_date | Date | Release planned end date. | 
-| Freshservice.Release.status | Number | Release status. | 
-| Freshservice.Release.priority | Number | Release priority. | 
-| Freshservice.Release.release_type | Number | Release release_type. | 
-| Freshservice.Release.work_start_date | Date | Release work start date. | 
-| Freshservice.Release.work_end_date | Date | Release work end date. | 
-| Freshservice.Release.created_at | Date | Release created at. | 
-| Freshservice.Release.updated_at | Date | Release updated at. | 
+| Freshservice.Release.id | Number | Release ID. |
+| Freshservice.Release.agent_id | Unknown | Release agent ID. |
+| Freshservice.Release.description | String | Release description. |
+| Freshservice.Release.group_id | Unknown | Release group ID. |
+| Freshservice.Release.department_id | Unknown | Release department ID. |
+| Freshservice.Release.subject | String | Release subject. |
+| Freshservice.Release.category | String | Release category. |
+| Freshservice.Release.sub_category | Unknown | Release sub-category. |
+| Freshservice.Release.item_category | Unknown | Release item category. |
+| Freshservice.Release.planned_start_date | Date | Release planned start date. |
+| Freshservice.Release.planned_end_date | Date | Release planned end date. |
+| Freshservice.Release.status | Number | Release status. |
+| Freshservice.Release.priority | Number | Release priority. |
+| Freshservice.Release.release_type | Number | Release release_type. |
+| Freshservice.Release.work_start_date | Date | Release work start date. |
+| Freshservice.Release.work_end_date | Date | Release work end date. |
+| Freshservice.Release.created_at | Date | release creation time. |
+| Freshservice.Release.updated_at | Date | Release updated at. |
 
 #### Command example
 ```!freshservice-release-update description=description release_id=40```
@@ -5863,7 +5863,7 @@ Delete a Release with the given ID from Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| release_id | The release ID (use freshservice-release-list to get the release request ID). | Required | 
+| release_id | The release ID (use freshservice-release-list to get the release request ID). | Required |
 
 #### Context Output
 
@@ -5887,28 +5887,28 @@ Retrieve the tasks on a Release with the given ID from Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| release_id | The release ID (use freshservice-release-list to get the release request ID). | Required | 
-| task_id | The release request task ID. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| release_id | The release ID (use freshservice-release-list to get the release request ID). | Required |
+| task_id | The release request task ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Release.Task.id | Number | Task ID. | 
-| Freshservice.Release.Task.agent_id | Unknown | Task agent ID. | 
-| Freshservice.Release.Task.status | Number | Task status. | 
-| Freshservice.Release.Task.due_date | Date | Task due date. | 
-| Freshservice.Release.Task.notify_before | Number | Task notify before. | 
-| Freshservice.Release.Task.title | String | Task title. | 
-| Freshservice.Release.Task.description | String | Task description. | 
-| Freshservice.Release.Task.created_at | Date | Task created at. | 
-| Freshservice.Release.Task.updated_at | Date | Task updated at. | 
-| Freshservice.Release.Task.closed_at | Unknown | Task closed at. | 
-| Freshservice.Release.Task.group_id | Number | Task group ID. | 
-| Freshservice.Release.Task.deleted | Boolean | Task deleted. | 
+| Freshservice.Release.Task.id | Number | Task ID. |
+| Freshservice.Release.Task.agent_id | Unknown | Task agent ID. |
+| Freshservice.Release.Task.status | Number | Task status. |
+| Freshservice.Release.Task.due_date | Date | Task due date. |
+| Freshservice.Release.Task.notify_before | Number | Task notify before. |
+| Freshservice.Release.Task.title | String | Task title. |
+| Freshservice.Release.Task.description | String | Task description. |
+| Freshservice.Release.Task.created_at | Date | Task creation time. |
+| Freshservice.Release.Task.updated_at | Date | Task updated at. |
+| Freshservice.Release.Task.closed_at | Unknown | Task closed at. |
+| Freshservice.Release.Task.group_id | Number | Task group ID. |
+| Freshservice.Release.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
 ```!freshservice-release-task-list release_id=40```
@@ -5927,7 +5927,7 @@ Retrieve the tasks on a Release with the given ID from Freshservice.
 #### Human Readable Output
 
 >### Release
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >**No entries.**
 
@@ -5945,29 +5945,29 @@ Create a new task on a Release in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Required | 
-| notify_before | Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc). | Required | 
-| title | Task title. | Required | 
-| description | Task description. | Required | 
-| status | Status of the task,. Possible values are: Open, In Progress, Completed. | Optional | 
-| release_id | The release ID to add a task for (use freshservice-release-list to get the release request ID). | Required | 
+| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Required |
+| notify_before | Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc). | Required |
+| title | Task title. | Required |
+| description | Task description. | Required |
+| status | Status of the task,. Possible values are: Open, In Progress, Completed. | Optional |
+| release_id | The release ID to add a task for (use freshservice-release-list to get the release request ID). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Release.Task.id | Number | Task ID. | 
-| Freshservice.Release.Task.agent_id | Unknown | Task agent ID. | 
-| Freshservice.Release.Task.status | Number | Task status. | 
-| Freshservice.Release.Task.due_date | Date | Task due date. | 
-| Freshservice.Release.Task.notify_before | Number | Task notify before. | 
-| Freshservice.Release.Task.title | String | Task title. | 
-| Freshservice.Release.Task.description | String | Task description. | 
-| Freshservice.Release.Task.created_at | Date | Task created at. | 
-| Freshservice.Release.Task.updated_at | Date | Task updated at. | 
-| Freshservice.Release.Task.closed_at | Unknown | Task closed at. | 
-| Freshservice.Release.Task.group_id | Unknown | Task group ID. | 
-| Freshservice.Release.Task.deleted | Boolean | Task deleted. | 
+| Freshservice.Release.Task.id | Number | Task ID. |
+| Freshservice.Release.Task.agent_id | Unknown | Task agent ID. |
+| Freshservice.Release.Task.status | Number | Task status. |
+| Freshservice.Release.Task.due_date | Date | Task due date. |
+| Freshservice.Release.Task.notify_before | Number | Task notify before. |
+| Freshservice.Release.Task.title | String | Task title. |
+| Freshservice.Release.Task.description | String | Task description. |
+| Freshservice.Release.Task.created_at | Date | Task creation time. |
+| Freshservice.Release.Task.updated_at | Date | Task updated at. |
+| Freshservice.Release.Task.closed_at | Unknown | Task closed at. |
+| Freshservice.Release.Task.group_id | Unknown | Task group ID. |
+| Freshservice.Release.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
 ```!freshservice-release-task-create due_date="2020-04-03T10:26:13.067Z" notify_before="2020-05-03T10:26:13.067Z" title=title description=description status=Open release_id=34```
@@ -6022,30 +6022,30 @@ Update an existing task on an existing Release in Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Optional | 
-| notify_before | Task notify before (For example 30 minutes, 7 hours and etc). | Optional | 
-| title | Task title. | Optional | 
-| description | Task description. | Optional | 
-| status | Status of the task,. Possible values are: Open, In Progress, Completed. | Optional | 
-| release_id | The Release ID to update a task for (use freshservice-release-list to get the release request ID). | Required | 
-| task_id | The Task ID for an update (use freshservice-release-task-list to get the task ID). | Required | 
+| due_date | Task due date (for example YYYY-MM-DDThh:mm). | Optional |
+| notify_before | Task notify before (For example 30 minutes, 7 hours and etc). | Optional |
+| title | Task title. | Optional |
+| description | Task description. | Optional |
+| status | Status of the task,. Possible values are: Open, In Progress, Completed. | Optional |
+| release_id | The Release ID to update a task for (use freshservice-release-list to get the release request ID). | Required |
+| task_id | The Task ID for an update (use freshservice-release-task-list to get the task ID). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Release.Task.id | Number | Task ID. | 
-| Freshservice.Release.Task.agent_id | Unknown | Task agent ID. | 
-| Freshservice.Release.Task.status | Number | Task status. | 
-| Freshservice.Release.Task.due_date | Date | Task due date. | 
-| Freshservice.Release.Task.notify_before | Number | Task notify before. | 
-| Freshservice.Release.Task.title | String | Task title. | 
-| Freshservice.Release.Task.description | String | Task description. | 
-| Freshservice.Release.Task.created_at | Date | Task created at. | 
-| Freshservice.Release.Task.updated_at | Date | Task updated at. | 
-| Freshservice.Release.Task.closed_at | Unknown | Task closed at. | 
-| Freshservice.Release.Task.group_id | Unknown | Task group ID. | 
-| Freshservice.Release.Task.deleted | Boolean | Task deleted. | 
+| Freshservice.Release.Task.id | Number | Task ID. |
+| Freshservice.Release.Task.agent_id | Unknown | Task agent ID. |
+| Freshservice.Release.Task.status | Number | Task status. |
+| Freshservice.Release.Task.due_date | Date | Task due date. |
+| Freshservice.Release.Task.notify_before | Number | Task notify before. |
+| Freshservice.Release.Task.title | String | Task title. |
+| Freshservice.Release.Task.description | String | Task description. |
+| Freshservice.Release.Task.created_at | Date | Task creation time. |
+| Freshservice.Release.Task.updated_at | Date | Task updated at. |
+| Freshservice.Release.Task.closed_at | Unknown | Task closed at. |
+| Freshservice.Release.Task.group_id | Unknown | Task group ID. |
+| Freshservice.Release.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
 ```!freshservice-release-task-update description=description status=Open release_id=34 task_id=190```
@@ -6100,8 +6100,8 @@ Delete the task on a Release with the given ID from Freshservice.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| release_id | The Release ID (use freshservice-release-list to get the release request ID). | Required | 
-| task_id | The task ID to delete (use freshservice-release-task-list to get the task ID). | Required | 
+| release_id | The Release ID (use freshservice-release-list to get the release request ID). | Required |
+| task_id | The task ID to delete (use freshservice-release-task-list to get the task ID). | Required |
 
 #### Context Output
 
@@ -6125,55 +6125,55 @@ Lists all the requesters (information about a user) in a Freshservice account. Y
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| requester_id | The requester ID (use freshservice-agent-list to get the requester ID). | Optional | 
-| first_name | First name of the requester. | Optional | 
-| last_name | Last name of the requester. | Optional | 
-| name | Concatenation of first_name and last_name with single space in-between fields. | Optional | 
-| job_title | Title of the requester. | Optional | 
-| primary_email | Email address of the requester. | Optional | 
-| work_phone_number | Work phone of the requester. | Optional | 
-| mobile_phone_number | Mobile phone of the requester. | Optional | 
-| department_id | ID of the department(s) assigned to the requester (use freshservice-department-list to get the department ID). | Optional | 
-| reporting_manager_id | User ID of the agent's reporting manager (you can use freshservice-agent-list to extract the reporting_manager_id). | Optional | 
-| time_zone | Requester time zone. | Optional | 
-| language | Language code(Eg. en, ja-JP). | Optional | 
-| location_id | ID of the location. | Optional | 
-| created_at | Date (YYYY-MM-DDThh:mm) when the requester is created. | Optional | 
-| updated_at | Date (YYYY-MM-DDThh:mm) when the requester is updated. | Optional | 
-| query | Query to fetch requesters. Use query or other filter arguments, not both. For example "time_zone:'Eastern Time (US &amp; Canada)' AND language:'en'" (Logical operators AND, OR along with parentheses () can be used to group conditions). | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| requester_id | The requester ID (use freshservice-agent-list to get the requester ID). | Optional |
+| first_name | First name of the requester. | Optional |
+| last_name | Last name of the requester. | Optional |
+| name | Concatenation of first_name and last_name with single space in-between fields. | Optional |
+| job_title | Title of the requester. | Optional |
+| primary_email | Email address of the requester. | Optional |
+| work_phone_number | Work phone of the requester. | Optional |
+| mobile_phone_number | Mobile phone of the requester. | Optional |
+| department_id | ID of the department(s) assigned to the requester (use freshservice-department-list to get the department ID). | Optional |
+| reporting_manager_id | User ID of the agent's reporting manager (you can use freshservice-agent-list to extract the reporting_manager_id). | Optional |
+| time_zone | Requester time zone. | Optional |
+| language | Language code(Eg. en, ja-JP). | Optional |
+| location_id | ID of the location. | Optional |
+| created_at | Date (YYYY-MM-DDThh:mm) when the requester is created. | Optional |
+| updated_at | Date (YYYY-MM-DDThh:mm) when the requester is updated. | Optional |
+| query | Query to fetch requesters. Use query or other filter arguments, not both. For example "time_zone:'Eastern Time (US &amp; Canada)' AND language:'en'" (Logical operators AND, OR along with parentheses () can be used to group conditions). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Requester.active | Boolean | Requester active. | 
-| Freshservice.Requester.address | Unknown | Requester address. | 
-| Freshservice.Requester.background_information | Unknown | Requester background information. | 
-| Freshservice.Requester.can_see_all_changes_from_associated_departments | Boolean | Requester can see all changes from associated departments. | 
-| Freshservice.Requester.can_see_all_tickets_from_associated_departments | Boolean | Requester can see all tickets from associated departments. | 
-| Freshservice.Requester.created_at | Date | Requester created at. | 
-| Freshservice.Requester.department_names | Unknown | Requester department names. | 
-| Freshservice.Requester.external_id | Unknown | Requester external ID. | 
-| Freshservice.Requester.first_name | String | Requester first name. | 
-| Freshservice.Requester.has_logged_in | Boolean | Requester has logged in. | 
-| Freshservice.Requester.id | Date | Requester ID. | 
-| Freshservice.Requester.is_agent | Boolean | Requester is agent. | 
-| Freshservice.Requester.job_title | Unknown | Requester job title. | 
-| Freshservice.Requester.language | String | Requester language. | 
-| Freshservice.Requester.last_name | Unknown | Requester last name. | 
-| Freshservice.Requester.location_id | Unknown | Requester location ID. | 
-| Freshservice.Requester.location_name | Unknown | Requester location name. | 
-| Freshservice.Requester.mobile_phone_number | Unknown | Requester mobile phone number. | 
-| Freshservice.Requester.primary_email | String | Requester primary email. | 
-| Freshservice.Requester.reporting_manager_id | Unknown | Requester reporting manager ID. | 
-| Freshservice.Requester.time_format | String | Requester time format. | 
-| Freshservice.Requester.time_zone | String | Requester time zone. | 
-| Freshservice.Requester.updated_at | Date | Requester updated at. | 
-| Freshservice.Requester.vip_user | Boolean | Requester vip user. | 
-| Freshservice.Requester.work_phone_number | Unknown | Requester work phone number. | 
+| Freshservice.Requester.active | Boolean | Requester active. |
+| Freshservice.Requester.address | Unknown | Requester address. |
+| Freshservice.Requester.background_information | Unknown | Requester background information. |
+| Freshservice.Requester.can_see_all_changes_from_associated_departments | Boolean | Requester can see all changes from associated departments. |
+| Freshservice.Requester.can_see_all_tickets_from_associated_departments | Boolean | Requester can see all tickets from associated departments. |
+| Freshservice.Requester.created_at | Date | Requester creation time. |
+| Freshservice.Requester.department_names | Unknown | Requester department names. |
+| Freshservice.Requester.external_id | Unknown | Requester external ID. |
+| Freshservice.Requester.first_name | String | Requester first name. |
+| Freshservice.Requester.has_logged_in | Boolean | Requester has logged in. |
+| Freshservice.Requester.id | Date | Requester ID. |
+| Freshservice.Requester.is_agent | Boolean | Requester is agent. |
+| Freshservice.Requester.job_title | Unknown | Requester job title. |
+| Freshservice.Requester.language | String | Requester language. |
+| Freshservice.Requester.last_name | Unknown | Requester last name. |
+| Freshservice.Requester.location_id | Unknown | Requester location ID. |
+| Freshservice.Requester.location_name | Unknown | Requester location name. |
+| Freshservice.Requester.mobile_phone_number | Unknown | Requester mobile phone number. |
+| Freshservice.Requester.primary_email | String | Requester primary email. |
+| Freshservice.Requester.reporting_manager_id | Unknown | Requester reporting manager ID. |
+| Freshservice.Requester.time_format | String | Requester time format. |
+| Freshservice.Requester.time_zone | String | Requester time zone. |
+| Freshservice.Requester.updated_at | Date | Requester updated at. |
+| Freshservice.Requester.vip_user | Boolean | Requester vip user. |
+| Freshservice.Requester.work_phone_number | Unknown | Requester work phone number. |
 
 #### Command example
 ```!freshservice-requester-list```
@@ -6736,7 +6736,7 @@ Lists all the requesters (information about a user) in a Freshservice account. Y
 #### Human Readable Output
 
 >### Requester
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|First Name|Last Name|Primary Email|Active|Created At|Updated At|Time Zone|Department Id|Department Name|Can See All Tickets From Associated Departments|Can See All Changes From Associated Departments|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -6773,64 +6773,64 @@ Retrieve a list of all Agents (or specific by ID) in Freshservice. You can speci
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| agent_id | Agent ID. | Optional | 
-| first_name | First name of the agent. | Optional | 
-| last_name | Last name of the agent. | Optional | 
-| name | Concatenation of first_name and last_name with single space in-between fields. | Optional | 
-| job_title | Title of the agent. | Optional | 
-| email | Email address of the agent. | Optional | 
-| work_phone_number | Work phone of the agent. | Optional | 
-| mobile_phone_number | Mobile phone of the agent. | Optional | 
-| department_id | ID of the department(s) assigned to the agent. Use freshservice-department-list to get the agent ID. | Optional | 
-| reporting_manager_id | User ID of the agent's reporting manager. | Optional | 
-| time_zone | Agent time zone. | Optional | 
-| language | Language code(Eg. en, ja-JP). | Optional | 
-| location_id | ID of the location. | Optional | 
-| created_at | Date when the agent is created (for example YYYY-MM-DDThh:mm). | Optional | 
-| updated_at | Date when the agent is updated (for example YYYY-MM-DDThh:mm). | Optional | 
-| query | Query to fetch agents. Use query or other filter arguments, not both. For example "(department_id:4001 OR department_id:5001) AND (location_id:200 OR location_id:300)". | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| agent_id | Agent ID. | Optional |
+| first_name | First name of the agent. | Optional |
+| last_name | Last name of the agent. | Optional |
+| name | Concatenation of first_name and last_name with single space in-between fields. | Optional |
+| job_title | Title of the agent. | Optional |
+| email | Email address of the agent. | Optional |
+| work_phone_number | Work phone of the agent. | Optional |
+| mobile_phone_number | Mobile phone of the agent. | Optional |
+| department_id | ID of the department(s) assigned to the agent. Use freshservice-department-list to get the agent ID. | Optional |
+| reporting_manager_id | User ID of the agent's reporting manager. | Optional |
+| time_zone | Agent time zone. | Optional |
+| language | Language code(Eg. en, ja-JP). | Optional |
+| location_id | ID of the location. | Optional |
+| created_at | Date when the agent is created (for example YYYY-MM-DDThh:mm). | Optional |
+| updated_at | Date when the agent is updated (for example YYYY-MM-DDThh:mm). | Optional |
+| query | Query to fetch agents. Use query or other filter arguments, not both. For example "(department_id:4001 OR department_id:5001) AND (location_id:200 OR location_id:300)". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Agent.active | Boolean | Agent active. | 
-| Freshservice.Agent.address | Unknown | Agent address. | 
-| Freshservice.Agent.auto_assign_status_changed_at | Unknown | Agent auto_assign_status_changed_at. | 
-| Freshservice.Agent.auto_assign_tickets | Boolean | Agent auto assign tickets. | 
-| Freshservice.Agent.background_information | Unknown | Agent background information. | 
-| Freshservice.Agent.can_see_all_tickets_from_associated_departments | Boolean | Agent can see all tickets from associated departments. | 
-| Freshservice.Agent.created_at | Date | Agent created at. | 
-| Freshservice.Agent.department_names | Unknown | Agent department names. | 
-| Freshservice.Agent.email | String | Agent email. | 
-| Freshservice.Agent.external_id | Unknown | Agent external ID. | 
-| Freshservice.Agent.first_name | String | Agent first name. | 
-| Freshservice.Agent.has_logged_in | Boolean | Agent has logged in. | 
-| Freshservice.Agent.id | Date | Agent ID. | 
-| Freshservice.Agent.job_title | Unknown | Agent job title. | 
-| Freshservice.Agent.language | String | Agent language. | 
-| Freshservice.Agent.last_active_at | Date | Agent last active at. | 
-| Freshservice.Agent.last_login_at | Unknown | Agent last login at. | 
-| Freshservice.Agent.last_name | String | Agent last name. | 
-| Freshservice.Agent.location_id | Unknown | Agent location ID. | 
-| Freshservice.Agent.location_name | Unknown | Agent location name. | 
-| Freshservice.Agent.mobile_phone_number | Unknown | Agent mobile phone number. | 
-| Freshservice.Agent.occasional | Boolean | Agent occasional. | 
-| Freshservice.Agent.reporting_manager_id | Unknown | Agent reporting manager ID. | 
-| Freshservice.Agent.role_ids | Date | Agent role IDs. | 
-| Freshservice.Agent.role_id | Date | Agent role ID. | 
-| Freshservice.Agent.assignment_scope | String | Agent roles assignment scope. | 
-| Freshservice.Agent.workspace_id | Number | Agent roles workspace ID. | 
-| Freshservice.Agent.signature | String | Agent signature. | 
-| Freshservice.Agent.time_format | String | Agent time format. | 
-| Freshservice.Agent.time_zone | String | Agent time zone. | 
-| Freshservice.Agent.updated_at | Date | Agent updated at. | 
-| Freshservice.Agent.vip_user | Boolean | Agent vip user. | 
-| Freshservice.Agent.work_phone_number | Unknown | Agent work phone number. | 
-| Freshservice.Agent.workspace_ids | Number | Agent workspace IDs. | 
+| Freshservice.Agent.active | Boolean | Agent active. |
+| Freshservice.Agent.address | Unknown | Agent address. |
+| Freshservice.Agent.auto_assign_status_changed_at | Unknown | Agent auto_assign_status_changed_at. |
+| Freshservice.Agent.auto_assign_tickets | Boolean | Agent auto assign tickets. |
+| Freshservice.Agent.background_information | Unknown | Agent background information. |
+| Freshservice.Agent.can_see_all_tickets_from_associated_departments | Boolean | Agent can see all tickets from associated departments. |
+| Freshservice.Agent.created_at | Date | Agent creation time. |
+| Freshservice.Agent.department_names | Unknown | Agent department names. |
+| Freshservice.Agent.email | String | Agent email. |
+| Freshservice.Agent.external_id | Unknown | Agent external ID. |
+| Freshservice.Agent.first_name | String | Agent first name. |
+| Freshservice.Agent.has_logged_in | Boolean | Agent has logged in. |
+| Freshservice.Agent.id | Date | Agent ID. |
+| Freshservice.Agent.job_title | Unknown | Agent job title. |
+| Freshservice.Agent.language | String | Agent language. |
+| Freshservice.Agent.last_active_at | Date | Agent last active at. |
+| Freshservice.Agent.last_login_at | Unknown | Agent last login at. |
+| Freshservice.Agent.last_name | String | Agent last name. |
+| Freshservice.Agent.location_id | Unknown | Agent location ID. |
+| Freshservice.Agent.location_name | Unknown | Agent location name. |
+| Freshservice.Agent.mobile_phone_number | Unknown | Agent mobile phone number. |
+| Freshservice.Agent.occasional | Boolean | Agent occasional. |
+| Freshservice.Agent.reporting_manager_id | Unknown | Agent reporting manager ID. |
+| Freshservice.Agent.role_ids | Date | Agent role IDs. |
+| Freshservice.Agent.role_id | Date | Agent role ID. |
+| Freshservice.Agent.assignment_scope | String | Agent roles assignment scope. |
+| Freshservice.Agent.workspace_id | Number | Agent roles workspace ID. |
+| Freshservice.Agent.signature | String | Agent signature. |
+| Freshservice.Agent.time_format | String | Agent time format. |
+| Freshservice.Agent.time_zone | String | Agent time zone. |
+| Freshservice.Agent.updated_at | Date | Agent updated at. |
+| Freshservice.Agent.vip_user | Boolean | Agent vip user. |
+| Freshservice.Agent.work_phone_number | Unknown | Agent work phone number. |
+| Freshservice.Agent.workspace_ids | Number | Agent workspace IDs. |
 
 #### Command example
 ```!freshservice-agent-list```
@@ -7015,7 +7015,7 @@ Retrieve a list of all Agents (or specific by ID) in Freshservice. You can speci
 #### Human Readable Output
 
 >### Agent
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|First Name|Last Name|Email|Active|Created At|Updated At|Time Zone|Language|Can See All Tickets From Associated Departments|Auto Assign Status Changed At|
 >|---|---|---|---|---|---|---|---|---|---|---|
@@ -7037,22 +7037,22 @@ Lists all the roles in a Freshservice account. Roles allow you to manage access 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| role_id | The role ID. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| role_id | The role ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Role.description | String | Role description. | 
-| Freshservice.Role.id | Date | Role ID. | 
-| Freshservice.Role.name | String | Role name. | 
-| Freshservice.Role.created_at | Date | Role created at. | 
-| Freshservice.Role.updated_at | Date | Role updated at. | 
-| Freshservice.Role.default | Boolean | Role default. | 
-| Freshservice.Role.role_type | Number | Role type. | 
+| Freshservice.Role.description | String | Role description. |
+| Freshservice.Role.id | Date | Role ID. |
+| Freshservice.Role.name | String | Role name. |
+| Freshservice.Role.created_at | Date | Role creation time. |
+| Freshservice.Role.updated_at | Date | Role updated at. |
+| Freshservice.Role.default | Boolean | Role default. |
+| Freshservice.Role.role_type | Number | Role type. |
 
 #### Command example
 ```!freshservice-role-list```
@@ -7204,7 +7204,7 @@ Lists all the roles in a Freshservice account. Roles allow you to manage access 
 #### Human Readable Output
 
 >### Role
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|Name|Description|Role Type|Default|Created At|Updated At|
 >|---|---|---|---|---|---|---|
@@ -7238,30 +7238,30 @@ Lists all the vendors (or specific by ID) in the Freshservice account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| vendor_id | Vendor ID. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| vendor_id | Vendor ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Vendor.address.line1 | Unknown | Vendor address line1. | 
-| Freshservice.Vendor.address.city | Unknown | Vendor address city. | 
-| Freshservice.Vendor.address.state | Unknown | Vendor address state. | 
-| Freshservice.Vendor.address.country | Unknown | Vendor address country. | 
-| Freshservice.Vendor.address.zipcode | Unknown | Vendor address zip code. | 
-| Freshservice.Vendor.id | Date | Vendor ID. | 
-| Freshservice.Vendor.name | String | Vendor name. | 
-| Freshservice.Vendor.description | String | Vendor description. | 
-| Freshservice.Vendor.contact_name | Unknown | Vendor contact name. | 
-| Freshservice.Vendor.email | Unknown | Vendor email. | 
-| Freshservice.Vendor.mobile | Unknown | Vendor mobile. | 
-| Freshservice.Vendor.phone | Unknown | Vendor phone. | 
-| Freshservice.Vendor.primary_contact_id | Unknown | Vendor primary contact ID. | 
-| Freshservice.Vendor.created_at | Date | Vendor created at. | 
-| Freshservice.Vendor.updated_at | Date | Vendor updated at. | 
+| Freshservice.Vendor.address.line1 | Unknown | Vendor address line1. |
+| Freshservice.Vendor.address.city | Unknown | Vendor address city. |
+| Freshservice.Vendor.address.state | Unknown | Vendor address state. |
+| Freshservice.Vendor.address.country | Unknown | Vendor address country. |
+| Freshservice.Vendor.address.zipcode | Unknown | Vendor address zip code. |
+| Freshservice.Vendor.id | Date | Vendor ID. |
+| Freshservice.Vendor.name | String | Vendor name. |
+| Freshservice.Vendor.description | String | Vendor description. |
+| Freshservice.Vendor.contact_name | Unknown | Vendor contact name. |
+| Freshservice.Vendor.email | Unknown | Vendor email. |
+| Freshservice.Vendor.mobile | Unknown | Vendor mobile. |
+| Freshservice.Vendor.phone | Unknown | Vendor phone. |
+| Freshservice.Vendor.primary_contact_id | Unknown | Vendor primary contact ID. |
+| Freshservice.Vendor.created_at | Date | Vendor creation time. |
+| Freshservice.Vendor.updated_at | Date | Vendor updated at. |
 
 #### Command example
 ```!freshservice-vendor-list```
@@ -7378,7 +7378,7 @@ Lists all the vendors (or specific by ID) in the Freshservice account.
 #### Human Readable Output
 
 >### Vendor
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|Name|Contact Name|Description|Email|Created At|Updated At|
 >|---|---|---|---|---|---|---|
@@ -7402,32 +7402,32 @@ Lists all the softwares (or specific by ID) in the Freshservice account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| software_id | Software ID. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| software_id | Software ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Software.overview | Unknown | Software application overview. | 
-| Freshservice.Software.graph_data | Unknown | Software application graph data. | 
-| Freshservice.Software.last_sync_date | Unknown | Software application last sync date. | 
-| Freshservice.Software.user_count | Number | Software application user count. | 
-| Freshservice.Software.installation_count | Number | Software application installation count. | 
-| Freshservice.Software.id | Date | Software application ID. | 
-| Freshservice.Software.name | String | Software application name. | 
-| Freshservice.Software.description | Unknown | Software application description. | 
-| Freshservice.Software.notes | Unknown | Software application notes. | 
-| Freshservice.Software.publisher_id | Date | Software application publisher ID. | 
-| Freshservice.Software.created_at | Date | Software application created at. | 
-| Freshservice.Software.updated_at | Date | Software application updated at. | 
-| Freshservice.Software.workspace_id | Number | Software application workspace ID. | 
-| Freshservice.Software.application_type | String | Software application application type. | 
-| Freshservice.Software.status | String | Software application status. | 
-| Freshservice.Software.managed_by_id | Date | Software application managed by ID. | 
-| Freshservice.Software.category | Unknown | Software application category. | 
+| Freshservice.Software.overview | Unknown | Software application overview. |
+| Freshservice.Software.graph_data | Unknown | Software application graph data. |
+| Freshservice.Software.last_sync_date | Unknown | Software application last sync date. |
+| Freshservice.Software.user_count | Number | Software application user count. |
+| Freshservice.Software.installation_count | Number | Software application installation count. |
+| Freshservice.Software.id | Date | Software application ID. |
+| Freshservice.Software.name | String | Software application name. |
+| Freshservice.Software.description | Unknown | Software application description. |
+| Freshservice.Software.notes | Unknown | Software application notes. |
+| Freshservice.Software.publisher_id | Date | Software application publisher ID. |
+| Freshservice.Software.created_at | Date | Software application creation time. |
+| Freshservice.Software.updated_at | Date | Software application updated at. |
+| Freshservice.Software.workspace_id | Number | Software application workspace ID. |
+| Freshservice.Software.application_type | String | Software application application type. |
+| Freshservice.Software.status | String | Software application status. |
+| Freshservice.Software.managed_by_id | Date | Software application managed by ID. |
+| Freshservice.Software.category | Unknown | Software application category. |
 
 #### Command example
 ```!freshservice-software-list```
@@ -7488,7 +7488,7 @@ Lists all the softwares (or specific by ID) in the Freshservice account.
 #### Human Readable Output
 
 >### Software
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|Name|Description|Application Type|Status|Created At|Updated At|Managed By Id|Publisher Id|Workspace Id|User Count|Category|Installation Count|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -7509,46 +7509,46 @@ Lists all the assets (or specific by ID) in the Freshservice account. You can s
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| asset_id | Asset ID. | Optional | 
-| asset_type_id | ID of the asset type. | Optional | 
-| department_id | ID of the department to which the asset belongs. Use freshservice-department-list to get the agent ID. | Optional | 
-| location_id | ID of the location. | Optional | 
-| asset_state | Status of the asset. Possible values are: IN USE, IN STOCK. | Optional | 
-| user_id | ID of the user to whom the asset is assigned (use freshservice-agent-list to get the agent ID). | Optional | 
-| agent_id | ID of the agent by whom the asset is managed. Use freshservice-agent-list to get the agent ID. | Optional | 
-| name | Display name of the asset. | Optional | 
-| asset_tag | Tag that is assigned to the asset. | Optional | 
-| created_at | Date when the asset is created (for example YYYY-MM-DDThh:mm). | Optional | 
-| updated_at | Date when the asset is updated (for example YYYY-MM-DDThh:mm). | Optional | 
-| serial_number | Serial number of the asset. | Optional | 
-| query | Query to fetch assets. Use query or other filter arguments, not both. For example "asset_state:'IN STOCK' AND created_at:&gt;'2018-08-10'" (Logical operators AND, OR along with parentheses () can be used to group conditions). | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| asset_id | Asset ID. | Optional |
+| asset_type_id | ID of the asset type. | Optional |
+| department_id | ID of the department to which the asset belongs. Use freshservice-department-list to get the agent ID. | Optional |
+| location_id | ID of the location. | Optional |
+| asset_state | Status of the asset. Possible values are: IN USE, IN STOCK. | Optional |
+| user_id | ID of the user to whom the asset is assigned (use freshservice-agent-list to get the agent ID). | Optional |
+| agent_id | ID of the agent by whom the asset is managed. Use freshservice-agent-list to get the agent ID. | Optional |
+| name | Display name of the asset. | Optional |
+| asset_tag | Tag that is assigned to the asset. | Optional |
+| created_at | Date when the asset is created (for example YYYY-MM-DDThh:mm). | Optional |
+| updated_at | Date when the asset is updated (for example YYYY-MM-DDThh:mm). | Optional |
+| serial_number | Serial number of the asset. | Optional |
+| query | Query to fetch assets. Use query or other filter arguments, not both. For example "asset_state:'IN STOCK' AND created_at:&gt;'2018-08-10'" (Logical operators AND, OR along with parentheses () can be used to group conditions). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Asset.id | Date | Asset ID. | 
-| Freshservice.Asset.display_id | Number | Asset display ID. | 
-| Freshservice.Asset.name | String | Asset name. | 
-| Freshservice.Asset.description | Unknown | Asset description. | 
-| Freshservice.Asset.asset_type_id | Date | Asset type ID. | 
-| Freshservice.Asset.impact | String | Asset impact. | 
-| Freshservice.Asset.author_type | String | Asset author type. | 
-| Freshservice.Asset.usage_type | String | Asset usage type. | 
-| Freshservice.Asset.asset_tag | String | Asset tag. | 
-| Freshservice.Asset.user_id | Date | Asset user ID. | 
-| Freshservice.Asset.department_id | Unknown | Asset department ID. | 
-| Freshservice.Asset.location_id | Unknown | Asset location ID. | 
-| Freshservice.Asset.agent_id | Unknown | Asset agent ID. | 
-| Freshservice.Asset.group_id | Unknown | Asset group ID. | 
-| Freshservice.Asset.assigned_on | Unknown | Asset assigned_on. | 
-| Freshservice.Asset.created_at | Date | Asset created at. | 
-| Freshservice.Asset.updated_at | Date | Asset updated at. | 
-| Freshservice.Asset.end_of_life | Date | Asset end of life. | 
-| Freshservice.Asset.workspace_id | Number | Asset workspace ID. | 
+| Freshservice.Asset.id | Date | Asset ID. |
+| Freshservice.Asset.display_id | Number | Asset display ID. |
+| Freshservice.Asset.name | String | Asset name. |
+| Freshservice.Asset.description | Unknown | Asset description. |
+| Freshservice.Asset.asset_type_id | Date | Asset type ID. |
+| Freshservice.Asset.impact | String | Asset impact. |
+| Freshservice.Asset.author_type | String | Asset author type. |
+| Freshservice.Asset.usage_type | String | Asset usage type. |
+| Freshservice.Asset.asset_tag | String | Asset tag. |
+| Freshservice.Asset.user_id | Date | Asset user ID. |
+| Freshservice.Asset.department_id | Unknown | Asset department ID. |
+| Freshservice.Asset.location_id | Unknown | Asset location ID. |
+| Freshservice.Asset.agent_id | Unknown | Asset agent ID. |
+| Freshservice.Asset.group_id | Unknown | Asset group ID. |
+| Freshservice.Asset.assigned_on | Unknown | Asset assigned_on. |
+| Freshservice.Asset.created_at | Date | Asset creation time. |
+| Freshservice.Asset.updated_at | Date | Asset updated at. |
+| Freshservice.Asset.end_of_life | Date | Asset end of life. |
+| Freshservice.Asset.workspace_id | Number | Asset workspace ID. |
 
 #### Command example
 ```!freshservice-asset-list```
@@ -7653,7 +7653,7 @@ Lists all the assets (or specific by ID) in the Freshservice account. You can s
 #### Human Readable Output
 
 >### Asset
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Display Id|Name|Description|Asset Type Id|Impact|Author Type|Usage Type|Created At|Updated At|End Of Life|
 >|---|---|---|---|---|---|---|---|---|---|
@@ -7676,27 +7676,27 @@ Lists all the purchase orders (or specific by ID) in a Freshservice account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| purchase_order_id | Purchase order ID. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| purchase_order_id | Purchase order ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.PurchaseOrder.id | Number | Purchase order ID. | 
-| Freshservice.PurchaseOrder.name | String | Purchase order name. | 
-| Freshservice.PurchaseOrder.po_number | String | Purchase order number. | 
-| Freshservice.PurchaseOrder.total_cost | Number | Purchase order total cost. | 
-| Freshservice.PurchaseOrder.expected_delivery_date | Date | Purchase order expected delivery date. | 
-| Freshservice.PurchaseOrder.created_at | Date | Purchase order created at. | 
-| Freshservice.PurchaseOrder.updated_at | Date | Purchase order updated at. | 
-| Freshservice.PurchaseOrder.vendor_id | Date | Purchase order vendor ID. | 
-| Freshservice.PurchaseOrder.department_id | Unknown | Purchase order department ID. | 
-| Freshservice.PurchaseOrder.created_by | Date | Purchase order created by. | 
-| Freshservice.PurchaseOrder.status | Number | Purchase order status. | 
-| Freshservice.PurchaseOrder.workspace_id | Number | Purchase order workspace ID. | 
+| Freshservice.PurchaseOrder.id | Number | Purchase order ID. |
+| Freshservice.PurchaseOrder.name | String | Purchase order name. |
+| Freshservice.PurchaseOrder.po_number | String | Purchase order number. |
+| Freshservice.PurchaseOrder.total_cost | Number | Purchase order total cost. |
+| Freshservice.PurchaseOrder.expected_delivery_date | Date | Purchase order expected delivery date. |
+| Freshservice.PurchaseOrder.created_at | Date | Purchase order creation time. |
+| Freshservice.PurchaseOrder.updated_at | Date | Purchase order updated at. |
+| Freshservice.PurchaseOrder.vendor_id | Date | Purchase order vendor ID. |
+| Freshservice.PurchaseOrder.department_id | Unknown | Purchase order department ID. |
+| Freshservice.PurchaseOrder.created_by | Date | Purchase order created by. |
+| Freshservice.PurchaseOrder.status | Number | Purchase order status. |
+| Freshservice.PurchaseOrder.workspace_id | Number | Purchase order workspace ID. |
 
 #### Command example
 ```!freshservice-purchase-order-list```
@@ -7741,7 +7741,7 @@ Lists all the purchase orders (or specific by ID) in a Freshservice account.
 #### Human Readable Output
 
 >### PurchaseOrder
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|Name|Vendor Id|Po Number|Total Cost|Status|Created At|Updated At|Expected Delivery Date|
 >|---|---|---|---|---|---|---|---|---|
@@ -7762,26 +7762,26 @@ Lists all the agent groups (or specific by ID) in a Freshservice account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| agent_group_id | Agent group ID. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| agent_group_id | Agent group ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.AgentGroup.id | Number | Agent groupr ID. | 
-| Freshservice.AgentGroup.name | String | Agent group name. | 
-| Freshservice.AgentGroup.description | String | Agent group description. | 
-| Freshservice.AgentGroup.auto_ticket_assign | String | Agent group auto ticket assign. | 
-| Freshservice.AgentGroup.workspace_id | Number | Agent group workspace ID. | 
-| Freshservice.AgentGroup.created_at | Date | Agent group created at. | 
-| Freshservice.AgentGroup.updated_at | Date | Agent group updated at. | 
-| Freshservice.AgentGroup.agent_ids | String | Agent group agent IDs. | 
-| Freshservice.AgentGroup.members | String | Agent group members. | 
-| Freshservice.AgentGroup.observers | String | Agent group observers. | 
-| Freshservice.AgentGroup.unassigned_for | String | Agent group unassigned for. | 
+| Freshservice.AgentGroup.id | Number | Agent groupr ID. |
+| Freshservice.AgentGroup.name | String | Agent group name. |
+| Freshservice.AgentGroup.description | String | Agent group description. |
+| Freshservice.AgentGroup.auto_ticket_assign | String | Agent group auto ticket assign. |
+| Freshservice.AgentGroup.workspace_id | Number | Agent group workspace ID. |
+| Freshservice.AgentGroup.created_at | Date | Agent group creation time. |
+| Freshservice.AgentGroup.updated_at | Date | Agent group updated at. |
+| Freshservice.AgentGroup.agent_ids | String | Agent group agent IDs. |
+| Freshservice.AgentGroup.members | String | Agent group members. |
+| Freshservice.AgentGroup.observers | String | Agent group observers. |
+| Freshservice.AgentGroup.unassigned_for | String | Agent group unassigned for. |
 
 #### Command example
 ```!freshservice-agent-group-list```
@@ -8074,7 +8074,7 @@ Lists all the agent groups (or specific by ID) in a Freshservice account.
 #### Human Readable Output
 
 >### AgentGroup
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|Name|Description|Members|Observers|Agent Ids|Created At|Updated At|Auto Ticket Assign|
 >|---|---|---|---|---|---|---|---|---|
@@ -8110,25 +8110,25 @@ Lists all the departments (or specific by ID) in a Freshservice account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| department_id | Department ID. | Optional | 
-| name | Name of the department. | Optional | 
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| department_id | Department ID. | Optional |
+| name | Name of the department. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.Department.id | Number | Department ID. | 
-| Freshservice.Department.name | String | Department name. | 
-| Freshservice.Department.description | String | Department description. | 
-| Freshservice.Department.custom_fields | String | Department custom fields. | 
-| Freshservice.Department.domains | String | Department domains. | 
-| Freshservice.Department.created_at | Date | Department created at. | 
-| Freshservice.Department.updated_at | Date | Department updated at. | 
-| Freshservice.Department.prime_user_id | Number | Department prime user ID. | 
-| Freshservice.Department.head_user_id | Number | Department head user ID. | 
+| Freshservice.Department.id | Number | Department ID. |
+| Freshservice.Department.name | String | Department name. |
+| Freshservice.Department.description | String | Department description. |
+| Freshservice.Department.custom_fields | String | Department custom fields. |
+| Freshservice.Department.domains | String | Department domains. |
+| Freshservice.Department.created_at | Date | Department creation time. |
+| Freshservice.Department.updated_at | Date | Department updated at. |
+| Freshservice.Department.prime_user_id | Number | Department prime user ID. |
+| Freshservice.Department.head_user_id | Number | Department head user ID. |
 
 #### Command example
 ```!freshservice-department-list```
@@ -8235,7 +8235,7 @@ Lists all the departments (or specific by ID) in a Freshservice account.
 #### Human Readable Output
 
 >### Department
->Showing page 1. 
+>Showing page 1.
 > Current page size: 50.
 >|Id|Name|Description|Domains|Created At|Updated At|
 >|---|---|---|---|---|---|
@@ -8267,15 +8267,15 @@ Lists all the Requester fields in a Freshservice account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Freshservice.RequesterField.id | Number | Requester fields ID. | 
-| Freshservice.RequesterField.name | String | Requester fields name. | 
-| Freshservice.RequesterField.label | String | Requester fields label. | 
-| Freshservice.RequesterField.position | Number | Requester fields position. | 
-| Freshservice.RequesterField.type | String | Requester fields type. | 
-| Freshservice.RequesterField.created_at | Date | Requester fields created at. | 
-| Freshservice.RequesterField.updated_at | Date | Requester fields updated at. | 
-| Freshservice.RequesterField.label_for_requesters | String | Requester field label for. | 
-| Freshservice.RequesterField.choices | String | Requester fields choices. | 
+| Freshservice.RequesterField.id | Number | Requester fields ID. |
+| Freshservice.RequesterField.name | String | Requester fields name. |
+| Freshservice.RequesterField.label | String | Requester fields label. |
+| Freshservice.RequesterField.position | Number | Requester fields position. |
+| Freshservice.RequesterField.type | String | Requester fields type. |
+| Freshservice.RequesterField.created_at | Date | Requester fields creation time. |
+| Freshservice.RequesterField.updated_at | Date | Requester fields updated at. |
+| Freshservice.RequesterField.label_for_requesters | String | Requester field label for. |
+| Freshservice.RequesterField.choices | String | Requester fields choices. |
 
 #### Command example
 ```!freshservice-requester-field-list```
@@ -8741,7 +8741,7 @@ Lists all the Requester fields in a Freshservice account.
 #### Human Readable Output
 
 >### RequesterField
->Showing page 1. 
+>Showing page 1.
 > Current page size: None.
 >|Id|Name|Label|Position|Type|Label For Requesters|Choices|Created At|Updated At|
 >|---|---|---|---|---|---|---|---|---|
@@ -8793,8 +8793,8 @@ Gets remote data from a remote incident. This method does not update the current
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ticket ID. | Required | 
-| lastUpdate | Retrieves entries that were created after lastUpdate. | Required | 
+| id | The ticket ID. | Required |
+| lastUpdate | Retrieves entries that were created after lastUpdate. | Required |
 
 #### Context Output
 
@@ -8812,7 +8812,7 @@ Gets the list of incidents that were modified since the last update time. Note t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lastUpdate | A date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time. | Optional | 
+| lastUpdate | A date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time. | Optional |
 
 #### Context Output
 
