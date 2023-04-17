@@ -1,8 +1,8 @@
 import argparse
-import re
 import sys
+from pathlib import Path
 
-PROTECTED_DIRECTORIES = [
+PROTECTED_DIRECTORIES = {
     ".circleci",
     ".devcontainer",
     ".github",
@@ -16,22 +16,22 @@ PROTECTED_DIRECTORIES = [
     "TestPlaybooks",
     "Tests",
     "Utils"
-]
+}
 
-EXCEPTIONS = [
-    "Tests/conf.json",
-    ".github/scripts/check_protected_directories.py",
-    ".github/workflows/protect-directories.yml"
-]
+EXCEPTIONS = {
+    "Tests/conf.json"
+}
 
 
 def main(changed_files):
     # Check if any protected directories have been modified
     for changed_file in changed_files:
-        for protected_dir in PROTECTED_DIRECTORIES:
-            if re.match(f"^{protected_dir}/", changed_file) and not (changed_file in EXCEPTIONS):
-                print(f"Error: Changes made to protected directory - {protected_dir}: {changed_file}")
-                sys.exit(1)
+        changed_path = Path(changed_file)
+        top_level_directory = changed_path.parents[-1].as_posix()
+        if top_level_directory in PROTECTED_DIRECTORIES and changed_file not in EXCEPTIONS:
+            print(f"Error: Contribution branch includes changes to files under {top_level_directory}, "
+                  f"which is a protected directory. Please revert them. (file: {changed_file})")
+            sys.exit(1)
 
 
 if __name__ == "__main__":
