@@ -44,4 +44,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Detonate File - VirusTotal (API v3)](../doc_files/Detonate_File_-_VirusTotal_API_v3.png)
+![Detonate Private File - VirusTotal (API v3)](../doc_files/Detonate_Private_File_-_VirusTotal_V3.png)
