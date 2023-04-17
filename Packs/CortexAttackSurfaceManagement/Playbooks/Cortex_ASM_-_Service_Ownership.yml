@@ -1,0 +1,379 @@
+description: Identifies and recommends the most likely owners of the service, additionally citing explanations and confidence scores for each.
+id: Cortex ASM - Service Ownership
+inputs: []
+name: Cortex ASM - Service Ownership
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7d8acddf-5ee0-460f-8fef-2d0d24385bcb
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 7d8acddf-5ee0-460f-8fef-2d0d24385bcb
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: alert.asmserviceownerobservations.Source
+                    operator: startWith
+                    right:
+                      value:
+                        simple: Service account on instance
+                root: alert.asmserviceownerobservations
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determine whether a service account was included among the potential service owners.
+      id: d641c28f-669f-4532-8c84-dd4327aeb9d9
+      iscommand: false
+      name: Is service account defined?
+      type: condition
+      version: -1
+    taskid: d641c28f-669f-4532-8c84-dd4327aeb9d9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      project_name:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: alert.asmserviceownerobservations.Source
+              operator: startWith
+              right:
+                value:
+                  simple: Service account on instance
+          root: alert.asmserviceownerobservations
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: Email
+            operator: getField
+          - args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=@)[^\.]+(?=\.iam\.gserviceaccount\.com)
+              unpack_matches: {}
+            operator: RegexExtractAll
+          - args:
+              prefix:
+                value:
+                  simple: projects/
+              suffix: {}
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: GCP-IAM
+      description: Retrieves the IAM access control policy for the specified project.
+      id: 34bafcc9-2b6e-4b2a-82f5-5480d071307a
+      iscommand: true
+      name: Lookup project owner
+      script: GCP-IAM|||gcp-iam-project-iam-policy-get
+      type: regular
+      version: -1
+    taskid: 34bafcc9-2b6e-4b2a-82f5-5480d071307a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 830
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmserviceownerobservations
+      keys:
+        simple: Name,Email,Source,Timestamp
+      val1:
+        simple: n/a
+      val2:
+        complex:
+          accessor: members
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: GCPIAM.Policy.bindings.role
+              operator: isEqualString
+              right:
+                value:
+                  simple: roles/owner
+          root: GCPIAM.Policy.bindings
+          transformers:
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: 'user:'
+            operator: replace
+      val3:
+        simple: GCP project owner on project where service account is defined
+      val4:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: TimeStampToDate
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 4202b86f-6578-4423-8291-8af502fdc341
+      iscommand: false
+      name: Add project owner to service owner observations grid field
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 4202b86f-6578-4423-8291-8af502fdc341
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1190
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      owners:
+        simple: ${alert.asmserviceownerobservations}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
+      id: 7666e986-43b8-46a3-8a16-33d74a6aa206
+      iscommand: false
+      name: Normalize and rank likely service owners
+      script: 7fe755b2-98a8-4f8a-85ee-9a4ce3154d80
+      type: regular
+      version: -1
+    taskid: 7666e986-43b8-46a3-8a16-33d74a6aa206
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1420
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmserviceownerunrankedraw
+      keys:
+        simple: Name,Email,Source,Timestamp
+      val1:
+        complex:
+          accessor: asmserviceowner
+          root: alert
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: Name
+            operator: getField
+      val2:
+        complex:
+          accessor: asmserviceowner
+          root: alert
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: Email
+            operator: getField
+      val3:
+        complex:
+          accessor: asmserviceowner
+          root: alert
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: Source
+            operator: getField
+      val4:
+        complex:
+          accessor: asmserviceowner
+          root: alert
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: Timestamp
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 5e630cc2-c8c4-4054-8c77-47382b4c8879
+      iscommand: false
+      name: Back up service owners gridfield
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 5e630cc2-c8c4-4054-8c77-47382b4c8879
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: 9e27252f-1db0-40f8-890c-ab9b816c1579
+      iscommand: false
+      name: Get current time
+      script: GetTime
+      type: regular
+      version: -1
+    taskid: 9e27252f-1db0-40f8-890c-ab9b816c1579
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1010
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1325,
+        "width": 630,
+        "x": 200,
+        "y": 190
+      }
+    }
+  }
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
