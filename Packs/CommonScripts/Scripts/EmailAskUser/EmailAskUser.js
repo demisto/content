@@ -88,7 +88,6 @@ if (addresses.length > 0) {
     emailArgs = args;
     emailArgs.to = addresses.join(',');
     emailArgs.subject = subject;
-    message += " rb:" + renderBody.toString();
     if (bodyType === 'html') {
         emailArgs.htmlBody = message;
     } else {
