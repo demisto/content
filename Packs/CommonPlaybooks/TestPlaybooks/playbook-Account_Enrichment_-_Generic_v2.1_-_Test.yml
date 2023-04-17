@@ -237,7 +237,7 @@ tasks:
     task:
       id: 30d65168-2707-4959-83e1-9551808cd523
       version: -1
-      name: Account Enrichment - Generic v2.1_copy
+      name: Account Enrichment - Generic v2.1
       description: |-
         Enrich accounts using one or more integrations.
         Supported integrations:
@@ -279,7 +279,7 @@ tasks:
     task:
       id: fb4a033e-e9da-454f-8538-d5a7a1645dea
       version: -1
-      name: Account Enrichment - Generic v2.1_copy
+      name: Account Enrichment - Generic v2.1
       description: |-
         Enrich accounts using one or more integrations.
         Supported integrations:
