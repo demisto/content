@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Tuple
 from typing import Dict
 
 import dateutil.parser
@@ -1087,7 +1087,7 @@ def get_indicator_list(
     return indicators_list
 
 
-def fetch_indicators(client: MandiantClient, args: Dict = None) -> List:
+def fetch_indicators(client: MandiantClient, args: Dict = None) -> Tuple[List, Dict]:
     """
     For each type the fetch indicator command will:
         1. Fetch a list of indicators from the Mandiant Threat Intelligence API
@@ -1117,6 +1117,8 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> List:
     first_fetch = client.first_fetch
 
     result = []
+    last_run_dict = demisto.getLastRun()
+
     for indicator_type in types:
         indicators_list = get_indicator_list(client, limit, first_fetch, indicator_type)
 
@@ -1138,19 +1140,18 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> List:
 
         result += indicators
 
-        last_run_dict = demisto.getLastRun()
         last_run_dict[indicator_type + "List"] = indicators[limit:]
         if indicators_list:
             date_key = "last_seen" if indicator_type == "Indicators" else "last_updated"
             last_run_dict[indicator_type + "LastFetch"] = indicators_list[-1][date_key]
 
-    demisto.setLastRun(last_run_dict)
-    return result
+    return (result, last_run_dict)
 
 def debug_fetch_indicators(client: MandiantClient, args: Dict = None):
+    indicators, _ = fetch_indicators(client, args)
     return [CommandResults(outputs=indicator,
                           outputs_prefix="MANDIANTTI.Feed",
-                          ignore_auto_extract=True) for indicator in fetch_indicators(client, args)]
+                          ignore_auto_extract=True) for indicator in indicators]
 
 def batch_fetch_indicators(client: MandiantClient):
     """
@@ -1167,10 +1168,12 @@ def batch_fetch_indicators(client: MandiantClient):
         List of all indicators
     """
 
-    result = fetch_indicators(client=client)
+    result, last_run_dict = fetch_indicators(client=client)
 
     for b in batch(result, batch_size=2000):
         demisto.createIndicators(b)
+
+    demisto.setLastRun(last_run_dict)
 
 
 def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
@@ -1180,9 +1183,6 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
     INDICATOR_TYPE_MAP: dict[str, str] = {"ipv4": "ip", "fqdn": "domain", "url": "url", "md5": "file"}
 
     indicators_list = client.get_indicators_by_value(indicator_value=indicator_value)
-
-    if not indicators_list:
-        return CommandResults()
 
     indicators = [
         MAP_INDICATORS_FUNCTIONS[INDICATOR_TYPE_MAP[indicator["type"]]](
@@ -1194,25 +1194,28 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
     for indicator in indicators:
         indicator["value"] = indicators_value_to_clickable([indicator["value"]])
 
-    table = {
-        'Value': indicators[0]["rawJSON"]['value'],
-        'MScore': indicators[0]["rawJSON"]['mscore'],
-        'Last Seen': indicators[0]["rawJSON"]["last_seen"]
-    }
-    indicator_type = indicators[0]["rawJSON"]["type"].lower()
+    if indicators:
+        table = {
+            'Value': indicators[0]["rawJSON"]['value'],
+            'MScore': indicators[0]["rawJSON"]['mscore'],
+            'Last Seen': indicators[0]["rawJSON"]["last_seen"]
+        }
+        indicator_type = indicators[0]["rawJSON"]["type"].lower()
 
-    markdown = tableToMarkdown(f'Mandiant Advantage Threat Intelligence information for {table["Value"]}\n'
-                               f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/{indicator_type}/{table["Value"]})',
-                               table)
+        markdown = tableToMarkdown(f'Mandiant Advantage Threat Intelligence information for {table["Value"]}\n'
+                                   f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/{indicator_type}/{table["Value"]})',
+                                   table)
 
-    return CommandResults(
-        readable_output=markdown,
-        content_format=formats["json"],
-        outputs_prefix=f"MANDIANTTI.{INDICATOR_TYPE_MAP[indicators_list[0]['type']].upper()}",
-        outputs=indicators,
-        outputs_key_field="name",
-        ignore_auto_extract=True,
-    )
+        return CommandResults(
+            readable_output=markdown,
+            content_format=formats["json"],
+            outputs_prefix=f"MANDIANTTI.{INDICATOR_TYPE_MAP[indicators_list[0]['type']].upper()}",
+            outputs=indicators,
+            outputs_key_field="name",
+            ignore_auto_extract=True,
+        )
+    else:
+        return f"No indicators found matching value {indicator_value}"
 
 
 def fetch_threat_actor(client: MandiantClient, args: Dict = None):
@@ -1306,20 +1309,23 @@ def fetch_reputation(client: MandiantClient, args: Dict = None):
 
     demisto.createIndicators(indicators)
 
-    table = {
-        'Value': indicators[0]['value'],
-        'MScore': indicators[0]['score'],
-        'Last Seen': indicators[0]["rawJSON"]["last_seen"]
-    }
-    indicator_type = indicators[0]["rawJSON"]["type"].lower()
+    if indicators:
+        table = {
+            'Value': indicators[0]['value'],
+            'MScore': indicators[0]['score'],
+            'Last Seen': indicators[0]["rawJSON"]["last_seen"]
+        }
+        indicator_type = indicators[0]["rawJSON"]["type"].lower()
 
-    markdown = tableToMarkdown(f'Mandiant Advantage Threat Intelligence information for {indicators[0]["value"]}\n'
-                               f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/{indicator_type}/{indicators[0]["value"]})',
-                               table)
+        markdown = tableToMarkdown(f'Mandiant Advantage Threat Intelligence information for {indicators[0]["value"]}\n'
+                                   f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/{indicator_type}/{indicators[0]["value"]})',
+                                   table)
 
-    return CommandResults(readable_output=markdown,
-        outputs=indicators, outputs_prefix=f"MANDIANTTI.{input_type.upper()}", ignore_auto_extract=True
-    )
+        return CommandResults(readable_output=markdown,
+            outputs=indicators, outputs_prefix=f"MANDIANTTI.{input_type.upper()}", ignore_auto_extract=True
+        )
+    else:
+        return f"No indicators found matching value {indicator_value}"
 
 
 """ COMMAND FUNCTIONS """

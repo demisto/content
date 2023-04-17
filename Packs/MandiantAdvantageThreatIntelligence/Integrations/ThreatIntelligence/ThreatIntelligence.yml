@@ -160,7 +160,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get information about a single Indicator of Compromise from Mandiant
+    description: Get information about a single Indicator of Compromise (IP Address, FQDN, URL, or File Hash) from Mandiant
     execution: false
     outputs:
     - contextPath: MANDIANTTI.IP.score
