@@ -1,4 +1,10 @@
-Detonate a private file through VirusTotal (API v3)
+Detonate a private file through VirusTotal Private Scanning service
+
+See files through the eyes of VirusTotal without uploading them to the main threat corpus, keeping them entirely private. Static, dynamic, network and similarity analysis included, as well as automated threat intel enrichment, but NOT multi-antivirus analysis.
+
+More information: https://support.virustotal.com/hc/en-us/articles/8516907790749-Private-Scanning
+
+Get Private Scanning: https://www.virustotal.com/gui/contact-us
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -44,4 +50,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Detonate Private File - VirusTotal (API v3)](../doc_files/Detonate_Private_File_-_VirusTotal_V3.png)
+![Detonate Private File - VirusTotal Private Scanning](../doc_files/Detonate_Private_File_-_VirusTotal_V3.png)

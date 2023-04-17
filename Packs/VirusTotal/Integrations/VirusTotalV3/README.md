@@ -2165,6 +2165,8 @@ Retrieves result of the last Sigma analysis.
 ***
 Checks the file reputation of the specified private hash.
 
+See files through the eyes of VirusTotal without uploading them to the main threat corpus, keeping them entirely private. Static, dynamic, network and similarity analysis included, as well as automated threat intel enrichment, but NOT multi-antivirus analysis.
+
 #### Base Command
 
 `vt-privatescanning-file`

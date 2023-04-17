@@ -1,7 +1,7 @@
-id: Detonate Private File - VirusTotal (API v3)
+id: Detonate Private File - VirusTotal Private Scanning
 version: -1
-name: Detonate Private File - VirusTotal (API v3)
-description: Detonate a private file through VirusTotal (API v3)
+name: Detonate Private File - VirusTotal Private Scanning
+description: Detonate a private file through VirusTotal Private Scanning service
 starttaskid: "0"
 tasks:
   "0":
