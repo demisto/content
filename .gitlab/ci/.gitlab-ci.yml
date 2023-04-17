@@ -60,4 +60,4 @@ include:
   - local: .gitlab/ci/test-native-candidate.yml
   - file: '/.gitlab/test-ref.yml'
     ref: test_refs
-    project: 'content-test-conf/content-test-conf'
+    project: '/content-test-conf/-'
