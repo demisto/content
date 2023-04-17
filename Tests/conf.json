@@ -3600,10 +3600,6 @@
             "playbookID": "Identity & Access test playbook"
         },
         {
-            "integrations": "MicrosoftPolicyAndComplianceAuditLog",
-            "playbookID": "Audit Log - Test"
-        },
-        {
             "integrations": "Nutanix Hypervisor",
             "playbookID": "Nutanix-test"
         },
@@ -5543,7 +5539,8 @@
         "ThreatGrid_v2_Test": "No instance, developed by Qmasters",
         "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters",
         "awake_security_test_pb": "No instance, CRTX-77572",
-        "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. "
+        "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip.",
+        "Audit Log - Test": "Basic Auth is no longer supported, only OAuth 2.0 is (which requires an update to the playbook). - XSUP-23266"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
