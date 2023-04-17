@@ -24,14 +24,17 @@ EXCEPTIONS = {
 
 
 def main(changed_files):
+    found_files = []
     # Check if any protected directories have been modified
     for changed_file in changed_files:
         changed_path = Path(changed_file)
-        top_level_directory = changed_path.parents[-1].as_posix()
+        top_level_directory = changed_path.parents[1].as_posix()
         if top_level_directory in PROTECTED_DIRECTORIES and changed_file not in EXCEPTIONS:
             print(f"Error: Contribution branch includes changes to files under {top_level_directory}, "
                   f"which is a protected directory. Please revert them. (file: {changed_file})")
-            sys.exit(1)
+            found_files.append(changed_file)
+    if len(found_files) > 0:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
