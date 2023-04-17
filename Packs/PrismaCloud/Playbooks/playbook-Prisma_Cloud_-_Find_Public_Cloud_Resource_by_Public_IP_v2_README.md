@@ -6,9 +6,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Prisma Cloud - Find AWS Resource by Public IP v2
 * Prisma Cloud - Find GCP Resource by Public IP v2
 * Prisma Cloud - Find Azure Resource by Public IP v2
+* Prisma Cloud - Find AWS Resource by Public IP v2
 
 ### Integrations
 
@@ -29,7 +29,7 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | PublicIPAddress | Public IP Address to look up |  | Required |
-| CloudProvider | Public Cloud Provider \(AWS, Azure, GCP\) | Azure | Optional |
+| CloudProvider | Public Cloud Provider \(AWS, Azure, GCP\) |  | Optional |
 
 ## Playbook Outputs
 

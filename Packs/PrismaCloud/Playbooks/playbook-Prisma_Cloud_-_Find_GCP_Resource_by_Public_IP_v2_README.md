@@ -12,15 +12,15 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-PrismaCloud v2
+* PrismaCloud v2
 
 ### Scripts
 
-PrismaCloudAttribution
+* PrismaCloudAttribution
 
 ### Commands
 
-prisma-cloud-config-search
+* prisma-cloud-config-search
 
 ## Playbook Inputs
 

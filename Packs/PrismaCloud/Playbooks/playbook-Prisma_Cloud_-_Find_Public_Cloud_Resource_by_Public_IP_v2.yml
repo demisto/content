@@ -183,7 +183,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "25"
+      - "26"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -479,12 +479,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: ccee7efd-4863-449f-8011-e62a0272112f
+  "26":
+    id: "26"
+    taskid: ca4523b4-7f64-4c09-8c6e-a68a4b73094f
     type: playbook
     task:
-      id: ccee7efd-4863-449f-8011-e62a0272112f
+      id: ca4523b4-7f64-4c09-8c6e-a68a4b73094f
       version: -1
       name: Prisma Cloud - Find GCP Resource by Public IP v2
       description: |
@@ -507,7 +507,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 100
+      max: 0
     view: |-
       {
         "position": {
@@ -545,8 +545,7 @@ inputs:
   description: Public IP Address to look up
   playbookInputQuery:
 - key: CloudProvider
-  value:
-    simple: Azure
+  value: {}
   required: false
   description: Public Cloud Provider (AWS, Azure, GCP)
   playbookInputQuery:

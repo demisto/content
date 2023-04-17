@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ee0f03e7-b077-4928-8650-b16f5844ce00
+    taskid: 40ae166d-0493-41d3-81e3-04b87913975e
     type: start
     task:
-      id: ee0f03e7-b077-4928-8650-b16f5844ce00
+      id: 40ae166d-0493-41d3-81e3-04b87913975e
       version: -1
       name: ""
       iscommand: false
@@ -40,10 +40,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: fc17a6c9-a85a-4832-8034-8b46ee4717f1
+    taskid: 0cb94f5d-6592-46b9-8944-d690e893d4f0
     type: title
     task:
-      id: fc17a6c9-a85a-4832-8034-8b46ee4717f1
+      id: 0cb94f5d-6592-46b9-8944-d690e893d4f0
       version: -1
       name: Check Results
       type: title
@@ -71,14 +71,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: e96d6704-121c-4795-82f7-84dcc58162ac
+    taskid: fc1bee60-2efe-45c8-8142-fac341a44269
     type: regular
     task:
-      id: e96d6704-121c-4795-82f7-84dcc58162ac
+      id: fc1bee60-2efe-45c8-8142-fac341a44269
       version: -1
       name: Search in GCE
-      description: Search GCE instances in Prisma Cloud
-      script: PrismaCloud v2|||redlock-search-config
+      description: Search GCE instances in Prisma Cloud.
+      script: PrismaCloud v2|||prisma-cloud-config-search
       type: regular
       iscommand: true
       brand: PrismaCloud v2
@@ -127,10 +127,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: c318635e-de69-4c79-8bd3-c87bfc2a5ed7
+    taskid: 4aa5d0c6-5377-44d3-8c4c-21a8fb48c98c
     type: condition
     task:
-      id: c318635e-de69-4c79-8bd3-c87bfc2a5ed7
+      id: 4aa5d0c6-5377-44d3-8c4c-21a8fb48c98c
       version: -1
       name: Are Results Found?
       description: Check whether results are found.
@@ -170,13 +170,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: c02a6c54-3f55-4ac7-8ec9-abbaff471282
+    taskid: c03a4b71-274f-4deb-8181-94b4f9a24fbc
     type: regular
     task:
-      id: c02a6c54-3f55-4ac7-8ec9-abbaff471282
+      id: c03a4b71-274f-4deb-8181-94b4f9a24fbc
       version: -1
       name: Transform Results
-      description: Prisma Cloud Attribution
+      description: Prisma Cloud Attribution.
       scriptName: PrismaCloudAttribution
       type: regular
       iscommand: false
@@ -207,10 +207,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 435c8a09-dc4d-4b80-8c21-9980fe4b6415
+    taskid: bba7b4a9-db1c-4c8f-8027-5e866a59a9e0
     type: title
     task:
-      id: 435c8a09-dc4d-4b80-8c21-9980fe4b6415
+      id: bba7b4a9-db1c-4c8f-8027-5e866a59a9e0
       version: -1
       name: Done
       type: title
@@ -235,10 +235,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: b1b1ef5d-7cbb-42be-8755-4d75db40095b
+    taskid: 4e860905-c7fb-4773-88d2-d5e9ad1fb69f
     type: title
     task:
-      id: b1b1ef5d-7cbb-42be-8755-4d75db40095b
+      id: 4e860905-c7fb-4773-88d2-d5e9ad1fb69f
       version: -1
       name: Search in Prisma Cloud
       type: title
@@ -268,10 +268,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: aefcdbe9-ef89-4008-8d2f-4d732948d857
+    taskid: ac7c817e-0ce6-4ce7-84da-0d024490e54c
     type: condition
     task:
-      id: aefcdbe9-ef89-4008-8d2f-4d732948d857
+      id: ac7c817e-0ce6-4ce7-84da-0d024490e54c
       version: -1
       name: Is Prisma Cloud enabled?
       description: Check whether Prisma Cloud integration is enabled.
@@ -327,13 +327,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 787721dc-c96b-452a-87be-08b39762d98a
+    taskid: ab1813c3-3d15-49f5-8260-d0382f60da8a
     type: condition
     task:
-      id: 787721dc-c96b-452a-87be-08b39762d98a
+      id: ab1813c3-3d15-49f5-8260-d0382f60da8a
       version: -1
       name: Are there IPs in input?
-      description: Check if there are any IP in the input.
+      description: Check if there are any IPs in the input.
       type: condition
       iscommand: false
       brand: ""
@@ -369,14 +369,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: d63f008c-bcfd-44c8-828d-f2988e6a0ab3
+    taskid: 1ef4f6a9-1e5b-410d-8d44-0fa35f15118f
     type: regular
     task:
-      id: d63f008c-bcfd-44c8-828d-f2988e6a0ab3
+      id: 1ef4f6a9-1e5b-410d-8d44-0fa35f15118f
       version: -1
       name: Search in Google Cloud Load Balancing
-      description: Search GCE instances in Prisma Cloud
-      script: PrismaCloud v2|||redlock-search-config
+      description: Search GCE instances in Prisma Cloud.
+      script: PrismaCloud v2|||prisma-cloud-config-search
       type: regular
       iscommand: true
       brand: PrismaCloud v2
@@ -425,14 +425,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 1aade99e-b211-46f9-80e2-2f0f3f096b8a
+    taskid: 2c5ee418-ee55-4f6c-84b5-a21227fa2110
     type: regular
     task:
-      id: 1aade99e-b211-46f9-80e2-2f0f3f096b8a
+      id: 2c5ee418-ee55-4f6c-84b5-a21227fa2110
       version: -1
       name: Search in GKE
-      description: Search GCE instances in Prisma Cloud
-      script: PrismaCloud v2|||redlock-search-config
+      description: Search GCE instances in Prisma Cloud.
+      script: PrismaCloud v2|||prisma-cloud-config-search
       type: regular
       iscommand: true
       brand: PrismaCloud v2
