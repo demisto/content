@@ -1,0 +1,1 @@
+{"breakingChanges":true, "breakingChangesNotes": "Added the **MS graph security version** integration param, this param will decide the version of the api to use. Note: the default version is V2 which causes breaking changes and demands reconfiguring with new credentials."}
