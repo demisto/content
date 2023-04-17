@@ -1,5 +1,6 @@
 id: Get Code42 Employee Information
 version: -1
+fromversion: "6.8.0"
 name: Get Code42 Employee Information
 description: Receives usernames from a Code42 Incydr alert and queries Active Directory for employee and supervisor information, if applicable.
 tags:
@@ -8,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c8acc6bb-66ab-471b-818a-610af410ff2e
+    taskid: 413529f6-5bdf-494d-85e9-a3c9e90599be
     type: start
     task:
-      id: c8acc6bb-66ab-471b-818a-610af410ff2e
+      id: 413529f6-5bdf-494d-85e9-a3c9e90599be
       version: -1
       name: ""
       iscommand: false
@@ -19,13 +20,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "13"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 807.5,
           "y": 50
         }
       }
@@ -38,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: d84d1818-f4b9-4efb-87da-89af67b9d973
+    taskid: 268613d9-87ad-4de2-8d5e-a1f802ae4b59
     type: condition
     task:
-      id: d84d1818-f4b9-4efb-87da-89af67b9d973
+      id: 268613d9-87ad-4de2-8d5e-a1f802ae4b59
       version: -1
       name: Is Input an Email, Display Name, or Username?
       description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
@@ -100,7 +101,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -112,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 88f0da6c-e8e1-4e86-806d-2bd09c11d424
+    taskid: 93c29d02-bca4-4196-804b-66ca1dddfa4f
     type: regular
     task:
-      id: 88f0da6c-e8e1-4e86-806d-2bd09c11d424
+      id: 93c29d02-bca4-4196-804b-66ca1dddfa4f
       version: -1
       name: Query Active Directory via Email
       description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
@@ -137,7 +138,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -149,10 +150,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 1d04ca9c-d3e5-4a17-8ecb-71aab3847141
+    taskid: 13a18fc7-0421-4131-8c8f-2dbdf507043c
     type: regular
     task:
-      id: 1d04ca9c-d3e5-4a17-8ecb-71aab3847141
+      id: 13a18fc7-0421-4131-8c8f-2dbdf507043c
       version: -1
       name: Query Active Directory via Display Name
       description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
@@ -174,7 +175,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -186,10 +187,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: acadc282-86f9-42c9-8e48-1fc21bd5c971
+    taskid: b17c5bd4-f092-4c22-8456-f842c18e2131
     type: regular
     task:
-      id: acadc282-86f9-42c9-8e48-1fc21bd5c971
+      id: b17c5bd4-f092-4c22-8456-f842c18e2131
       version: -1
       name: Query Active Directory via Username
       description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
@@ -211,7 +212,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -223,13 +224,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: f1404d58-fad1-4919-8c46-7c59b2765428
+    taskid: 69b4b363-ddb0-4c56-84a0-23a9c3b29262
     type: condition
     task:
-      id: f1404d58-fad1-4919-8c46-7c59b2765428
+      id: 69b4b363-ddb0-4c56-84a0-23a9c3b29262
       version: -1
       name: Does Incident ID Exist?
-      description: ""
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -253,8 +254,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 1380
+          "x": 367.5,
+          "y": 1565
         }
       }
     note: false
@@ -266,10 +267,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: abb25134-3936-4bfe-891e-637c7a696985
+    taskid: 003851f6-c62c-4447-8938-377aaf5375e0
     type: regular
     task:
-      id: abb25134-3936-4bfe-891e-637c7a696985
+      id: 003851f6-c62c-4447-8938-377aaf5375e0
       version: -1
       name: Set Manager Incident Info
       description: commands.local.cmd.set.incident
@@ -292,8 +293,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 1560
+          "x": 787.5,
+          "y": 1740
         }
       }
     note: false
@@ -305,10 +306,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 256e0435-e1b5-4fec-8b04-030b840a5c01
+    taskid: 4569d13c-7081-4865-8f8a-639a1300f500
     type: title
     task:
-      id: 256e0435-e1b5-4fec-8b04-030b840a5c01
+      id: 4569d13c-7081-4865-8f8a-639a1300f500
       version: -1
       name: Done
       type: title
@@ -320,8 +321,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1730
+          "x": 685,
+          "y": 1915
         }
       }
     note: false
@@ -333,10 +334,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d935687d-9cf5-480f-849a-292fd25f8928
+    taskid: 14a9a37a-5846-41b4-8958-e54f38a8056e
     type: regular
     task:
-      id: d935687d-9cf5-480f-849a-292fd25f8928
+      id: 14a9a37a-5846-41b4-8958-e54f38a8056e
       version: -1
       name: Query Active Directory for Manager
       description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
@@ -362,8 +363,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 1205
+          "x": 367.5,
+          "y": 1390
         }
       }
     note: false
@@ -375,10 +376,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: f133ddbf-ca00-41a6-8321-a1fb1142fb2d
+    taskid: 0f1e84ae-8e4f-4acb-83da-864446f1ec3e
     type: title
     task:
-      id: f133ddbf-ca00-41a6-8321-a1fb1142fb2d
+      id: 0f1e84ae-8e4f-4acb-83da-864446f1ec3e
       version: -1
       name: Get Manager Data
       type: title
@@ -394,7 +395,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -406,13 +407,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 4107a83c-88cd-4761-85fd-f007084c0857
+    taskid: b4beb002-9f70-4a30-8b4a-08729b1bf682
     type: condition
     task:
-      id: 4107a83c-88cd-4761-85fd-f007084c0857
+      id: b4beb002-9f70-4a30-8b4a-08729b1bf682
       version: -1
       name: Does Manager Attribute Exist?
-      description: ""
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -442,7 +443,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1030
+          "y": 1215
         }
       }
     note: false
@@ -454,10 +455,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 6e32b95c-1baa-490f-8169-589de4a11821
+    taskid: 68fbd026-e809-48dc-828d-99eae1334718
     type: regular
     task:
-      id: 6e32b95c-1baa-490f-8169-589de4a11821
+      id: 68fbd026-e809-48dc-828d-99eae1334718
       version: -1
       name: Set Employee Incident Info
       description: commands.local.cmd.set.incident
@@ -482,8 +483,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 860
+          "x": 367.5,
+          "y": 1040
         }
       }
     note: false
@@ -495,13 +496,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: bc4e1575-532d-4b71-87b0-e1a719a82630
+    taskid: 507d1a41-2cf3-4e66-8802-7148d4f5d456
     type: condition
     task:
-      id: bc4e1575-532d-4b71-87b0-e1a719a82630
+      id: 507d1a41-2cf3-4e66-8802-7148d4f5d456
       version: -1
       name: Does Incident ID Exist?
-      description: ""
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -524,7 +525,46 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 690
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 2db60b86-4bad-4cc9-8e22-64daa41e7003
+    type: condition
+    task:
+      id: 2db60b86-4bad-4cc9-8e22-64daa41e7003
+      version: -1
+      name: Is Active Directory Available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 195
         }
       }
     note: false
@@ -545,7 +585,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1745,
+        "height": 1930,
         "width": 1240,
         "x": 50,
         "y": 50
@@ -581,4 +621,3 @@ outputs:
   type: string
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0

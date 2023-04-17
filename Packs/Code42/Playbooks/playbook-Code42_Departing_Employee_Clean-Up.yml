@@ -2,7 +2,7 @@ id: Departing Employee Clean-Up
 version: -1
 fromversion: "6.8.0"
 name: Departing Employee Clean-Up
-description: Queries the Departing Employee watchlist in Code42 Incydr and passes relevant employee data to the Remove Employees from Departing Employee Watchlist playbook.
+description: Queries the Departing Employee watchlist in Code42 Incydr and passes relevant employee data to the Remove Employees from Departing Employee Watchlist playbook. Intended to be run as a scheduled job.
 tags:
 - Code42 Incydr
 starttaskid: "0"

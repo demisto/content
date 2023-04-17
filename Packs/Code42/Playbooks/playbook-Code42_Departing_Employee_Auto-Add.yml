@@ -2,7 +2,7 @@ id: Departing Employee Auto-Add
 version: -1
 fromversion: "6.8.0"
 name: Departing Employee Auto-Add
-description: Queries stand-down tickets from a ticketing system and passes relevant employee data to the Add Employees to Departing Employee Watchlist playbook.
+description: Queries stand-down tickets from a ticketing system and passes relevant employee data to the Add Employees to Departing Employee Watchlist playbook. Intended to be run as a scheduled job.
 tags:
 - Code42 Incydr
 starttaskid: "0"
@@ -73,7 +73,17 @@ tasks:
       id: 6d152284-5e55-4c05-8d10-0a21e2979738
       version: -1
       name: Query Stand-Down Tickets
-      description: Set a value in context under the key you entered.
+      description: |-
+        This task is meant to be edited/replaced with one that makes a query to a ticketing or HR system for new
+        departing employees. 
+        
+        For example, if your company's employee lifecycle process includes creating a new Jira
+        ticket when an employee gives notice, you would set this task to query Jira tickets for the relevant project or
+        subject and extract appropriate fields from the ticket.
+        
+        If the query returns any results, it should set a list of `Ticket` objects in the context,
+        with one required property `Ticket.username` (the email address that matches the Code42 user account), and an 
+        optional `Ticket.departure_date` property (in YYYY-MM-DD format).
       scriptName: Set
       type: regular
       iscommand: false
