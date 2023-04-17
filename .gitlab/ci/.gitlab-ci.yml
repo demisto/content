@@ -58,3 +58,6 @@ include:
   - local: .gitlab/ci/sdk-nightly.yml
   - local: .gitlab/ci/miscellaneous.yml
   - local: .gitlab/ci/test-native-candidate.yml
+  - file: '/test-ref.yml'
+    ref: test_refs
+    project: 'content-test-conf/.gitlab'
