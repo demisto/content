@@ -1550,7 +1550,7 @@ def build_private_file_output(file_hash: str, raw_response: dict) -> CommandResu
                 'Threat Severity Level', 'Popular Threat Category', 'Threat Verdict'
             ],
             removeNull=True,
-            headerTransform=underscoreToCamelCase
+            headerTransform=string_to_table_header
         ),
         outputs=data,
         raw_response=raw_response,
@@ -1971,6 +1971,7 @@ def upload_file(client: Client, args: dict, private: bool = False) -> List[Comma
                     f'The file has been submitted "{file_obj["name"]}"',
                     data,
                     headers=['id', 'EntryID', 'MD5', 'SHA1', 'SHA256'],
+                    removeNull=True
                 ),
                 outputs=context,
                 raw_response=raw_response
@@ -2378,7 +2379,8 @@ def private_get_analysis_command(client: Client, args: dict) -> CommandResults:
                 'id': analysis_id
             },
             headers=['id', 'threat_severity_level', 'popular_threat_category', 'threat_verdict', 'status'],
-            headerTransform=underscoreToCamelCase
+            removeNull=True,
+            headerTransform=string_to_table_header
         ),
         outputs={
             **raw_response,
