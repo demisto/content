@@ -163,7 +163,6 @@ def http_wait_server():
         server_thread.join()
 
 
-
 # Some web servers can block the connection after the http is sent
 # In this case chromium will hang. An example for this is:
 # curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"  # disable-secrets-detection
