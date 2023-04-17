@@ -602,7 +602,7 @@ def get_user_command(client: MsGraphClient, args):
 
 
 def create_alert_comment_command(client: MsGraphClient, args):
-    """ 
+    """
     Adds a comment to an alert with the given id
 
     Args:
@@ -612,6 +612,9 @@ def create_alert_comment_command(client: MsGraphClient, args):
     Returns:
         str, Dict, Dict: the human readable, parsed outputs and request's response.
     """
+    if API_VER == "API V1":
+        raise DemistoException("This command is available only for V2."
+                               " If you wish to add a comment to an alert with V1 please use 'msg-update-alert' command.")
     alert_id = args.get('alert_id', '')
     comment = args.get('comment', '')
     params = {"comment": comment}
@@ -624,7 +627,7 @@ def create_alert_comment_command(client: MsGraphClient, args):
     ec = {
         'MsGraph.AlertComment(val.ID && val.ID == obj.ID)': context
     }
-    header = f'## Microsoft Security Graph Create Alert Comment - {alert_id}\n'
+    header = f'Microsoft Security Graph Create Alert Comment - {alert_id}\n'
     human_readable = tableToMarkdown(header, comments, removeNull=True)
     return human_readable, ec, res
 

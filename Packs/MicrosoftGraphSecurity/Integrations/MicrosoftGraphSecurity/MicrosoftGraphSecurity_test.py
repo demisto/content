@@ -1,6 +1,6 @@
 from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, search_alerts_command, \
     get_users_command, fetch_incidents, get_alert_details_command, main, MANAGED_IDENTITIES_TOKEN_URL, \
-    Resources, create_data_to_update
+    Resources, create_data_to_update, create_alert_comment_command, create_filter_query
 from CommonServerPython import DemistoException
 import pytest
 import json
@@ -135,8 +135,8 @@ def test_fetch_incidents_command(mocker, test_case):
     ({'filter': "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
      {'$filter': "Category eq 'Malware' and Severity eq 'High' and relevant_key eq 'resolved'"}, True, "API V2"),
     ({'filter': "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
-     {'$top': 50, '$filter': "Category eq 'Malware' and Severity eq 'High'"}, False, "API V1"),
-    ({'page': "2"}, {'$top': 50, '$skip': 100, '$filter': ''}, False, "API V1")
+     {'$top': '50', '$filter': "Category eq 'Malware' and Severity eq 'High'"}, False, "API V1"),
+    ({'page': "2"}, {'$top': '50', '$skip': 100, '$filter': ''}, False, "API V1")
 ])
 def test_create_search_alerts_filters(mocker, args, expected_params, is_fetch, api_version):
     """
@@ -163,33 +163,33 @@ def test_create_search_alerts_filters(mocker, args, expected_params, is_fetch, a
     assert params == expected_params
 
 
-# @pytest.mark.parametrize('args, expected_error, api_version', [
-#     ({'page_size': "1001"}, "", "API V1"),
-#     ({'page_size': "1000", "page": "3"}, "", "API V1")
-#     ({'page_size': "2001"}, "", "API V2")
-# ])
-# def test_create_search_alerts_filters_errors(mocker, args, expected_error, api_version):
-#     """
-#         Given:
-#         - args, expected_error, and a api_version flag.
-#         - Case 1: args with only assigned_to field, and API version flag is V1.
-#         - Case 2: args with vendor_information, provider information, and status set to 'new' (valid only for v2) fields,
-#                   and API version flag is V1.
-#         - Case 3: args with only status field set to 'newAlert' (valid only for v1) and API version flag is V2.
+@pytest.mark.parametrize('args, expected_error, api_version', [
+    ({"page_size": "1001"}, "Please note that the page size limit for API V1 is 1000", "API V1"),
+    ({"page_size": "1000", "page": "3"}, 'Please note that the maximum amount of alerts you can skip in API V1 is 500',
+     "API V1"),
+    ({"page_size": "2001"}, "Please note that the page size limit for API V2 is 2000", "API V2")
+])
+def test_create_search_alerts_filters_errors(mocker, args, expected_error, api_version):
+    """
+        Given:
+        - args, expected_error, and a api_version flag.
+        - Case 1: Args with page_size = 1001, and API version flag is V1.
+        - Case 2: Args with page_size = 1000 and page = 3 (total of page=3000) and API version flag is V1.
+        - Case 3: Args with page_size = 2001, and API version flag is V2.
 
-#         When:
-#         - Running create_data_to_update.
+        When:
+        - Running create_search_alerts_filters.
 
-#         Then:
-#         - Ensure that the right error was thrown.
-#         - Case 1: Should throw an error for missing vendor and provider information
-#         - Case 2: Should throw an error for wrong status value.
-#         - Case 3: Should throw an error for wrong status value.
-#     """
-#     mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
-#     with pytest.raises(DemistoException) as e:
-#         create_search_alerts_filters(args, is_fetch=False)
-#     assert str(e.value.message) == expected_error
+        Then:
+        - Ensure that the right error was thrown.
+        - Case 1: Should throw an error for page_size too big for V1 limitations.
+        - Case 2: Should throw an error for too many alerts to skip for V1 limitations.
+        - Case 3: Should throw an error for page_size too big for V2 limitations.
+    """
+    mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
+    with pytest.raises(DemistoException) as e:
+        create_search_alerts_filters(args, is_fetch=False)
+    assert str(e.value.message) == expected_error
 
 
 @pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
@@ -267,8 +267,8 @@ def test_create_data_to_update(mocker, args, expected_results, api_version):
      "Invalid status value. When using API V1, use newAlert instead of new.",
      'API V1'),
     ({'status': 'newAlert'}, "Invalid status value. When using API V2, use new instead of newAlert.", 'API V2'),
-    ({}, "No data relevant for API V2 to update was provided, please provide at least one of the following:"
-        " assigned_to, determination, classification, status.", 'API V2')
+    ({'closed_date_time': 'now'}, "No data relevant for API V2 to update was provided, please provide at least one of the "
+     "following: assigned_to, determination, classification, status.", 'API V2')
 ])
 def test_create_data_to_update_errors(mocker, args, expected_error, api_version):
     """
@@ -278,6 +278,7 @@ def test_create_data_to_update_errors(mocker, args, expected_error, api_version)
         - Case 2: args with vendor_information, provider information, and status set to 'new' (valid only for v2) fields,
                   and API version flag is V1.
         - Case 3: args with only status field set to 'newAlert' (valid only for v1) and API version flag is V2.
+        - Case 4: Args with only 'closed_date_time' field (relevant only for v1),  and API version flag is V2.
 
         When:
         - Running create_data_to_update.
@@ -287,8 +288,90 @@ def test_create_data_to_update_errors(mocker, args, expected_error, api_version)
         - Case 1: Should throw an error for missing vendor and provider information
         - Case 2: Should throw an error for wrong status value.
         - Case 3: Should throw an error for wrong status value.
+        - Case 4: Should throw an error for missing V2 relevant data to update.
     """
     mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
     with pytest.raises(DemistoException) as e:
         create_data_to_update(args)
     assert str(e.value.message) == expected_error
+
+
+@pytest.mark.parametrize('args, expected_error, api_version', [
+    ({'alert_id': 'alert_id', "comment": "comment"}, "This command is available only for V2."
+     " If you wish to add a comment to an alert with V1 please use 'msg-update-alert' command.", 'API V1')
+])
+def test_create_alert_comment_command_error(mocker, args, expected_error, api_version):
+    """
+        Given:
+        - args, expected_error, and a api_version flag.
+        - Case 1: args with alert_id and a comment to add, and API version flag is V1.
+
+        When:
+        - Running create_alert_comment_command.
+
+        Then:
+        - Ensure that the right error was thrown.
+        - Case 1: Should throw an error for running the command using V1 of the API.
+    """
+    mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
+    with pytest.raises(DemistoException) as e:
+        create_alert_comment_command(client_mocker, args)
+    assert str(e.value.message) == expected_error
+
+
+@pytest.mark.parametrize('test_case', [
+    "test_case_1", "test_case_2"
+])
+def test_create_alert_comment_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args including alert_id and comment to add, response mock, and expected hr and ec outputs
+        - Case 1: Mock response of a comment with only one comment (the one that just got added).
+        - Case 2: Mock response of a comment with two comments.
+        When:
+        - Running create_alert_comment_command.
+
+        Then:
+        - Ensure that the alert was parsed correctly and right HR and EC outputs are returned.
+        - Case 1: Should return a table with one entry.
+        - Case 2: Should return a table with two entries, one for each comment. 
+    """
+    test_data = load_json("./test_data/test_create_alert_comment_command.json").get(test_case)
+    mocker.patch.object(client_mocker, 'create_alert_comment', return_value=test_data.get('mock_response'))
+    hr, ec, _ = create_alert_comment_command(client_mocker, test_data.get('args'))
+    assert hr == test_data.get('expected_hr')
+    assert ec == test_data.get('expected_ec')
+
+
+@pytest.mark.parametrize('param, providers_param, service_sources_param, expected_results, api_version', [
+    ("param", "providers_param", "service_sources_param", "param", "API V1"),
+    ("param", "providers_param", "service_sources_param", "param", "API V2"),
+    ("", "providers_param", "service_sources_param", "vendorInformation/provider eq 'providers_param'", "API V1"),
+    ("", "providers_param", "service_sources_param", "serviceSource eq 'service_sources_param'", "API V2"),
+    ("", "", "", "", "API V2")
+])
+def test_create_filter_query(mocker, param, providers_param, service_sources_param, expected_results, api_version):
+    """
+        Given:
+        - param, providers_param, service_sources_param function arguments,
+          expected_results, and a api_version flag.
+        - Case 1: param, providers_param, and service_sources_param function arguments filled, and API version flag is V1.
+        - Case 2: param, providers_param, and service_sources_param function arguments filled, and API version flag is V2.
+        - Case 3: Only providers_param and service_sources_param function arguments filled, and API version flag is V1.
+        - Case 4: Only providers_param and service_sources_param function arguments filled, and API version flag is V2.
+        - Case 5: param, providers_param, and service_sources_param function arguments Empty, and API version flag is V2.
+        When:
+        - Running create_filter_query.
+
+        Then:
+        - Ensure that the right option was returned.
+        - Case 1: Should return param.
+        - Case 2: Should return param.
+        - Case 3: Should return providers_param.
+        - Case 4: Should return service_sources_param.
+        - Case 5: Should return an empty string.
+    """
+    mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
+    filter_query = create_filter_query(param, providers_param, service_sources_param)
+    assert filter_query == expected_results
