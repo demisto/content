@@ -1,6 +1,8 @@
 import json
 import io
 
+import pytest
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -104,3 +106,30 @@ def test_fetch_indicators(mocker):
     assert response == expected_response
 
 
+def test_create_relationship_list_no_mitre_id():
+    """
+        Given: A list of XSOAR indicators.
+        When: Creating relationships between the indicators.
+        Then: Ensure the relationships are created correctly.
+    """
+    from FeedLOLBAS import create_relationship_list
+    mock_indicators = [{'value': 'test_indicator'}, {'value': 'test_indicator2', 'fields': {}}]
+
+    response = create_relationship_list(mock_indicators)
+    assert response == []
+
+
+@pytest.mark.parametrize('pre_parsed_detections, expected',
+                         [("", []), ("test", []), ("test1: test_detection, test2: test_detection",
+                                                   [{'Type': 'test1', 'Content': ' test_detection'},
+                                                    {'Type': ' test2', 'Content': ' test_detection'}])])
+def test_parse_detections(pre_parsed_detections, expected):
+    """
+        Given: A list of detections.
+        When: Parsing the detections.
+        Then: Ensure the detections are parsed correctly.
+    """
+    from FeedLOLBAS import parse_detections
+
+    response = parse_detections(pre_parsed_detections)
+    assert response == expected

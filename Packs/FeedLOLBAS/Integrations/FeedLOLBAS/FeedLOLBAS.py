@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any, Tuple
+from typing import Dict, Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -26,13 +26,13 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, verify: bool, proxy: bool,
-                 create_relationships: bool, feed_tags: list, tlp_color: str):
+                 create_relationships: bool, feed_tags: List[str], tlp_color: str):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.create_relationships = create_relationships
-        self.feed_tags: Optional[list] = feed_tags
-        self.tlp_color: Optional[str] = tlp_color
+        self.feed_tags = feed_tags
+        self.tlp_color = tlp_color
 
-    def get_indicators(self):
+    def get_indicators(self) -> str:  # pragma: no cover
         """
         Get indicators from LOLBAS API.
         """
@@ -42,7 +42,7 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client):  # pragma: no cover
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -57,7 +57,8 @@ def test_module(client: Client) -> str:
     """
     try:
         client.get_indicators()
-        demisto.results('ok')
+        return_results('ok')
+
     except DemistoException:
         return_error('Could not connect to server')
 
@@ -85,7 +86,7 @@ def create_relationship_list(indicators: List[Dict[str, Any]]) -> List[Dict[str,
     relationships = []
     for indicator in indicators:
         entity_a = indicator.get('value')
-        entity_b = indicator.get('fields').get('Commands').get('MitreID')
+        entity_b = indicator.get('fields', {}).get('Commands', {}).get('MitreID', "")
         if entity_a and entity_b:
             relation_obj = EntityRelationship(
                 name=EntityRelationship.Relationships.RELATED_TO,
@@ -102,12 +103,14 @@ def parse_detections(pre_parsed_detections: str) -> List[Dict[str, str]]:
         Parse detections from the response.
     """
     parsed_detections = []
+
     if detections := pre_parsed_detections:
         for detection in detections.split(','):
-            detection = detection.split(':', 1)
-            if detection_type := detection[0]:
-                if detection_content := detection[1]:
-                    parsed_detections.append({"Type": detection_type, "Content": detection_content})
+            if detection.count(':') > 0:
+                if splitted_detection := detection.split(':', 1):
+                    if detection_type := splitted_detection[0]:
+                        if detection_content := splitted_detection[1]:
+                            parsed_detections.append({"Type": detection_type, "Content": detection_content})
     return parsed_detections
 
 
@@ -117,7 +120,7 @@ def create_indicators(client: Client, pre_indicators: List[Dict[str, str]]) -> L
     """
     indicators: List[Dict[str, Any]] = []
     for pre_indicator in pre_indicators:
-        indicator = {
+        indicator: Dict[str, Any] = {
             "type": ThreatIntel.ObjectsNames.TOOL,
             "value": pre_indicator.get('Filename'),
             "description": pre_indicator.get('Description'),
@@ -131,7 +134,7 @@ def create_indicators(client: Client, pre_indicators: List[Dict[str, str]]) -> L
                     "MitreID": pre_indicator.get('MITRE ATT&CK technique'),
                     "OperatingSystem": pre_indicator.get('Operating System')
                 },
-                "Detections": parse_detections(pre_indicator.get("Detection")),
+                "Detections": parse_detections(pre_indicator.get("Detection", "")),
                 "Paths": {"Paths": pre_indicator.get('Paths'), }
             },
             "rawJSON": pre_indicator,
@@ -150,11 +153,12 @@ def create_relationships(client: Client, indicators: List[Dict[str, Any]]) -> Li
     """
     if client.create_relationships:
         relationships = create_relationship_list(indicators)
-        dummy_indicator_for_relations = {
-            "value": "$$DummyIndicator$$",
-            "relationships": relationships
-        }
-        indicators.append(dummy_indicator_for_relations)
+        if relationships:
+            dummy_indicator_for_relations = {
+                "value": "$$DummyIndicator$$",
+                "relationships": relationships
+            }
+            indicators.append(dummy_indicator_for_relations)
     return indicators
 
 
@@ -172,7 +176,7 @@ def fetch_indicators(client: Client) -> List[Dict[str, Any]]:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:

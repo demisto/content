@@ -88,7 +88,7 @@ configuration:
   required: false
   type: 8
 description: 'LOLBAS feed of published IOCs, which contains known malicious indicators.'
-display: 'FeedLOLBAS'
+display: 'LOLBAS'
 name: FeedLOLBAS
 script:
   commands: []
