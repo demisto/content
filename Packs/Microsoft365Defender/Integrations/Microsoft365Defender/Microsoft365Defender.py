@@ -469,11 +469,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
     """
     start_time = time.time()
     test_context_for_token(client)
-    integration_context = get_integration_context()
-    grouped_incidents = integration_context.get('grouped_incidents', [])
-    demisto.debug(f'hello there{grouped_incidents}')
     last_run_dict = demisto.getLastRun()
-    demisto.debug(last_run_dict)
 
     last_run = last_run_dict.get('last_run')
     if not last_run:  # this is the first run
@@ -508,14 +504,12 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
             raw_incidents = response.get('value')
             for incident in raw_incidents:
                 if redirect_id := incident.get('redirectIncidentId'):
-                    if redirect_id in grouped_incidents:
-                        raw_incidents.remove(incident)
-                    else:
-                        grouped_incidents.append(redirect_id)
                         grouped_incident = client.get_incident(incident_id=redirect_id, timeout=timeout)
                         incident.update(grouped_incident)
                 incident.update(_get_meta_data_for_incident(incident))
 
+
+            raw_incidents = filter_incidents_by_duplicates_and_limit(raw_incidents, last_run_dict, fetch_limit, 'incidentId')
             incidents += [{
                 "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
                 "occurred": incident.get('createdTime'),
@@ -531,10 +525,6 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
         incidents.sort(key=lambda x: dateparser.parse(x['occurred']))  # type: ignore
         incidents_queue += incidents
 
-    if not grouped_incidents == get_integration_context().get('grouped_incidents'):
-        integration_context.update(grouped_incidents=grouped_incidents)
-        set_integration_context(integration_context)
-        
     oldest_incidents = incidents_queue[:fetch_limit]
     new_last_run = incidents_queue[-1]["occurred"] if oldest_incidents else last_run  # newest incident creation time
     demisto.setLastRun({'last_run': new_last_run,
