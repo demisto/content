@@ -53,6 +53,11 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote']
 INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES = ['Dismissed', 'Resolved', 'Snoozed']
 INCIDENT_INCOMING_MIRROR_REOPENING_STATUS = 'Open'
+INCIDENT_INCOMING_MIRROR_CLOSING_MAPPING = {
+    'Dismissed': 'Other',
+    'Resolved': 'Resolved',
+    'Snoozed': 'Other'
+}  # Maps Alert closing statuses in Prisma Cloud to possible incident closing reasons in XSOAR
 
 PAGE_NUMBER_DEFAULT_VALUE = 1
 PAGE_SIZE_DEFAULT_VALUE = 50
@@ -615,14 +620,14 @@ def alert_to_incident_context(alert: Dict[str, Any]) -> Dict[str, Any]:
     return incident_context
 
 
-def get_remote_incident_data(client: Client, remote_incident_id: str) -> Tuple[Dict, Dict]:
+def get_remote_alert_data(client: Client, remote_alert_id: str) -> Tuple[Dict, Dict]:
     """
     Called every time get-remote-data command runs on an alert.
     Gets the details of the relevant alert entity from the remote system (Prisma Cloud).
     Takes from the entity only the relevant incoming mirroring fields, and returns the updated_object for the incident
     we want to mirror in, from the mirrored data, according to the mirroring fields.
     """
-    alert_details = client.alert_get_details_request(alert_id=remote_incident_id, detailed='true') # TODO: need to check maybe enough to use detailed=false.
+    alert_details = client.alert_get_details_request(alert_id=remote_alert_id, detailed='true') # TODO: need to check maybe enough to use detailed=false.
 
     updated_object: Dict[str, Any] = {}
     for field in INCIDENT_INCOMING_MIRROR_ARGS:
@@ -631,47 +636,52 @@ def get_remote_incident_data(client: Client, remote_incident_id: str) -> Tuple[D
     return alert_details, updated_object
 
 
-def close_incident_in_xsoar(entries: List, remote_incident_id: str, mirrored_status: str):
+def close_incident_in_xsoar(remote_alert_id: str, mirrored_status: str, mirrored_dismissal_note: str):
     """
     # TODO: need to add description
     """
-    demisto.debug(f'Alert is closed: {remote_incident_id}')
-    entries.append({
+    demisto.debug(f'Prisma Alert {remote_alert_id} was closed')
+    entry = {
         'Type': EntryType.NOTE,
         'Contents': {
             'dbotIncidentClose': True,
-            'rawCloseReason': '',  # TODO: add the status from prisma
-            'closeReason': f'Alert was {mirrored_status} on Prisma Cloud.', # TODO: add the status mapped from prosma to xsoar possible statuses
-            'closeNotes': f'Alert was {mirrored_status} on Prisma Cloud.' # TODO: probably need to add the dimissal note - verify with dima.
+            'rawCloseReason': mirrored_status,
+            'closeReason': f'Alert was {mirrored_status} on Prisma Cloud. Marked as '
+                           f'{INCIDENT_INCOMING_MIRROR_CLOSING_MAPPING.get(mirrored_status)} in XSOAR.',
+            'closeNotes': mirrored_dismissal_note
         },
         'ContentsFormat': EntryFormat.JSON
-    })
+    }
+    return entry
 
 
-def reopen_incident_in_xsoar(entries: List, remote_incident_id: str):
+def reopen_incident_in_xsoar(remote_alert_id: str):
     """
     # TODO: need to add description
     """
-    demisto.debug(f' is reopened: {remote_incident_id}')
-    entries.append({
+    demisto.debug(f'Prisma Alert {remote_alert_id} was reopened')
+    entry = {
         'Type': EntryType.NOTE,
         'Contents': {
             'dbotIncidentReopen': True
         },
         'ContentsFormat': EntryFormat.JSON
-    })
+    }
+    return entry
 
 
-def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, remote_incident_id: str):
+def set_xsoar_incident_entries(updated_object: Dict[str, Any], remote_alert_id: str):
     """
     # TODO: need to add description
     """
     if demisto.params().get('close_incident'):
         if mirrored_status := updated_object.get('status') in set(INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES):
-            close_incident_in_xsoar(entries, remote_incident_id, mirrored_status, 'Incident')
+            mirrored_dismissal_note = updated_object.get('dismissalNote')
+            entry = close_incident_in_xsoar(remote_alert_id, mirrored_status, mirrored_dismissal_note)
         elif updated_object.get('status') == INCIDENT_INCOMING_MIRROR_REOPENING_STATUS:
             # TODO: need to verify that with Dima (if this is the only option for re-open scenario) - test all possible scenarios.
-            reopen_incident_in_xsoar(entries, remote_incident_id, 'Incident')
+            entry = reopen_incident_in_xsoar(remote_alert_id)
+        return entry
 
 
 ''' V1 DEPRECATED COMMAND FUNCTIONS to support backwards compatibility '''
@@ -1635,7 +1645,7 @@ def get_modified_remote_data_command(client: Client,
                                      args: Dict[str, str],
                                      params: Dict[str, Any]) -> GetModifiedRemoteDataResponse:
     """
-    Gets the modified remote incidents IDs.
+    Gets the modified remote alerts IDs.
 
     Args:
         client: Demisto client.
@@ -1644,19 +1654,18 @@ def get_modified_remote_data_command(client: Client,
         params: Demisto params.
 
     Returns:
-        GetModifiedRemoteDataResponse object, which contains a list of the retrieved incidents IDs.
+        GetModifiedRemoteDataResponse object, which contains a list of the retrieved alerts IDs.
     """
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = remote_args.last_update
     parsed_date = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
     if not parsed_date:
-        raise DemistoException(f'could not parse {last_update}')  # verify with Judah if need to use assert here
+        raise DemistoException(f'could not parse {last_update}')  # TODO: verify with Judah if need to use assert here
     last_update_timestamp = parsed_date.strftime(DATE_FORMAT)
     demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
 
     # TODO: do we have a limit for the mirroring? if yes - need to add it to alert_search_request() -
     #  consult with dima\yuval about rate limit and Burst limit - we might take 120 as a limit.
-
 
     detailed = 'false'  # TODO: took false from the thread example - not sure - need to check if the mirrored fields arrived with false
     sort_by = ['alertTime:asc']
@@ -1675,39 +1684,42 @@ def get_modified_remote_data_command(client: Client,
 
 def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDataResponse:
     """
-    Returns an updated remote incident.
+    Returns an updated remote alert.
 
     Args:
         client: Demisto client.
         args:
-            id: incident id to retrieve.
+            id: alert id to retrieve.
             lastUpdate: when was the last time we retrieved data.
 
     Returns:
-        GetRemoteDataResponse object, which contain the incident data to update.
+        GetRemoteDataResponse object, which contains the alert data to update.
     """
     remote_args = GetRemoteDataArgs(args)
-    remote_incident_id = remote_args.remote_incident_id
+    remote_alert_id = remote_args.remote_incident_id
+    entries = []
 
     try:
-        demisto.debug(f'Performing get-remote-data command with incident id: {remote_incident_id} '
+        demisto.debug(f'Performing get-remote-data command with incident id: {remote_alert_id} '
                       f'and last_update: {remote_args.last_update}')
-        mirrored_data, updated_object = get_remote_incident_data(client, remote_incident_id)
+        mirrored_data, updated_object = get_remote_alert_data(client, remote_alert_id)
         if updated_object:
-            demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
-            set_xsoar_incident_entries(updated_object, entries, remote_incident_id)  # sets in place TODO: no need to transfer the entries + will return only one entry here.
+            demisto.debug(f'Update incident {remote_alert_id} with fields: {updated_object}')
+            entry = set_xsoar_incident_entries(updated_object, remote_alert_id)
+            if entry:
+                entries.append(entry)
 
         if not updated_object:
-            demisto.debug(f'No delta was found for incident id: {remote_incident_id}.')
+            demisto.debug(f'No delta was found for incident id: {remote_alert_id}.')
 
         return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
 
     except Exception as e:
-        demisto.debug(f"Error in Prisma Cloud v2 incoming mirror for incident: {remote_incident_id}\n"
+        demisto.debug(f"Error in Prisma Cloud v2 incoming mirror for incident: {remote_alert_id}\n"
                       f"Error message: {str(e)}")
 
         if not mirrored_data:
-            mirrored_data = {'id': remote_incident_id}
+            mirrored_data = {'id': remote_alert_id}
         mirrored_data['in_mirror_error'] = str(e)
 
         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
