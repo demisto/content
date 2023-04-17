@@ -121,13 +121,14 @@ class Client(BaseClient):
         """
         uri = f'{CONFIG_URI_PREFIX}security-rules'
 
-        return self.http_request(
+        res = self.http_request(
             method="POST",
             url_suffix=uri,
             params=query_params,
             json_data=rule,
             tsg_id=tsg_id
         )
+        return res
 
     def edit_security_rule(self, rule: dict, rule_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
         """Update an existing security rule
