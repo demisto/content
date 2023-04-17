@@ -58,5 +58,6 @@ include:
   - local: .gitlab/ci/sdk-nightly.yml
   - local: .gitlab/ci/miscellaneous.yml
   - local: .gitlab/ci/test-native-candidate.yml
-  - remote: 'https://code.pan.run/xsoar/content-test-conf/-/merge_requests/1618/.gitlab/test-ref.yml'
-
+  - file: '/.gitlab/test-ref.yml'
+    ref: test_refs
+    project: '/xsoar/content-test-conf/'
