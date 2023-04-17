@@ -1,8 +1,6 @@
 import json
 import io
 
-import pytest
-
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -15,27 +13,12 @@ def mock_client():
     """
     from FeedLOLBAS import Client
     return Client(
-        base_url='https://example/api',
         verify=False,
         proxy=False,
         create_relationships=True,
         feed_tags=['tag1', 'tag2'],
         tlp_color='TEST',
     )
-
-
-def test_parse_response():
-    """
-        Given: A response from the LOLBAS API.
-        When: Parsing the response.
-        Then: Ensure the response is parsed correctly.
-    """
-    from FeedLOLBAS import parse_response
-    mock_response = util_load_json('test_data/response.json')
-    expected_response = util_load_json('test_data/expected_parse_response.json')
-
-    response = parse_response(mock_response.get('text'))
-    assert response == expected_response
 
 
 def test_create_indicators():
@@ -47,7 +30,7 @@ def test_create_indicators():
     from FeedLOLBAS import create_indicators
 
     client = mock_client()
-    mock_pre_indicators = util_load_json('test_data/expected_parse_response.json')
+    mock_pre_indicators = util_load_json('test_data/response.json')
     expected_response = util_load_json('test_data/expected_create_indicators.json')
 
     response = create_indicators(client, mock_pre_indicators)
@@ -98,7 +81,7 @@ def test_fetch_indicators(mocker):
     """
     from FeedLOLBAS import fetch_indicators
     client = mock_client()
-    mocked_response = util_load_json('test_data/response.json').get('text')
+    mocked_response = util_load_json('test_data/response.json')
     mocker.patch.object(client, 'get_indicators', return_value=mocked_response)
     expected_response = util_load_json('test_data/expected_fetch_indicators.json')
 
@@ -117,19 +100,3 @@ def test_create_relationship_list_no_mitre_id():
 
     response = create_relationship_list(mock_indicators)
     assert response == []
-
-
-@pytest.mark.parametrize('pre_parsed_detections, expected',
-                         [("", []), ("test", []), ("test1: test_detection, test2: test_detection",
-                                                   [{'Type': 'test1', 'Content': ' test_detection'},
-                                                    {'Type': ' test2', 'Content': ' test_detection'}])])
-def test_parse_detections(pre_parsed_detections, expected):
-    """
-        Given: A list of detections.
-        When: Parsing the detections.
-        Then: Ensure the detections are parsed correctly.
-    """
-    from FeedLOLBAS import parse_detections
-
-    response = parse_detections(pre_parsed_detections)
-    assert response == expected

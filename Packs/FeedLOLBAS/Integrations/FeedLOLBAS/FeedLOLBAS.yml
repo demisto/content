@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: FeedLOLBAS
+  id: LOLBAS Feed
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -33,13 +33,15 @@ configuration:
   required: true
   type: 15
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  defaultvalue: CLEAR
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
   - RED
+  - AMBER+STRICT
   - AMBER
   - GREEN
-  - WHITE
+  - CLEAR
   required: false
   type: 15
 - defaultvalue: never
@@ -57,7 +59,7 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '10080'
+- defaultvalue: '1440'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
@@ -87,9 +89,9 @@ configuration:
   name: create_relationships
   required: false
   type: 8
-description: 'LOLBAS feed of published IOCs, which contains known malicious indicators.'
-display: 'LOLBAS'
-name: FeedLOLBAS
+description: 'Living off the land binaries" is a term used to describe malware or hacking techniques that take advantage of legitimate tools and processes that are already present on a computer or network, rather than introducing new malware or malicious code. The goal is to blend in with normal activity and avoid detection. Examples of this include using built-in Windows commands to move laterally through a network, or using scripting languages that are commonly installed on a system to execute malicious code. LOLBAS project is documenting binaries, scripts, and libraries that can be used for Living Off The Land techniques.'
+display: 'LOLBAS Feed'
+name: LOLBAS Feed
 script:
   commands: []
   feed: true

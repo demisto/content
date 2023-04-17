@@ -10,8 +10,8 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-CSV_REGEX = r'"([^"]*)"'
-
+BASE_URL = 'https://lolbas-project.github.io/api'
+DEFAULT_FEED_TAGS = {'LOLBAS', 'MitreID'}
 ''' CLIENT CLASS '''
 
 
@@ -25,9 +25,9 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url: str, verify: bool, proxy: bool,
+    def __init__(self, verify: bool, proxy: bool,
                  create_relationships: bool, feed_tags: List[str], tlp_color: str):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url=BASE_URL, verify=verify, proxy=proxy)
         self.create_relationships = create_relationships
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
@@ -36,7 +36,8 @@ class Client(BaseClient):
         """
         Get indicators from LOLBAS API.
         """
-        return self._http_request('GET', '/lolbas.csv', resp_type='csv').text
+        demisto.debug('Getting indicators from lolbas api.')
+        return self._http_request('GET', '/lolbas.json', resp_type='json')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -55,27 +56,8 @@ def test_module(client: Client):  # pragma: no cover
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    try:
-        client.get_indicators()
-        return_results('ok')
-
-    except DemistoException:
-        return_error('Could not connect to server')
-
-
-def parse_response(response) -> List[Dict[str, str]]:
-    """
-    Parse the response from LOLBAS API.
-    """
-    pre_indicators: List[Dict[str, str]] = []
-    rows_resp = response.split('\n')
-    if rows_resp:
-        headers = rows_resp[0].split(',')
-        for row in rows_resp[1:]:
-            row = re.findall(CSV_REGEX, row)
-            if len(row) == len(headers):
-                pre_indicators.append(dict(zip(headers, row)))
-    return pre_indicators
+    client.get_indicators()
+    return_results('ok')
 
 
 def create_relationship_list(indicators: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -86,58 +68,35 @@ def create_relationship_list(indicators: List[Dict[str, Any]]) -> List[Dict[str,
     relationships = []
     for indicator in indicators:
         entity_a = indicator.get('value')
-        entity_b = indicator.get('fields', {}).get('Commands', {}).get('MitreID', "")
-        if entity_a and entity_b:
-            relation_obj = EntityRelationship(
-                name=EntityRelationship.Relationships.RELATED_TO,
-                entity_a=entity_a,
-                entity_a_type=ThreatIntel.ObjectsNames.TOOL,
-                entity_b=entity_b,
-                entity_b_type=ThreatIntel.ObjectsNames.ATTACK_PATTERN, )
-            relationships.append(relation_obj.to_indicator())
+        for command in indicator.get('fields', {}).get('Commands', []):
+            if mitre_id := command.get('MitreID'):
+                relation_obj = EntityRelationship(
+                    name=EntityRelationship.Relationships.RELATED_TO,
+                    entity_a=entity_a,
+                    entity_a_type=ThreatIntel.ObjectsNames.TOOL,
+                    entity_b=mitre_id,
+                    entity_b_type=ThreatIntel.ObjectsNames.ATTACK_PATTERN, )
+                relationships.append(relation_obj.to_indicator())
     return relationships
 
 
-def parse_detections(pre_parsed_detections: str) -> List[Dict[str, str]]:
-    """
-        Parse detections from the response.
-    """
-    parsed_detections = []
-
-    if detections := pre_parsed_detections:
-        for detection in detections.split(','):
-            if detection.count(':') > 0:
-                if splitted_detection := detection.split(':', 1):
-                    if detection_type := splitted_detection[0]:
-                        if detection_content := splitted_detection[1]:
-                            parsed_detections.append({"Type": detection_type, "Content": detection_content})
-    return parsed_detections
-
-
-def create_indicators(client: Client, pre_indicators: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+def create_indicators(client: Client, pre_indicators) -> List[Dict[str, Any]]:
     """
     Create indicators from the response.
     """
+    demisto.debug(f'Creating {len(pre_indicators)} indicators.')
     indicators: List[Dict[str, Any]] = []
     for pre_indicator in pre_indicators:
         indicator: Dict[str, Any] = {
-            "type": ThreatIntel.ObjectsNames.TOOL,
-            "value": pre_indicator.get('Filename'),
-            "description": pre_indicator.get('Description'),
-            "fields": {
-                "Commands": {
-                    "Command": pre_indicator.get('Command'),
-                    "Description": pre_indicator.get('Command Description'),
-                    "Usecase": pre_indicator.get('Command Usecase'),
-                    "Category": pre_indicator.get('Command Category'),
-                    "Privileges": pre_indicator.get('Command Privileges'),
-                    "MitreID": pre_indicator.get('MITRE ATT&CK technique'),
-                    "OperatingSystem": pre_indicator.get('Operating System')
-                },
-                "Detections": parse_detections(pre_indicator.get("Detection", "")),
-                "Paths": {"Paths": pre_indicator.get('Paths'), }
+            'type': ThreatIntel.ObjectsNames.TOOL,
+            'value': pre_indicator.get('Name'),
+            'description': pre_indicator.get('Description'),
+            'fields': {
+                'Commands': pre_indicator.get('Commands', []),
+                'Detections': pre_indicator.get('Detections', []),
+                'Paths': pre_indicator.get('Full_Paths', []),
             },
-            "rawJSON": pre_indicator,
+            'rawJSON': pre_indicator,
         }
         if tlp_color := client.tlp_color:
             indicator['fields']['trafficlightprotocol'] = tlp_color
@@ -152,11 +111,12 @@ def create_relationships(client: Client, indicators: List[Dict[str, Any]]) -> Li
     Create relationships between indicators.
     """
     if client.create_relationships:
+        demisto.debug('Creating relationships.')
         relationships = create_relationship_list(indicators)
         if relationships:
             dummy_indicator_for_relations = {
-                "value": "$$DummyIndicator$$",
-                "relationships": relationships
+                'value': '$$DummyIndicator$$',
+                'relationships': relationships
             }
             indicators.append(dummy_indicator_for_relations)
     return indicators
@@ -167,8 +127,7 @@ def fetch_indicators(client: Client) -> List[Dict[str, Any]]:
         Fetch indicators from LOLBAS API and create indicators in XSOAR.
     """
     response = client.get_indicators()
-    pre_indicators = parse_response(response)
-    indicators = create_indicators(client, pre_indicators)
+    indicators = create_indicators(client, response)
     indicators = create_relationships(client, indicators)
     return indicators
 
@@ -183,18 +142,17 @@ def main() -> None:  # pragma: no cover
     :rtype:
     """
     params = demisto.params()
-    base_url = 'https://lolbas-project.github.io/api'
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     create_relationships = argToBoolean(params.get('create_relationships', True))
-    feed_tags = argToList(params.get('feedTags', []))
+    # Append default tags.
+    feed_tags = list(set(argToList(params.get('feedTags', []))) | DEFAULT_FEED_TAGS)
     tlp_color = params.get('tlp_color', '')
     command = demisto.command()
 
     demisto.info(f'Command being called is {command}')
     try:
         client = Client(
-            base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
             create_relationships=create_relationships,
@@ -207,6 +165,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'fetch-indicators':
             indicators = fetch_indicators(client)
+
             for iter_ in batch(indicators, batch_size=2000):
                 try:
                     demisto.createIndicators(iter_)

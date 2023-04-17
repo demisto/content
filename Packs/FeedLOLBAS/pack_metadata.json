@@ -1,5 +1,5 @@
 {
-    "name": "FeedLOLBAS",
+    "name": "LOLBAS Feed",
     "description": "Fetches indicators from LOLBAS.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
