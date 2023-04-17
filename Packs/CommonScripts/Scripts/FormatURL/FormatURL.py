@@ -504,7 +504,7 @@ class URLCheck(object):
             URLError if the domain is invalid
         """
 
-        no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=())
+        no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=(), cache_dir=None)
 
         if host.endswith("."):
             host = host.rstrip(".")
