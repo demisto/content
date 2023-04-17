@@ -2,6 +2,7 @@ id: Druva-Ransomware-Response-User-resource-URL
 version: -1
 name: Druva-Ransomware-Response-User-resource-URL
 deprecated: true
+hidden: true
 description: Deprecated. Use Druva-Ransomware-Response instead.
 starttaskid: "0"
 tasks:
