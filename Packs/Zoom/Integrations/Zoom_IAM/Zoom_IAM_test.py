@@ -1,6 +1,5 @@
 from Zoom_IAM import Client
 from IAMApiModule import *
-from freezegun import freeze_time
 import Zoom_IAM
 import pytest
 

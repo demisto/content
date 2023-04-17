@@ -1,5 +1,4 @@
 from Zoom import Client
-from freezegun import freeze_time
 import Zoom
 import pytest
 from CommonServerPython import DemistoException
