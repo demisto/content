@@ -3,4 +3,4 @@ id: barracuda_cloudgen_firewall
 name: Barracuda Cloudgen Firewall
 rules: ''
 schema: ''
-tags: Apache Tomcat
+tags:
