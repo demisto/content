@@ -8,10 +8,11 @@ configuration:
   defaultvalue: https://outlook.office365.com
   type: 0
   required: true
-- display: Email (Password for basic authentication only)
+- display: Email (UPN)
   name: credentials
   type: 9
   required: false
+  hiddenpassword: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

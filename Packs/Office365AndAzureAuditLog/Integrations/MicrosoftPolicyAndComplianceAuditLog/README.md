@@ -14,9 +14,8 @@ Use the integration to get logs from the O365 service.
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Authentication
-- Basic authentication - Fill in the Email and password.
 - OAuth2.0 (For MFA enabled accounts) -
-    1. Enter a value for the UPN parameter in the integration configuration.
+    1. Enter a value for the Email (UPN) parameter in the integration configuration.
     2. Run the ***o365-auditlog-auth-start*** command and follow the instructions.
     3. Run the ***o365-auditlog-auth-test*** command to verify that the authorization process was implemented correctly.
 

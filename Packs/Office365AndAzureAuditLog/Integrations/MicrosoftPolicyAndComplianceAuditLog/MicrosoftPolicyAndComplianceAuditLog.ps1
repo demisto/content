@@ -29,20 +29,10 @@ function CreateNewSession {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope='Function')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Function')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Scope='Function')]
-    param([string]$url, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
-    if ($password){
-        $url = "$url/powershell-liveid"
-    }
-    else
-    {
-        $url = "$url/powershell-liveid?BasicAuthToOAuthConversion=true"
-    }
+    param([string]$url, [string]$upn, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
+    $url = "$url/powershell-liveid?BasicAuthToOAuthConversion=true"
+    $credential = ConvertTo-SecureString "Bearer $bearer_token" -AsPlainText -Force
 
-    if ($password){
-        $credential = ConvertTo-SecureString "$password" -AsPlainText -Force
-    } else {
-        $credential = ConvertTo-SecureString "Bearer $bearer_token" -AsPlainText -Force
-    }
     $credential = New-Object System.Management.Automation.PSCredential($upn, $credential)
     $session_option_params = @{
         "SkipCACheck" = $insecure
@@ -73,9 +63,6 @@ function CreateNewSession {
 
         .PARAMETER upn
         User Principal Name (UPN) is the name of a system user in an email address format.
-
-        .PARAMETER password
-        Password is filled only if authentication method is basic auth.
 
         .PARAMETER bearer_token
         Valid bearer token value.
@@ -396,16 +383,14 @@ class OAuth2DeviceCodeClient
 class ExchangeOnlineClient {
     [string]$url
     [string]$upn
-    [string]$password
     [string]$bearer_token
-    [psobject]$session
+    [PSObject]$session
     [bool]$insecure
     [bool]$proxy
 
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Function')]
-    ExchangeOnlineClient([string]$url, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy) {
+    ExchangeOnlineClient([string]$url, [string]$upn, [string]$bearer_token, [bool]$insecure, [bool]$proxy) {
         $this.upn = $upn
-        $this.password = $password
         $this.bearer_token = $bearer_token
         $this.insecure = $insecure
         $this.proxy = $proxy
@@ -419,9 +404,6 @@ class ExchangeOnlineClient {
 
             .PARAMETER upn
             User Principal Name (UPN) is the name of a system user in an email address format.
-
-            .PARAMETER password
-            Password is filled only if authentication method is basic auth.
 
             .PARAMETER bearer_token
             Valid bearer token value.
@@ -438,7 +420,7 @@ class ExchangeOnlineClient {
     }
 
     CreateSession() {
-        $this.session = CreateNewSession -url $this.url -upn $this.upn -password $this.password -bearer_token $this.bearer_token -insecure $this.insecure -proxy $this.proxy
+        $this.session = CreateNewSession -url $this.url -upn $this.upn -bearer_token $this.bearer_token -insecure $this.insecure -proxy $this.proxy
         <#
             .DESCRIPTION
             This method is for internal use. It creates session to Exchange Online.
@@ -640,7 +622,7 @@ function Main {
     $command_arguments = $demisto.Args()
     $integration_params = $demisto.Params()
     <#
-        Proxy currently isn't supported by PWSH New-Pssession, However partly implmentation of proxy feature still function (OAuth2.0 and redirect),
+        Proxy currently isn't supported by PWSH New-PSSession, However partly implementation of proxy feature still function (OAuth2.0 and redirect),
         leaving this parameter for feature development if required.
     #>
     $no_proxy = $false
@@ -655,7 +637,7 @@ function Main {
         # Creating ExchangeOnline client
         $exo_client = [ExchangeOnlineClient]::new(
                 $integration_params.url, $integration_params.credentials.identifier,
-                $integration_params.credentials.password, $oauth2_client.access_token, $insecure, $no_proxy)
+                $oauth2_client.access_token, $insecure, $no_proxy)
         # Executing command
         $demisto.Debug("Command being called is $command")
         switch ($command)
@@ -681,7 +663,7 @@ function Main {
         }
         # Updating integration context if access token changed
         UpdateIntegrationContext $oauth2_client
-        # Return results to Demisto Server
+        # Return results to server
         ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
     } catch {
                 $demisto.debug("Integration: $script:INTEGRATION_NAME
