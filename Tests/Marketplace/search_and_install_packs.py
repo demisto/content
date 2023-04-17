@@ -374,7 +374,7 @@ def install_packs(client: demisto_client,
                                                                                     path='/contentpacks/marketplace/install',
                                                                                     method='POST',
                                                                                     body={'packs': packs,
-                                                                                        'ignoreWarnings': True},
+                                                                                          'ignoreWarnings': True},
                                                                                     accept='application/json',
                                                                                     _request_timeout=request_timeout,
                                                                                     response_type='object')
