@@ -36,7 +36,7 @@ tasks:
       version: -1
       name: archer-get-file
       description: Downloads file from Archer to Demisto's context
-      script: RSA Archer|||archer-get-file
+      script: RSA Archer v2|||archer-get-file
       type: regular
       iscommand: true
       brand: RSA Archer
