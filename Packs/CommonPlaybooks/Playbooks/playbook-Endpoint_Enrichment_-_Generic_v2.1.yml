@@ -316,11 +316,11 @@ tasks:
       id: 79f17c3a-2456-47d9-8e68-cc3d84ef01bd
       version: -1
       name: Get host information from Carbon Black Enterprise Response
-      description: Gets host information from Carbon Black Enterprise Response.
-      script: carbonblack-v2|||cb-sensor-info
+      description: Display information about the given sensor
+      script: VMware Carbon Black EDR v2|||endpoint
       type: regular
       iscommand: true
-      brand: carbonblack-v2
+      brand: VMware Carbon Black EDR v2
     nexttasks:
       '#none#':
       - "4"

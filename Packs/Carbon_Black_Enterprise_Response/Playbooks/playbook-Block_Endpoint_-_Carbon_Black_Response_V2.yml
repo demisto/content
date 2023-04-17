@@ -41,20 +41,18 @@ tasks:
       id: 8d840b85-2255-4771-8047-1cffd0133d56
       version: -1
       name: Get host information from Carbon Black Enterprise Response
-      description: Display information about the given sensor.
-      script: '|||cb-sensor-info'
+      description: List the CarbonBlack sensors
+      script: 'VMware Carbon Black EDR v2|||cb-edr-sensors-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "VMware Carbon Black EDR v2"
     nexttasks:
       '#none#':
       - "7"
     scriptarguments:
-      groupid: {}
       hostname:
         simple: ${inputs.Hostname}
-      ip: {}
-      sensor:
+      id:
         simple: ${inputs.Sensor_id}
     separatecontext: false
     view: |-
@@ -77,17 +75,17 @@ tasks:
       id: 8a7b3b07-16d1-4953-897b-dde82b8153f3
       version: -1
       name: Isolate endpoint
-      description: Isolate the endpoint from the network.
-      script: '|||cb-quarantine-device'
+      description: Isolate the endpoint from the network
+      script: 'VMware Carbon Black EDR v2|||cb-edr-quarantine-device'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "VMware Carbon Black EDR v2"
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
-      sensor:
-        simple: ${CbResponse.Sensors.CbSensorID}
+      sensor_id:
+        simple: ${CarbonBlackEDR.Sensor.id}
     separatecontext: false
     view: |-
       {
@@ -187,7 +185,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: CbResponse.Sensors.Isolated
+              simple: CarbonBlackEDR.Sensor.is_isolating
             iscontext: true
           right:
             value:

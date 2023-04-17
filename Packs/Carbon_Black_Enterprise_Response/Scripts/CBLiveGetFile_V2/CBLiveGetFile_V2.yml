@@ -126,6 +126,6 @@ dependson:
   - cb-session-create-and-wait
   - cb-session-close
   - cb-get-file-from-endpoint
-  - cb-list-sensors
+  - cb-edr-sensors-list
   - cb-list-sessions
 fromversion: 5.0.0

@@ -122,7 +122,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: Endpoint.CbSensorID
+              simple: CarbonBlackEDR.Sensor.id
             iscontext: true
           right:
             value:
@@ -148,19 +148,16 @@ tasks:
       id: d308391d-bca5-4895-8ca3-7212016b1112
       version: -1
       name: Get host information from Carbon Black Enterprise Response
-      description: Display information about the given sensor.
-      script: carbonblack-v2|||cb-sensor-info
+      description: Display information about the given sensor
+      script: VMware Carbon Black EDR v2|||endpoint
       type: regular
       iscommand: true
-      brand: carbonblack-v2
+      brand: VMware Carbon Black EDR v2
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
-      groupid: {}
-      hostname: {}
-      ip: {}
-      sensor:
+      id:
         simple: ${inputs.Endpoint_ID}
     separatecontext: false
     view: |-
@@ -199,7 +196,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: CbResponse.Sensors.Isolated
+              simple: Endpoint.IsIsolated
             iscontext: true
           right:
             value:
@@ -224,16 +221,16 @@ tasks:
       id: 6e64eb8f-6046-41a9-8f7c-d9210545d742
       version: -1
       name: Unisolate the sensor
-      description: Unquarantine the endpoint.
-      script: carbonblack-v2|||cb-unquarantine-device
+      description: Unquarantine the endpoint
+      script: VMware Carbon Black EDR v2|||cb-edr-unquarantine-device
       type: regular
       iscommand: true
-      brand: carbonblack-v2
+      brand: VMware Carbon Black EDR v2
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      sensor:
+      sensor_id:
         simple: ${inputs.Endpoint_ID}
     separatecontext: false
     view: |-
@@ -256,11 +253,11 @@ tasks:
       id: f9b56018-29bb-4a84-8c72-fc5bcaf10745
       version: -1
       name: Get CB sensor list
-      description: List the CarbonBlack sensors.
-      script: '|||cb-list-sensors'
+      description: List the CarbonBlack sensors
+      script: 'VMware Carbon Black EDR v2|||cb-edr-sensors-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "VMware Carbon Black EDR v2"
     nexttasks:
       '#none#':
       - "3"

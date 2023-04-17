@@ -18,7 +18,7 @@ ERROR_SESSION = -1
 def search_sensor_id(endpoint: str) -> int:
     """ Retrieve list of connected sensors from:
             Integration: VMware Carbon Black EDR (Live Response API).
-            Command: cb-list-sensors.
+            Command: cb-edr-sensors-list.
     Args:
         endpoint: Endpoint name - hostname/IP
 
@@ -27,8 +27,8 @@ def search_sensor_id(endpoint: str) -> int:
     """
     sensor_id = ERROR_SENSOR
     # Execute command and extract sensors
-    output = demisto.executeCommand("cb-list-sensors", {})
-    sensors = dict_safe_get(output, [0, 'EntryContext', 'CbResponse.Sensors(val.CbSensorID==obj.CbSensorID)'],
+    output = demisto.executeCommand("cb-edr-sensors-list", {})
+    sensors = dict_safe_get(output, [0, 'EntryContext', 'CarbonBlackEDR.Sensor(val.id==obj.id)'],
                             default_return_value=[], return_type=list)  # type: ignore
     # Search for sensor with endpoint or ip
     for sensor in sensors:
