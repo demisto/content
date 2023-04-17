@@ -40,5 +40,5 @@ alter
         xdm.network.http.http_header.value = requestheaders,
         //xdm.event.description = securityruledescription,
         //xdm.network.rule = securityruleid,
-        xdm.alert.severity = wafattackscore,
+        xdm.alert.severity = to_string(wafattackscore),
         xdm.target.zone = zonename;
