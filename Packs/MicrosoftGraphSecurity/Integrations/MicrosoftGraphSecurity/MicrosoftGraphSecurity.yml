@@ -274,38 +274,176 @@ script:
     name: msg-search-alerts
     outputs:
     - contextPath: MsGraph.Alert.ID
-      description: Alert ID
+      description: Relevant only for V1. Alert ID
       type: string
     - contextPath: MsGraph.Alert.Title
-      description: Alert title
+      description: Relevant only for V1. Alert title
       type: string
     - contextPath: MsGraph.Alert.Category
-      description: Alert category
+      description: Relevant only for V1. Alert category
       type: string
     - contextPath: MsGraph.Alert.Severity
-      description: Alert severity
+      description: Relevant only for V1. Alert severity
       type: string
     - contextPath: MsGraph.Alert.CreatedDate
-      description: Alert created date
+      description: Relevant only for V1. Alert created date
       type: date
     - contextPath: MsGraph.Alert.EventDate
-      description: Alert event time
+      description: Relevant only for V1. Alert event time
       type: date
     - contextPath: MsGraph.Alert.Status
-      description: Alert status
+      description: Relevant only for V1. Alert status
       type: string
     - contextPath: MsGraph.Alert.Vendor
-      description: Alert vendor/provider
+      description: Relevant only for V1. Alert vendor/provider
       type: string
     - contextPath: MsGraph.Alert.MalwareStates
-      description: Alert malware states
+      description: Relevant only for V1. Alert malware states
       type: string
     - contextPath: MsGraph.Alert.Vendor
-      description: Alert vendor
+      description: Relevant only for V1. Alert vendor
       type: string
     - contextPath: MsGraph.Alert.Provider
-      description: Alert provider
+      description: Relevant only for V1. Alert provider
       type: string
+    - contextPath: MsGraph.Alert.actorDisplayName
+      description: Relevant only for V2. Alert actor name
+      type: Unknown
+    - contextPath: MsGraph.Alert.alertWebUrl
+      description: Relevant only for V2. Alert web url
+      type: String
+    - contextPath: MsGraph.Alert.assignedTo
+      description: Relevant only for V2. Alert assignee
+      type: Unknown
+    - contextPath: MsGraph.Alert.category
+      description: Relevant only for V2. Alert category
+      type: String
+    - contextPath: MsGraph.Alert.classification
+      description: Relevant only for V2. Alert classification
+      type: Unknown
+    - contextPath: MsGraph.Alert.createdDateTime
+      description: Relevant only for V2. Alert creation time
+      type: Date
+    - contextPath: MsGraph.Alert.description
+      description: Relevant only for V2. Alert description
+      type: String
+    - contextPath: MsGraph.Alert.detectionSource
+      description: Relevant only for V2. Alert detection source
+      type: String
+    - contextPath: MsGraph.Alert.detectorId
+      description: Relevant only for V2. Alert detector id
+      type: String
+    - contextPath: MsGraph.Alert.determination
+      description: Relevant only for V2. Alert determination
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.@odata.type
+      description: Relevant only for V2. Alert evidence
+      type: String
+    - contextPath: MsGraph.Alert.evidence.azureAdDeviceId
+      description: Relevant only for V2. Evidence azure device id
+      type: String
+    - contextPath: MsGraph.Alert.evidence.createdDateTime
+      description: Relevant only for V2. Evidence creation time
+      type: Date
+    - contextPath: MsGraph.Alert.evidence.defenderAvStatus
+      description: Relevant only for V2. Evidence defender AV status
+      type: String
+    - contextPath: MsGraph.Alert.evidence.deviceDnsName
+      description: Relevant only for V2. Evidence device DNS name
+      type: String
+    - contextPath: MsGraph.Alert.evidence.firstSeenDateTime
+      description: Relevant only for V2. Evidence first seen time
+      type: Date
+    - contextPath: MsGraph.Alert.evidence.healthStatus
+      description: Relevant only for V2. Evidence health status
+      type: String
+    - contextPath: MsGraph.Alert.evidence.mdeDeviceId
+      description: Relevant only for V2. Evidence MDE device id
+      type: String
+    - contextPath: MsGraph.Alert.evidence.onboardingStatus
+      description: Relevant only for V2. Evidence onboarding status
+      type: String
+    - contextPath: MsGraph.Alert.evidence.osBuild
+      description: Relevant only for V2. Evidence OS build
+      type: Number
+    - contextPath: MsGraph.Alert.evidence.osPlatform
+      description: Relevant only for V2. Evidence OS platform
+      type: String
+    - contextPath: MsGraph.Alert.evidence.rbacGroupId
+      description: Relevant only for V2. Evidence RBAC group id
+      type: Number
+    - contextPath: MsGraph.Alert.evidence.rbacGroupName
+      description: Relevant only for V2. Evidence RBAC group name
+      type: String
+    - contextPath: MsGraph.Alert.evidence.remediationStatus
+      description: Relevant only for V2. Evidence remediation status
+      type: String
+    - contextPath: MsGraph.Alert.evidence.remediationStatusDetails
+      description: Relevant only for V2. Evidence remediation status details
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.riskScore
+      description: Relevant only for V2. Evidence risk score
+      type: String
+    - contextPath: MsGraph.Alert.evidence.tags
+      description: Relevant only for V2. Evidence tags
+      type: String
+    - contextPath: MsGraph.Alert.evidence.verdict
+      description: Relevant only for V2. Evidence verdict
+      type: String
+    - contextPath: MsGraph.Alert.evidence.version
+      description: Relevant only for V2. Evidence version
+      type: String
+    - contextPath: MsGraph.Alert.evidence.vmMetadata
+      description: Relevant only for V2. Evidence VM metadata
+      type: Unknown
+    - contextPath: MsGraph.Alert.firstActivityDateTime
+      description: Relevant only for V2. Evidence first activity time
+      type: Date
+    - contextPath: MsGraph.Alert.id
+      description: Relevant only for V2. Alert id
+      type: String
+    - contextPath: MsGraph.Alert.incidentId
+      description: Relevant only for V2. Alert incident id
+      type: String
+    - contextPath: MsGraph.Alert.incidentWebUrl
+      description: Relevant only for V2. Alert incident URL
+      type: String
+    - contextPath: MsGraph.Alert.lastActivityDateTime
+      description: Relevant only for V2. Alert last activity time
+      type: Date
+    - contextPath: MsGraph.Alert.lastUpdateDateTime
+      description: Relevant only for V2. Alert last update time
+      type: Date
+    - contextPath: MsGraph.Alert.providerAlertId
+      description: Relevant only for V2. Alert provider id
+      type: String
+    - contextPath: MsGraph.Alert.recommendedActions
+      description: Relevant only for V2. Alert recommended action
+      type: String
+    - contextPath: MsGraph.Alert.resolvedDateTime
+      description: Relevant only for V2. Alert closing time
+      type: Date
+    - contextPath: MsGraph.Alert.serviceSource
+      description: Relevant only for V2. Alert service source
+      type: String
+    - contextPath: MsGraph.Alert.severity
+      description: Relevant only for V2. Alert severity
+      type: String
+    - contextPath: MsGraph.Alert.status
+      description: Relevant only for V2. Alert status
+      type: String
+    - contextPath: MsGraph.Alert.tenantId
+      description: Relevant only for V2. Alert tenant id
+      type: String
+    - contextPath: MsGraph.Alert.threatDisplayName
+      description: Relevant only for V2. Alert threat display name
+      type: Unknown
+    - contextPath: MsGraph.Alert.threatFamilyName
+      description: Relevant only for V2. Alert threat family name
+      type: Unknown
+    - contextPath: MsGraph.Alert.title
+      description: Relevant only for V2. Alert title
+      type: String
   - arguments:
     - default: true
       description: The Alert ID - Provider-generated GUID/unique identifier.
@@ -326,32 +464,272 @@ script:
     name: msg-get-alert-details
     outputs:
     - contextPath: MsGraph.Alert.ID
-      description: Alert ID
+      description: Relevant only for V1. Alert ID
       type: string
     - contextPath: MsGraph.Alert.Title
-      description: Alert title
+      description: Relevant only for V1. Alert title
       type: string
     - contextPath: MsGraph.Alert.Category
-      description: Alert category
+      description: Relevant only for V1. Alert category
       type: string
     - contextPath: MsGraph.Alert.Severity
-      description: Alert severity
+      description: Relevant only for V1. Alert severity
       type: string
     - contextPath: MsGraph.Alert.CreatedDate
-      description: Alert created date
+      description: Relevant only for V1. Alert created date
       type: date
     - contextPath: MsGraph.Alert.EventDate
-      description: Alert event date
+      description: Relevant only for V1. Alert event date
       type: date
     - contextPath: MsGraph.Alert.Status
-      description: Alert status
+      description: Relevant only for V1. Alert status
       type: string
     - contextPath: MsGraph.Alert.Vendor
-      description: Alert vendor
+      description: Relevant only for V1. Alert vendor
       type: string
     - contextPath: MsGraph.Alert.Provider
-      description: Alert provider
+      description: Relevant only for V1. Alert provider
       type: Unknown
+    - contextPath: MsGraph.Alert.@odata.context
+      description: Relevant only for V2. Alert odata context
+      type: String
+    - contextPath: MsGraph.Alert.actorDisplayName
+      description: Relevant only for V2. Alert actor name
+      type: Unknown
+    - contextPath: MsGraph.Alert.alertWebUrl
+      description: Relevant only for V2. Alert web url 
+      type: String
+    - contextPath: MsGraph.Alert.assignedTo
+      description: Relevant only for V2. Alert assignee
+      type: Unknown
+    - contextPath: MsGraph.Alert.category
+      description: Relevant only for V2. Alert category
+      type: String
+    - contextPath: MsGraph.Alert.classification
+      description: Relevant only for V2. Alert classification
+      type: Unknown
+    - contextPath: MsGraph.Alert.comments.comment
+      description: Relevant only for V2. Alert comment
+      type: String
+    - contextPath: MsGraph.Alert.comments.createdByDisplayName
+      description: Relevant only for V2. Alert comment creator name
+      type: String
+    - contextPath: MsGraph.Alert.comments.createdDateTime
+      description: Relevant only for V2. Alert comment creation time
+      type: Date
+    - contextPath: MsGraph.Alert.createdDateTime
+      description: Relevant only for V2. Alert creation time
+      type: Date
+    - contextPath: MsGraph.Alert.description
+      description: Relevant only for V2. Alert description
+      type: String
+    - contextPath: MsGraph.Alert.detectionSource
+      description: Relevant only for V2. Alert detection source
+      type: String
+    - contextPath: MsGraph.Alert.detectorId
+      description: Relevant only for V2. Alert detector id
+      type: String
+    - contextPath: MsGraph.Alert.determination
+      description: Relevant only for V2. Alert determination
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.@odata.type
+      description: Relevant only for V2. Alert evidence
+      type: String
+    - contextPath: MsGraph.Alert.evidence.createdDateTime
+      description: Relevant only for V2. Evidence creation time
+      type: Date
+    - contextPath: MsGraph.Alert.evidence.detectionStatus
+      description: Relevant only for V2. Evidence detection status
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.imageFile.fileName
+      description: Relevant only for V2. Evidence image file name
+      type: String
+    - contextPath: MsGraph.Alert.evidence.imageFile.filePath
+      description: Relevant only for V2. Evidence image file path
+      type: String
+    - contextPath: MsGraph.Alert.evidence.imageFile.filePublisher
+      description: Relevant only for V2. Evidence image file publisher
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.imageFile.fileSize
+      description: Relevant only for V2. Evidence image file size
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.imageFile.issuer
+      description: Relevant only for V2. Evidence image file issuer
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.imageFile.sha1
+      description: Relevant only for V2. Evidence image file sha1 hash
+      type: String
+    - contextPath: MsGraph.Alert.evidence.imageFile.sha256
+      description: Relevant only for V2. Evidence image file sha256 hash
+      type: String
+    - contextPath: MsGraph.Alert.evidence.imageFile.signer
+      description: Relevant only for V2. Evidence image file signer
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.mdeDeviceId
+      description: Relevant only for V2. Evidence MDE device id
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.parentProcessCreationDateTime
+      description: Relevant only for V2. Evidence parent process creation time
+      type: Date
+    - contextPath: MsGraph.Alert.evidence.parentProcessId
+      description: Relevant only for V2. Evidence parent process process id
+      type: Number
+    - contextPath: MsGraph.Alert.evidence.parentProcessImageFile
+      description: Relevant only for V2. Evidence parent process image file
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.processCommandLine
+      description: Relevant only for V2. Evidence process command line
+      type: String
+    - contextPath: MsGraph.Alert.evidence.processCreationDateTime
+      description: Relevant only for V2.  Evidence process creation time
+      type: Date
+    - contextPath: MsGraph.Alert.evidence.processId
+      description: Relevant only for V2.  Evidence process id
+      type: Number
+    - contextPath: MsGraph.Alert.evidence.remediationStatus
+      description: Relevant only for V2. Evidence remediation status
+      type: String
+    - contextPath: MsGraph.Alert.evidence.remediationStatusDetails
+      description: Relevant only for V2. Evidence remediation status details
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.userAccount.accountName
+      description: Relevant only for V2. Evidence user account name
+      type: String
+    - contextPath: MsGraph.Alert.evidence.userAccount.azureAdUserId
+      description: Relevant only for V2. Evidence user account azure AD user id
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.userAccount.displayName
+      description: Relevant only for V2. Evidence user account display name
+      type: String
+    - contextPath: MsGraph.Alert.evidence.userAccount.domainName
+      description: Relevant only for V2. Evidence user account domain name
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.userAccount.userPrincipalName
+      description: Relevant only for V2. Evidence user account user principal name
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.userAccount.userSid
+      description: Relevant only for V2. Evidence user account user Sid
+      type: String
+    - contextPath: MsGraph.Alert.evidence.verdict
+      description: Relevant only for V2. Evidence verdict
+      type: String
+    - contextPath: MsGraph.Alert.evidence.fileDetails.fileName
+      description: Relevant only for V2. Evidence file details file name
+      type: String
+    - contextPath: MsGraph.Alert.evidence.fileDetails.filePath
+      description: Relevant only for V2. Evidence file details file path
+      type: String
+    - contextPath: MsGraph.Alert.evidence.fileDetails.filePublisher
+      description: Relevant only for V2. Evidence file details file publisher
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.fileDetails.fileSize
+      description: Relevant only for V2. Evidence file details file size
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.fileDetails.issuer
+      description: Relevant only for V2. Evidence file details file issuer
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.fileDetails.sha1
+      description: Relevant only for V2. Evidence file details sha1 hash
+      type: String
+    - contextPath: MsGraph.Alert.evidence.fileDetails.sha256
+      description: Relevant only for V2. Evidence file details sha256 hash
+      type: String
+    - contextPath: MsGraph.Alert.evidence.fileDetails.signer
+      description: Relevant only for V2. Evidence file details file signer
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.countryLetterCode
+      description: Relevant only for V2. Evidence country letter code
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.ipAddress
+      description: Relevant only for V2. Evidence ip address
+      type: String
+    - contextPath: MsGraph.Alert.evidence.azureAdDeviceId
+      description: Relevant only for V2. Evidence azure AD device id
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.defenderAvStatus
+      description: Relevant only for V2. Evidence defender AV status
+      type: String
+    - contextPath: MsGraph.Alert.evidence.deviceDnsName
+      description: Relevant only for V2. Evidence device DNS name
+      type: String
+    - contextPath: MsGraph.Alert.evidence.firstSeenDateTime
+      description: Relevant only for V2. Evidence first seen time
+      type: Date
+    - contextPath: MsGraph.Alert.evidence.healthStatus
+      description: Relevant only for V2. Evidence health status
+      type: String
+    - contextPath: MsGraph.Alert.evidence.onboardingStatus
+      description: Relevant only for V2. Evidence onboarding status
+      type: String
+    - contextPath: MsGraph.Alert.evidence.osBuild
+      description: Relevant only for V2. Evidence OS build
+      type: Unknown
+    - contextPath: MsGraph.Alert.evidence.osPlatform
+      description: Relevant only for V2. Evidence OS platform
+      type: String
+    - contextPath: MsGraph.Alert.evidence.rbacGroupId
+      description: Relevant only for V2. Evidence RBAC group id
+      type: Number
+    - contextPath: MsGraph.Alert.evidence.rbacGroupName
+      description: Relevant only for V2. Evidence RBAC group name
+      type: String
+    - contextPath: MsGraph.Alert.evidence.riskScore
+      description: Relevant only for V2. Evidence risk score
+      type: String
+    - contextPath: MsGraph.Alert.evidence.version
+      description: Relevant only for V2. Evidence version
+      type: String
+    - contextPath: MsGraph.Alert.evidence.vmMetadata
+      description: Relevant only for V2. Evidence VM metadata
+      type: Unknown
+    - contextPath: MsGraph.Alert.firstActivityDateTime
+      description: Relevant only for V2. Evidence first activity time
+      type: Date
+    - contextPath: MsGraph.Alert.id
+      description: Relevant only for V2. Alert id
+      type: String
+    - contextPath: MsGraph.Alert.incidentId
+      description: Relevant only for V2. Alert incident id
+      type: String
+    - contextPath: MsGraph.Alert.incidentWebUrl
+      description: Relevant only for V2. Alert incident URL
+      type: String
+    - contextPath: MsGraph.Alert.lastActivityDateTime
+      description: Relevant only for V2. Alert last activity time
+      type: Date
+    - contextPath: MsGraph.Alert.lastUpdateDateTime
+      description: Relevant only for V2. Alert last update time
+      type: Date
+    - contextPath: MsGraph.Alert.providerAlertId
+      description: Relevant only for V2. Alert provider id
+      type: String
+    - contextPath: MsGraph.Alert.recommendedActions
+      description: Relevant only for V2. Alert recommended action
+      type: String
+    - contextPath: MsGraph.Alert.resolvedDateTime
+      description: Relevant only for V2. Alert closing time
+      type: Date
+    - contextPath: MsGraph.Alert.serviceSource
+      description: Relevant only for V2. Alert service source
+      type: String
+    - contextPath: MsGraph.Alert.severity
+      description: Relevant only for V2. Alert severity
+      type: String
+    - contextPath: MsGraph.Alert.status
+      description: Relevant only for V2. Alert status
+      type: String
+    - contextPath: MsGraph.Alert.tenantId
+      description: Relevant only for V2. Alert tenant id
+      type: String
+    - contextPath: MsGraph.Alert.threatDisplayName
+      description: Relevant only for V2. Alert threat display name
+      type: Unknown
+    - contextPath: MsGraph.Alert.threatFamilyName
+      description: Relevant only for V2. Alert threat family name
+      type: Unknown
+    - contextPath: MsGraph.Alert.title
+      description: Relevant only for V2. Alert title
+      type: String
   - arguments:
     - default: false
       description: The Alert ID. Provider-generated GUID/unique identifier.
@@ -456,6 +834,9 @@ script:
     execution: false
     name: msg-update-alert
     outputs:
+    - contextPath: MsGraph.Alert.ID
+      description: Alert ID
+      type: string
   - arguments:
     - default: true
       description: The Alert ID - Provider-generated GUID/unique identifier.
@@ -475,6 +856,18 @@ script:
     execution: false
     name: msg-create-alert-comment
     outputs:
+    - contextPath: MsGraph.AlertComment.ID
+      description: The alert id that the comment was added to.
+      type: String
+    - contextPath: MsGraph.AlertComment.Comments.comment
+      description: The comment itself
+      type: String
+    - contextPath: MsGraph.AlertComment.Comments.createdByDisplayName
+      description: The comment's creator display name
+      type: String
+    - contextPath: MsGraph.AlertComment.Comments.createdDateTime
+      description: The comment's creation time
+      type: Date
   - deprecated: true
     description: Deprecated. Use the Azure Active Directory Users integration instead.
     execution: false
