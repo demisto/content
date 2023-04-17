@@ -2134,7 +2134,7 @@ def send_mail_command():
 
 def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     email_to = argToList(args.get('to'))
-    email_from = args.get('from')
+    email_from = args.get('from', ADMIN_EMAIL)
     body = args.get('body')
     subject = f"{subject_prefix}{args.get('subject')}"
     entry_ids = argToList(args.get('attachIDs'))
@@ -2152,9 +2152,6 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     template_param = args.get('templateParams')
     render_body = argToBoolean(args.get('renderBody', False))
     body_type = args.get('bodyType', 'Text').lower()
-
-    if email_from is None:
-        email_from = ADMIN_EMAIL
 
     result = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, file_names,
                        attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
