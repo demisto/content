@@ -320,40 +320,41 @@ def scan_command(client: Client, args: Dict[str, Any]):
 
 def search_query_command(client: Client, args: Dict[str, Any]):
     def validate_args():
-        if page_size and (not page_size.isdigit() or int(page_size) not in [5, 10, 20]):
+        if page_size and page_size not in [5, 10, 20]:
             raise DemistoException("Page size value must be 5, 10 or 20")
-        if page and (not page.isdigit() or int(page) <= 0):
+        if page and page <= 0:
             raise DemistoException("Page must be an integer and grater than 0")
-        if limit and (int(limit) <= 0 or int(limit) > 50):
+        if limit and (limit <= 0 or limit > 50):
             raise DemistoException("Limit must be an integer and between 1 and 50")
 
     items = []
     query_string = args.get("query", "")
-    page_size = args.get("page_size")
-    page = args.get("page")
-    limit = args.get("limit", 10)
+    page_size = arg_to_number(args.get("page_size"))
+    page = arg_to_number(args.get("page"))
+    limit = arg_to_number(args.get("limit")) or 10
 
     validate_args()
 
     if page_size and not page:
         page = 1
-        page_size = int(page_size)
     elif not page_size and page:
         page_size = 10
-        page = int(page)
 
     if page_size and page:
         items = client.get_search_query(query_string, page, page_size).get("items", [])
     else:
         page_size = 20
         page = 1
-        limit = int(limit)
         continue_query = True
         while continue_query:
-            actual_items = client.get_search_query(query_string, page, page_size).get("items", [])
-            if len(actual_items) < 20 or len(items) >= limit:
+            response = client.get_search_query(query_string, page, page_size)
+            actual_items = response.get("items", [])
+            total_available_items = response.get("count", len(items))
+            # queried all or reached the limit
+            if total_available_items == len(items) or len(items) >= limit:
                 continue_query = False
             items += actual_items
+            page += 1
         items = items[0:limit]
 
     if items:

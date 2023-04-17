@@ -83,10 +83,11 @@ def test_search_query_command_url(mocker, client):
 @pytest.mark.parametrize("args, outputs", [
     ({"limit": "-1"}, DemistoException),
     ({"limit": "100"}, DemistoException),
+    ({"limit": "a"}, Exception),
     ({"page": "-1"}, DemistoException),
-    ({"page": "a"}, DemistoException),
+    ({"page": "a"}, Exception),
     ({"page_size": "1"}, DemistoException),
-    ({"page_size": "a"}, DemistoException)
+    ({"page_size": "a"}, Exception)
 ])
 def test_search_query_command_argument_check(mocker, client, args, outputs):
     mocker.patch.object(client, "get_search_query", return_value={})
