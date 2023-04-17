@@ -1140,8 +1140,9 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> List:
 
         last_run_dict = demisto.getLastRun()
         last_run_dict[indicator_type + "List"] = indicators[limit:]
-        date_key = "last_seen" if indicator_type == "Indicators" else "last_updated"
-        last_run_dict[indicator_type + "LastFetch"] = indicators_list[-1][date_key]
+        if indicators_list:
+            date_key = "last_seen" if indicator_type == "Indicators" else "last_updated"
+            last_run_dict[indicator_type + "LastFetch"] = indicators_list[-1][date_key]
 
     demisto.setLastRun(last_run_dict)
     return result
