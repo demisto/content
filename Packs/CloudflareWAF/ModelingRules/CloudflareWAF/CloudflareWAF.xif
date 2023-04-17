@@ -10,7 +10,7 @@ alter
 		edgeserverip6 = arrayindex(regextract(edgeserverip, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
 		originip4 = arrayindex(regextract(originip, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
 		originip6 = arrayindex(regextract(originip, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
-		response_status = coalesce(edgeresponsestatus, originresponsestatus),
+		response_status = to_string(coalesce(edgeresponsestatus, originresponsestatus)),
 		clientrequestmethod_upper = uppercase(clientrequestmethod)
 | alter
         xdm.event.type = eventType,
