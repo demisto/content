@@ -11,6 +11,7 @@ This playbook does not use any sub-playbooks.
 ### Integrations
 
 * Mail Sender (New)
+* PAN-OS
 
 ### Scripts
 
@@ -30,7 +31,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| notify_email | Send email notification for new malware | epartington@paloaltonetworks.com | Optional |
+| notify_email | Send email notification for new malware |  | Optional |
 | log_source | where should we poll for Log Events to investigate<br/>panos<br/>cdl<br/>siem | cdl | Optional |
 | threat_ids | threat ID to search for as CSV list | 93486,93487,93488,93489,93490,93492,93494,93496,93497,93498,93499,93500,93501,93502,93503,93504,93505,93506,93507 | Optional |
 | time_range_hours | how many hours back to query for events in hours | 200 | Optional |

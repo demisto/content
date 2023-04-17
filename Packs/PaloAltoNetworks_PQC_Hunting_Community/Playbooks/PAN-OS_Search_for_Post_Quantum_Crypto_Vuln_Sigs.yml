@@ -1180,7 +1180,7 @@ view: |-
 inputs:
 - key: notify_email
   value:
-    simple: epartington@paloaltonetworks.com
+    simple:
   required: false
   description: Send email notification for new malware
   playbookInputQuery:
