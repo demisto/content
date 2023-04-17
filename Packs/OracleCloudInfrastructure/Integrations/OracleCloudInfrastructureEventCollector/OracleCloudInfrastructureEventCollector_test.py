@@ -379,7 +379,8 @@ class TestEventRelatedFunctions:
         from OracleCloudInfrastructureEventCollector import get_events
         mocked_response = MockResponse(content=event_list)
         mocker.patch('OracleCloudInfrastructureEventCollector.audit_log_api_request', return_value=mocked_response)
-        events, last_event_time = get_events(client=dummy_client, first_fetch_time=first_fetch_time, max_fetch=max_fetch)
+        events, last_event_time = get_events(
+            client=dummy_client, first_fetch_time=first_fetch_time, max_fetch=max_fetch, push_events_on_error=False)
         assert (events, last_event_time) == (expected_events, expected_last_event_time)
 
     def test_get_events_fail_without_events(self, mocker, dummy_client, dummy_datetime=dummy_datetime):
@@ -417,7 +418,7 @@ class TestEventRelatedFunctions:
         if not isinstance(first_date_time, datetime.datetime):
             raise ValueError('first_date_time is not a datetime object')
         with pytest.raises(Exception):
-            get_events(client=dummy_client, first_fetch_time=first_date_time, max_fetch=5)
+            get_events(client=dummy_client, first_fetch_time=first_date_time, max_fetch=5, push_events_on_error=False)
 
 
 class TestFetchEventsFlows:
