@@ -335,7 +335,7 @@ def test_create_alert_comment_command(mocker, test_case):
         Then:
         - Ensure that the alert was parsed correctly and right HR and EC outputs are returned.
         - Case 1: Should return a table with one entry.
-        - Case 2: Should return a table with two entries, one for each comment. 
+        - Case 2: Should return a table with two entries, one for each comment.
     """
     test_data = load_json("./test_data/test_create_alert_comment_command.json").get(test_case)
     mocker.patch.object(client_mocker, 'create_alert_comment', return_value=test_data.get('mock_response'))
