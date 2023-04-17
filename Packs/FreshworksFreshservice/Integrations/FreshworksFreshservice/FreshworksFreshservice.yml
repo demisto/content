@@ -327,16 +327,16 @@ script:
       description: Whether the ticket first request was escalated.
       type: Boolean
     - contextPath: Freshservice.Ticket.deleted
-      description: Ticket deleted.
+      description: Whether the ticket was deleted.
       type: Boolean
     - contextPath: Freshservice.Ticket.spam
-      description: Ticket spam.
+      description: Whether the ticket was spam.
       type: Boolean
     - contextPath: Freshservice.Ticket.email_config_id
       description: Ticket email config ID.
       type: Number
     - contextPath: Freshservice.Ticket.is_escalated
-      description: Whether the ticket is escalated.
+      description: Whether the ticket was escalated.
       type: Boolean
     - contextPath: Freshservice.Ticket.fr_due_by
       description: Indicates when the first response is due.
@@ -354,10 +354,10 @@ script:
       description: Ticket source.
       type: Number
     - contextPath: Freshservice.Ticket.created_at
-      description: Ticket creation time.
+      description: Datetime the ticket was created.
       type: Date
     - contextPath: Freshservice.Ticket.updated_at
-      description: Ticket updated at.
+      description: Datetime the ticket was updated.
       type: Date
     - contextPath: Freshservice.Ticket.requested_for_id
       description: Ticket requested for ID.
@@ -502,11 +502,11 @@ script:
       isArray: false
       name: problem
       required: false
-    - description: Change causing the Ticket that needs to be associated with the Ticket (use freshservice-change-list to get the change ID).
+    - description: The change ID that is needed for the ticket to be initialized. (So the change ID needs to be associated with the ticket). (Use freshservice-change-list to get the change ID).
       isArray: false
       name: change_initiating_ticket
       required: false
-    - description: Change needed for the Ticket to be fixed that needs to be associated with the Ticket (use freshservice-change-list to get the change ID).
+    - description: The change ID that is needed for the ticket to be fixed. (So the change ID needs to be associated with the ticket). (Use freshservice-change-list to get the change ID).
       isArray: false
       name: change_initiated_by_ticket
       required: false
@@ -538,14 +538,14 @@ script:
       isArray: false
       name: fr_due_by
       required: false
-    - description: The ID of the group to which the Ticket has been assigned. The default value is the ID of the group that is associated with the given email config ID. Use freshservice-agent-group-list to get the agent group ID.
+    - description: The ID of the group to which the ticket has been assigned. The default value is the ID of the group that is associated with the given email config ID. Use freshservice-agent-group-list to get the agent group ID.
       isArray: false
       name: group_id
       required: false
     deprecated: false
     description: |-
-      Create a new Ticket at the service desk. The default Ticket type
-      is incident. Create ticket required one of the following: requester_id, phone, email. Ticket type helps categorize the ticket according to the different
+      Create a new ticket at the service desk. The default ticket type
+      is incident. Create ticket requires one of the following: requester_id, phone, email. Ticket type helps categorize the ticket according to the different
       kinds of issues your support team deals with. As of now, API v2 supports only
       type 'incident'.
     execution: false
@@ -555,7 +555,7 @@ script:
       description: Whether the ticket first request was escalated.
       type: Boolean
     - contextPath: Freshservice.Ticket.spam
-      description: Ticket spam.
+      description: Whether the ticket is spam.
       type: Boolean
     - contextPath: Freshservice.Ticket.email_config_id
       description: Ticket email config ID.
@@ -603,7 +603,7 @@ script:
       description: Indicates when the first response is due.
       type: Date
     - contextPath: Freshservice.Ticket.is_escalated
-      description: Whether the ticket is escalated.
+      description: Whether the ticket was escalated.
       type: Boolean
     - contextPath: Freshservice.Ticket.description
       description: Ticket description.
@@ -618,13 +618,13 @@ script:
       description: Ticket item category.
       type: String
     - contextPath: Freshservice.Ticket.created_at
-      description: Ticket creation time.
+      description: Datetime the ticket was created.
       type: Date
     - contextPath: Freshservice.Ticket.updated_at
-      description: Ticket updated at.
+      description: Datetime the ticket was updated.
       type: Date
   - arguments:
-    - description: The Ticket ID to update (use freshservice-ticket-list to get ticket ID).
+    - description: The ticket ID to update (use freshservice-ticket-list to get ticket ID).
       isArray: false
       name: ticket_id
       required: true
@@ -673,7 +673,7 @@ script:
       name: subject
       required: false
     - auto: PREDEFINED
-      description: The channel through which the Ticket was created. The default value is 2. (Email=1, Portal=2, Phone=3, Chat=4, Feedback widget=5, Yammer=6, AWS Cloudwatch=7, Pagerduty=8, Walkup=9, Slack=10).
+      description: The channel through which the ticket was created. The default value is 2. (Email=1, Portal=2, Phone=3, Chat=4, Feedback widget=5, Yammer=6, AWS Cloudwatch=7, Pagerduty=8, Walkup=9, Slack=10).
       isArray: false
       name: source
       predefined:
@@ -725,11 +725,11 @@ script:
       - Legal Review - Customer Documents
       - Other
       required: false
-    - description: "Ticket subcategory.  Note that each category has a different predefined subcategory."
+    - description: Ticket subcategory. Note that each category has a different predefined subcategory.
       isArray: false
       name: sub_category
       required: false
-    - description: Assets that have to be associated with the ticket (the asset display_id. Replace the exist value).
+    - description: Assets that have to be associated with the ticket (the asset display_id. Replace the existing value).
       isArray: false
       name: assets
       required: false
@@ -755,11 +755,11 @@ script:
       isArray: false
       name: problem
       required: false
-    - description: Change causing the Ticket that needs to be associated with the Ticket (use freshservice-change-list to get the change ID).
+    - description: The change ID that is needed for the ticket to be initialized. (So the change ID needs to be associated with the ticket). (Use freshservice-change-list to get the change ID).
       isArray: false
       name: change_initiating_ticket
       required: false
-    - description: Change needed for the Ticket to be fixed that needs to be associated with the Ticket (use freshservice-change-list to get the change ID).
+    - description: The change ID that is needed for the ticket to be fixed. (So the change ID needs to be associated with the ticket). (Use freshservice-change-list to get the change ID).
       isArray: false
       name: change_initiated_by_ticket
       required: false
@@ -779,11 +779,11 @@ script:
       isArray: false
       name: custom_fields
       required: false
-    - description: Timestamp that denotes when the Ticket is due to be resolved (for example YYYY-MM-DDThh:mm).
+    - description: Timestamp that denotes when the ticket is due to be resolved (for example YYYY-MM-DDThh:mm).
       isArray: false
       name: due_by
       required: false
-    - description: The ID of the email config which is used for this ticket. (i.e., support@yourcompany.com/sales@yourcompany.com).
+    - description: The ID of the email config which is used for this ticket (i.e., support@yourcompany.com/sales@yourcompany.com).
       isArray: false
       name: email_config_id
       required: false
@@ -791,17 +791,17 @@ script:
       isArray: false
       name: fr_due_by
       required: false
-    - description: The ID of the group to which the Ticket has been assigned. The default value is the ID of the group that is associated with the given email_config_id. Use freshservice-agent-group-list to get the agent group ID.
+    - description: The ID of the group to which the ticket has been assigned. The default value is the ID of the group that is associated with the given email_config_id. Use freshservice-agent-group-list to get the agent group ID.
       isArray: false
       name: group_id
       required: false
     deprecated: false
-    description: Update an existing Ticket in Freshservice.
+    description: Update an existing ticket in Freshservice.
     execution: false
     name: freshservice-ticket-update
     outputs:
     - contextPath: Freshservice.Ticket.spam
-      description: Ticket spam.
+      description: Whether the ticket is spam.
       type: Boolean
     - contextPath: Freshservice.Ticket.email_config_id
       description: Ticket email config ID.
@@ -858,7 +858,7 @@ script:
       description: Ticket department ID.
       type: Number
     - contextPath: Freshservice.Ticket.is_escalated
-      description: Whether the ticket is escalated.
+      description: Whether the ticket was escalated.
       type: Boolean
     - contextPath: Freshservice.Ticket.due_by
       description: The timestamp that denotes when the ticket is due to be resolved.
@@ -867,10 +867,10 @@ script:
       description: Indicates when the first response is due.
       type: Date
     - contextPath: Freshservice.Ticket.created_at
-      description: Ticket creation time.
+      description: Datetime the ticket was created.
       type: Date
     - contextPath: Freshservice.Ticket.updated_at
-      description: Ticket updated at.
+      description: Datetime the ticket was updated.
       type: Date
   - arguments:
     - description: The Ticket ID to delete (use freshservice-ticket-list to get ticket ID).
