@@ -28,6 +28,8 @@ Builds A JSON array based on the values provided by the user for the 'threatstre
 | domain_indicator_type | The indicator type \(Itype\) of the domains provided. By default the type will be “Malware Domain” \(mal_domain\). |
 | indicator_query | The indicators query, based lucene search syntax. |
 
+Note: If both a query (indicator_query) and values (e.g., email_values) are provided as arguments, the values will be ignored.
+
 ## Outputs
 
 ---
