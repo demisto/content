@@ -37,7 +37,6 @@ class Client(BaseClient):
             private_key (str): Private Key parameter.
             key_fingerprint (str): API Key Fingerprint parameter.
             tenancy_ocid (str): Tenancy OCID parameter.
-            region (str): Region parameter.
 
         Raises:
             DemistoException: If the singer object is invalid.
@@ -124,6 +123,10 @@ class Client(BaseClient):
 def add_time_key_to_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Add the _time key to the events.
+    It is the current decided solution for the _time data model field.
+    Note:   _time used to be parsed as a parsing rule in XSIAM,
+            but to avoid a lot of cases where parsing rules were created only for _time field,
+            now the current acceptable solution is to "map" this attribute programmatically.
     Args:
         events (list[dict[str, Any]]): The events to add the time key to.
     Returns:
@@ -359,7 +362,7 @@ def main():
     max_fetch = arg_to_number(params.get('max_fetch')) or MAX_EVENTS_TO_FETCH
     first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME)
     first_fetch_time = get_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
-    should_push_events = argToBoolean(args.get('should_push_events'))
+    should_push_events = argToBoolean(args.get('should_push_events', False))
     demisto.info(f'OCI: Command being called is {command}')
 
     try:

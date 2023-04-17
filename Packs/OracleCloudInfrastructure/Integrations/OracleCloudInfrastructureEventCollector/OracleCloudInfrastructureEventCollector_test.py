@@ -143,6 +143,14 @@ class TestClientRelatedFunctions:
                               case_escaped_private_key,
                               case_escaped_and_doubled_new_line_private_key])
     def test_validate_private_key_syntax(self, mocker, private_key, expected_result):
+        """
+        Given:
+            - A private key parameter is provided.
+        When:
+            - Creating a Client object.
+        Then:
+            - Make sure the private key is validated successfully.
+        """
         mocker.patch.object(Client, 'build_singer_object', return_value='dummy_singer_object')
         mocker.patch.object(Client, 'build_audit_base_url', return_value='dummy_audit_base_url')
         client = Client(
