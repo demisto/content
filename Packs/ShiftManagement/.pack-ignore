@@ -1,4 +1,3 @@
-
 [file:incidentfield-Shift_open_incidents.json]
 ignore=IF100
 
@@ -9,7 +8,14 @@ ignore=BA113,BA112
 ignore=BA113
 
 [file:ManageOOOusers.yml]
-ignore=CJ105
+ignore=CJ105,BA124
 
 [file:README.md]
 ignore=RM106
+
+[file:AssignToNextShiftOOO.yml]
+ignore=BA124
+
+[file:CreateChannelWrapper.yml]
+ignore=BA124
+

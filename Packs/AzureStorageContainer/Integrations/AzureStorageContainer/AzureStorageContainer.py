@@ -3,10 +3,11 @@ import hmac
 import shutil
 from typing import Callable
 from urllib import parse  # noqa: F401
+import defusedxml.ElementTree as defused_ET
+from requests import Response
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from requests import Response
 
 DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
 account_sas_token = ""
@@ -295,7 +296,7 @@ def get_pagination_next_marker_element(limit: str, page: int, client_request: Ca
     """
     offset = int(limit) * (page - 1)
     response = client_request(limit=str(offset), **params)
-    tree = ET.ElementTree(ET.fromstring(response))
+    tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
     return root.findtext('NextMarker')  # type: ignore
@@ -335,7 +336,7 @@ def list_containers_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     response = client.list_containers_request(limit, prefix, marker)
 
-    tree = ET.ElementTree(ET.fromstring(response))
+    tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
     raw_response = []
@@ -519,7 +520,7 @@ def list_blobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.list_blobs_request(container_name, limit, prefix, marker)
 
-    tree = ET.ElementTree(ET.fromstring(response))
+    tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
     raw_response = []
@@ -643,7 +644,7 @@ def get_blob_tags_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     response = client.get_blob_tags_request(container_name, blob_name)
 
-    tree = ET.ElementTree(ET.fromstring(response))
+    tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
     raw_response = []

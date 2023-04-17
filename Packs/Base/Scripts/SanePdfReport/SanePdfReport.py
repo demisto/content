@@ -52,7 +52,7 @@ def quit_driver_and_reap_children(killMarkdownServer):
                 SERVER_OBJECT.shutdown()
 
         zombies, ps_out = find_zombie_processes()
-        if zombies:
+        if zombies:  # pragma no cover
             demisto.info(f'Found zombie processes will waitpid: {ps_out}')
             for pid in zombies:
                 waitres = os.waitpid(int(pid), os.WNOHANG)[1]

@@ -14,25 +14,25 @@ ignore=SC105,BA109
 ignore=SC105,BA109
 
 [file:GetIncidentsByQuery.yml]
-ignore=SC105,BA109
+ignore=SC105,BA109,BA124
 
 [file:DrawRelatedIncidentsCanvas.yml]
-ignore=SC105
+ignore=SC105,BA124
 
 [file:DBotPredictPhishingWords.yml]
-ignore=BA109
+ignore=BA109,BA124
 
 [file:DBotPreprocessTextData.yml]
-ignore=BA109
+ignore=BA109,BA124
 
 [file:DBotTrainTextClassifierV2.yml]
-ignore=BA109
+ignore=BA109,BA124
 
 [file:FindSimilarIncidentsByText.yml]
 ignore=BA109
 
 [file:GetIndicatorsByQuery.yml]
-ignore=BA109
+ignore=BA109,BA124
 
 [file:WordTokenizerV2.yml]
 ignore=BA109
@@ -46,22 +46,33 @@ ignore=SC101
 [file:SanePdfReport.yml]
 ignore=SC101
 
+[file:DeleteIndicatorRelationships.yml]
+ignore=BA124
+
+[file:DBotShowClusteringModelInfo.yml]
+ignore=BA124
+
+[file:DBotTrainClustering.yml]
+ignore=BA124
+
 [known_words]
-CreateIndicatorRelationship
-CommonServerPython
-CommonServer
-mergeVersionedIntegrationContext
-SearchIndicatorRelationships
-CommandResults
-YMLMetadataCollector
+createindicatorrelationship
+commonserverpython
+commonserver
+mergeversionedintegrationcontext
+searchindicatorrelationships
+commandresults
+ymlmetadatacollector
 siam
-XSIAM
-EntryType
-Enums
-CustomIndicator
-Mutex
-SSLAdapter
-SSL
-appendContext
+xsiam
+entrytype
+enums
+customindicator
+mutex
+ssladapter
+ssl
+appendcontext
 refang
-IndicatorsSearcher
+indicatorssearcher
+FeedIndicatorType
+str

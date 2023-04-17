@@ -4,7 +4,7 @@ import json
 import pytest
 from requests.auth import _basic_auth_str
 from TAXII2Server import TAXII2Server, APP, uuid, create_fields_list, MEDIA_TYPE_STIX_V20, MEDIA_TYPE_TAXII_V20, \
-    create_query, convert_sco_to_indicator_sdo
+    create_query, convert_sco_to_indicator_sdo, build_sco_object
 import demistomock as demisto
 
 HEADERS = {
@@ -589,8 +589,34 @@ def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
 
     output = convert_sco_to_indicator_sdo(ioc, xsoar_indicator)
     assert 'file:hashes.' in output.get('pattern', '')
-    assert 'MD5' in output.get('pattern', '')
+    assert 'SHA-1' in output.get('pattern', '')
     assert 'pattern_type' in output.keys()
+
+
+xsoar_indicators = util_load_json('test_data/xsoar_sco_indicators.json').get('iocs', {})
+sco_indicators = util_load_json('test_data/stix_sco_indicators.json').get('objects', {})
+
+
+@pytest.mark.parametrize('indicator, sco_indicator', [
+    (xsoar_indicators[0], sco_indicators[0]),
+    (xsoar_indicators[1], sco_indicators[1]),
+    (xsoar_indicators[2], sco_indicators[2])
+])
+def test_build_sco_object(indicator, sco_indicator):
+    """
+        Given
+            Case 1: xsoar File indicator with hashes.
+            Case 2: xsoar Registry key indicator with key and value data
+            Case 3: xsoar ASN indicator with "name" as a unique field and the as number as the value
+        When
+            Running build_sco_object
+        Then
+            Case 1: validate that the resulted object has the "hashes" key with all relevant hashes
+            Case 2: validate that the resulted object has all key-values data of the registry key
+            Case 3: validate that the ASN has a "number" key as well as a "name" key.
+    """
+    output = build_sco_object(indicator["stix_type"], indicator["xsoar_indicator"])
+    assert output == sco_indicator
 
 
 def test_taxii21_objects_with_relationships(mocker, taxii2_server_v21):
@@ -620,11 +646,17 @@ def test_taxii21_objects_with_relationships(mocker, taxii2_server_v21):
     mocker.patch.object(demisto, 'searchIndicators', side_effect=[mock_iocs,
                                                                   mock_entity_b_iocs])
 
-    mocker.patch.object(demisto, 'params', return_value={'res_size': '4'})
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '20'})
     with APP.test_client() as test_client:
         response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/objects/',
                                    headers=HEADERS)
         assert response.status_code == 200
         assert response.content_type == 'application/taxii+json;version=2.1'
-        demisto.searchRelationships.assert_called_once_with({'entities': ["1.1.1.1", "8.8.8.8", "3.3.3.3", "1.2.3.4"]})
+        demisto.searchRelationships.assert_called_once_with({
+            'entities': ["1.1.1.1",
+                         "3.3.3.3",
+                         "f1412386aa8db2579aff2636cb9511cacc5fd9880ecab60c048508fbe26ee4d9",
+                         "2.2.2.2",
+                         "4.4.4.4",
+                         "bad-domain.com"]})
         assert response.json == objects

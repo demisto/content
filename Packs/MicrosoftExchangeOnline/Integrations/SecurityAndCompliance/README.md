@@ -1,5 +1,3 @@
-Deprecated. Use ***Security And Compliance V2*** instead.
-
 
 This integration enables you to manage and interact with Microsoft security and compliance content search. You can manage the security of all your organization's emails, SharePoint sites, OneDrives, etc., by searching for text strings or queries based on attributes of a malicious email. However, you can only perform actions (preview and delete) on emails.
 This integration was integrated and tested with [Security & Compliance Center](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#policy-and-compliance-content-search). 
@@ -44,6 +42,39 @@ To access the Security & Compliance Center, the user account needs to be a globa
 6. Choose which members to add from the displayed list and click **Add**.
 7. Click **Done**.
    
+
+### Enabling Client Side Basic Authentication
+Client side basic authentication is necessary for O365 - Security And Compliance and is necessary for Powershell remoting.
+
+Per [Microsoft's documentation](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?source=recommendations&view=exchange-ps), Security & Compliance PowerShell still requires Basic authentication in WinRM as described Prerequisites for the Exchange Online PowerShell module. REST API cmdlets that allow you to turn off Basic authentication in WinRM are not yet available for the Connect-IPPSSession cmdlet. For more information, see Updates for the EXO V3 module).
+
+It is important to note that there are two types of basic authentication. The one that was deprecated which is the server side, and the other version which is the client side basic auth.
+What the exchange library does when client side basic auth is enabled is to instead of sending "user:pass" in the headers, it sends "Bearer xyz". The Exchange client itself, does not know the difference between the headers so when client basic auth is disabled, the bearer token can’t be sent.
+
+Please note: The use of Username and Password is not indicative of the use of basic authentication. The PowerShell session uses modern authentication as noted [here](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?view=exchange-ps#connect-to-security--compliance-powershell-without-a-login-prompt-unattended-scripts).
+
+1. Create a Group in Active Directory called “Enable Client Basic Auth” and add the user you will use for the integration to the group.
+2. Create a Policy in the Microsoft Endpoint Manager for - [This can be found here](https://endpoint.microsoft.com/?ref=AdminCenter#view/Microsoft_Intune_Workflows/SecurityBaselineSummaryMenu/~/profiles/summaryName/Windows%20365%20Security%20Baseline/templateType~/10/latestTemplateId/cef15778-c3b9-4d53-a00a-042929f0aad0/latestTemplateName/Windows%20365%20Security%20Baseline/intentCount/1/publishedDateTime/10%2F21%2F2021/version/November%202021/templatesJson/%5B%7B%22id%22%3A%22cef15778-c3b9-4d53-a00a-042929f0aad0%22%2C%22templateType%22%3A10%2C%22displayName%22%3A%22Windows%20365%20Security%20Baseline%22%2C%22description%22%3A%22Windows%20365%20settings%20as%20recommended%20by%20Microsoft%22%2C%22versionInfo%22%3A%22November%202021%22%2C%22platformType%22%3A6%2C%22platformName%22%3A%22Windows%2010%20and%20later%22%2C%22isDeprecated%22%3Afalse%2C%22intentCount%22%3A1%2C%22publishedDateTime%22%3A%222021-10-21T00%3A00%3A00.000Z%22%2C%22publishedDateTimeString%22%3A%2210%2F21%2F2021%22%2C%22templateSubtype%22%3A0%2C%22sourceType%22%3A%22dcv1%22%7D%5D/baseId//type/dcv1)
+3. Search for "Basic" and you will see the Remote Management dropdown. Under this option, please enable "Client basic authentication"
+    ![cba-role-1](../../doc_files/cba-role-1.png)
+4. Add the "Enable Client Basic Auth" group to the policy
+    ![cba-role-2](../../doc_files/cba-role-2.png)
+5. In the Instance Configuration, click the Test button. This will likely return an error with a correlation ID. 
+6. Copy this ID and search for the correlation in the [Risky Sign-Ins portal found here](https://portal.azure.com/#view/Microsoft_AAD_IAM/RiskySignInsBlade).
+7. Since we generated this alert, we can confirm that the sign-in is safe. by clicking the option found below.
+   ![cba-role-3](../../doc_files/cba-role-3.png)
+8. Finally return to the Instance Configuration and click the Test button to confirm the integration works.
+
+*Please Note:* Microsoft requires that this connection be made from a secure connection. Disabling certificate verification is not supported at this time.
+
+
+### Additional Configuration/Debugging Options
+In the event that the above does not result in a successful connection to Security and Compliance, we recommend the following:
+
+1. Adding the IP address of the XSOAR server to the list of [Named Locations](https://portal.azure.com/#view/Microsoft_AAD_ConditionalAccess/NamedLocationsBlade).
+2. Configuring the IP address of the XSOAR server as an exemption for multi-factor authentication. [https://account.activedirectory.windowsazure.com/usermanagement/mfasettings.aspx?tenantid={YOUR-TENANT-ID}](https://account.activedirectory.windowsazure.com/usermanagement/mfasettings.aspx?tenantid=)
+3. Dismissing the user's risk level and state in the [Risky Users Portal](https://portal.azure.com/#view/Microsoft_AAD_IAM/RiskyUsersBlade)
+
 
 ## Configure SecurityAndCompliance on Cortex XSOAR
 
