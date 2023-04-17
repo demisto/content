@@ -224,11 +224,11 @@ def search_pack(client: demisto_client,
         logging.exception(f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed. '
                           f'Exception: {str(ex)}')
 
-        lock.acquire()
-        global SUCCESS_FLAG
-        SUCCESS_FLAG = False
-        lock.release()
-        return {}
+    lock.acquire()
+    global SUCCESS_FLAG
+    SUCCESS_FLAG = False
+    lock.release()
+    return {}
 
 
 def find_malformed_pack_id(body: str) -> List:
