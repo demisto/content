@@ -954,17 +954,17 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: Day
-      description: "Grouping the missed snapshots on the basis of the selected value.\n\nPossible values are: \"Month\", \"Day\", \"Year\", \"Week\", \"Hour\", \"Quarter\"."
+      defaultValue: DAY
+      description: "Grouping the missed snapshots on the basis of the selected value.\n\nPossible values are: \"MONTH\", \"DAY\", \"YEAR\", \"WEEK\", \"HOUR\", \"QUARTER\"."
       isArray: false
       name: missed_snapshot_group_by
       predefined:
-        - Month
-        - Day
-        - Year
-        - Week
-        - Hour
-        - Quarter
+        - MONTH
+        - DAY
+        - YEAR
+        - WEEK
+        - HOUR
+        - QUARTER
       required: false
       secret: false
     - default: false
@@ -1695,16 +1695,70 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "The ID of the snapshot that is to be mounted.\n\nNote: Users\
-        \ can get the snapshot ID by executing the \"rubrik-polaris-vm-object-snapshot-list\"\
-        \ command."
+      description: The snappable ID.
       isArray: false
-      name: snapshot_id
+      name: snappable_id
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: |-
+        Whether to recover tags.
+
+        Possible values are: "True", "False".
+      isArray: false
+      name: should_recover_tags
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: |-
+        Whether to power on.
+
+        Possible values are: "True", "False".
+      isArray: false
+      name: power_on
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: |-
+        Whether to keep MAC addresses.
+
+        Possible values are: "True", "False".
+      isArray: false
+      name: keep_mac_addresses
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: |-
+        Whether to remove network interfaces from the VM.
+
+        Possible values are: "True", "False".
+      isArray: false
+      name: remove_network_devices
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
       secret: false
     - default: false
       description: |-
-        The ID of the Vsphere ESXi host on which the new VM will be mounted.
+        ID of the ESXi host to mount the new VM on.
 
         Note: Users can get the list of host IDs by executing the "rubrik-gps-vm-host-list" command.
       isArray: false
@@ -1712,88 +1766,59 @@ script:
       required: false
       secret: false
     - default: false
-      description: Name given to the VM that runs the snapshot. If not provided the
+      description: ID of the compute cluster where the new VM will be mounted.
+      isArray: false
+      name: cluster_id
+      required: false
+      secret: false
+    - default: false
+      description: ID of the resource pool where the new VM will be mounted.
+      isArray: false
+      name: resource_pool_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        ID of the snapshot to recover.
+
+        Note: Users can get the snapshot ID by executing the "rubrik-polaris-vm-object-snapshot-list" command.
+      isArray: false
+      name: snapshot_fid
+      required: false
+      secret: false
+    - default: false
+      description: Name of the new VM. If not provided the
         name will be "<Snapshot VM Name> <MM/DD of snapshot creation> <hh/mm of snapshot
         creation> <Num>".
       isArray: false
       name: vm_name
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'True'
+    - default: false
       description: |-
-        Whether to power on the mount or not.
-
-        Possible values are: "True", "False".
+        List of network bindings for vNIC of the VM.
+        
+        e.g. [
+              {
+                "backingNetworkInfo": {
+                  "moid": <string>,
+                  "name": <string>
+                },
+                "networkDeviceInfo": {
+                  "key": <int>,
+                  "name": <string>
+                }
+              }
+            ]
       isArray: false
-      name: power_on
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: |-
-        Whether the mac addresses of network devices be removed or not.
-
-        Possible values are: "True", "False".
-      isArray: false
-      name: keep_mac_addresses
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: |-
-        Whether the network devices of the original VM be kept.
-
-        Possible values are: "True", "False".
-      isArray: false
-      name: remove_network_devices
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: |-
-        Whether to disable networking on the mount or not.
-
-        Possible values are: "True", "False".
-      isArray: false
-      name: disable_network
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'True'
-      description: |-
-        Whether to keep vSphere tags associated with the VM or not.
-
-        Possible values are: "True", "False".
-      isArray: false
-      name: recover_tags
-      predefined:
-      - 'True'
-      - 'False'
+      name: vnic_bindings
       required: false
       secret: false
     - default: false
-      description: "The name of the datastore that the live mount uses.\n\nNote:\
-        \ Users can get the datastore name by executing the \"rubrik-gps-vm-datastore-list\"\
-        \ command."
+      description: |-
+        Point in time to recover to, e.g.: "2023-03-04T05:06:07.890"
       isArray: false
-      name: datastore_name
+      name: recovery_point
       required: false
       secret: false
     deprecated: false
@@ -1958,19 +1983,19 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: "Filter the events based on the provided activity statuses. Supports comma separated values.\n\nPossible values are: \"TaskFailure\", \"Canceling\", \"TaskSuccess\", \"Info\", \"Failure\", \"Running\", \"Queued\", \"Warning\", \"Canceled\", \"Success\"."
+      description: "Filter the events based on the provided activity statuses. Supports comma separated values.\n\nPossible values are: \"UNKNOWN_EVENT_STATUS\", \"TASK_FAILURE\", \"PARTIAL_SUCCESS\", \"TASK_SUCCESS\", \"INFO\", \"FAILURE\", \"RUNNING\", \"QUEUED\", \"WARNING\", \"CANCELED\", \"SUCCESS\"."
       isArray: false
       name: activity_status
       required: false
       secret: false
     - default: false
-      description: "Filter the events based on provided activity types. Supports comma separated values.\n\nPossible values are: \"Sync\", \"LocalRecovery\", \"TestFailover\", \"Anomaly\", \"RadarAnalysis\", \"Archive\", \"VolumeGroup\", \"VCenter\", \"Index\", \"CloudNativeVirtualMachine\", \"StormResource\", \"HostEvent\", \"Recovery\", \"Conversion\", \"CloudNativeVm\", \"EmbeddedEvent\", \"Maintenance\", \"Failover\", \"AuthDomain\", \"LegalHold\", \"Vcd\", \"Instantiate\", \"Configuration\", \"Fileset\", \"Discovery\", \"System\", \"Hdfs\", \"Classification\", \"StorageArray\", \"Storage\", \"Backup\", \"Hardware\", \"HypervServer\", \"HypervScvmm\", \"Diagnostic\", \"UnknownEventType\", \"Upgrade\", \"NutanixCluster\", \"Replication\", \"AwsEvent\", \"Support\", \"CloudNativeSource\", \"Download\", \"Connection\", \"ResourceOperations\"."
+      description: "Filter the events based on provided activity types. Supports comma separated values.\n\nPossible values are: \"SYNC\", \"LOCAL_RECOVERY\", \"TEST_FAILOVER\", \"ANOMALY\", \"RANSOMWARE_INVESTIGATION_ANALYSIS\", \"ARCHIVE\", \"VOLUME_GROUP\", \"VCENTER\", \"INDEX\", \"CLOUD_NATIVE_VIRTUAL_MACHINE\", \"STORM_RESOURCE\", \"HOST_EVENT\", \"RECOVERY\", \"CONVERSION\", \"CLOUD_NATIVE_VM\", \"EMBEDDED_EVENT\", \"MAINTENANCE\", \"FAILOVER\", \"AUTH_DOMAIN\", \"LEGAL_HOLD\", \"VCD\", \"INSTANTIATE\", \"CONFIGURATION\", \"FILESET\", \"DISCOVERY\", \"SYSTEM\", \"HDFS\", \"CLASSIFICATION\", \"STORAGE_ARRAY\", \"STORAGE\", \"BACKUP\", \"HARDWARE\", \"HYPERV_SERVER\", \"HYPERV_SCVMM\", \"DIAGNOSTIC\", \"UNKNOWN_EVENT_TYPE\", \"UPGRADE\", \"NUTANIX_CLUSTER\", \"REPLICATION\", \"AWS_EVENT\", \"SUPPORT\", \"CLOUD_NATIVE_SOURCE\", \"DOWNLOAD\", \"CONNECTION\", \"RESOURCE_OPERATIONS\"."
       isArray: false
       name: activity_type
       required: false
       secret: false
     - default: false
-      description: "Filter the events based on provided severities. Supports comma separated values.\n\nPossible values are: \"Critical\", \"Warning\", \"Info\"."
+      description: "Filter the events based on provided severities. Supports comma separated values.\n\nPossible values are: \"SEVERITY_CRITICAL\", \"SEVERITY_WARNING\", \"SEVERITY_INFO\"."
       isArray: false
       name: severity
       required: false
@@ -1982,7 +2007,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Filter the events based on provided object types. Supports comma separated values.\n\nPossible values are: \"ShareFileset\", \"NutanixVm\", \"VolumeGroup\", \"HypervVm\", \"LinuxFileset\", \"WindowsFileset\", \"VmwareVm\".\n\nAdditional values can be found in the documentation."
+      description: "Filter the events based on provided object types. Supports comma separated values.\n\nPossible values are: \"SHARE_FILESET\", \"NUTANIX_VM\", \"STORAGE_ARRAY_VOLUME_GROUP\", \"HYPERV_VM\", \"LINUX_FILESET\", \"WINDOWS_FILESET\", \"VMWARE_VM\".\n\nAdditional values can be found in the documentation."
       isArray: false
       name: object_type
       required: false
@@ -2020,34 +2045,34 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: LastUpdated
-      description: "Specify the field to use for sorting the response.\n\nNote: Possible values are: \"LastUpdated\", \"Location\", \"ObjectType\", \"ClusterName\", \"ObjectName\", \"StartTime\", \"ActivityType\", \"Severity\", \"ActivityStatus\"."
+      defaultValue: LAST_UPDATED
+      description: "Specify the field to use for sorting the response.\n\nNote: Possible values are: \"LAST_UPDATED\", \"LOCATION\", \"OBJECT_TYPE\", \"CLUSTER_NAME\", \"OBJECT_NAME\", \"START_TIME\", \"ACTIVITY_TYPE\", \"SEVERITY\", \"ACTIVITY_STATUS\"."
       isArray: false
       name: sort_by
       predefined:
-      - LastUpdated
-      - Location
-      - ObjectType
-      - ClusterName
-      - ObjectName
-      - StartTime
-      - ActivityType
-      - Severity
-      - ActivityStatus
+      - LAST_UPDATED
+      - LOCATION
+      - OBJECT_TYPE
+      - CLUSTER_NAME
+      - OBJECT_NAME
+      - START_TIME
+      - ACTIVITY_TYPE
+      - SEVERITY
+      - ACTIVITY_STATUS
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: Desc
-      description: "Specify the order to sort the data in.\n\nPossible values are: \"Asc\", \"Desc\"."
+      defaultValue: DESC
+      description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
       isArray: false
       name: sort_order
       predefined:
-        - Asc
-        - Desc
+        - ASC
+        - DESC
       required: false
       secret: false
-      deprecated: false
+    deprecated: false
     description: "Retrieve the list of events."
     execution: false
     name: rubrik-event-list
@@ -2123,7 +2148,7 @@ script:
       description: "Filter the objects based on the provided object types. Supports comma separated values.\n\nPossible values are: \"ShareFileset\", \"NutanixVirtualMachine\", \"VolumeGroup\", \"HypervVirtualMachine\", \"LinuxFileset\", \"WindowsFileset\", \"VmwareVirtualMachine\".\n\nAdditional values can be found in the documentation."
       isArray: false
       name: type_filter
-      required: false
+      required: true
       secret: false
     - default: false
       description: "Filter the objects based on the provided cluster IDs. Supports comma separated values.\n\nNote: Users can get the list of cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
@@ -2162,7 +2187,7 @@ script:
         - DESC
       required: false
       secret: false
-      deprecated: false
+    deprecated: false
     description: "Retrieve the list of Rubrik objects, based on the provided filters."
     execution: false
     name: rubrik-polaris-object-list
@@ -2267,16 +2292,16 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: Asc
-      description: "Specify the order to sort the data in.\n\nPossible values are: \"Asc\", \"Desc\"."
+      defaultValue: ASC
+      description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
       isArray: false
       name: sort_order
       predefined:
-        - Asc
-        - Desc
+        - ASC
+        - DESC
       required: false
       secret: false
-      deprecated: false
+    deprecated: false
     description: "Retrieve Rubrik snapshot(s) of an object, based on the provided object ID."
     execution: false
     name: rubrik-polaris-object-snapshot-list
@@ -2674,16 +2699,16 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: Asc
-      description: "Specify the order to sort the data in.\n\nPossible values are: \"Asc\", \"Desc\"."
+      defaultValue: ASC
+      description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
       isArray: false
       name: sort_order
       predefined:
-        - Asc
-        - Desc
+        - ASC
+        - DESC
       required: false
       secret: false
-      deprecated: false
+    deprecated: false
     description: "Retrieve the list of the available rubrik clusters."
     execution: false
     name: rubrik-gps-cluster-list
@@ -2868,7 +2893,7 @@ script:
     - contextPath: RubrikPolaris.GPSVMRecoverFiles.id
       description: Recover files request ID.
       type: String
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.51139
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.54625
   feed: false
   isfetch: true
   longRunning: false
