@@ -85,11 +85,9 @@ Get Description of An asset
 
 #### Context Output
 
-| **Path**                       | **Type** | **Description**     |
-|--------------------------------| --- |---------------------|
-| Orca.SetAlertSeverity.id       | String | Response            | 
-| Orca.SetAlertSeverity.details  | String | Response details    | 
-| Orca.SetAlertSeverity.severity | String | New alert serverity | 
+| **Path**                      | **Type** | **Description**   |
+|-------------------------------| --- |-------------------|
+| Orca.Alert    | String | Alert description | 
 
 
 #### Command Example
