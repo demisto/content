@@ -1,4 +1,5 @@
 {
+  "associatedToAll": false,
   "associatedTypes": [
     "FireEye NX IPS Event",
     "FireEye NX Alert",
