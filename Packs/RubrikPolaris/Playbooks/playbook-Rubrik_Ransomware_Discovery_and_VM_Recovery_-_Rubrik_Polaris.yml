@@ -337,6 +337,8 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
+      close_code:
+        simple: Closed/Resolved by Caller
       close_notes:
         simple: Resolved
       id:
@@ -2435,7 +2437,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
