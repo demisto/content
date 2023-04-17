@@ -67,12 +67,12 @@ args:
   secret: false
 comment: "Builds A JSON array based on the values provided by the user for the 'threatstream-import-indicator-without-approval' command."
 commonfields:
-  id: threatstream-build-ioc-import-json
+  id: ThreatstreamBuildIocImportJson
   version: -1
 enabled: false
-name: threatstream-build-ioc-import-json
+name: ThreatstreamBuildIocImportJson
 outputs:
-- contextPath: ImportJson
+- contextPath: ThreatstreamBuildIocImportJson
   description: The string output represents a JSON object.
   type: String
 script: '-'

@@ -106,8 +106,8 @@ def get_indicators_and_build_json(args: dict) -> CommandResults:
     else:
         list_indicators = get_indicators_from_user(args, indicators_types)
     outputs = str({'objects': list_indicators})
-    return CommandResults(outputs_key_field='ImportJson',
-                          outputs={'ImportJson': outputs},
+    return CommandResults(outputs_key_field='ThreatstreamBuildIocImportJson',
+                          outputs={'ThreatstreamBuildIocImportJson': outputs},
                           readable_output=outputs)
 
 
@@ -119,7 +119,7 @@ def main():
         args = demisto.args()
         return_results(get_indicators_and_build_json(args))
     except Exception as ex:
-        return_error(f'Failed to execute threatstream-build-ioc-import-json. Error: {str(ex)}')
+        return_error(f'Failed to execute ThreatstreamBuildIocImportJson. Error: {str(ex)}')
 
 
 ''' ENTRY POINT '''

@@ -44,7 +44,7 @@ def test_get_indicators_from_user(args, indicators_types, expected_result):
 
     Checks the output of the command function with the expected output.
     """
-    from buildIocImportJson import get_indicators_from_user
+    from ThreatstreamBuildIocImportJson import get_indicators_from_user
     response = get_indicators_from_user(args, indicators_types)
     assert response == expected_result
 
@@ -61,7 +61,7 @@ def test_validate_indicators(email_list, md5_list, ip_list, url_list, domain_lis
 
     Checks that an error message raised.
     """
-    from buildIocImportJson import validate_indicators
+    from ThreatstreamBuildIocImportJson import validate_indicators
     with pytest.raises(DemistoException) as de:
         validate_indicators(email_list, md5_list, ip_list, url_list, domain_list)
 
@@ -80,7 +80,7 @@ def test_execute_get_indicators_by_query(mocker, query, indicators_types, return
 
     Checks the output of the command function with the expected output.
     """
-    from buildIocImportJson import execute_get_indicators_by_query
+    from ThreatstreamBuildIocImportJson import execute_get_indicators_by_query
     mocker.patch.object(demisto, 'executeCommand', return_value=return_value)
     response = execute_get_indicators_by_query(query, indicators_types)
     assert response == expected_result
@@ -91,7 +91,8 @@ def test_execute_get_indicators_by_query(mocker, query, indicators_types, return
      [{'ModuleName': 'name', 'Brand': 'Scripts', 'Category': 'automation', 'ID': '', 'Version': 0, 'Type': 3,
        'Contents': [{'id': '1', 'indicator_type': 'IP', 'value': '1.2.4.5'},
                     {'id': '2', 'indicator_type': 'Domain', 'value': 'my.domain1.com'}]}],
-     {'ImportJson': "{'objects': [{'value': '1.2.4.5', 'itype': 'mal_ip'}, {'value': 'my.domain1.com', 'itype': 'mal_domain'}]}"},
+     {'ThreatstreamBuildIocImportJson': "{'objects': [{'value': '1.2.4.5', 'itype': 'mal_ip'}, "
+      "{'value': 'my.domain1.com', 'itype': 'mal_domain'}]}"},
      "{'objects': [{'value': '1.2.4.5', 'itype': 'mal_ip'}, {'value': 'my.domain1.com', 'itype': 'mal_domain'}]}"),
     ({"domain_indicator_type": 'spam_domain',
       "domain_values": 'my.domain1.com',
@@ -104,7 +105,7 @@ def test_execute_get_indicators_by_query(mocker, query, indicators_types, return
       "url_indicator_type": 'parked_url',
       "url_values": 'https://test.com'},
      None,
-     {'ImportJson': "{'objects': [{'value': 'test@test.com', 'itype': 'spam_email'}, "
+     {'ThreatstreamBuildIocImportJson': "{'objects': [{'value': 'test@test.com', 'itype': 'spam_email'}, "
       "{'value': '00000000000000000000000000000000', 'itype': 'phish_md5'}, "
       "{'value': '1.1.1.1', 'itype': 'actor_ip'}, {'value': 'https://test.com', 'itype': 'parked_url'}, "
       "{'value': 'my.domain1.com', 'itype': 'spam_domain'}]}"},
@@ -118,7 +119,7 @@ def test_get_indicators_and_build_json(mocker, args, return_value, expected_outp
 
     Checks the output of the command function with the expected output.
     """
-    from buildIocImportJson import get_indicators_and_build_json
+    from ThreatstreamBuildIocImportJson import get_indicators_and_build_json
     mocker.patch.object(demisto, 'executeCommand', return_value=return_value)
     response = get_indicators_and_build_json(args)
     assert response.outputs == expected_outputs
