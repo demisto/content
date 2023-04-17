@@ -873,12 +873,12 @@ script:
       description: Datetime the ticket was updated.
       type: Date
   - arguments:
-    - description: The Ticket ID to delete (use freshservice-ticket-list to get ticket ID).
+    - description: The ticket ID to delete (use freshservice-ticket-list to get ticket ID).
       isArray: false
       name: ticket_id
       required: true
     deprecated: false
-    description: Delete an existing Ticket in Freshservice.
+    description: Delete an existing ticket in Freshservice.
     execution: false
     name: freshservice-ticket-delete
   - arguments:
@@ -895,16 +895,16 @@ script:
       isArray: false
       name: limit
       required: false
-    - description: The Ticket ID (use freshservice-ticket-list to get ticket ID).
+    - description: The ticket ID (use freshservice-ticket-list to get ticket ID).
       isArray: false
       name: ticket_id
       required: true
-    - description: The Ticket task ID.
+    - description: The ticket task ID.
       isArray: false
       name: task_id
       required: false
     deprecated: false
-    description: Retrieve tasks list (or a specific task) on a Ticket with the given ID from Freshservice.
+    description: Retrieve tasks list (or a specific task) on a ticket with the given ID from Freshservice.
     execution: false
     name: freshservice-ticket-task-list
     outputs:
@@ -930,13 +930,13 @@ script:
       description: Task description.
       type: String
     - contextPath: Freshservice.Ticket.Task.created_at
-      description: Task creation time.
+      description: Datetime the task was created.
       type: Date
     - contextPath: Freshservice.Ticket.Task.updated_at
-      description: Task updated at.
+      description: Datetime the task was updated.
       type: Date
     - contextPath: Freshservice.Ticket.Task.closed_at
-      description: Task closed at.
+      description: Datetime the task was closed.
       type: Date
     - contextPath: Freshservice.Ticket.Task.group_id
       description: Task group ID.
@@ -949,7 +949,7 @@ script:
       isArray: false
       name: due_date
       required: true
-    - description: Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc).
+    - description: Time in seconds before which notification is sent prior to due date (for example 30 minutes, 7 hours and etc).
       isArray: false
       name: notify_before
       required: true
@@ -970,7 +970,7 @@ script:
       - In Progress
       - Completed
       required: false
-    - description: The Ticket ID to add a task for (use freshservice-ticket-list to get ticket ID).
+    - description: The ticket ID to add a task for (use freshservice-ticket-list to get ticket ID).
       isArray: false
       name: ticket_id
       required: true
@@ -1001,10 +1001,10 @@ script:
       description: Task description.
       type: String
     - contextPath: Freshservice.Ticket.Task.created_at
-      description: Task creation time.
+      description: Datetime the task was created.
       type: Date
     - contextPath: Freshservice.Ticket.Task.updated_at
-      description: Task updated at.
+      description: Datetime the task was updated.
       type: Date
     - contextPath: Freshservice.Ticket.Task.closed_at
       description: Task closed at.
@@ -1076,10 +1076,10 @@ script:
       description: Task description.
       type: String
     - contextPath: Freshservice.Ticket.Task.created_at
-      description: Task creation time.
+      description: Datetime the task was created.
       type: Date
     - contextPath: Freshservice.Ticket.Task.updated_at
-      description: Task updated at.
+      description: Datetime the task was updated.
       type: Date
     - contextPath: Freshservice.Ticket.Task.closed_at
       description: Task closed at.
@@ -1145,10 +1145,10 @@ script:
       description: Conversation ticket ID.
       type: Number
     - contextPath: Freshservice.Ticket.Conversation.created_at
-      description: Conversation creation time.
+      description: Datetime the conversation was  created.
       type: Date
     - contextPath: Freshservice.Ticket.Conversation.updated_at
-      description: Conversation updated at.
+      description: Datetime the conversation was  updated.
       type: Date
     - contextPath: Freshservice.Ticket.Conversation.incoming
       description: Conversation incoming.
@@ -1221,10 +1221,10 @@ script:
       description: Ticket Conversation Reply ticket ID.
       type: Number
     - contextPath: Freshservice.Ticket.Conversation.Reply.created_at
-      description: Ticket conversation reply creation time.
+      description: Datetime the ticket conversation reply was created.
       type: Date
     - contextPath: Freshservice.Ticket.Conversation.Reply.updated_at
-      description: Ticket Conversation Reply updated at.
+      description: Datetime the ticket conversation reply was updated.
       type: Date
     - contextPath: Freshservice.Ticket.Conversation.Reply.from_email
       description: Ticket Conversation Reply from email.
@@ -1287,10 +1287,10 @@ script:
       description: Ticket Conversation Note ticket ID.
       type: Number
     - contextPath: Freshservice.Ticket.Conversation.NoteCreate.Created_at
-      description: Ticket conversation note creation time.
+      description: Datetime the ticket conversation note was created.
       type: Date
     - contextPath: Freshservice.Ticket.Conversation.Note.updated_at
-      description: Ticket Conversation Note updated at.
+      description: Datetime the ticket conversation note was updated.
       type: Date
     - contextPath: Freshservice.Ticket.Conversation.Note.incoming
       description: Ticket Conversation Note incoming.
@@ -1339,10 +1339,10 @@ script:
       description: Conversation ticket ID.
       type: Number
     - contextPath: Freshservice.Ticket.Conversation.created_at
-      description: Conversation creation time.
+      description: Datetime the conversation was created.
       type: Date
     - contextPath: Freshservice.Ticket.Conversation.updated_at
-      description: Conversation updated at.
+      description: Datetime the conversation was updated.
       type: Date
     - contextPath: Freshservice.Ticket.Conversation.incoming
       description: Conversation incoming.
@@ -1431,10 +1431,10 @@ script:
       description: Problem item category.
       type: String
     - contextPath: Freshservice.Problem.created_at
-      description: Problem creation time
+      description: Datetime the problem was created.
       type: Date
     - contextPath: Freshservice.Problem.updated_at
-      description: Problem updated at.
+      description: Datetime the problem was updated.
       type: Date
   - arguments:
     - description: Problem request description.
@@ -1593,10 +1593,10 @@ script:
       description: Problem item category.
       type: String
     - contextPath: Freshservice.Problem.created_at
-      description: Problem creation time
+      description: Datetime the problem was created.
       type: Date
     - contextPath: Freshservice.Problem.updated_at
-      description: Problem updated at.
+      description: Datetime the problem was updated.
       type: Date
   - arguments:
     - description: The problem ID for an update (use freshservice-problem-list to get the problem request ID).
@@ -1755,10 +1755,10 @@ script:
       description: Problem item category.
       type: Unknown
     - contextPath: Freshservice.Problem.created_at
-      description: Problem creation time
+      description: Datetime the problem was created.
       type: Date
     - contextPath: Freshservice.Problem.updated_at
-      description: Problem updated at.
+      description: Datetime the problem was updated.
       type: Date
   - arguments:
     - description: The problem ID to delete (use freshservice-problem-list to get the problem request ID).
@@ -1818,10 +1818,10 @@ script:
       description: Task description.
       type: String
     - contextPath: Freshservice.Problem.Task.created_at
-      description: Task creation time.
+      description: Datetime the task was created.
       type: Date
     - contextPath: Freshservice.Problem.Task.updated_at
-      description: Task updated at.
+      description: Datetime the task was updated.
       type: Date
     - contextPath: Freshservice.Problem.Task.closed_at
       description: Task closed at.
@@ -1889,10 +1889,10 @@ script:
       description: Task description.
       type: String
     - contextPath: Freshservice.Problem.Task.created_at
-      description: Task creation time.
+      description: Datetime the task was created.
       type: Date
     - contextPath: Freshservice.Problem.Task.updated_at
-      description: Task updated at.
+      description: Datetime the task was updated.
       type: Date
     - contextPath: Freshservice.Problem.Task.closed_at
       description: Task closed at.
@@ -1964,10 +1964,10 @@ script:
       description: Task description.
       type: String
     - contextPath: Freshservice.Problem.Task.created_at
-      description: Task creation time.
+      description: Datetime the task was created.
       type: Date
     - contextPath: Freshservice.Problem.Task.updated_at
-      description: Task updated at.
+      description: Datetime the task was updated.
       type: Date
     - contextPath: Freshservice.Problem.Task.closed_at
       description: Task closed at.
@@ -2072,10 +2072,10 @@ script:
       description: Change window ID.
       type: Unknown
     - contextPath: Freshservice.Change.created_at
-      description: Change creation time
+      description: Datetime the change was created.
       type: Date
     - contextPath: Freshservice.Change.updated_at
-      description: Change updated at.
+      description: Datetime the change was updated.
       type: Date
   - arguments:
     - description: The content of the change.
@@ -2261,10 +2261,10 @@ script:
       description: Change window ID.
       type: Unknown
     - contextPath: Freshservice.Change.created_at
-      description: Change creation time
+      description: Datetime the change was created.
       type: Date
     - contextPath: Freshservice.Change.updated_at
-      description: Change updated at.
+      description: Datetime the change was updated.
       type: Date
   - arguments:
     - description: The content of the change.
@@ -2450,10 +2450,10 @@ script:
       description: Change window ID.
       type: Unknown
     - contextPath: Freshservice.Change.created_at
-      description: Change creation time
+      description: Datetime the change was created.
       type: Date
     - contextPath: Freshservice.Change.updated_at
-      description: Change updated at.
+      description: Datetime the change was updated.
       type: Date
   - arguments:
     - description: The change ID to delete (use freshservice-change-list to get the change request ID).
@@ -2513,10 +2513,10 @@ script:
       description: Task description.
       type: String
     - contextPath: Freshservice.Change.Task.created_at
-      description: Task creation time.
+      description: Datetime the task was created.
       type: Date
     - contextPath: Freshservice.Change.Task.updated_at
-      description: Task updated at.
+      description: Datetime the task was updated.
       type: Date
     - contextPath: Freshservice.Change.Task.closed_at
       description: Task closed at.
@@ -2584,10 +2584,10 @@ script:
       description: Task description.
       type: String
     - contextPath: Freshservice.Change.Task.created_at
-      description: Task creation time.
+      description: Datetime the task was created.
       type: Date
     - contextPath: Freshservice.Change.Task.updated_at
-      description: Task updated at.
+      description: Datetime the task was updated.
       type: Date
     - contextPath: Freshservice.Change.Task.closed_at
       description: Task closed at.
@@ -2659,13 +2659,13 @@ script:
       description: Task description.
       type: String
     - contextPath: Freshservice.Change.Task.created_at
-      description: Task creation time.
+      description: Datetime the task was created.
       type: Date
     - contextPath: Freshservice.Change.Task.updated_at
-      description: Task updated at.
+      description: Datetime the task was updated.
       type: Date
     - contextPath: Freshservice.Change.Task.closed_at
-      description: Task closed at.
+      description: Datetime the task was closed.
       type: Unknown
     - contextPath: Freshservice.Change.Task.group_id
       description: Task group ID.
@@ -2770,10 +2770,10 @@ script:
       description: release work end date.
       type: Date
     - contextPath: Freshservice.Release.created_at
-      description: release creation time.
+      description: Datetime the release was created.
       type: Date
     - contextPath: Freshservice.Release.updated_at
-      description: release updated at.
+      description: Datetime the release was updated.
       type: Date
     - contextPath: Freshservice.Release.associated_change_ids
       description: release associated change IDs.
@@ -2929,10 +2929,10 @@ script:
       description: Release work end date.
       type: Date
     - contextPath: Freshservice.Release.created_at
-      description: release creation time.
+      description: Datetime the release was created.
       type: Date
     - contextPath: Freshservice.Release.updated_at
-      description: Release updated at.
+      description: Datetime the release was updated.
       type: Date
   - arguments:
     - auto: PREDEFINED
@@ -3060,10 +3060,10 @@ script:
       description: Release work end date.
       type: Date
     - contextPath: Freshservice.Release.created_at
-      description: release creation time.
+      description: Datetime the release was created.
       type: Date
     - contextPath: Freshservice.Release.updated_at
-      description: Release updated at.
+      description: Datetime the release was updated.
       type: Date
   - arguments:
     - description: The release ID (use freshservice-release-list to get the release request ID).
@@ -3123,13 +3123,13 @@ script:
       description: Task description.
       type: String
     - contextPath: Freshservice.Release.Task.created_at
-      description: Task creation time.
+      description: Datetime the task was created.
       type: Date
     - contextPath: Freshservice.Release.Task.updated_at
       description: Task updated at.
       type: Date
     - contextPath: Freshservice.Release.Task.closed_at
-      description: Task closed at.
+      description: Datetime the task was closed.
       type: Unknown
     - contextPath: Freshservice.Release.Task.group_id
       description: Task group ID.
@@ -3194,13 +3194,13 @@ script:
       description: Task description.
       type: String
     - contextPath: Freshservice.Release.Task.created_at
-      description: Task creation time.
+      description: Datetime the task was created.
       type: Date
     - contextPath: Freshservice.Release.Task.updated_at
-      description: Task updated at.
+      description: Datetime the task was updated.
       type: Date
     - contextPath: Freshservice.Release.Task.closed_at
-      description: Task closed at.
+      description: Datetime the task was closed.
       type: Unknown
     - contextPath: Freshservice.Release.Task.group_id
       description: Task group ID.
@@ -3269,13 +3269,13 @@ script:
       description: Task description.
       type: String
     - contextPath: Freshservice.Release.Task.created_at
-      description: Task creation time.
+      description: Datetime the task was created.
       type: Date
     - contextPath: Freshservice.Release.Task.updated_at
-      description: Task updated at.
+      description: Datetime the task was updated.
       type: Date
     - contextPath: Freshservice.Release.Task.closed_at
-      description: Task closed at.
+      description: Datetime the task was closed.
       type: Unknown
     - contextPath: Freshservice.Release.Task.group_id
       description: Task group ID.
@@ -3395,7 +3395,7 @@ script:
       description: Requester can see all tickets from associated departments.
       type: Boolean
     - contextPath: Freshservice.Requester.created_at
-      description: Requester creation time.
+      description: Datetime the requester was created.
       type: Date
     - contextPath: Freshservice.Requester.department_names
       description: Requester department names.
@@ -3556,7 +3556,7 @@ script:
       description: Agent can see all tickets from associated departments.
       type: Boolean
     - contextPath: Freshservice.Agent.created_at
-      description: Agent creation time.
+      description: Datetime the agent was created.
       type: Date
     - contextPath: Freshservice.Agent.department_names
       description: Agent department names.
@@ -3672,13 +3672,13 @@ script:
       description: Role name.
       type: String
     - contextPath: Freshservice.Role.created_at
-      description: Role creation time.
+      description: Datetime the role was created.
       type: Date
     - contextPath: Freshservice.Role.updated_at
-      description: Role updated at.
+      description: Datetime the role was updated.
       type: Date
     - contextPath: Freshservice.Role.default
-      description: Role default.
+      description: Whether this role is the default.
       type: Boolean
     - contextPath: Freshservice.Role.role_type
       description: Role type.
@@ -3746,10 +3746,10 @@ script:
       description: Vendor primary contact ID.
       type: Unknown
     - contextPath: Freshservice.Vendor.created_at
-      description: Vendor creation time.
+      description: Datetime the vendor was created.
       type: Date
     - contextPath: Freshservice.Vendor.updated_at
-      description: Vendor updated at.
+      description: Datetime the vendor was updated.
       type: Date
   - arguments:
     - description: 'Page number of paginated results. Minimum value: 1'
@@ -3805,10 +3805,10 @@ script:
       description: Software application publisher ID.
       type: Date
     - contextPath: Freshservice.Software.created_at
-      description: Software application creation time.
+      description: Datetime the software application was created.
       type: Date
     - contextPath: Freshservice.Software.updated_at
-      description: Software application updated at.
+      description: Datetime the software application was updated.
       type: Date
     - contextPath: Freshservice.Software.workspace_id
       description: Software application workspace ID.
@@ -3944,13 +3944,13 @@ script:
       description: Asset assigned_on.
       type: Unknown
     - contextPath: Freshservice.Asset.created_at
-      description: Asset creation time.
+      description: Datetime the asset was created.
       type: Date
     - contextPath: Freshservice.Asset.updated_at
-      description: Asset updated at.
+      description: Datetime the asset was updated.
       type: Date
     - contextPath: Freshservice.Asset.end_of_life
-      description: Asset end of life.
+      description: Dateime of asset end of life.
       type: Date
     - contextPath: Freshservice.Asset.workspace_id
       description: Asset workspace ID.
@@ -3994,10 +3994,10 @@ script:
       description: Purchase order expected delivery date.
       type: Date
     - contextPath: Freshservice.PurchaseOrder.created_at
-      description: Purchase order creation time.
+      description: Datetime the purchase order was created.
       type: Date
     - contextPath: Freshservice.PurchaseOrder.updated_at
-      description: Purchase order updated at.
+      description: Datetime the purchase order was updated.
       type: Date
     - contextPath: Freshservice.PurchaseOrder.vendor_id
       description: Purchase order vendor ID.
@@ -4053,10 +4053,10 @@ script:
       description: Agent group workspace ID.
       type: Number
     - contextPath: Freshservice.AgentGroup.created_at
-      description: Agent group creation time.
+      description: Datetime the agent group was created.
       type: Date
     - contextPath: Freshservice.AgentGroup.updated_at
-      description: Agent group updated at.
+      description: Datetime the agent group was updated.
       type: Date
     - contextPath: Freshservice.AgentGroup.agent_ids
       description: Agent group agent IDs.
@@ -4113,10 +4113,10 @@ script:
       description: Department domains.
       type: String
     - contextPath: Freshservice.Department.created_at
-      description: Department creation time.
+      description: Datetime the department was created.
       type: Date
     - contextPath: Freshservice.Department.updated_at
-      description: Department updated at.
+      description: Datetime the department was updated.
       type: Date
     - contextPath: Freshservice.Department.prime_user_id
       description: Department prime user ID.
@@ -4146,10 +4146,10 @@ script:
       description: Requester fields type.
       type: String
     - contextPath: Freshservice.RequesterField.created_at
-      description: Requester fields creation time.
+      description: Datetime the requester fields were created.
       type: Date
     - contextPath: Freshservice.RequesterField.updated_at
-      description: Requester fields updated at.
+      description: Datetime the requester fields were updated.
       type: Date
     - contextPath: Freshservice.RequesterField.label_for_requesters
       description: Requester field label for.
