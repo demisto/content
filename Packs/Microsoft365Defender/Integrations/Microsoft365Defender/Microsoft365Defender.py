@@ -505,14 +505,17 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
             response = client.incidents_list(from_date=last_run, skip=offset, timeout=timeout)
             raw_incidents = response.get('value')
             for incident in raw_incidents:
+                removed = False
                 if redirect_id := incident.get('redirectIncidentId'):
                     if redirect_id in grouped_incidents:
                         raw_incidents.remove(incident)
+                        removed = True
                     else:
                         grouped_incidents.append(redirect_id)
                         grouped_incident = client.get_incident(incident_id=redirect_id, timeout=timeout)
                         incident.update(grouped_incident)
-                incident.update(_get_meta_data_for_incident(incident))
+                if not removed:
+                    incident.update(_get_meta_data_for_incident(incident))
 
             incidents += [{
                 "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
