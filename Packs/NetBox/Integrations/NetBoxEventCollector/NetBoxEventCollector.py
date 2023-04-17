@@ -50,8 +50,6 @@ class Client(BaseClient):
             "limit": limit,
             "ordering": ordering,
             "id__gte": next_id,
-            "StartDate": "",
-            "EndDate": ""
         }
 
         while next_page and len(results) < limit:
@@ -218,7 +216,7 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     api_key = params.get("credentials", {}).get("password")
-    base_url = urljoin(params.get("url"), "/api/v1/EventLogging")
+    base_url = urljoin(params.get("url"), "/api/extras")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
