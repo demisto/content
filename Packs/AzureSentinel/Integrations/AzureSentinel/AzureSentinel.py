@@ -516,7 +516,7 @@ def get_modified_remote_data_command(client: AzureSentinelClient, args: Dict[str
 
     next_link = True
     while next_link:
-        full_url = next_link if isinstance(next_link, str) else None
+        full_url = next_link.replace('%20', ' ') if isinstance(next_link, str) else None
         params = None if full_url else {'$filter': f'properties/lastModifiedTimeUtc ge {last_update}'}
 
         response = client.http_request('GET', 'incidents', full_url=full_url, params=params)
