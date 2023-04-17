@@ -256,9 +256,9 @@ script:
           description: Page size. Can be 5, 10 or 20
           auto: PREDEFINED
           predefined:
-          - 5
-          - 10
-          - 20
+          - '5'
+          - '10'
+          - '20'
         - name: limit
           required: false
           description: Number of total results. Maximum 50. (If page and page_size was also provided, then it will be ignored.)
