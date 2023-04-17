@@ -74,6 +74,15 @@ MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "med
 INCREASE_LIMIT = 1.1
 '''Request Arguments Class'''
 
+def debug_function(func):
+    def wrapper(*args, **kwargs):
+        demisto.debug(f"edl: Entering function {func.__name__}")
+        results = func(*args, **kwargs)
+        demisto.debug(f"edl: Exiting function {func.__name__}")
+        return results
+    
+    return wrapper
+        
 
 class RequestArguments:
     CTX_QUERY_KEY = 'last_query'
@@ -236,6 +245,7 @@ def iterable_to_str(iterable: Iterable, delimiter: str = '\n') -> str:
     return str_res
 
 
+@debug_function
 def log_iocs_file_data(formatted_indicators: str, max_length: int = 100) -> None:
     """Prints a debug log of the first `max_length` characters in the formatted indicators data.
 
@@ -250,6 +260,7 @@ def log_iocs_file_data(formatted_indicators: str, max_length: int = 100) -> None
         demisto.debug("No data from IOC search.")
 
 
+@debug_function
 def create_new_edl(request_args: RequestArguments) -> str:
     """
     Gets indicators from XSOAR server using IndicatorsSearcher and formats them
@@ -284,6 +295,7 @@ def create_new_edl(request_args: RequestArguments) -> str:
             elif line not in iocs_set:
                 iocs_set.add(line)
                 formatted_indicators += line
+
     else:
         new_iocs_file = get_indicators_to_format(indicator_searcher, request_args)
         new_iocs_file.seek(0)
@@ -293,6 +305,7 @@ def create_new_edl(request_args: RequestArguments) -> str:
     return formatted_indicators
 
 
+@debug_function
 def replace_field_name_to_output_format(fields: str):
     """
      convert from the request name field to the name in the response from the server
@@ -308,6 +321,7 @@ def replace_field_name_to_output_format(fields: str):
     return new_list
 
 
+@debug_function
 def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_args: RequestArguments) ->\
         Union[IO, IO[str]]:
     """
@@ -361,6 +375,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
     return f
 
 
+@debug_function
 def create_json_out_format(list_fields: List, indicator: Dict, request_args: RequestArguments, not_first_call=True) -> str:
     """format the indicator to json format.
 
@@ -387,6 +402,7 @@ def create_json_out_format(list_fields: List, indicator: Dict, request_args: Req
     return '[' + json.dumps(indicator)
 
 
+@debug_function
 def create_mwg_out_format(indicator: dict, request_args: RequestArguments, headers_was_writen: bool) -> str:
     """format the indicator to mwg format.
 
@@ -417,6 +433,7 @@ def create_mwg_out_format(indicator: dict, request_args: RequestArguments, heade
     return '\n' + value + " " + sources_string
 
 
+@debug_function
 def create_proxysg_all_category_out_format(indicators_file: IO, files_by_category: dict):
     """write all indicators to file in proxysg format.
 
@@ -440,6 +457,7 @@ def create_proxysg_all_category_out_format(indicators_file: IO, files_by_categor
     return indicators_file
 
 
+@debug_function
 def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_args: RequestArguments) -> dict:
     """format the indicator to proxysg.
 
@@ -468,6 +486,7 @@ def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_
     return files_by_category
 
 
+@debug_function
 def add_indicator_to_category(indicator: str, category: str, files_by_category: Dict):
     if category in files_by_category.keys():
         files_by_category[category].write(indicator + '\n')
@@ -479,6 +498,7 @@ def add_indicator_to_category(indicator: str, category: str, files_by_category: 
     return files_by_category
 
 
+@debug_function
 def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, request_args: RequestArguments):
     """format the ioc to csv format.
 
@@ -513,6 +533,7 @@ def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, requ
         return "\n" + list_to_str(fields_value_list, map_func=lambda val: f'"{val}"')
 
 
+@debug_function
 def ip_groups_to_cidrs(ip_range_groups: Iterable):
     """Collapse ip groups list to CIDRs
 
@@ -535,6 +556,7 @@ def ip_groups_to_cidrs(ip_range_groups: Iterable):
     return ip_ranges
 
 
+@debug_function
 def ip_groups_to_ranges(ip_range_groups: Iterable):
     """Collapse ip groups to ranges.
 
@@ -556,6 +578,7 @@ def ip_groups_to_ranges(ip_range_groups: Iterable):
     return ip_ranges
 
 
+@debug_function
 def ips_to_ranges(ips: Iterable, collapse_ips: str):
     """Collapse IPs to Ranges or CIDRs.
 
@@ -630,6 +653,7 @@ def is_valid_cidr(cidr: str) -> bool:
             return False
 
 
+@debug_function
 def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) -> str:
     """
     Transforms a list to an str, with a custom delimiter between each list item
@@ -643,6 +667,7 @@ def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) 
     return str_res
 
 
+@debug_function
 def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO, IO[str]]:
     """
     Create a list in new file of formatted_indicators
@@ -757,7 +782,7 @@ def get_outbound_mimetype(request_args: RequestArguments) -> str:
     else:
         return MIMETYPE_TEXT
 
-
+@debug_function
 def get_edl_on_demand():
     """
     Use the local file system to store the on-demand result, using a lock to
@@ -768,13 +793,24 @@ def get_edl_on_demand():
         ctx.pop(EDL_ON_DEMAND_KEY, None)
         request_args = RequestArguments.from_context_json(ctx)
         edl = create_new_edl(request_args)
-        with open(EDL_ON_DEMAND_CACHE_PATH, 'w') as file:
-            file.write(edl)
+        try:
+            demisto.debug("edl: Start writing EDL data to cache")
+            with open(EDL_ON_DEMAND_CACHE_PATH, 'w') as file:
+                file.write(edl)
+        except Exception as e:
+            demisto.debug(f"edl: Error in writing to file: {str(e)}")
+            raise e
+        demisto.debug("edl: End writing EDL data to cache")
         set_integration_context(ctx)
     else:
-        demisto.debug("Reading EDL data from cache")
-        with open(EDL_ON_DEMAND_CACHE_PATH, 'r') as file:
-            edl = file.read()
+        demisto.debug("edl: Start reading EDL data from cache")
+        try:
+            with open(EDL_ON_DEMAND_CACHE_PATH, 'r') as file:
+                edl = file.read()
+        except Exception as e:
+            demisto.debug(f"edl: Error in reading to file: {str(e)}")
+            raise e
+        demisto.debug("edl: End reading EDL data from cache")
     return edl
 
 
@@ -851,7 +887,7 @@ def route_edl() -> Response:
             edl = f"{prepend_str}\n{edl}"
     mimetype = get_outbound_mimetype(request_args)
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
-    demisto.debug(f'Returning edl of size: [{edl_size}], created: [{created}], query time seconds: [{query_time}],'
+    demisto.debug(f'edl: Returning edl of size: [{edl_size}], created: [{created}], query time seconds: [{query_time}],'
                   f' max age: [{max_age}], etag: [{etag}]')
     resp = Response(edl, status=200, mimetype=mimetype, headers=[
         ('X-EDL-Created', created.isoformat()),
@@ -987,6 +1023,7 @@ def test_module(_: Dict, params: Dict):
     return 'ok', {}, {}
 
 
+@debug_function
 def update_edl_command(args: Dict, params: Dict):
     """
     Updates the context to update the EDL values on demand the next time it runs
