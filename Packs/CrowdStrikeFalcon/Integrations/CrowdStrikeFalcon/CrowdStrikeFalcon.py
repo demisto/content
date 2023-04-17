@@ -303,7 +303,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 reason=reason
             )
             # try to create a new token
-            if res.status_code == 403 and get_token_flag:
+            if res.status_code in (401, 403) and get_token_flag:
                 LOG(err_msg)
                 token = get_token(new_token=True)
                 headers['Authorization'] = 'Bearer {}'.format(token)
@@ -1438,7 +1438,10 @@ def search_device(filter_operator='AND'):
     """
         Searches for devices using the argument provided by the command execution. Returns empty
         result if no device was found
+
         :param: filter_operator: the operator that should be used between filters, default is 'AND'
+        :param: exact_hostname: Whether to return exact hostname
+
         :return: Search device response json
     """
     args = demisto.args()
@@ -2086,6 +2089,7 @@ def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
 
 def fetch_incidents():
     incidents = []  # type:List
+    detections = []  # type:List
 
     last_run = demisto.getLastRun()
     demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
@@ -2123,24 +2127,22 @@ def fetch_incidents():
                 for detection in demisto.get(raw_res, "resources"):
                     detection['incident_type'] = incident_type
                     incident = detection_to_incident(detection)
-                    incident_date = incident['occurred']
 
-                    incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
+                    detections.append(incident)
 
-                    incidents.append(incident)
-
-            if len(incidents) == INCIDENTS_PER_FETCH:
+            if len(detections) == INCIDENTS_PER_FETCH:
                 current_fetch_info_detections['offset'] = offset + INCIDENTS_PER_FETCH
             else:
                 current_fetch_info_detections['offset'] = 0
-            incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=current_fetch_info_detections,
-                                                                 fetch_limit=fetch_limit, id_field='name')
+            detections = filter_incidents_by_duplicates_and_limit(incidents_res=detections,
+                                                                  last_run=current_fetch_info_detections,
+                                                                  fetch_limit=fetch_limit, id_field='name')
 
-            for incident in incidents:
-                occurred = dateparser.parse(incident["occurred"])
+            for detection in detections:
+                occurred = dateparser.parse(detection["occurred"])
                 if occurred:
-                    incident["occurred"] = occurred.strftime(DATE_FORMAT)
-            last_run = update_last_run_object(last_run=current_fetch_info_detections, incidents=incidents,
+                    detection["occurred"] = occurred.strftime(DATE_FORMAT)
+            last_run = update_last_run_object(last_run=current_fetch_info_detections, incidents=detections,
                                               fetch_limit=fetch_limit,
                                               start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
                                               look_back=look_back,
@@ -2210,7 +2212,7 @@ def fetch_incidents():
     demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch incidents. Fetched {len(incidents)}")
 
     demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents])
-    return incidents
+    return incidents + detections
 
 
 def upload_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=None,
@@ -2659,6 +2661,11 @@ def get_endpoint_command():
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
+
+    # filter hostnames that will match the exact hostnames including case-sensitive
+    if hostnames := argToList(args.get('hostname')):
+        lowercase_hostnames = set(hostname.lower() for hostname in hostnames)
+        devices = [device for device in devices if (device.get('hostname') or '').lower() in lowercase_hostnames]
 
     standard_endpoints = generate_endpoint_by_contex_standard(devices)
 

@@ -34,7 +34,8 @@ class URLCheck(object):
     This class will build and validate a URL based on "URL Living Standard" (https://url.spec.whatwg.org)
     """
     sub_delims = ("!", "$", "&", "'", "(", ")", "*", "+", ",", ";", "=")
-    brackets = ("\"", "'", "[", "]", "{", "}", "(", ")", ",")
+    brackets = ("\"", "'", "[", "]", "{", "}", "(", ")")
+
     bracket_pairs = {
         '{': '}',
         '(': ')',
@@ -619,6 +620,7 @@ class URLFormatter(object):
 
         url = self.correct_and_refang_url(self.original_url)
         url = self.strip_wrappers(url)
+        url = self.correct_and_refang_url(url)
 
         try:
             self.output = URLCheck(url).output
@@ -706,7 +708,9 @@ class URLFormatter(object):
         schemas = re.compile("(meow|hxxp)", re.IGNORECASE)
         url = url.replace("[.]", ".")
         url = url.replace("[:]", ":")
-        url = re.sub(schemas, "http", url)
+        lower_url = url.lower()
+        if lower_url.startswith("hxxp") or lower_url.startswith('meow'):
+            url = re.sub(schemas, "http", url, count=1)
 
         def fix_scheme(match: Match) -> str:
             return re.sub(":(\\\\|/)*", "://", match.group(0))
@@ -734,8 +738,7 @@ def _is_valid_cidr(cidr: str) -> bool:
 def main():
     raw_urls = demisto.args().get('input')
 
-    if isinstance(raw_urls, str):
-        raw_urls = raw_urls.split(",")
+    raw_urls = argToList(raw_urls, separator='|')
 
     formatted_urls: List[str] = []
 

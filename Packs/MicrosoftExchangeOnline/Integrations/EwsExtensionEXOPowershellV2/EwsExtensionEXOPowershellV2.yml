@@ -569,7 +569,7 @@ script:
   runonce: false
   script: ''
   type: powershell
-  dockerimage: demisto/pwsh-exchange:1.0.0.49040
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
 fromversion: 5.5.0
 tests:
 - playbook-O365-EWS-Extension-Powershell-Online-V2-Test
