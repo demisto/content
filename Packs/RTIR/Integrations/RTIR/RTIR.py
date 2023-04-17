@@ -62,7 +62,8 @@ def http_request(method, suffix_url, data=None, files=None, query=None):
     if query:
         params.update(query)
 
-    response = SESSION.request(method, url, data=data, params=params, files=files, headers=HEADERS)  # type: ignore
+    response = SESSION.request(method, url, data=data, params=params, files=files,
+                               headers=HEADERS)  # type: ignore
 
     # handle request failure
     if response.status_code not in {200}:
@@ -481,7 +482,7 @@ def edit_ticket():
             equal_index = cf.index('=')
             key = 'CF-{}: '.format(cf[:equal_index])
             value = cf[equal_index + 1:]
-            content = content + key + value + '\n'
+            content += '\n' + key + value
 
     if arguments_given:
         encoded = "content=" + urllib.parse.quote_plus(content.encode('utf-8'))

@@ -2,7 +2,7 @@
     "iocs": [
         {
             "CustomFields": {
-                "sha1": "some_sha1_2"
+                "sha1": "2222222222222222222222222222222222222222"
             },
             "calculatedTime": "2021-12-28T14:58:19.704369+02:00",
             "comments": [
@@ -49,11 +49,11 @@
             ],
             "source": "DBot",
             "timestamp": "2021-12-28T14:58:19.711496+02:00",
-            "value": "some_sha1_2",
+            "value": "2222222222222222222222222222222222222222",
             "version": 1
         },{
             "CustomFields": {
-                "sha1": "some_sha1_1"
+                "sha1": "1111111111111111111111111111111111111111"
             },
             "calculatedTime": "2021-12-28T14:58:19.704886+02:00",
             "comments": [
@@ -100,12 +100,12 @@
             ],
             "source": "DBot",
             "timestamp": "2021-12-28T14:58:19.712448+02:00",
-            "value": "some_sha1_1",
+            "value": "1111111111111111111111111111111111111111",
             "version": 1
         },
         {
             "CustomFields": {
-                "sha1": "some_sha1_3"
+                "sha1": "3333333333333333333333333333333333333333"
             },
             "calculatedTime": "2021-12-28T14:58:19.703576+02:00",
             "comments": [
@@ -152,12 +152,12 @@
             ],
             "source": "DBot",
             "timestamp": "2021-12-28T14:58:19.711459+02:00",
-            "value": "some_sha1_3",
+            "value": "3333333333333333333333333333333333333333",
             "version": 1
         },
         {
             "CustomFields": {
-                "sha1": "some_sha1_4"
+                "sha1": "4444444444444444444444444444444444444444"
             },
             "calculatedTime": "2021-12-28T14:58:19.703564+02:00",
             "comments": [
@@ -204,14 +204,14 @@
             ],
             "source": "DBot",
             "timestamp": "2021-12-28T14:58:19.711239+02:00",
-            "value": "some_sha1_4",
+            "value": "4444444444444444444444444444444444444444",
             "version": 1
         },
         {
             "CustomFields": {
                 "category": "Payload delivery",
                 "description": "Trojanized sftp",
-                "sha1": "some_sha1_5",
+                "sha1": "5555555555555555555555555555555555555555",
                 "updateddate": "2021-10-08T11:36:01+03:00"
             },
             "aggregatedReliability": "F - Reliability cannot be judged",
@@ -274,7 +274,7 @@
                     "fields": {
                         "category": "Payload delivery",
                         "description": "Trojanized sftp",
-                        "sha1": "some_sha1_5",
+                        "sha1": "5555555555555555555555555555555555555555",
                         "updateddate": "2021-10-08T11:36:01+03:00"
                     },
                     "isEnrichment": false,
@@ -289,7 +289,7 @@
                     "sourceInstance": "Some Feed_instance_1",
                     "timestamp": "0001-01-01T00:00:00Z",
                     "type": "File",
-                    "value": "some_sha1_5"
+                    "value": "5555555555555555555555555555555555555555"
                 }
             },
             "score": 0,
@@ -304,13 +304,13 @@
                 "Some Feed_instance_1"
             ],
             "timestamp": "2021-12-14T17:45:38.40295+02:00",
-            "value": "some_sha1_5",
+            "value": "5555555555555555555555555555555555555555",
             "version": 21
         },
         {
             "CustomFields": {
                 "category": "Payload installation",
-                "sha1": "some_sha1_6",
+                "sha1": "6666666666666666666666666666666666666666",
                 "updateddate": "2019-07-29T17:33:29+03:00"
             },
             "aggregatedReliability": "F - Reliability cannot be judged",
@@ -372,7 +372,7 @@
                     "fetchTime": "2021-12-27T16:11:11+02:00",
                     "fields": {
                         "category": "Payload installation",
-                        "sha1": "some_sha1_6",
+                        "sha1": "6666666666666666666666666666666666666666",
                         "updateddate": "2019-07-29T17:33:29+03:00"
                     },
                     "isEnrichment": false,
@@ -387,7 +387,7 @@
                     "sourceInstance": "Some Feed_instance_1",
                     "timestamp": "0001-01-01T00:00:00Z",
                     "type": "File",
-                    "value": "some_sha1_6"
+                    "value": "6666666666666666666666666666666666666666"
                 }
             },
             "score": 0,
@@ -402,14 +402,14 @@
                 "Some Feed_instance_1"
             ],
             "timestamp": "2021-12-14T17:45:34.792287+02:00",
-            "value": "some_sha1_6",
+            "value": "6666666666666666666666666666666666666666",
             "version": 21
         },
         {
             "CustomFields": {
                 "category": "Payload delivery",
                 "description": "Rootkit 2",
-                "sha1": "some_sha1_7",
+                "sha1": "7777777777777777777777777777777777777777",
                 "updateddate": "2021-10-08T11:36:01+03:00"
             },
             "aggregatedReliability": "F - Reliability cannot be judged",
@@ -472,7 +472,7 @@
                     "fields": {
                         "category": "Payload delivery",
                         "description": "Rootkit 2",
-                        "sha1": "some_sha1_7",
+                        "sha1": "7777777777777777777777777777777777777777",
                         "updateddate": "2021-10-08T11:36:01+03:00"
                     },
                     "isEnrichment": false,
@@ -487,7 +487,7 @@
                     "sourceInstance": "Some Feed_instance_1",
                     "timestamp": "0001-01-01T00:00:00Z",
                     "type": "File",
-                    "value": "some_sha1_7"
+                    "value": "7777777777777777777777777777777777777777"
                 }
             },
             "score": 0,
@@ -502,7 +502,7 @@
                 "Some Feed_instance_1"
             ],
             "timestamp": "2021-12-14T17:45:38.397583+02:00",
-            "value": "some_sha1_7",
+            "value": "7777777777777777777777777777777777777777",
             "version": 21
         }
     ],
