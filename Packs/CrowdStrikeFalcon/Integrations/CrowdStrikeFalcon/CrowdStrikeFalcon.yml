@@ -2998,10 +2998,10 @@ script:
       description: Indicate who last modified the rule.
       type: String
     - contextPath: CrowdStrike.MLExclusion.created_on
-      description: Indicate who created the rule.
+      description: The date when the exclusion rule was created.
       type: Date
     - contextPath: CrowdStrike.MLExclusion.created_by
-      description: The date when the exclusion rule was created.
+      description: Indicate who created the rule.
       type: String
   - arguments:
     - description: The ID of the exclusion to update.
@@ -3072,10 +3072,10 @@ script:
       description: Indicate who last modified the rule.
       type: String
     - contextPath: CrowdStrike.MLExclusion.created_on
-      description: Indicate who created the rule.
+      description: The date when the exclusion rule was created.
       type: Date
     - contextPath: CrowdStrike.MLExclusion.created_by
-      description: The date when the exclusion rule was created.
+      description: Indicate who created the rule.
       type: String
   - arguments:
       - description: A comma-separated list of exclusion IDs to delete.
@@ -3173,10 +3173,10 @@ script:
       description: Indicate who last modified the rule.
       type: String
     - contextPath: CrowdStrike.MLExclusion.created_on
-      description: Indicate who created the rule.
+      description: The date when the exclusion rule was created.
       type: Date
     - contextPath: CrowdStrike.MLExclusion.created_by
-      description: The date when the exclusion rule was created.
+      description: Indicate who created the rule.
       type: String
   - arguments:
     - description: Name of the exclusion.
@@ -3271,10 +3271,10 @@ script:
       description: Indicate who last modified the rule.
       type: String
     - contextPath: CrowdStrike.IOAExclusion.created_on
-      description: Indicate who created the rule.
+      description: The date when the exclusion rule was created.
       type: Date
     - contextPath: CrowdStrike.IOAExclusion.created_by
-      description: The date when the exclusion rule was created.
+      description: Indicate who created the rule.
       type: String
   - arguments:
     - description: ID of the exclusion to update.
@@ -3372,10 +3372,10 @@ script:
       description: Indicate who last modified the rule.
       type: String
     - contextPath: CrowdStrike.IOAExclusion.created_on
-      description: Indicate who created the rule.
+      description: The date when the exclusion rule was created.
       type: Date
     - contextPath: CrowdStrike.IOAExclusion.created_by
-      description: The date when the exclusion rule was created.
+      description: Indicate who created the rule.
       type: String
   - arguments:
       - description: A comma-separated list of exclusion IDs to delete.
@@ -3465,10 +3465,10 @@ script:
       description: Indicate who last modified the rule.
       type: String
     - contextPath: CrowdStrike.IOAExclusion.created_on
-      description: Indicate who created the rule.
+      description: The date when the exclusion rule was created.
       type: Date
     - contextPath: CrowdStrike.IOAExclusion.created_by
-      description: The date when the exclusion rule was created.
+      description: Indicate who created the rule.
       type: String
   - arguments:
     - description: A comma-separated list of quarantined file IDs to retrieve.

@@ -3080,14 +3080,8 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
-            value:
-              complex:
-                root: CrowdStrike.MLExclusion
-                accessor: id
-            iscontext: true
-          right:
             value:
               complex:
                 root: CrowdStrike.MLExclusion
@@ -3283,14 +3277,8 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
-            value:
-              complex:
-                root: CrowdStrike.IOAExclusion
-                accessor: id
-            iscontext: true
-          right:
             value:
               complex:
                 root: CrowdStrike.IOAExclusion
