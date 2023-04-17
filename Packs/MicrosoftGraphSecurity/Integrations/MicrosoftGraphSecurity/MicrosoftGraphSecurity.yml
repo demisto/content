@@ -13,7 +13,7 @@ configuration:
   type: 0
   section: Connect
 - defaultvalue: API v2
-  display: MS graph security version
+  display: MS graph security API version
   name: api_version
   required: true
   type: 15
@@ -140,7 +140,7 @@ configuration:
   type: 0
   section: Collect
 - display: Fetch incidents of the given providers only.
-  additionalinfo: Used with API V1, Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provioder}". If empty, incidents of all providers will be fetched.
+  additionalinfo: Relevant only for V1. Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provioder}". If empty, incidents of all providers will be fetched.
   hidden: false
   name: fetch_providers
   required: false
@@ -148,7 +148,7 @@ configuration:
   section: Collect
   advanced: true
 - display: Fetch incidents of the given service sources only.
-  additionalinfo: Used with API V2, Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftCloudAppSecurity",. If empty, incidents of all providers will be fetched.
+  additionalinfo: Relevant only for V2. Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftCloudAppSecurity",. If empty, incidents of all providers will be fetched.
   hidden: false
   name: fetch_service_sources
   required: false
