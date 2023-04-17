@@ -7128,6 +7128,14 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
     edl = args.get('dns_signature_source')
     action = args.get('action')
     packet_capture = args.get('packet_capture', 'disable')
+    
+    vsys = args.get('vsys')
+    if VSYS and not vsys:
+        vsys = VSYS
+    elif not vsys:
+        vsys = 'vsys1'
+        
+    # params for dvice group
     params = {
         'action': 'set',
         'type': 'config',
@@ -7141,6 +7149,10 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
                    f'</lists>'
                    f'</botnet-domains>'
     }
+    if VSYS:  # if singel firewall, modify the xpath param
+        params['xpath'] = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{vsys.lower()}']" \
+         f"/profiles/spyware/entry[@name='{anti_spy_ware_name}']"
+            
     result = http_request(
         URL,
         'POST',
