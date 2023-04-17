@@ -29,7 +29,8 @@ def test_find_zombie_processes(mocker):
 
 def test_sane_pdf_report(mocker):
     import SanePdfReport
-    # mocker.patch.object(SanePdfReport, 'MD_HTTP_PORT', 10889)
+    # changing the port number just to make sure it has no conflicts with other integrations/scripts
+    mocker.patch.object(SanePdfReport, 'MD_HTTP_PORT', 10889)
     mocker.patch.object(demisto, 'args', return_value={
         'sane_pdf_report_base64':
         'W3sidHlwZSI6Im1hcmtkb3duIiwiZGF0YSI6eyJ0ZXh0IjoiaGVsbG8gd29ybGQiLCJncm91cHMiOlt7Im5hbWUiOiIiLCJkYXRhIjpbMl0s'
