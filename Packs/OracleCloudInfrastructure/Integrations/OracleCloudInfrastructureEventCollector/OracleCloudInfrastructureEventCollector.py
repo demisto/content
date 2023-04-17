@@ -244,7 +244,7 @@ def add_millisecond_to_timestamp(timestamp: str) -> str:
 
 
 def get_events(
-        client: Client, first_fetch_time: datetime, max_fetch: int) -> tuple[
+        client: Client, first_fetch_time: datetime, max_fetch: int, push_events_on_error: bool) -> tuple[
         list[dict[str, Any]],
         str]:
     """Get events from an oracle cloud infrastructure tenant.
@@ -255,6 +255,7 @@ def get_events(
         client (Client): Client object for requests.
         first_fetch_time (datetime): The start time to fetch events from.
         max_fetch (int): The limit of events to fetch.
+        push_events_on_error (bool): Whether to push available fetched events to XSIAM if an error occurred while fetching events.
 
     Raises:
         DemistoException: If an error occurred while fetching events.
@@ -281,8 +282,10 @@ def get_events(
         last_event_time = get_last_event_time(events, first_fetch_time)
         events = add_time_key_to_events(events)
 
+    # handle the case where an error occurred while fetching events,
+    # and there are currently available events that can and need to be sent to XSIAM.
     except Exception as e:
-        if events:
+        if events and push_events_on_error:
             last_event_time = get_last_event_time(events, first_fetch_time)
             events = add_time_key_to_events(events)
             handle_fetched_events(events, last_event_time)
@@ -356,6 +359,7 @@ def main():
     max_fetch = arg_to_number(params.get('max_fetch')) or MAX_EVENTS_TO_FETCH
     first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME)
     first_fetch_time = get_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
+    should_push_events = argToBoolean(args.get('should_push_events'))
     demisto.info(f'OCI: Command being called is {command}')
 
     try:
@@ -377,9 +381,10 @@ def main():
             return_results(test_module(client))
 
         elif command in ('oracle-cloud-infrastructure-get-events', 'fetch-events'):
-            events, last_event_time = get_events(client, first_fetch_time, max_fetch)
+            push_events = (command == 'fetch-events' or should_push_events)
+            events, last_event_time = get_events(client, first_fetch_time, max_fetch, push_events_on_error=push_events)
 
-            if command == 'fetch-events' or args.get('should_push_events'):
+            if push_events:
                 handle_fetched_events(events, last_event_time)
 
             elif command == 'oracle-cloud-infrastructure-get-events':
