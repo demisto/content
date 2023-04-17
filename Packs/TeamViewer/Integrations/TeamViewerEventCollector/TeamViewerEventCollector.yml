@@ -8,21 +8,24 @@ configuration:
   name: url
   required: true
   type: 0
-- display: ""
-  displaypassword: Script Token
+  section: Connect
+- displaypassword: Script Token
   additionalinfo: The Script Token to use for connection
   name: credentials
   required: true
   hiddenusername: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch

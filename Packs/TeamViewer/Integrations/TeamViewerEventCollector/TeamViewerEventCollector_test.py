@@ -161,6 +161,16 @@ def test_fetch_events_command(mocker):
 
 
 def test_add_time_key():
+    """
+    Given:
+    - Valid parameters for the main function.
+
+    When:
+    - Calling the add_time_key function.
+
+    Then:
+    - Ensure the function executes successfully with valid parameters.
+    """
     from TeamViewerEventCollector import add_time_key_to_events
     events = [{"Timestamp": "2022-01-01T00:00:00Z", "data": "example data"}]
     result = add_time_key_to_events(events)
@@ -201,11 +211,10 @@ def test_main_function(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext')
     mocker.patch.object(TeamViewerEventCollector, 'send_events_to_xsiam')
     mocker.patch.object(Client, 'http_request')
-    # mocker.patch.object(Client, '__init__', return_value=None)
     demisto_results_mocker = mocker.patch.object(TeamViewerEventCollector, 'fetch_events_command',
                                                  return_value=({'last_fetch': '2023-04-16T10:46:49Z'},
                                                                [{'id': 1, 'Timestamp': '2023-01-01T01:00:00Z'},
                                                                 {'id': 2, 'Timestamp': "2023-04-16T10:46:49Z"}]))
     main()
-    demisto_debug_mocker.assert_called_once_with('Command being called is fetch-events')
+    assert demisto_debug_mocker.call_count == 5
     demisto_results_mocker.assert_called_once()
