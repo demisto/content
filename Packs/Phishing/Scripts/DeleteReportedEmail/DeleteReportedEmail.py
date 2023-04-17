@@ -192,7 +192,7 @@ def security_and_compliance_delete_mail(args: dict, to_user_id: str, from_user_i
 
     """
     check_demisto_version()
-    query = f'from:{from_user_id} AND subject:{email_subject}'
+    query = f'from:{from_user_id} AND subject:\"{email_subject}\"'
     search_name = args.get('search_name', '')
 
     if was_email_already_deleted({'message_id': message_id}, '')[0] == 'Success':
