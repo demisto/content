@@ -1,79 +1,78 @@
-[
-	{
-		"id": "Graph Security Alert",
-		"version": 2,
-		"cacheVersn": 0,
-		"modified": "2023-04-16T14:03:06.41990655Z",
-		"packID": "",
-		"packName": "",
-		"itemVersion": "",
-		"fromServerVersion": "",
-		"toServerVersion": "",
-		"definitionId": "",
-		"vcShouldIgnore": false,
-		"vcShouldKeepItemLegacyProdMachine": false,
-		"commitMessage": "",
-		"shouldCommit": false,
-		"locked": false,
-		"name": "Graph Security Alert",
-		"prevName": "Graph Security Alert",
-		"color": "#E5CF7C",
-		"hours": 0,
-		"days": 0,
-		"weeks": 0,
-		"hoursR": 0,
-		"daysR": 0,
-		"weeksR": 0,
-		"system": false,
-		"readonly": false,
-		"default": false,
-		"autorun": false,
-		"preProcessingScript": "",
-		"closureScript": "",
-		"disabled": false,
-		"reputationCalc": 0,
-		"onChangeRepAlg": 0,
-		"layout": "",
-		"detached": false,
-		"extractSettings": {
-			"mode": "Specific",
-			"fieldCliNameToExtractSettings": {
-				"alertid": {
-					"extractAsIsIndicatorTypeId": "",
-					"isExtractingAllIndicatorTypes": false,
-					"extractIndicatorTypesIDs": []
-				},
-				"classification": {
-					"extractAsIsIndicatorTypeId": "",
-					"isExtractingAllIndicatorTypes": false,
-					"extractIndicatorTypesIDs": []
-				},
-				"graphsecurityid": {
-					"extractAsIsIndicatorTypeId": "",
-					"isExtractingAllIndicatorTypes": false,
-					"extractIndicatorTypesIDs": []
-				},
-				"microsoftalertdetermination": {
-					"extractAsIsIndicatorTypeId": "",
-					"isExtractingAllIndicatorTypes": false,
-					"extractIndicatorTypesIDs": []
-				},
-				"microsoftservicesource": {
-					"extractAsIsIndicatorTypeId": "",
-					"isExtractingAllIndicatorTypes": false,
-					"extractIndicatorTypesIDs": []
-				},
-				"sourceid": {
-					"extractAsIsIndicatorTypeId": "",
-					"isExtractingAllIndicatorTypes": false,
-					"extractIndicatorTypesIDs": []
-				},
-				"sourcestatus": {
-					"extractAsIsIndicatorTypeId": "",
-					"isExtractingAllIndicatorTypes": false,
-					"extractIndicatorTypesIDs": []
-				}
+{
+	"id": "Graph Security Alert",
+	"version": 2,
+	"cacheVersn": 0,
+	"modified": "2023-04-16T14:03:06.41990655Z",
+	"packID": "",
+	"packName": "",
+	"itemVersion": "",
+	"fromServerVersion": "",
+	"toServerVersion": "",
+	"definitionId": "",
+	"vcShouldIgnore": false,
+	"vcShouldKeepItemLegacyProdMachine": false,
+	"commitMessage": "",
+	"shouldCommit": false,
+	"locked": false,
+	"name": "Graph Security Alert",
+	"prevName": "Graph Security Alert",
+	"color": "#E5CF7C",
+	"hours": 0,
+	"days": 0,
+	"weeks": 0,
+	"hoursR": 0,
+	"daysR": 0,
+	"weeksR": 0,
+	"system": false,
+	"readonly": false,
+	"default": false,
+	"autorun": false,
+	"preProcessingScript": "",
+	"closureScript": "",
+	"disabled": false,
+	"reputationCalc": 0,
+	"onChangeRepAlg": 0,
+	"layout": "",
+	"detached": false,
+    "fromVersion": "6.0.0",
+	"extractSettings": {
+		"mode": "Specific",
+		"fieldCliNameToExtractSettings": {
+			"alertid": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": false,
+				"extractIndicatorTypesIDs": []
+			},
+			"classification": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": false,
+				"extractIndicatorTypesIDs": []
+			},
+			"graphsecurityid": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": false,
+				"extractIndicatorTypesIDs": []
+			},
+			"microsoftalertdetermination": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": false,
+				"extractIndicatorTypesIDs": []
+			},
+			"microsoftservicesource": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": false,
+				"extractIndicatorTypesIDs": []
+			},
+			"sourceid": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": false,
+				"extractIndicatorTypesIDs": []
+			},
+			"sourcestatus": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": false,
+				"extractIndicatorTypesIDs": []
 			}
 		}
 	}
-]
+}
