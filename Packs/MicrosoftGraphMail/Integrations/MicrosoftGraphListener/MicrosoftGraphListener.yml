@@ -755,7 +755,7 @@ script:
     execution: false
     name: msgraph-mail-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.54410
+  dockerimage: demisto/crypto:1.0.0.54987
   isfetch: true
   runonce: false
   script: ''
