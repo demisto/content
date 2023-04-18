@@ -27,7 +27,6 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
     def http_request(self, params=None, body=None):
-        demisto.debug('http request')
         return self._http_request(
             method='POST', headers=self._headers, params=params, data=body)
 
@@ -47,22 +46,22 @@ def search_events(client: Client, limit: int,
     Returns:
         list: A list containing the events
     """
-    demisto.debug('search_events start')
     results: List[Dict] = []
     token_next_page = None
     next_page = True
     params: Dict[str, Any] = {}
     while next_page and len(results) < limit:
         response = client.http_request(params=params, body=body)
+        demisto.debug(f'http response:\n {response}')
         results += response.get('AuditEvents', [])
         next_page = response.get('ContinuationToken')
         if token_next_page := response.get('ContinuationToken'):
             params['ContinuationToken'] = token_next_page
         else:
             next_page = False
+            demisto.debug('finished fetching http response')
     events: List[Dict[str, Any]] = results[:limit]
     hr = tableToMarkdown(name='Events', t=events) if events else 'No events found.'
-    demisto.debug('search_events end')
     return events, CommandResults(readable_output=hr)
 
 
@@ -109,16 +108,16 @@ def fetch_events_command(
         list: List of events that will be created in XSIAM.
     """
     # In the first fetch, get the ids for the first fetch time
-    demisto.debug('fetch_events_command start')
     last_fetch = last_run.get('last_fetch')
     last_fetch = first_fetch_time if last_fetch is None else datetime.strptime(last_fetch, DATE_FORMAT)
+    demisto.debug(f'last fetch :\n {last_fetch}')
     body = {
         'StartDate': (last_fetch + timedelta(milliseconds=1)).strftime(DATE_FORMAT),
         'EndDate': datetime.utcnow().strftime(DATE_FORMAT)
     }
+    demisto.debug(f'starting fetch events with time params:\n {body}')
     events, _ = search_events(client=client, limit=max_fetch, body=body)
     next_run = {'last_fetch': max(events, key=lambda x: x['Timestamp'])['Timestamp']}
-    demisto.debug('fetch_events_command end')
     return next_run, events
 
 
@@ -150,13 +149,11 @@ def main() -> None:
     base_url = urljoin(params.get('url'), '/api/v1/EventLogging')
     verify_certificate = not params.get('insecure', True)
     proxy = params.get('proxy', False)
-    demisto.debug('start')
-    # How much time before the first fetch to retrieve events
     first_fetch_time: datetime = arg_to_datetime(
         arg=params.get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True,
-    )  # type: ignore   # datetime.datetime(2022, 1, 1, 00, 00, 00, 0)
+    )  # type: ignore
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -170,7 +167,6 @@ def main() -> None:
             return_results(result)
 
         elif command in ('teamviewer-get-events', 'fetch-events'):
-            demisto.debug('command selection')
             if command == 'teamviewer-get-events':
                 should_push_events = argToBoolean(args.get('should_push_events'))
                 events, results = search_events(
@@ -184,7 +180,7 @@ def main() -> None:
                 return_results(results)
 
             else:
-                demisto.debug('command == fetch-events')
+                # the command is fetch-events
                 should_push_events = True
                 last_run = demisto.getLastRun()
                 next_run, events = fetch_events_command(
@@ -193,13 +189,15 @@ def main() -> None:
                     last_run=last_run,
                     first_fetch_time=first_fetch_time,
                 )
-                demisto.debug('after fetch-events')
+                demisto.debug(f'last run: {last_run} \n next run: {next_run}')
                 # saves next_run for the time fetch-events is invoked
 
             if should_push_events:
+                demisto.debug(f'Number of events: {len(events)}')
                 events = add_time_key_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun(next_run)
+                
 
     # Log exceptions and return errors
     except Exception as e:

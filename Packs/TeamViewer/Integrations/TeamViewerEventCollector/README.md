@@ -1,5 +1,5 @@
 TeamViewer event collector integration for Cortex XSIAM.
-This integration was integrated and tested with version xx of TeamViewer Event Collector
+This integration was integrated and tested with version 15.40 of TeamViewer Event Collector
 
 ## Configure TeamViewer Event Collector on Cortex XSOAR
 

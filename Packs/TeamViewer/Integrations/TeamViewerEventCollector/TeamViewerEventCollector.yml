@@ -39,7 +39,7 @@ configuration:
   type: 0
   section: Collect
 description: TeamViewer event collector integration for Cortex XSIAM.
-display: 'TeamViewer Event Collector'
+display: TeamViewer Event Collector
 name: TeamViewer Event Collector
 script:
   commands:
