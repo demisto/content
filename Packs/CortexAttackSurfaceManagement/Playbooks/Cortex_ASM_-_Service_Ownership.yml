@@ -374,6 +374,6 @@ view: |-
       }
     }
   }
-fromversion: 6.2.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
