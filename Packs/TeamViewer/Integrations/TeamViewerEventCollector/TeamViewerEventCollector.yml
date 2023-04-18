@@ -10,7 +10,7 @@ configuration:
   type: 0
   section: Connect
 - displaypassword: Script Token
-  additionalinfo: The Script Token to use for connection
+  additionalinfo: The script token to use for connection
   name: credentials
   required: true
   hiddenusername: true
