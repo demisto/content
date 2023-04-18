@@ -200,10 +200,7 @@ inputs:
   required: true
   description: Scheduled report ID. Can be found by running the command qualys-scheduled-report-list.
   playbookInputQuery:
-outputs:
-- contextPath: Qualys.Report.VM.Launched
-  type: unknown
-  description: Launched VM scan.
+outputs: []
 tests:
 - QualysVulnerabilityManagement-Test
 fromversion: 5.5.0
