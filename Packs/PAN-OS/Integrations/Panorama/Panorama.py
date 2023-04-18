@@ -7128,14 +7128,8 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
     edl = args.get('dns_signature_source')
     action = args.get('action')
     packet_capture = args.get('packet_capture', 'disable')
-    
-    vsys = args.get('vsys')
-    if VSYS and not vsys:
-        vsys = VSYS
-    elif not vsys:
-        vsys = 'vsys1'
         
-    # params for dvice group
+    # params for device group
     params = {
         'action': 'set',
         'type': 'config',
