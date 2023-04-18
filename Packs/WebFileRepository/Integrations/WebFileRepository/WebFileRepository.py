@@ -4117,7 +4117,8 @@ def command_upload_file(args: Dict[str, str], settings: Settings) -> str:
 
     res = demisto.getFilePath(args.get('entry_id'))
     path = res['path']
-    if not (name := args.get('file_name')):
+    name = args.get('file_name')
+    if not name:
         name = res['name']
 
     with open(path, 'rb') as f:
