@@ -1,7 +1,8 @@
-id: Launch And Fetch Scheduled Report - Qualys - TEST
+id: Launch And Fetch Scheduled Report - Qualys
 version: -1
-name: Launch And Fetch Scheduled Report - Qualys - TEST
-description: Launches a scheduled report and fetches the report when it's ready.
+name: Launch And Fetch Scheduled Report - Qualys
+description: Launches a scheduled report and fetches the report when it's
+  ready.
 starttaskid: "0"
 tasks:
   "0":
