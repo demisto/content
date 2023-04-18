@@ -400,7 +400,7 @@ tasks:
       id: 53ed49f3-afa1-4292-8dd6-e682bc802cd9
       iscommand: false
       name: Prisma Cloud - Find AWS Resource by Public IP
-      playbookId: Prisma Cloud - Find AWS Resource by Public IP v2
+      playbookId: Prisma Cloud - Find AWS Resource by Public IP
       type: playbook
       version: -1
     taskid: 53ed49f3-afa1-4292-8dd6-e682bc802cd9
@@ -445,7 +445,7 @@ tasks:
       id: 63100a88-7603-4ba5-8bbc-6220b8add91a
       iscommand: false
       name: Prisma Cloud - Find Azure Resource by Public IP
-      playbookId: Prisma Cloud - Find Azure Resource by Public IP v2
+      playbookId: Prisma Cloud - Find Azure Resource by Public IP
       type: playbook
       version: -1
     taskid: 63100a88-7603-4ba5-8bbc-6220b8add91a
@@ -483,7 +483,7 @@ tasks:
       id: 041845c9-3fb4-4c7e-8819-ae5408b41d8e
       iscommand: false
       name: Prisma Cloud - Find GCP Resource by Public IP
-      playbookId: Prisma Cloud - Find GCP Resource by Public IP v2
+      playbookId: Prisma Cloud - Find GCP Resource by Public IP
       type: playbook
       version: -1
     taskid: 041845c9-3fb4-4c7e-8819-ae5408b41d8e
