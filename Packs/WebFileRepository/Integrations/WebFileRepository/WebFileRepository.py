@@ -4107,6 +4107,33 @@ def command_reset(args: Dict[str, str], settings: Settings) -> str:
     return 'Done.'
 
 
+def command_upload_file(args: Dict[str, str], settings: Settings) -> str:
+    """ Upload a file
+
+    :param args: The parameters which were given to the command.
+    :param settings: The instance settings.
+    """
+    client = new_client(detect_service_ip_port(settings), settings)
+
+    res = demisto.getFilePath(args.get('entry_id'))
+    path = res['path']
+    if not (name := args.get('file_name')):
+        name = res['name']
+    
+    with open(path, 'rb') as f:
+        files = [('file', [name, f.read()])]
+
+    data = {
+        'q': 'upload',
+        'dir': args.get('upload_directory', '/'),
+        'extract': 'true' if argToBoolean(args.get('extract_archive', 'false')) else 'false',
+    }
+    resp = client._http_request('POST', data=data, files=files, raise_on_status=True)
+    if not resp.get('success'):
+        raise ValueError(f'Failed to upload a file: {resp.get("message")}')
+    return 'Done.'
+
+
 def command_upload_files(args: Dict[str, str], settings: Settings) -> str:
     """ Upload files
 
@@ -4259,6 +4286,7 @@ def main() -> None:
         'wfr-status': command_status,
         'wfr-cleanup': command_cleanup,
         'wfr-reset': command_reset,
+        'wfr-upload-file': command_upload_file,
         'wfr-upload-files': command_upload_files,
         'wfr-list-files': command_list_files,
         'wfr-remove-files': command_remove_files,
