@@ -1,6 +1,7 @@
-id: Microsoft Graph Security Test
+id: Microsoft Graph Security Test V2
 version: -1
-name: Microsoft Graph Security Test
+vcShouldKeepItemLegacyProdMachine: false
+name: Microsoft Graph Security Test V2
 starttaskid: "0"
 tasks:
   "0":
@@ -67,10 +68,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 0323ed91-22f5-413f-8df3-e9f62207d6da
+    taskid: 35b0daae-9232-4c3b-8b0b-1ea014ac0fc5
     type: regular
     task:
-      id: 0323ed91-22f5-413f-8df3-e9f62207d6da
+      id: 35b0daae-9232-4c3b-8b0b-1ea014ac0fc5
       version: -1
       name: msg-get-alert-details
       description: Get details for a specific alert.
@@ -84,8 +85,8 @@ tasks:
     scriptarguments:
       alert_id:
         complex:
-          root: MsGraph
-          accessor: Alert.ID
+          root: MsGraph.Alert
+          accessor: id
           transformers:
           - operator: atIndex
             args:
@@ -98,7 +99,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1080
         }
       }
     note: false
@@ -110,10 +111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: d0655dce-4a4d-4e75-84a5-410dbef8c4bf
+    taskid: 8b072457-06dc-4d9e-8753-3202b0be8b83
     type: regular
     task:
-      id: d0655dce-4a4d-4e75-84a5-410dbef8c4bf
+      id: 8b072457-06dc-4d9e-8753-3202b0be8b83
       version: -1
       name: msg-update-alert
       description: Update an editable alert property within any integrated solution
@@ -125,49 +126,29 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "12"
     scriptarguments:
       alert_id:
         complex:
-          root: MsGraph
-          accessor: Alert.ID
+          root: MsGraph.Alert
+          accessor: id
           transformers:
           - operator: atIndex
             args:
               index:
                 value:
                   simple: "0"
-      comments:
-        simple: This is a text comment.
+      determination:
+        simple: other
       feedback:
         simple: truePositive
-      provider_information:
-        complex:
-          root: MsGraph
-          accessor: Alert.Provider
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
-      vendor_information:
-        complex:
-          root: MsGraph
-          accessor: Alert.Vendor
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1065
+          "y": 720
         }
       }
     note: false
@@ -194,7 +175,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1415
+          "y": 1610
         }
       }
     note: false
@@ -206,10 +187,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: a7a11c44-a322-430e-802d-759aa21879b0
+    taskid: 7dc674e1-e2cc-4e43-84fd-c0d1001e59bf
     type: condition
     task:
-      id: a7a11c44-a322-430e-802d-759aa21879b0
+      id: 7dc674e1-e2cc-4e43-84fd-c0d1001e59bf
       version: -1
       name: Verify msg-search-alerts output
       type: condition
@@ -217,7 +198,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "2"
+      - "3"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -226,9 +207,11 @@ tasks:
           left:
             value:
               complex:
-                root: MsGraph
-                accessor: Alert.ID
+                root: MsGraph.Alert
+                accessor: id
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -281,12 +264,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 95a16134-c5a3-41f1-80d3-2c53a9f37af5
+    taskid: a40ddb37-2931-4d90-8f47-e84742fbab90
     type: regular
     task:
-      id: 95a16134-c5a3-41f1-80d3-2c53a9f37af5
+      id: a40ddb37-2931-4d90-8f47-e84742fbab90
       version: -1
-      name: Sleep for 30 seconds
+      name: Sleep for 60 seconds
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -297,14 +280,14 @@ tasks:
       - "5"
     scriptarguments:
       seconds:
-        simple: "30"
+        simple: "60"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1240
+          "y": 1440
         }
       }
     note: false
@@ -316,35 +299,80 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 4ed5e8ee-8e8d-4c62-8eda-0d5819a41b3f
+    taskid: cfc9a59f-1d34-4fea-8b9b-433f32ef37b4
     type: condition
     task:
-      id: 4ed5e8ee-8e8d-4c62-8eda-0d5819a41b3f
+      id: cfc9a59f-1d34-4fea-8b9b-433f32ef37b4
       version: -1
-      name: Verify msg-search-alerts output
+      name: Verify msg-get-alert-details output
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "3"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isEqualString
           left:
             value:
               complex:
-                root: MsGraph
-                accessor: Alert.ID
+                root: MsGraph.Alert
+                accessor: determination
+            iscontext: true
+          right:
+            value:
+              simple: other
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MsGraph.Alert.comments
             iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 890
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 73e8dbd1-8638-4ddd-8794-18dc3519d937
+    type: regular
+    task:
+      id: 73e8dbd1-8638-4ddd-8794-18dc3519d937
+      version: -1
+      name: msg-create-alert-comment
+      description: Relevant only for V2, create a comment for an existing alert.
+      script: '|||msg-create-alert-comment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      alert_id:
+        simple: ${MsGraph.Alert.id}
+      comment:
+        simple: test comment
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 900
         }
       }
     note: false
@@ -359,7 +387,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1430,
+        "height": 1625,
         "width": 380,
         "x": 50,
         "y": 50
@@ -368,4 +396,5 @@ view: |-
   }
 inputs: []
 outputs: []
+sourceplaybookid: Microsoft Graph Security Test
 fromversion: 5.0.0

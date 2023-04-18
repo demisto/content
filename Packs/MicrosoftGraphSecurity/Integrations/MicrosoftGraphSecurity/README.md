@@ -9,9 +9,14 @@ The `message-search-alerts` command does not filter alerts of the `Office 365` p
 For more info, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
 
 ### Required Permissions
-1. SecurityEvents.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`
+API V1:
+1. SecurityEvents.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
 2. SecurityEvents.ReadWrite.All - Application (required for updating alerts with the command: `msg-update-alert`)
 3. User.Read.All - Application (Only required if using the deprecated commands: `msg-get-user` and `msg-get-users`)
+
+API V2:
+1. SecurityAlert.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
+2. SecurityAlert.ReadWrite.All - Application (required for updating alerts with the commands: `msg-update-alert` and `msg-create-alert-comment`)
 
 ## Configure Microsoft Graph Security on Cortex XSOAR
 
