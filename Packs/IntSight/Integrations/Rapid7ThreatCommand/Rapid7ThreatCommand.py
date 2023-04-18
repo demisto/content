@@ -16,7 +16,7 @@ ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 INTEGRATION_ENTRY_CONTEXT = "ThreatCommand"
 
 
-class Headers(Enum):
+class Headers(list, Enum):
     GET_ALERT = [
         "id",
         "type",
@@ -79,7 +79,7 @@ class Headers(Enum):
     ]
 
 
-class ReadableOutputs(Enum):
+class ReadableOutputs(str, Enum):
     CYBER_TERM_CVES = "Related CVEs to Cyber term {0}"
     CYBER_TERM_IOCS = "Related IOCs to Cyber term {0}"
     CYBER_TERM = "Cyber terms"
@@ -152,7 +152,7 @@ class ReadableOutputs(Enum):
     ENRICH_QUOTA = "Current API enrichment credits (quota)."
 
 
-class ReadableErrors(Enum):
+class ReadableErrors(str, Enum):
     MISSING_IOCS = "Missing IOCs. Please insert."
     SOURCE_NOT_EXIST = "The source does not exist."
     GENERAL = "General error with the request."
@@ -247,11 +247,12 @@ pattern_and_readable_error_by_ioc_type = {
     IOCType.EMAIL: (emailRegex, ReadableErrors.EMAIL),
 }
 
+WHITELIST_ADD = "Add to the user whitelist"
+WHITELIST_DO_NOT = "Do not whitelist"
 
-class ArgumentValues(Enum):
+
+class ArgumentValues(list, Enum):
     DOCUMENT_SEVERITY = ["High", "Medium", "Low"]
-    WHITELIST_ADD = "Add to the user whitelist"
-    WHITELIST_DO_NOT = "Do not whitelist"
     WHITELIST_STATUS = [WHITELIST_ADD, WHITELIST_DO_NOT]
     BOOLEAN = ["true", "false"]
     ALERT_TYPE = [
@@ -307,12 +308,12 @@ XSOAR_SEVERITY = {
     "High": IncidentSeverity.HIGH,
 }
 ALERT_WHITELIST = {
-    ArgumentValues.WHITELIST_ADD.value: True,
-    ArgumentValues.WHITELIST_DO_NOT.value: False,
+    WHITELIST_ADD: True,
+    WHITELIST_DO_NOT: False,
 }
 
 
-class UrlPrefix(Enum):
+class UrlPrefix(str, Enum):
     CYBER_TERM = "threat-library/cyber-terms"
     IOC_SOURCE = "iocs"
     ACCOUNT = "account"
@@ -1039,9 +1040,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from Threat Command API.
         """
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.CYBER_TERM.value, cyber_term_id, "cves"
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.CYBER_TERM}/{cyber_term_id}/cves"
         return self._http_request(method="GET", url_suffix=url_suffix)
 
     def list_cyber_term_ioc(
@@ -1071,9 +1070,7 @@ class Client(BaseClient):
                 "offset": offset,
             }
         )
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.CYBER_TERM.value, cyber_term_id, "iocs"
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.CYBER_TERM}/{cyber_term_id}/iocs"
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
     def list_cyber_term(
@@ -1125,7 +1122,7 @@ class Client(BaseClient):
                 "offset": offset,
             }
         )
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.CYBER_TERM.value)
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.CYBER_TERM}"
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
     def list_source(self) -> dict[str, Any]:
@@ -1135,7 +1132,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from Threat Command API.
         """
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.IOC_SOURCE.value, "sources")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.IOC_SOURCE}/sources"
         return self._http_request(method="GET", url_suffix=url_suffix)
 
     def create_document_source(
@@ -1186,7 +1183,7 @@ class Client(BaseClient):
                 ),
             }
         )
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.IOC_SOURCE.value, "add-source")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.IOC_SOURCE}/add-source"
         return self._http_request(
             method="POST",
             url_suffix=url_suffix,
@@ -1203,9 +1200,7 @@ class Client(BaseClient):
         Returns:
             Response: API response from Threat Command API.
         """
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.IOC_SOURCE.value, "delete-source", source_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.IOC_SOURCE}/delete-source/{source_id}"
         return self._http_request(
             method="DELETE",
             url_suffix=url_suffix,
@@ -1247,9 +1242,7 @@ class Client(BaseClient):
                 )
             }
         )
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.IOC_SOURCE.value, "add-iocs-to-source", source_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.IOC_SOURCE}/add-iocs-to-source/{source_id}"
         return self._http_request(
             method="POST",
             url_suffix=url_suffix,
@@ -1265,7 +1258,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from Threat Command API.
         """
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.ACCOUNT.value, "system-modules")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ACCOUNT}/system-modules"
         return self._http_request(method="GET", url_suffix=url_suffix)
 
     def add_asset(self, asset_type: str, asset_value: str) -> Response:
@@ -1280,7 +1273,7 @@ class Client(BaseClient):
             Response: API response from Threat Command API.
         """
         payload = {"AssetType": asset_type, "AssetValue": asset_value}
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.ASSET.value, "add-asset")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ASSET}/add-asset"
         return self._http_request(
             method="PUT",
             url_suffix=url_suffix,
@@ -1301,7 +1294,7 @@ class Client(BaseClient):
             Response: API response from Threat Command API.
         """
         payload = {"AssetType": asset_type, "AssetValue": asset_value}
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.ASSET.value, "delete-asset")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ASSET}/delete-asset"
         return self._http_request(
             method="DELETE",
             url_suffix=url_suffix,
@@ -1323,7 +1316,7 @@ class Client(BaseClient):
         params = remove_empty_elements(
             {"assetTypes": asset_types if asset_types else None}
         )
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.ASSET.value, "account-assets")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ASSET}/account-assets"
         return self._http_request(
             method="GET", url_suffix=url_suffix, ok_codes=[HTTPStatus.OK], params=params
         )
@@ -1335,7 +1328,7 @@ class Client(BaseClient):
         Returns:
             List[str]: API response from Threat Command API.
         """
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.ASSET.value, "assets-types")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ASSET}/assets-types"
         return self._http_request(
             method="GET", url_suffix=url_suffix, ok_codes=[HTTPStatus.OK]
         )
@@ -1379,7 +1372,7 @@ class Client(BaseClient):
                 "offset": offset,
             }
         )
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.CVE.value, "get-cves-list")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.CVE}/get-cves-list"
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
     def add_cve(self, cve_ids: List[str]) -> dict[str, Any]:
@@ -1393,7 +1386,7 @@ class Client(BaseClient):
             dict[str, Any]: API response from Threat Command API.
         """
         payload = {"cveIds": cve_ids}
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.CVE.value, "add-cves")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.CVE}/add-cves"
         return self._http_request(
             method="POST",
             url_suffix=url_suffix,
@@ -1412,7 +1405,7 @@ class Client(BaseClient):
             dict[str, Any]: API response from Threat Command API.
         """
         payload = {"cveIds": cve_ids}
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.CVE.value, "delete-cves")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.CVE}/delete-cves"
         return self._http_request(
             method="DELETE",
             url_suffix=url_suffix,
@@ -1494,7 +1487,7 @@ class Client(BaseClient):
                 "offset": offset,
             }
         )
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.ALERT.value, "update-alerts")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/update-alerts"
         return self._http_request(
             method="GET", url_suffix=url_suffix, params=params, ok_codes=[HTTPStatus.OK]
         )
@@ -1509,9 +1502,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from Threat Command API.
         """
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "get-complete-alert", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/get-complete-alert/{alert_id}"
         return self._http_request(
             method="GET", url_suffix=url_suffix, ok_codes=[HTTPStatus.OK]
         )
@@ -1571,7 +1562,8 @@ class Client(BaseClient):
                 "Scenario": scenario,
             }
         )
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.ALERT.value, "add-alert")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/add-alert"
+
         return self._http_request(
             method="PUT",
             url_suffix=url_suffix,
@@ -1609,9 +1601,7 @@ class Client(BaseClient):
                 "Rate": rate,
             }
         )
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "close-alert", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/close-alert/{alert_id}"
         return self._http_request(
             method="PATCH",
             url_suffix=url_suffix,
@@ -1631,9 +1621,7 @@ class Client(BaseClient):
             Response: API response from Threat Command API.
         """
         payload = {"Severity": severity}
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "change-severity", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/change-severity/{alert_id}"
         return self._http_request(
             method="PATCH",
             url_suffix=url_suffix,
@@ -1657,9 +1645,7 @@ class Client(BaseClient):
             "AssigneeID": user_id,
             "IsMssp": is_mssp,
         }
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "assign-alert", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/assign-alert/{alert_id}"
         return self._http_request(
             method="PATCH",
             url_suffix=url_suffix,
@@ -1677,9 +1663,7 @@ class Client(BaseClient):
         Returns:
             Response: API response from Threat Command API.
         """
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "unassign-alert", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/unassign-alert/{alert_id}"
         return self._http_request(
             method="PATCH", url_suffix=url_suffix, resp_type="response"
         )
@@ -1694,9 +1678,7 @@ class Client(BaseClient):
         Returns:
             Response: API response from Threat Command API.
         """
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "reopen-alert", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/reopen-alert/{alert_id}"
         return self._http_request(
             method="PATCH", url_suffix=url_suffix, resp_type="response"
         )
@@ -1715,7 +1697,7 @@ class Client(BaseClient):
         payload = {
             "TagName": tag_name,
         }
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.ALERT.value, "add-tag", alert_id)
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/add-tag/{alert_id}"
         return self._http_request(
             method="PATCH",
             url_suffix=url_suffix,
@@ -1737,9 +1719,7 @@ class Client(BaseClient):
         payload = {
             "TagID": tag_id,
         }
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "remove-tag", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/remove-tag/{alert_id}"
         return self._http_request(
             method="PATCH",
             url_suffix=url_suffix,
@@ -1763,9 +1743,7 @@ class Client(BaseClient):
             Response: API response from Threat Command API.
         """
         payload = {"Emails": email_addresses, "Content": content}
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "send-mail", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/send-mail/{alert_id}"
         return self._http_request(
             method="POST",
             url_suffix=url_suffix,
@@ -1785,9 +1763,7 @@ class Client(BaseClient):
             Response: API response from Threat Command API.
         """
         payload = {"Question": question}
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "ask-the-analyst", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/ask-the-analyst/{alert_id}"
         return self._http_request(
             method="POST",
             url_suffix=url_suffix,
@@ -1805,9 +1781,7 @@ class Client(BaseClient):
         Returns:
             Response: API response from Threat Command API.
         """
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "ask-the-analyst-conversation", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/ask-the-analyst-conversation/{alert_id}"
         return self._http_request(
             method="GET",
             url_suffix=url_suffix,
@@ -1825,9 +1799,7 @@ class Client(BaseClient):
         Returns:
             List[dict[str, Any]]: API response from Threat Command API.
         """
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "activity-log", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/activity-log/{alert_id}"
         return self._http_request(method="GET", url_suffix=url_suffix)
 
     def add_alert_note(
@@ -1845,9 +1817,7 @@ class Client(BaseClient):
             Response: API response from Threat Command API.
         """
         payload = {"Note": note, "Files": files_handler(file_ids=file_entry_ids)}
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "add-note", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/add-note/{alert_id}"
         return self._http_request(
             method="POST",
             url_suffix=url_suffix,
@@ -1865,9 +1835,7 @@ class Client(BaseClient):
         Returns:
             List[dict[str, Any]]: API response from Threat Command API.
         """
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "blocklist-status", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/blocklist-status/{alert_id}"
         return self._http_request(method="GET", url_suffix=url_suffix)
 
     def update_alert_blocklist(
@@ -1904,9 +1872,7 @@ class Client(BaseClient):
                 )
             }
         )
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "change-iocs-blocklist-status", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/change-iocs-blocklist-status/{alert_id}"
         return self._http_request(
             method="PATCH",
             url_suffix=url_suffix,
@@ -1925,9 +1891,7 @@ class Client(BaseClient):
         Returns:
             Response: API response from Threat Command API.
         """
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "alert-image", image_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/alert-image/{image_id}"
         return self._http_request(
             method="GET", url_suffix=url_suffix, resp_type="response"
         )
@@ -1950,9 +1914,7 @@ class Client(BaseClient):
             "Target": target,
             "ShouldCloseAlertAfterSuccess": close_alert_after_success,
         }
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "takedown-request", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/takedown-request/{alert_id}"
         return self._http_request(
             method="PATCH",
             url_suffix=url_suffix,
@@ -1970,9 +1932,7 @@ class Client(BaseClient):
         Returns:
             Response: API response from Threat Command API.
         """
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "takedown-status", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/takedown-status/{alert_id}"
         return self._http_request(
             method="GET", url_suffix=url_suffix, resp_type="response"
         )
@@ -1984,9 +1944,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from Threat Command API.
         """
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "types-subtypes-relations"
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/types-subtypes-relations"
         return self._http_request(method="GET", url_suffix=url_suffix)
 
     def list_alert_source_type(self) -> List[dict[str, Any]]:
@@ -1996,7 +1954,7 @@ class Client(BaseClient):
         Returns:
             List[dict[str, Any]]: API response from Threat Command API.
         """
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.ALERT.value, "source-types")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/source-types"
         return self._http_request(method="GET", url_suffix=url_suffix)
 
     def list_alert_scenario(
@@ -2015,9 +1973,7 @@ class Client(BaseClient):
         params = remove_empty_elements(
             {"type": remove_whitespaces(type_), "subType": sub_type}
         )
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "scenario-relations"
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/scenario-relations"
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
     def report_alert_ioc(self, alert_id: str, external_sources: List[str]) -> Response:
@@ -2032,9 +1988,7 @@ class Client(BaseClient):
             Response: API response from Threat Command API.
         """
         payload = {"ExternalSources": external_sources}
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "report-iocs", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/report-iocs/{alert_id}"
         return self._http_request(
             method="POST",
             url_suffix=url_suffix,
@@ -2062,7 +2016,7 @@ class Client(BaseClient):
                 "userId": user_id,
             }
         )
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.ACCOUNT.value, "users-details")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ACCOUNT}/users-details"
         return self._http_request(
             method="GET", url_suffix=url_suffix, params=params, ok_codes=[HTTPStatus.OK]
         )
@@ -2080,7 +2034,7 @@ class Client(BaseClient):
         params = {
             "iocValue": ioc_value,
         }
-        url_suffix = os.path.join(V3_PREFIX, UrlPrefix.IOC.value, "ioc-by-value")
+        url_suffix = f"{V3_PREFIX}/{UrlPrefix.IOC}/ioc-by-value"
         return self._http_request(
             method="GET", url_suffix=url_suffix, params=params, ok_codes=[HTTPStatus.OK]
         )
@@ -2148,7 +2102,7 @@ class Client(BaseClient):
                 "offset": offset,
             }
         )
-        url_suffix = os.path.join(V3_PREFIX, UrlPrefix.IOC.value)
+        url_suffix = f"{V3_PREFIX}/{UrlPrefix.IOC}"
         return self._http_request(
             method="GET", url_suffix=url_suffix, params=params, ok_codes=[HTTPStatus.OK]
         )
@@ -2165,7 +2119,7 @@ class Client(BaseClient):
             dict[str, Any]: API response from Threat Command API.
         """
         payload = [{"iocValue": ioc_value, "tag": tag} for tag in tag_values]
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.IOC.value, "tags")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.IOC}/tags"
         return self._http_request(
             method="POST",
             url_suffix=url_suffix,
@@ -2187,7 +2141,7 @@ class Client(BaseClient):
             dict[str, Any]: API response from Threat Command API.
         """
         payload = [{"iocValue": ioc, "severity": severity} for ioc in ioc_values]
-        url_suffix = os.path.join(V2_PREFIX, UrlPrefix.IOC_SOURCE.value, "severity")
+        url_suffix = f"{V2_PREFIX}/{UrlPrefix.IOC_SOURCE}/severity"
         return self._http_request(
             method="PATCH", url_suffix=url_suffix, json_data=payload
         )
@@ -2204,7 +2158,7 @@ class Client(BaseClient):
             dict[str, Any]: API response from Threat Command API.
         """
         payload = [{"iocValue": ioc, "comment": comment} for ioc in ioc_values]
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.IOC_SOURCE.value, "comments")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.IOC_SOURCE}/comments"
         return self._http_request(
             method="POST", url_suffix=url_suffix, json_data=payload
         )
@@ -2232,9 +2186,7 @@ class Client(BaseClient):
                 for ioc in ioc_values
             ]
         }
-        url_suffix = os.path.join(
-            V2_PREFIX, UrlPrefix.IOC_SOURCE.value, "user-whitelist"
-        )
+        url_suffix = f"{V2_PREFIX}/{UrlPrefix.IOC_SOURCE}/user-whitelist"
         return self._http_request(
             method="POST", url_suffix=url_suffix, json_data=payload
         )
@@ -2250,9 +2202,7 @@ class Client(BaseClient):
             dict[str, Any]: API response from Threat Command API.
         """
         payload = {"iocs": ioc_values}
-        url_suffix = os.path.join(
-            V2_PREFIX, UrlPrefix.IOC_SOURCE.value, "user-whitelist"
-        )
+        url_suffix = f"{V2_PREFIX}/{UrlPrefix.IOC_SOURCE}/user-whitelist"
         return self._http_request(
             method="DELETE", url_suffix=url_suffix, json_data=payload
         )
@@ -2268,7 +2218,7 @@ class Client(BaseClient):
             dict[str, Any]: API response from Threat Command API.
         """
         payload = {"iocs": ioc_values}
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.IOC_SOURCE.value, "blocklist")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.IOC_SOURCE}/blocklist"
         return self._http_request(
             method="POST", url_suffix=url_suffix, json_data=payload
         )
@@ -2284,7 +2234,7 @@ class Client(BaseClient):
             dict[str, Any]: API response from Threat Command API.
         """
         payload = {"iocs": ioc_values}
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.IOC_SOURCE.value, "blocklist")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.IOC_SOURCE}/blocklist"
         return self._http_request(
             method="DELETE", url_suffix=url_suffix, json_data=payload
         )
@@ -2325,7 +2275,7 @@ class Client(BaseClient):
                 "highlight-tags": highlight_tags,
             }
         )
-        url_suffix = os.path.join(V2_PREFIX, "intellifind")
+        url_suffix = f"{V2_PREFIX}/intellifind"
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
     def usage_quota_enrichment(self) -> dict[str, Any]:
@@ -2335,7 +2285,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from Threat Command API.
         """
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.IOC.value, "quota")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.IOC}/quota"
         return self._http_request(method="GET", url_suffix=url_suffix)
 
     def enrich_ioc(self, ioc_value: str) -> dict[str, Any]:
@@ -2348,7 +2298,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: API response from Threat Command API.
         """
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.IOC.value, "enrich", ioc_value)
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.IOC}/enrich/{ioc_value}"
         return self._http_request(method="GET", url_suffix=url_suffix)
 
     def list_mssp_user(self) -> List[dict[str, Any]]:
@@ -2358,7 +2308,7 @@ class Client(BaseClient):
         Returns:
             List[dict[str, Any]]: API response from Threat Command API.
         """
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.MSSP.value, "users-details")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.MSSP}/users-details"
         return self._http_request(
             method="GET", url_suffix=url_suffix, ok_codes=[HTTPStatus.OK]
         )
@@ -2370,7 +2320,7 @@ class Client(BaseClient):
         Returns:
             List[dict[str, Any]]: API response from Threat Command API.
         """
-        url_suffix = os.path.join(V1_PREFIX, UrlPrefix.MSSP.value, "customers")
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.MSSP}/customers"
         return self._http_request(
             method="GET", url_suffix=url_suffix, ok_codes=[HTTPStatus.OK]
         )
@@ -2385,9 +2335,7 @@ class Client(BaseClient):
         Returns:
             Response: API response from Threat Command API.
         """
-        url_suffix = os.path.join(
-            V1_PREFIX, UrlPrefix.ALERT.value, "csv-file", alert_id
-        )
+        url_suffix = f"{V1_PREFIX}/{UrlPrefix.ALERT}/csv-file/{alert_id}"
         return self._http_request(
             method="GET",
             url_suffix=url_suffix,
@@ -5316,14 +5264,14 @@ def main() -> None:
         elif command == "fetch-incidents":
             first_fetch = arg_to_datetime(params.get("first_fetch"))
             max_fetch = arg_to_number(params["max_fetch"])
-            alert_types = argToList(params.get("alert_type"))
+            alert_types = argToList(params.get("alert_types"))
             alert_severities = argToList(params.get("alert_severity"))
-            source_types = argToList(params.get("source_type"))
-            is_closed = argToBoolean(params["is_closed"])
+            source_types = argToList(params.get("source_types"))
+            is_closed = argToBoolean(params["fetch_closed_incidents"])
             fetch_csv = argToBoolean(params["fetch_csv"])
             fetch_attachments = argToBoolean(params["fetch_attachments"])
-            if not isinstance(max_fetch, int):
-                raise ValueError("Failed to get max fetch.")
+            if not max_fetch or max_fetch < 1:
+                raise ValueError("max_fetch must be a positive integer.")
 
             if not isinstance(first_fetch, datetime):
                 raise ValueError("Failed to get first fetch time.")
