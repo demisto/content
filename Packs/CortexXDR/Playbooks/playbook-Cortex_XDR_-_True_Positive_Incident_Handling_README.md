@@ -17,16 +17,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
+* ServiceNowCreateIncident
 * IsIntegrationAvailable
 * AddEvidence
-* ServiceNowCreateIncident
 
 ### Commands
 
-* jira-create-issue
 * closeInvestigation
-* xdr-blocklist-files
+* jira-create-issue
 * setIncident
+* xdr-blocklist-files
 * setIndicators
 
 ## Playbook Inputs
@@ -42,7 +42,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | TicketProjectName | For ticketing systems such as Jira a project name is required. |  | Optional |
 | TicketingSystemToUse | The name of the ticketing system to use, for example Jira or ServiceNow |  | Optional |
 | FileSha256 | Enter the File SHA256 you would like to block. Also, this input can be used in the Threat Hunting step. | incident.filesha256 | Optional |
-| HostID | The ID of the host for running an isolation process. | ${incident.deviceid} | Optional |
+| HostID | The ID of the host for running an isolation process. | incident.deviceid | Optional |
 | FilePaths | Enter the File paths you would like to delete. | incident.processpaths | Optional |
 | ManuallyChooseIOCForHunting | This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.<br/>If false, it will hunt for all IOCs detected in the incident.<br/>Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage. | True | Optional |
 | IP | IP value to hunt for. | IP | Optional |
