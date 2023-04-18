@@ -1,7 +1,7 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "asmserviceowner",
+    "cliName": "asmserviceownerobservations",
     "closeForm": false,
     "columns": [
         {
@@ -55,48 +55,22 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150
-        },
-        {
-            "displayName": "ConfidenceScore",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "confidencescore",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Justification",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "justification",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
         }
     ],
-    "content": true,
+    "content": false,
     "defaultRows": [
         {},
         {},
         {}
     ],
-    "description": "Potential service owners gathered through playbook",
+    "description": "Potential service owners gathered through playbook. Owners can appear multiple times with different sources, representing observations of the same owner in different contexts.",
     "editForm": true,
     "group": 0,
-    "hidden": false,
-    "id": "incident_asmserviceowner",
+    "hidden": true,
+    "id": "incident_asmserviceownerobservations",
     "isReadOnly": false,
     "locked": false,
-    "name": "ASM - Service Owner",
+    "name": "ASM - Service Owner Observations",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
