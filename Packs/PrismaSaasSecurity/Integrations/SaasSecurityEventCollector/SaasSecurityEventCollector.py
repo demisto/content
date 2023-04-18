@@ -144,6 +144,8 @@ def get_max_fetch(limit: Optional[int]) -> int:
     if limit:
         if limit <= 0:
             raise DemistoException('fetch limit parameter cannot be negative number or zero')
+        if limit < 10:
+            limit = 10
         if limit > MAX_LIMIT:  # do not allow limit of more than 5000 to avoid timeouts
             limit = MAX_LIMIT
         if limit % 10 != 0:  # max limit must be a multiplier of 10 (SaaS api limit)

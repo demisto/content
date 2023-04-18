@@ -467,8 +467,13 @@ def test_is_token_expired(mocker, time_mock, token_initiate_time, token_expirati
     ) == expected_result
 
 
-@pytest.mark.parametrize('limit', [126, 54, 23, 12, 45, 12, 3, 1, 76, 23, 101, 235, -1, -80])
-def test_validate_limit(limit):
+@pytest.mark.parametrize(
+    'limit, expected_limit',
+    [
+        (126, 120), (54, 50), (23, 20), (235, 230), (250, 250), (10000, 5000), (5000, 5000), (3, 10)
+    ]
+)
+def test_max_fetch(limit, expected_limit):
     """
     Given
        - a limit parameter which is not divisible by 100/negative limit.
@@ -479,7 +484,23 @@ def test_validate_limit(limit):
     Then
       - make sure an exception is raised
     """
-    from SaasSecurityEventCollector import validate_limit
+    from SaasSecurityEventCollector import get_max_fetch
+
+    assert get_max_fetch(limit) == expected_limit
+
+
+def test_max_fetch_negative_number():
+    """
+    Given
+      - a limit parameter that is negative
+
+    When
+      - executing validate_limit function
+
+    Then
+      - make sure an exception is raised
+   """
+    from SaasSecurityEventCollector import get_max_fetch
 
     with pytest.raises(DemistoException):
-        validate_limit(limit)
+        get_max_fetch(-1)
