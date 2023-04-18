@@ -52,7 +52,7 @@ Follow these steps for a self-deployed configuration:
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | ID or Client ID | The API key to use to connect. | False |
+    | Application ID or Client ID | The API key to use to connect. | False |
     | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
     | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
     | Token or Tenant ID (for Client Credentials mode) |  | False |
