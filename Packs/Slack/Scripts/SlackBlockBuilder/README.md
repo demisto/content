@@ -41,6 +41,8 @@ This script uses the following commands and scripts.
 | --- | --- | --- |
 | SlackBlockState | The State of the response from the user will be stored under this context path. | unknown |
 
+**Note**
+Make sure to configure the "XSOAR API Key" instance parameter in the "Slack v3" integration. In order To get the API KEY, go to "settings" -> "Api keys", generate it and paste it in the instance parameter.
 #### Command Example using blocks_url
 ---
 ```text
