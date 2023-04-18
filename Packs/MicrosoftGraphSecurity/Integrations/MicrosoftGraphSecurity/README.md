@@ -35,7 +35,7 @@ For more info, see: https://github.com/microsoftgraph/security-api-solutions/iss
     | Use a self-deployed Azure application | Whether to use a self-deployed application. | False |
     | Fetch incidents | Whether to fetch incidents. | False |
     | Incident type | The incident type to apply. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | <number> <time unit>, for example 1 hour, 30 minutes | False |
+    | First fetch timestamp (`<number> <time unit>`, e.g., 12 hours, 7 days) | `<number> <time unit>`, for example 1 hour, 30 minutes | False |
     | Max incidents per fetch | The maximum number of incidents to fetch per iteration | False |
     | Fetch incidents of the given providers only. | Relevant only for V1. Multiple providers can be inserted separated by a comma, for example "\{first_provider\},\{second_provioder\}". If empty, incidents of all providers will be fetched. | False |
     | Fetch incidents of the given service sources only. | Relevant only for V2. Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftCloudAppSecurity",. If empty, incidents of all providers will be fetched. | False |
@@ -149,7 +149,7 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 ### Microsoft Security Graph Alerts
 |id|incidentId|status|severity|detectionSource|serviceSource|title|category|createdDateTime|lastUpdateDateTime|
 |---|---|---|---|---|---|---|---|---|---|
-| id | <incidentId> | new | medium | customTi | microsoftDefenderForEndpoint | test alert | None | 2022-10-03T03:39:21.7562976Z | 2023-04-17T11:01:31.7566667Z |
+| id | <incident_id> | new | medium | customTi | microsoftDefenderForEndpoint | test alert | None | 2022-10-03T03:39:21.7562976Z | 2023-04-17T11:01:31.7566667Z |
 
 ### msg-get-alert-details
 
@@ -269,18 +269,18 @@ Get details for a specific alert.
 ### Basic Properties
 |AzureTenantID|Category|CreatedDate|Description|EventDate|LastModifiedDate|Severity|Status|Title|
 |---|---|---|---|---|---|---|---|---|
-| <AzureTenantID> | None | 2022-10-03T03:39:21.7562976Z | Created for test | 2022-09-26T05:01:02.839216Z | 2022-09-26T05:01:02.839216Z | medium | newAlert | test alert |
+| <azure_tenant_id> | None | 2022-10-03T03:39:21.7562976Z | Created for test | 2022-09-26T05:01:02.839216Z | 2022-09-26T05:01:02.839216Z | medium | newAlert | test alert |
 ### Customer Provided Comments for Alert
 - comment
 - comment
 ### File Security States for Alert
 |FileHash|Name|Path|
 |---|---|---|
-| <FileHash> | crond | /usr/sbin |
+| <file_hash> | crond | /usr/sbin |
 ### Host Security States for Alert
 |Fqdn|OS|PrivateIPAddress|PublicIPAddress|RiskScore|
 |---|---|---|---|---|
-| <fqdn> | CentOS | <PrivateIPAddress> | <PublicIPAddress> | medium |
+| `<fqdn>` | CentOS | <private_ip_address> | <public_ip_address> | medium |
 ### User Security States for Alert
 |AccountName|EmailRole|
 |---|---|
@@ -296,7 +296,7 @@ Get details for a specific alert.
 ## Microsoft Security Graph Alert Details - <alert_id>
 |id|incidentId|status|severity|detectionSource|serviceSource|title|category|createdDateTime|lastUpdateDateTime|
 |---|---|---|---|---|---|---|---|---|---|
-| <alert_id> | <incidentId> | new | medium | customTi | microsoftDefenderForEndpoint | test alert | None | 2022-10-03T03:39:21.7562976Z | 2023-04-17T11:01:31.7566667Z |
+| <alert_id> | <incident_id> | new | medium | customTi | microsoftDefenderForEndpoint | test alert | None | 2022-10-03T03:39:21.7562976Z | 2023-04-17T11:01:31.7566667Z |
 
 ### msg-update-alert
 
