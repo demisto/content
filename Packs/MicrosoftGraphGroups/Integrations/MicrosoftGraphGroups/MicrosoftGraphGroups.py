@@ -162,16 +162,24 @@ class MsGraphClient:
         Returns:
             Response from API.
         """
+        headers = {}
+
         if next_link:  # pagination
             return self.ms_client.http_request(method='GET', full_url=next_link)
         params = {'$top': top}
+
         if filter_:
             params['$filter'] = filter_  # type: ignore
+
+        if count := demisto.args().get('count'):
+            params['$count'] = count
+            headers['ConsistencyLevel'] = 'eventual'
 
         return self.ms_client.http_request(
             method='GET',
             url_suffix=f'groups/{group_id}/members',
-            params=params)
+            params=params,
+            headers=headers)
 
     def add_member(self, group_id: str, properties: Dict[str, str]):
         """Add a single member to a group by sending a POST request.
@@ -443,9 +451,9 @@ def main():
     """
     params: dict = demisto.params()
     base_url = params.get('url', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('tenant_id') or params.get('_tenant_id')
-    auth_and_token_url = params.get('auth_id') or params.get('_auth_id')
-    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
+    tenant = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id') or params.get('_tenant_id')
+    auth_and_token_url = params.get('creds_auth_id', {}).get('password', '') or params.get('auth_id') or params.get('_auth_id')
+    enc_key = params.get('enc_key') or params.get('credentials', {}).get('password')
     verify = not params.get('insecure', False)
     redirect_uri = params.get('redirect_uri', '')
     auth_code = params.get('creds_auth_code', {}).get('password', '') or params.get('auth_code', '')

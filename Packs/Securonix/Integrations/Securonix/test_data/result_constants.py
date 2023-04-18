@@ -501,3 +501,5 @@ EXPECTED_XSOAR_STATE_MAPPING = {
         'status': 'completed'
     }
 }
+
+EXPECTED_DELETE_LOOKUP_ENTRIES_DELETE = {}

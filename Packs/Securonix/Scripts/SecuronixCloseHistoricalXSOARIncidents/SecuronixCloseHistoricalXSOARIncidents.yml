@@ -5,7 +5,10 @@ name: SecuronixCloseHistoricalXSOARIncidents
 script: ''
 type: python
 tags: []
-comment: Close historical XSOAR incidents that are already closed on Securonix.
+comment: |-
+  Close historical XSOAR incidents that are already closed on Securonix.
+
+  NOTE: This script will close all the XSOAR incidents which are created from Securonix integration and does not have incident type as "Securonix Incident" in the provided time frame.
 enabled: true
 args:
 - name: from
@@ -28,7 +31,7 @@ dependson:
   must:
   - '|||securonix-incident-activity-history-get'
 runonce: false
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.10.49934
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:

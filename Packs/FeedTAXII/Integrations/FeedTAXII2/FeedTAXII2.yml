@@ -40,6 +40,7 @@ configuration:
   - WHITE
   required: false
   type: 15
+  defaultvalue: 'WHITE'
 - display: ''
   name: feedExpirationPolicy
   options:
@@ -241,7 +242,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.45745
+  dockerimage: demisto/taxii2:1.0.0.52421
   feed: true
   isfetch: false
   longRunning: false

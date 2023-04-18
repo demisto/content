@@ -10,15 +10,15 @@ import json
 BASE_URL = 'http://123-fake-api.com'
 API_KEY = 'test-api-key'
 
-MOCK_HELLOWORLD_SEARCH_RESULTS = """{
+MOCK_HELLOWORLD_SEARCH_RESULTS = {
     "id": "HelloWorld",
     "currentVersion": "1.1.10"
-}"""
-MOCK_AZURESENTINEL_SEARCH_RESULTS = """{
+}
+MOCK_AZURESENTINEL_SEARCH_RESULTS = {
     "id": "AzureSentinel",
     "currentVersion": "1.0.2"
-}"""
-MOCK_PACKS_INSTALLATION_RESULT = """[
+}
+MOCK_PACKS_INSTALLATION_RESULT = [
     {
         "id": "HelloWorld",
         "currentVersion": "2.0.0",
@@ -43,9 +43,9 @@ MOCK_PACKS_INSTALLATION_RESULT = """[
         "name": "Base",
         "installed": "2020-04-06T14:54:09.755811+03:00"
     }
-]"""
+]
 
-MOCK_PACKS_DEPENDENCIES_RESULT = """{
+MOCK_PACKS_DEPENDENCIES_RESULT = {
     "dependencies": [
         {
             "id": "TestPack",
@@ -62,12 +62,12 @@ MOCK_PACKS_DEPENDENCIES_RESULT = """{
             }
         }
     ]
-}"""
+}
 
 PACKS_PACK_META_FILE_NAME = 'pack_metadata.json'
 
 
-def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None):
+def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None, response_type='object'):
     if path == '/contentpacks/marketplace/HelloWorld':
         return MOCK_HELLOWORLD_SEARCH_RESULTS, 200, None
     if path == '/contentpacks/marketplace/AzureSentinel':

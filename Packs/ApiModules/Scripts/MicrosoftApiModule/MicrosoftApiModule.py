@@ -263,7 +263,12 @@ class MicrosoftClient(BaseClient):
             if resp_type == 'content':
                 return response.content
             if resp_type == 'xml':
-                ET.parse(response.text)
+                try:
+                    import defusedxml.ElementTree as defused_ET
+                    defused_ET.fromstring(response.text)
+                except ImportError:
+                    demisto.debug('defused_ET is not supported, using ET instead.')
+                    ET.fromstring(response.text)
             return response
         except ValueError as exception:
             raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)

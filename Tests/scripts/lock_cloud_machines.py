@@ -268,7 +268,7 @@ def create_list_of_machines_to_run(storage_bucket, lock_machine_name, gcs_locks_
     Returns: the machines list.
     """
     if lock_machine_name:  # For debugging: We got a name of a specific machine to use.
-        logging.info('trying to lock the given machine: {options.lock_machine_name}')
+        logging.info(f'trying to lock the given machine: {lock_machine_name}')
         list_machines = [lock_machine_name]
     else:
         logging.info('getting all machine names')  # We are looking for a free machine in all the available machines.

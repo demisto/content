@@ -11,6 +11,32 @@ import re
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+V10 = "V10x"
+V9 = "V9x"
+VERSION = demisto.params().get('version', V9)
+DEFAULT_LIMIT = 50
+HOST = 'HOST'
+ADDRESS_RANGE = 'ADDRESS_RANGE'
+STATE_TO_NUMBER = {"Disabled": 0, "Enabled": 1}
+DEPLOY_ARGUMENT_MAPPER = {"push_ssl_key": "SSLPercentageComplete",
+                          "push_gam_updates": "GamUpdatePercentageComplete",
+                          "push_configuration_signature_set": "sigsetConfigPercentageComplete",
+                          "push_botnet": "botnetPercentageComplete"}
+
+MESSAGE_MAP = {"push_ssl_key": "SSLStatusMessage",
+               "push_gam_updates": "GamUpdateStatusMessage",
+               "push_configuration_signature_set": "sigsetConfigStatusMessage",
+               "push_botnet": "botnetStatusMessage"}
+
+ADDRESS_LIST_MAP = {"IPv6AddressRange": "IPV6RangeList",
+                    "IPv4AddressRange": "IPV4RangeList",
+                    "HostIPv4": "hostIPv4AddressList",
+                    "HostIPv6": "hostIPv6AddressList",
+                    "Network_IPV_6": "networkIPV6List",
+                    "Network_IPV_4": "networkIPV4List",
+                    }
+INTERVAL = arg_to_number(demisto.args().get("interval_in_seconds", 30))
+
 ''' CLIENT CLASS '''
 
 
@@ -296,6 +322,140 @@ class Client(BaseClient):
         self.headers['Accept'] = 'application/octet-stream'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body, resp_type='response')
 
+    def list_domain_device_request(self, domain_id: int) -> Dict:
+        """ Retrieves the list of devices in a domain.
+            Args:
+                domain_id: int - The relevant domain id.
+            Returns:
+                A dictionary with a list of devices.
+        """
+        url_suffix = f'/domain/{domain_id}/device'
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def list_device_interface_request(self, domain_id: int, device_id: int) -> Dict[str, List]:
+        """ Retrieves the list of interfaces related to a device.
+            Args:
+                device_id: int - The relevant device id.
+                domain_id: int - The relevant domain id.
+            Returns:
+                A dictionary with a list of interfaces.
+        """
+        url_suffix = f'/domain/{domain_id}/sensor/{device_id}/allocatedinterfaces'
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def assign_device_policy_request(self, domain_id: int, device_id: int, pre_firewall_policy: Optional[str],
+                                     post_firewall_policy: Optional[str]) -> Dict:
+        """ Assigns a policy to a device.
+            Args:
+                device_id: int - The relevant device id.
+                domain_id: int - The relevant domain id.
+                pre_firewall_policy: Optional[str] - The pre firewall policy.
+                post_firewall_policy: Optional[str] - The post firewall policy.
+            Returns:
+                A success or failure code.
+        """
+        url_suffix = f'/domain/{domain_id}/policyassignments/device/{device_id}'
+        json_data = {"firewallPolicyLast": post_firewall_policy,
+                     "firewallPolicyFirst": pre_firewall_policy}
+        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
+
+    def list_device_policy_request(self, domain_id: int, device_id: Optional[int]) -> Dict:
+        """ Retrieves the list of policies assigned to a device.
+            Args:
+                device_id: int - The relevant device id.
+                domain_id: int - The relevant domain id.
+            Returns:
+                A dictionary with a list of policies.
+        """
+        if device_id:
+            url_suffix = f'/domain/{domain_id}/policyassignments/device/{device_id}'
+        else:
+            url_suffix = f'/domain/{domain_id}/policyassignments/device'
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def assign_interface_policy_request(self, domain_id: int, interface_id: int, firewall_policy: Optional[str],
+                                        firewall_port_policy: Optional[str], ips_policy: Optional[str],
+                                        custom_policy_json: Optional[Dict]) -> Dict:
+        """ Assigns a policy to an interface.
+            Args:
+                domain_id: int - The relevant domain id.
+                interface_id: int - The relevant interface id.
+                firewall_policy: str - The firewall policy.
+                firewall_port_policy: str - The firewall port policy.
+                ips_policy: str - The IPS policy.
+                custom_policy_json: Dict - A dict of custom policies.
+            Returns:
+                A success or failure code.
+
+        """
+        url_suffix = f'/domain/{domain_id}/policyassignments/interface/{interface_id}'
+        json_data = {"firewallPolicy": firewall_policy,
+                     "firewallPortPolicy": firewall_port_policy,
+                     "ipsPolicy": ips_policy}
+        if custom_policy_json:
+            json_data |= custom_policy_json
+
+        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
+
+    def list_interface_policy_request(self, domain_id: int, interface_id: Optional[int]) -> Dict:
+        """ Retrieves the list of policies assigned to an interface.
+            Args:
+                domain_id: int - The relevant domain id.
+                interface_id: int - The relevant interface id.
+            Returns:
+                A dictionary with a list of policies.
+        """
+        if interface_id:
+            url_suffix = f'/domain/{domain_id}/policyassignments/interface/{interface_id}'
+        else:
+            url_suffix = f'/domain/{domain_id}/policyassignments/interface'
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def get_device_configuration_request(self, device_id: int) -> Dict:
+        """ Retrieves the configuration of a device.
+            Args:
+                device_id: int - The relevant device id.
+            Returns:
+                A dictionary with the device configuration.
+        """
+        url_suffix = f'/sensor/{device_id}/action/update_sensor_config'
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def deploy_device_configuration_request(self, device_id: int, is_SSL_Push_Required: bool = False,
+                                            is_GAM_Update_Required: bool = False,
+                                            is_Sigset_Config_Push_Required: bool = False,
+                                            is_Botnet_Push_Required: bool = False) -> Dict:
+        """ Deploy a device configuration.
+            Args:
+                device_id: int - The relevant device id.
+                is_SSL_Push_Required: bool - Is SSL push required.
+                is_GAM_Update_Required: bool - Is GAM update required.
+                is_Sigset_Config_Push_Required: bool - Is signature set configuration push required.
+                is_Botnet_Push_Required: bool - Is botnet push required.
+
+            Returns:
+                A success or failure code.
+        """
+        json_data = {"isSSLPushRequired": is_SSL_Push_Required,
+                     "isGAMUpdateRequired": is_GAM_Update_Required,
+                     "isSigsetConfigPushRequired": is_Sigset_Config_Push_Required,
+                     "isBotnetPushRequired": is_Botnet_Push_Required}
+
+        url_suffix = f'/sensor/{device_id}/action/update_sensor_config'
+        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
+
+    def check_deploy_device_configuration_request_status(self, device_id, request_id):
+        """
+        Checks the status of a device configuration deployment.
+        Args:
+            device_id (int): The relevant device id.
+            request_id (int): The relevant request id.
+
+        Returns: A dictionary with the status of deployment for all optional deployment categories.
+        """
+        url_suffix = f'/sensor/{device_id}/action/update_sensor_config/{request_id}'
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -463,9 +623,9 @@ def reverse_rule_object_type_cases(rule_type: str) -> str:
         NETWORK_IPV_6 -> Network IP V.6
     """
     number = '4' if ('4' in rule_type) else '6'
-    if 'HOST' in rule_type:
+    if HOST in rule_type:
         return f'Endpoint IP V.{number}'
-    elif 'ADDRESS_RANGE' in rule_type:
+    elif ADDRESS_RANGE in rule_type:
         return f'Range IP V.{number}'
     else:
         return f'Network IP V.{number}'
@@ -564,21 +724,21 @@ def create_body_firewall_policy(domain: int, name: str, visible_to_child: bool, 
 
 
 def create_body_create_rule(rule_type: str, address: List, number: int,
-                            from_to_list: list[dict[str, Any | None]]) -> tuple:
+                            from_to_list: list[dict[str, Optional[Any]]]) -> tuple:
     """ create part of the body for the command create_rule_object
         Args:
             rule_type: str - The type of the rule.
             address: List - A list of addresses, if relevant.
             number: int - The number of the IPV.
-            from_to_list: List - A list that contains dictionaries with from and do addresses.
+            from_to_list: List - A list that contains dictionaries with from and to addresses.
         Returns:
             Returns the body for the request.
         """
-    if 'HOST' in rule_type:
+    if HOST in rule_type:
         return f'HostIPv{number}', {
             f'hostIPv{number}AddressList': address
         }
-    elif 'ADDRESS_RANGE' in rule_type:
+    elif ADDRESS_RANGE in rule_type:
         return f'IPv{number}AddressRange', {
             f'IPV{number}RangeList': from_to_list
         }
@@ -586,6 +746,210 @@ def create_body_create_rule(rule_type: str, address: List, number: int,
         return f'Network_IPV_{number}', {
             f'networkIPV{number}List': address
         }
+
+
+def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
+                                    from_to_list: List[Dict[str, Optional[Any]]], state: str = "Enabled") -> tuple:
+    """ create part of the body for the command create_rule_object for v10
+        Args:
+            rule_type: str - The type of the rule.
+            address: List - A list of addresses, if relevant.
+            number: int - The number of the IPV.
+            from_to_list: List - A list that contains dictionaries with from and to addresses.
+            state: str - An Enabled or Disabled state.
+        Returns:
+            Returns the body for the request.
+        """
+    # build a list of dictionaries with the state and the address
+    list_to_send: list[Dict] = [
+        {"value": single_address, "state": STATE_TO_NUMBER.get(state)}
+        for single_address in address]
+    # for parameters with a range, we need to add the state to the dictionary
+    if from_to_list:
+        from_to_list[0].update({"state": STATE_TO_NUMBER.get(state)})
+
+    if HOST in rule_type:
+        return f'HostIPv{number}', {
+            f'hostIPv{number}AddressList': list_to_send
+        }
+    elif ADDRESS_RANGE in rule_type:
+        return f'IPv{number}AddressRange', {
+            f'IPV{number}RangeList': from_to_list
+        }
+    else:
+        return f'Network_IPV_{number}', {
+            f'networkIPV{number}List': list_to_send
+        }
+
+
+def create_body_update_rule_for_v10(rule_type: str, address: List, number: int,
+                                    from_to_list: List[Dict[str, Optional[Any]]], state: str = "Enabled") -> tuple:
+    """ create part of the body for the command update_rule_object for v10
+        Args:
+            rule_type: str - The type of the rule.
+            address: List - A list of addresses, if relevant.
+            number: int - The number of the IPV.
+            from_to_list: List - A list that contains dictionaries with from and to addresses.
+            state: str - An Enabled or Disabled state.
+        Returns:
+            Returns the body for the request.
+        """
+    # build a list of dictionaries with the state, the address, and changedState for update or delete
+    # code explanations:
+    # changedState: 1 = add, 3 = delete, depends on the choice of the user to overwrite or not
+    # AS you can tell from the 'update_rule_object_command', address is a list of dictionaries or strings.
+    # The existing addresses are dictionaries and the upcoming addresses are strings
+    # if the address is a dictionary, the user wants to delete and overwrite that's the reason we kept that address in the list.
+    list_to_send: list[Dict] = []
+    for single_address in address:
+        if type(single_address) is dict:  # if its a dict == its an existing address to overwrite, we saved from the 'get' call
+            list_to_send.append({"value": single_address.get("value"),
+                                 "state": STATE_TO_NUMBER.get(state),
+                                 "changedState": 3})
+        else:       # its a new address the user wants to add
+            list_to_send.append({"value": single_address,
+                                 "state": STATE_TO_NUMBER.get(state),
+                                 "changedState": 1})
+
+    # for parameters with a range, we need to add the state and the changeState to the dictionary
+    # Similar logic to above, if "state" is in the dictionary, the user wants to delete and overwrite that's the reason
+    # we kept that range in the list.
+    if from_to_list:
+        for dictionary in from_to_list:
+            if "state" in dictionary:  # if the state is in the dictionary, it means the user wants to delete that range.
+                dictionary.update({"changedState": 3})
+            else:  # if the state is not in the dictionary, it means the user wants to add that range of addresses
+                dictionary.update({"state": STATE_TO_NUMBER.get(state), "changedState": 1})
+
+    if HOST in rule_type:
+        return f'HostIPv{number}', {
+            f'hostIPv{number}AddressList': list_to_send
+        }
+    elif ADDRESS_RANGE in rule_type:
+        return f'IPv{number}AddressRange', {
+            f'IPV{number}RangeList': from_to_list
+        }
+    else:
+        return f'Network_IPV_{number}', {
+            f'networkIPV{number}List': list_to_send
+        }
+
+
+def modify_v10_results_to_v9_format(response: List[Dict[Any, Any]]) -> List[Dict[Any, Any]]:
+    """
+    Modify the response of v10 to be in the same format as in v9.
+    The main difference is that in v10 the API returns the addresses in a list of dictionaries,
+    A dictionary for each address with extra information, and in v9 all the addresses are in one list.
+
+    This function takes a v10 response and returns a v9 response (to maintain backward compatibility).
+    Args:
+        response: List[Dict[Any, Any]] - The response of the command of v10.
+    Returns:
+        A list of dictionaries in the same format as in v9.
+    """
+    key_list = ['IPv6AddressRange', 'HostIPv6', 'Network_IPV_6', 'Network_IPV_4',
+                'HostIPv4', 'IPv4AddressRange']
+    for record in response:
+        for key, value in record.items():
+            if key in key_list and value:   # find the key that its value is the dict contains the addresses
+                address_list: list = []
+                my_key = key
+
+                # The value of the first (and only) key is a list containing dict with addresses
+                addresses = value[ADDRESS_LIST_MAP.get(key)]
+                for inner_dict in addresses:
+                    temp_dict = {}
+                    for key in inner_dict.keys():
+                        # choose the relevant keys and values and saves them in a temp dict
+                        if key == 'value':
+                            address_list.append(inner_dict[key])
+                        elif key in ['FromAddress', 'ToAddress']:
+                            temp_dict[key] = inner_dict[key]
+
+                    address_list.append(temp_dict) if temp_dict else None
+
+                if address_list:
+                    # replace the list of dicts in the original record with a list of strings containing the addresses
+                    record[my_key] = {ADDRESS_LIST_MAP.get(my_key): address_list}
+
+    return response
+
+
+def capitalize_key_first_letter(input_lst: List[Dict], check_lst: List = []) -> List[Dict]:
+    """
+        Capitalize the first letter of all keys in all given dictionaries,
+        while keeping the rest of the key as it is.(can't use 'capitalize()').
+        Args:
+            input_lst: List - A list of dictionaries.
+            check_lst: List - A list of keys to check if they exist in the dictionary.
+        Returns:
+            Returns the dict with the first letter of all keys capitalized.
+    """
+    capitalize_lst = []
+    for my_dict in input_lst:
+        my_dict = (
+            {
+                k[:1].upper() + k[1:]: v
+                for k, v in my_dict.items()
+                if k in check_lst
+            }
+            if check_lst
+            else {k[:1].upper() + k[1:]: v for k, v in my_dict.items()}
+        )
+        capitalize_lst.append(my_dict) if my_dict else None
+    return capitalize_lst
+
+
+def flatten_and_capitalize(main_dict: Dict, inner_dict_key: str, check_lst: List = []) -> Dict:
+    """
+         Flatten a nested dictionary and capitalize the first letter of all the nested dictionary's key
+        Args:
+            main_dict: Dict - A dictionary with a nested dict.
+            inner_dict_key: str - The key of the nested dictionary.
+            check_lst: List - A list of keys to check if they exist in the dictionary.
+        Returns:
+            Returns a flat dict with the first letter of all keys capitalized.
+    """
+    if inner_dict := main_dict.pop(inner_dict_key, None):
+        capitalized_inner = capitalize_key_first_letter(input_lst=[inner_dict], check_lst=check_lst)[0]
+        main_dict |= capitalized_inner
+    return main_dict
+
+
+def deploy_polling_message(status: Dict, args: Dict):
+    """
+    Builds a message and a fail or success list for the polling command
+    Args:
+        status: the status of the deployment
+        args: the arguments of the deployment command
+    Returns:
+        fail_or_success_list: a list of 0 or 1, 0 for failure and 1 for success
+        message: a message to be printed to the user
+    """
+    fail_or_success_list = []
+    build_a_massage = ""
+    for k, v in args.items():
+        if v == "true":  # if the value is true that is one of the arguments to deploy and we need to check its status
+            current_percentage_status = status.get(DEPLOY_ARGUMENT_MAPPER.get(str(k)))
+            current_message_status = status.get(MESSAGE_MAP.get(str(k)))
+            if current_percentage_status != 100 or current_message_status != "DOWNLOAD COMPLETE":
+                fail_or_success_list.append(0)
+                build_a_massage += f"""\nThe current percentage of deployment for '{k}' is: {current_percentage_status}%
+                \nAnd the current message is: {current_message_status}\n"""
+            else:
+                fail_or_success_list.append(1)
+    return fail_or_success_list, build_a_massage
+
+
+def check_required_arg(arg_name: str, arg_value: int | None) -> int:
+    """ Check if the required arguments are present in the command.
+        Args:
+            arg_value: int - The expected value for the argument.
+            arg_name: str - The name of the argument.
+    """
+    if not arg_value and arg_value != 0:
+        raise DemistoException(f'Please provide a {arg_name} argument.')
+    return arg_value
 
 
 def check_args_create_rule(rule_type: str, address: List, from_address: str, to_address: str, number: int):
@@ -601,11 +965,11 @@ def check_args_create_rule(rule_type: str, address: List, from_address: str, to_
         raise Exception('Please enter a matching address.')
     if ('4' in rule_type and number == 6) or ('6' in rule_type and number == 4):
         raise Exception('The version of the IP in "rule_object_type" should match the addresses version.')
-    if ('HOST' in rule_type or 'NETWORK' in rule_type) and (not address or from_address or to_address):
+    if (HOST in rule_type or 'NETWORK' in rule_type) and (not address or from_address or to_address):
         raise Exception(f'If the "rule_object_type" is “Endpoint IP V.{number}” or “Network IP V.{number}” than only'
                         f' the argument “address_ip_v.{number}” must contain a value. The other address arguments '
                         f'should be empty.')
-    if 'ADDRESS_RANGE' in rule_type and (not to_address or not from_address or address):
+    if ADDRESS_RANGE in rule_type and (not to_address or not from_address or address):
         raise Exception(f'If the "rule_object_type" is “Range IP V.{number}” than only the arguments '
                         f'“from_address_ip_v.{number}” and “to_address_ip_v.{number}” must contain a value, the other'
                         f' address arguments should be empty.')
@@ -661,11 +1025,11 @@ def update_source_destination_object(obj: List[Dict], rule_object_id: Optional[i
     return obj
 
 
-def overwrite_source_destination_object(rule_object_id: int | None, rule_object_type: Optional[str], dest_or_src: str,
+def overwrite_source_destination_object(rule_object_id: Optional[int], rule_object_type: Optional[str], dest_or_src: str,
                                         member_rule_list: Dict) -> List:
     """ overwrite the source and destination objects in the command update_firewall_policy.
         Args:
-            rule_object_id: int | None - The id of the rule.
+            rule_object_id: Optional [int] - The id of the rule.
             rule_object_type: Optional[str] - The type of the rule.
             dest_or_src: str - Overwrite the destination or source object.
             member_rule_list: Dict - The first object in MemberRuleList in the API response.
@@ -717,9 +1081,9 @@ def get_addresses_from_response(response: Dict) -> List:
     """
     rule_type = response.get('ruleobjType', '')
     number = 4 if '4' in rule_type else 6
-    if 'HOST' in rule_type:
+    if HOST in rule_type:
         return response.get(f'HostIPv{number}', {}).get(f'hostIPv{number}AddressList', [])
-    elif 'ADDRESS_RANGE' in rule_type:
+    elif ADDRESS_RANGE in rule_type:
         return response.get(f'IPv{number}AddressRange', {}).get(f'IPV{number}RangeList', [Dict])
     else:  # 'NETWORK'
         return response.get(f'Network_IPV_{number}', {}).get(f'networkIPV{number}List', [])
@@ -752,7 +1116,7 @@ def list_domain_firewall_policy_command(client: Client, args: Dict) -> CommandRe
         A CommandResult object with the list of Firewall Policies defined in a particular domain.
     """
     domain_id = int(args.get('domain_id', 0))
-    limit = arg_to_number(args.get('limit', 50)) or 50
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
@@ -990,7 +1354,7 @@ def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResul
     """
     domain_id = arg_to_number(args.get('domain_id'), required=True) or 0
     rule_type = args.get('type', 'All')
-    limit = arg_to_number(args.get('limit', 50)) or 50
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
 
@@ -1003,6 +1367,9 @@ def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResul
         rule_type = rule_object_type_cases(rule_type, 'low')
     response = client.list_domain_rule_objects_request(domain_id, rule_type)
     results = pagination(response.get('RuleObjDef', []), limit, page, page_size)
+    # modify the results in v10 to match the v9 pattern
+    if VERSION == V10:
+        results = modify_v10_results_to_v9_format(results)
 
     contents = []
     for record in results:
@@ -1039,6 +1406,10 @@ def get_rule_object_command(client: Client, args: Dict) -> CommandResults:
     rule_id = int(args.get('rule_id', ''))
     response = client.get_rule_object_request(rule_id)
     response = response.get('RuleObjDef', {})
+    addresses = get_addresses_from_response(response)
+    # modify the results in v10 to match the v9 pattern
+    if VERSION == V10:
+        response = modify_v10_results_to_v9_format([response])[0]
     addresses = get_addresses_from_response(response)
     response['ruleobjType'] = reverse_rule_object_type_cases(response.get('ruleobjType'))
     contents = {
@@ -1080,6 +1451,7 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
     address_ip_v_6 = argToList(args.get('address_ip_v.6'))
     from_address_ip_v_6 = args.get('from_address_ip_v.6')
     to_address_ip_v_6 = args.get('to_address_ip_v.6')
+    state: str = args.get('state', 'Enabled')
 
     if (address_ip_v_4 and address_ip_v_6) or (from_address_ip_v_4 and from_address_ip_v_6) or \
             (to_address_ip_v_4 and to_address_ip_v_6):
@@ -1107,8 +1479,14 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
         'FromAddress': from_address,
         'ToAddress': to_address
     }]
+    # create the body according to the version of the NSM
+    if VERSION == V10:
+        d_name, extra_body = create_body_create_rule_for_v10(rule_type=rule_type, address=address,
+                                                             number=number, from_to_list=from_to_list,
+                                                             state=state)
+    else:
+        d_name, extra_body = create_body_create_rule(rule_type, address, number, from_to_list)
 
-    d_name, extra_body = create_body_create_rule(rule_type, address, number, from_to_list)
     rule_obj_def = body.get('RuleObjDef', {})
     rule_obj_def[d_name] = extra_body
     response = client.create_rule_object_request(body)
@@ -1145,7 +1523,7 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     from_address_ip_v_6 = args.get('from_address_ip_v.6')
     to_address_ip_v_6 = args.get('to_address_ip_v.6')
     is_overwrite = argToBoolean(args.get('is_overwrite', False))
-
+    state: str = args.get('state', 'Enabled')
     response_get = client.get_rule_object_request(rule_id)
     response_get = response_get.get('RuleObjDef', {})
 
@@ -1180,7 +1558,9 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     description = description if description else response_get.get('description')
     from_to_address_ip_v_6 = []
     from_to_address_ip_v_4 = []
-    if is_overwrite:
+    # in v9 if the user wants to overwrite the addresses we send only the new values,
+    # in v10 we do the same thing if the user dose not want to overwrite the addresses
+    if VERSION == V9 and is_overwrite or VERSION == V10 and not is_overwrite:
         if rule_type == 'HOST_IPV_4':
             address_ip_v_4 = address_ip_v_4 if address_ip_v_4 else response_get.get('HostIPv4', {}) \
                 .get('hostIPv4AddressList')
@@ -1207,7 +1587,9 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
             }]
         elif not from_address_ip_v_6 and rule_type == 'IPV_6_ADDRESS_RANGE':
             from_to_address_ip_v_6 = response_get.get('IPv6AddressRange', {}).get('IPV6RangeList')
-    else:
+    # in v9 if the user wants to add new addresses we send the old values and the new addresses,
+    # in v10 we do the same thing if the user wants to overwrite the addresses
+    elif VERSION == V9 and not is_overwrite or VERSION == V10 and is_overwrite:
         if rule_type == 'HOST_IPV_4':
             old_address_ip_v_4 = response_get.get('HostIPv4', {}).get('hostIPv4AddressList', [])
             if address_ip_v_4:
@@ -1255,7 +1637,15 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     address = address_ip_v_4 if address_ip_v_4 else address_ip_v_6
     number = 4 if (address_ip_v_4 or from_to_address_ip_v_4) else 6
     from_to_list = from_to_address_ip_v_4 if from_to_address_ip_v_4 else from_to_address_ip_v_6
-    d_name, extra_body = create_body_create_rule(rule_type, address, number, from_to_list)
+    # create the body according to the version of the NSM
+    if VERSION == V10:
+        d_name, extra_body = create_body_update_rule_for_v10(rule_type=rule_type, address=address,
+                                                             number=number, from_to_list=from_to_list,
+                                                             state=state)
+
+    else:
+        d_name, extra_body = create_body_create_rule(rule_type, address, number, from_to_list)
+
     rule_obj_def = body.get('RuleObjDef', {})
     rule_obj_def[d_name] = extra_body
     client.update_rule_object_request(body, rule_id)
@@ -1283,7 +1673,7 @@ def get_alerts_command(client: Client, args: Dict) -> CommandResults:
         Returns:
             A CommandResult object with a list of alerts.
     """
-    limit = arg_to_number(args.get('limit', 50)) or 50
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     time_period = args.get('time_period', 'LAST_7_DAYS')
@@ -1516,7 +1906,7 @@ def get_domains_command(client: Client, args: Dict) -> CommandResults:
             A CommandResult object with The domain details or domains list.
     """
     domain_id = arg_to_number(args.get('domain_id', None))
-    limit = arg_to_number(args.get('limit', 50)) or 50
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
@@ -1565,7 +1955,7 @@ def get_sensors_command(client: Client, args: Dict) -> CommandResults:
             A CommandResult object with The relevant sensors.
     """
     domain_id = arg_to_number(args.get('domain_id'))
-    limit = arg_to_number(args.get('limit', 50)) or 50
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
@@ -1638,7 +2028,7 @@ def get_ips_policies_command(client: Client, args: Dict) -> CommandResults:
             A CommandResult object with The relevant ips policies.
     """
     domain_id = arg_to_number(args.get('domain_id')) or 0
-    limit = arg_to_number(args.get('limit', 50)) or 50
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
@@ -1786,7 +2176,7 @@ def list_pcap_file_command(client: Client, args: Dict) -> CommandResults:
             A CommandResult object with a list of captured PCAP files.
     """
     sensor_id = int(args.get('sensor_id', ''))
-    limit = arg_to_number(args.get('limit', 50)) or 50
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
@@ -1831,19 +2221,306 @@ def export_pcap_file_command(client: Client, args: Dict) -> List:
     return [file_]
 
 
+def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves the list of devices related to a given domain.
+    Args:
+        client(Client): client - A McAfeeNSM client.
+        args(Dict): - The function arguments.
+    Returns:
+        A CommandResult object with a list of domain devices.
+    """
+    domain_id = arg_to_number(args.get('domain_id'), arg_name='domain_id', required=True)
+    domain_id = check_required_arg(arg_name="domain_id", arg_value=domain_id)
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', False))
+
+    response = client.list_domain_device_request(domain_id)
+    devices: List = response.get('DeviceResponseList', [])
+
+    capitalize_devices = capitalize_key_first_letter(devices) if all_results else capitalize_key_first_letter(devices)[:limit]
+
+    readable_output = tableToMarkdown(
+        name='Domain devices List', t=capitalize_devices, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.Device',
+        outputs=capitalize_devices,
+        raw_response=response,
+    )
+
+
+def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves the list of interfaces related to a given device.
+    Args:
+        client(Client): client - A McAfeeNSM client.
+        args(Dict): - The function arguments.
+    Returns:
+        A CommandResult object with a list of device interfaces.
+    """
+    device_id = arg_to_number(args.get('device_id'), arg_name='device_id', required=True)
+    device_id = check_required_arg(arg_name="device_id", arg_value=device_id)
+    domain_id = arg_to_number(args.get('domain_id'), arg_name='domain_id', required=True)
+    domain_id = check_required_arg(arg_name="domain_id", arg_value=domain_id)
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', False))
+
+    response = client.list_device_interface_request(domain_id=domain_id, device_id=device_id)
+    interfaces = (response.get('allocatedInterfaceList', []))
+
+    key_list = ['interfaceId', 'interfaceName', 'interfaceType']
+    capitalize_interfaces = capitalize_key_first_letter(interfaces, key_list) if all_results else \
+        capitalize_key_first_letter(interfaces, key_list)[:limit]
+
+    readable_output = tableToMarkdown(
+        name='Device interfaces List', t=capitalize_interfaces, removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.Interface',
+        outputs=capitalize_interfaces,
+        raw_response=response
+    )
+
+
+def assign_device_policy_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Assigns a policy to a device.
+    Args:
+        client(Client): client - A McAfeeNSM client.
+        args(Dict): - The function arguments.
+    Returns:
+        A CommandResult object with a success or failure message.
+    """
+    device_id = arg_to_number(args.get('device_id'), arg_name='device_id', required=True)
+    device_id = check_required_arg(arg_name="device_id", arg_value=device_id)
+    domain_id = arg_to_number(args.get('domain_id'), arg_name='domain_id', required=True)
+    domain_id = check_required_arg(arg_name="domain_id", arg_value=domain_id)
+    pre_firewall_policy = args.get('pre_firewall_policy_name')
+    post_firewall_policy = args.get('post_firewall_policy_name')
+
+    response = client.assign_device_policy_request(domain_id=domain_id, device_id=device_id,
+                                                   pre_firewall_policy=pre_firewall_policy,
+                                                   post_firewall_policy=post_firewall_policy
+                                                   )
+    readable_output = 'Policy assigned successfully.' if response.get('status') == 1 else 'Policy assignment failed.'
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=response)
+
+
+def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves a list of policies related to the domain or a specific device.
+    Args:
+        client(Client): client - A McAfeeNSM client.
+        args(Dict): - The function arguments.
+
+    Returns:
+         A CommandResult object with a list of device policies.
+    """
+    device_id = arg_to_number(args.get('device_id'))
+    domain_id = arg_to_number(args.get('domain_id'), arg_name='domain_id', required=True)
+    domain_id = check_required_arg(arg_name="domain_id", arg_value=domain_id)
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', False))
+
+    response = client.list_device_policy_request(domain_id=domain_id, device_id=device_id)
+    all_policies = response.get('policyAssignmentsList', [])
+
+    capitalize_policies = capitalize_key_first_letter(all_policies) if all_results else \
+        capitalize_key_first_letter(all_policies)[:limit]
+
+    readable_output = tableToMarkdown(
+        name='Device policy List', t=capitalize_policies, removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.DevicePolicy',
+        outputs=capitalize_policies,
+        raw_response=response
+    )
+
+
+def assign_interface_policy_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Assigns an existing policy to an interface.
+    Args:
+        client(Client): - A McAfeeNSM client.
+        args(Dict): - The function arguments.
+    Returns:
+        A CommandResult object with a success or failure message.
+    """
+    domain_id = arg_to_number(args.get('domain_id'), arg_name='domain_id', required=True)
+    domain_id = check_required_arg(arg_name="domain_id", arg_value=domain_id)
+    interface_id = arg_to_number(args.get('interface_id'), arg_name='interface_id', required=True)
+    interface_id = check_required_arg(arg_name="interface_id", arg_value=interface_id)
+    firewall_policy = args.get('firewall_policy_name')
+    firewall_port_policy = args.get('firewall_port_policy_name')
+    ips_policy = args.get('ips_policy_name')
+    custom_policy_json: str = args.get('custom_policy_json') or ""
+    custom_policy_json = json.loads(custom_policy_json) if custom_policy_json else {}
+
+    # Check if at least one policy was provided
+    if not firewall_policy and not firewall_port_policy and not ips_policy and not custom_policy_json:
+        raise DemistoException("Please provide at least one policy to assign.")
+
+    response = client.assign_interface_policy_request(domain_id=domain_id,
+                                                      interface_id=interface_id,
+                                                      firewall_policy=firewall_policy,
+                                                      firewall_port_policy=firewall_port_policy,
+                                                      ips_policy=ips_policy,
+                                                      custom_policy_json=custom_policy_json
+                                                      )
+    readable_output = 'Policy assigned successfully.' if response.get('status') == 1 else 'Policy assignment failed.'
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=response
+    )
+
+
+def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves a list of policies related to the domain or a specific interface.
+    Args:
+        client (Client):  - A McAfeeNSM client.
+        args (Dict): - The function arguments.
+
+    Returns:
+        A CommandResult object with a list of policies.
+    """
+    domain_id = arg_to_number(args.get('domain_id'), arg_name='domain_id', required=True)
+    domain_id = check_required_arg(arg_name="domain_id", arg_value=domain_id)
+    interface_id = arg_to_number(args.get('interface_id'))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', False))
+
+    response = client.list_interface_policy_request(domain_id=domain_id, interface_id=interface_id)
+    all_policies: list = [response] if interface_id else response.get('policyAssignmentsList') or []
+
+    capitalize_policies = capitalize_key_first_letter(all_policies) if all_results else \
+        capitalize_key_first_letter(all_policies)[:limit]
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            name='Interface policy List', t=capitalize_policies, removeNull=True
+        ),
+        outputs_prefix='NSM.InterfacePolicy',
+        outputs=capitalize_policies,
+        raw_response=response
+    )
+
+
+def get_device_configuration_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves the configuration of a device(e.g pending changes).
+    Args:
+        client (Client):  - A McAfeeNSM client.
+        args (Dict): - The function arguments.
+
+    Returns:
+        A CommandResult object with the device configuration information.
+    """
+    device_id = arg_to_number(args.get('device_id'), arg_name='device_id', required=True)
+    device_id = check_required_arg(arg_name="device_id", arg_value=device_id)
+
+    response = client.get_device_configuration_request(device_id=device_id)
+    capitalize_response = capitalize_key_first_letter([response])[0]
+    flattened_response = flatten_and_capitalize(main_dict=capitalize_response,
+                                                inner_dict_key='PendingChanges')
+
+    readable_output = tableToMarkdown(
+        name='Device Configuration', t=flattened_response, removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.DeviceConfiguration',
+        outputs=flattened_response,
+        raw_response=response
+    )
+
+
+@polling_function(name='nsm-deploy-device-configuration', interval=INTERVAL, requires_polling_arg=False)
+def deploy_device_configuration_command(args: Dict, client: Client) -> PollResult:
+    """
+    Deploy the configuration of a device.(e.g activate pending changes).
+    Args:
+        args (Dict): - The function arguments.
+        client (Client): - A McAfeeNSM client.
+
+    Returns:
+        A PollResult object with a success or failure message.
+    """
+
+    request_id = arg_to_number(args.get('request_id'))
+    device_id = arg_to_number(args.get('device_id'), arg_name='device_id', required=True)
+    device_id = check_required_arg(arg_name="device_id", arg_value=device_id)
+
+    if not request_id:   # if this is the first time the function is called
+        is_ssl_push_required = argToBoolean(args.get('push_ssl_key', False))
+        is_gam_update_required = argToBoolean(args.get('push_gam_updates', False))
+        is_sigset_config_push_required = argToBoolean(args.get('push_configuration_signature_set', False))
+        is_botnet_push_required = argToBoolean(args.get('push_botnet', False))
+
+        if not any([is_ssl_push_required, is_gam_update_required, is_sigset_config_push_required, is_botnet_push_required]):
+            raise DemistoException("Please provide at least one argument to deploy.")
+
+        if requests_id := client.deploy_device_configuration_request(
+            device_id=device_id,
+            is_SSL_Push_Required=is_ssl_push_required,
+            is_GAM_Update_Required=is_gam_update_required,
+            is_Sigset_Config_Push_Required=is_sigset_config_push_required,
+            is_Botnet_Push_Required=is_botnet_push_required,
+        ).get('RequestId'):
+            args["request_id"] = requests_id
+
+        else:
+            raise DemistoException("Failed to deploy the device configuration.")
+
+    status = client.check_deploy_device_configuration_request_status(device_id=device_id,
+                                                                     request_id=request_id)
+
+    fail_or_success_list, message_to_return = deploy_polling_message(args=args, status=status)
+    message = CommandResults(
+        readable_output=f"{message_to_return}\n\nChecking again in {INTERVAL} seconds...")
+
+    if not all(fail_or_success_list):  # if one of the arguments was not fully deployed yet, the polling will continue
+        return PollResult(
+            partial_result=message,
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run={"request_id": request_id,
+                               "device_id": device_id,
+                               **args})
+
+    message = CommandResults(
+        readable_output='The device configuration has been deployed successfully.')
+    return PollResult(
+        response=message,
+        continue_to_poll=False)
+
+
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:  # pragma: no cover
 
-    url = f"{demisto.params().get('url')}/sdkapi"
-    user_name = demisto.params().get('credentials', {}).get('identifier', "")
-    password = demisto.params().get('credentials', {}).get('password', "")
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    args = demisto.args()
+    command = demisto.command()
+    params = demisto.params()
+
+    url = f"{params.get('url')}/sdkapi"
+    user_name = params.get('credentials', {}).get('identifier', "")
+    password = params.get('credentials', {}).get('password', "")
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
     auth = (user_name, password)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
     try:
 
         headers: Dict = {
@@ -1852,81 +2529,78 @@ def main() -> None:  # pragma: no cover
         }
 
         client = Client(url=url, auth=auth, headers=headers, proxy=proxy, verify=verify_certificate)
-        if demisto.command() != 'test-module':
+        if command != 'test-module':
             session_str = get_session(client, f'{user_name}:{password}')
             headers['NSM-SDK-API'] = session_str
             client = Client(url=url, auth=auth, headers=headers, proxy=proxy, verify=verify_certificate)
-
-        if demisto.command() == 'test-module':
+        results: Union[CommandResults, list[CommandResults], str]
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result_str = test_module(client, f'{user_name}:{password}')
-            return_results(result_str)
-        elif demisto.command() == 'nsm-list-domain-firewall-policy':
-            result = list_domain_firewall_policy_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-firewall-policy':
-            result = get_firewall_policy_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-create-firewall-policy':
-            result = create_firewall_policy_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-update-firewall-policy':
-            result = update_firewall_policy_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-delete-firewall-policy':
-            result = delete_firewall_policy_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-list-domain-rule-object':
-            result = list_domain_rule_objects_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-rule-object':
-            result = get_rule_object_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-create-rule-object':
-            result = create_rule_object_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-update-rule-object':
-            result = update_rule_object_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-delete-rule-object':
-            result = delete_rule_object_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-alerts':
-            result = get_alerts_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-alert-details':
-            result = get_alert_details_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-attacks':
-            results_list = get_attacks_command(client, demisto.args())
-            return_results(results_list)
-        elif demisto.command() == 'nsm-get-domains':
-            result = get_domains_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-sensors':
-            result = get_sensors_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-ips-policies':
-            result = get_ips_policies_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-get-ips-policy-details':
-            result = get_ips_policy_details_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-update-alerts':
-            result = update_alerts_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-list-pcap-file':
-            result = list_pcap_file_command(client, demisto.args())
-            return_results(result)
-        elif demisto.command() == 'nsm-export-pcap-file':
-            results_list = export_pcap_file_command(client, demisto.args())
-            return_results(results_list)
+            results = test_module(client, f'{user_name}:{password}')
+            # return_results(str_results)
+        elif command == 'nsm-list-domain-firewall-policy':
+            results = list_domain_firewall_policy_command(client, args)
+        elif command == 'nsm-get-firewall-policy':
+            results = get_firewall_policy_command(client, args)
+        elif command == 'nsm-create-firewall-policy':
+            results = create_firewall_policy_command(client, args)
+        elif command == 'nsm-update-firewall-policy':
+            results = update_firewall_policy_command(client, args)
+        elif command == 'nsm-delete-firewall-policy':
+            results = delete_firewall_policy_command(client, args)
+        elif command == 'nsm-list-domain-rule-object':
+            results = list_domain_rule_objects_command(client, args)
+        elif command == 'nsm-get-rule-object':
+            results = get_rule_object_command(client, args)
+        elif command == 'nsm-create-rule-object':
+            results = create_rule_object_command(client, args)
+        elif command == 'nsm-update-rule-object':
+            results = update_rule_object_command(client, args)
+        elif command == 'nsm-delete-rule-object':
+            results = delete_rule_object_command(client, args)
+        elif command == 'nsm-get-alerts':
+            results = get_alerts_command(client, args)
+        elif command == 'nsm-get-alert-details':
+            results = get_alert_details_command(client, args)
+        elif command == 'nsm-get-attacks':
+            results = get_attacks_command(client, args)
+        elif command == 'nsm-get-domains':
+            results = get_domains_command(client, args)
+        elif command == 'nsm-get-sensors':
+            results = get_sensors_command(client, args)
+        elif command == 'nsm-get-ips-policies':
+            results = get_ips_policies_command(client, args)
+        elif command == 'nsm-get-ips-policy-details':
+            results = get_ips_policy_details_command(client, args)
+        elif command == 'nsm-update-alerts':
+            results = update_alerts_command(client, args)
+        elif command == 'nsm-list-pcap-file':
+            results = list_pcap_file_command(client, args)
+        elif command == 'nsm-export-pcap-file':
+            results = export_pcap_file_command(client, args)
+        elif command == 'nsm-list-device-interface':
+            results = list_device_interface_command(client, args)
+        elif command == 'nsm-list-domain-device':
+            results = list_domain_device_command(client, args)
+        elif command == 'nsm-assign-device-policy':
+            results = assign_device_policy_command(client, args)
+        elif command == 'nsm-list-device-policy':
+            results = list_device_policy_command(client, args)
+        elif command == 'nsm-assign-interface-policy':
+            results = assign_interface_policy_command(client, args)
+        elif command == 'nsm-list-interface-policy':
+            results = list_interface_policy_command(client, args)
+        elif command == 'nsm-get-device-configuration':
+            results = get_device_configuration_command(client, args)
+        elif command == 'nsm-deploy-device-configuration':
+            results = deploy_device_configuration_command(args, client)
         else:
             raise NotImplementedError('This command is not implemented yet.')
+        return_results(results)
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

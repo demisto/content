@@ -133,6 +133,8 @@ MOCK_KEYS = {
     'foo': 'bar',
     'baz': 'bug'
 }
+OFFSET = 0
+ITEMS_PER_PAGE = 10
 
 
 class MOCK_LOOKUP(object):
@@ -198,7 +200,7 @@ def test_first_fetch_incidents(mock_query_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     incidents = fetch_incidents()
     assert len(incidents) == 2
-    assert json.loads(incidents[0]['rawJSON'])['devo.metadata.alert']['context'] == 'simultaneous_login'
+    assert json.loads(incidents[0]['rawJSON'])['devo.metadata.alert']['context'] == 'CPU_Usage_Alert'
 
 
 @patch('Devo_v2.READER_ENDPOINT', MOCK_READER_ENDPOINT, create=True)
@@ -211,7 +213,7 @@ def test_next_fetch(mock_query_results, mock_last_run):
     mock_last_run.return_value = MOCK_LAST_RUN
     incidents = fetch_incidents()
     assert len(incidents) == 2
-    assert json.loads(incidents[1]['rawJSON'])['devo.metadata.alert']['context'] == 'CPU_Usage_Alert'
+    assert json.loads(incidents[1]['rawJSON'])['devo.metadata.alert']['context'] == 'simultaneous_login'
 
 
 @patch('Devo_v2.READER_ENDPOINT', MOCK_READER_ENDPOINT, create=True)
@@ -221,7 +223,7 @@ def test_next_fetch(mock_query_results, mock_last_run):
 def test_get_alerts(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_ALERT_ARGS
-    results = get_alerts_command()
+    results = get_alerts_command(OFFSET, ITEMS_PER_PAGE)
     assert len(results) == 2
     assert results[0]['Contents'][0]['engine'] == 'CPU_Usage_Alert'
 
@@ -233,7 +235,7 @@ def test_get_alerts(mock_query_results, mock_args_results):
 def test_run_query(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_QUERY_ARGS
-    results = run_query_command()
+    results = run_query_command(OFFSET, ITEMS_PER_PAGE)
     assert len(results) == 2
     assert results[0]['Contents'][0]['engine'] == 'CPU_Usage_Alert'
 
@@ -254,7 +256,7 @@ def test_multi_query(mock_query_types, mock_query_reader, mock_query_results, mo
     mock_args_results.return_value = MOCK_MULTI_ARGS
     mock_submit_results.return_value = None
     mock_wait_results.return_value = (None, None)
-    results = multi_table_query_command()
+    results = multi_table_query_command(OFFSET, ITEMS_PER_PAGE)
     assert results['HumanReadable'] == 'No results found'
 
 

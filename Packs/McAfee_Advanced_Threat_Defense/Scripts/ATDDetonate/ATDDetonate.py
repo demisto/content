@@ -53,7 +53,7 @@ def main():
         istate = demisto.get(resp[0], 'Contents.results.istate')
 
         # find status
-        if int(istate) in [1, 2]:
+        if istate and int(istate) in [1, 2]:
             atdDone = True
         # continue loop
         else:
