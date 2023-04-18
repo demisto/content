@@ -41,26 +41,38 @@ configuration:
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   required: false
   type: 0
+- display: PrivateLink service URL.
+  name: endpoint_url
+  type: 0
+  required: false
+  section: Connect
+  advanced: true
+- display: STS PrivateLink URL.
+  name: sts_endpoint_url
+  type: 0
+  required: false
+  section: Connect
+  advanced: true
 - display: First fetch time
   name: first_fetch
-  type: 0
-  defaultvalue: 3 days ago
   required: false
+  defaultvalue: '3 days ago'
+  type: 0
 - display: Number of events to fetch per fetch.
   name: limit
+  required: false
   type: 0
   defaultvalue: 1000
-  required: false
 - display: Guard Duty Severity level
   name: gd_severity
   required: true
+  type: 15
   additionalinfo: 'The severity level or higher of findings to be fetched. Possible values: Low, Medium, or High. For example, if you set the severity level to Medium, only findings with severity level Medium or High will be fetched.'
   options:
   - 'Low'
   - 'Medium'
   - 'High'
   defaultvalue: 'Low'
-  type: 15
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure
@@ -112,7 +124,7 @@ script:
     description: Manual command used to fetch events and display them.
     execution: false
     name: aws-gd-get-events
-  dockerimage: demisto/boto3py3:1.0.0.49694
+  dockerimage: demisto/boto3py3:1.0.0.52713
   isfetchevents: true
   runonce: false
   subtype: python3

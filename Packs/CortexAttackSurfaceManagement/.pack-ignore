@@ -21,3 +21,5 @@ Nexpose
 RemediationGuidance
 closeReasons
 Openssh
+GcpProject
+RemediationRule

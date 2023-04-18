@@ -23,7 +23,7 @@
     "system": false,
     "threshold": 72,
     "type": "multiSelect",
-    "unmapped": true,
+    "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,

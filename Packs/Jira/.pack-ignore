@@ -5,10 +5,10 @@ ignore=IN126,IN145
 ignore=RM106
 
 [file:ScriptJiraChangeTransition.yml]
-ignore=BA110
+ignore=BA110,BA124
 
 [file:ScriptJiraListTransition.yml]
-ignore=BA110
+ignore=BA110,BA124
 
 [file:classifier-mapper-outgoing-Jira.json]
 ignore=BA101
@@ -17,10 +17,11 @@ ignore=BA101
 ignore=PB106
 
 [known_words]
-Atlassian
-Jira
-JiraEventCollector
-JiraCreateIssue
-JiraCreateIssueExample
-customFields
-SSL
+atlassian
+jira
+jiraeventcollector
+jiracreateissue
+jiracreateissueexample
+customfields
+ssl
+

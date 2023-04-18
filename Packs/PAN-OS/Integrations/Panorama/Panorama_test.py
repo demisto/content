@@ -1,6 +1,7 @@
 import json
 import io
 import pytest
+import requests_mock
 
 import demistomock as demisto
 from lxml import etree
@@ -6483,3 +6484,84 @@ def test_build_xpath_filter(name_match, name_contain, filters, expected_result):
     from Panorama import build_xpath_filter
     mock_result = build_xpath_filter(name_match, name_contain, filters)
     assert mock_result == expected_result
+
+
+@pytest.mark.parametrize('sample_file, expected_result_file',
+                         [
+                             ('test_data/prettify_edls_arr_sample.json',
+                              'test_data/prettify_edls_arr_expected_result.json'),
+                         ])
+def test_prettify_edls_arr(sample_file, expected_result_file):
+    """
+    Given:
+    - raw response from api represented by a dictionary
+
+    When:
+    - calling panorama_list_edls and there is only one edl in response
+
+    Then:
+    - assert that the returned value after prettify is correct
+    """
+    from Panorama import prettify_edls_arr
+
+    with open(sample_file, 'r') as f:
+        sample = json.loads(f.read())
+
+    with open(expected_result_file, 'r') as f:
+        expected_result = json.loads(f.read())
+
+    mock_result = prettify_edls_arr(sample)
+    assert mock_result == expected_result
+
+
+def test_panorama_list_rules():
+    import Panorama
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    mock_version_xml = """
+    <response status="success" code="19">
+        <result total-count="1" count="1">
+            <entry name="hehe 2">
+                <to>
+                    <member>any</member>
+                </to>
+                <from>
+                    <member>any</member>
+                </from>
+                <source>
+                    <member>any</member>
+                </source>
+                <destination>
+                    <member>any</member>
+                </destination>
+                <source-user>
+                    <member>any</member>
+                </source-user>
+                <category>
+                    <member>any</member>
+                </category>
+                <application>
+                    <member>dns</member>
+                    <member>http</member>
+                </application>
+                <service>
+                    <member>application-default</member>
+                </service>
+                <hip-profiles>
+                    <member>any</member>
+                </hip-profiles>
+                <action>allow</action>
+            </entry>
+        </result>
+    </response>
+    """
+    xpath = "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry"
+    query = "(application/member eq 'dns')"
+
+    with requests_mock.Mocker() as m:
+        mock_request = m.get('https://1.1.1.1:443', text=mock_version_xml, status_code=200)
+        rules = Panorama.panorama_list_rules(xpath, query=query)
+
+    assert rules['application']['member'][0] == 'dns'
+    assert mock_request.last_request.qs['xpath'][0] == \
+           "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry[(application/member = 'dns')]"

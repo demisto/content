@@ -11,9 +11,11 @@ import requests
 import random
 import string
 from datetime import datetime, timedelta
+import defusedxml.ElementTree as defused_ET
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 ''' GLOBALS/PARAMS '''
@@ -1527,7 +1529,7 @@ def execute_query(data_args):
         message = message[3:-2]
 
         try:
-            root = ET.fromstring(message)
+            root = defused_ET.fromstring(message)
 
             log_item = {
                 "EventID": str(root.find(xml_ns + 'EventID').text),  # type: ignore
