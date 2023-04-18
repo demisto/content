@@ -24,9 +24,13 @@
  "group": 0,
  "hidden": false,
  "associatedTypes": [
-  "Phishing"
+     "Phishing",
+     "Reset User Password via Chatbot"
  ],
- "systemAssociatedTypes": null,
+ "systemAssociatedTypes": [
+     "Phishing",
+     "Reset User Password via Chatbot"
+ ],
  "associatedToAll": false,
  "unmapped": false,
  "unsearchable": false,
