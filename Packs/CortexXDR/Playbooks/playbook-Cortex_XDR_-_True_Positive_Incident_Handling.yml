@@ -763,7 +763,7 @@ tasks:
       name: Open Snow ticket
       type: regular
       version: -1
-      script: ServiceNowCreateIncident
+      scriptName: ServiceNowCreateIncident
     taskid: e7d1c80a-7f2d-4545-8ff7-c65ea67ca265
     timertriggers: []
     type: regular
