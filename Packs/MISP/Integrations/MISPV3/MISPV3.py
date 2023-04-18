@@ -2,7 +2,7 @@
 from typing import Union, List, Dict
 from urllib.parse import urlparse
 import urllib3
-
+import ast
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute
 from pymisp.tools import GenericObjectGenerator, EMailObject
 import copy
