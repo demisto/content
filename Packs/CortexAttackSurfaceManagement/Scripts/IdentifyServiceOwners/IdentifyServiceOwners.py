@@ -54,7 +54,7 @@ def deduplicate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
             # deduplicate by name if no email is found
             for name, subgroup in groupby(sorted(group, key=lambda x: x["Name"]), key=lambda x: x['Name']):
                 sg = list(subgroup)
-                source = '|'.join(sorted(set([x['Source'] for x in sg])))
+                source = ' | '.join(sorted(set([x['Source'] for x in sg])))
                 timestamp = sorted([x['Timestamp'] for x in sg], reverse=True)[0]
                 owner = {
                     'Name': name,
@@ -68,7 +68,7 @@ def deduplicate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
         else:
             # deduplicate by email
             g = list(group)
-            source = '|'.join(sorted(set([x['Source'] for x in g])))
+            source = ' | '.join(sorted(set([x['Source'] for x in g])))
             name = sorted([x['Name'] for x in g], key=lambda x: len(x), reverse=True)[0]
             timestamp = sorted([x['Timestamp'] for x in g], reverse=True)[0]
             owner = {
