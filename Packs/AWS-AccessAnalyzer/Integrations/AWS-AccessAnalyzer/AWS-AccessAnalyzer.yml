@@ -487,7 +487,7 @@ script:
     description: Updates findings with the new values provided in the request.
     execution: false
     name: aws-access-analyzer-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.49259
+  dockerimage: demisto/boto3py3:1.0.0.49918
   isfetch: true
   longRunning: false
   longRunningPort: false

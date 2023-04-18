@@ -1,0 +1,30 @@
+{
+    "id": "Securonix Threat",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Securonix Threat",
+    "prevName": "Securonix Threat",
+    "color": "#4DB6AC",
+    "playbookId": "Fetch All Violations - Securonix",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Securonix Threat",
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.5.0"
+}

@@ -1,7 +1,7 @@
 id: Carbon Black Response Test
 version: -1
 name: Carbon Black Response Test
-description: Tests carbon black enterprise response selected use cases and commands
+description: Deprecated. No available replacement because "carbonblack v2" is deprected. Use "VMware Carbon Black EDR v2" integration instead.
 starttaskid: '0'
 tasks:
   '0':
@@ -319,8 +319,7 @@ tasks:
       id: c968aecf-b653-4f86-8290-794cd7e4332c
       version: -1
       name: Get hash block list and choose an item to unblock and block
-      description: Returns a list of hashes on block list, with each list entry describing
-        one hash on block list.
+      description: Returns a list of hashes on block list, with each list entry describing one hash on block list.
       script: '|||cb-get-hash-blacklist'
       type: regular
       iscommand: true
@@ -475,8 +474,7 @@ tasks:
       id: 6271e4e2-2fc9-4957-8496-e57687a0d2cf
       version: -1
       name: Fetch binary
-      description: Retrieve a binary from CarbonBlack based on hash. Returned file
-        will be places in the war room.
+      description: Retrieve a binary from CarbonBlack based on hash. Returned file will be places in the war room.
       script: '|||cb-binary-get'
       type: regular
       iscommand: true
@@ -771,8 +769,7 @@ tasks:
       brand: ''
     scriptarguments:
       message:
-        simple: 'Could not find expected value in watchlist, Expected: "TestWatchlist#123Changed"
-          Found: "${CbResponse.Watchlists.Name}"'
+        simple: 'Could not find expected value in watchlist, Expected: "TestWatchlist#123Changed" Found: "${CbResponse.Watchlists.Name}"'
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 895\n  }\n}"
     note: false
@@ -867,9 +864,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 4845,\n      \"width\": 1240,\n      \"x\": 50,\n      \"y\":\
-  \ 50\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 4845,\n      \"width\": 1240,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
 inputs: []
 outputs: []
 fromversion: 5.0.0
+deprecated: true
+tests:
+- No tests (deprecated)

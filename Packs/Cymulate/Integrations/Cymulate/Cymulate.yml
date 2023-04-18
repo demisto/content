@@ -1,4 +1,4 @@
-category: Vulnerability Management
+category: Deception & Breach Simulation
 commonfields:
   id: Cymulate
   version: -1

@@ -7,7 +7,7 @@ sectionOrder:
 name: EWS Mail Sender
 display: EWS Mail Sender (Deprecated)
 deprecated: true
-category: Messaging
+category: Email
 description: 'Exchange Web Services mail sender. Note: this integration supports Office 365 basic authentication only. If you are using Office 365, we recommend using the EWS O365 Integration instead, which supports modern authentication (oauth2). Deprecated. Use EWS v2 instead'
 configuration:
 - display: Exchange URL or Server IP address

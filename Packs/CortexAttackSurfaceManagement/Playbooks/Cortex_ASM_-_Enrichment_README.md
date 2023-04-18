@@ -1,28 +1,35 @@
 Used as a container folder for all enrichments of ASM alerts.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex ASM - GCP Enrichment
-* Cortex ASM - Azure Enrichment
-* Cortex ASM - ServiceNow CMDB Enrichment
+
 * Cortex ASM - AWS Enrichment
-* Cortex ASM - Tenable.io Enrichment
-* Cortex ASM - Splunk Enrichment
+* Cortex ASM - Azure Enrichment
+* Cortex ASM - GCP Enrichment
+* Cortex ASM - Qualys Enrichment
 * Cortex ASM - Rapid7 Enrichment
+* Cortex ASM - ServiceNow CMDB Enrichment
+* Cortex ASM - Splunk Enrichment
+* Cortex ASM - Tenable.io Enrichment
 
 ### Integrations
+
 * Cortex Attack Surface Management
 
 ### Scripts
+
 * InferWhetherServiceIsDev
 
 ### Commands
+
 * setAlert
 * asm-get-external-service
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -30,6 +37,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | RemoteIP | IP address of service | alert.remoteip | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -37,5 +45,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | ASM.ExternalService.externally_detected_providers | Providers of the external service. | unknown |
 
 ## Playbook Image
+
 ---
 ![Cortex ASM - Enrichment](../doc_files/Cortex_ASM_-_Enrichment.png)

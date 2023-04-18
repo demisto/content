@@ -6,3 +6,6 @@ ignore=RM104,RM113
 
 [file:Qualys_image.png]
 ignore=IM111
+
+[file:QualysCreateIncidentFromReport.yml]
+ignore=SC105

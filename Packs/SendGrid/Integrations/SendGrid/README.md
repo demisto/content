@@ -1,5 +1,5 @@
 SendGrid provides a cloud-based service that assists businesses with email delivery. It allows companies to track email opens, unsubscribes, bounces, and spam reports. Our SendGrid pack utilize these SendGrid use cases to help you send and manage your emails.
-This integration was integrated and tested with version 6.7.0 of SendGrid
+
 ## Configure SendGrid on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -13,17 +13,21 @@ This integration was integrated and tested with version 6.7.0 of SendGrid
     | From Sender Name | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### sg-send-email
+
 ***
 Send an email.
-
 
 #### Base Command
 
 `sg-send-email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -55,19 +59,18 @@ Send an email.
 | Bcc | A CSV list of to email bcc recipients. Make sure To, Cc and Bcc emails are unique. | Optional | 
 | Cc | A CSV list of to email cc recipients. Make sure To, Cc and Bcc emails are unique. | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
 ### sg-get-global-email-stats
+
 ***
 Retrieves all of your global email statistics between a given date range.
-
 
 #### Base Command
 
 `sg-get-global-email-stats`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -77,7 +80,7 @@ Retrieves all of your global email statistics between a given date range.
 | aggregated_by | How to group the statistics. Must be either "day", "week", or "month". Possible values are: day, week, month. | Optional | 
 | start_date | The starting date of the statistics to retrieve. Must follow format YYYY-MM-DD. | Required | 
 | end_date | The end date of the statistics to retrieve. Defaults to today. Must follow format YYYY-MM-DD. | Optional | 
-| headers | Table headers to use the human readable output (if none provided, will show all table headers). Available headers: blocks,bounce_drops,bounces,clicks,date,deferred,delivered,invalid_emails,opens,processed,requests,spam_report_drops,spam_reports,unique_clicks,unique_opens,unsubscribe_drops,unsubscribes. | Optional |
+| headers | Table headers to use the human readable output (if none provided, will show all table headers). Available headers: blocks,bounce_drops,bounces,clicks,date,deferred,delivered,invalid_emails,opens,processed,requests,spam_report_drops,spam_reports,unique_clicks,unique_opens,unsubscribe_drops,unsubscribes. | Optional | 
 
 #### Context Output
 
@@ -86,13 +89,14 @@ Retrieves all of your global email statistics between a given date range.
 | Sendgrid.GlobalEmailStats | unknown | List of email statistics day/week/month wise. | 
 
 ### sg-get-category-stats
+
 ***
 Retrieves all of your email statistics for each of your categories.
-
 
 #### Base Command
 
 `sg-get-category-stats`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -103,7 +107,7 @@ Retrieves all of your email statistics for each of your categories.
 | aggregated_by | How to group the statistics. Must be either "day", "week", or "month". Possible values are: day, week, month. | Optional | 
 | limit | The number of results to include.  default: 500 maximum: 500. | Optional | 
 | offset | The number of results to skip. | Optional | 
-| headers | Table headers to use the human readable output (if none provided, will show all table headers). Available headers: blocks,bounce_drops,bounces,clicks,date,deferred,delivered,invalid_emails,opens,processed,requests,spam_report_drops,spam_reports,unique_clicks,unique_opens,unsubscribe_drops,unsubscribes. | Optional |
+| headers | Table headers to use the human readable output (if none provided, will show all table headers). Available headers: blocks,bounce_drops,bounces,clicks,date,deferred,delivered,invalid_emails,opens,processed,requests,spam_report_drops,spam_reports,unique_clicks,unique_opens,unsubscribe_drops,unsubscribes. | Optional | 
 
 #### Context Output
 
@@ -111,27 +115,27 @@ Retrieves all of your email statistics for each of your categories.
 | --- | --- | --- |
 | Sendgrid.CategoryStats | unknown | List of email category statistics day/week/month wise. | 
 
-
 ### sg-get-all-categories-stats
-***
-Retrieves the total sum of each email statistic for every category over the given date range.
 
+***
+Retrieves the total sum of each email statistic for every category over the given date range. By default it returns only 5 categories. Use limit= argument to define the number of categories to return. 
 
 #### Base Command
 
 `sg-get-all-categories-stats`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | start_date | The starting date of the statistics to retrieve. Must follow format YYYY-MM-DD. | Required | 
 | end_date | The end date of the statistics to retrieve. Defaults to today. Must follow format YYYY-MM-DD. | Optional | 
+| limit | The number of results to return. | Optional | 
 | aggregated_by | How to group the statistics. Must be either "day", "week", or "month". Possible values are: day, week, month. | Optional | 
 | sort_by_metric | The metric that you want to sort by. Must be a single metric.  default: delivered. Possible values are: blocks, bounce_drops, bounces, clicks, deferred, delivered, invalid_emails, opens, processed, requests, spam_report_drops, spam_reports, unique_clicks, unique_opens, unsubscribe_drops, unsubscribes. | Optional | 
 | sort_by_direction | The direction you want to sort.  Allowed Values: desc, asc default: desc. Possible values are: asc, desc. | Optional | 
-| limit | The number of results to return. | Optional | 
 | offset | The point in the list to begin retrieving results. | Optional | 
-| headers | Table headers to use the human readable output (if none provided, will show all table headers). Available headers: blocks,bounce_drops,bounces,clicks,date,deferred,delivered,invalid_emails,opens,processed,requests,spam_report_drops,spam_reports,unique_clicks,unique_opens,unsubscribe_drops,unsubscribes. | Optional |
+| headers | Table headers to use the human readable output (if none provided, will show all table headers). Available headers: blocks,bounce_drops,bounces,clicks,date,deferred,delivered,invalid_emails,opens,processed,requests,spam_report_drops,spam_reports,unique_clicks,unique_opens,unsubscribe_drops,unsubscribes. | Optional | 
 
 #### Context Output
 
@@ -139,16 +143,15 @@ Retrieves the total sum of each email statistic for every category over the give
 | --- | --- | --- |
 | Sendgrid.AllCategoriesStats | unknown | List of all email statistics day/week/month wise. | 
 
-
-
 ### sg-list-categories
+
 ***
 Retrieves a list of all of your categories.
-
 
 #### Base Command
 
 `sg-list-categories`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -157,7 +160,6 @@ Retrieves a list of all of your categories.
 | limit | The number of categories to display per page. Default: 50. | Optional | 
 | offset | The point in the list that you would like to begin displaying results. Default: 0. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -165,18 +167,18 @@ Retrieves a list of all of your categories.
 | Sendgrid.CategoriesList | unknown | List of categories. | 
 
 ### sg-create-batch-id
+
 ***
 Generates a new batch ID.
-
 
 #### Base Command
 
 `sg-create-batch-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
@@ -185,20 +187,20 @@ Generates a new batch ID.
 | Sendgrid.BatchId | unknown | Returns a batch id, which can be used manage scheduled sends. | 
 
 ### sg-scheduled-status-change
+
 ***
 Cancel or pause a scheduled send associated with a batch ID.
-
 
 #### Base Command
 
 `sg-scheduled-status-change`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | batch_id | ID to manage multiple scheduled sends. | Required | 
 | status | The status of the send you would like to implement. This can be pause or cancel. Possible values are: pause, cancel. | Required | 
-
 
 #### Context Output
 
@@ -207,18 +209,18 @@ Cancel or pause a scheduled send associated with a batch ID.
 | Sendgrid.ScheduledSendStatus | unknown | The latest status of the scheduled send. | 
 
 ### sg-retrieve-all-scheduled-sends
+
 ***
 Retrieves all cancelled and paused scheduled send information.
-
 
 #### Base Command
 
 `sg-retrieve-all-scheduled-sends`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
@@ -227,19 +229,19 @@ Retrieves all cancelled and paused scheduled send information.
 | Sendgrid.ScheduledSends | unknown | List of all paused/cancelled scheduled sends. | 
 
 ### sg-retrieve-scheduled-send
+
 ***
 Retrieves the cancel/paused scheduled send information for a specific batch id.
-
 
 #### Base Command
 
 `sg-retrieve-scheduled-send`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | batch_id | ID to manage multiple scheduled sends. | Required | 
-
 
 #### Context Output
 
@@ -247,15 +249,15 @@ Retrieves the cancel/paused scheduled send information for a specific batch id.
 | --- | --- | --- |
 | Sendgrid.ScheduledSend | unknown | List of all paused/cancelled scheduled sends associated with the given batch id. | 
 
-
 ### sg-update-scheduled-send
+
 ***
 Update the status of a scheduled send for the given batch id.
-
 
 #### Base Command
 
 `sg-update-scheduled-send`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -263,46 +265,178 @@ Update the status of a scheduled send for the given batch id.
 | batch_id | ID to manage multiple scheduled sends. | Required | 
 | status | The status of the send you would like to implement. This can be pause or cancel. Possible values are: pause, cancel. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
 ### sg-delete-scheduled-send
+
 ***
 Delete the cancellation/pause of a scheduled send.
-
 
 #### Base Command
 
 `sg-delete-scheduled-send`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | batch_id | ID to manage multiple scheduled sends. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
+### sg-get-email-activity-list
 
-
-## sg-get-email-activity-list
 ***
 Retrieves the email activity list associated with the messages matching your query. If no query provided, it returns a list of most recent emails you've sent. NOTE: This Email Activity API returns email list up to last 30 days.
+
 #### Base Command
+
 `sg-get-email-activity-list`
+
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The number of messages returned. This parameter must be greater than 0 and less than or equal to 1000. Default is 10. | Required | 
 | query | Use the query syntax to filter your email activity.     For example: query to get email list for category - "Last Login": query=`(Contains(categories,"Last Login"))`     Document link for query samples: https://docs.sendgrid.com/for-developers/sending-email/getting-started-email-activity-api#query-reference. | Optional | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers). Available headers: clicks_count,from_email,last_event_time,msg_id,opens_count,status,subject,to_email. | Optional | 
+
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| endgrid.EmailList | unknown | email activity list associated with the messages matching your query. | 
-#### Command Example
-``` ```
-#### Human Readable Output
+| Sendgrid.EmailList | unknown | Email activity list associated with the messages matching your query. | 
+
+### sg-get-all-lists
+
+***
+Retrieves all of your recipient lists. If you don't have any lists, an empty array will be returned.
+
+#### Base Command
+
+`sg-get-all-lists`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page_size | Maximum number of elements to return. returns 1000 max. default: 100. | Optional | 
+| page_token | Token corresponding to a specific page of results, as provided by metadata. default: None. | Optional | 
+| headers | Table headers to use the human readable output (if none provided, will show all table headers). Available headers: id, name, contact_count, _metadata. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Sendgrid.Lists.Result | unknown | Array of your contact lists | 
+| Sendgrid.Lists.Metadata | unknown | Metadata of returned set of result | 
+
+### sg-get-list-by-id
+
+***
+Retrieves a single recipient list.
+
+#### Base Command
+
+`sg-get-list-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | ID of contact list. | Required | 
+| contact_sample | Setting the optional parameter contact_sample=true returns the contact_sample in the response body. Up to fifty of the most recent contacts uploaded or attached to a list will be returned, sorted alphabetically, by email address. Default:False. Possible values are: True, False. Default is False. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Sendgrid.List | unknown | Contact list details | 
+
+### sg-create-list
+
+***
+Creates a new contacts list
+
+#### Base Command
+
+`sg-create-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_name | Name for your list. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Sendgrid.NewList | unknown | Newly created List details | 
+
+### sg-get-list-contact-count-by-id
+
+***
+Returns the number of contacts on a specific list
+
+#### Base Command
+
+`sg-get-list-contact-count-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | ID of contact list. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Sendgrid.ListCount | unknown | List contact count details | 
+
+### sg-update-list-name
+
+***
+Updates the name of a list
+
+#### Base Command
+
+`sg-update-list-name`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | ID of contact list. | Required | 
+| updated_list_name | New name for your list. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Sendgrid.updatedList | unknown | Updated list details | 
+
+### sg-delete-list
+
+***
+Deletes a specific list
+
+#### Base Command
+
+`sg-delete-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | ID of contact list or job Id. | Required | 
+| delete_contacts | Flag indicates that all contacts on the list are also to be deleted. default: False. Possible values are: True, False. Default is False. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Sendgrid.DeleteListJobId | unknown | Job id of the async job | 

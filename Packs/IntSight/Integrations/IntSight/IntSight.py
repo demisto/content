@@ -172,13 +172,13 @@ def handle_filters(found_date_from=None):
 def get_alerts_helper(params):
     demisto.info("Executing get_alerts with params: {}".format(params))
     response = http_request('GET', 'public/v1/data/alerts/alerts-list', params=params, json_response=True)
-
     alerts_human_readable = []
     alerts_context = []
     for alert_id in response:
         alert_human_readable, alert_context = get_alert_by_id_helper(alert_id)
         alerts_human_readable.append(alert_human_readable)
         alerts_context.append(alert_context)
+    demisto.debug(f'{len(alerts_context)=} before filtering')
     return alerts_human_readable, alerts_context
 
 
@@ -843,7 +843,8 @@ def request_for_ioc_enrichment():
     response = http_request('GET', request_url, json_response=True)
     status = response.get('Status')
     if status == 'Done':
-        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_enrichment_to_readable(response)
+        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_enrichment_to_readable(
+            response)
 
         demisto.results(
             {
@@ -900,7 +901,11 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     demisto.info("IntSight fetch last run time is: {}".format(str(last_run)))
     if not last_run or 'time' not in last_run:
-        fetch_delta, _ = parse_date_range(demisto.params().get('fetch_delta', DEFAULT_TIME_RANGE), to_timestamp=True)
+        first_fetch_param = demisto.params().get('first_fetch', DEFAULT_TIME_RANGE)
+        first_fetch_date = arg_to_datetime(first_fetch_param, 'first_fetch')
+        fetch_delta = int(first_fetch_date.timestamp() * 1000)  # type:ignore
+        demisto.debug(f'First fetch, using {fetch_delta=}')
+
     else:
         fetch_delta = last_run.get('time')
 
@@ -910,6 +915,7 @@ def fetch_incidents():
     if min_severity_level not in SEVERITY_LEVEL:
         raise Exception("Minimum Alert severity level to fetch incidents incidents from, allowed values are: All,"
                         " Low, Medium, High. (Setting to All will fetch all incidents)")
+    demisto.debug(f'{min_severity_level=}')
 
     _, alerts_context = get_alerts_helper(handle_filters(fetch_delta))
     incidents = []
@@ -925,7 +931,11 @@ def fetch_incidents():
                 alert_timestamp = date_to_timestamp(alert.get('FoundDate'), date_format='%Y-%m-%dT%H:%M:%S.%fZ')
                 if alert_timestamp > current_fetch:
                     current_fetch = alert_timestamp
-
+            else:
+                demisto.debug(f'dropping incident with id {alert.get("ID")} because of alert_type filter')
+        else:
+            demisto.debug(f'dropping incident with id {alert.get("ID")} because of severity filter')
+    demisto.debug(f'returning {len(incidents)} incidents')
     demisto.incidents(incidents)
     demisto.setLastRun({'time': current_fetch + 1000})
 

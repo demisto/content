@@ -1,0 +1,8 @@
+!darktrace-run-advanced-search-analysis initialDate="2023-01-14" initialTime="00:00:00" endDate="2023-01-15" endTime="00:00:00" query="@type:conn" operation="score" metric="@fields.dest_ip" offset="0"
+!darktrace-get-device-connection-info deviceId="1" dataType="co" showAllGraphData="false" numberOfSimilarDevices="0" fullDeviceDetails="false"
+!darktrace-get-external-endpoint-details endpointType="hostname" endpointValue="darktrace.com" devices="true" additionalInfo="true" score="true"
+!darktrace-get-similar-devices deviceId="1" maxResults="50"
+!darktrace-post-to-watched-list endpointsToWatch="1.1.1.1, test.com, malware.com" description="blacklist malware endpoints from fw blocked list"
+!darktrace-get-tagged-devices tagName="Admin"
+!darktrace-get-tags-for-device deviceId="1"
+!darktrace-post-tag-to-device deviceId="1" tagName="Admin"

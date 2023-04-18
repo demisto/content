@@ -291,7 +291,7 @@ tasks:
       body:
         simple: |-
           Hello,
-          Cortex XDR has detected a possible RDP Brute force attempt by the user ${inputs.Username} from the remote IP address ${inputs.External IP}.
+          Cortex XDR has detected a possible RDP Brute force attempt by the user ${inputs.Username} from the remote IP address ${inputs.ExternalIP}.
           Was this action performed by you and can be considered as authorized?
       methods:
       - email
@@ -589,6 +589,13 @@ tasks:
                   simple: inputs.ExternalIP
                 iscontext: true
           accessor: Score
+          transformers:
+          - operator: sort
+            args:
+              descending:
+                value:
+                  simple: "true"
+          - operator: FirstArrayElement
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -2909,7 +2916,7 @@ inputs:
     simple: "2"
   required: false
   description: |-
-    The threshold number of suspicious elements that will trigger a user engagement. Set to "false" to disable user engagement.
+    The threshold number of suspicious elements that will trigger a user engagement. Set 0 to disable user engagement.
 
     NOTICE: If this threshold is equal to or higher than "FinalThreshold", the final verdict will be deemed by the user response and not by the FinalThreshold calculation.
   playbookInputQuery:
