@@ -3,7 +3,7 @@ import urllib3
 from abc import ABCMeta
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Callable
+from typing import Callable, Tuple
 from collections import defaultdict
 from bs4 import BeautifulSoup
 from datetime import timezone
@@ -1204,12 +1204,34 @@ class JiraOnPremClient(JiraBaseClient):
             method='GET', url_suffix='rest/api/2/search', params=query_params
         )
 
+    # Issue Fields Requests
+    def get_issue_fields(self) -> List[Dict[str, Any]]:
+        return self.http_request_with_access_token(
+            method='GET', url_suffix='rest/api/2/field'
+        )
+
     #  Issue Requests
     def get_comments(self, issue_id_or_key: str, max_results: int = 50) -> Dict[str, Any]:
         query_params = {'expand': 'renderedBody', 'maxResults': max_results}
         return self.http_request_with_access_token(
             method='GET',
             url_suffix=f'rest/api/2/issue/{issue_id_or_key}/comment',
+            params=query_params,
+        )
+
+    def delete_comment(self, issue_id_or_key: str, comment_id: str) -> requests.Response:
+        return self.http_request_with_access_token(
+            method='DELETE',
+            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/comment/{comment_id}',
+            resp_type='response',
+        )
+
+    def edit_comment(self, issue_id_or_key: str, comment_id: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+        query_params = {'expand': 'renderedBody'}
+        return self.http_request_with_access_token(
+            method='PUT',
+            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/comment/{comment_id}',
+            json_data=json_data,
             params=query_params,
         )
 
@@ -1274,6 +1296,33 @@ class JiraOnPremClient(JiraBaseClient):
             json_data=json_data,
         )
 
+    def get_issue_link_types(self) -> Dict[str, Any]:
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix='rest/api/2/issueLinkType',
+        )
+
+    def create_issue_link(self, json_data: Dict[str, Any]) -> requests.Response:
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix='rest/api/2/issueLink',
+            json_data=json_data,
+            resp_type='response'
+        )
+
+    def get_epic_issues(self, epic_id_or_key: str, start_at: int | None = None, max_results: int | None = None,
+                        jql_query: str | None = None) -> Dict[str, Any]:
+        query_params = assign_params(
+            jql=jql_query,
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/agile/1.0/epic/{epic_id_or_key}/issue',
+            params=query_params
+        )
+
     # Attachments Requests
     def upload_attachment(self, issue_id_or_key: str, files: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
         headers = {
@@ -1295,8 +1344,123 @@ class JiraOnPremClient(JiraBaseClient):
         return self.http_request_with_access_token(
             method='GET',
             full_url=attachment_content_url,
-            # url_suffix=f'jira/attachments/{attachment_id}',
             resp_type='content',
+        )
+
+    # Board Requests
+    def get_epics_from_board(self, board_id: str, done: str, start_at: int | None = None,
+                             max_results: int | None = None) -> Dict[str, Any]:
+        query_params = assign_params(
+            startAt=start_at,
+            maxResults=max_results,
+            done=done
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/agile/1.0/board/{board_id}/epic',
+            params=query_params
+        )
+
+    def get_issues_from_backlog(self, board_id: str, jql_query: str | None = None,
+                                start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+        query_params = assign_params(
+            jql=jql_query,
+            startAt=start_at,
+            maxResults=max_results,
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/agile/1.0/board/{board_id}/backlog',
+            params=query_params
+        )
+
+    def get_issues_from_board(self, board_id: str, jql_query: str | None = None,
+                              start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+        query_params = assign_params(
+            jql=jql_query,
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/agile/1.0/board/{board_id}/issue',
+            params=query_params
+        )
+
+    def get_sprints_from_board(self, board_id: str, start_at: int | None = None,
+                               max_results: int | None = None) -> Dict[str, Any]:
+        query_params = assign_params(
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/agile/1.0/board/{board_id}/sprint',
+            params=query_params
+        )
+
+    def issues_to_sprint(self, sprint_id: str, json_data: Dict[str, Any]) -> requests.Response:
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'rest/agile/1.0/sprint/{sprint_id}/issue',
+            json_data=json_data,
+            resp_type='response',
+        )
+
+    def get_issues_from_sprint(self, sprint_id: str, start_at: int | None = None, max_results: int | None = None,
+                               jql_query: str | None = None) -> Dict[str, Any]:
+        query_params = assign_params(
+            jql=jql_query,
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/agile/1.0/sprint/{sprint_id}/issue',
+            params=query_params
+        )
+
+    def get_sprint_issues_from_board(self, sprint_id: str, board_id: str, start_at: int | None = None,
+                                     max_results: int | None = None,
+                                     jql_query: str | None = None) -> Dict[str, Any]:
+        query_params = assign_params(
+            jql=jql_query,
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/agile/1.0/board/{board_id}/sprint/{sprint_id}/issue',
+            params=query_params
+        )
+
+    def issues_from_sprint_to_backlog(self, json_data: Dict[str, Any]) -> requests.Response:
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix='rest/agile/1.0/backlog/issue',
+            json_data=json_data,
+            resp_type='response',
+        )
+
+    def get_board(self, board_id: str) -> Dict[str, Any]:
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/agile/1.0/board/{board_id}',
+        )
+
+    def get_boards(self, board_type: str | None = None, project_key_id: str | None = None, board_name: str | None = None,
+                   start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+        query_params = assign_params(
+            type=board_type,
+            projectKeyOrId=project_key_id,
+            name=board_name,
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix='rest/agile/1.0/board',
+            params=query_params
         )
 
     # User Requests
@@ -2315,24 +2479,31 @@ def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
         limit = 50
     res = client.get_comments(issue_id_or_key=issue_id_or_key, max_results=limit)
     if comments_response := res.get('comments', []):
-        return create_comments_command_results(
-            comments_response=comments_response, issue_id_or_key=issue_id_or_key, res=res
+        human_readable, outputs = create_comments_command_results(
+            comments_response=comments_response, issue_id_or_key=issue_id_or_key
+        )
+        return CommandResults(
+            outputs_prefix='Ticket',
+            outputs=outputs,
+            outputs_key_field='Id',
+            readable_output=human_readable,
+            raw_response=res
         )
     else:
         return CommandResults(readable_output='No comments were found in the ticket')
 
 
 def create_comments_command_results(comments_response: List[Dict[str, Any]],
-                                    issue_id_or_key: str, res: Dict[str, Any]) -> CommandResults:
-    """Creates the CommandResults of the get_comments_command.
+                                    issue_id_or_key: str) -> Tuple[str, Dict[str, Any]]:
+    """Returns the human readable and context output of the get_comments_command.
 
     Args:
         comments_response (List[Dict[str, Any]]): The comments object returned from the API (not empty!).
         issue_id_or_key (str): The issue id or key that holds the comments.
-        res (Dict[str, Any]): The raw response when calling the API to retrieve the comments.
 
     Returns:
-        CommandResults: CommandResults to return to XSOAR.
+        Tuple[str, Dict[str, Any]]: A tuple where that first element is the human readable to return to the
+        user, and the second is to return to the context data.
     """
     if not comments_response:
         raise DemistoException('The list of comments can not be empty!')
@@ -2345,13 +2516,7 @@ def create_comments_command_results(comments_response: List[Dict[str, Any]],
         extracted_issue_id = extract_issue_id_from_comment_url(comment_url=comments_response[0].get('self', ''))
         outputs |= {'Id': extracted_issue_id, 'Key': issue_id_or_key}
     human_readable = tableToMarkdown("Comments", comments)
-    return CommandResults(
-        outputs_prefix='Ticket',
-        outputs=outputs,
-        outputs_key_field='Id',
-        readable_output=human_readable,
-        raw_response=res
-    )
+    return human_readable, outputs
 
 
 def extract_comment_entry_from_raw_response(comment_response: Dict[str, Any]) -> Dict[str, Any]:
@@ -2395,7 +2560,7 @@ def edit_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     comment = args.get('comment', '')
     visibility = args.get('visibility', '')
     payload = {
-        'body': text_to_adf(text=comment)
+        'body': text_to_adf(text=comment) if isinstance(client, JiraCloudClient) else comment
     }
     if visibility:
         payload['visibility'] = {
@@ -2408,8 +2573,15 @@ def edit_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     client.edit_comment(issue_id_or_key=issue_id_or_key, comment_id=comment_id, json_data=payload)
     res = client.get_comments(issue_id_or_key=issue_id_or_key)
     if comments_response := res.get('comments', []):
-        return create_comments_command_results(
-            comments_response=comments_response, issue_id_or_key=issue_id_or_key, res=res
+        _, outputs = create_comments_command_results(
+            comments_response=comments_response, issue_id_or_key=issue_id_or_key
+        )
+        return CommandResults(
+            outputs_prefix='Ticket',
+            outputs=outputs,
+            outputs_key_field='Id',
+            readable_output='The comment has been edited successfully',
+            raw_response=res
         )
     else:
         return CommandResults(readable_output='No comments were found in the ticket')
@@ -2774,6 +2946,8 @@ def create_sprint_issues_command_results(board_id: str, issues: List[Dict[str, A
     """
     if not board_id:
         # If board_id was not given by the user, we try to extract it from the issues.
+        if not issues:
+            return CommandResults(readable_output='No issues found to retrieve the board ID', raw_response=res)
         sprint = issues[0].get('fields', {}).get('sprint', {}) or {}
         board_id = sprint.get(
             'originBoardId', '') or ''
@@ -2811,6 +2985,8 @@ def issues_to_sprint_command(client: JiraBaseClient, args: Dict[str, Any]) -> Co
     sprint_id = args.get('sprint_id', '')
     rank_before_issue = args.get('rank_before_issue', '')
     rank_after_issue = args.get('rank_after_issue', '')
+    if rank_before_issue or rank_after_issue and isinstance(client, JiraOnPremClient):
+        raise DemistoException('The arguments rank_before_issue, and rank_after_issue are not supported on Jira OnPrem')
     json_data = assign_params(
         issues=issues,
         rankBeforeIssue=rank_before_issue,
@@ -2863,6 +3039,8 @@ def create_epic_issues_command_results(issues: List[Dict[str, Any]],
     """
     markdown_list = []
     issues_list = []
+    if not issues:
+        return CommandResults(readable_output='No issues found to retrieve the epic, or board ID', raw_response=res)
     for issue in issues:
         markdown_dict, outputs_context_data = create_issue_md_and_outputs_dict(issue_data=issue)
         markdown_list.append(markdown_dict)
@@ -2927,8 +3105,9 @@ def link_issue_to_issue_command(client: JiraBaseClient, args: Dict[str, Any]) ->
     inward_issue = args.get('inward_issue', '')
     link_type = args.get('link_type', '')
     comment = args.get('comment', '')
+
     json_data = assign_params(
-        comment={'body': text_to_adf(text=comment)} if comment else '',
+        comment={'body': text_to_adf(text=comment) if isinstance(client, JiraCloudClient) else comment} if comment else '',
         inwardIssue={'key': inward_issue},
         outwardIssue={'key': outward_issue},
         type={'name': link_type}
@@ -2970,7 +3149,7 @@ def issues_to_backlog_command(client: JiraBaseClient, args: Dict[str, Any]) -> C
             )
             client.issues_to_backlog(board_id=board_id, json_data=json_data)
         else:
-            raise DemistoException('This argument is not supported for a Jira OnPrem instance.')
+            raise DemistoException('The argument board_id is not supported for a Jira OnPrem instance.')
     else:
         # If the board_id is not given, then the issues that are meant to be moved to backlog, must be
         # part of a sprint, or in other words, the issues must be part of a board that supports sprints.
@@ -3079,8 +3258,8 @@ def board_backlog_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> 
         issues_list.append(outputs)
     return CommandResults(
         outputs_prefix='Jira.BoardBacklog',
-        outputs_key_field='id',
-        outputs={'id': board_id, 'Ticket': issues_list},
+        outputs_key_field='boardId',
+        outputs={'boardId': board_id, 'Ticket': issues_list},
         readable_output=tableToMarkdown(name='Backlog Issues', t=markdown_list),
         raw_response=res
     )
@@ -3110,8 +3289,8 @@ def board_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> C
         issues_list.append(outputs)
     return CommandResults(
         outputs_prefix='Jira.BoardIssue',
-        outputs_key_field='id',
-        outputs={'id': board_id, 'Ticket': issues_list},
+        outputs_key_field='boardId',
+        outputs={'boardId': board_id, 'Ticket': issues_list},
         readable_output=tableToMarkdown(name='Board Issues', t=markdown_list),
         raw_response=res
     )
@@ -3145,8 +3324,8 @@ def board_sprint_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> C
     ]
     return CommandResults(
         outputs_prefix='Jira.BoardSprint',
-        outputs_key_field='id',
-        outputs={'id': board_id, 'Sprints': sprints},
+        outputs_key_field='boardId',
+        outputs={'boardId': board_id, 'Sprints': sprints},
         readable_output=tableToMarkdown(name='Sprints', t=md_dict),
         raw_response=res
     )
@@ -3181,8 +3360,8 @@ def board_epic_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> Com
         ]
         return CommandResults(
             outputs_prefix='Jira.BoardEpic',
-            outputs_key_field='id',
-            outputs={'id': board_id, 'Epics': epics},
+            outputs_key_field='boardId',
+            outputs={'boardId': board_id, 'Epics': epics},
             readable_output=tableToMarkdown(name='Epics', t=md_dict),
             raw_response=res
         )
@@ -3220,7 +3399,9 @@ def oauth_complete_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comm
     """
     code = args.get('code', '')
     client.oauth_complete(code=code)
-    return CommandResults(readable_output=('Authentication process has completed successfully.'))
+    return CommandResults(
+        readable_output=('### Logged in successfully.\n A refresh token was saved to the integration context. This token will be '
+                         'used to generate a new access token once the current one expires.'))
 
 
 def test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:

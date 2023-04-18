@@ -1274,19 +1274,19 @@ script:
     outputs:
     - contextPath: Ticket.Id
       description: The ID of the ticket.
-      type: string
+      type: String
     - contextPath: Ticket.Comment.Id
       description: The ID of the comment.
-      type: string
+      type: String
     - contextPath: Ticket.Comment.Comment
       description: The text of the comment.
-      type: string
+      type: String
     - contextPath: Ticket.Comment.Created
       description: The issue creation date.
-      type: string
+      type: String
     - contextPath: Ticket.Comment.User
       description: The user that created the comment.
-      type: string
+      type: String
   - arguments:
     - default: false
       description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
@@ -1313,97 +1313,97 @@ script:
     outputs:
     - contextPath: Jira.IssueField.id
       description: The ID of the field.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.key
       description: The key of the field.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.name
       description: The name of the field.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.custom
       description: Whether the field is a custom field.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.orderable
       description: Whether the content of the field can be used to order lists.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.navigable
       description: Whether the field can be used as a column on the issue navigator.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.searchable
       description: Whether the content of the field can be searched.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.clauseNames
       description: The names that can be used to reference the field in an advanced search.
-      type: List
+      type: Array
     - contextPath: Jira.IssueField.scope
       description: The scope of the field.
       type: Object
     - contextPath: Jira.IssueField.scope.type
       description: 'The type of scope. Valid values: PROJECT, TEMPLATE'
-      type: string
+      type: String
     - contextPath: Jira.IssueField.scope.project
       description: The project the item has scope in.
-      type: object
+      type: Object
     - contextPath: Jira.IssueField.scope.project.self
       description: The URL of the project details.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.scope.project.id
       description: The ID of the project.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.scope.project.key
       description: The key of the project.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.scope.project.name
       description: The name of the project.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.scope.project.projectTypeKey
       description: 'The project type of the project. Valid values: software, service_desk, business'
-      type: string
+      type: String
     - contextPath: Jira.IssueField.scope.project.simplified
       description: Whether or not the project is simplified.
-      type: boolean
+      type: Boolean
     - contextPath: Jira.IssueField.scope.project.avatarUrls
       description: The URLs of the project's avatars.
-      type: object
+      type: Object
     - contextPath: Jira.IssueField.scope.project.projectCategory
       description: The category the project belongs to.
-      type: object
+      type: Object
     - contextPath: Jira.IssueField.scope.project.projectCategory.self
       description: The URL of the project category.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.scope.project.projectCategory.id
       description: The ID of the project category.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.scope.project.projectCategory.description
       description: The name of the project category.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.scope.project.projectCategory.name
       description: The description of the project category.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.scope.type
       description: 'The type of scope. Valid values: PROJECT, TEMPLATE'
-      type: string
+      type: String
     - contextPath: Jira.IssueField.schema
       description: The data schema for the field.
-      type: object
+      type: Object
     - contextPath: Jira.IssueField.schema.type
       description: The data type of the field.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.schema.items
       description: When the data type is an array, the name of the field items within the array.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.schema.system
       description: If the field is a system field, the name of the field.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.schema.custom
       description: If the field is a custom field, the URI of the field.
-      type: string
+      type: String
     - contextPath: Jira.IssueField.schema.customId
       description: If the field is a custom field, the custom ID of the field.
-      type: number
+      type: Number
     - contextPath: Jira.IssueField.schema.configuration
       description: If the field is a custom field, the configuration of the field.
-      type: object
+      type: Object
   - arguments:
     - default: false
       description: The issues to move to backlog.
@@ -1519,85 +1519,85 @@ script:
     outputs:
     - contextPath: Jira.Board.id
       description: The ID of the board.
-      type: number
+      type: Number
     - contextPath: Jira.Board.self
       description: The URL of the board.
-      type: string
+      type: String
     - contextPath: Jira.Board.name
       description: The name of the board.
-      type: string
+      type: String
     - contextPath: Jira.Board.type
       description: The type the board.
-      type: string
+      type: String
     - contextPath: Jira.Board.admins
       description: The type the board.
-      type: object
+      type: Object
     - contextPath: Jira.Board.admins.users
       description: The users who own the board.
-      type: object
+      type: Object
     - contextPath: Jira.Board.admins.users.self
       description: The URL of the user.
-      type: string
+      type: String
     - contextPath: Jira.Board.admins.users.displayName
       description: The display name of the user. Depending on the user’s privacy setting, this may return an alternative value.
-      type: string
+      type: String
     - contextPath: Jira.Board.admins.users.active
       description: Whether the user is active.
-      type: string
+      type: String
     - contextPath: Jira.Board.admins.users.accountId
       description: The account ID of the user, which uniquely identifies the user across all Atlassian products.
-      type: string
+      type: String
     - contextPath: Jira.Board.admins.users.avatarUrls
       description: The avatars of the user.
-      type: object
+      type: Object
     - contextPath: Jira.Board.admins.groups
       description: The groups who own the board.
-      type: object
+      type: Object
     - contextPath: Jira.Board.admins.groups.name
       description: The name of the group.
-      type: string
+      type: String
     - contextPath: Jira.Board.admins.groups.self
       description: The url of the group.
-      type: string
+      type: String
     - contextPath: Jira.Board.location
       description: The container that the board is located in.
-      type: object
+      type: Object
     - contextPath: Jira.Board.location.projectId
       description: The project ID.
-      type: number
+      type: Number
     - contextPath: Jira.Board.location.userId
       description: The user ID.
-      type: number
+      type: Number
     - contextPath: Jira.Board.location.userAccountId
       description: The user account ID.
-      type: string
+      type: String
     - contextPath: Jira.Board.location.displayName
       description: The display name of the project.
-      type: string
+      type: String
     - contextPath: Jira.Board.location.projectName
       description: The project name.
-      type: string
+      type: String
     - contextPath: Jira.Board.location.projectKey
       description: The project key.
-      type: string
+      type: String
     - contextPath: Jira.Board.location.projectTypeKey
       description: Add description.
-      type: string
+      type: String
     - contextPath: Jira.Board.location.avatarURI
       description: Add description.
-      type: string
+      type: String
     - contextPath: Jira.Board.location.name
       description: Add description.
-      type: string
+      type: String
     - contextPath: Jira.Board.canEdit
       description: Whether the board can be edited.
-      type: string
+      type: String
     - contextPath: Jira.Board.isPrivate
       description: Whether the board is private.
-      type: string
+      type: String
     - contextPath: Jira.Board.favourite
       description: Whether the board is selected as a favorite.
-      type: string
+      type: String
   - arguments:
     - default: false
       description: The board ID.
@@ -1630,31 +1630,31 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get issues from backlog of specific board
+    description: Get issues from backlog of specific board. For Jira OnPrem, the board must be of type scrum.
     execution: false
     name: jira-board-backlog-list
     outputs:
-    - contextPath: Jira.BoardBacklog.id
+    - contextPath: Jira.BoardBacklog.boardId
       description: The ID of the board.
-      type: number
+      type: Number
     - contextPath: Jira.BoardBacklog.Ticket.Id
       description: The ticket ID.
-      type: number
+      type: Number
     - contextPath: Jira.BoardBacklog.Ticket.Key
       description: The ticket key.
-      type: string
+      type: String
     - contextPath: Jira.BoardBacklog.Ticket.Assignee
       description: The user assigned to the ticket.
-      type: string
+      type: String
     - contextPath: Jira.BoardBacklog.Ticket.Creator
       description: The user who created the ticket.
-      type: string
+      type: String
     - contextPath: Jira.BoardBacklog.Ticket.Summary
       description: The ticket summary.
-      type: string
+      type: String
     - contextPath: Jira.BoardBacklog.Ticket.Status
       description: The ticket status.
-      type: string
+      type: String
     - contextPath: Jira.BoardBacklog.Ticket.Priority
       description: The ticket priority.
       type: String
@@ -1709,27 +1709,27 @@ script:
     execution: false
     name: jira-board-issue-list
     outputs:
-    - contextPath: Jira.BoardIssue.id
+    - contextPath: Jira.BoardIssue.boardId
       description: The ID of the board.
-      type: number
+      type: Number
     - contextPath: Jira.BoardIssue.Ticket.Id
       description: The ticket ID.
-      type: number
+      type: Number
     - contextPath: Jira.BoardIssue.Ticket.Key
       description: The ticket key.
-      type: string
+      type: String
     - contextPath: Jira.BoardIssue.Ticket.Assignee
       description: The user assigned to the ticket.
-      type: string
+      type: String
     - contextPath: Jira.BoardIssue.Ticket.Creator
       description: The user who created the ticket.
-      type: string
+      type: String
     - contextPath: Jira.BoardIssue.Ticket.Summary
       description: The ticket summary.
-      type: string
+      type: String
     - contextPath: Jira.BoardIssue.Ticket.Status
       description: The ticket status.
-      type: string
+      type: String
     - contextPath: Jira.BoardIssue.Ticket.Priority
       description: The ticket priority.
       type: String
@@ -1778,39 +1778,39 @@ script:
     execution: false
     name: jira-board-sprint-list
     outputs:
-    - contextPath: Jira.BoardSprint.id
+    - contextPath: Jira.BoardSprint.boardId
       description: The ID of the board.
-      type: string
+      type: String
     - contextPath: Jira.BoardSprint.Sprints
       description: The sprints in the board.
-      type: object
+      type: Object
     - contextPath: Jira.BoardSprint.Sprints.id
       description: The ID of the sprint.
-      type: number
+      type: Number
     - contextPath: Jira.BoardSprint.Sprints.self
       description: The url of the sprint.
-      type: string
+      type: String
     - contextPath: Jira.BoardSprint.Sprints.state
       description: The state of the sprint.
-      type: string
+      type: String
     - contextPath: Jira.BoardSprint.Sprints.name
       description: The name of the sprint.
-      type: string
+      type: String
     - contextPath: Jira.BoardSprint.Sprints.startDate
       description: The starting date of the sprint.
-      type: string
+      type: String
     - contextPath: Jira.BoardSprint.Sprints.endDate
       description: The ending date of the sprint.
-      type: string
+      type: String
     - contextPath: Jira.BoardSprint.Sprints.completeDate
       description: The date the sprint was completed.
-      type: string
+      type: String
     - contextPath: Jira.BoardSprint.Sprints.originBoardId
       description: The ID of the origin board.
-      type: number
+      type: Number
     - contextPath: Jira.BoardSprint.Sprints.goal
       description: The goal of the sprint.
-      type: string
+      type: String
   - arguments:
     - default: false
       description: The board ID.
@@ -1820,7 +1820,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filters results to epics that are either done or not done. This uses the `Epic Status` field, and not the `Status` field for the issue.
+      description: Filters results to epics that are either done or not done. This uses the `Epic Status` field, and not the `Status` field of the issue.
       isArray: false
       name: done
       required: false
@@ -1852,36 +1852,36 @@ script:
     execution: false
     name: jira-board-epic-list
     outputs:
-    - contextPath: Jira.BoardEpic.id
+    - contextPath: Jira.BoardEpic.boardId
       description: The ID of the board.
-      type: number
+      type: Number
     - contextPath: Jira.BoardEpic.Epics
       description: Holds the data of the epic issues.
-      type: object
+      type: Object
     - contextPath: Jira.BoardEpic.Epics.id
       description: The ID of the epic.
-      type: number
+      type: Number
     - contextPath: Jira.BoardEpic.Epics.key
       description: The key of the epic.
-      type: string
+      type: String
     - contextPath: Jira.BoardEpic.Epics.self
       description: The url of the epic.
-      type: string
+      type: String
     - contextPath: Jira.BoardEpic.Epics.name
       description: The name of the epic.
-      type: string
+      type: String
     - contextPath: Jira.BoardEpic.Epics.summary
       description: The summary of the epic.
-      type: string
+      type: String
     - contextPath: Jira.BoardEpic.Epics.done
       description: Whether the epic has been completed or not.
-      type: boolean
+      type: Boolean
     - contextPath: Jira.BoardEpic.Epics.color
       description: Data about the color of the epic.
-      type: object
+      type: Object
     - contextPath: Jira.BoardEpic.Epics.color.key
       description: The key of the color associated with the epic.
-      type: string
+      type: String
   - arguments:
     - default: false
       description: The board ID.
@@ -1926,28 +1926,28 @@ script:
     outputs:
     - contextPath: Jira.SprintIssues.boardId
       description: The ID of the board that the sprint belongs to.
-      type: string
+      type: String
     - contextPath: Jira.SprintIssues.sprintId
       description: The ID of the sprint.
-      type: string
+      type: String
     - contextPath: Jira.SprintIssues.Ticket.Id
       description: The ticket ID.
-      type: number
+      type: Number
     - contextPath: Jira.SprintIssues.Ticket.Key
       description: The ticket key.
-      type: string
+      type: String
     - contextPath: Jira.SprintIssues.Ticket.Assignee
       description: The user assigned to the ticket.
-      type: string
+      type: String
     - contextPath: Jira.SprintIssues.Ticket.Creator
       description: The user who created the ticket.
-      type: string
+      type: String
     - contextPath: Jira.SprintIssues.Ticket.Summary
       description: The ticket summary.
-      type: string
+      type: String
     - contextPath: Jira.SprintIssues.Ticket.Status
       description: The ticket status.
-      type: string
+      type: String
     - contextPath: Jira.SprintIssues.Ticket.Priority
       description: The ticket priority.
       type: String
@@ -2039,31 +2039,31 @@ script:
     outputs:
     - contextPath: Jira.EpicIssues.boardId
       description: The ID of the board that holds the issues.
-      type: string
+      type: String
     - contextPath: Jira.EpicIssues.epicId
       description: The ID of the epic that holds the issues.
-      type: string
+      type: String
     - contextPath: Jira.EpicIssues.key
       description: The key of the epic.
-      type: string
+      type: String
     - contextPath: Jira.EpicIssues.Ticket.Id
       description: The ticket ID.
-      type: number
+      type: Number
     - contextPath: Jira.EpicIssues.Ticket.Key
       description: The ticket key.
-      type: string
+      type: String
     - contextPath: Jira.EpicIssues.Ticket.Assignee
       description: The user assigned to the ticket.
-      type: string
+      type: String
     - contextPath: Jira.EpicIssues.Ticket.Creator
       description: The user who created the ticket.
-      type: string
+      type: String
     - contextPath: Jira.EpicIssues.Ticket.Summary
       description: The ticket summary.
-      type: string
+      type: String
     - contextPath: Jira.EpicIssues.Ticket.Status
       description: The ticket status.
-      type: string
+      type: String
     - contextPath: Jira.EpicIssues.Ticket.Priority
       description: The ticket priority.
       type: String
@@ -2089,22 +2089,22 @@ script:
     outputs:
     - contextPath: Jira.IssueLinkType
       description: The issue link type bean.
-      type: object
+      type: Object
     - contextPath: Jira.IssueLinkType.id
       description: The ID of the issue link type.
-      type: string
+      type: String
     - contextPath: Jira.IssueLinkType.inward
       description: The description of the issue link type inward link.
-      type: string
+      type: String
     - contextPath: Jira.IssueLinkType.name
       description: The name of the issue link type.
-      type: string
+      type: String
     - contextPath: Jira.IssueLinkType.outward
       description: The description of the issue link type outward link.
-      type: string
+      type: String
     - contextPath: Jira.IssueLinkType.self
       description: The URL of the issue link type.
-      type: string
+      type: String
   - arguments:
     - default: false
       description: The key of the outward issue.
@@ -2190,5 +2190,5 @@ script:
 tests:
   - no tests
 defaultmapperin: classifier-mapper-incoming-JiraV3
-defaultmapperout: classifier-mapper-outgoing-Jira
+defaultmapperout: JiraV3 Outgoing Mapper
 fromversion: 5.0.0
