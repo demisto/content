@@ -1,6 +1,5 @@
 import demistomock as demisto
 import urllib3
-import math
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from typing import Dict, Tuple
