@@ -1,3 +1,5 @@
+Deprecated. Use the Prisma Cloud v2 integration instead.
+
 ## Configure Prisma Cloud (RedLock) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
