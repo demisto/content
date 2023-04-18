@@ -32,11 +32,11 @@ def search_sensor_id(endpoint: str) -> int:
                             default_return_value=[], return_type=list)  # type: ignore
     # Search for sensor with endpoint or ip
     for sensor in sensors:
-        is_same_ipaddress = endpoint in dict_safe_get(sensor, ["IPAddress", "IPAddresses"],
+        is_same_ipaddress = endpoint in dict_safe_get(sensor, ["network_adapters"],
                                                       default_return_value=[], return_type=list)
-        is_same_endpoint = sensor.get("Hostname") == endpoint
+        is_same_endpoint = sensor.get("computer_name") == endpoint
         if is_same_endpoint or is_same_ipaddress:
-            sensor_id = sensor.get("CbSensorID", ERROR_SENSOR)
+            sensor_id = sensor.get("id", ERROR_SENSOR)
             break
 
     return sensor_id

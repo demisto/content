@@ -12,30 +12,32 @@ commonfields:
 enabled: true
 name: CBFindIP
 outputs:
-- contextPath: Process.Path
+- contextPath: ProcessSearch.Results.path
   description: Process path.
   type: String
-- contextPath: Process.PID
+- contextPath: ProcessSearch.Results.id
   description: Process PID.
   type: Number
-- contextPath: Process.MD5
+- contextPath: ProcessSearch.Results.process_md5
   description: Process MD5 hash.
   type: String
-- contextPath: Process.Hostname
+- contextPath: ProcessSearch.Results.hostname
   description: Process hostname.
   type: String
-- contextPath: Process.Name
+- contextPath: ProcessSearch.Results.process_name
   description: Process name.
   type: String
-- contextPath: Process.CbSegmentID
-  description: Carbon Black "segment" where this process instance is stored. Required to fetch additional information for a process.
+- contextPath: ProcessSearch.Results.segment_id
+  description: Carbon Black "segment" where this process instance is stored. Required
+    to fetch additional information for a process.
   type: String
-- contextPath: Process.CbID
-  description: Carbon Black unique ID for this process instance. Required (together with CbSegmentID) to fetch additional information for a process.
+- contextPath: ProcessSearch.Results.unique_id
+  description: Carbon Black unique ID for this process instance. Required (together
+    with CbSegmentID) to fetch additional information for a process.
   type: String
-- contextPath: Process.Endpoint
+- contextPath: ProcessSearch.Results.interface_ip
   description: The endpoint of the process.
-  type: String
+  type: Number
 script: '-'
 system: false
 tags:

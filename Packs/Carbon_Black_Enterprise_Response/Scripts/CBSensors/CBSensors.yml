@@ -12,7 +12,7 @@ system: true
 scripttarget: 0
 dependson:
   must:
-  - cb-list-sensors
+  - cb-edr-sensors-list
 timeout: 0s
 fromversion: 5.0.0
 tests:

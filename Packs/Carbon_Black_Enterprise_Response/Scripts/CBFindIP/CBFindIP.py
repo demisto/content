@@ -9,7 +9,7 @@ def main():
     found = []
     ips = argToList(demisto.args()['ip'])
     for ip in ips:
-        for e in demisto.executeCommand('cb-get-processes', {'query': 'ipaddr:' + ip}):
+        for e in demisto.executeCommand('cb-edr-processes-search', {'query': 'ipaddr:' + ip}):
             if isError(e):
                 return_error(e['Contents'])
             else:
