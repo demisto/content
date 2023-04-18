@@ -1534,7 +1534,7 @@ script:
       isArray: false
       name: assets
       required: false
-    - description: Unique identifier of the agent to whom the Problem is assigned. Use freshservice-agent-list to get the agent ID.
+    - description: Unique identifier of the agent to whom the problem is assigned. Use freshservice-agent-list to get the agent ID.
       isArray: false
       name: agent_id
       required: false
