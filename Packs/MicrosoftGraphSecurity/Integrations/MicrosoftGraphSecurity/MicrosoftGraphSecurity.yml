@@ -139,7 +139,7 @@ configuration:
   type: 0
   section: Collect
 - display: Fetch incidents of the given providers only.
-  additionalinfo: Relevant only for V1. Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provioder}". If empty, incidents of all providers will be fetched.
+  additionalinfo: Relevant only for V1. Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provider}". If empty, incidents of all providers will be fetched.
   hidden: false
   name: fetch_providers
   required: false
@@ -452,7 +452,7 @@ script:
       secret: false
     - default: false
       defaultValue: All
-      description: 'Relevant only for V1. Fields to fetch for specified Alert apart from the basic properties, given as comma separated values, e.g. NetworkConnections,Processes. Optional values: All,NetworkConnections,Processes,RegistryKeys,UserStates,HostStates,FileStates,CloudAppStates,MalwareStates,CustomerComment,Triggers,VendorInformation,VulnerabilityStates.'
+      description: 'Relevant only for V1. Fields to fetch for specified Alert apart from the basic properties, given as comma separated values, e.g. NetworkConnections,Processes. The possible values are: All, NetworkConnections, Processes, RegistryKeys, UserStates, HostStates, FileStates, CloudAppStates, MalwareStates, CustomerComments, Triggers, VendorInformation, VulnerabilityStates. Default is All.'
       isArray: false
       name: fields_to_include
       required: false

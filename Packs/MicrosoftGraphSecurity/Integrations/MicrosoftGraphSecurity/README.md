@@ -42,7 +42,7 @@ API V2:
     | Incident type | The incident type to apply. | False |
     | First fetch timestamp (`<number> <time unit>`, e.g., 12 hours, 7 days) | `<number> <time unit>`, for example 1 hour, 30 minutes | False |
     | Max incidents per fetch | The maximum number of incidents to fetch per iteration | False |
-    | Fetch incidents of the given providers only. | Relevant only for V1. Multiple providers can be inserted separated by a comma, for example "\{first_provider\},\{second_provioder\}". If empty, incidents of all providers will be fetched. | False |
+    | Fetch incidents of the given providers only. | Relevant only for V1. Multiple providers can be inserted separated by a comma, for example "\{first_provider\},\{second_provider\}". If empty, incidents of all providers will be fetched. | False |
     | Fetch incidents of the given service sources only. | Relevant only for V2. Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftCloudAppSecurity",. If empty, incidents of all providers will be fetched. | False |
     | Fetched incidents filter | Use this field to filter fetched incidents according to any of the alert properties. Overrides the providers list, if given. Filter should be in the format "\{property\} eq '\{property-value\}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'". | False |
 
@@ -170,7 +170,7 @@ Get details for a specific alert.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The Alert ID - Provider-generated GUID/unique identifier. | Required | 
-| fields_to_include | Relevant only for V1. Fields to fetch for specified Alert apart from the basic properties, given as comma separated values, e.g. NetworkConnections,Processes. Optional values: All,NetworkConnections,Processes,RegistryKeys,UserStates,HostStates,FileStates,CloudAppStates,MalwareStates,CustomerComment,Triggers,VendorInformation,VulnerabilityStates. Default is All. | Optional | 
+| fields_to_include | Relevant only for V1. Fields to fetch for specified Alert apart from the basic properties, given as comma separated values, e.g. NetworkConnections,Processes. The possible values are: All, NetworkConnections, Processes, RegistryKeys, UserStates, HostStates, FileStates, CloudAppStates, MalwareStates, CustomerComments, Triggers, VendorInformation, VulnerabilityStates. Default is All. | Optional | 
 
 #### Context Output
 | **Path** | **Type** | **Description** |

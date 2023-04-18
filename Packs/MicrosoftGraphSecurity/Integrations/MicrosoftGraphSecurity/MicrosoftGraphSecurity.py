@@ -13,6 +13,10 @@ CMD_URL = 'security/alerts_v2'
 API_VER = 'API V2'
 PAGE_SIZE_LIMIT_DICT = {'API V2': 2000, 'API V1': 1000}
 API_V1_PAGE_LIMIT = 500
+POSSIBLE_FIELDS_TO_INCLUDE = ["All", "NetworkConnections", "Processes", "RegistryKeys", "UserStates", "HostStates", "FileStates",
+                              "CloudAppStates", "MalwareStates", "CustomerComments", "Triggers", "VendorInformation",
+                              "VulnerabilityStates"]
+
 RELEVANT_DATA_TO_UPDATE_PER_VERSION = {'API V1': {'assigned_to': 'assignedTo', 'closed_date_time': 'closedDateTime',
                                                   'comments': 'comments', 'feedback': 'feedback', 'status': 'status',
                                                   'tags': 'tags'},
@@ -45,17 +49,18 @@ def create_search_alerts_filters(args, is_fetch=False):
     filters = []
     params: dict[str, str] = {}
     if last_modified:
-        filters.append("lastModifiedDateTime gt {}".format(get_timestamp(last_modified)))
+        last_modified_query_key: str = "lastModifiedDateTime" if API_VER == "API V1" else "lastUpdateDateTime"
+        filters.append(f"{last_modified_query_key} gt {get_timestamp(last_modified)}")
     if category:
-        filters.append("category eq '{}'".format(category))
+        filters.append(f"category eq '{category}'")
     if severity:
-        filters.append("severity eq '{}'".format(severity))
+        filters.append(f"severity eq '{severity}'")
     if time_from:  # changed to ge and le in order to solve issue #27884
-        filters.append("createdDateTime ge {}".format(time_from))
+        filters.append(f"createdDateTime ge {time_from}")
     if time_to:
-        filters.append("createdDateTime le {}".format(time_to))
+        filters.append(f"createdDateTime le {time_to}")
     if filter_query:
-        filters.append("{}".format(filter_query))
+        filters.append(f"{filter_query}")
     if page_size:
         if PAGE_SIZE_LIMIT_DICT.get(API_VER, 1000) < page_size:
             raise DemistoException(f"Please note that the page size limit for {API_VER} is {PAGE_SIZE_LIMIT_DICT.get(API_VER)}")
@@ -69,9 +74,9 @@ def create_search_alerts_filters(args, is_fetch=False):
         params['$skip'] = page
     if API_VER == 'API V2':
         relevant_filters_v2 = ['classification', 'serviceSource', 'status']
-        for relevant_key in relevant_filters_v2:
-            if val := args.get(relevant_key):
-                filters.append(f"relevant_key eq '{val}'")
+        for key in relevant_filters_v2:
+            if val := args.get(key):
+                filters.append(f"{key} eq '{val}'")
     filters = " and ".join(filters)
     params['$filter'] = filters
     return params
@@ -114,6 +119,17 @@ def create_data_to_update(args):
             else:
                 data[relevant_data_key] = val
     return data
+
+
+def validate_fields_list(fields_list):
+    unsupported_fields = []
+    for field in fields_list:
+        if field not in POSSIBLE_FIELDS_TO_INCLUDE:
+            unsupported_fields.append(field)
+    if unsupported_fields:
+        raise DemistoException(f"The following fields are not supported by the commands as fields to include: "
+                                f"{(', ').join(unsupported_fields)}.\nPlease make sure to enter only fields from the "
+                                f"following list: {(', ').join(POSSIBLE_FIELDS_TO_INCLUDE)}.")
 
 
 def get_timestamp(time_description):
@@ -337,6 +353,7 @@ def get_alert_details_command(client: MsGraphClient, args):
         fields_to_include = args.get('fields_to_include')
         if fields_to_include:
             fields_list = fields_to_include.split(',')
+            validate_fields_list(fields_list)
         else:
             fields_list = []
         show_all_fields = True if 'All' in fields_list else False
@@ -377,7 +394,7 @@ def get_alert_details_command(client: MsGraphClient, args):
             if comments:
                 comments_hr = '### Customer Provided Comments for Alert\n'
                 for comment in comments:
-                    comments_hr += '- {}\n'.format(comment)
+                    comments_hr += f'- {comment}\n'
                 hr += comments_hr
 
         if 'FileStates' in fields_list or show_all_fields:
@@ -557,7 +574,7 @@ def update_alert_command(client: MsGraphClient, args):
     ec = {
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': context
     }
-    human_readable = 'Alert {} has been successfully updated.'.format(alert_id)
+    human_readable = f'Alert {alert_id} has been successfully updated.'
     if status and API_VER == 'API V1' and provider_information in {'IPC', 'MCAS', 'Azure Sentinel'}:
         human_readable += f'\nUpdating status for alerts from provider {provider_information} gets updated across \
 Microsoft Graph Security API integrated applications but not reflected in the provider’s management experience.\n \
