@@ -7,6 +7,7 @@ from urllib3 import disable_warnings
 from requests.exceptions import HTTPError
 from requests import Response
 from typing import Callable, Iterable, Optional, List, Union, Iterator, Dict
+from collections import deque
 
 
 STR_OR_STR_LIST = Union[str, List[str]]
@@ -285,43 +286,6 @@ class UpdatedTickets(TicketEvents):
             return ticket['created_at'] != ticket['updated_at']
 
         for ticket in filter(filter_created_ticket, super(UpdatedTickets, self).tickets()):
-            yield ticket
-
-
-class CreatedTickets(TicketEvents):
-
-    def __init__(self, zendesk_client, last_run):
-        after_cursor = last_run.get('after_cursor')
-        self._latest_ticket_id = last_run.get('latest_ticket_id', 0)
-        self._highest_ticket_id_in_current_run = 0
-        super(CreatedTickets, self).__init__(zendesk_client, after_cursor, last_run.get('tickets', []))
-
-    def next_run(self):
-        next_run = super(CreatedTickets, self).next_run()
-        next_run['latest_ticket_id'] = max(self._latest_ticket_id, self._highest_ticket_id_in_current_run)
-        return next_run
-
-    def query_params(self):
-
-        params = super(CreatedTickets, self).query_params()
-        if not params:
-            params['start_time'] = int(dateparser.parse(        # type: ignore
-                self._demisto_params.get('first_fetch', '3d')
-            ).timestamp())
-
-        params['exclude_deleted'] = True
-        return params
-
-    def tickets(self):
-        limit = int(self._demisto_params.get('max_fetch', 50))
-        ticket_types = self._demisto_params.get('ticket_types', [])
-        ticket_types = None if 'all' in ticket_types else ticket_types
-
-        def filter_updated_ticket(ticket: Dict):
-            return ticket['id'] > self._latest_ticket_id and (not ticket_types or ticket.get('type') in ticket_types)
-
-        for ticket in filter(filter_updated_ticket, super(CreatedTickets, self).tickets(limit=limit)):
-            self._highest_ticket_id_in_current_run = max(ticket['id'], self._highest_ticket_id_in_current_run)
             yield ticket
 
 
@@ -609,7 +573,7 @@ class ZendeskClient(BaseClient):
                 lambda x: x['id'],
                 filter(
                     lambda x: x['result_type'] == 'ticket',
-                    self.__zebdesk_search_results(query=query, page_number=page_number, **kwargs)
+                    self.__zendesk_search_results(query=query, page_number=page_number, **kwargs)
                 )
             ))
         if ticket_id is not None:
@@ -808,8 +772,8 @@ class ZendeskClient(BaseClient):
 
     # ---- search releated functions ---- #
 
-    def __zebdesk_search_results(self, query: str, limit: int = 50, page_number: Optional[int] = None, page_size: int = 50):
-        params = {'query': urlencode({'A': query})[2:]}
+    def __zendesk_search_results(self, query: str, limit: int = 50, page_number: Optional[int] = None, page_size: int = 50, additional_params: dict = {}):
+        params = {'query': query} | additional_params
         results = []
         if page_number:
             results = list(self.__get_spesific_page(url_suffix='search.json', params=params,
@@ -829,7 +793,7 @@ class ZendeskClient(BaseClient):
 
     def zendesk_search(self, query: str, limit: int = 50, page_number: Optional[int] = None, page_size: int = 50):
         return CommandResults(outputs_prefix="Zendesk.Search",
-                              outputs=self.__zebdesk_search_results(
+                              outputs=self.__zendesk_search_results(
                                   query=query, limit=limit, page_number=page_number, page_size=page_size
                               ))
 
@@ -883,18 +847,62 @@ class ZendeskClient(BaseClient):
             'occurred': ticket['created_at'],
         }
 
-    def fetch_incidents(self, lastRun: Optional[str] = None):
-        created_tickets = CreatedTickets(self, json.loads(lastRun or '{}') or demisto.getLastRun())
+    @staticmethod
+    def _fetch_query_builder(last_fetch: str, zendesk_time_filter_type: str, query: str = None, time_filter_type: str = None,
+                             ticket_priority: str = None, ticket_status: str = None, ticket_types: str = None,
+                             **_kwargs):
+        query_parts = ['type:ticket', f"{zendesk_time_filter_type}>{last_fetch}"]
+        if query:
+            query_parts.append(query)
+            return ' '.join(query_parts)
+        if ticket_priority and 'all' not in ticket_priority:
+            for priority in argToList(ticket_priority):
+                query_parts.append(f'priority:{priority}')
+        if ticket_status and 'all' not in ticket_status:
+            for status in argToList(ticket_status):
+                query_parts.append(f'status:{status}')
+        if ticket_types and 'all' not in ticket_types:
+            for ticket_type in argToList(ticket_types):
+                query_parts.append(f'ticket_type:{ticket_type}')
+        return ' '.join(query_parts)
 
-        tickets = list(map(
-            self._ticket_to_incident,
-            map(
-                self.__ticket_context,
-                created_tickets.tickets()
-            )
-        ))
-        demisto.incidents(tickets)
-        demisto.setLastRun(created_tickets.next_run())
+    def fetch_incidents(self, params: dict, lastRun: Optional[str] = None):
+        last_run = json.loads(lastRun or '{}') or demisto.getLastRun()
+        page_number = last_run.get('page_number') or 1
+        fetched_tickets = deque(last_run.get('fetched_tickets') or [])
+        max_fetch = int(last_run.get('max_fetch') or params.get('max_fetch') or 50)
+        now = datetime.utcnow() - timedelta(minutes=1)
+        last_fetch = last_run.get('fetch_time')
+        zendesk_time_filter_type = 'updated' if params.get('time_filter_type') == 'updated-at' else 'created'
+
+        if not last_fetch:
+            first_fetch = dateparser.parse(
+                params.get('first_fetch') or '3 days', settings={'TIMEZONE': 'UTC'})
+            last_fetch = first_fetch.strftime('%Y-%m-%dT%H:%M:00Z')
+
+        search_query = self._fetch_query_builder(last_fetch, zendesk_time_filter_type, **params)
+        demisto.error(f'{search_query=}')
+        search_results = self.__zendesk_search_results(
+            query=search_query, limit=max_fetch, page_size=max_fetch, page_number=page_number,
+            additional_params={'sort_by': f'{zendesk_time_filter_type}_at', 'sort_order': 'asc'})
+        search_results_ids = list(map(lambda x: x.get('id'), search_results))
+        filtered_search_results_ids = list(filter(lambda x: x not in fetched_tickets, search_results_ids))
+        tickets = list(map(lambda x: self._get_ticket_by_id(x), filtered_search_results_ids))
+        incidents = list(map(self._ticket_to_incident, tickets))
+
+        demisto.incidents(incidents)
+        fetched_tickets.extend(filtered_search_results_ids)
+        next_run = {
+            'fetched_tickets': list(fetched_tickets)[-1000:],
+            'fetch_time': now.strftime('%Y-%m-%dT%H:%M:00Z')
+        }
+        if not len(search_results_ids) < max_fetch:
+            next_run['max_fetch'] = max_fetch
+            next_run['page_number'] = page_number + 1
+            next_run['fetch_time'] = last_fetch
+        demisto.error(
+            f'next run args:\n{next_run.get("fetch_time")=}\n{next_run.get("limit")=}\n{next_run.get("page_number")=}\n{next_run.get("fetch_time")=}\n')
+        demisto.setLastRun(next_run)
 
     def get_modified_remote_data(self, lastUpdate: Optional[str] = None):
         try:
@@ -966,7 +974,6 @@ class ZendeskClient(BaseClient):
             }, [])
 
     def update_remote_system(self, **kwargs):
-        # TODO: finish outgoing mapper
         args = UpdateRemoteSystemArgs(kwargs)
         files = []
         args.delta = {key: val for key, val in args.delta.items() if val}
@@ -1066,7 +1073,6 @@ def main():  # pragma: no cover
         commands: Dict[str, Callable] = {
             # demisto commands
             'test-module': client.test_module,
-            'fetch-incidents': client.fetch_incidents,
             'get-modified-remote-data': client.get_modified_remote_data,
             'get-remote-data': client.get_remote_data,
             'update-remote-system': client.update_remote_system,
@@ -1101,7 +1107,9 @@ def main():  # pragma: no cover
         }
         demisto.debug(f'command {command} called')
 
-        if command in commands:
+        if command == 'fetch-incidents':
+            client.fetch_incidents(params, **args)
+        elif command in commands:
             if command_res := commands[command](**args):
                 return_results(command_res)
         else:

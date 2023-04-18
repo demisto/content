@@ -303,57 +303,6 @@ class TestUpdatedTickets:
             'ticket_events/mixed_ticket_events')['after_cursor']
 
 
-class TestCreatedTickets:
-    def test_first_run(self, zendesk_client):
-        updated_tickets = CreatedTickets(zendesk_client, {})
-        assert 'start_time' in updated_tickets.query_params()
-        assert 'after_cursor' not in updated_tickets.query_params()
-
-    def test_tickets_without_data(self, zendesk_client, requests_mock):
-        requests_mock.get(full_url('incremental/tickets/cursor'), json=get_json_file('ticket_events/no_ticket_events'))
-        created_tickets = CreatedTickets(zendesk_client, {})
-        assert len(list(created_tickets.tickets())) == 0
-
-    def test_tickets_with_updated_only(self, zendesk_client, requests_mock):
-        requests_mock.get(full_url('incremental/tickets/cursor'), json=get_json_file('ticket_events/updated_only_ticket_events'))
-        created_tickets = CreatedTickets(zendesk_client, {})
-        assert len(list(created_tickets.tickets())) == 2
-        assert created_tickets.query_params()['cursor'] == get_json_file(
-            'ticket_events/updated_only_ticket_events')['after_cursor']
-
-    def test_tickets_with_mixed_unhundled_events(self, zendesk_client, requests_mock):
-        requests_mock.get(full_url('incremental/tickets/cursor'), json=get_json_file('ticket_events/mixed_ticket_events'))
-        created_tickets = CreatedTickets(zendesk_client, {})
-        assert len(list(created_tickets.tickets())) == 2
-        assert created_tickets.query_params()['cursor'] == get_json_file(
-            'ticket_events/mixed_ticket_events')['after_cursor']
-
-    def test_tickets_with_mixed_hundled_and_unhundled_events(self, zendesk_client, requests_mock):
-        requests_mock.get(full_url('incremental/tickets/cursor'), json=get_json_file('ticket_events/mixed_ticket_events'))
-        created_tickets = CreatedTickets(zendesk_client, {'latest_ticket_id': 3})
-        assert len(list(created_tickets.tickets())) == 1
-        assert created_tickets.query_params()['cursor'] == get_json_file(
-            'ticket_events/mixed_ticket_events')['after_cursor']
-        assert created_tickets.next_run()['latest_ticket_id'] == 7
-
-    def test_with_older_data(self, zendesk_client, requests_mock):
-        requests_mock.get(full_url('incremental/tickets/cursor'), json=get_json_file('ticket_events/no_ticket_events'))
-        created_tickets = CreatedTickets(
-            zendesk_client, {'tickets': get_json_file('ticket_events/mixed_ticket_events')['tickets']})
-        assert len(created_tickets._tickets_list) == 2
-        assert len(list(created_tickets.tickets())) == 2
-        assert created_tickets._tickets_list == []
-
-    def test_when_tickets_arent_done(self, zendesk_client, requests_mock, mocker):
-        requests_mock.get(full_url('incremental/tickets/cursor'), json=get_json_file('ticket_events/no_ticket_events'))
-        mocker.patch.object(demisto, 'params', return_value={'max_fetch': 1})
-        created_tickets = CreatedTickets(
-            zendesk_client, {'tickets': get_json_file('ticket_events/mixed_ticket_events')['tickets']})
-        assert len(created_tickets._tickets_list) == 2
-        assert len(list(created_tickets.tickets())) == 1
-        assert created_tickets._tickets_list == created_tickets.next_run()['tickets']
-
-
 class TestZendeskClient:
 
     class TestHTTPRequest:
