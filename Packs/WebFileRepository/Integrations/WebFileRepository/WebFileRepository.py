@@ -4119,7 +4119,7 @@ def command_upload_file(args: Dict[str, str], settings: Settings) -> str:
     path = res['path']
     if not (name := args.get('file_name')):
         name = res['name']
-    
+
     with open(path, 'rb') as f:
         files = [('file', [name, f.read()])]
 
