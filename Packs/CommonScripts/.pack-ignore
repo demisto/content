@@ -247,11 +247,6 @@ ignore=BA124
 [file:EditServerConfig.yml]
 ignore=BA124
 
-
-ParseYAML
-Parses
-YAML
-
 [tests_require_network]
 Ping
 GetDockerImageLatestTag
