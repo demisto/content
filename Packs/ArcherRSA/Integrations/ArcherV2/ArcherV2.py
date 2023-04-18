@@ -1,8 +1,8 @@
 from datetime import timezone
+import random
 from typing import Dict, Tuple, Union
 
 import dateparser
-import json
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
@@ -76,21 +76,6 @@ def get_token_soap_request(user, password, instance, domain=None):
         ET.SubElement(create_user_session, "userName").text = user
         ET.SubElement(create_user_session, "instanceName").text = instance
         ET.SubElement(create_user_session, "password").text = password
-
-    return ET.tostring(root)
-
-
-def terminate_session_soap_request(token):
-    # Create the root element
-    root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-                                        "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
-                                        "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
-    # Create the soap:Body element
-    body = ET.SubElement(root, "soap:Body")
-    # Create the TerminateSession element
-    terminate_session = ET.SubElement(body, "TerminateSession", {"xmlns": "http://archer-tech.com/webservices/"})
-    # Add the sessionToken element
-    ET.SubElement(terminate_session, "sessionToken").text = token
 
     return ET.tostring(root)
 
@@ -279,6 +264,12 @@ SOAP_COMMANDS = {
 }
 
 
+def merge_integration_context(new_dict):
+    old_context = get_integration_context()
+    old_context.update(new_dict)
+    set_integration_context(old_context)
+
+
 def get_occurred_time(fields: Union[List[dict], dict], field_id: str) -> str:
     """
     Occurred time is part of the raw 'Field' key in the response.
@@ -312,23 +303,84 @@ class Client(BaseClient):
         self.password = password
         self.instance_name = instance_name
         self.domain = domain
-        super(Client, self).__init__(base_url=base_url, headers=REQUEST_HEADERS, timeout=timeout, **kwargs)
 
-    def do_request(self, method, url_suffix, data=None, params=None):
-        if not REQUEST_HEADERS.get('Authorization'):
-            self.update_session()
+        super(Client, self).__init__(base_url=base_url, timeout=timeout, **kwargs)
 
-        res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data, params=params,
-                                 resp_type='response', ok_codes=(200, 401))
+    def get_headers(self, create_new_session: bool = False):
+        """
+        This function returns the relevant headers dict which also contains session id. In case the session doesn't exist in
+        context or the create_new_session flag is given, the session will ge re-generated using create_session().
+        In order to support some level of concurrency when running tasks simultaneously, the function has a small
+        sleeping mechanism to allow tasks to first try and use existing session before moving forward to create a new
+        one.
+        Args:
+            create_new_session (bool): whether to force creation of a new session
 
-        if res.status_code == 401:
-            self.update_session()
-            res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data,
+        Returns:
+             dict: the dictionary containing the headers together with the session id.
+        """
+        time.sleep(random.uniform(0, 5))
+        headers = REQUEST_HEADERS
+        context_session_id = get_integration_context().get('session_id')
+        if create_new_session or not context_session_id:
+            session_id = self.create_session()
+        else:
+            session_id = context_session_id
+        headers['Authorization'] = f'Archer session-id={session_id}'
+        return headers
+
+    def try_rest_request(self, method, url_suffix, data=None, params=None, create_new_session=False, attempts=1):
+        """
+        This function perform several attempts to extract the necessary headers and call the Base client http request
+        function. If the create_new_session flag is given it will enforce the creation of a new session, otherwise it
+        will try to use the existing one.
+
+        Args:
+            method: (str) the HTTP method to use
+            url_suffix: (str) the url_suffix to use
+            data: (str) the to send in the json body
+            params: (str) the url parameters to send
+            create_new_session: (bool) whether to enforce creation of new session (will be true in case previous calls
+                returned 401)
+            attempts: (int) number of attempts to try with the given session extraction/method.
+
+        Returns:
+            requets.Response: the response object
+        """
+        for _ in range(attempts):
+            headers = self.get_headers(create_new_session=create_new_session)
+            res = self._http_request(method, url_suffix, headers=headers, json_data=data, params=params,
                                      resp_type='response', ok_codes=(200, 401))
+            demisto.debug(f"rest status code: {res.status_code}")
+            if 200 <= res.status_code <= 300:
+                break
+        return res
 
+    def do_rest_request(self, method, url_suffix, data=None, params=None):
+        """
+        This function manages the REST API calls by calling the *try_rest_request* function twice:
+            - First without the *create_new_session* flag (this will cause *try_rest_request* to try and use exiting
+            session id if exists).
+            - In case of bad session (401), another call will be made with the *create_new_session* flag set to true
+            which performs force update of the session id.
+
+        Args:
+            method: (str) the HTTP method to use
+            url_suffix: (str) the url_suffix to use
+            data: (dict) the data to send in the json body
+            params: (dict) the url parameters to send
+
+        Returns:
+            dict: the response json object
+        """
+        res = self.try_rest_request(method=method, url_suffix=url_suffix, data=data, params=params, attempts=2)
+        if res.status_code == 401:
+            demisto.debug("trying rest with new session")
+            res = self.try_rest_request(method=method, url_suffix=url_suffix, data=data, params=params,
+                                        create_new_session=True, attempts=4)
         return res.json()
 
-    def update_session(self):
+    def create_session(self):
         body = {
             'InstanceName': self.instance_name,
             'Username': self.username,
@@ -345,9 +397,10 @@ class Client(BaseClient):
         if not is_successful_response:
             return_error(res.get('ValidationMessages'))
         session = res.get('RequestedObject', {}).get('SessionToken')
-        REQUEST_HEADERS['Authorization'] = f'Archer session-id={session}'
+        merge_integration_context({'session_id': session})
+        return session
 
-    def get_token(self):
+    def generate_token(self):
         if self.domain:
             endpoint = 'CreateDomainUserSessionFromInstance'
         else:
@@ -360,26 +413,90 @@ class Client(BaseClient):
         }
         res = self._http_request('POST', 'ws/general.asmx',
                                  headers=headers, data=body, resp_type='content')
-        return extract_from_xml(
+        token = extract_from_xml(
             res,
             f'Envelope.Body.{endpoint}Response.'
             f'{endpoint}Result'
         )
+        merge_integration_context({'token': token})
+        return token
 
-    def destroy_token(self, token):
-        body = terminate_session_soap_request(token)
-        headers = {'SOAPAction': 'http://archer-tech.com/webservices/TerminateSession',
-                   'Content-Type': 'text/xml; charset=utf-8'}
-        self._http_request('POST', 'ws/general.asmx', headers=headers, data=body, resp_type='content')
+    def update_body_with_token(self, request_body_builder_function, create_new_token: bool = False, **kwargs):
+        """
+        This function returns the updated body dict which also contains api token. In case the token doesn't exist in
+        context or the create_new_token flag is given, the token will be re-generated using generate_token().
+        In order to support some level of concurrency when running tasks simultaneously, the function has a small
+        sleeping mechanism to allow tasks to first try and use existing session before moving forward to create a new
+        one.
+        Args:
+            request_body_builder_function (function): function to build the relevant request body
+            create_new_token (bool): whether to force creation of a new session
+            kwargs: (dict) dict of additional parameters relevant to the soap request.
+
+        Returns:
+             dict: the dictionary containing the necessary body together with the api token.
+        """
+        time.sleep(random.uniform(0, 5))
+        context_token = get_integration_context().get('token')
+        if create_new_token or not context_token:
+            token = self.generate_token()
+        else:
+            token = context_token
+        body = request_body_builder_function(token, **kwargs)
+        return body
+
+    def try_soap_request(self, req_data, method, create_new_token=False, attempts=1, **kwargs):
+        """
+        This function perform several attempts to read/generate api token and call the Base client http request
+        function. If the create_new_token flag is given it will enforce the creation of a new token, otherwise it
+        will try to use the existing one.
+
+        Args:
+            method: (str) the HTTP method to use
+            req_data: (dict) dictionary containing API info relevant to the specific API request
+            create_new_token: (bool) whether to enforce creation of new session (will be true in case previous calls
+                returned 500)
+            attempts: (int) number of attempts to try with the given session extraction/method.
+            kwargs: (dict) dict of additional parameters relevant to the soap request.
+
+        Returns:
+            requets.Response: the response object
+        """
+        headers = {'SOAPAction': req_data['soapAction'], 'Content-Type': 'text/xml; charset=utf-8'}
+        request_body_builder_function = req_data['soapBody']
+        url_suffix = req_data['urlSuffix']
+        for _ in range(attempts):
+            body = self.update_body_with_token(request_body_builder_function=request_body_builder_function,
+                                               create_new_token=create_new_token, **kwargs)
+            res = self._http_request(method=method, url_suffix=url_suffix, headers=headers, data=body,
+                                     resp_type='response', ok_codes=(200, 500))
+            demisto.debug(f"soap status code: {res.status_code}")
+            if 200 <= res.status_code <= 300:
+                return res
+        return res
 
     def do_soap_request(self, command, **kwargs):
+        """
+        This function manages the SOAP API calls by calling the *try_soap_request* function twice:
+            - First without the *create_new_token* flag (this will cause *try_soap_request* to try and use exiting
+            token if exists).
+            - In case of bad session (500), another call will be made with the *create_new_token* flag set to true
+            which performs force update of the token.
+
+        Args:
+            command: (str) the name of the command to use
+            kwargs: (dict) dict of additional parameters relevant to the soap request.
+
+        Returns:
+            dict: the relevant dict containing the data in the relevant path of the xml response
+            bytes: res.content
+        """
         req_data = SOAP_COMMANDS[command]
-        headers = {'SOAPAction': req_data['soapAction'], 'Content-Type': 'text/xml; charset=utf-8'}
-        token = self.get_token()
-        body = req_data['soapBody'](token, **kwargs)  # type: ignore
-        res = self._http_request('POST', req_data['urlSuffix'], headers=headers, data=body, resp_type='content')
-        self.destroy_token(token)
-        return extract_from_xml(res, req_data['outputPath']), res
+        res = self.try_soap_request(req_data=req_data, method='POST', attempts=2, **kwargs)
+        if res.status_code == 500:
+            demisto.debug("trying soap with new session")
+            res = self.try_soap_request(req_data=req_data, method='POST', create_new_token=True, attempts=2, **kwargs)
+        return extract_from_xml(res.content, req_data['outputPath']), res.content
 
     def get_level_by_app_id(self, app_id, specify_level_id=None):
         levels = []
@@ -388,13 +505,14 @@ class Client(BaseClient):
         if cache.get(app_id):
             levels = cache[app_id]
         else:
-            all_levels_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/level/module/{app_id}')
+            all_levels_res = self.do_rest_request('GET', f'{API_ENDPOINT}/core/system/level/module/{app_id}')
             for level in all_levels_res:
                 if level.get('RequestedObject') and level.get('IsSuccessful'):
                     level_id = level.get('RequestedObject').get('Id')
 
                     fields = {}
-                    level_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/level/{level_id}')
+                    level_res = self.do_rest_request('GET',
+                                                     f'{API_ENDPOINT}/core/system/fielddefinition/level/{level_id}')
                     for field in level_res:
                         if field.get('RequestedObject') and field.get('IsSuccessful'):
                             field_item = field.get('RequestedObject')
@@ -408,7 +526,7 @@ class Client(BaseClient):
                     levels.append({'level': level_id, 'mapping': fields})
             if levels:
                 cache[int(app_id)] = levels
-                set_integration_context(cache)
+                merge_integration_context(cache)
 
         level_data = None
         if specify_level_id:
@@ -422,7 +540,7 @@ class Client(BaseClient):
         return level_data
 
     def get_record(self, app_id, record_id, depth):
-        res = self.do_request('GET', f'{API_ENDPOINT}/core/content/{record_id}')
+        res = self.do_rest_request('GET', f'{API_ENDPOINT}/core/content/{record_id}')
 
         if not isinstance(res, dict):
             res = res.json()
@@ -601,7 +719,7 @@ class Client(BaseClient):
         if cache['fieldValueList'].get(field_id):
             return cache.get('fieldValueList').get(field_id)
 
-        res = self.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/{field_id}')
+        res = self.do_rest_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/{field_id}')
 
         errors = get_errors_from_res(res)
         if errors:
@@ -613,7 +731,8 @@ class Client(BaseClient):
                 raise Exception('The command returns values only for fields of type "Values List".\n')
 
             list_id = res['RequestedObject']['RelatedValuesListId']
-            values_list_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}')
+            values_list_res = self.do_rest_request('GET',
+                                                   f'{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}')
             if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
                 values_list: List[Dict[str, Any]] = []
                 for value in values_list_res['RequestedObject'].get('Children', ()):
@@ -621,7 +740,7 @@ class Client(BaseClient):
                 field_data = {'FieldId': field_id, 'ValuesList': values_list}
 
                 cache['fieldValueList'][field_id] = field_data
-                set_integration_context(cache)
+                merge_integration_context(cache)
                 return field_data
         return {}
 
@@ -656,7 +775,7 @@ class Client(BaseClient):
         Returns:
             fields, raw response
         """
-        res = self.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/application/{app_id}')
+        res = self.do_rest_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/application/{app_id}')
 
         fields = []
         for field in res:
@@ -810,7 +929,7 @@ def test_module(client: Client, params: dict) -> str:
         fetch_incidents_command(client, params, last_run)
         return 'ok'
 
-    return 'ok' if client.do_request('GET', f'{API_ENDPOINT}/core/system/application') else 'Connection failed.'
+    return 'ok' if client.do_rest_request('GET', f'{API_ENDPOINT}/core/system/application') else 'Connection failed.'
 
 
 def search_applications_command(client: Client, args: Dict[str, str]):
@@ -820,9 +939,9 @@ def search_applications_command(client: Client, args: Dict[str, str]):
 
     if app_id:
         endpoint_url = f'{API_ENDPOINT}/core/system/application/{app_id}'
-        res = client.do_request('GET', endpoint_url)
+        res = client.do_rest_request('GET', endpoint_url)
     elif limit:
-        res = client.do_request('GET', endpoint_url, params={"$top": limit})
+        res = client.do_rest_request('GET', endpoint_url, params={"$top": limit})
 
     errors = get_errors_from_res(res)
     if errors:
@@ -860,7 +979,7 @@ def get_application_fields_command(client: Client, args: Dict[str, str]):
 def get_field_command(client: Client, args: Dict[str, str]):
     field_id = args.get('fieldID')
 
-    res = client.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/{field_id}')
+    res = client.do_rest_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/{field_id}')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -887,7 +1006,7 @@ def get_field_command(client: Client, args: Dict[str, str]):
 def get_mapping_by_level_command(client: Client, args: Dict[str, str]):
     level = args.get('level')
 
-    res = client.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/level/{level}')
+    res = client.do_rest_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/level/{level}')
 
     items = []
     for item in res:
@@ -939,7 +1058,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
 
-    res = client.do_request('Post', f'{API_ENDPOINT}/core/content', data=body)
+    res = client.do_rest_request('Post', f'{API_ENDPOINT}/core/content', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -952,7 +1071,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
 
 def delete_record_command(client: Client, args: Dict[str, str]):
     record_id = args.get('contentId')
-    res = client.do_request('Delete', f'{API_ENDPOINT}/core/content/{record_id}')
+    res = client.do_rest_request('Delete', f'{API_ENDPOINT}/core/content/{record_id}')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -970,7 +1089,7 @@ def update_record_command(client: Client, args: Dict[str, str]):
     field_contents = generate_field_contents(client, fields_values, level_data['mapping'], depth)
 
     body = {'Content': {'Id': record_id, 'LevelId': level_data['level'], 'FieldContents': field_contents}}
-    res = client.do_request('Put', f'{API_ENDPOINT}/core/content', data=body)
+    res = client.do_rest_request('Put', f'{API_ENDPOINT}/core/content', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1044,7 +1163,7 @@ def upload_file_command(client: Client, args: Dict[str, str]) -> str:
     file_name, file_bytes = get_file(entry_id)
     body = {'AttachmentName': file_name, 'AttachmentBytes': file_bytes}
 
-    res = client.do_request('POST', f'{API_ENDPOINT}/core/content/attachment', data=body)
+    res = client.do_rest_request('POST', f'{API_ENDPOINT}/core/content/attachment', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1081,7 +1200,7 @@ def upload_and_associate_command(client: Client, args: Dict[str, str]):
 
 def download_file_command(client: Client, args: Dict[str, str]):
     attachment_id = args.get('fileId')
-    res = client.do_request('GET', f'{API_ENDPOINT}/core/content/attachment/{attachment_id}')
+    res = client.do_rest_request('GET', f'{API_ENDPOINT}/core/content/attachment/{attachment_id}')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1098,9 +1217,9 @@ def download_file_command(client: Client, args: Dict[str, str]):
 def list_users_command(client: Client, args: Dict[str, str]):
     user_id = args.get('userId')
     if user_id:
-        res = client.do_request('GET', f'{API_ENDPOINT}/core/system/user/{user_id}')
+        res = client.do_rest_request('GET', f'{API_ENDPOINT}/core/system/user/{user_id}')
     else:
-        res = client.do_request('GET', f'{API_ENDPOINT}/core/system/user')
+        res = client.do_rest_request('GET', f'{API_ENDPOINT}/core/system/user')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1200,7 +1319,7 @@ def search_records_by_report_command(client: Client, args: Dict[str, str]):
         else:
             level_id = raw_records['Records']['Record']['@levelId']
 
-        level_res = client.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/level/{level_id}')
+        level_res = client.do_rest_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/level/{level_id}')
         fields = {}
         for field in level_res:
             if field.get('RequestedObject') and field.get('IsSuccessful'):
@@ -1339,7 +1458,7 @@ def main():
     cache = get_integration_context()
     if not cache.get('fieldValueList'):
         cache['fieldValueList'] = {}
-        set_integration_context(cache)
+        merge_integration_context(cache)
 
     client = Client(
         base_url,
