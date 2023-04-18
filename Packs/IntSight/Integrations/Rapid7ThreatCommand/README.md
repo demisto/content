@@ -1,14 +1,13 @@
 # Rapid7 Threat Command Pack
-Rapid7 Threat Command allows managing alerts, CVEs, IOCs, and assets by accounts and MSSP accounts.
+Rapid7 Threat Command content pack is designed to help users manage alerts, CVEs, IOCs, and assets by accounts and MSSP accounts.
 
 ## What does this pack do?
 
-- Mange alerts.
-- Manage account CVEs.
-- Manage account assets.
-- Mange account and public IOCs, create and add account IOC sources and IOCs.
-- Retrieve cyber-terms from Threat Library.
-- Retrieve information about system modules.
+- Alert management
+- Account CVE management.
+- Account asset management.
+- Account and public IOC management, including the ability to create and add account IOC sources and IOCs.
+- Cyber-term retrieval from the Threat Library.
+- System module information retrieval.
 
-This pack contains an integration, whose main purpose is to perform controlled changes on alerts, indicators, assets, CVEs by accounts and MSSP accounts.
-****
+The integration in this pack is designed to facilitate controlled changes to alerts, indicators, assets, and CVEs by accounts and MSSP accounts.
