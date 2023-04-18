@@ -15,19 +15,19 @@
                 "End Time": {
                     "simple": "lastActivityDateTime"
                 },
-                "Graph Security Id": {
+                "MicrosoftGraphSecurity Id": {
                     "simple": "incidentId"
                 },
                 "Last Update Time": {
                     "simple": "lastUpdateDateTime"
                 },
-                "Microsoft Alert Determination": {
+                "MicrosoftGraphSecurity Alert Determination": {
                     "simple": "determination"
                 },
-                "Microsoft Recommended Action": {
+                "MicrosoftGraphSecurity Recommended Action": {
                     "simple": "recommendedActions"
                 },
-                "Microsoft Service Source": {
+                "MicrosoftGraphSecurity Service Source": {
                     "simple": "serviceSource"
                 },
                 "Start Time": {

@@ -1,10 +1,10 @@
 {
-    "id": "incident_microsoftservicesource",
+    "id": "incident_microsoftgraphsecurityservicesource",
     "version": -1,
     "modified": "2023-04-16T14:32:43.53259862Z",
-    "name": "Microsoft Service Source",
+    "name": "MicrosoftGraphSecurity Service Source",
     "ownerOnly": false,
-    "cliName": "microsoftservicesource",
+    "cliName": "microsoftgraphsecurityservicesource",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
