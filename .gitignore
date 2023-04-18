@@ -11,8 +11,6 @@ Integrations/SymantecMSS/test_data/SymantecXML.txt
 *.pyc
 *.swp
 .pytest_cache
-pytest_report.json
-test_runner.sh
 .python-version
 CommonServerPython.py
 *Module.py
@@ -81,6 +79,9 @@ Packs/Whois/Integrations/Whois/test_data/microsocks
 coverage.xml
 Packs/**/Integrations/**/.pytest.ini
 Packs/**/Scripts/**/.pytest.ini
+pytest_report.json
+test_runner.sh
+
 
 # log files
 demisto_sdk_debug.log
