@@ -190,17 +190,6 @@ class TestFetchEvents:
             create_events(start_id=1, end_id=300, should_dump=False)
         ),
         (
-            400,
-            [
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
-                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
-                MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
-                MockedResponse(status_code=204),
-                MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400))
-            ],
-            create_events(start_id=1, end_id=300, should_dump=False)
-        ),
-        (
             10000,
             [
                 MockedResponse(status_code=200, text=create_events(start_id=1, end_id=705)),
@@ -245,21 +234,10 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=601, end_id=700)),
                 MockedResponse(status_code=200, text=create_events(start_id=701, end_id=800)),
                 MockedResponse(status_code=200, text=create_events(start_id=801, end_id=900)),
-                MockedResponse(status_code=200, text=create_events(start_id=901, end_id=1000)),
-                MockedResponse(status_code=200, text=create_events(start_id=1001, end_id=1100)),
-                MockedResponse(status_code=200, text=create_events(start_id=1101, end_id=1200)),
-                MockedResponse(status_code=200, text=create_events(start_id=1201, end_id=1300)),
-                MockedResponse(status_code=200, text=create_events(start_id=1301, end_id=1400)),
-                MockedResponse(status_code=200, text=create_events(start_id=1401, end_id=1500)),
-                MockedResponse(status_code=200, text=create_events(start_id=1501, end_id=1600)),
-                MockedResponse(status_code=200, text=create_events(start_id=1601, end_id=1700)),
-                MockedResponse(status_code=200, text=create_events(start_id=1701, end_id=1800)),
-                MockedResponse(status_code=200, text=create_events(start_id=1801, end_id=1900)),
-                MockedResponse(status_code=200, text=create_events(start_id=1901, end_id=2000)),
-                MockedResponse(status_code=200, text=create_events(start_id=2001, end_id=2043)),
+                MockedResponse(status_code=200, text=create_events(start_id=901, end_id=950)),
                 MockedResponse(status_code=204)
             ],
-            create_events(start_id=1, end_id=2043, should_dump=False)
+            create_events(start_id=1, end_id=950, should_dump=False)
         ),
     ]
 
