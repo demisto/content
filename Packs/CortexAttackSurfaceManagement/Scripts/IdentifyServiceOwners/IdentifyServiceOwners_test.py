@@ -335,5 +335,5 @@ def test_main(mocker, owners, expected_out):
     main()
 
     # Verify the output value was set
-    expected_calls_to_mock_object = [unittest.mock.call('setAlert', {'asmserviceownerfinal': expected_out})]
+    expected_calls_to_mock_object = [unittest.mock.call('setAlert', {'asmserviceowner': expected_out})]
     assert demisto_execution_mock.call_args_list == expected_calls_to_mock_object
