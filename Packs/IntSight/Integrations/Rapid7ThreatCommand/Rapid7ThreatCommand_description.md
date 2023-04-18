@@ -6,8 +6,5 @@ Supports Threat Command 3.0.0 and above.
 * Connect your account to Threat Command.
 * Generate your API account ID & API key.
 
-### Authorization:
-When using XSOAR credentials insert your account ID to the credential username and the API key to the credential password. Otherwise, insert your account ID and API key into the relevant required parameters.
-
 ### MSSP users:
-Please insert your sub-account  ID in order to perform actions on.
+Insert your sub-account ID in order to perform MSSP actions.
