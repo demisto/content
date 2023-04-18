@@ -1,4 +1,4 @@
-To use the common Zoom  Server logic (authentication and API requests), run the following command to import the `ZoomApiModule`.
+To use the common Zoom Server logic (authentication and API requests), run the following command to import the `ZoomApiModule`.
 
 ```python
 def main():
