@@ -1,7 +1,7 @@
 args:
-- isArray: true
+- description: List of potential service owners
+  isArray: true
   name: owners
-  description: List of potential service owners
 comment: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
 commonfields:
   id: IdentifyServiceOwners

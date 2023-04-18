@@ -7,16 +7,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-This playbook does not use any integrations.
+* GCP-IAM
 
 ### Scripts
-* 7fe755b2-98a8-4f8a-85ee-9a4ce3154d80
 * GetTime
 * GridFieldSetup
 * IdentifyServiceOwners
 
 ### Commands
-This playbook does not use any commands.
+* gcp-iam-project-iam-policy-get
 
 ## Playbook Inputs
 ---

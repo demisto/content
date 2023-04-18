@@ -369,8 +369,8 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      playbookId: Cortex ASM - ServiceNow CMDB Enrichment
       description: ''
+      playbookId: Cortex ASM - ServiceNow CMDB Enrichment
     nexttasks:
       '#none#':
       - "62"
@@ -706,11 +706,11 @@ tasks:
       id: d09a1edb-5425-48dc-8a79-fdeb2d3a23a3
       version: -1
       name: Cortex ASM - Splunk Enrichment
+      description: ''
       type: playbook
       iscommand: false
       brand: ""
       playbookId: Cortex ASM - Splunk Enrichment
-      description: ''
     nexttasks:
       '#none#':
       - "73"
@@ -737,11 +737,11 @@ tasks:
       id: d83f24b5-3369-409c-8346-96cf2bf9b8b5
       version: -1
       name: Cortex ASM - Rapid7 Enrichment
+      description: ''
       type: playbook
       iscommand: false
       brand: ""
       playbookId: Cortex ASM - Rapid7 Enrichment
-      description: ''
     nexttasks:
       '#none#':
       - "68"
@@ -797,12 +797,12 @@ tasks:
     task:
       id: ccce87b6-ee07-49cd-86ce-6bc15b4a0497
       version: -1
-      name: 56d132cf-462f-4495-8a8e-3c7e8b8fc829
+      name: Cortex ASM - GCP Enrichment
       type: playbook
       iscommand: false
       brand: ""
-      playbookId: Cortex ASM - GCP Enrichment_ACES-2371
       description: ''
+      playbookId: Cortex ASM - GCP Enrichment
     nexttasks:
       '#none#':
       - "3"
@@ -828,12 +828,12 @@ tasks:
     task:
       id: ccdc4b18-d641-4b39-862e-b706433fd0ca
       version: -1
-      name: 3a1ae341-bbe0-4da9-85f1-527b508efd74
+      name: Cortex ASM - Service Ownership
+      description: ''
       type: playbook
       iscommand: false
       brand: ""
       playbookId: Cortex ASM - Service Ownership
-      description: ''
     nexttasks:
       '#none#':
       - "38"
