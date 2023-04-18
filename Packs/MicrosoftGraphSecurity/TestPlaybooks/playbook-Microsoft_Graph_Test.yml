@@ -98,7 +98,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 910
         }
       }
     note: false
@@ -110,10 +110,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: d0655dce-4a4d-4e75-84a5-410dbef8c4bf
+    taskid: 57fb7006-d2d7-4a84-85c2-3c463cf4e0c6
     type: regular
     task:
-      id: d0655dce-4a4d-4e75-84a5-410dbef8c4bf
+      id: 57fb7006-d2d7-4a84-85c2-3c463cf4e0c6
       version: -1
       name: msg-update-alert
       description: Update an editable alert property within any integrated solution
@@ -125,22 +125,18 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "2"
     scriptarguments:
       alert_id:
         complex:
-          root: MsGraph
-          accessor: Alert.ID
+          root: MsGraph.Alert
+          accessor: ID
           transformers:
           - operator: atIndex
             args:
               index:
                 value:
                   simple: "0"
-      comments:
-        simple: This is a text comment.
-      feedback:
-        simple: truePositive
       provider_information:
         complex:
           root: MsGraph
@@ -151,6 +147,8 @@ tasks:
               index:
                 value:
                   simple: "0"
+      status:
+        simple: resolved
       vendor_information:
         complex:
           root: MsGraph
@@ -167,7 +165,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1065
+          "y": 740
         }
       }
     note: false
@@ -217,7 +215,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "2"
+      - "3"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -279,14 +277,64 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: 95a16134-c5a3-41f1-80d3-2c53a9f37af5
+  "11":
+    id: "11"
+    taskid: 195eb152-3485-4e4b-82b4-7ba59c3bcd06
+    type: condition
+    task:
+      id: 195eb152-3485-4e4b-82b4-7ba59c3bcd06
+      version: -1
+      name: Verify msg-get-alert-details output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MsGraph.Alert
+                accessor: ID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MsGraph.Alert.Status
+            iscontext: true
+          right:
+            value:
+              simple: resolved
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 8b4dff29-e631-41ed-89a5-cd322667fc97
     type: regular
     task:
-      id: 95a16134-c5a3-41f1-80d3-2c53a9f37af5
+      id: 8b4dff29-e631-41ed-89a5-cd322667fc97
       version: -1
-      name: Sleep for 30 seconds
+      name: Sleep for 60 seconds
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -297,7 +345,7 @@ tasks:
       - "5"
     scriptarguments:
       seconds:
-        simple: "30"
+        simple: "60"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -305,46 +353,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 1240
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: 4ed5e8ee-8e8d-4c62-8eda-0d5819a41b3f
-    type: condition
-    task:
-      id: 4ed5e8ee-8e8d-4c62-8eda-0d5819a41b3f
-      version: -1
-      name: Verify msg-search-alerts output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: MsGraph
-                accessor: Alert.ID
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 890
         }
       }
     note: false
