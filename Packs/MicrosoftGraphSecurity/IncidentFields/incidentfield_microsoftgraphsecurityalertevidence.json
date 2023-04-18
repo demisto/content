@@ -1,7 +1,7 @@
 {
 	"incidentFields": [
 		{
-			"id": "incident_microsoftalertevidence",
+			"id": "incident_microsoftgraphsecurityalertevidence",
 			"version": 1,
 			"cacheVersn": 0,
 			"modified": "2023-04-18T08:46:18.257179046Z",
@@ -15,13 +15,13 @@
 			"vcShouldKeepItemLegacyProdMachine": false,
 			"commitMessage": "",
 			"shouldCommit": false,
-			"name": "Microsoft Alert Evidence",
+			"name": "Microsoft Graph Security Alert Evidence",
 			"prevName": "Microsoft Alert Evidence",
 			"ownerOnly": false,
 			"placeholder": "",
 			"template": "",
 			"description": "",
-			"cliName": "microsoftalertevidence",
+			"cliName": "microsoftgraphsecurityalertevidence",
 			"type": "markdown",
 			"orgType": "markdown",
 			"closeForm": false,
