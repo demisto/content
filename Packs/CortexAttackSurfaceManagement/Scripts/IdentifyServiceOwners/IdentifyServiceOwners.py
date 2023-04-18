@@ -114,8 +114,8 @@ def main():
                 owner["Source"] = "Owner of GCP project of instance"
 
         top_k = justify(rank(score(deduplicate(owners))))
-        demisto.executeCommand("setAlert", {"asmserviceownerfinal": top_k})
-        return_results(CommandResults(readable_output='top 5 service owners written to asmserviceownerfinal'))
+        demisto.executeCommand("setAlert", {"asmserviceowner": top_k})
+        return_results(CommandResults(readable_output='top 5 service owners written to asmserviceowner'))
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
