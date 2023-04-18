@@ -25,17 +25,6 @@ jobs:
     - name: Install dependencies
       run: poetry install
 
-    - name: get full demisto-sdk version
-      id: get-demisto-sdk-version
-      run: |
-        # this gives us the full version, including the commit hash if available
-        echo version=$(poetry show | grep demisto-sdk) >> $GITHUB_OUTPUT
-
-    - uses: actions/cache@v3
-      with:
-        path: ~/.cache/pre-commit
-        key: pre-commit-3|${{ env.pythonLocation }}-${{ steps.get-demisto-sdk-version.outputs.version }}
-
     - name: run pre-commit
       run: poetry run demisto-sdk pre-commit -g --unit-test --validate
 
@@ -68,4 +57,4 @@ jobs:
       if: always()
       id: append-coverage
       run: |
-        cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+        cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY || echo "Missing coverage report"
