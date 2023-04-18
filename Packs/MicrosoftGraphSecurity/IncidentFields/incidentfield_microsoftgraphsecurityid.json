@@ -2,7 +2,7 @@
     "id": "incident_microsoftgraphsecurityid",
     "version": -1,
     "modified": "2023-04-16T14:32:17.514483282Z",
-    "name": "MicrosoftGraphSecurity Id",
+    "name": "Microsoft Graph Security Id",
     "ownerOnly": false,
     "cliName": "microsoftgraphsecurityid",
     "type": "shortText",

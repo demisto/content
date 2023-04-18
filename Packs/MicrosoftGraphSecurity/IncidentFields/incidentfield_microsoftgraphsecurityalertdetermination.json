@@ -2,7 +2,7 @@
     "id": "incident_microsoftgraphsecurityalertdetermination",
     "version": -1,
     "modified": "2023-04-16T14:18:35.114145878Z",
-    "name": "MicrosoftGraphSecurity Alert Determination",
+    "name": "Microsoft Graph Security Alert Determination",
     "ownerOnly": false,
     "cliName": "microsoftgraphsecurityalertdetermination",
     "type": "shortText",

@@ -75,7 +75,6 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 | limit | Number of total results to return. default is 50. Default is 50. | Optional | 
 
 #### Context Output
-
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MsGraph.Alert.ID | string | Relevant only for V1. Alert ID | 
@@ -169,8 +168,6 @@ Get details for a specific alert.
 | fields_to_include | Relevant only for V1. Fields to fetch for specified Alert apart from the basic properties, given as comma separated values, e.g. NetworkConnections,Processes. Optional values: All,NetworkConnections,Processes,RegistryKeys,UserStates,HostStates,FileStates,CloudAppStates,MalwareStates,CustomerComment,Triggers,VendorInformation,VulnerabilityStates. Default is All. | Optional | 
 
 #### Context Output
-
-## Using V1 of the API:
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MsGraph.Alert.ID | string | Relevant only for V1. Alert ID | 
@@ -182,10 +179,6 @@ Get details for a specific alert.
 | MsGraph.Alert.Status | string | Relevant only for V1. Alert status | 
 | MsGraph.Alert.Vendor | string | Relevant only for V1. Alert vendor | 
 | MsGraph.Alert.Provider | Unknown | Relevant only for V1. Alert provider | 
-
-## Using V2 of the API:
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
 | MsGraph.Alert.@odata.context | String | Relevant only for V2. Alert odata context | 
 | MsGraph.Alert.actorDisplayName | Unknown | Relevant only for V2. Alert actor name | 
 | MsGraph.Alert.alertWebUrl | String | Relevant only for V2. Alert web url | 
@@ -331,7 +324,6 @@ Update an editable alert property within any integrated solution to keep alert s
 | determination | Relevant only for V2, Use this field to update the alert's determination. Possible values are: unknown, apt, malware, phishing, other, securityPersonnel, securityTesting, multiStagedAttack, maliciousUserActivity, lineOfBusinessApplication, unwantedSoftware. | Optional | 
 
 #### Context Output
-### Both API versions have the same output:
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MsGraph.Alert.ID | string | Alert ID | 
@@ -357,7 +349,6 @@ Relevant only for V2, create a comment for an existing alert.
 | comment | The comment to add to each alert. | Required | 
 
 #### Context Output
-
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MsGraph.AlertComment.ID | String | The alert id that the comment was added to. | 
