@@ -1,0 +1,12 @@
+[MODEL: dataset=teamviewer_raw]
+alter
+xdm.event.type = EventType,
+xdm.event.description = EventName,
+xdm.source.user.username = Author,
+xdm.target.resource. = AffectedItem,
+Entities = json_extract_array(EventDetails, "$.EventDetails")
+| alter 
+xdm.target.resource_before.value = arraystring(arraymap(Entities, json_extract_scalar("@element", """$['$OldValue']""")), ","),
+xdm.target.resource.value = arraystring(arraymap(Entities, json_extract_scalar("@element", """$['$NewValue']""")), ","),
+xdm.target.resource.type = arraystring(arraymap(Entities, json_extract_scalar("@element", """$['$PropertyName']""")), ","),
+xdm.event.operation_sub_type = arraystring(arraymap(Entities, json_extract_scalar("@element", """$['$PropertyCategory']""")), ",");
