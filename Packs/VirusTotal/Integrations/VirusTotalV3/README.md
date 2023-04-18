@@ -2390,7 +2390,7 @@ See files through the eyes of VirusTotal without uploading them to the main thre
 
 >### Results of file hash 609d7e352dbbb005acb29c943ef634e265a099b659a4eb92df232f8926fc66cd
 >
->|Sha1|Sha256|Md5|MeaningfulName|Threat Severity Level|Popular Threat Category|Threat Verdict|
+>|Sha1|Sha256|Md5|Meaningful Name|Threat Severity Level|Popular Threat Category|Threat Verdict|
 >|---|---|---|---|---|---|---|
 >| cff8615f1aaccc5f3eb59200bdc32c4744cc785e | 609d7e352dbbb005acb29c943ef634e265a099b659a4eb92df232f8926fc66cd | 801bf852231cfc953bafe5236cbe4dcf | private | HIGH | trojan | MALICIOUS |
 
@@ -2536,6 +2536,6 @@ Get analysis of a private file submitted to VirusTotal.
 
 >### Analysis results
 >
->|Id|ThreatSeverityLevel|PopularThreatCategory|ThreatVerdict|Status|
+>|Id|Threat Severity Level|Popular Threat Category|Threat Verdict|Status|
 >|---|---|---|---|---|---|---|
 >| NTJjNTM1MThmMzhiNWRiNGE1ZWQ5ZDhiZjQyNWY2NzM6MDVmMjBhMWM3MjI1ZTg1YzFkMzcwZmEzNTZhYmMyMmM6MTY4MTM5MjQ1Mw== | HIGH | trojan | MALICIOUS | completed |
