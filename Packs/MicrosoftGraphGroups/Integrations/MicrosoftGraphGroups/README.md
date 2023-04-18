@@ -28,9 +28,9 @@ For more details about the authentication used in this integration, see <a href=
     <ul>
       <li><strong>Name</strong>: a textual name for the integration instance.</li>
    <li><strong>Server URL</strong></li>
-   <li><strong>ID (received from the admin consent - see Detailed Instructions (?)</strong></li>
-   <li><strong>Token (received from the admin consent - see Detailed Instructions (?) section)</strong></li>
-   <li><strong>Key (received from the admin consent - see Detailed Instructions (?)</strong></li>
+   <li><strong>ID or Client ID</strong></li>
+   <li><strong>Token or Tenant ID</strong></li>
+   <li><strong>Key or Client Secret</strong></li>
    <li><strong>Certificate Thumbprint</strong></li>
    <li><strong>Private Key</strong></li>
    <li><strong>Trust any certificate (not secure)</strong></li>
