@@ -38,6 +38,9 @@
 						]
 					}
 				},
+				"IncomingMirrorError": {
+					"simple": "in_mirror_error"
+				},
 				"Last Modified By": {
 					"complex": {
 						"accessor": "lastModifiedBy",
@@ -337,6 +340,15 @@
 				"Vendor Product": {
 					"simple": "Prisma Cloud"
 				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
 				"details": {
 					"complex": {
 						"accessor": "description",
@@ -363,19 +375,7 @@
 				},
 				"sourceBrand": {
 					"simple": "\"Prisma Cloud\""
-				},
-				"dbotMirrorDirection": {
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"simple": "id"
-				},
-				"dbotMirrorInstance": {
-					"simple": "mirror_instance"
-				},
-                "IncomingMirrorError": {
-                  "simple": "in_mirror_error"
-                }
+				}
 			}
 		},
 		"AWS EC2 Instance Misconfiguration": {
@@ -411,6 +411,9 @@
 						]
 					}
 				},
+				"IncomingMirrorError": {
+					"simple": "in_mirror_error"
+				},
 				"Last Modified By": {
 					"complex": {
 						"accessor": "lastModifiedBy",
@@ -710,6 +713,15 @@
 				"Vendor Product": {
 					"simple": "Prisma Cloud"
 				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
 				"details": {
 					"complex": {
 						"accessor": "description",
@@ -736,19 +748,7 @@
 				},
 				"sourceBrand": {
 					"simple": "\"Prisma Cloud\""
-				},
-				"dbotMirrorDirection": {
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"simple": "id"
-				},
-				"dbotMirrorInstance": {
-					"simple": "mirror_instance"
-				},
-                "IncomingMirrorError": {
-                  "simple": "in_mirror_error"
-                }
+				}
 			}
 		},
 		"AWS IAM Policy Misconfiguration": {
@@ -784,6 +784,9 @@
 						]
 					}
 				},
+				"IncomingMirrorError": {
+					"simple": "in_mirror_error"
+				},
 				"Last Modified By": {
 					"complex": {
 						"accessor": "lastModifiedBy",
@@ -1083,6 +1086,15 @@
 				"Vendor Product": {
 					"simple": "Prisma Cloud"
 				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
 				"details": {
 					"complex": {
 						"accessor": "description",
@@ -1109,19 +1121,7 @@
 				},
 				"sourceBrand": {
 					"simple": "\"Prisma Cloud\""
-				},
-				"dbotMirrorDirection": {
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"simple": "id"
-				},
-				"dbotMirrorInstance": {
-					"simple": "mirror_instance"
-				},
-                "IncomingMirrorError": {
-                  "simple": "in_mirror_error"
-                }
+				}
 			}
 		},
 		"GCP Compute Engine Misconfiguration": {
@@ -1157,6 +1157,9 @@
 						]
 					}
 				},
+				"IncomingMirrorError": {
+					"simple": "in_mirror_error"
+				},
 				"Last Modified By": {
 					"complex": {
 						"accessor": "lastModifiedBy",
@@ -1456,6 +1459,15 @@
 				"Vendor Product": {
 					"simple": "Prisma Cloud"
 				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
 				"details": {
 					"complex": {
 						"accessor": "description",
@@ -1482,19 +1494,7 @@
 				},
 				"sourceBrand": {
 					"simple": "\"Prisma Cloud\""
-				},
-				"dbotMirrorDirection": {
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"simple": "id"
-				},
-				"dbotMirrorInstance": {
-					"simple": "mirror_instance"
-				},
-                "IncomingMirrorError": {
-                  "simple": "in_mirror_error"
-                }
+				}
 			}
 		},
 		"GCP Kubernetes Engine Misconfiguration": {
@@ -1530,6 +1530,9 @@
 						]
 					}
 				},
+				"IncomingMirrorError": {
+					"simple": "in_mirror_error"
+				},
 				"Last Modified By": {
 					"complex": {
 						"accessor": "lastModifiedBy",
@@ -1829,6 +1832,15 @@
 				"Vendor Product": {
 					"simple": "Prisma Cloud"
 				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
 				"details": {
 					"complex": {
 						"accessor": "description",
@@ -1855,19 +1867,7 @@
 				},
 				"sourceBrand": {
 					"simple": "\"Prisma Cloud\""
-				},
-				"dbotMirrorDirection": {
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"simple": "id"
-				},
-				"dbotMirrorInstance": {
-					"simple": "mirror_instance"
-				},
-                "IncomingMirrorError": {
-                  "simple": "in_mirror_error"
-                }
+				}
 			}
 		},
 		"Prisma Cloud": {
@@ -1898,6 +1898,9 @@
 						]
 					}
 				},
+				"IncomingMirrorError": {
+					"simple": "in_mirror_error"
+				},
 				"Last Modified By": {
 					"complex": {
 						"accessor": "lastModifiedBy",
@@ -2196,6 +2199,15 @@
 				},
 				"Vendor Product": {
 					"simple": "Prisma Cloud"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
 				},
 				"details": {
 					"complex": {
@@ -2254,6 +2266,9 @@
 						]
 					}
 				},
+				"IncomingMirrorError": {
+					"simple": "in_mirror_error"
+				},
 				"Last Modified By": {
 					"complex": {
 						"accessor": "lastModifiedBy",
@@ -2542,6 +2557,15 @@
 				"Vendor Product": {
 					"simple": "Prisma Cloud"
 				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
 				"details": {
 					"complex": {
 						"accessor": "description",
@@ -2568,19 +2592,7 @@
 				},
 				"sourceBrand": {
 					"simple": "\"Prisma Cloud\""
-				},
-				"dbotMirrorDirection": {
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"simple": "id"
-				},
-				"dbotMirrorInstance": {
-					"simple": "mirror_instance"
-				},
-                "IncomingMirrorError": {
-                  "simple": "in_mirror_error"
-                }
+				}
 			}
 		}
 	},
