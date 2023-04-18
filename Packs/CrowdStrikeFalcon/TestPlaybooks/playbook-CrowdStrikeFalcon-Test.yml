@@ -2966,8 +2966,7 @@ tasks:
       groups:
         simple: 7471ba0636b34cbb8c65fae7979a6a9b
       value:
-        complex:
-          root: GeneratedUUID
+        simple: test
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3384,14 +3383,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "93"
+      - "80"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1902.5,
-          "y": 7530
+          "y": 7705
         }
       }
     note: false
@@ -3441,45 +3440,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "93":
-    id: "93"
-    taskid: 032697b8-0b56-4b5a-86ae-a1c7b95aa769
-    type: regular
-    task:
-      id: 032697b8-0b56-4b5a-86ae-a1c7b95aa769
-      version: -1
-      name: Generate random exchange name
-      description: Generates a random UUID (UUID 4).
-      scriptName: GenerateRandomUUID
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "80"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1902.5,
-          "y": 7690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 9980,
-        "width": 1802.5,
+        "width": 2232.5,
         "x": 50,
         "y": 50
       }
