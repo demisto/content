@@ -5342,20 +5342,6 @@ inputs:
   required: false
   description: Write data back to Expanse?
   playbookInputQuery:
-- key: OwnerNotificationSubject
-  value:
-    simple: New security issue on a public service owned by your team
-  required: false
-  description: Subject of the email to send to the OU Owner.
-  playbookInputQuery:
-- key: OwnerNotificationBody
-  value:
-    simple: Infosec identified a security issue on a service owned by your team and
-      exposed on Internet. Please get in touch with your Infosec team to define proper
-      remediation access.
-  required: false
-  description: Body of the email to send to the OU Owner.
-  playbookInputQuery:
 - key: OrganizationUnitsToOwnerName
   value:
     simple: ExpanseOrganizationUnitsToOwner
