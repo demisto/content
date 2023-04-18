@@ -3504,7 +3504,7 @@ def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, quer
     }
 
     if query:
-        params["xpath"] = f'{params["xpath"]}[{query}]'
+        params["xpath"] = f'{params["xpath"]}[{query.replace(" eq ", " = ")}]'
     elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
         params["xpath"] = f'{params["xpath"]}[{xpath_filter}]'
 
