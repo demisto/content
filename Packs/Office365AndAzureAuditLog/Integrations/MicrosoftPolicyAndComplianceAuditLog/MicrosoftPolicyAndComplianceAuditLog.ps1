@@ -492,24 +492,6 @@ class ExchangeOnlineClient {
 
 #### COMMAND FUNCTIONS ####
 
-function TestModuleCommand {
-    [CmdletBinding()]
-    Param(
-        [ExchangeOnlineClient]$exo_client
-    )
-    try {
-        $exo_client.CreateSession()
-    }
-    finally {
-        $exo_client.CloseSession()
-    }
-    $raw_response = $null
-    $human_readable = "ok"
-    $entry_context = $null
-
-    Write-Output $human_readable, $entry_context, $raw_response
-}
-
 function StartAuthCommand {
     [CmdletBinding()]
     Param(
@@ -642,7 +624,9 @@ function Main {
         $demisto.Debug("Command being called is $command")
         switch ($command) {
             "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $exo_client
+                throw "To complete the authentication process, run the '!o365-auditlog-auth-start' command,
+                and follow the printed instructions.
+                Then to verify the authentication was successful, run '!o365-auditlog-auth-test'."
             }
             "$script:COMMAND_PREFIX-search" {
                 ($human_readable, $entry_context, $raw_response) = SearchAuditLogCommand $exo_client $command_arguments
@@ -667,15 +651,15 @@ function Main {
     }
     catch {
         $demisto.debug("Integration: $script:INTEGRATION_NAME
-Command: $command
-Arguments: $($command_arguments | ConvertTo-Json)
-Error: $($_.Exception.Message)")
+            Command: $command
+            Arguments: $($command_arguments | ConvertTo-Json)
+            Error: $($_.Exception.Message)")
         if ($command -ne "test-module") {
             ReturnError "Error:
-Integration: $script:INTEGRATION_NAME
-Command: $command
-Arguments: $($command_arguments | ConvertTo-Json)
-Error: $($_.Exception)" | Out-Null
+            Integration: $script:INTEGRATION_NAME
+            Command: $command
+            Arguments: $($command_arguments | ConvertTo-Json)
+            Error: $($_.Exception)" | Out-Null
         }
         else {
             ReturnError $_.Exception.Message
