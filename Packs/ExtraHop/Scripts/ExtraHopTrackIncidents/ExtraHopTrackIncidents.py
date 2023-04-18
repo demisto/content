@@ -25,7 +25,7 @@ if incidents:
                 elif dArgs['name'] == 'status':
                     args['incident_status'] = dArgs['new']
 
-            track_ticket = demisto.executeCommand("extrahop-track-ticket", args)[0]
+            track_ticket = demisto.executeCommand("extrahop-ticket-track", args)[0]
 
             if isError(track_ticket):
                 demisto.results(track_ticket)

@@ -1,4 +1,4 @@
-category: Forensics & Malware Analysis
+category: Deception & Breach Simulation
 commonfields:
   id: cymulate_v2
   version: -1
@@ -41,8 +41,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: Maximal number of incidents to fetch. Max value can be no grater
-    than 35.
+- additionalinfo: Maximal number of incidents to fetch. Max value can be no grater than 35.
   defaultvalue: '35'
   display: Max Fetch
   name: max_fetch
@@ -79,9 +78,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the template to run the exfiltration Assessment with.
-        Can be retrieved using Cymulate's UI, or using cymulate-exfiltration-template-list
-        command.
+      description: The ID of the template to run the exfiltration Assessment with. Can be retrieved using Cymulate's UI, or using cymulate-exfiltration-template-list command.
       isArray: false
       name: template_id
       required: true
@@ -104,8 +101,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Loop size of the scheduled agent. For example: to run the agent
-        only once, use the value ''one-time''.'
+      description: 'Loop size of the scheduled agent. For example: to run the agent only once, use the value ''one-time''.'
       isArray: false
       name: schedule_loop
       predefined:
@@ -174,9 +170,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the template to run the email gateway assessment with.
-        Can be retrieved using Cymulate's UI, or using cymulate-email-gateway-template-list
-        command.
+      description: The ID of the template to run the email gateway assessment with. Can be retrieved using Cymulate's UI, or using cymulate-email-gateway-template-list command.
       isArray: false
       name: template_id
       required: true
@@ -199,8 +193,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Loop size of the scheduled agent. For example: to run the agent
-        only once, use the value ''one-time''.'
+      description: 'Loop size of the scheduled agent. For example: to run the agent only once, use the value ''one-time''.'
       isArray: false
       name: schedule_loop
       predefined:
@@ -272,9 +265,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the template to run the endpoint security assessment
-        with. Can be retrieved using Cymulate's UI, or using cymulate-endpoint-security-template-list
-        command.
+      description: The ID of the template to run the endpoint security assessment with. Can be retrieved using Cymulate's UI, or using cymulate-endpoint-security-template-list command.
       isArray: false
       name: template_id
       required: true
@@ -297,8 +288,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Loop size of the scheduled agent. For example: to run the agent
-        only once, use the value ''one-time''.'
+      description: 'Loop size of the scheduled agent. For example: to run the agent only once, use the value ''one-time''.'
       isArray: false
       name: schedule_loop
       predefined:
@@ -367,15 +357,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the template to run the WAF assessment with. Can be retrieved
-        using Cymulate's UI, or using cymulate-waf-template-list command.
+      description: The ID of the template to run the WAF assessment with. Can be retrieved using Cymulate's UI, or using cymulate-waf-template-list command.
       isArray: false
       name: template_id
       required: true
       secret: false
     - default: false
-      description: Websites to run the assessment on. Can be a single website URL
-        or a list of URLs.
+      description: Websites to run the assessment on. Can be a single website URL or a list of URLs.
       isArray: true
       name: sites
       required: true
@@ -392,8 +380,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Loop size of the scheduled agent. For example: to run the agent
-        only once, use the value ''one-time''.'
+      description: 'Loop size of the scheduled agent. For example: to run the agent only once, use the value ''one-time''.'
       isArray: false
       name: schedule_loop
       predefined:
@@ -469,8 +456,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the template to run the immediate threat assessment with.
-        Can be retrieved using Cymulate's UI.
+      description: The ID of the template to run the immediate threat assessment with. Can be retrieved using Cymulate's UI.
       isArray: false
       name: template_id
       required: true
@@ -599,9 +585,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the template to run the lateral movement with. Can be
-        retrieved using Cymulate's UI, or using cymulate-lateral-movement-template-list
-        command.
+      description: The ID of the template to run the lateral movement with. Can be retrieved using Cymulate's UI, or using cymulate-lateral-movement-template-list command.
       isArray: false
       name: template_id
       required: true
@@ -629,8 +613,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Loop size of the scheduled agent. For example: to run the agent
-        only once, use the value ''one-time''.'
+      description: 'Loop size of the scheduled agent. For example: to run the agent only once, use the value ''one-time''.'
       isArray: false
       name: schedule_loop
       predefined:
@@ -716,8 +699,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Attack ID. Can be retrieved using cymulate-simulations-id-list
-        command.
+      description: Attack ID. Can be retrieved using cymulate-simulations-id-list command.
       isArray: false
       name: attack_id
       required: true
@@ -806,16 +788,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'From which date to fetch data. Format: YYYY-MM-DD, for example:
-        March 1st 2021 should be written: 2021-03-01.'
+      description: 'From which date to fetch data. Format: YYYY-MM-DD, for example: March 1st 2021 should be written: 2021-03-01.'
       isArray: false
       name: from_date
       required: true
       secret: false
     - default: false
-      description: 'End date to fetch data. Format: YYYY-MM-DD, for example: March
-        1st 2021 should be written: 2021-03-01. If no argument is given, default is
-        now.'
+      description: 'End date to fetch data. Format: YYYY-MM-DD, for example: March 1st 2021 should be written: 2021-03-01. If no argument is given, default is now.'
       isArray: false
       name: to_date
       required: false
@@ -837,7 +816,7 @@ script:
     - contextPath: Cymulate.Simulations.Template
       description: Attack template.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false

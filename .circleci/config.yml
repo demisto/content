@@ -1,4 +1,8 @@
 version: 2.1
+orbs:
+  python: circleci/python@<< pipeline.parameters.python-orb-version >>
+  node: circleci/node@<< pipeline.parameters.node-orb-version >>
+
 commands:
   set-instance-role-env-variable:
     description: "Sets INSTANCE_ROLE env variable into $BASH_ENV file"
@@ -40,7 +44,16 @@ parameters:
   gcs_market_bucket:
     type: string
     default: "marketplace-dist"
-
+  cache-version:
+    type: string
+    default: v1  # Change this parameter to clear cache.
+  python-orb-version:
+    type: string
+    default: "2.0.3" # disable-secrets-detection
+  node-orb-version:
+    type: string
+    default: "5.0.1" # disable-secrets-detection
+  
 references:
   environment: &environment
     environment:
@@ -55,16 +68,28 @@ references:
       PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
+  
+  install_build_dependencies: &install_build_dependencies
+    python/install-packages: 
+        pkg-manager: "poetry"
+        args: "--with ci"
+        cache-version: << pipeline.parameters.cache-version >>
+        pre-install-steps:
+          - run:
+              name: Check if pyproject.toml is consistent with poetry.lock
+              command: poetry lock --check
+
+  install_node_ci: &install_node_ci
+    node/install-packages:
+        cache-version: << pipeline.parameters.cache-version >>
+
 
   install_neo4j: &install_neo4j
     run:
       name: Install Neo4j
       command: |
-        # workaround for 402 Payment required issue: https://github.com/actions/runner-images/issues/1983
-        sudo rm -fv /etc/apt/sources.list.d/github_git-lfs.list
-        sudo rm -fv /etc/apt/sources.list.d/github_git-lfs.list.save
         wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo apt-key add -
-        echo 'deb https://debian.neo4j.com stable 4.4' | sudo tee /etc/apt/sources.list.d/neo4j.list
+        echo 'deb https://debian.neo4j.com stable 5' | sudo tee /etc/apt/sources.list.d/neo4j.list
         sudo apt-get update
         apt list -a neo4j
         sudo apt-get install neo4j
@@ -72,7 +97,7 @@ references:
         sudo chown -R circleci /var/lib/neo4j
         sudo chown -R circleci /etc/neo4j
         mkdir -p /var/lib/neo4j/plugins
-        wget -O /var/lib/neo4j/plugins/apoc-4.4.0.8-all.jar https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.4.0.8/apoc-4.4.0.8-all.jar
+        wget -O /var/lib/neo4j/plugins/apoc-5.5.0-core.jar https://github.com/neo4j/apoc/releases/download/5.5.0/apoc-5.5.0-core.jar
         neo4j_conf_file="/etc/neo4j/neo4j.conf"
         sudo echo "dbms.security.procedures.unrestricted=apoc.*" >> $neo4j_conf_file
         sudo echo "dbms.security.procedures.allowlist=apoc.*" >> $neo4j_conf_file
@@ -80,11 +105,11 @@ references:
         sudo echo "apoc.export.file.enabled=true" > $apoc_conf_file
         sudo echo "apoc.import.file.enabled=true" >> $apoc_conf_file
         sudo echo "apoc.import.file.use_neo4j_config=true" >> $apoc_conf_file
-        neo4j-admin set-initial-password test
+        neo4j-admin dbms set-initial-password contentgraph
 
   container_config: &container_config
     docker:
-      - image: devdemisto/content-build:3.0.0.33772  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.49685  # disable-secrets-detection
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -139,12 +164,6 @@ references:
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/Marketplace/*
 
-        echo "Checking if pyproject.toml is consistent with poetry.lock"
-        poetry lock --check
-
-        # we still need to install even if cached. if cached, `poetry` will handle it
-        echo "installing venv"
-        NO_HOOKS=1 .hooks/bootstrap
         source ./.venv/bin/activate
 
         # store in bash env so we load our venv in each step
@@ -159,13 +178,9 @@ references:
         npm --version
         demisto-sdk --version
 
-  restore_cache: &restore_cache
-    restore_cache:
-      key: virtualenv-venv-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
-
   remote_docker: &remote_docker
     setup_remote_docker:
-      version: 20.10.6
+      version: 20.10.17
       docker_layer_caching: true
 
   persist_to_workspace: &persist_to_workspace
@@ -195,7 +210,7 @@ references:
 
         neo4j start
         # poll for neo4j status until available
-        while ! neo4j status; do sleep 1; done
+        while ! curl --fail http://127.0.0.1:7474 &> /dev/null; do sleep 1; done
 
         ./Tests/scripts/linters_runner.sh
         ./Tests/scripts/validate.sh
@@ -223,7 +238,12 @@ references:
         echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         mkdir ./unit-tests
-        demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << parameters.dockerimageflag >>
+
+        neo4j start
+        # poll for neo4j status until available
+        while ! curl --fail http://127.0.0.1:7474 &> /dev/null; do sleep 1; done
+
+        demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << parameters.dockerimageflag >> --check-dependent-api-module
 
   generate_coverage_reports: &generate_coverage_reports
     run:
@@ -303,19 +323,15 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - *restore_cache
+      - *install_build_dependencies
+      - *install_node_ci
       - *prepare_environment
-      - save_cache:
-          paths:
-            - .venv
-            - node_modules
-          key: virtualenv-venv-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
       - *get_contribution_pack
       - *persist_to_workspace
 
   Run Unit Testing And Lint:
     <<: *container_config
-    resource_class: medium
+    resource_class: large
     <<: *environment
     parameters:
       dockerimageflag:
@@ -323,9 +339,10 @@ jobs:
     steps:
       - *attach_workspace
       - *remote_docker
-      - *restore_cache
-      - *prepare_environment
+      - *install_build_dependencies
+      - *install_node_ci
       - *install_neo4j
+      - *prepare_environment
       - *infrastructure_testing
       - *run_unit_testing_and_lint
       - *generate_coverage_reports
@@ -339,9 +356,10 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - *restore_cache
-      - *prepare_environment
+      - *install_build_dependencies
+      - *install_node_ci
       - *install_neo4j
+      - *prepare_environment
       - *secrets
       - *validate_files_and_yaml
       - run:
@@ -370,6 +388,8 @@ jobs:
 
             python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
       - *store_artifacts
+      - store_artifacts:
+          path: $ARTIFACTS_FOLDER
 
 
 
@@ -377,9 +397,10 @@ workflows:
   version: 2
   commit:
     when:
-      not:
-        or:
-          - << pipeline.parameters.nightly >>
+      matches:
+        # matching the environment variable << pipeline.git.branch >> to contributions branch pattern.
+        pattern: pull/[0-9]+
+        value: << pipeline.git.branch >>
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
@@ -387,7 +408,7 @@ workflows:
             - Setup Environment
           matrix:
             parameters:
-              dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
+              dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "native:candidate", "from-yml" ]
           name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
       - Run Validations:
           requires:

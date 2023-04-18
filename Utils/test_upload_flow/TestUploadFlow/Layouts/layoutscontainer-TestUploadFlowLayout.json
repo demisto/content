@@ -105,7 +105,7 @@
                         "isVisible": true,
                         "maxW": 3,
                         "name": "Linked Incidents",
-                        "type": "linkedIncidents",
+                        "type": "actions",
                         "w": 1,
                         "x": 1,
                         "y": 6
@@ -116,7 +116,7 @@
                         "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
                         "maxW": 3,
                         "name": "Child Incidents",
-                        "type": "childInv",
+                        "type": "actions",
                         "w": 1,
                         "x": 2,
                         "y": 4
@@ -126,8 +126,8 @@
                         "h": 2,
                         "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
                         "maxW": 3,
-                        "name": "Evidence",
-                        "type": "evidence",
+                        "name": "actions",
+                        "type": "actions",
                         "w": 1,
                         "x": 2,
                         "y": 2
@@ -138,8 +138,8 @@
                         "hideName": false,
                         "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
                         "maxW": 3,
-                        "name": "Team Members",
-                        "type": "team",
+                        "name": "actions Members",
+                        "type": "actions",
                         "w": 1,
                         "x": 2,
                         "y": 6
@@ -290,19 +290,19 @@
                 "type": "workPlan"
             },
             {
-                "id": "evidenceBoard",
-                "name": "Evidence Board",
-                "type": "evidenceBoard"
+                "id": "actionsBoard",
+                "name": "actions Board",
+                "type": "actionsBoard"
             },
             {
                 "id": "relatedIncidents",
                 "name": "Related Incidents",
-                "type": "relatedIncidents"
+                "type": "actions"
             },
             {
-                "id": "canvas",
-                "name": "Canvas",
-                "type": "canvas"
+                "id": "actions",
+                "name": "actions",
+                "type": "actions"
             }
         ]
     },

@@ -1832,7 +1832,7 @@ script:
     outputs:
     - contextPath: CheckPoint.DeletedThreatProtections
       description: ''
-  dockerimage: demisto/python3:3.10.9.45313
+  dockerimage: demisto/python3:3.10.10.48392
   runonce: false
   script: ''
   subtype: python3

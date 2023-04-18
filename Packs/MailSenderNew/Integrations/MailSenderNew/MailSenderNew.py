@@ -19,6 +19,7 @@ import string
 import smtplib
 import traceback
 import sys
+from itertools import zip_longest
 
 SERVER = None
 UTF_8 = 'utf-8'
@@ -102,7 +103,7 @@ def handle_html(htmlBody):
             'data': base64.b64decode(m.group(3)),
             'name': 'image%d.%s' % (i, subtype)
         }
-        att['cid'] = '%s@%s.%s' % (att['name'], randomword(8), randomword(8))
+        att['cid'] = '%r@%r.%r' % (att['name'], randomword(8), randomword(8))
         attachments.append(att)
         cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
         lastIndex = m.end() - 1
@@ -117,6 +118,7 @@ def collect_manual_attachments():
 
         path = res['path']
         maintype, subtype = guess_type(attachment['FileName'])
+        data: str | bytes  # Because of mypy errors.
         if maintype == 'text':
             with open(path) as fp:
                 data = fp.read()
@@ -156,6 +158,7 @@ def collect_attachments():
             else:
                 cid = ''
             maintype, subtype = guess_type(filename)
+            data: str | bytes  # Because of mypy errors.
             if maintype == 'text':
                 with open(path) as fp:
                     data = fp.read()
@@ -182,7 +185,7 @@ def collect_attachments():
     f_cids = args.get('transientFileCID', [])
     f_cids = f_cids if isinstance(f_cids, (list, tuple)) else f_cids.split(',')
 
-    for name, data, cid in map(None, f_names, f_contents, f_cids):
+    for name, data, cid in zip_longest(f_names, f_contents, f_cids):
         if name is None or data is None:
             break
         maintype, subtype = guess_type(name)
@@ -224,7 +227,7 @@ def header(s):
     if not s:
         return None
     s_no_newlines = ' '.join(s.splitlines())
-    return Header(s_no_newlines, UTF_8)
+    return Header(s_no_newlines)
 
 
 def create_msg():
@@ -392,7 +395,7 @@ def main():
         else:
             return_error_mail_sender('Command not recognized')
     except SMTPRecipientsRefused as e:
-        error_msg = ''.join('{}\n'.format(val) for key, val in e.recipients.iteritems())
+        error_msg = ''.join('{}\n'.format(val) for key, val in e.recipients.items())
         return_error_mail_sender("Encountered error: {}".format(error_msg))
     except Exception as e:
         return_error_mail_sender(e)
@@ -402,5 +405,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

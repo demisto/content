@@ -1,9 +1,11 @@
 from enum import Enum
-from typing import Dict, List
 import demistomock as demisto
 from CommonServerPython import *
 
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
+DEFAULT_LIMIT = 100
+DEFAULT_PAGE_SIZE = 100
+STARTING_PAGE_NUMBER = 1
 
 
 class AlertSeverity(Enum):
@@ -150,16 +152,20 @@ def search_incidents(args: Dict):   # pragma: no cover
             return 'Alerts not found.', {}, {}
         return 'Incidents not found.', {}, {}
 
+    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
     result_data_list = res[0]["Contents"]["data"]
-    page = 0
-    max_page = round(res[0]["Contents"]["total"] / 100)
-    while max_page != page:
+    # adding 1 here because the default page number start from 0
+    max_page = (res[0]["Contents"]["total"] // DEFAULT_PAGE_SIZE) + 1
+
+    page = STARTING_PAGE_NUMBER
+    while len(result_data_list) < limit and page < max_page:
+        args['page'] = page
+        result_data_list.extend(execute_command('getIncidents', args).get('data') or [])
         page += 1
-        args["page"] = page
-        result_data_list.extend(execute_command('getIncidents', args).get("data"))
 
     data = apply_filters(result_data_list, args)
     data = add_incidents_link(data, platform)
+    data = data[:limit]
     headers: List[str]
     if platform == 'x2':
         headers = ['id', 'name', 'severity', 'details', 'hostname', 'initiatedby', 'status',

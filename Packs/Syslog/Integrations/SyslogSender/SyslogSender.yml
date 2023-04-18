@@ -11,7 +11,7 @@ configuration:
   required: false
   type: 0
   section: Connect
-  additionalinfo: A Syslog server address must be provided.
+  additionalinfo: A Syslog server address must be provided. Note, the maximal supported length of a label inside an address is 64 characters.
 - defaultvalue: '514'
   display: Port
   name: port

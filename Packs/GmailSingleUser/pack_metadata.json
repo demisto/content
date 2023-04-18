@@ -12,7 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Google"
+    ],
     "dependencies": {
         "Phishing": {
             "mandatory": false,

@@ -12,7 +12,7 @@ API_TOKEN = "api_token"
 BASE_URL = 'https://panacea.threatgrid.com'
 API_VERSION2_URL = 'api/v2'
 API_VERSION3_URL = 'api/v3'
-URL_SHA256 = hashlib.sha256('url'.encode('utf-8')).hexdigest()
+URL_SHA256 = hashlib.sha256('http://test.com:80/'.encode('utf-8')).hexdigest()
 
 DBOT_SCORE = Common.DBotScore(indicator='url_value',
                               indicator_type='url',
@@ -30,17 +30,24 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
 
-    with open(os.path.join('test_data', file_name), mode='r', encoding='utf-8') as mock_file:
+    with open(os.path.join('test_data', file_name), mode='r',
+              encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
 
-FILE_ENTRY = {'filename': 'sample_id-report.html', 'data': load_mock_response('sample_get.json')}
+FILE_ENTRY = {
+    'filename': 'sample_id-report.html',
+    'data': load_mock_response('sample_get.json')
+}
 
 
 @pytest.fixture(autouse=True)
 def mock_client():
 
-    return Client(base_url=BASE_URL, api_token=API_TOKEN, proxy=False, verify=True)
+    return Client(base_url=BASE_URL,
+                  api_token=API_TOKEN,
+                  proxy=False,
+                  verify=True)
 
 
 @pytest.mark.parametrize('url, args, outputs', [
@@ -105,7 +112,7 @@ def test_get_sample_command(requests_mock, mock_client, url, args, outputs):
         'command_name': 'threat-grid-ip-samples-list',
     }, 'ThreatGrid.IpAssociatedSample'),
     (f"/{API_VERSION2_URL}/urls/{URL_SHA256}/samples", {
-        'url': 'url',
+        'url': 'http://test.com:80',
         'command_name': 'threat-grid-url-samples-list',
     }, 'ThreatGrid.UrlAssociatedSample'),
     (f'/{API_VERSION2_URL}/domains/domain/samples', {
@@ -123,7 +130,8 @@ def test_get_sample_command(requests_mock, mock_client, url, args, outputs):
         'command_name': 'threat-grid-path-samples-list'
     }, 'ThreatGrid.PathAssociatedSample'),
 ])
-def test_list_associated_samples_command(requests_mock, mock_client, url, args, outputs_prefix):
+def test_list_associated_samples_command(requests_mock, mock_client, url, args,
+                                         outputs_prefix):
     """
     Scenario: Returns a list of samples associated to the
         domain / IP / URL / path / artifact / registry key that specified.
@@ -152,9 +160,12 @@ def test_list_associated_samples_command(requests_mock, mock_client, url, args, 
 
     assert result.outputs_prefix == outputs_prefix
     assert result.outputs.get('samples')[0].get('sha256') == 'sha256'
-    assert result.outputs.get('samples')[0].get('filename') == 'data_samples[0]_filename'
-    assert result.outputs.get('samples')[0].get('details') == 'data_samples[0]_details'
-    assert result.outputs.get('samples')[0].get('login') == 'data_samples[0]_login'
+    assert result.outputs.get('samples')[0].get(
+        'filename') == 'data_samples[0]_filename'
+    assert result.outputs.get('samples')[0].get(
+        'details') == 'data_samples[0]_details'
+    assert result.outputs.get('samples')[0].get(
+        'login') == 'data_samples[0]_login'
 
 
 @pytest.mark.parametrize('url, args,outputs_prefix', [
@@ -176,18 +187,20 @@ def test_list_associated_samples_command(requests_mock, mock_client, url, args, 
         'sample_id': 'sample_id',
         'command_name': 'threat-grid-analysis-metadata-get'
     }, 'AnalysisMetadata'),
-    (f'/{API_VERSION2_URL}/samples/sample_id/analysis/network_streams/network_stream', {
-        'sample_id': 'sample_id',
-        'network_stream_id': 'network_stream',
-        'command_name': 'threat-grid-analysis-network-streams-get'
-    }, 'NetworkAnalysis'),
+    (f'/{API_VERSION2_URL}/samples/sample_id/analysis/network_streams/network_stream',
+     {
+         'sample_id': 'sample_id',
+         'network_stream_id': 'network_stream',
+         'command_name': 'threat-grid-analysis-network-streams-get'
+     }, 'NetworkAnalysis'),
     (f'/{API_VERSION2_URL}/samples/sample_id/analysis/processes/process_id', {
         'sample_id': 'sample_id',
         'process_id': 'process_id',
         'command_name': 'threat-grid-analysis-processes-get'
     }, 'ProcessAnalysis'),
 ])
-def test_analysis_sample_command(requests_mock, mock_client, url, args, outputs_prefix):
+def test_analysis_sample_command(requests_mock, mock_client, url, args,
+                                 outputs_prefix):
     """
     Scenario: Get data about a specific IOC / processes / artifact / network-stream
         from the relevant section of the sample's analysis.json.
@@ -215,9 +228,12 @@ def test_analysis_sample_command(requests_mock, mock_client, url, args, outputs_
     result = analysis_sample_command(mock_client, args)
 
     assert result.outputs_prefix == f'ThreatGrid.{outputs_prefix}'
-    assert result.outputs['items']['network']['ip1']['ts'] == 'data_items_network_ip1_ts'
-    assert result.outputs['items']['network']['ip2']['ts'] == 'data_items_network_ip2_ts'
-    assert result.outputs['items']['network']['ip3']['ts'] == 'data_items_network_ip3_ts'
+    assert result.outputs['items']['network']['ip1'][
+        'ts'] == 'data_items_network_ip1_ts'
+    assert result.outputs['items']['network']['ip2'][
+        'ts'] == 'data_items_network_ip2_ts'
+    assert result.outputs['items']['network']['ip3'][
+        'ts'] == 'data_items_network_ip3_ts'
 
 
 def test_get_rate_limit_command(requests_mock, mock_client):
@@ -248,8 +264,10 @@ def test_get_rate_limit_command(requests_mock, mock_client):
     })
 
     assert result.outputs_prefix == 'ThreatGrid.RateLimit'
-    assert result.outputs.get('submissions-available') == 'user_submissions-available'
-    assert result.outputs.get('submission-wait-seconds') == 'data_user_submission-wait-seconds'
+    assert result.outputs.get(
+        'submissions-available') == 'user_submissions-available'
+    assert result.outputs.get(
+        'submission-wait-seconds') == 'data_user_submission-wait-seconds'
     assert result.outputs.get('submission-rate-limit') == []
 
 
@@ -302,12 +320,13 @@ def test_get_specific_feed_command(requests_mock, mock_client):
 
     requests_mock.get(url=url, json=mock_response)
 
-    result = get_specific_feed_command(mock_client, {
-        'feed_name': feed_name,
-        'output_type': output_type,
-        'before': 'before',
-        'after': 'after',
-    })
+    result = get_specific_feed_command(
+        mock_client, {
+            'feed_name': feed_name,
+            'output_type': output_type,
+            'before': 'before',
+            'after': 'after',
+        })
 
     assert result.outputs_prefix == 'ThreatGrid.Feed'
     assert result.outputs[0].get('sample') == 'sample'
@@ -334,7 +353,8 @@ def test_get_specific_feed_command(requests_mock, mock_client):
         'command_name': 'threat-grid-ip-associated-urls',
     }, 'IpAssociatedUrl'),
 ])
-def test_associated_command(requests_mock, mock_client, url, args, outputs_prefix):
+def test_associated_command(requests_mock, mock_client, url, args,
+                            outputs_prefix):
     """
     Scenario: Returns a list of domains / URLs associated with the IP or
         list of IPs / URLs associated with the domain.
@@ -365,8 +385,10 @@ def test_associated_command(requests_mock, mock_client, url, args, outputs_prefi
 
     assert result.outputs_prefix == f'ThreatGrid.{outputs_prefix}'
     assert result.outputs.get(arg_name) == f'data_{arg_name}'
-    assert result.outputs.get(arg_name_2)[0].get('details') == 'data[0]_details'
-    assert result.outputs.get(arg_name_2)[1].get('details') == 'data[1]_details'
+    assert result.outputs.get(arg_name_2)[0].get(
+        'details') == 'data[0]_details'
+    assert result.outputs.get(arg_name_2)[1].get(
+        'details') == 'data[1]_details'
 
 
 @pytest.mark.parametrize('url, args, outputs_prefix', [
@@ -465,14 +487,15 @@ def test_upload_sample_command(requests_mock, mock_client):
 @pytest.mark.parametrize('url_prefix ,args, outputs_prefix', [
     (f"urls/{URL_SHA256}", {
         'command_name': 'threat-grid-url-search',
-        'url': 'url',
+        'url': 'http://test.com:80',
     }, 'url'),
     ('ips/ip', {
         'command_name': 'threat-grid-ip-search',
         'ip': 'ip',
     }, 'ip'),
 ])
-def test_search_command(requests_mock, mock_client, url_prefix, args, outputs_prefix):
+def test_search_command(requests_mock, mock_client, url_prefix, args,
+                        outputs_prefix):
     """
     Scenario: Search IPs / URLs.
     Given:
@@ -489,15 +512,19 @@ def test_search_command(requests_mock, mock_client, url_prefix, args, outputs_pr
     from ThreatGridv2 import search_command
 
     mock_response = load_mock_response('search.json')
-    requests_mock.get(url=f'/{API_VERSION2_URL}/{url_prefix}', json=mock_response)
+    requests_mock.get(url=f'/{API_VERSION2_URL}/{url_prefix}',
+                      json=mock_response)
 
     result = search_command(mock_client, args)
 
     assert result.outputs_prefix == 'ThreatGrid.search'
     assert result.outputs_key_field == outputs_prefix
-    assert result.outputs.get('items')[0].get('result') == 'data_items[0]_result'
-    assert result.outputs.get('items')[1].get('result') == 'data_items[1]_result'
-    assert result.outputs.get('items')[2].get('result') == 'data_items[2]_result'
+    assert result.outputs.get('items')[0].get(
+        'result') == 'data_items[0]_result'
+    assert result.outputs.get('items')[1].get(
+        'result') == 'data_items[1]_result'
+    assert result.outputs.get('items')[2].get(
+        'result') == 'data_items[2]_result'
 
 
 def test_search_submission_command(requests_mock, mock_client):
@@ -565,8 +592,9 @@ def test_reputation_command(
 
     if args['command_name'] == 'ip':
         mock_response = load_mock_response('sample_analysis.json')
-        requests_mock.get(url=f'/{API_VERSION2_URL}/samples/sample_id/analysis/annotations',
-                          json=mock_response)
+        requests_mock.get(
+            url=f'/{API_VERSION2_URL}/samples/sample_id/analysis/annotations',
+            json=mock_response)
 
     mock_response = load_mock_response('submission_search.json')
 
@@ -649,3 +677,18 @@ def test_parse_domain_indicator():
 
     assert result.outputs_key_field == 'domain'
     assert result.outputs_prefix == 'ThreatGrid.Domain'
+
+
+@pytest.mark.parametrize('url', [
+    'http://test.com:80',
+    'https://test.com:80',
+    'http://test.com',
+    'test.com',
+])
+def test_validate_url_template(url):
+    """ Parse domain indicator.
+    """
+    from ThreatGridv2 import validate_url_template
+    result = validate_url_template(url)
+
+    assert result == 'http://test.com:80/'

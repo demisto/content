@@ -371,11 +371,11 @@ tasks:
     task:
       id: 7e41ceab-7235-457f-8e5e-9c3d0209b11e
       version: -1
-      name: Is Prisma Cloud (RedLock) integration enabled?
-      description: Is Prisma Cloud (RedLock) integration enabled?
+      name: Is Prisma Cloud v2 integration enabled?
+      description: Is Prisma Cloud v2 integration enabled?
       type: condition
       iscommand: false
-      brand: RedLock
+      brand: PrismaCloud v2
     nexttasks:
       '#default#':
       - "9"
@@ -399,7 +399,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: RedLock
+                        simple: PrismaCloud v2
                 - - operator: isEqualString
                     left:
                       value:
@@ -432,10 +432,10 @@ tasks:
       name: Dismiss Prisma Cloud alert
       description: Dismiss the alerts matching the given filter. Must provide either
         policy IDs or alert IDs.
-      script: RedLock|||redlock-dismiss-alerts
+      script: PrismaCloud v2|||redlock-dismiss-alerts
       type: regular
       iscommand: true
-      brand: RedLock
+      brand: PrismaCloud v2
     nexttasks:
       '#none#':
       - "9"

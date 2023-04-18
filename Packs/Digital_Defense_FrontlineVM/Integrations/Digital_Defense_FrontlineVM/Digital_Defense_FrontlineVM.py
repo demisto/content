@@ -7,11 +7,12 @@ import requests
 import signal
 import socket
 import struct
+import urllib3
 from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Any
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # Params:
 VERIFY_SSL = not demisto.params().get('insecure', False)
