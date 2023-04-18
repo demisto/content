@@ -28,7 +28,7 @@ def get_incidents_ids_by_type(incident_type: str) -> Iterable[str]:
     try:
         incidents = json.loads(incidents)
     except Exception as e:
-        raise DemistoException(f'Failed loading incident: {e}, {incidents=}') from e
+        raise DemistoException(f'Failed loads for incidents: {incidents=}, error message: {str(e)}') from e
 
     campaign_ids = [incident.get('id') for incident in incidents]
     demisto.debug(f"Found campaing incident ids: {campaign_ids}")
