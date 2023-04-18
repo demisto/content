@@ -25,7 +25,7 @@ SDK_NIGHTLY_JOBS = [
 ]
 UPLOAD_JOBS = [
     'run-unittests-and-lint-upload-flow: [native:dev,from-yml]',
-    'run-unittests-and-lint-upload-flow: [native:ga,native:maintenance]',
+    'run-unittests-and-lint-upload-flow: [native:ga,native:maintenance,native:candidate]',
     'run-validations-upload-flow',
     'mpv2-prepare-testing-bucket-upload-flow',
     'upload-id-set-bucket',
