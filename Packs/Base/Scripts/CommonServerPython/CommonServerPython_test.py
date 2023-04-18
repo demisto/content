@@ -1776,20 +1776,21 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
-    def test_outputs_without_outputs_prefix(self):
+    @pytest.mark.parametrize('outputs, prefix', [([], None), ([], ''), ({}, '.')])
+    def test_outputs_without_outputs_prefix(self, outputs, prefix):
         """
         Given
-        - outputs as a list without output_prefix
+        - outputs as a list without output_prefix, or with a period output prefix.
 
         When
-        - Returins results
+        - Returns results.
 
         Then
         - Validate a ValueError is raised.
         """
         from CommonServerPython import CommandResults
         with pytest.raises(ValueError, match='outputs_prefix'):
-            CommandResults(outputs=[])
+            CommandResults(outputs=outputs, outputs_prefix=prefix)
 
     def test_with_tags(self):
         from CommonServerPython import CommandResults
