@@ -26,6 +26,15 @@ args:
   required: false
   defaultValue: "5"
   description: A maximum number of recursions to run in case of nested shortened-URLs. Use 0 for unlimited (not recommended).
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Use system proxy settings
+  isArray: false
+  name: use_system_proxy
+  predefined:
+  - 'True'
+  - 'False'
 - name: insecure
   required: false
   type: Boolean
