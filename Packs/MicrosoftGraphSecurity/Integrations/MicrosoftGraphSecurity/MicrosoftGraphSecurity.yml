@@ -15,7 +15,6 @@ configuration:
 - defaultvalue: API v2
   display: MS graph security API version
   name: api_version
-  required: true
   type: 15
   options:
   - API V1

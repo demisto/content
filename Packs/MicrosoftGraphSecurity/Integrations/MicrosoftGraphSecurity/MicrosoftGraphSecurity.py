@@ -687,7 +687,7 @@ def main():
     private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
-    api_version: str = params.get('api_version', 'API v2')
+    api_version: str = params.get('api_version', 'API V2')
 
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
