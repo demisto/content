@@ -1,0 +1,55 @@
+commonfields:
+  id: DisplayRDPImage
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: ceba5b99-f162-4c36-8c64-34808d6c7a8d
+    packName: RDPCacheHunting
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.5.31928
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: DisplayRDPImage
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: |-
+  register_module_line('DisplayRDPImage', 'start', __line__())
+
+  import base64
+
+  def img2html(image):
+      data_uri = base64.b64encode(open(image, 'rb').read()).decode('utf-8')
+      html = '<img src="data:image/png;base64,{0}">'.format(data_uri)
+      return html
+
+  def main():
+      if not demisto.context().get('RDPImageEntryID'):
+          return_error("Missing Image")
+      RDPImage = demisto.context().get('RDPImageEntryID')
+      result = demisto.getFilePath(RDPImage)
+      if not result:
+          return_error("Couldn't find entry id: {}".format(entry_id))
+      file_path = result['path']
+      img_html = img2html(file_path)
+      demisto.results({
+          'ContentsFormat': formats['html'],
+          'Type': entryTypes['note'],
+          'Contents': img_html
+      })
+
+  if __name__ in ["__builtin__", "builtins", '__main__']:
+      main()
+
+  register_module_line('DisplayRDPImage', 'end', __line__())
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python

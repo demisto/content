@@ -1,0 +1,39 @@
+{
+	"autorun": true,
+	"cacheVersn": 0,
+	"closureScript": "",
+	"color": "#CFD0D0",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"definitionId": "",
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "All"
+	},
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "RDP Sessions",
+	"itemVersion": "",
+	"layout": "RDP Sessions",
+	"locked": false,
+	"name": "RDP Sessions",
+	"onChangeRepAlg": 0,
+	"packID": "ceba5b99-f162-4c36-8c64-34808d6c7a8d",
+	"packName": "RDPCacheHunting",
+	"playbookId": "RDP Bitmap Cache - Detect and Hunt",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}
