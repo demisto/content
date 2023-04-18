@@ -890,7 +890,7 @@
             "cveId": "CVE-1999-0005",
             "cpe": [
                 {
-                    "Value": "cpe:2.3:a:university_of_washington:imap:10.234:*:*:*:*:*:*:*",
+                    "Value": "test",
                     "Range": {
                         "VersionStartIncluding": "",
                         "VersionEndIncluding": "",
@@ -1830,7 +1830,7 @@
             "cveId": "CVE-1999-0005",
             "cpe": [
                 {
-                    "Value": "cpe:2.3:a:university_of_washington:imap:10.234:*:*:*:*:*:*:*",
+                    "Value": "test",
                     "Range": {
                         "VersionStartIncluding": "",
                         "VersionEndIncluding": "",

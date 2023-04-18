@@ -259,7 +259,7 @@
                 ]
             },
             {
-                "Value": "assurant.360cyberlink.com",
+                "Value": "test",
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Medium",
@@ -343,7 +343,7 @@
                 ]
             },
             {
-                "Value": "afrizam.360cyberlink.com",
+                "Value": "test",
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Low",
@@ -914,7 +914,7 @@
                 ]
             },
             {
-                "Value": "tradingview-cost.skoconstructionng.com",
+                "Value": "test",
                 "Type": "Domains",
                 "Status": "Retired",
                 "Severity": "Medium",

@@ -286,7 +286,7 @@
                 "Count": 480
             },
             {
-                "Value": "a.sinkhole.yourtrap.com.",
+                "Value": "test",
                 "Type": "CNAME",
                 "FirstResolved": "Data_DnsRecords[33]_FirstResolved",
                 "LastResolved": "Data_DnsRecords[33]_LastResolved",

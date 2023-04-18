@@ -88,7 +88,7 @@ configuration:
   name: fetch_attachments
   required: false
   type: 8
-  additionalinfo: In case you are MSSP account you have to provide sub-account ID in order to to perform actions on.
+  additionalinfo: MSSP accounts must provide a sub-account ID to perform this action.
 - display: "Sub-account ID (for MSSP accounts)."
   name: mssp_sub_account
   type: 0

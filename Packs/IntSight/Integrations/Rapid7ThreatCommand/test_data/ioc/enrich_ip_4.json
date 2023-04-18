@@ -79,7 +79,7 @@
                 ]
             },
             {
-                "ResolvedDomain": "113.tor-relay.nothingtohide.nl",
+                "ResolvedDomain": "test",
                 "FirstResolved": "Data_Resolutions[1]_FirstResolved",
                 "LastResolved": "Data_Resolutions[1]_LastResolved",
                 "ReportingSources": [

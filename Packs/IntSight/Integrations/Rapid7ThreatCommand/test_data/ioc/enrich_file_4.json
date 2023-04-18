@@ -195,7 +195,7 @@
                 "Result": ""
             },
             {
-                "Name": "TrendMicro-HouseCall",
+                "Name": "test",
                 "Version": "10.0.0.1040",
                 "Detected": true,
                 "Result": "TROJ_FRS.0NA103K222"
@@ -357,7 +357,7 @@
                 "Result": "Trojan.Generic.D3AF3087"
             },
             {
-                "Name": "SUPERAntiSpyware",
+                "Name": "test",
                 "Version": "5.6.0.1032",
                 "Detected": false,
                 "Result": ""

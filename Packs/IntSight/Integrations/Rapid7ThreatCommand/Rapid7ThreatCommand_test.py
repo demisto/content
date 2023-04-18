@@ -2698,7 +2698,8 @@ def test_fetch_incidents(
         max_fetch=2,
         source_types=None,
     )
-    assert next_run.get("offset")
+    assert next_run.get("time")
+    assert next_run.get("last_id")
     assert len(incidents) == 2
     assert isinstance(incidents[0]["attachment"], list)
     assert len(incidents[0]["attachment"]) == 1

@@ -193,7 +193,7 @@
                 "Name": "ClamAV",
                 "Version": "Data_AntivirusDetections[22]_Version",
                 "Detected": true,
-                "Result": "Win.Trojan.Ramnit-1847"
+                "Result": "test"
             },
             {
                 "Name": "Kaspersky",
@@ -211,10 +211,10 @@
                 "Name": "NANO-Antivirus",
                 "Version": "1.0.134.25119",
                 "Detected": true,
-                "Result": "Virus.Win32.Ramnit.eslalb"
+                "Result": "test"
             },
             {
-                "Name": "SUPERAntiSpyware",
+                "Name": "test",
                 "Version": "5.6.0.1032",
                 "Detected": false,
                 "Result": ""
@@ -223,7 +223,7 @@
                 "Name": "Rising",
                 "Version": "Data_AntivirusDetections[27]_Version",
                 "Detected": true,
-                "Result": "Virus.Ramnit!1.9AA5 (CLASSIC)"
+                "Result": "test (CLASSIC)"
             },
             {
                 "Name": "Endgame",
@@ -241,7 +241,7 @@
                 "Name": "Comodo",
                 "Version": "32645",
                 "Detected": true,
-                "Result": "Packed.Win32.MUPX.Gen@24tbus"
+                "Result": "test"
             },
             {
                 "Name": "F-Secure",
@@ -373,7 +373,7 @@
                 "Name": "Microsoft",
                 "Version": "1.1.17200.2",
                 "Detected": true,
-                "Result": "Virus:Win32/Ramnit.A"
+                "Result": "test"
             },
             {
                 "Name": "Cynet",
@@ -397,7 +397,7 @@
                 "Name": "BitDefenderTheta",
                 "Version": "7.2.37796.0",
                 "Detected": true,
-                "Result": "AI:FileInfector.EAEEA7850C"
+                "Result": "test"
             },
             {
                 "Name": "ALYac",
@@ -409,7 +409,7 @@
                 "Name": "TACHYON",
                 "Version": "2020-07-20.02",
                 "Detected": true,
-                "Result": "Virus/W32.Ramnit.B"
+                "Result": "test"
             },
             {
                 "Name": "VBA32",
@@ -430,7 +430,7 @@
                 "Result": "Trojan.Win32.33102"
             },
             {
-                "Name": "TrendMicro-HouseCall",
+                "Name": "test",
                 "Version": "10.0.0.1040",
                 "Detected": true,
                 "Result": "PE_RAMNIT.H"
@@ -457,7 +457,7 @@
                 "Name": "eGambit",
                 "Version": "",
                 "Detected": true,
-                "Result": "Unsafe.AI_Score_99%"
+                "Result": "test"
             },
             {
                 "Name": "GData",

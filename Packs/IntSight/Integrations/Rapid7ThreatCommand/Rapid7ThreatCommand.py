@@ -3,7 +3,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from enum import Enum
 from typing import Any, Callable, cast
-import os
 import copy
 from requests import Response
 import pathlib
@@ -101,6 +100,7 @@ class ReadableOutputs(str, Enum):
     DELETE_CVE_SUCCESS = 'The "{0}" CVEs successfully deleted.'
     DELETE_CVE_FAIL = 'Failed to delete the "{0}" CVEs.'
     ALERT_LIST = "Alert list"
+    ALERT_GET = 'Alert "{0}"'
     ALERT_CREATE = "Alert successfully created"
     ALERT_CLOSE = 'Alert "{0}" successfully closed'
     ALERT_SEVERITY = 'Alert "{0}" severity successfully updated to "{1}".'
@@ -2929,7 +2929,7 @@ def get_alert_details_command(client: Client, alert_id: str) -> CommandResults:
     readable_outputs = alert_readable_outputs_handler(response=mapped_response)
 
     return command_result_generate(
-        readable_message=ReadableOutputs.ALERT_LIST.value,
+        readable_message=ReadableOutputs.ALERT_GET.value.format(alert_id),
         readable_outputs=readable_outputs,
         outputs=mapped_response,
         headers=Headers.GET_ALERT.value,
@@ -5017,6 +5017,25 @@ def response_obj_parser(dict_: dict[str, Any]) -> dict[str, Any]:
     )
 
 
+def minimum_severity_handler(severity: str | None) -> List[str]:
+    """
+    Replace minimum severity to list of the relevant severities.
+
+    Args:
+        severity (str | None): Severity value.
+
+    Returns:
+        List[str]: List of the relevant severities.
+    """
+    if not severity:
+        return ["High", "Medium", "Low"]
+    if severity == "High":
+        return ["High"]
+    if severity == "Medium":
+        return ["High", "Medium"]
+    return ["High", "Medium", "Low"]
+
+
 def test_module(client: Client) -> str:
     """
     Test module.
@@ -5115,9 +5134,11 @@ def fetch_incidents(
             incidents: List of incidents that will be created in XSOAR.
     """
     incidents = []
-    if offset := last_run.get("offset"):
+    offset = None
+    if (offset_time := last_run.get("time")) and (offset_id := last_run.get("last_id")):
         try:
-            datetime.fromisoformat(offset.split("::")[0].replace("Z", "+00:00"))
+            datetime.fromisoformat(offset_time.replace("Z", "+00:00"))
+            offset = f"{offset_time}::{offset_id}"
         except ValueError:
             offset = None
 
@@ -5143,7 +5164,7 @@ def fetch_incidents(
                 fetch_csv_handler(csv_response=csv_response, alert_id=alert_id)
             )
         if fetch_attachments is True:
-            for img in dict_safe_get(alert_details, ["Details", "Images"], []):
+            for img in alert_details.get("Details", {}).get("Images", []):
                 attachments.append(
                     fetch_attachment_parser(
                         file_name=f"{img}.png", data=client.get_alert_image(img).content
@@ -5159,7 +5180,7 @@ def fetch_incidents(
         )
     offset_date = list_response["content"][-1].get("updateDate")
     offset_id = list_response["content"][-1].get("_id")
-    next_run = {"offset": f"{offset_date}::{offset_id}"}
+    next_run = {"time": offset_date, "last_id": offset_id}
     return next_run, incidents
 
 
@@ -5265,7 +5286,7 @@ def main() -> None:
             first_fetch = arg_to_datetime(params.get("first_fetch"))
             max_fetch = arg_to_number(params["max_fetch"])
             alert_types = argToList(params.get("alert_types"))
-            alert_severities = argToList(params.get("alert_severity"))
+            alert_severities = minimum_severity_handler(params.get("alert_severity"))
             source_types = argToList(params.get("source_types"))
             is_closed = argToBoolean(params["fetch_closed_incidents"])
             fetch_csv = argToBoolean(params["fetch_csv"])

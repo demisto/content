@@ -2739,7 +2739,7 @@ tasks:
       - '78'
     scriptarguments:
       ip:
-        simple: '5.252.23.159'
+        simple: '8.8.8.8'
     separatecontext: false
     view: '{"position":{"x":50,"y":15400}}'
     note: false
