@@ -2,7 +2,7 @@ Cortex XSOAR interfaces with Freshservice to help streamline security-related se
 
 # What does this pack do?
 
-- Views, creates, updates, or deletes a Freshservice ticket directly from Cortex XSOAR.
+- Views, creates, updates, and deletes a Freshservice ticket directly from Cortex XSOAR.
 - Views, creates, updates, and deletes records from the Freshservice users, vendors, software and purchase orders.
 - Fetches Freshservice tickets.
 - Mirrors incoming Freshservice tickets in Cortex XSOAR.
