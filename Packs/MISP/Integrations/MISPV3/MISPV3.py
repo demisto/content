@@ -549,13 +549,15 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         new_event (MISPEvent): When this function was called from create event command, the attrubite will be added to
         that existing event.
     """
+    args_value = demisto_args.get('value')
+    value = convert_to_list(args_value)
     attributes_args = {
         'id': demisto_args.get('event_id'),  # misp event id
         'type': demisto_args.get('type', 'other'),
         'category': demisto_args.get('category', 'External analysis'),
         'to_ids': argToBoolean(demisto_args.get('to_ids', True)),
         'comment': demisto_args.get('comment'),
-        'value': demisto_args.get('value')
+        'value': value
     }
     event_id = event_id if event_id else arg_to_number(demisto_args.get('event_id'), "event_id")
     attributes_args.update({'id': event_id}) if event_id else None
@@ -588,6 +590,17 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         outputs=build_attributes_search_response(updated_event),
         raw_response=updated_event
     )
+
+def convert_to_list(string):
+    try:
+        list_value = ast.literal_eval(string)
+        if isinstance(list_value, list):
+            return list_value
+    except ValueError:
+        pass
+    except SyntaxError:
+        pass
+    return string
 
 
 def generic_reputation_command(demisto_args, reputation_type, dbot_type, malicious_tag_ids, suspicious_tag_ids,
