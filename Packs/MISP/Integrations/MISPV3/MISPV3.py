@@ -591,6 +591,7 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         raw_response=updated_event
     )
 
+
 def convert_to_list(string):
     try:
         list_value = ast.literal_eval(string)
