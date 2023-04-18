@@ -1786,7 +1786,7 @@ def filter_new_to_marketplace_packs(build: Build, modified_pack_names: Set[str])
 
 def get_packs_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
     """
-    Return a set of packs to install only in the post-update, and set not to install in pre-update.
+    Return a set of packs to install only in the pre-update, and set to install in post-update.
     Args:
         build (Build): The build object.
     Returns:
