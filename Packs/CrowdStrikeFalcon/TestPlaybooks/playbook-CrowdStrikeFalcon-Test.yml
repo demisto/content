@@ -3383,14 +3383,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "80"
+      - "94"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1902.5,
-          "y": 7705
+          "y": 7180
         }
       }
     note: false
@@ -3431,6 +3431,120 @@ tasks:
         "position": {
           "x": 1902.5,
           "y": 9790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: a93b05a7-4c2a-4842-8aee-e281d5a8ad18
+    type: regular
+    task:
+      id: a93b05a7-4c2a-4842-8aee-e281d5a8ad18
+      version: -1
+      name: Delete ML exclusion
+      description: Delete the ML exclusions by id.
+      script: '|||cs-falcon-delete-ml-exclusion'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      ids:
+        complex:
+          root: CrowdStrike.MLExclusion
+          accessor: id
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1902.5,
+          "y": 7515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: d936e858-a33f-4ab4-8321-d1a1af8daa23
+    type: regular
+    task:
+      id: d936e858-a33f-4ab4-8321-d1a1af8daa23
+      version: -1
+      name: Search ML exclusion
+      description: Get a list of ML Exclusions by specifying their IDs, value, or
+        a specific filter.
+      script: '|||cs-falcon-search-ml-exclusion'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      value:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1902.5,
+          "y": 7340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 7a957a96-5ac7-4742-88f0-a2b1d1e9adb8
+    type: regular
+    task:
+      id: 7a957a96-5ac7-4742-88f0-a2b1d1e9adb8
+      version: -1
+      name: Delete context ML exclusion
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      key:
+        simple: CrowdStrike.MLExclusion
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1902.5,
+          "y": 7690
         }
       }
     note: false
