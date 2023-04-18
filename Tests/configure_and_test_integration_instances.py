@@ -1784,7 +1784,7 @@ def filter_new_to_marketplace_packs(build: Build, modified_pack_names: Set[str])
     return first_added_to_marketplace
 
 
-def get_packs_not_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
+def get_packs_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
     """
     Return a set of packs to install only in the post-update, and set not to install in pre-update.
     Args:
@@ -1809,7 +1809,8 @@ def get_packs_not_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
 
     packs_not_to_install_in_pre_update = set().union(*[packs_with_higher_min_version,
                                                        non_hidden_packs, first_added_to_marketplace])
-    return packs_not_to_install_in_pre_update, non_hidden_packs
+    packs_to_install_pre_update = modified_packs_names - packs_not_to_install_in_pre_update
+    return packs_to_install_pre_update, non_hidden_packs
 
 
 def get_packs_with_higher_min_version(packs_names: Set[str],
@@ -1881,10 +1882,8 @@ def main():
     if build.is_nightly:
         build.install_nightly_pack()
     else:
-        modified_packs_names = get_non_added_packs_ids(build)
-        packs_not_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_not_to_install(build)
-        packs_to_install = modified_packs_names - packs_not_to_install_in_pre_update
-        build.install_packs(pack_ids=packs_to_install)
+        packs_to_install_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)
+        build.install_packs(pack_ids=packs_to_install_pre_update)
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(
             packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
