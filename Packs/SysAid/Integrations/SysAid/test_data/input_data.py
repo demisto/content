@@ -138,11 +138,39 @@ service_record_expected_output = [
      'title': 'Try Test'}]
 service_record_expected_response_output = [
     {'alertID': 'green', 'id': '25', 'impact': 'Low', 'insert_time': '03/07/2022 08:56:35 AM', 'sr_type': 'Incident',
-     'status': 'New', 'title': 'Cannot access email - Test ', 'update_time': '03/15/2022 04:53:20 AM'},
+     'status': 'New', 'title': 'Cannot access email - Test ', 'update_time': '03/15/2022 04:53:20 AM',
+     'canArchive': True, 'canDelete': True, 'canUpdate': True, 'hasChildren': False, 'id': '25', 'info': [
+        {'key': 'impact', 'keyCaption': 'Impact', 'value': 4, 'valueCaption': 'Low', 'valueClass': ''},
+        {'key': 'alertID', 'keyCaption': 'Alert', 'value': 25, 'valueCaption': 'green', 'valueClass': ''},
+        {'key': 'status', 'keyCaption': 'Status', 'value': 1, 'valueCaption': 'New', 'valueClass': 0},
+        {'key': 'insert_time', 'keyCaption': 'Request time', 'value': 1646661395760, 'valueCaption': '03/07/2022 08:56:35 AM',
+         'valueClass': ''},
+        {'key': 'title', 'keyCaption': 'Title', 'value': 'Cannot access email - Test ',
+         'valueCaption': 'Cannot access email - Test ', 'valueClass': ''},
+        {'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987, 'valueCaption': '03/15/2022 04:53:20 AM',
+         'valueClass': ''},
+        {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 1, 'valueCaption': 'Incident', 'valueClass': ''}]},
     {'description': 'I test this', 'id': '28', 'sr_type': 'Incident', 'status': 'New',
-     'title': 'Cannot connect to a Wi-Fi network', 'update_time': '03/07/2022 09:08:01 AM'},
-    {'id': '33', 'priority': 'Normal', 'source': 'Administrator Portal', 'sr_type': 'Incident', 'status': 'New',
-     'title': 'Try Test', 'update_time': '03/20/2022 11:08:56 AM'}]
+     'title': 'Cannot connect to a Wi-Fi network', 'update_time': '03/07/2022 09:08:01 AM',
+     'canArchive': True, 'canDelete': True, 'canUpdate': True, 'hasChildren': False, 'id': '28', 'info': [
+        {'key': 'status', 'keyCaption': 'Status', 'value': 1, 'valueCaption': 'New', 'valueClass': 0},
+        {'key': 'description', 'keyCaption': 'Description', 'value': 'I test this', 'valueCaption': 'I test this',
+         'valueClass': ''},
+        {'key': 'title', 'keyCaption': 'Title', 'value': 'Cannot connect to a Wi-Fi network',
+         'valueCaption': 'Cannot connect to a Wi-Fi network', 'valueClass': ''},
+        {'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662081400, 'valueCaption': '03/07/2022 09:08:01 AM',
+         'valueClass': ''},
+        {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 1, 'valueCaption': 'Incident', 'valueClass': ''}]},
+    {'priority': 'Normal', 'source': 'Administrator Portal', 'sr_type': 'Incident', 'status': 'New',
+     'title': 'Try Test', 'update_time': '03/20/2022 11:08:56 AM',
+     'canArchive': True, 'canDelete': True, 'canUpdate': True, 'hasChildren': False, 'id': '33', 'info': [
+        {'key': 'source', 'keyCaption': 'Source', 'value': 1, 'valueCaption': 'Administrator Portal', 'valueClass': ''},
+        {'key': 'priority', 'keyCaption': 'Priority', 'value': 4, 'valueCaption': 'Normal', 'valueClass': ''},
+        {'key': 'status', 'keyCaption': 'Status', 'value': 1, 'valueCaption': 'New', 'valueClass': 0},
+        {'key': 'title', 'keyCaption': 'Title', 'value': 'Try Test', 'valueCaption': 'Try Test', 'valueClass': ''},
+        {'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647792536563, 'valueCaption': '03/20/2022 11:08:56 AM',
+         'valueClass': ''},
+        {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 1, 'valueCaption': 'Incident', 'valueClass': ''}]}]
 
 # custom_fields_keys, custom_fields_values, expected_output
 extract_filters_no_args = (argToList(None), argToList(None), {})
