@@ -47,7 +47,7 @@ MIRROR_DIRECTION_MAPPING = {
     "Outgoing": "Out",
     "Incoming And Outgoing": "Both",
 }
-MIRROR_DIRECTION = MIRROR_DIRECTION_MAPPING.get(demisto.params().get('mirror_direction'))
+MIRROR_DIRECTION = MIRROR_DIRECTION_MAPPING.get(demisto.params().get('mirror_direction')) # TODO: better to pass that as an arg to the fetch command through the main function
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote']
@@ -674,7 +674,7 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], remote_alert_id: 
     """
     # TODO: need to add description
     """
-    if demisto.params().get('close_incident'):
+    if demisto.params().get('close_incident'):  #  TODO: need to remove the close option parameters cause this is the only thing we do in this mirroring.
         if mirrored_status := updated_object.get('status') in set(INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES):
             mirrored_dismissal_note = updated_object.get('dismissalNote')
             entry = close_incident_in_xsoar(remote_alert_id, mirrored_status, mirrored_dismissal_note)
@@ -1656,6 +1656,7 @@ def get_modified_remote_data_command(client: Client,
     Returns:
         GetModifiedRemoteDataResponse object, which contains a list of the retrieved alerts IDs.
     """
+    demisto.debug('######## get-modified-remote-data is being called')
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = remote_args.last_update
     parsed_date = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
@@ -1673,6 +1674,7 @@ def get_modified_remote_data_command(client: Client,
                                      time_to='now')
     filters = argToList(params.get('filters')) # TODO: there is a chance we need to remove the alert.status=open filter (alert.status filters in general need to be removed)
     filters.append('timeRange.type=ALERT_STATUS_UPDATED')
+    filters.extend(['alert.status=dismissed', 'alert.status=snoozed', 'alert.status=resolved'])
 
     # TODO: what next_token is used for? need to check if I need to implement it.
     response = client.alert_search_request(time_range=time_filter, filters=filters, detailed=detailed, sort_by=sort_by)
