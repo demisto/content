@@ -74,15 +74,16 @@ MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "med
 INCREASE_LIMIT = 1.1
 '''Request Arguments Class'''
 
+
 def debug_function(func):
     def wrapper(*args, **kwargs):
         demisto.debug(f"edl: Entering function {func.__name__}")
         results = func(*args, **kwargs)
         demisto.debug(f"edl: Exiting function {func.__name__}")
         return results
-    
+
     return wrapper
-        
+
 
 class RequestArguments:
     CTX_QUERY_KEY = 'last_query'
@@ -781,6 +782,7 @@ def get_outbound_mimetype(request_args: RequestArguments) -> str:
 
     else:
         return MIMETYPE_TEXT
+
 
 @debug_function
 def get_edl_on_demand():
