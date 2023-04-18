@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* GCP-IAM
+This playbook does not use any integrations.
 
 ### Scripts
 * 7fe755b2-98a8-4f8a-85ee-9a4ce3154d80
@@ -16,7 +16,7 @@ This playbook does not use any sub-playbooks.
 * IdentifyServiceOwners
 
 ### Commands
-* gcp-iam-project-iam-policy-get
+This playbook does not use any commands.
 
 ## Playbook Inputs
 ---
