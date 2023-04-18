@@ -1,5 +1,5 @@
 {
-    "name": "Rapid7 - Threat Command (IntSight)",
+    "name": "Rapid7 - Threat Command (IntSights)",
     "description": "Use Threat Command to manage alerts, CVEs, IOCs, and assets by accounts and MSSP accounts.",
     "support": "xsoar",
     "currentVersion": "3.0.0",
