@@ -238,7 +238,7 @@ tasks:
       id: 7666e986-43b8-46a3-8a16-33d74a6aa206
       iscommand: false
       name: Normalize and rank likely service owners
-      script: 7fe755b2-98a8-4f8a-85ee-9a4ce3154d80
+      script: IdentifyServiceOwners
       type: regular
       version: -1
     taskid: 7666e986-43b8-46a3-8a16-33d74a6aa206
