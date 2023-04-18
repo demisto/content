@@ -1,4 +1,4 @@
-Given the IP address this playbook enriches GCP and Firewall information.
+Given the IP address this playbook enriches GCP information relevant to ASM alerts.
 
 ## Dependencies
 
