@@ -50,6 +50,10 @@ def side_effect_demisto_dt(obj, dt):
             return int(obj) == int(dt[len('.=val =='):])
         elif dt.startswith('.=val !='):
             return int(obj) != int(dt[len('.=val !='):])
+        elif dt.startswith('.=>val != null'):
+            return obj is not None
+        elif dt.startswith('.=>val == null'):
+            return obj is None
     except Exception:
         return False
 
