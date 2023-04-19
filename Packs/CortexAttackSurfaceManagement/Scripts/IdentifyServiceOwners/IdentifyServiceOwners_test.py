@@ -1,7 +1,62 @@
 import demistomock as demisto  # noqa: F401
 import pytest
 import unittest
-from IdentifyServiceOwners import deduplicate, score, main
+from IdentifyServiceOwners import deduplicate, score, main, rank
+from contextlib import nullcontext as does_not_raise
+
+
+@pytest.mark.parametrize('owners,k,expected_out,expected_raises', [
+    # different names
+    (
+        [
+            {
+                'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
+                'Timestamp': '', 'Confidence Score': 1, 'Justification': 'source1'
+            },
+        ],
+        1,
+        [
+            {
+                'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
+                'Timestamp': '', 'Confidence Score': 1, 'Justification': 'source1'
+            },
+        ],
+        does_not_raise(),
+    ),
+    (
+        [
+            {
+                'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
+                'Timestamp': '', 'Confidence Score': 1, 'Justification': 'source1'
+            },
+        ],
+        0,
+        None,
+        pytest.raises(ValueError),
+    ),
+    (
+        [
+            {
+                'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
+                'Timestamp': '', 'Confidence Score': 1, 'Justification': 'source1'
+            },
+        ],
+        -1,
+        None,
+        pytest.raises(ValueError),
+    ),
+    (
+        [
+            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': ''},
+        ],
+        1,
+        None,
+        pytest.raises(ValueError),
+    ),
+])
+def test_rank(owners, k, expected_out, expected_raises):
+    with expected_raises:
+        assert rank(owners, k=k) == expected_out
 
 
 @pytest.mark.parametrize('owners,expected_out', [

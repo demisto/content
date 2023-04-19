@@ -28,9 +28,14 @@ def score(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 def rank(owners: List[Dict[str, Any]], k: int = 5) -> List[Dict[str, Any]]:
     """
-    Sort by confidence and return top k
+    Return up to k owners with the highest confidence scores
     """
-    return sorted(owners, key=lambda x: x['Confidence Score'])[:k]
+    if k <= 0:
+        raise ValueError(f'Number of owners k={k} must be greater than zero')
+    try:
+        return sorted(owners, key=lambda x: x['Confidence Score'])[:k]
+    except KeyError:
+        raise ValueError('Owners must contain key `Confidence Score` to be ranked; please score using `score` function.')
 
 
 def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:
