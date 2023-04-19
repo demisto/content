@@ -1,3 +1,4 @@
+import time
 import pytest
 from unittest.mock import patch
 from freezegun import freeze_time
@@ -318,7 +319,7 @@ def test_service_record_get_request(mocker, sysaid_client):
     http_request.assert_called_with('GET', 'sr/37', params={}, cookies=COOKIES)
 
 
-@freeze_time('2001-09-09 01:48:50 UTC')
+@freeze_time(time.ctime(9999893300))
 def test_service_record_add_note_command(mocker, sysaid_client):
     """
     Given:
@@ -341,7 +342,7 @@ def test_service_record_add_note_command(mocker, sysaid_client):
                 "value": [
                     {
                         "userName": "xsoar_dev",
-                        "createDate": "999989330000",
+                        "createDate": "9999893300000",
                         "text": "this is a new note"
                     }
                 ]
