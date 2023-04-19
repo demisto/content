@@ -299,10 +299,13 @@ def main() -> None:
         packs = []
 
     pack_version = "1.2.0"
-    if packs:
+    if isinstance(packs, List):
         for pack in packs:
             if pack["name"] == "GreyNoise":
                 pack_version = pack["currentVersion"]
+    else:  # packs is a dict
+        if packs.get("name") == "GreyNoise":
+            pack_version = packs.get("currentVersion")
 
     api_key = demisto.params().get("api_key")
     proxy = demisto.params().get("proxy", False)
