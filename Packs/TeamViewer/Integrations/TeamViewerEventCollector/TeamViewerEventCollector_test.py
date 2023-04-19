@@ -216,5 +216,5 @@ def test_main_function(mocker):
                                                                [{'id': 1, 'Timestamp': '2023-01-01T01:00:00Z'},
                                                                 {'id': 2, 'Timestamp': "2023-04-16T10:46:49Z"}]))
     main()
-    assert demisto_debug_mocker.call_count == 5
+    assert demisto_debug_mocker.call_count == 3
     demisto_results_mocker.assert_called_once()

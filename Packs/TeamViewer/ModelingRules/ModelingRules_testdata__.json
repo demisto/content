@@ -1,0 +1,47 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "bdc2fb14-2357-4498-9419-2cafe7511015",
+            "vendor": "teamviewer",
+            "product": "teamviewer",
+            "dataset": "teamviewer_teamviewer_raw",
+            "event_data": {
+                "EventDetails": [
+                    {
+                        "OldValue": "old1",
+                        "NewValue": "val",
+                        "PolicyEnforcementNewValue": null,
+                        "PolicyEnforcementOldValue": null,
+                        "PropertyName": "Name",
+                        "PropertyCategory": "ChangedProperty"
+                    },
+                    {
+                        "OldValue": "old2",
+                        "NewValue": "val2",
+                        "PolicyEnforcementNewValue": null,
+                        "PolicyEnforcementOldValue": null,
+                        "PropertyName": "Description",
+                        "PropertyCategory": "ChangedProperty"
+                    }
+                ],
+                "EventName": "Script token added",
+                "EventType": "Company administration",
+                "Timestamp": "2023-02-22T22:22:22Z",
+                "Author": "author name",
+                "AffectedItem": "1"
+            },
+            "expected_values": {
+                "xdm.target.resource_before.value": 
+                    "old1,old2",
+                "xdm.event.type": "Company administration",
+                "xdm.event.operation_sub_type": 
+                    "ChangedProperty,ChangedProperty",
+                "xdm.target.resource.name": null,
+                "xdm.target.resource.type": "Name,Description",
+                "xdm.target.resource.value": "val,val2",
+                "xdm.source.user.username": "author name",
+                "xdm.event.description": "Script token added"
+            }
+        }
+    ]
+}
