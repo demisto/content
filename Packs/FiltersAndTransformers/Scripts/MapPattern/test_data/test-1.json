@@ -954,15 +954,16 @@
     "compare_fields": "true",
     "wildcards": "",
     "mappings": {
-      "key1": {
-        "...=>val != null": "key1 exists"
+      "field1": {
+        "...='key1' in val": "key1 exists"
       }
     },
     "patterns": [
       {
         "value": {
-          "key1": "value1",
-          "key2": "value2"
+          "field1": {
+            "key1": "value"
+          }
         },
         "result": "key1 exists"
       }
@@ -977,17 +978,18 @@
     "compare_fields": "true",
     "wildcards": "",
     "mappings": {
-      "key3": {
-        "...=>val == null": "key3 doesn't exist"
+      "field1": {
+        "...=!('key2' in val)": "key2 doesn't exist"
       }
     },
     "patterns": [
       {
         "value": {
-          "key1": "value1",
-          "key2": "value2"
+          "field1": {
+            "key1": "value"
+          }
         },
-        "result": "key3 doesn't exist"
+        "result": "key2 doesn't exist"
       }
     ]
   }
