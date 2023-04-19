@@ -1889,11 +1889,9 @@ class Client(BaseClient):
             The response provides a list of siteshield maps
 
         """
-        headers = {"accept": "application/json"}
-        method = "GET"
-        return self._http_request(method=method,
+        return self._http_request(method="GET",
                                   url_suffix='siteshield/v1/maps',
-                                  headers=headers,
+                                  headers={"accept": "application/json"},
                                   )
 
 
