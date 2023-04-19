@@ -1,16 +1,16 @@
 alert_category: EXECUTION
 alert_description: This alert will trigger in an event where multiple attempts of unauthorized actions were detected
 alert_fields:
-  actor_image:
-  actor_path: xdm.source.user.user_type
-  cmd:
-  domain:
-  hash:
-  hostname:
-  local_ip:
-  remote_ip: xdm.source.ipv4
-  remote_port:
-  username: xdm.source.user.username
+  actor_process_image_name:
+  actor_process_image_path: xdm.source.user.user_type
+  actor_process_command_line:
+  agent_device_domain:
+  actor_process_image_sha256:
+  agent_hostname:
+  action_local_ip:
+  action_remote_ip: xdm.source.ipv4
+  action_remote_port:
+  actor_effective_username: xdm.source.user.username
 alert_name: Alibaba ActionTrail - multiple unauthorized action attempts detected by a user
 crontab: '*/10 * * * *'
 dataset: alerts

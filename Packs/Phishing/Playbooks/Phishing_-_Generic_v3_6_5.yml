@@ -134,7 +134,7 @@ tasks:
       {
         "position": {
           "x": -247.5,
-          "y": 4580
+          "y": 4920
         }
       }
     note: false
@@ -503,7 +503,7 @@ tasks:
       {
         "position": {
           "x": 432.5,
-          "y": 3590
+          "y": 3930
         }
       }
     note: false
@@ -598,7 +598,7 @@ tasks:
       {
         "position": {
           "x": 212.5,
-          "y": 4210
+          "y": 4550
         }
       }
     note: false
@@ -626,7 +626,7 @@ tasks:
       {
         "position": {
           "x": -247.5,
-          "y": 4745
+          "y": 5085
         }
       }
     note: false
@@ -650,7 +650,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "149"
+      - "214"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -752,7 +752,7 @@ tasks:
       {
         "position": {
           "x": -200,
-          "y": 4210
+          "y": 4550
         }
       }
     note: false
@@ -797,7 +797,7 @@ tasks:
       {
         "position": {
           "x": 212.5,
-          "y": 3860
+          "y": 4200
         }
       }
     note: false
@@ -862,7 +862,7 @@ tasks:
       {
         "position": {
           "x": 432.5,
-          "y": 4380
+          "y": 4720
         }
       }
     note: false
@@ -1477,7 +1477,7 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 3730
+          "y": 4070
         }
       }
     note: false
@@ -1508,7 +1508,7 @@ tasks:
       {
         "position": {
           "x": 212.5,
-          "y": 3730
+          "y": 4070
         }
       }
     note: false
@@ -1828,7 +1828,7 @@ tasks:
       {
         "position": {
           "x": 190,
-          "y": 3420
+          "y": 3760
         }
       }
     note: false
@@ -1892,7 +1892,7 @@ tasks:
       {
         "position": {
           "x": 432.5,
-          "y": 3210
+          "y": 3550
         }
       }
     note: false
@@ -1940,7 +1940,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 3420
+          "y": 3760
         }
       }
     note: false
@@ -2030,7 +2030,7 @@ tasks:
       {
         "position": {
           "x": 212.5,
-          "y": 4035
+          "y": 4375
         }
       }
     note: false
@@ -2942,7 +2942,89 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 3860
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "214":
+    id: "214"
+    taskid: d52768e3-e3b4-4ef1-8b97-9f6acbc14e88
+    type: condition
+    task:
+      id: d52768e3-e3b4-4ef1-8b97-9f6acbc14e88
+      version: -1
+      name: Phishing email sender address exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "149"
+      "yes":
+      - "215"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: reportedemailfrom
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 432.5,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "215":
+    id: "215"
+    taskid: 04d6d0cd-28fb-4473-8a27-cfe1b8f16460
+    type: regular
+    task:
+      id: 04d6d0cd-28fb-4473-8a27-cfe1b8f16460
+      version: -1
+      name: Set phishing email sender address verdict as malicious
+      description: commands.local.cmd.set.indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "149"
+    scriptarguments:
+      value:
+        complex:
+          root: incident
+          accessor: reportedemailfrom
+      verdict:
+        simple: Malicious
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 3380
         }
       }
     note: false
@@ -2972,6 +3054,7 @@ view: |-
       "162_52_#default#": 0.22,
       "179_211_yes": 0.5,
       "179_84_#default#": 0.1,
+      "214_215_yes": 0.37,
       "33_149_yes": 0.18,
       "36_152_Yes": 0.49,
       "79_82_yes": 0.46,
@@ -2979,7 +3062,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5320,
+        "height": 5660,
         "width": 2797.5,
         "x": -1557.5,
         "y": -510

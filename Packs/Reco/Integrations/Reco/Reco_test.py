@@ -15,7 +15,7 @@ from Reco import (
     get_max_fetch,
     get_risky_users_from_reco,
     add_risky_user_label,
-    get_assets_user_has_access,
+    get_assets_user_has_access, get_sensitive_assets_by_name,
 )
 
 from test_data.structs import (
@@ -501,7 +501,7 @@ def test_get_risky_users_bad_response(
 def test_add_risky_user_label(requests_mock, reco_client: RecoClient) -> None:
     label_id = f"{uuid.uuid1()}@gmail.com"
     requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/entry-labels/{label_id}", json={}, status_code=200
+        f"{DUMMY_RECO_API_DNS_NAME}/entry-label-relations", json={}, status_code=200
     )
     res = add_risky_user_label(reco_client=reco_client, email_address=label_id)
     assert "labeled as risky" in res.readable_output
@@ -529,4 +529,18 @@ def test_get_assets_user_bad_response(
     )
     with capfd.disabled():
         with pytest.raises(Exception):
-            get_assets_user_has_access(reco_client=reco_client)
+            get_assets_user_has_access(reco_client=reco_client,
+                                       email_address="test",
+                                       only_sensitive=False)
+
+
+def test_get_sensitive_assets_by_name(requests_mock, reco_client: RecoClient) -> None:
+    raw_result = get_random_assets_user_has_access_to_response()
+    requests_mock.post(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    )
+    actual_result = get_sensitive_assets_by_name(
+        reco_client=reco_client, asset_name="test", regex_search=True
+    )
+    assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
+    assert actual_result.outputs[0].get("source") is not None

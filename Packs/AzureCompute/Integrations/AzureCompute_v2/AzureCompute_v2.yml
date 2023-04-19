@@ -666,7 +666,7 @@ script:
     - contextPath: Azure.Network.IPConfigurations.PublicIPAddressID
       description: The address ID.
       type: String
-  dockerimage: demisto/crypto:1.0.0.45575
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false
   longRunning: false

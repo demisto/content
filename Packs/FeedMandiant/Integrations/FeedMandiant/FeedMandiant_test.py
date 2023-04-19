@@ -209,3 +209,32 @@ def test_get_indicator_list():
     FeedMandiant.get_new_indicators = get_new_indicators_mock
     res = FeedMandiant.get_indicator_list(client, 2, '90 days ago', 'Indicators')
     assert res == res_indicators['new_indicators']
+
+
+def test_get_indicator_list_two_iterations(mocker):
+    """
+        Given -
+           mock client and response.
+        When -
+            getting new indicators twice.
+        Then -
+            Ensures the right indicator was returned:
+            the first response should be from the get_new_indicators function and the second one from the last run object.
+    """
+    import FeedMandiant
+    import demistomock as demisto
+
+    client = mock_client()
+    res_indicators = util_load_json('./test_data/result_indicators.json')
+
+    def get_new_indicators_mock(a, b, c, d):
+        return res_indicators['new_indicators_2']
+
+    FeedMandiant.get_new_indicators = get_new_indicators_mock
+    res = FeedMandiant.get_indicator_list(client, 1, '90 days ago', 'Indicators')
+    assert res == [res_indicators['new_indicators_2'][0]]
+    mocker.patch.object(demisto, 'getLastRun', return_value={'IndicatorsList': [res_indicators['new_indicators_2'][1]]})
+
+    FeedMandiant.get_new_indicators = get_new_indicators_mock
+    res = FeedMandiant.get_indicator_list(client, 1, '90 days ago', 'Indicators')
+    assert res == [res_indicators['new_indicators_2'][1]]
