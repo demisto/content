@@ -14,12 +14,12 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-This playbook does not use any scripts.
+* IsListExist
 
 ### Commands
 
+* createList
 * addToList
-* setList
 
 ## Playbook Inputs
 
