@@ -3,7 +3,7 @@
     "feed": false,
     "id": "Slack Classifier",
     "keyTypeMap": {
-        "1": "Reset User Password via Chatbot"
+        "1": "Password Reset via Chatbot"
     },
     "name": "Slack Classifier",
     "propagationLabels": [

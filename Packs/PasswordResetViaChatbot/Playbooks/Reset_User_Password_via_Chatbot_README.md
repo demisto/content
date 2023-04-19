@@ -8,7 +8,7 @@ This playbook resets the password of an Active Directory or Okta user. The proce
 7. The encrypted ZIP file that contains the new password for the user will be sent to the user via email. 
 8. The password for the ZIP file that contains the new user's password, will be sent to the requesting user through Slack or Teams.
 
-This playbook is intended for use with Slack or Teams. In order to use it, please make sure that you have a classifier and mapper in place. The classifier should create a Reset User Password via Chatbot incident, while the mapper should map the email of the user to the Reporter Email Address field.
+This playbook is intended for use with Slack or Teams. In order to use it, please make sure that you have a classifier and mapper in place. The classifier should create a Password Reset via Chatbot incident, while the mapper should map the email of the user to the Reporter Email Address field.
 This playbook assumes that the user requesting the password reset has the same email in Slack / Teams, and in Active Directory / Okta.
 
 ## Dependencies

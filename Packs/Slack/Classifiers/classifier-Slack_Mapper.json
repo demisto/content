@@ -3,7 +3,7 @@
     "feed": false,
     "id": "Slack Mapper",
     "mapping": {
-        "Reset User Password via Chatbot": {
+        "Password Reset via Chatbot": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Description": {

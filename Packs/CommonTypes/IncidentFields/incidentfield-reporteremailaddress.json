@@ -25,11 +25,11 @@
  "hidden": false,
  "associatedTypes": [
      "Phishing",
-     "Reset User Password via Chatbot"
+     "Password Reset via Chatbot"
  ],
  "systemAssociatedTypes": [
      "Phishing",
-     "Reset User Password via Chatbot"
+     "Password Reset via Chatbot"
  ],
  "associatedToAll": false,
  "unmapped": false,
