@@ -106,7 +106,6 @@ def test_fetch_incidents(mocker, client, emails_data, expected_incident, last_ru
     result_raw_json = json.loads(result_incidents.pop('rawJSON'))
     expected_raw_json = expected_incident.pop('rawJSON', None)
 
-
     assert result_raw_json == expected_raw_json
     assert result_incidents == expected_incident
 
@@ -577,7 +576,6 @@ def test_update_email_status_command(mocker, args: dict):
     client.http_request.assert_called_with(method="PATCH", url_suffix=url_suffix, json_data={'isRead': mark_as_read})
 
 
-
 @pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
 def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
     """
@@ -631,7 +629,7 @@ def test_get_attachment(client):
     with open('test_data/mail_with_attachment') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)
-        res =  GraphMailUtils.item_result_creator(raw_response, user_id)
+        res = GraphMailUtils.item_result_creator(raw_response, user_id)
         assert isinstance(res, CommandResults)
         output = res.to_context().get('EntryContext', {})
         assert output.get(output_prefix).get('ID') == 'exampleID'
@@ -708,7 +706,7 @@ class TestCommandsWithLargeAttachments:
              'body': "<b>This text is bold</b>",
              'body_type': 'html',
              'flag': 'notFlagged',
-             'importance':'Low',
+             'importance': 'Low',
              'internet_message_headers': '',
              'attach_ids': '1',
              'attach_names': '',
@@ -726,7 +724,7 @@ class TestCommandsWithLargeAttachments:
              'body_type': 'html',
              'replyTo': 'ex2@example.com,ex3@example.com',
              'flag': 'notFlagged',
-             'importance':'Low',
+             'importance': 'Low',
              'internet_message_headers': '',
              'attach_ids': '2',
              'attach_names': '',

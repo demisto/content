@@ -14,6 +14,9 @@ class MsGraphMailBaseClient(MicrosoftClient):
     FILE_ATTACHMENT = '#microsoft.graph.fileAttachment'
     # maximum attachment size to be sent through the api, files larger must be uploaded via upload session
     MAX_ATTACHMENT_SIZE = 3145728  # 3mb = 3145728 bytes
+    MAX_FOLDERS_SIZE = 250
+    DEFAULT_PAGE_SIZE = 20
+    DEFAULT_PAGES_TO_PULL_NUM = 1
 
     # Well known folders shortcut in MS Graph API
     # For more information: https://docs.microsoft.com/en-us/graph/api/resources/mailfolder?view=graph-rest-1.0
@@ -152,7 +155,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         :rtype: ``list``
         """
         return self.http_request('GET',
-                                 f'users/{user_id}/mailFolders/{folder_id}/childFolders?$top=250',
+                                 f'users/{user_id}/mailFolders/{folder_id}/childFolders?$top={self.MAX_FOLDERS_SIZE}',
                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry).get('value', [])
 
     def _get_folder_info(self, user_id, folder_id, overwrite_rate_limit_retry=False):
@@ -318,8 +321,8 @@ class MsGraphMailBaseClient(MicrosoftClient):
             dict or list:   list of mails or dictionary when single item is returned
         """
         user_id = user_id or self._mailbox_to_fetch
-        pages_to_pull = demisto.args().get('pages_to_pull', 1)
-        page_size = demisto.args().get('page_size', 20)
+        pages_to_pull = demisto.args().get('pages_to_pull', self.DEFAULT_PAGES_TO_PULL_NUM)
+        page_size = demisto.args().get('page_size', self.DEFAULT_PAGE_SIZE)
         odata = f'{odata}&$top={page_size}' if odata else f'$top={page_size}'
         if search:
             # Data is being handled as a JSON so in cases the search phrase contains double quote ",
@@ -681,20 +684,33 @@ class MsGraphMailBaseClient(MicrosoftClient):
         """
 
         attachment_size = len(attachment_data)
-        try:
-            upload_session = self.get_upload_session(
-                email=email,
-                draft_id=draft_id,
-                attachment_name=attachment_name,
-                attachment_size=attachment_size,
-                is_inline=is_inline
-            )
-            upload_url = upload_session.get('uploadUrl')
-            if not upload_url:
-                raise Exception(f'Cannot get upload URL for attachment {attachment_name}')
+        upload_session = self.get_upload_session(
+            email=email,
+            draft_id=draft_id,
+            attachment_name=attachment_name,
+            attachment_size=attachment_size,
+            is_inline=is_inline
+        )
+        upload_url = upload_session.get('uploadUrl')
+        if not upload_url:
+            raise Exception(f'Cannot get upload URL for attachment {attachment_name}')
 
-            start_chunk_index = 0
-            end_chunk_index = self.MAX_ATTACHMENT_SIZE
+        start_chunk_index = 0
+        end_chunk_index = self.MAX_ATTACHMENT_SIZE
+
+        chunk_data = attachment_data[start_chunk_index: end_chunk_index]
+
+        response = self.upload_attachment(
+            upload_url=upload_url,
+            start_chunk_idx=start_chunk_index,
+            end_chunk_idx=end_chunk_index,
+            chunk_data=chunk_data,
+            attachment_size=attachment_size
+        )
+        while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
+            start_chunk_index = end_chunk_index
+            next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
+            end_chunk_index = next_chunk if next_chunk < attachment_size else attachment_size
 
             chunk_data = attachment_data[start_chunk_index: end_chunk_index]
 
@@ -705,27 +721,9 @@ class MsGraphMailBaseClient(MicrosoftClient):
                 chunk_data=chunk_data,
                 attachment_size=attachment_size
             )
-            while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
-                start_chunk_index = end_chunk_index
-                next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
-                end_chunk_index = next_chunk if next_chunk < attachment_size else attachment_size
 
-                chunk_data = attachment_data[start_chunk_index: end_chunk_index]
-
-                response = self.upload_attachment(
-                    upload_url=upload_url,
-                    start_chunk_idx=start_chunk_index,
-                    end_chunk_idx=end_chunk_index,
-                    chunk_data=chunk_data,
-                    attachment_size=attachment_size
-                )
-
-                if response.status_code not in (201, 200):
-                    raise Exception(f'{response.json()}')
-
-        except Exception as e:
-            demisto.error(f'{e}')
-            raise e
+            if response.status_code not in (201, 200):
+                raise Exception(f'{response.json()}')
 
     def send_mail_with_upload_session_flow(self, email: str, json_data: dict,
                                            attachments_more_than_3mb: list[dict], reply_message_id: str = None):
