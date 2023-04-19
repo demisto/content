@@ -51,26 +51,11 @@ configuration:
   name: incoming_mirror
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+description: 'Integrate with Mandiant Advantage Attack Surface Management to import "issues" as Incidents.'
 display: 'Mandiant Attack Surface Management'
 name: AttackSurfaceManagement
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
   - name: attacksurfacemanagement-get-projects
     deprecated: false
     description: Retrieve a list of all accessible ASM projects.
@@ -106,7 +91,7 @@ script:
     deprecated: false
     description: Update a specific incident
     arguments:
-      - description: The ticket ID.
+      - description: The ASM Incident ID
         name: id
         required: true
         default: false
