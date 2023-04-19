@@ -6,8 +6,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Entity Enrichment - Generic v2
 * Calculate Severity - Generic v2
+* Entity Enrichment - Generic v2
 
 ### Integrations
 
