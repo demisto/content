@@ -446,14 +446,16 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
     if missing_core_packs or unexpected_core_packs:
         sys.exit(1)
 
-    corepacks_json_path = os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME)
-    core_packs_data = {
-        'corePacks': core_packs_public_urls,
-        'upgradeCorePacks': GCPConfig.get_core_packs_to_upgrade(marketplace),
-        'buildNumber': build_number
-    }
-    json_write(corepacks_json_path, core_packs_data)
-    logging.success(f"Finished copying {GCPConfig.CORE_PACK_FILE_NAME} to artifacts.")
+    corepacks_files_names = {GCPConfig.CORE_PACK_FILE_NAME, 'corepacks-X.X.X.json'}
+    for corepacks_file in corepacks_files_names:
+        corepacks_json_path = os.path.join(artifacts_dir, corepacks_file)
+        core_packs_data = {
+            'corePacks': core_packs_public_urls,
+            'upgradeCorePacks': GCPConfig.get_core_packs_to_upgrade(marketplace),
+            'buildNumber': build_number
+        }
+        json_write(corepacks_json_path, core_packs_data)
+        logging.success(f"Finished copying {corepacks_file} to artifacts.")
 
 
 def _build_summary_table(packs_input_list: list, include_pack_status: bool = False) -> Any:
