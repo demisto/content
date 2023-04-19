@@ -7,14 +7,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-carbonblack
+VMware Carbon Black EDR v2
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* cb-quarantine-device
-* cb-sensor-info
+* cb-edr-quarantine-device
+* cb-edr-sensors-list
 
 ## Playbook Inputs
 ---
@@ -27,12 +27,10 @@ This playbook does not use any scripts.
 ---
 
 | **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| CbResponse.Sensors.CbSensorID | Carbon Black Response Sensors IDs that are isolated. | unknown |
-| Endpoint | The isolated enpoint. | unknown |
-| CbResponse.Sensors.Status | Sensor status. | unknown |
-| CbResponse.Sensors.Isolated | Is sensor isolated. | unknown |
-| Endpoint.Hostname | Endpoint hostname. | unknown |
+| --- | --- |----------|
+| CarbonBlackEDR.Sensor.id | Carbon Black Response Sensors IDs that are isolated. | Number   |
+| CarbonBlackEDR.Sensor.status | Sensor status. | String   |
+| CarbonBlackEDR.Sensor.is_isolating | Is sensor isolated. | Boolean  |
 
 ## Playbook Image
 ---

@@ -1284,7 +1284,7 @@ script:
       description: The maximum hashs of result to retrieve.
       isArray: false
       name: limit
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: |-

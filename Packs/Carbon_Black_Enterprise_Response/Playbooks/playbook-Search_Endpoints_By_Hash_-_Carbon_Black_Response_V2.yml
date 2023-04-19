@@ -37,29 +37,19 @@ tasks:
       id: 71c8642a-2af7-4af6-8015-5a2f89fd40d2
       version: -1
       name: Hunt MD5 Hash
-      description: Query processes based on given parameters
-      script: '|||cb-get-processes'
+      description: Process search
+      script: VMware Carbon Black EDR v2|||cb-edr-processes-search
       type: regular
       iscommand: true
-      brand: ""
+      brand: VMware Carbon Black EDR v2
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
-      facet: {}
-      group: {}
-      hostname: {}
       md5:
         complex:
           root: inputs
           accessor: Hash
-      name: {}
-      parent-process-name: {}
-      process-path: {}
-      query: {}
-      rows: {}
-      sort: {}
-      start: {}
     separatecontext: false
     view: |-
       {
@@ -108,7 +98,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: carbonblack-v2
+                        simple: VMware Carbon Black EDR v2
                 - - operator: isEqualString
                     left:
                       value:
@@ -266,13 +256,7 @@ inputs:
       accessor: MD5
   required: false
   description: MD5 Hash
-outputs:
-- contextPath: Endpoint.Hostname
-  description: The device hostname
-  type: string
-- contextPath: Endpoint
-  description: The endpoint
-  type: unknown
+outputs: []
 fromversion: 5.0.0
 tests:
 - No tests

@@ -42,10 +42,10 @@ tasks:
       version: -1
       name: Get host information from Carbon Black Enterprise Response
       description: List the CarbonBlack sensors
-      script: 'VMware Carbon Black EDR v2|||cb-edr-sensors-list'
+      script: VMware Carbon Black EDR v2|||cb-edr-sensors-list
       type: regular
       iscommand: true
-      brand: "VMware Carbon Black EDR v2"
+      brand: VMware Carbon Black EDR v2
     nexttasks:
       '#none#':
       - "7"
@@ -76,10 +76,10 @@ tasks:
       version: -1
       name: Isolate endpoint
       description: Isolate the endpoint from the network
-      script: 'VMware Carbon Black EDR v2|||cb-edr-quarantine-device'
+      script: VMware Carbon Black EDR v2|||cb-edr-quarantine-device
       type: regular
       iscommand: true
-      brand: "VMware Carbon Black EDR v2"
+      brand: VMware Carbon Black EDR v2
     nexttasks:
       '#none#':
       - "4"
@@ -145,7 +145,7 @@ tasks:
       - "2"
     scriptarguments:
       brandname:
-        simple: carbonblack-v2
+        simple: VMware Carbon Black EDR v2
     results:
     - brandInstances
     separatecontext: false
@@ -230,20 +230,12 @@ inputs:
   description: The sensor ID of the endpoint.
   playbookInputQuery:
 outputs:
-- contextPath: CbResponse.Sensors.CbSensorID
+- contextPath: CarbonBlackEDR.Sensor.id
   description: Carbon Black Response Sensors IDs that are isolated.
-- contextPath: Endpoint
-  description: The isolated endpoint.
-- contextPath: CbResponse.Sensors.Status
+  type: number
+- contextPath: CarbonBlackEDR.Sensor.status
   description: Sensor status.
-  type: unknown
-- contextPath: CbResponse.Sensors.Isolated
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.is_isolating
   description: Is sensor isolated.
-  type: unknown
-- contextPath: Endpoint.Hostname
-  description: Endpoint hostname.
-  type: unknown
-tests:
-- Carbon Black Response Test
-- CBFindIP - Test
-fromversion: 5.5.0
+  type: boolean

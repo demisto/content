@@ -13,7 +13,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any scripts.
 
 ### Commands
-* cb-get-processes
+* cb-edr-processes-search
 
 ## Playbook Inputs
 ---
@@ -22,11 +22,5 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | Hash | MD5 Hash | File.MD5 | Optional |
 
-## Playbook Outputs
----
 
-| **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| Endpoint.Hostname | The device hostname | string |
-| Endpoint | The endpoint | unknown |
 

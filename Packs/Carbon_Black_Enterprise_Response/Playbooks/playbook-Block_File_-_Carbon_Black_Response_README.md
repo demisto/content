@@ -15,8 +15,8 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ## Commands
-* cb-get-hash-blacklist
-* cb-block-hash
+* cb-edr-binary-ban
+* cb-edr-binary-bans-list
 
 ## Playbook Inputs
 ---
@@ -30,9 +30,9 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| CbResponse.BlockedHashes.LastBlock.Time | The last block time. | unknown |
-| CbResponse.BlockedHashes.LastBlock.Hostname | The last block hostname. | unknown |
-| CbResponse.BlockedHashes.LastBlock.CbSensorID | The last block sensor ID. | unknown |
+| CarbonBlackEDR.BinaryBan.last_block_time | The last block time. | unknown |
+| CarbonBlackEDR.BinaryBan.last_block_hostname | The last block hostname. | unknown |
+| CarbonBlackEDR.BinaryBan.last_block_sensor_id | The last block sensor ID. | unknown |
 
 ## Playbook Image
 ---

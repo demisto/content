@@ -52,7 +52,7 @@ tasks:
       - "7"
     scriptarguments:
       brandname:
-        simple: carbonblack-v2
+        simple: VMware Carbon Black EDR v2
     results:
     - brandInstances
     separatecontext: false
