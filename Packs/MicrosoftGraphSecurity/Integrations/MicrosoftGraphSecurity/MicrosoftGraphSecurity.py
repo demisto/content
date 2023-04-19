@@ -135,6 +135,25 @@ def get_timestamp(time_description):
     return datetime.strftime(datetime.now() - timedelta(time_delta), '%Y-%m-%d')
 
 
+def capitalize_dict_keys_first_letter(dict_obj):
+    """
+    Recursively creates a data dictionary where all key starts with capital letters.
+    Args:
+        args (Dict): The command's arguments dictionary.
+    Returns:
+        Dict: A dictionary object containing the alert's fields to update.
+    """
+    new_alert: dict = {}
+    for key, value in dict_obj.items():
+        if key == 'id':
+            new_alert['ID'] = value
+        elif isinstance(value, dict):
+            new_alert[capitalize_first_letter(key)] = capitalize_dict_keys_first_letter(value)
+        else:
+            new_alert[capitalize_first_letter(key)] = value
+    return new_alert
+
+
 def capitalize_first_letter(string):
     return string[:1].upper() + string[1:]
 
@@ -307,9 +326,9 @@ def search_alerts_command(client: MsGraphClient, args):
             })
         table_headers = ['ID', 'Vendor', 'Provider', 'Title', 'Category', 'Severity', 'CreatedDate', 'EventDate', 'Status']
     else:
-        outputs = alerts
-        table_headers = ['id', 'incidentId', 'status', 'severity', 'detectionSource', 'serviceSource', 'title', 'category',
-                         'createdDateTime', 'lastUpdateDateTime']
+        outputs = [capitalize_dict_keys_first_letter(alert) for alert in alerts]
+        table_headers = ['ID', 'DetectionSource', 'ServiceSource', 'Title', 'Category', 'Severity', 'CreatedDate',
+                         'LastUpdateDateTime', 'Status', 'IncidentId']
     ec = {
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': outputs
     }
@@ -332,16 +351,15 @@ def get_alert_details_command(client: MsGraphClient, args):
 
     alert_details = client.get_alert_details(alert_id)
 
-    context = alert_details
-
     hr = f'## Microsoft Security Graph Alert Details - {alert_id}\n'
     if API_VER == API_V2:
+        outputs = capitalize_dict_keys_first_letter(alert_details)
+        table_headers = ['ID', 'DetectionSource', 'ServiceSource', 'Title', 'Category', 'Severity', 'CreatedDate',
+                         'LastUpdateDateTime', 'Status', 'IncidentId']
         ec = {
-            'MsGraph.Alert(val.id && val.id === obj.id)': context
+            'MsGraph.Alert(val.id && val.id === obj.id)': outputs
         }
-        table_headers = ['id', 'incidentId', 'status', 'severity', 'detectionSource', 'serviceSource', 'title', 'category',
-                         'createdDateTime', 'lastUpdateDateTime']
-        hr += tableToMarkdown('', alert_details, table_headers, removeNull=True)
+        hr += tableToMarkdown('', outputs, table_headers, removeNull=True)
     else:
         fields_to_include = args.get('fields_to_include')
         if fields_to_include:
@@ -632,7 +650,7 @@ def create_alert_comment_command(client: MsGraphClient, args):
     comment = args.get('comment', '')
     params = {"comment": comment}
     res = client.create_alert_comment(alert_id, params)
-    comments = res.get('value', [])
+    comments = [capitalize_dict_keys_first_letter(comment) for comment in res.get('value', [])]
     context = {
         'ID': alert_id,
         'Comments': comments
