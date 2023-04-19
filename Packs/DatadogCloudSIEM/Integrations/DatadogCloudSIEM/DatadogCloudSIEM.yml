@@ -1103,6 +1103,112 @@ script:
     - contextPath: Datadog.Incident.relationships.commander_user.data.id
       description: A unique identifier that represents the user.
       type: String
+  - arguments:
+    - default: false
+      description: |-
+        Start of the queried time period.
+        Format : YYYY-MM-dd’T’HH:mm:ssZ Or '-1days'.
+      isArray: false
+      name: from
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        End of the queried time period.
+        Format : yyyy-MM-dd’T’HH:mm:ssZ Or '-1days'.
+      isArray: false
+      name: to
+      required: true
+      secret: false
+    - default: false
+      description: "Query string.\nEx : query=\"system.cpu.idle\" \nA complete list\
+        \ of query string values available here. https://app.datadoghq.com/metric/summary"
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Query of Sequence of data points which are collected over time intervals,
+      allowing us to track changes over time.
+    execution: false
+    name: datadog-time-series-point-query
+    outputs:
+    - contextPath: Datadog.TimeSeriesPoint.from_date
+      description: Start of requested time window, milliseconds since Unix epoch.
+      type: Date
+    - contextPath: Datadog.TimeSeriesPoint.error
+      description: Message indicating the errors if status is not ok.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.group_by
+      description: 'List of tag keys on which to group. '
+      type: Unknown
+    - contextPath: Datadog.TimeSeriesPoint.message
+      description: Message indicating success if status is ok.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.query
+      description: Query string.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.res_type
+      description: Type of response.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.aggr
+      description: Aggregation type.
+      type: Unknown
+    - contextPath: Datadog.TimeSeriesPoint.series.display_name
+      description: Display name of the metric.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.end
+      description: End of the time window, milliseconds since Unix epoch.
+      type: Date
+    - contextPath: Datadog.TimeSeriesPoint.series.expression
+      description: Metric expression.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.interval
+      description: Number of seconds between data samples.
+      type: Number
+    - contextPath: Datadog.TimeSeriesPoint.series.length
+      description: Number of data samples.
+      type: Number
+    - contextPath: Datadog.TimeSeriesPoint.series.metric
+      description: Metric name.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.pointlist
+      description: List of points of the time series.
+      type: Number
+    - contextPath: Datadog.TimeSeriesPoint.series.query_index
+      description: The index of the series query within the request.
+      type: Number
+    - contextPath: Datadog.TimeSeriesPoint.series.scope
+      description: Metric scope, comma separated list of tags.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.start
+      description: Start of the time window, milliseconds since Unix epoch.
+      type: Date
+    - contextPath: Datadog.TimeSeriesPoint.series.tag_set
+      description: Unique tags identifying this series.
+      type: Unknown
+    - contextPath: Datadog.TimeSeriesPoint.series.unit.family
+      description: Unit family allows for conversion between units of the same family,
+        for scaling.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.unit.name
+      description: Unit name.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.unit.plural
+      description: Plural form of the unit's name.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.series.unit.scale_factor
+      description: Factor for scaling between units of the same family.
+      type: Number
+    - contextPath: Datadog.TimeSeriesPoint.series.unit.short_name
+      description: Abbreviation of the unit.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.status
+      description: Status of the query.
+      type: String
+    - contextPath: Datadog.TimeSeriesPoint.to_date
+      description: End of requested time window, milliseconds since Unix epoch.
+      type: Date
   dockerimage: demisto/datadog-api-client:1.0.0.48939
   feed: false
   isfetch: false

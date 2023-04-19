@@ -49,7 +49,6 @@ from dateparser import parse
 from urllib3 import disable_warnings
 from datadog_api_client.exceptions import ForbiddenException, UnauthorizedException
 
-
 # Disable insecure warnings
 disable_warnings()
 
@@ -73,7 +72,7 @@ DATE_ERROR_MSG = "Unable to parse date. Please check help section for right form
 
 
 def get_paginated_results(results: List, offset: int, limit: int) -> List:
-    return results[offset : offset + limit]
+    return results[offset: offset + limit]
 
 
 def table_header(
@@ -1076,6 +1075,34 @@ def delete_incident_command(
         return CommandResults(readable_output="Incident deleted successfully!")
 
 
+def query_timeseries_points_command(configuration: Configuration, args: Dict[str, Any]):
+    query = str(args.get("query"))
+    from_time = parse(args.get("from", ""), settings={"TIMEZONE": "UTC"})
+    to_time = parse(args.get("to", ""), settings={"TIMEZONE": "UTC"})
+    if not from_time or not to_time:
+        return DemistoException(DATE_ERROR_MSG)
+    with ApiClient(configuration) as api_client:
+        api_instance = MetricsApi(api_client)
+        response = api_instance.query_metrics(
+            _from=int(from_time.timestamp()) if from_time else None,
+            to=int(to_time.timestamp()) if to_time else None,
+            query=query + "{*}",
+        )
+
+        return [
+            CommandResults(
+                readable_output="### Query Timeseries Points \n",
+                outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.TimeSeriesPoint",
+                outputs=response.to_dict(),
+            ),
+            fileResult(
+                filename="timeseries_query_points.json",
+                data=str(response),
+                file_type=EntryType.ENTRY_INFO_FILE,
+            ),
+        ]
+
+
 """ MAIN FUNCTION """
 
 
@@ -1106,6 +1133,7 @@ def main() -> None:
             "datadog-incident-create": create_incident_command,
             "datadog-incident-update": update_incident_command,
             "datadog-incident-delete": delete_incident_command,
+            "datadog-time-series-point-query": query_timeseries_points_command,
         }
         if command == "test-module":
             return_results(test_module(configuration))

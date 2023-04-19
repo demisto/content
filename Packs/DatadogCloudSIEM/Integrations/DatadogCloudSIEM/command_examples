@@ -12,3 +12,5 @@
 !datadog-incident-create customer_impacted=False title="incident-test1"
 !datadog-incident-delete incident_id="d14b9cfd-a637-5651-9cb9-e38197c01d38"
 !datadog-incident-update incident_id="d14b9cfd-a637-5651-9cb9-e38197c01d38"
+!datadog-incident-list limit=2
+!datadog-time-series-point-query from="2 days ago" query="system.cpu.idle" to=now

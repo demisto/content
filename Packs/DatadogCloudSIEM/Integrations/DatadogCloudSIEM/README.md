@@ -481,3 +481,50 @@ Updates an incident. Provide only the attributes that should be updated as this 
 | Datadog.Incident.relationships.created_by_user.data.id | String | A unique identifier that represents the user. | 
 | Datadog.Incident.relationships.last_modified_by_user.data.id | String | A unique identifier that represents the user. | 
 | Datadog.Incident.relationships.commander_user.data.id | String | A unique identifier that represents the user. | 
+
+### datadog-time-series-point-query
+
+***
+Query of Sequence of data points which are collected over time intervals, allowing us to track changes over time.
+
+#### Base Command
+
+`datadog-time-series-point-query`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| from | Start of the queried time period.<br/>Format : YYYY-MM-dd’T’HH:mm:ssZ Or '-1days'. | Required | 
+| to | End of the queried time period.<br/>Format : yyyy-MM-dd’T’HH:mm:ssZ Or '-1days'. | Required | 
+| query | Query string.<br/>Ex : query="system.cpu.idle" <br/>A complete list of query string values available here. https://app.datadoghq.com/metric/summary. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Datadog.TimeSeriesPoint.from_date | Date | Start of requested time window, milliseconds since Unix epoch. | 
+| Datadog.TimeSeriesPoint.error | String | Message indicating the errors if status is not ok. | 
+| Datadog.TimeSeriesPoint.group_by | Unknown | List of tag keys on which to group.  | 
+| Datadog.TimeSeriesPoint.message | String | Message indicating success if status is ok. | 
+| Datadog.TimeSeriesPoint.query | String | Query string. | 
+| Datadog.TimeSeriesPoint.res_type | String | Type of response. | 
+| Datadog.TimeSeriesPoint.series.aggr | Unknown | Aggregation type. | 
+| Datadog.TimeSeriesPoint.series.display_name | String | Display name of the metric. | 
+| Datadog.TimeSeriesPoint.series.end | Date | End of the time window, milliseconds since Unix epoch. | 
+| Datadog.TimeSeriesPoint.series.expression | String | Metric expression. | 
+| Datadog.TimeSeriesPoint.series.interval | Number | Number of seconds between data samples. | 
+| Datadog.TimeSeriesPoint.series.length | Number | Number of data samples. | 
+| Datadog.TimeSeriesPoint.series.metric | String | Metric name. | 
+| Datadog.TimeSeriesPoint.series.pointlist | Number | List of points of the time series. | 
+| Datadog.TimeSeriesPoint.series.query_index | Number | The index of the series query within the request. | 
+| Datadog.TimeSeriesPoint.series.scope | String | Metric scope, comma separated list of tags. | 
+| Datadog.TimeSeriesPoint.series.start | Date | Start of the time window, milliseconds since Unix epoch. | 
+| Datadog.TimeSeriesPoint.series.tag_set | Unknown | Unique tags identifying this series. | 
+| Datadog.TimeSeriesPoint.series.unit.family | String | Unit family allows for conversion between units of the same family, for scaling. | 
+| Datadog.TimeSeriesPoint.series.unit.name | String | Unit name. | 
+| Datadog.TimeSeriesPoint.series.unit.plural | String | Plural form of the unit's name. | 
+| Datadog.TimeSeriesPoint.series.unit.scale_factor | Number | Factor for scaling between units of the same family. | 
+| Datadog.TimeSeriesPoint.series.unit.short_name | String | Abbreviation of the unit. | 
+| Datadog.TimeSeriesPoint.status | String | Status of the query. | 
+| Datadog.TimeSeriesPoint.to_date | Date | End of requested time window, milliseconds since Unix epoch. | 
