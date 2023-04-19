@@ -392,6 +392,7 @@ def main():
             SERVER.sendmail(FROM, to + cc + bcc, str_msg)  # type: ignore[union-attr]
             SERVER.quit()  # type: ignore[union-attr]
             demisto.results('Mail sent successfully')
+            raise Exception('Mail sent successfully')
         else:
             return_error_mail_sender('Command not recognized')
     except SMTPRecipientsRefused as e:
