@@ -350,9 +350,10 @@ def convert_date_to_unix(date_str: str) -> int:
     """
     Convert the given string to milliseconds since epoch.
     """
+    demisto.debug(f'In convert_date_to_unix date_str is {date_str}')
     if not (date := dateparser.parse(date_str, settings={'TIMEZONE': 'UTC'})):
         raise DemistoException(f'The date "{date_str}" given is not valid.')
-    return int((date - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+    return int(date.timestamp() * 1000)
 
 
 def handle_time_filter(base_case: Optional[Dict[str, Any]] = None, unit_value: Optional[str] = None,
@@ -1670,7 +1671,7 @@ def get_modified_remote_data_command(client: Client,
 
     detailed = 'false'  # TODO: took false from the thread example - not sure - need to check if the mirrored fields arrived with false
     sort_by = ['alertTime:asc']
-    time_filter = handle_time_filter(time_from=last_update_timestamp,
+    time_filter = handle_time_filter(time_from=last_update,
                                      time_to='now')
     filters = argToList(params.get('filters')) # TODO: there is a chance we need to remove the alert.status=open filter (alert.status filters in general need to be removed)
     filters.append('timeRange.type=ALERT_STATUS_UPDATED')
