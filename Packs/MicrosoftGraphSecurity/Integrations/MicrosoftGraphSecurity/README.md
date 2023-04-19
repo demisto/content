@@ -24,7 +24,7 @@ API V2:
 2. Search for Microsoft Graph Security.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
+     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Host URL | The host URL. | True |
     | MS graph security version | MS graph security API version | True |
@@ -76,69 +76,63 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 | service_source | Relevant only for V2, Use this field to filter the alerts by the service or product that created this alert. Possible values are: microsoftDefenderForEndpoint, microsoftDefenderForIdentity, microsoftDefenderForOffice365, microsoft365Defender, microsoftAppGovernance, microsoftDefenderForCloudApps. | Optional | 
 | status | Relevant only for V2, Use this field to filter by alert's status. Possible values are: unknown, new, inProgress, resolved. | Optional | 
 | page | Page number to return, zero indexed. The maximum number of alerts that can be skipped for API V1 is 500 (i.e page * page_size must be &lt;= 500). | Optional | 
-| page_size | Number of results in a page. default is 50, the limit for API V1 is 1000, the limit for API V2 is 2000. | Optional | 
+| page_size | Number of results in a page. default is 50, the limit for API V1 is 1000, the limit for API V2 is 2000. When using API V1, the response will provide <page_size> results for each provider. | Optional | 
 | limit | Number of total results to return. default is 50. Default is 50. | Optional | 
 
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.Alert.ID | string | Relevant only for V1. Alert ID | 
-| MsGraph.Alert.Title | string | Relevant only for V1. Alert title | 
-| MsGraph.Alert.Category | string | Relevant only for V1. Alert category | 
-| MsGraph.Alert.Severity | string | Relevant only for V1. Alert severity | 
+| MsGraph.Alert.ID | string | Alert ID | 
+| MsGraph.Alert.Title | string | Alert title | 
+| MsGraph.Alert.Category | string | Alert category | 
+| MsGraph.Alert.Severity | string | Alert severity | 
 | MsGraph.Alert.CreatedDate | date | Relevant only for V1. Alert created date | 
 | MsGraph.Alert.EventDate | date | Relevant only for V1. Alert event time | 
-| MsGraph.Alert.Status | string | Relevant only for V1. Alert status | 
+| MsGraph.Alert.Status | string | Alert status | 
 | MsGraph.Alert.Vendor | string | Relevant only for V1. Alert vendor/provider | 
-| MsGraph.Alert.MalwareStates | string | Relevant only for V1. Alert malware states | 
-| MsGraph.Alert.Vendor | string | Relevant only for V1. Alert vendor | 
 | MsGraph.Alert.Provider | string | Relevant only for V1. Alert provider | 
-| MsGraph.Alert.actorDisplayName | Unknown | Relevant only for V2. Alert actor name | 
-| MsGraph.Alert.alertWebUrl | String | Relevant only for V2. Alert web url | 
-| MsGraph.Alert.assignedTo | Unknown | Relevant only for V2. Alert assignee | 
-| MsGraph.Alert.category | String | Relevant only for V2. Alert category | 
-| MsGraph.Alert.classification | Unknown | Relevant only for V2. Alert classification | 
-| MsGraph.Alert.createdDateTime | Date | Relevant only for V2. Alert creation time | 
-| MsGraph.Alert.description | String | Relevant only for V2. Alert description | 
-| MsGraph.Alert.detectionSource | String | Relevant only for V2. Alert detection source | 
-| MsGraph.Alert.detectorId | String | Relevant only for V2. Alert detector id | 
-| MsGraph.Alert.determination | Unknown | Relevant only for V2. Alert determination | 
-| MsGraph.Alert.evidence.@odata.type | String | Relevant only for V2. Alert evidence | 
-| MsGraph.Alert.evidence.azureAdDeviceId | String | Relevant only for V2. Evidence azure device id | 
-| MsGraph.Alert.evidence.createdDateTime | Date | Relevant only for V2. Evidence creation time | 
-| MsGraph.Alert.evidence.defenderAvStatus | String | Relevant only for V2. Evidence defender AV status | 
-| MsGraph.Alert.evidence.deviceDnsName | String | Relevant only for V2. Evidence device DNS name | 
-| MsGraph.Alert.evidence.firstSeenDateTime | Date | Relevant only for V2. Evidence first seen time | 
-| MsGraph.Alert.evidence.healthStatus | String | Relevant only for V2. Evidence health status | 
-| MsGraph.Alert.evidence.mdeDeviceId | String | Relevant only for V2. Evidence MDE device id | 
-| MsGraph.Alert.evidence.onboardingStatus | String | Relevant only for V2. Evidence onboarding status | 
-| MsGraph.Alert.evidence.osBuild | Number | Relevant only for V2. Evidence OS build | 
-| MsGraph.Alert.evidence.osPlatform | String | Relevant only for V2. Evidence OS platform | 
-| MsGraph.Alert.evidence.rbacGroupId | Number | Relevant only for V2. Evidence RBAC group id | 
-| MsGraph.Alert.evidence.rbacGroupName | String | Relevant only for V2. Evidence RBAC group name | 
-| MsGraph.Alert.evidence.remediationStatus | String | Relevant only for V2. Evidence remediation status | 
-| MsGraph.Alert.evidence.remediationStatusDetails | Unknown | Relevant only for V2. Evidence remediation status details | 
-| MsGraph.Alert.evidence.riskScore | String | Relevant only for V2. Evidence risk score | 
-| MsGraph.Alert.evidence.tags | String | Relevant only for V2. Evidence tags | 
-| MsGraph.Alert.evidence.verdict | String | Relevant only for V2. Evidence verdict | 
-| MsGraph.Alert.evidence.version | String | Relevant only for V2. Evidence version | 
-| MsGraph.Alert.evidence.vmMetadata | Unknown | Relevant only for V2. Evidence VM metadata | 
-| MsGraph.Alert.firstActivityDateTime | Date | Relevant only for V2. Evidence first activity time | 
-| MsGraph.Alert.id | String | Relevant only for V2. Alert id | 
-| MsGraph.Alert.incidentId | String | Relevant only for V2. Alert incident id | 
-| MsGraph.Alert.incidentWebUrl | String | Relevant only for V2. Alert incident URL | 
-| MsGraph.Alert.lastActivityDateTime | Date | Relevant only for V2. Alert last activity time | 
-| MsGraph.Alert.lastUpdateDateTime | Date | Relevant only for V2. Alert last update time | 
-| MsGraph.Alert.providerAlertId | String | Relevant only for V2. Alert provider id | 
-| MsGraph.Alert.recommendedActions | String | Relevant only for V2. Alert recommended action | 
-| MsGraph.Alert.resolvedDateTime | Date | Relevant only for V2. Alert closing time | 
-| MsGraph.Alert.serviceSource | String | Relevant only for V2. Alert service source | 
-| MsGraph.Alert.severity | String | Relevant only for V2. Alert severity | 
-| MsGraph.Alert.status | String | Relevant only for V2. Alert status | 
-| MsGraph.Alert.tenantId | String | Relevant only for V2. Alert tenant id | 
-| MsGraph.Alert.threatDisplayName | Unknown | Relevant only for V2. Alert threat display name | 
-| MsGraph.Alert.threatFamilyName | Unknown | Relevant only for V2. Alert threat family name | 
-| MsGraph.Alert.title | String | Relevant only for V2. Alert title | 
+| MsGraph.Alert.ActorDisplayName | Unknown | Relevant only for V2. Alert actor name | 
+| MsGraph.Alert.AlertWebUrl | String | Relevant only for V2. Alert web url | 
+| MsGraph.Alert.AssignedTo | Unknown | Relevant only for V2. Alert assignee | 
+| MsGraph.Alert.Classification | Unknown | Relevant only for V2. Alert classification | 
+| MsGraph.Alert.CreatedDateTime | Date | Relevant only for V2. Alert creation time | 
+| MsGraph.Alert.Description | String | Relevant only for V2. Alert description | 
+| MsGraph.Alert.DetectionSource | String | Relevant only for V2. Alert detection source | 
+| MsGraph.Alert.DetectorId | String | Relevant only for V2. Alert detector id | 
+| MsGraph.Alert.Determination | Unknown | Relevant only for V2. Alert determination | 
+| MsGraph.Alert.Evidence.@odata.Type | String | Relevant only for V2. Alert evidence | 
+| MsGraph.Alert.Evidence.AzureAdDeviceId | String | Relevant only for V2. Evidence azure device id | 
+| MsGraph.Alert.Evidence.CreatedDateTime | Date | Relevant only for V2. Evidence creation time | 
+| MsGraph.Alert.Evidence.DefenderAvStatus | String | Relevant only for V2. Evidence defender AV status | 
+| MsGraph.Alert.Evidence.DeviceDnsName | String | Relevant only for V2. Evidence device DNS name | 
+| MsGraph.Alert.Evidence.FirstSeenDateTime | Date | Relevant only for V2. Evidence first seen time | 
+| MsGraph.Alert.Evidence.HealthStatus | String | Relevant only for V2. Evidence health status | 
+| MsGraph.Alert.Evidence.MdeDeviceId | String | Relevant only for V2. Evidence MDE device id | 
+| MsGraph.Alert.Evidence.OnboardingStatus | String | Relevant only for V2. Evidence onboarding status | 
+| MsGraph.Alert.Evidence.OsBuild | Number | Relevant only for V2. Evidence OS build | 
+| MsGraph.Alert.Evidence.OsPlatform | String | Relevant only for V2. Evidence OS platform | 
+| MsGraph.Alert.Evidence.RbacGroupId | Number | Relevant only for V2. Evidence RBAC group id | 
+| MsGraph.Alert.Evidence.RbacGroupName | String | Relevant only for V2. Evidence RBAC group name | 
+| MsGraph.Alert.Evidence.RemediationStatus | String | Relevant only for V2. Evidence remediation status | 
+| MsGraph.Alert.Evidence.RemediationStatusDetails | Unknown | Relevant only for V2. Evidence remediation status details | 
+| MsGraph.Alert.Evidence.RiskScore | String | Relevant only for V2. Evidence risk score | 
+| MsGraph.Alert.Evidence.Tags | String | Relevant only for V2. Evidence tags | 
+| MsGraph.Alert.Evidence.Verdict | String | Relevant only for V2. Evidence verdict | 
+| MsGraph.Alert.Evidence.Version | String | Relevant only for V2. Evidence version | 
+| MsGraph.Alert.Evidence.VmMetadata | Unknown | Relevant only for V2. Evidence VM metadata | 
+| MsGraph.Alert.FirstActivityDateTime | Date | Relevant only for V2. Evidence first activity time | 
+| MsGraph.Alert.IncidentId | String | Relevant only for V2. Alert incident id | 
+| MsGraph.Alert.IncidentWebUrl | String | Relevant only for V2. Alert incident URL | 
+| MsGraph.Alert.LastActivityDateTime | Date | Relevant only for V2. Alert last activity time | 
+| MsGraph.Alert.LastUpdateDateTime | Date | Relevant only for V2. Alert last update time | 
+| MsGraph.Alert.ProviderAlertId | String | Relevant only for V2. Alert provider id | 
+| MsGraph.Alert.RecommendedActions | String | Relevant only for V2. Alert recommended action | 
+| MsGraph.Alert.ResolvedDateTime | Date | Relevant only for V2. Alert closing time | 
+| MsGraph.Alert.ServiceSource | String | Relevant only for V2. Alert service source | 
+| MsGraph.Alert.TenantId | String | Relevant only for V2. Alert tenant id | 
+| MsGraph.Alert.ThreatDisplayName | Unknown | Relevant only for V2. Alert threat display name | 
+| MsGraph.Alert.ThreatFamilyName | Unknown | Relevant only for V2. Alert threat family name | 
 
 #### Human Readable Output
 
@@ -152,7 +146,7 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 ## Using V2 of the API:
 
 ### Microsoft Security Graph Alerts
-|id|incidentId|status|severity|detectionSource|serviceSource|title|category|createdDateTime|lastUpdateDateTime|
+|ID|IncidentId|Status|Severity|DetectionSource|ServiceSource|Title|Category|CreatedDateTime|LastUpdateDateTime|
 |---|---|---|---|---|---|---|---|---|---|
 | id | <incident_id> | new | medium | customTi | microsoftDefenderForEndpoint | test alert | None | 2022-10-03T03:39:21.7562976Z | 2023-04-17T11:01:31.7566667Z |
 
@@ -173,97 +167,93 @@ Get details for a specific alert.
 | fields_to_include | Relevant only for V1. Fields to fetch for specified Alert apart from the basic properties, given as comma separated values, e.g. NetworkConnections,Processes. The possible values are: All, NetworkConnections, Processes, RegistryKeys, UserStates, HostStates, FileStates, CloudAppStates, MalwareStates, CustomerComments, Triggers, VendorInformation, VulnerabilityStates. Default is All. | Optional | 
 
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.Alert.ID | string | Relevant only for V1. Alert ID | 
-| MsGraph.Alert.Title | string | Relevant only for V1. Alert title | 
-| MsGraph.Alert.Category | string | Relevant only for V1. Alert category | 
-| MsGraph.Alert.Severity | string | Relevant only for V1. Alert severity | 
+| MsGraph.Alert.ID | string | Alert ID | 
+| MsGraph.Alert.Title | string | Alert title | 
+| MsGraph.Alert.Category | string | Alert category | 
+| MsGraph.Alert.Severity | string | Alert severity | 
 | MsGraph.Alert.CreatedDate | date | Relevant only for V1. Alert created date | 
-| MsGraph.Alert.EventDate | date | Relevant only for V1. Alert event date | 
-| MsGraph.Alert.Status | string | Relevant only for V1. Alert status | 
-| MsGraph.Alert.Vendor | string | Relevant only for V1. Alert vendor | 
-| MsGraph.Alert.Provider | Unknown | Relevant only for V1. Alert provider | 
-| MsGraph.Alert.@odata.context | String | Relevant only for V2. Alert odata context | 
-| MsGraph.Alert.actorDisplayName | Unknown | Relevant only for V2. Alert actor name | 
-| MsGraph.Alert.alertWebUrl | String | Relevant only for V2. Alert web url | 
-| MsGraph.Alert.assignedTo | Unknown | Relevant only for V2. Alert assignee | 
-| MsGraph.Alert.category | String | Relevant only for V2. Alert category | 
-| MsGraph.Alert.classification | Unknown | Relevant only for V2. Alert classification | 
-| MsGraph.Alert.comments.comment | String | Relevant only for V2. Alert comment | 
-| MsGraph.Alert.comments.createdByDisplayName | String | Relevant only for V2. Alert comment creator name | 
-| MsGraph.Alert.comments.createdDateTime | Date | Relevant only for V2. Alert comment creation time | 
-| MsGraph.Alert.createdDateTime | Date | Relevant only for V2. Alert creation time | 
-| MsGraph.Alert.description | String | Relevant only for V2. Alert description | 
-| MsGraph.Alert.detectionSource | String | Relevant only for V2. Alert detection source | 
-| MsGraph.Alert.detectorId | String | Relevant only for V2. Alert detector id | 
-| MsGraph.Alert.determination | Unknown | Relevant only for V2. Alert determination | 
-| MsGraph.Alert.evidence.@odata.type | String | Relevant only for V2. Alert evidence | 
-| MsGraph.Alert.evidence.createdDateTime | Date | Relevant only for V2. Evidence creation time | 
-| MsGraph.Alert.evidence.detectionStatus | Unknown | Relevant only for V2. Evidence detection status | 
-| MsGraph.Alert.evidence.imageFile.fileName | String | Relevant only for V2. Evidence image file name | 
-| MsGraph.Alert.evidence.imageFile.filePath | String | Relevant only for V2. Evidence image file path | 
-| MsGraph.Alert.evidence.imageFile.filePublisher | Unknown | Relevant only for V2. Evidence image file publisher | 
-| MsGraph.Alert.evidence.imageFile.fileSize | Unknown | Relevant only for V2. Evidence image file size | 
-| MsGraph.Alert.evidence.imageFile.issuer | Unknown | Relevant only for V2. Evidence image file issuer | 
-| MsGraph.Alert.evidence.imageFile.sha1 | String | Relevant only for V2. Evidence image file sha1 hash | 
-| MsGraph.Alert.evidence.imageFile.sha256 | String | Relevant only for V2. Evidence image file sha256 hash | 
-| MsGraph.Alert.evidence.imageFile.signer | Unknown | Relevant only for V2. Evidence image file signer | 
-| MsGraph.Alert.evidence.mdeDeviceId | Unknown | Relevant only for V2. Evidence MDE device id | 
-| MsGraph.Alert.evidence.parentProcessCreationDateTime | Date | Relevant only for V2. Evidence parent process creation time | 
-| MsGraph.Alert.evidence.parentProcessId | Number | Relevant only for V2. Evidence parent process process id | 
-| MsGraph.Alert.evidence.parentProcessImageFile | Unknown | Relevant only for V2. Evidence parent process image file | 
-| MsGraph.Alert.evidence.processCommandLine | String | Relevant only for V2. Evidence process command line | 
-| MsGraph.Alert.evidence.processCreationDateTime | Date | Relevant only for V2.  Evidence process creation time | 
-| MsGraph.Alert.evidence.processId | Number | Relevant only for V2.  Evidence process id | 
-| MsGraph.Alert.evidence.remediationStatus | String | Relevant only for V2. Evidence remediation status | 
-| MsGraph.Alert.evidence.remediationStatusDetails | Unknown | Relevant only for V2. Evidence remediation status details | 
-| MsGraph.Alert.evidence.userAccount.accountName | String | Relevant only for V2. Evidence user account name | 
-| MsGraph.Alert.evidence.userAccount.azureAdUserId | Unknown | Relevant only for V2. Evidence user account azure AD user id | 
-| MsGraph.Alert.evidence.userAccount.displayName | String | Relevant only for V2. Evidence user account display name | 
-| MsGraph.Alert.evidence.userAccount.domainName | Unknown | Relevant only for V2. Evidence user account domain name | 
-| MsGraph.Alert.evidence.userAccount.userPrincipalName | Unknown | Relevant only for V2. Evidence user account user principal name | 
-| MsGraph.Alert.evidence.userAccount.userSid | String | Relevant only for V2. Evidence user account user Sid | 
-| MsGraph.Alert.evidence.verdict | String | Relevant only for V2. Evidence verdict | 
-| MsGraph.Alert.evidence.fileDetails.fileName | String | Relevant only for V2. Evidence file details file name | 
-| MsGraph.Alert.evidence.fileDetails.filePath | String | Relevant only for V2. Evidence file details file path | 
-| MsGraph.Alert.evidence.fileDetails.filePublisher | Unknown | Relevant only for V2. Evidence file details file publisher | 
-| MsGraph.Alert.evidence.fileDetails.fileSize | Unknown | Relevant only for V2. Evidence file details file size | 
-| MsGraph.Alert.evidence.fileDetails.issuer | Unknown | Relevant only for V2. Evidence file details file issuer | 
-| MsGraph.Alert.evidence.fileDetails.sha1 | String | Relevant only for V2. Evidence file details sha1 hash | 
-| MsGraph.Alert.evidence.fileDetails.sha256 | String | Relevant only for V2. Evidence file details sha256 hash | 
-| MsGraph.Alert.evidence.fileDetails.signer | Unknown | Relevant only for V2. Evidence file details file signer | 
-| MsGraph.Alert.evidence.countryLetterCode | Unknown | Relevant only for V2. Evidence country letter code | 
-| MsGraph.Alert.evidence.ipAddress | String | Relevant only for V2. Evidence ip address | 
-| MsGraph.Alert.evidence.azureAdDeviceId | Unknown | Relevant only for V2. Evidence azure AD device id | 
-| MsGraph.Alert.evidence.defenderAvStatus | String | Relevant only for V2. Evidence defender AV status | 
-| MsGraph.Alert.evidence.deviceDnsName | String | Relevant only for V2. Evidence device DNS name | 
-| MsGraph.Alert.evidence.firstSeenDateTime | Date | Relevant only for V2. Evidence first seen time | 
-| MsGraph.Alert.evidence.healthStatus | String | Relevant only for V2. Evidence health status | 
-| MsGraph.Alert.evidence.onboardingStatus | String | Relevant only for V2. Evidence onboarding status | 
-| MsGraph.Alert.evidence.osBuild | Unknown | Relevant only for V2. Evidence OS build | 
-| MsGraph.Alert.evidence.osPlatform | String | Relevant only for V2. Evidence OS platform | 
-| MsGraph.Alert.evidence.rbacGroupId | Number | Relevant only for V2. Evidence RBAC group id | 
-| MsGraph.Alert.evidence.rbacGroupName | String | Relevant only for V2. Evidence RBAC group name | 
-| MsGraph.Alert.evidence.riskScore | String | Relevant only for V2. Evidence risk score | 
-| MsGraph.Alert.evidence.version | String | Relevant only for V2. Evidence version | 
-| MsGraph.Alert.evidence.vmMetadata | Unknown | Relevant only for V2. Evidence VM metadata | 
-| MsGraph.Alert.firstActivityDateTime | Date | Relevant only for V2. Evidence first activity time | 
-| MsGraph.Alert.id | String | Relevant only for V2. Alert id | 
-| MsGraph.Alert.incidentId | String | Relevant only for V2. Alert incident id | 
-| MsGraph.Alert.incidentWebUrl | String | Relevant only for V2. Alert incident URL | 
-| MsGraph.Alert.lastActivityDateTime | Date | Relevant only for V2. Alert last activity time | 
-| MsGraph.Alert.lastUpdateDateTime | Date | Relevant only for V2. Alert last update time | 
-| MsGraph.Alert.providerAlertId | String | Relevant only for V2. Alert provider id | 
-| MsGraph.Alert.recommendedActions | String | Relevant only for V2. Alert recommended action | 
-| MsGraph.Alert.resolvedDateTime | Date | Relevant only for V2. Alert closing time | 
-| MsGraph.Alert.serviceSource | String | Relevant only for V2. Alert service source | 
-| MsGraph.Alert.severity | String | Relevant only for V2. Alert severity | 
-| MsGraph.Alert.status | String | Relevant only for V2. Alert status | 
-| MsGraph.Alert.tenantId | String | Relevant only for V2. Alert tenant id | 
-| MsGraph.Alert.threatDisplayName | Unknown | Relevant only for V2. Alert threat display name | 
-| MsGraph.Alert.threatFamilyName | Unknown | Relevant only for V2. Alert threat family name | 
-| MsGraph.Alert.title | String | Relevant only for V2. Alert title |
+| MsGraph.Alert.EventDate | date | Relevant only for V1. Alert event time | 
+| MsGraph.Alert.Status | string | Alert status | 
+| MsGraph.Alert.Vendor | string | Relevant only for V1. Alert vendor/provider | 
+| MsGraph.Alert.Provider | string | Relevant only for V1. Alert provider | 
+| MsGraph.Alert.@odata.Context | String | Relevant only for V2. Alert odata context | 
+| MsGraph.Alert.ActorDisplayName | Unknown | Relevant only for V2. Alert actor name | 
+| MsGraph.Alert.AlertWebUrl | String | Relevant only for V2. Alert web url | 
+| MsGraph.Alert.AssignedTo | Unknown | Relevant only for V2. Alert assignee | 
+| MsGraph.Alert.Classification | Unknown | Relevant only for V2. Alert classification | 
+| MsGraph.Alert.Comments.Comment | String | Relevant only for V2. Alert comment | 
+| MsGraph.Alert.Comments.CreatedByDisplayName | String | Relevant only for V2. Alert comment creator name | 
+| MsGraph.Alert.Comments.CreatedDateTime | Date | Relevant only for V2. Alert comment creation time | 
+| MsGraph.Alert.CreatedDateTime | Date | Relevant only for V2. Alert creation time | 
+| MsGraph.Alert.Description | String | Relevant only for V2. Alert description | 
+| MsGraph.Alert.DetectionSource | String | Relevant only for V2. Alert detection source | 
+| MsGraph.Alert.DetectorId | String | Relevant only for V2. Alert detector id | 
+| MsGraph.Alert.Determination | Unknown | Relevant only for V2. Alert determination | 
+| MsGraph.Alert.Evidence.@odata.Type | String | Relevant only for V2. Alert evidence | 
+| MsGraph.Alert.Evidence.CreatedDateTime | Date | Relevant only for V2. Evidence creation time | 
+| MsGraph.Alert.Evidence.DetectionStatus | Unknown | Relevant only for V2. Evidence detection status | 
+| MsGraph.Alert.Evidence.ImageFile.FileName | String | Relevant only for V2. Evidence image file name | 
+| MsGraph.Alert.Evidence.ImageFile.FilePath | String | Relevant only for V2. Evidence image file path | 
+| MsGraph.Alert.Evidence.ImageFile.FilePublisher | Unknown | Relevant only for V2. Evidence image file publisher | 
+| MsGraph.Alert.Evidence.ImageFile.FileSize | Unknown | Relevant only for V2. Evidence image file size | 
+| MsGraph.Alert.Evidence.ImageFile.Issuer | Unknown | Relevant only for V2. Evidence image file issuer | 
+| MsGraph.Alert.Evidence.ImageFile.Sha1 | String | Relevant only for V2. Evidence image file sha1 hash | 
+| MsGraph.Alert.Evidence.ImageFile.Sha256 | String | Relevant only for V2. Evidence image file sha256 hash | 
+| MsGraph.Alert.Evidence.ImageFile.Signer | Unknown | Relevant only for V2. Evidence image file signer | 
+| MsGraph.Alert.Evidence.MdeDeviceId | Unknown | Relevant only for V2. Evidence MDE device id | 
+| MsGraph.Alert.Evidence.ParentProcessCreationDateTime | Date | Relevant only for V2. Evidence parent process creation time | 
+| MsGraph.Alert.Evidence.ParentProcessId | Number | Relevant only for V2. Evidence parent process process id | 
+| MsGraph.Alert.Evidence.ParentProcessImageFile | Unknown | Relevant only for V2. Evidence parent process image file | 
+| MsGraph.Alert.Evidence.ProcessCommandLine | String | Relevant only for V2. Evidence process command line | 
+| MsGraph.Alert.Evidence.ProcessCreationDateTime | Date | Relevant only for V2.  Evidence process creation time | 
+| MsGraph.Alert.Evidence.ProcessId | Number | Relevant only for V2.  Evidence process id | 
+| MsGraph.Alert.Evidence.RemediationStatus | String | Relevant only for V2. Evidence remediation status | 
+| MsGraph.Alert.Evidence.RemediationStatusDetails | Unknown | Relevant only for V2. Evidence remediation status details | 
+| MsGraph.Alert.Evidence.UserAccount.AccountName | String | Relevant only for V2. Evidence user account name | 
+| MsGraph.Alert.Evidence.UserAccount.AzureAdUserId | Unknown | Relevant only for V2. Evidence user account azure AD user id | 
+| MsGraph.Alert.Evidence.UserAccount.DisplayName | String | Relevant only for V2. Evidence user account display name | 
+| MsGraph.Alert.Evidence.UserAccount.DomainName | Unknown | Relevant only for V2. Evidence user account domain name | 
+| MsGraph.Alert.Evidence.UserAccount.UserPrincipalName | Unknown | Relevant only for V2. Evidence user account user principal name | 
+| MsGraph.Alert.Evidence.UserAccount.UserSid | String | Relevant only for V2. Evidence user account user Sid | 
+| MsGraph.Alert.Evidence.Verdict | String | Relevant only for V2. Evidence verdict | 
+| MsGraph.Alert.Evidence.FileDetails.FileName | String | Relevant only for V2. Evidence file details file name | 
+| MsGraph.Alert.Evidence.FileDetails.FilePath | String | Relevant only for V2. Evidence file details file path | 
+| MsGraph.Alert.Evidence.FileDetails.FilePublisher | Unknown | Relevant only for V2. Evidence file details file publisher | 
+| MsGraph.Alert.Evidence.FileDetails.FileSize | Unknown | Relevant only for V2. Evidence file details file size | 
+| MsGraph.Alert.Evidence.FileDetails.Issuer | Unknown | Relevant only for V2. Evidence file details file issuer | 
+| MsGraph.Alert.Evidence.FileDetails.Sha1 | String | Relevant only for V2. Evidence file details sha1 hash | 
+| MsGraph.Alert.Evidence.FileDetails.Sha256 | String | Relevant only for V2. Evidence file details sha256 hash | 
+| MsGraph.Alert.Evidence.FileDetails.Signer | Unknown | Relevant only for V2. Evidence file details file signer | 
+| MsGraph.Alert.Evidence.CֹountryLetterCode | Unknown | Relevant only for V2. Evidence country letter code | 
+| MsGraph.Alert.Evidence.IpAddress | String | Relevant only for V2. Evidence ip address | 
+| MsGraph.Alert.Evidence.AzureAdDeviceId | Unknown | Relevant only for V2. Evidence azure AD device id | 
+| MsGraph.Alert.Evidence.DefenderAvStatus | String | Relevant only for V2. Evidence defender AV status | 
+| MsGraph.Alert.Evidence.DeviceDnsName | String | Relevant only for V2. Evidence device DNS name | 
+| MsGraph.Alert.Evidence.FirstSeenDateTime | Date | Relevant only for V2. Evidence first seen time | 
+| MsGraph.Alert.Evidence.HealthStatus | String | Relevant only for V2. Evidence health status | 
+| MsGraph.Alert.Evidence.OnboardingStatus | String | Relevant only for V2. Evidence onboarding status | 
+| MsGraph.Alert.Evidence.OsBuild | Unknown | Relevant only for V2. Evidence OS build | 
+| MsGraph.Alert.Evidence.OsPlatform | String | Relevant only for V2. Evidence OS platform | 
+| MsGraph.Alert.Evidence.RbacGroupId | Number | Relevant only for V2. Evidence RBAC group id | 
+| MsGraph.Alert.Evidence.RbacGroupName | String | Relevant only for V2. Evidence RBAC group name | 
+| MsGraph.Alert.Evidence.RiskScore | String | Relevant only for V2. Evidence risk score | 
+| MsGraph.Alert.Evidence.Version | String | Relevant only for V2. Evidence version | 
+| MsGraph.Alert.Evidence.VmMetadata | Unknown | Relevant only for V2. Evidence VM metadata | 
+| MsGraph.Alert.FirstActivityDateTime | Date | Relevant only for V2. Evidence first activity time | 
+| MsGraph.Alert.IncidentId | String | Relevant only for V2. Alert incident id | 
+| MsGraph.Alert.IncidentWebUrl | String | Relevant only for V2. Alert incident URL | 
+| MsGraph.Alert.LastActivityDateTime | Date | Relevant only for V2. Alert last activity time | 
+| MsGraph.Alert.LastUpdateDateTime | Date | Relevant only for V2. Alert last update time | 
+| MsGraph.Alert.ProviderAlertId | String | Relevant only for V2. Alert provider id | 
+| MsGraph.Alert.RecommendedActions | String | Relevant only for V2. Alert recommended action | 
+| MsGraph.Alert.ResolvedDateTime | Date | Relevant only for V2. Alert closing time | 
+| MsGraph.Alert.ServiceSource | String | Relevant only for V2. Alert service source | 
+| MsGraph.Alert.TenantId | String | Relevant only for V2. Alert tenant id | 
+| MsGraph.Alert.ThreatDisplayName | Unknown | Relevant only for V2. Alert threat display name | 
+| MsGraph.Alert.ThreatFamilyName | Unknown | Relevant only for V2. Alert threat family name | 
 
 #### Human Readable Output
 
@@ -299,7 +289,7 @@ Get details for a specific alert.
 
 ### Microsoft Security Graph Alerts
 ## Microsoft Security Graph Alert Details - <alert_id>
-|id|incidentId|status|severity|detectionSource|serviceSource|title|category|createdDateTime|lastUpdateDateTime|
+|ID|IncidentId|Status|Severity|DetectionSource|ServiceSource|Title|Category|CreatedDateTime|LastUpdateDateTime|
 |---|---|---|---|---|---|---|---|---|---|
 | <alert_id> | <incident_id> | new | medium | customTi | microsoftDefenderForEndpoint | test alert | None | 2022-10-03T03:39:21.7562976Z | 2023-04-17T11:01:31.7566667Z |
 
@@ -329,6 +319,7 @@ Update an editable alert property within any integrated solution to keep alert s
 | determination | Relevant only for V2, Use this field to update the alert's determination. Possible values are: unknown, apt, malware, phishing, other, securityPersonnel, securityTesting, multiStagedAttack, maliciousUserActivity, lineOfBusinessApplication, unwantedSoftware. | Optional | 
 
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MsGraph.Alert.ID | string | Alert ID | 
@@ -354,12 +345,13 @@ Relevant only for V2, create a comment for an existing alert.
 | comment | The comment to add to each alert. | Required | 
 
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MsGraph.AlertComment.ID | String | The alert id that the comment was added to. | 
-| MsGraph.AlertComment.Comments.comment | String | The comment itself | 
-| MsGraph.AlertComment.Comments.createdByDisplayName | String | The comment's creator display name | 
-| MsGraph.AlertComment.Comments.createdDateTime | Date | The comment's creation time | 
+| MsGraph.AlertComment.Comments.Comment | String | The comment itself | 
+| MsGraph.AlertComment.Comments.CreatedByDisplayName | String | The comment's creator display name | 
+| MsGraph.AlertComment.Comments.CreatedDateTime | Date | The comment's creation time | 
 
 #### Human Readable Output
 

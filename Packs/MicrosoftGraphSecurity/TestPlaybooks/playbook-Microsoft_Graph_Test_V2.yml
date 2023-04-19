@@ -86,7 +86,7 @@ tasks:
       alert_id:
         complex:
           root: MsGraph.Alert
-          accessor: id
+          accessor: ID
           transformers:
           - operator: atIndex
             args:
@@ -131,7 +131,7 @@ tasks:
       alert_id:
         complex:
           root: MsGraph.Alert
-          accessor: id
+          accessor: ID
           transformers:
           - operator: atIndex
             args:
@@ -208,7 +208,7 @@ tasks:
             value:
               complex:
                 root: MsGraph.Alert
-                accessor: id
+                accessor: ID
             iscontext: true
           right:
             value: {}
@@ -320,7 +320,7 @@ tasks:
             value:
               complex:
                 root: MsGraph.Alert
-                accessor: determination
+                accessor: Determination
             iscontext: true
           right:
             value:
@@ -328,7 +328,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: MsGraph.Alert.comments
+              simple: MsGraph.Alert.Comments
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -363,7 +363,7 @@ tasks:
       - "2"
     scriptarguments:
       alert_id:
-        simple: ${MsGraph.Alert.id}
+        simple: ${MsGraph.Alert.ID}
       comment:
         simple: test comment
     separatecontext: false
