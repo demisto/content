@@ -435,7 +435,7 @@ script:
       - Walkup
       - Slack
       required: false
-    - description: Tags that have been associated with the ticket.
+    - description: A comma-separated list of tags that have been associated with the ticket.
       isArray: true
       name: tags
       required: false
@@ -514,15 +514,15 @@ script:
       isArray: false
       name: responder_id
       required: false
-    - description: Ticket attachments. The total size of these attachments cannot exceed 15MB. Upload the file to Cortex XSOAR and provide the file ID for attaching the file to Freshservice tickets.
+    - description: A comma-separated list of ticket attachments. The total size of these attachments cannot exceed 15MB. Upload the file to Cortex XSOAR and provide the file ID for attaching the file to Freshservice tickets.
       isArray: true
       name: attachments
       required: false
-    - description: Email address added in the 'cc' field of the incoming ticket email.
+    - description: A comma-separated list of email addresses added in the 'cc' field of the incoming ticket email.
       isArray: true
       name: cc_emails
       required: false
-    - description: Key value pairs containing the names and values of custom fields. For example 'key1=value1, key2=value2'.
+    - description: A comma-separated list of key value pairs containing the names and values of custom fields. For example 'key1=value1, key2=value2'.
       isArray: true
       name: custom_fields
       required: false
@@ -568,10 +568,10 @@ script:
       type: Number
     - contextPath: Freshservice.Ticket.requester_id
       description: Ticket requester ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Ticket.requested_for_id
       description: Ticket requested for ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Ticket.responder_id
       description: Ticket responder ID.
       type: Number
@@ -687,7 +687,7 @@ script:
       - Walkup
       - Slack
       required: false
-    - description: Tags that have been associated with the ticket (replace the existing value).
+    - description: A comma-separated list of tags that have been associated with the ticket (replace the existing value).
       isArray: true
       name: tags
       required: false
@@ -766,11 +766,11 @@ script:
       isArray: false
       name: responder_id
       required: false
-    - description: Ticket attachments. The total size of these attachments cannot exceed 15MB. Upload the file to Cortex XSOAR and provide the file ID for attaching the file to Freshservice tickets.
+    - description: A comma-separated list of ticket attachments. The total size of these attachments cannot exceed 15MB. Upload the file to Cortex XSOAR and provide the file ID for attaching the file to Freshservice tickets.
       isArray: true
       name: attachments
       required: false
-    - description: Email address added in the 'cc' field of the incoming ticket email.
+    - description: A comma-separated list of email address added in the 'cc' field of the incoming ticket email.
       isArray: true
       name: cc_emails
       required: false
@@ -816,7 +816,7 @@ script:
       type: Number
     - contextPath: Freshservice.Ticket.requester_id
       description: Ticket requester ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Ticket.requested_for_id
       description: Ticket requested for ID.
       type: Date
@@ -1127,10 +1127,10 @@ script:
     outputs:
     - contextPath: Freshservice.Ticket.Conversation.id
       description: Conversation ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Ticket.Conversation.user_id
       description: Conversation user ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Ticket.Conversation.to_emails
       description: Conversation to emails.
       type: String
@@ -1184,11 +1184,11 @@ script:
       isArray: false
       name: user_id
       required: false
-    - description: Email address added in the 'cc' field of the outgoing ticket email.
+    - description: A comma-separated list of email address added in the 'cc' field of the outgoing ticket email.
       isArray: true
       name: cc_emails
       required: false
-    - description: Email address added in the 'bcc' field of the outgoing ticket email.
+    - description: A comma-separated list of email address added in the 'bcc' field of the outgoing ticket email.
       isArray: true
       name: bcc_emails
       required: false
@@ -1245,7 +1245,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Email addresses of agents/users who need to be notified about this note.
+    - description: A comma-separated list of email addresses of agents/users who need to be notified about this note.
       isArray: true
       name: notify_emails
       required: false
@@ -1272,10 +1272,10 @@ script:
     outputs:
     - contextPath: Freshservice.Ticket.Conversation.Note.id
       description: Ticket conversation note ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Ticket.Conversation.Note.user_id
       description: Ticket conversation note user ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Ticket.Conversation.Note.body
       description: Ticket conversation note body.
       type: String
@@ -1314,7 +1314,7 @@ script:
       name: name
       required: false
     - description: Conversation attachment.
-      isArray: true
+      isArray: false
       name: attachment
       required: false
     deprecated: false
@@ -1324,10 +1324,10 @@ script:
     outputs:
     - contextPath: Freshservice.Ticket.Conversation.id
       description: Conversation ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Ticket.Conversation.user_id
       description: Conversation user ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Ticket.Conversation.body
       description: Conversation body.
       type: String
@@ -1395,13 +1395,13 @@ script:
       type: String
     - contextPath: Freshservice.Problem.requester_id
       description: Problem requester ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Problem.subject
       description: Problem subject.
       type: String
     - contextPath: Freshservice.Problem.group_id
       description: Problem group ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Problem.priority
       description: Problem priority.
       type: Number
@@ -1557,13 +1557,13 @@ script:
       type: String
     - contextPath: Freshservice.Problem.requester_id
       description: Problem requester ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Problem.subject
       description: Problem subject.
       type: String
     - contextPath: Freshservice.Problem.group_id
       description: Problem group ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Problem.priority
       description: Problem priority.
       type: Number
@@ -1575,13 +1575,13 @@ script:
       type: Number
     - contextPath: Freshservice.Problem.due_by
       description: The timestamp that denotes when the problem is due to be resolved.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Problem.known_error
       description: Whether the problem is a known error.
       type: Boolean
     - contextPath: Freshservice.Problem.department_id
       description: Problem department ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Problem.category
       description: Problem category.
       type: String
@@ -1686,12 +1686,12 @@ script:
     - description: Key value pairs containing the names and values of custom fields.
       isArray: false
       name: custom_fields
-      required: false
+      required: true
     - description: Key value pairs containing the names and values of the problem cause, problem symptom, and problem impact.
       isArray: false
       name: analysis_fields
       required: false
-    - description: List of assets associated with the problem (replace the existing value).
+    - description: A comma-separated list of assets associated with the problem (replace the existing value).
       isArray: true
       name: assets
       required: false
@@ -1719,13 +1719,13 @@ script:
       type: String
     - contextPath: Freshservice.Problem.requester_id
       description: Problem requester ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Problem.subject
       description: Problem subject.
       type: String
     - contextPath: Freshservice.Problem.group_id
       description: Problem group ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Problem.priority
       description: Problem priority.
       type: Number
@@ -1743,7 +1743,7 @@ script:
       type: Boolean
     - contextPath: Freshservice.Problem.department_id
       description: Problem department ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Problem.category
       description: Problem category.
       type: String
@@ -2063,7 +2063,7 @@ script:
       type: Number
     - contextPath: Freshservice.Change.requester_id
       description: Change requester ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Change.approval_status
       description: Change approval status.
       type: Number
@@ -2252,7 +2252,7 @@ script:
       type: Number
     - contextPath: Freshservice.Change.requester_id
       description: Change requester ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Change.approval_status
       description: Change approval status.
       type: Number
@@ -2441,7 +2441,7 @@ script:
       type: Number
     - contextPath: Freshservice.Change.requester_id
       description: Change requester ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Change.approval_status
       description: Change approval status.
       type: Number
@@ -2814,7 +2814,7 @@ script:
       name: subject
       required: true
     - description: Description of the release.
-      isArray: true
+      isArray: false
       name: description
       required: true
     - description: Timestamp at which the release is starting (for example YYYY-MM-DDThh:mm).
@@ -3410,7 +3410,7 @@ script:
       type: Boolean
     - contextPath: Freshservice.Requester.id
       description: Requester ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Requester.is_agent
       description: Whether the requester is an agent.
       type: Boolean
@@ -3574,7 +3574,7 @@ script:
       type: Boolean
     - contextPath: Freshservice.Agent.id
       description: Agent ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Agent.job_title
       description: Agent job title.
       type: Unknown
@@ -3607,10 +3607,10 @@ script:
       type: Unknown
     - contextPath: Freshservice.Agent.role_ids
       description: Agent role IDs.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Agent.role_id
       description: Agent role ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Agent.assignment_scope
       description: Agent roles assignment scope.
       type: String
@@ -3666,7 +3666,7 @@ script:
       type: String
     - contextPath: Freshservice.Role.id
       description: Role ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Role.name
       description: Role name.
       type: String
@@ -3722,7 +3722,7 @@ script:
       type: Unknown
     - contextPath: Freshservice.Vendor.id
       description: Vendor ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Vendor.name
       description: Vendor name.
       type: String
@@ -3790,7 +3790,7 @@ script:
       type: Number
     - contextPath: Freshservice.Software.id
       description: Software application ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Software.name
       description: Software application name.
       type: String
@@ -3802,7 +3802,7 @@ script:
       type: Unknown
     - contextPath: Freshservice.Software.publisher_id
       description: Software application publisher ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Software.created_at
       description: Timestamp when the software application was created.
       type: Date
@@ -3820,7 +3820,7 @@ script:
       type: String
     - contextPath: Freshservice.Software.managed_by_id
       description: Software application managed by ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Software.category
       description: Software application category.
       type: Unknown
@@ -3899,7 +3899,7 @@ script:
     outputs:
     - contextPath: Freshservice.Asset.id
       description: Asset ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Asset.display_id
       description: Asset display ID.
       type: Number
@@ -3911,7 +3911,7 @@ script:
       type: Unknown
     - contextPath: Freshservice.Asset.asset_type_id
       description: Asset type ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Asset.impact
       description: Asset impact.
       type: String
@@ -3926,7 +3926,7 @@ script:
       type: String
     - contextPath: Freshservice.Asset.user_id
       description: Asset user ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.Asset.department_id
       description: Asset department ID.
       type: Unknown
@@ -4000,7 +4000,7 @@ script:
       type: Date
     - contextPath: Freshservice.PurchaseOrder.vendor_id
       description: Purchase order vendor ID.
-      type: Date
+      type: Number
     - contextPath: Freshservice.PurchaseOrder.department_id
       description: Purchase order department ID.
       type: Unknown
