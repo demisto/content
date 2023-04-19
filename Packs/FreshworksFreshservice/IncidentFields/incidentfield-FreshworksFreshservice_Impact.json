@@ -2,8 +2,8 @@
     "associatedToAll": false,
     "associatedTypes": [
         "FreshworksFreshservice Ticket",
-        "FreshworksFreshservice Change Request",
-        "FreshworksFreshservice Problem Request"
+        "FreshworksFreshservice Change Request",
+        "FreshworksFreshservice Problem Request"
     ],
     "caseInsensitive": false,
     "cliName": "freshworksfreshserviceimpact",

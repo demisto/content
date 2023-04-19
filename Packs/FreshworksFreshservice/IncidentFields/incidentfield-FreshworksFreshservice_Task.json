@@ -2,9 +2,9 @@
     "associatedToAll": false,
     "associatedTypes": [
         "FreshworksFreshservice Ticket",
-        "FreshworksFreshservice Change Request",
-        "FreshworksFreshservice Problem Request",
-        "FreshworksFreshservice Release Request"
+        "FreshworksFreshservice Change Request",
+        "FreshworksFreshservice Problem Request",
+        "FreshworksFreshservice Release Request"
     ],
     "caseInsensitive": true,
     "cliName": "freshworksfreshservicetask",
@@ -179,7 +179,7 @@
     "id": "incident_freshworksfreshservicetask",
     "isReadOnly": false,
     "locked": false,
-    "name": "FreshworksFreshservice Task",
+    "name": "FreshworksFreshservice Task",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

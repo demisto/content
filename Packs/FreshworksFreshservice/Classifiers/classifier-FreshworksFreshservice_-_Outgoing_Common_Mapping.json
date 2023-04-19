@@ -50,7 +50,7 @@
                 }
             }
         },
-        "FreshworksFreshservice Change Request": {
+        "FreshworksFreshservice Change Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "agent_id": {
@@ -106,7 +106,7 @@
                 }
             }
         },
-        "FreshworksFreshservice Problem Request": {
+        "FreshworksFreshservice Problem Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "agent_id": {
@@ -153,7 +153,7 @@
                 }
             }
         },
-        "FreshworksFreshservice Release Request": {
+        "FreshworksFreshservice Release Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "agent_id": {

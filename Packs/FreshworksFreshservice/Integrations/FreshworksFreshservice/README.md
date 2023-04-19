@@ -4833,7 +4833,7 @@ Retrieve a list of all Change requests or the Change request with the given ID f
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 29 | Hi Team,    One of our email servers, Exchange Server (ES3) has been acting up. We tried rebooting it, but that didn’t help. We need to get it replaced ASAP.   Regards  Rachel | 21001523121 | Getting ES3 back up to speed | Low | Low | Open | Low | Minor |  | 2023-04-13T14:06:10Z | 2023-04-13T14:06:10Z | 2019-03-20T16:18:46Z | 2019-03-23T16:18:46Z |
 >| 28 | Hi Team,    One of our email servers, Exchange Server (ES3) has been acting up. We tried rebooting it, but that didn’t help. We need to get it replaced ASAP.   Regards  Rachel | 21001523121 | Getting ES3 back up to speed | Low | Low | Open | Low | Minor |  | 2023-04-13T14:03:42Z | 2023-04-13T14:03:42Z | 2019-03-20T16:18:46Z | 2019-03-23T16:18:46Z |
->| 27 | Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. | 21001397559 | bsfbfsb | Medium | Medium | Open | Medium | Major | Software | 2023-03-29T15:10:11Z | 2023-03-29T15:10:11Z | 2023-03-28T21:45:00Z | 2023-03-28T22:30:00Z |
+>| 27 | Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. | 21001397559 | bsfbfsb | Medium | Medium | Open | Medium | Major | Software | 2023-03-29T15:10:11Z | 2023-03-29T15:10:11Z | 2023-03-28T21:45:00Z | 2023-03-28T22:30:00Z |
 >| 19 | mirroring OUT 16:49 | 21001397559 | oj[oko' | Medium | Medium | Open | High | Standard | Travel | 2023-03-23T17:01:01Z | 2023-04-04T13:50:11Z | 2023-03-27T21:30:00Z | 2023-03-29T22:00:00Z |
 >| 11 | 14:08 | 21001894392 | New test by ben | High | High | Open | Low | Emergency |  | 2023-03-19T12:49:52Z | 2023-04-02T11:07:57Z | 2023-10-02T00:00:00Z | 2023-11-01T00:00:00Z |
 >| 10 | test description | 21001894392 | New test by ben | High | High | Open | High | Emergency |  | 2023-03-19T12:38:33Z | 2023-03-19T12:38:33Z | 2023-10-02T00:00:00Z | 2023-11-01T00:00:00Z |
@@ -7499,7 +7499,7 @@ Lists all the softwares (or specific by ID) in the Freshservice account.
 ### freshservice-asset-list
 
 ***
-Lists all the assets (or specific by ID) in the Freshservice account. You can specify 'query' argument or any filter arguments, not both. When providing multiple filter arguments the connection between them will be "AND".
+Lists all the assets (or specific by ID) in the Freshservice account. You can specify 'query' argument or any filter arguments, not both. When providing multiple filter arguments the connection between them will be "AND".
 
 #### Base Command
 
@@ -7666,7 +7666,7 @@ Lists all the assets (or specific by ID) in the Freshservice account. You can s
 ### freshservice-purchase-order-list
 
 ***
-Lists all the purchase orders (or specific by ID) in a Freshservice account.
+Lists all the purchase orders (or specific by ID) in a Freshservice account.
 
 #### Base Command
 
@@ -7752,7 +7752,7 @@ Lists all the purchase orders (or specific by ID) in a Freshservice account.
 ### freshservice-agent-group-list
 
 ***
-Lists all the agent groups (or specific by ID) in a Freshservice account.
+Lists all the agent groups (or specific by ID) in a Freshservice account.
 
 #### Base Command
 
@@ -8100,7 +8100,7 @@ Lists all the agent groups (or specific by ID) in a Freshservice account.
 ### freshservice-department-list
 
 ***
-Lists all the departments (or specific by ID) in a Freshservice account.
+Lists all the departments (or specific by ID) in a Freshservice account.
 
 #### Base Command
 
@@ -8252,7 +8252,7 @@ Lists all the departments (or specific by ID) in a Freshservice account.
 ### freshservice-requester-field-list
 
 ***
-Lists all the Requester fields in a Freshservice account.
+Lists all the Requester fields in a Freshservice account.
 
 #### Base Command
 

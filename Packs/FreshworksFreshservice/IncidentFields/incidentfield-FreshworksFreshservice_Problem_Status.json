@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "FreshworksFreshservice Problem Request"
+        "FreshworksFreshservice Problem Request"
     ],
     "caseInsensitive": false,
     "cliName": "freshworksfreshserviceproblemstatus",

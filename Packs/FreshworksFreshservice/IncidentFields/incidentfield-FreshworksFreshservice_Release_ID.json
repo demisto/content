@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "FreshworksFreshservice Release Request"
+        "FreshworksFreshservice Release Request"
     ],
     "caseInsensitive": true,
     "cliName": "freshworksfreshservicereleaseid",

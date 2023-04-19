@@ -2,9 +2,9 @@
     "associatedToAll": false,
     "associatedTypes": [
         "FreshworksFreshservice Ticket",
-        "FreshworksFreshservice Change Request",
-        "FreshworksFreshservice Problem Request",
-        "FreshworksFreshservice Release Request"
+        "FreshworksFreshservice Change Request",
+        "FreshworksFreshservice Problem Request",
+        "FreshworksFreshservice Release Request"
     ],
     "caseInsensitive": true,
     "cliName": "freshworksfreshservicesubcategory",

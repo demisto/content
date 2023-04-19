@@ -3,9 +3,9 @@
     "feed": false,
     "id": "FreshworksFreshservice - Classifier",
     "keyTypeMap": {
-        "change": "FreshworksFreshservice Change Request",
-        "problem": "FreshworksFreshservice Problem Request",
-        "release": "FreshworksFreshservice Release Request",
+        "change": "FreshworksFreshservice Change Request",
+        "problem": "FreshworksFreshservice Problem Request",
+        "release": "FreshworksFreshservice Release Request",
         "ticket": "FreshworksFreshservice Ticket"
     },
     "name": "FreshworksFreshservice - Classifier",
