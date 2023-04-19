@@ -7,18 +7,18 @@ This integration was integrated and tested with version xx of AttackSurfaceManag
 2. Search for Mandiant Attack Surface Management.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Your server URL | The ASM API URL.  Leave as \`https://asm-api.advantage.mandiant.com/\` if you're unsure | True |
-    | Access Key | The Access and Secret Keys used for authentication | True |
-    | Secret Key |  | True |
-    | Project ID | The ASM Project ID to retrieve issues from | False |
-    | Collection IDs | A list of Collection IDs, separated by commas \(\`,\`\) | False |
-    | Initial Lookback Days | The number of days to look back when first retrieving issues. | True |
-    | Maximum Issues To Fetch | The maximum number of issues to pull during a single fetch-incidents command. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Mirror incoming incidents |  | False |
+   | **Parameter** | **Description** | **Required** |
+       | --- | --- | --- |
+   | Your server URL | The ASM API URL.  Leave as \`https://asm-api.advantage.mandiant.com/\` if you're unsure | True |
+   | Access Key | The Access and Secret Keys used for authentication | True |
+   | Secret Key |  | True |
+   | Project ID | The ASM Project ID to retrieve issues from | False |
+   | Collection IDs | A list of Collection IDs, separated by commas \(\`,\`\) | False |
+   | Initial Lookback Days | The number of days to look back when first retrieving issues. | True |
+   | Maximum Issues To Fetch | The maximum number of issues to pull during a single fetch-incidents command. | True |
+   | Trust any certificate (not secure) |  | False |
+   | Use system proxy settings |  | False |
+   | Mirror incoming incidents |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -53,15 +53,15 @@ There are no input arguments for this command.
 #### Context Example
 ```json
 {
-    "MandiantAdvantageASM": {
-        "Projects": [
-            {
-                "ID": 6797,
-                "Name": "ASMQA_AttackSurfaceAPP",
-                "Owner": "name@attacksurface.app"
-            }
-        ]
-    }
+  "MandiantAdvantageASM": {
+    "Projects": [
+      {
+        "ID": 6797,
+        "Name": "ASMQA_AttackSurfaceAPP",
+        "Owner": "name@attacksurface.app"
+      }
+    ]
+  }
 }
 ```
 
@@ -70,9 +70,7 @@ There are no input arguments for this command.
 >### Results
 >|ID|Name|Owner|
 >|---|---|---|
->| 2771 | ASM Sample Project | armando.cosillion@mandiant.com |
->| 5081 | Crazy Catfood | grant.damas@mandiant.com |
->| 5848 | chris-test | christopher.hultin@mandiant.com |
+>| 6797 | ASMQA_AttackSurfaceAPP | name@attacksurface.app |
 
 
 ### attacksurfacemanagement-get-collections
@@ -120,7 +118,7 @@ Retrieve a list of collections for a specified project
 >### Results
 >|ID|Name|Owner|
 >|---|---|---|
->| test_kwzlvsm | Test | chris-test |
+>| attacksurface_mw3tdwq | Attacksurface_APP_QA | ASMQA_AttackSurfaceAPP |
 
 
 ### fetch-incidents
