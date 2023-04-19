@@ -16,14 +16,13 @@ def score(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     Owner score is the number of observations on that owner divided by the max number of observations
     for any owner in the list
 
-    Expects `Count` key and replaces it with `Confidence Score`; this function should be run after
-    `deduplicate` and before `rank`
+    Expects `Count` key and replaces it with `Confidence Score`
     """
-    if len(owners):
-        max_count = max(x['Count'] for x in owners)
-        for i in range(len(owners)):
-            count = owners[i].pop('Count')
-            owners[i]['Confidence Score'] = count / max_count
+    if owners:
+        max_count = max(owner.get('Count', 1) for owner in owners)
+        for owner in owners:
+            count = owner.pop('Count', 1)
+            owner['Confidence Score'] = count / max_count
     return owners
 
 
