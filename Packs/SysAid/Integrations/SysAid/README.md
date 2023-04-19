@@ -19529,13 +19529,14 @@ There is no context output for this command.
 >Service Records 2,32 Deleted Successfully.
 
 ### sysaid-service-record-attach-file
+
 ***
 Add an attachment to a service record.
-
 
 #### Base Command
 
 `sysaid-service-record-attach-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -19543,25 +19544,24 @@ Add an attachment to a service record.
 | id | The service record ID. | Required | 
 | file_id | File file ID to upload. | Required | 
 
-
 #### Context Output
+
 There is no context output for this command.
-
 #### Command example
-```!sysaid-service-record-attach-file id=2 file_id="50@519fe085-179d-43f4-85c7-795eb4edd1a0"```
-
+```!sysaid-service-record-attach-file file_id=110@51d40811-801a-4b26-8861-68474c40b347 id=25```
 #### Human Readable Output
 
->File uploaded to Service Record {id} successfully.
-
+>File uploaded to Service Record 25 successfully.
 
 ### sysaid-service-record-delete-file
+
 ***
 Delete an attachment from a service record.
 
 #### Base Command
 
 `sysaid-service-record-delete-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -19569,30 +19569,30 @@ Delete an attachment from a service record.
 | id | The service record ID. | Required | 
 | file_id | The attachment file ID to delete. | Required | 
 
-
 #### Context Output
+
 There is no context output for this command.
-
 #### Command example
-```!sysaid-service-record-delete-file id=2 file_id="1147906284_-769427333"```
-
+```!sysaid-service-record-delete-file id=25 file_id=534492489_354835714```
 #### Human Readable Output
->File deleted from Service Record {id} successfully.
 
+>File deleted from Service Record 25 successfully.
 
 ### sysaid-service-record-get
+
 ***
 Returns the information for the specified service record.
 
 #### Base Command
+
 `sysaid-service-record-get`
 
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The service record ID. | Required | 
 | fields | List of fields to return, comma separated. If sent together with view parameter, returns both view’s fields and the requested fields. | Required | 
-
 
 #### Context Output
 
@@ -19606,556 +19606,1367 @@ Returns the information for the specified service record.
 | SysAid.ServiceRecord.notes | String | The notes of the service record. | 
 
 #### Command example
-```!service_record_get_command id=2 fields=all```
-
+```!sysaid-service-record-get id=25 fields=all```
 #### Context Example
-    {
-        "SysAid": {
-            "ServiceRecord": {
-                "canArchive": true,
-                "canDelete": true,
-                "canUpdate": true,
-                "hasChildren": false,
-                "id": "25",
-                "info": [
-                    {
-                        "key": "third_level_category",
-                        "keyCaption": "Third Level Category",
-                        "value": "Cannot access email",
-                        "valueCaption": "Cannot access email",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "cust_list1",
-                        "keyCaption": "SR Custom List 1",
-                        "value": 0,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "max_support_level",
-                        "keyCaption": "Max Support Level",
-                        "value": 0,
-                        "valueCaption": "0",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "quick_name",
-                        "keyCaption": "Template",
-                        "value": "Cannot access email - Test ",
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "lock_field",
-                        "keyCaption": "=== Hide/Show Divider ===",
-                        "value": 25,
-                        "valueCaption": "25",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "source",
-                        "keyCaption": "Source",
-                        "value": 4,
-                        "valueCaption": "Self-Service Portal",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "resolution",
-                        "keyCaption": "Resolution",
-                        "value": "",
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "cust_list2",
-                        "keyCaption": "SR Custom List 2",
-                        "value": 0,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "parent_link",
-                        "keyCaption": "Parent ID",
-                        "value": 0,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "solution",
-                        "keyCaption": "Solution",
-                        "value": "",
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "user_manager_name",
-                        "keyCaption": "Request User Manager",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "survey_status",
-                        "keyCaption": "Survey Status",
-                        "value": 0,
-                        "valueCaption": "The survey has not been sent.",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "sr_weight",
-                        "keyCaption": "Weight",
-                        "value": 0,
-                        "valueCaption": "0",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "followup_planned_date",
-                        "keyCaption": "Followup Planned Date",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "submit_user",
-                        "keyCaption": "Submit user",
-                        "value": 1,
-                        "valueCaption": "sysaid-dmst",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "agreement",
-                        "keyCaption": "Agreement",
-                        "value": 1,
-                        "valueCaption": "DEFAULT SLA",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "cust_int2",
-                        "keyCaption": "SR Custom Int 2",
-                        "value": 0,
-                        "valueCaption": "0",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "cust_date1",
-                        "keyCaption": "SR Custom Date 1",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "cust_int1",
-                        "keyCaption": "SR Custom Int 1",
-                        "value": 0,
-                        "valueCaption": "0",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "totalTime",
-                        "keyCaption": "Total Activities time",
-                        "value": 25,
-                        "valueCaption": "25",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "impact",
-                        "keyCaption": "Impact",
-                        "value": 4,
-                        "valueCaption": "Low",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "reopen_counter",
-                        "keyCaption": "Reopen Counter",
-                        "value": 0,
-                        "valueCaption": "0",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "cust_date2",
-                        "keyCaption": "SR Custom Date 2",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "archive",
-                        "keyCaption": "Archive",
-                        "value": 0,
-                        "valueCaption": "No",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "close_time",
-                        "keyCaption": "Close time",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "priority",
-                        "keyCaption": "Priority",
-                        "value": 5,
-                        "valueCaption": "Low",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "merged_service_records",
-                        "keyCaption": "Merged service records",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "version",
-                        "keyCaption": "Version",
-                        "value": 6,
-                        "valueCaption": "6",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "is_escalated",
-                        "keyCaption": "Is Escalated",
-                        "value": 0,
-                        "valueCaption": "No",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "CustomColumn3sr",
-                        "keyCaption": "Test Field",
-                        "value": "Demo Test",
-                        "valueCaption": "Demo Test",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "closure_information",
-                        "keyCaption": "Closure Information",
-                        "value": 0,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "assign_counter",
-                        "keyCaption": "Assigned Counter",
-                        "value": 1,
-                        "valueCaption": "1",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "problem_type",
-                        "keyCaption": "Category",
-                        "value": "Mobile Devices",
-                        "valueCaption": "Mobile Devices",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "alertID",
-                        "keyCaption": "Alert",
-                        "value": 25,
-                        "valueCaption": "green",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "status",
-                        "keyCaption": "Status",
-                        "value": 1,
-                        "valueCaption": "New",
-                        "valueClass": 0
-                    },
-                    {
-                        "key": "problem_sub_type",
-                        "keyCaption": "Sub-Category",
-                        "value": "Tablet",
-                        "valueCaption": "Tablet",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "known_error",
-                        "keyCaption": "Known Error",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "description",
-                        "keyCaption": "Description",
-                        "value": "This is a test incident",
-                        "valueCaption": "This is a test incident",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "insert_time",
-                        "keyCaption": "Request time",
-                        "value": 1646661395760,
-                        "valueCaption": "03/07/2022 08:56:35 AM",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "task_id",
-                        "keyCaption": "Main task",
-                        "value": 0,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "title",
-                        "keyCaption": "Title",
-                        "value": "Cannot access email - Test ",
-                        "valueCaption": "Cannot access email - Test ",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "request_user_name",
-                        "keyCaption": "Request username",
-                        "value": 1,
-                        "valueCaption": "sysaid-dmst",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "followup_user",
-                        "keyCaption": "Followup User",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "workaround",
-                        "keyCaption": "Workaround",
-                        "value": "",
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "current_support_level",
-                        "keyCaption": "Current Support Level",
-                        "value": 0,
-                        "valueCaption": "0",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "update_time",
-                        "keyCaption": "Modify time",
-                        "value": 1647338000987,
-                        "valueCaption": "03/15/2022 04:53:20 AM",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "success_rating",
-                        "keyCaption": "Success Rating",
-                        "value": 0,
-                        "valueCaption": "0",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "update_user",
-                        "keyCaption": "Modify User",
-                        "value": 1,
-                        "valueCaption": "sysaid-dmst",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "cust_notes",
-                        "keyCaption": "SR Custom Notes",
-                        "value": "This is a note for the API",
-                        "valueCaption": "This is a note for the API",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "followup_text",
-                        "keyCaption": "Followup Text",
-                        "value": "",
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "email_account",
-                        "keyCaption": "Email Account",
-                        "value": " ",
-                        "valueCaption": " ",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "responsibility",
-                        "keyCaption": "Process manager",
-                        "value": 1,
-                        "valueCaption": "sysaid-dmst",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "urgency",
-                        "keyCaption": "Urgency",
-                        "value": 4,
-                        "valueCaption": "Normal",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "request_user",
-                        "keyCaption": "Request user",
-                        "value": 1,
-                        "valueCaption": "sysaid-dmst",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "sub_type",
-                        "keyCaption": "Sub Type",
-                        "value": 6,
-                        "valueCaption": "DEFAULT",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "company",
-                        "keyCaption": "Company",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "followup_actual_date",
-                        "keyCaption": "Followup Actual Date",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "department",
-                        "keyCaption": "Department",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "all_active_assigned_to",
-                        "keyCaption": "Users assigned to active action items",
-                        "value": 25,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "computer_id",
-                        "keyCaption": "Asset ID",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "cc",
-                        "keyCaption": "CC",
-                        "value": "",
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "timer1",
-                        "keyCaption": "Time to Repair",
-                        "value": 1131881301,
-                        "valueCaption": "1131881301",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "computer_name",
-                        "keyCaption": "Main Asset",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "timer2",
-                        "keyCaption": "Time to Respond",
-                        "value": 1131881301,
-                        "valueCaption": "1131881301",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "ci",
-                        "keyCaption": "Main CI",
-                        "value": 0,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "due_date",
-                        "keyCaption": "Due Date",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "cust_text1",
-                        "keyCaption": "SR Custom Text 1",
-                        "value": "",
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "cust_text2",
-                        "keyCaption": "SR Custom Text 2",
-                        "value": "",
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "merged_to",
-                        "keyCaption": "Merged to",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "responsible_manager",
-                        "keyCaption": "Responsible Admin",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "account_id",
-                        "keyCaption": "Account",
-                        "value": "paloaltonetworks_trial",
-                        "valueCaption": "paloaltonetworks_trial",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "escalation",
-                        "keyCaption": "Escalation Level",
-                        "value": 0,
-                        "valueCaption": "0",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "change_category",
-                        "keyCaption": "Classification",
-                        "value": 0,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "assigned_group",
-                        "keyCaption": "Admin group",
-                        "value": null,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "location",
-                        "keyCaption": "Location",
-                        "value": 0,
-                        "valueCaption": "",
-                        "valueClass": ""
-                    },
-                    {
-                        "key": "sr_type",
-                        "keyCaption": "Service Record Type",
-                        "value": 1,
-                        "valueCaption": "Incident",
-                        "valueClass": ""
-                    }
-                ]
-            }
+```json
+{
+    "SysAid": {
+        "ServiceRecord": {
+            "CustomColumn3sr": "Demo Test",
+            "account_id": "paloaltonetworks_trial",
+            "actions": null,
+            "activities": null,
+            "agreement": "DEFAULT SLA",
+            "alertID": "green",
+            "all_active_assigned_to": "",
+            "archive": "No",
+            "assign_counter": "1",
+            "assigned_group": "",
+            "attachments": null,
+            "canArchive": true,
+            "canDelete": true,
+            "canUpdate": true,
+            "cc": "",
+            "change_category": "",
+            "childs": null,
+            "ci": "",
+            "close_time": "",
+            "closure_information": "",
+            "company": "",
+            "computer_id": "",
+            "computer_name": "",
+            "current_support_level": "0",
+            "cust_date1": "",
+            "cust_date2": "",
+            "cust_int1": "0",
+            "cust_int2": "0",
+            "cust_list1": "",
+            "cust_list2": "",
+            "cust_notes": "This is a note for the API",
+            "cust_text1": "",
+            "cust_text2": "",
+            "department": "",
+            "description": "This is a test incident",
+            "due_date": "",
+            "email_account": " ",
+            "escalation": "0",
+            "followup_actual_date": "",
+            "followup_planned_date": "",
+            "followup_text": "",
+            "followup_user": "",
+            "hasChildren": false,
+            "history": null,
+            "id": "25",
+            "impact": "Low",
+            "info": [
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "third_level_category",
+                    "keyCaption": "Third Level Category",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": "Cannot access email",
+                    "valueCaption": "Cannot access email",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "cust_list1",
+                    "keyCaption": "SR Custom List 1",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 0,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "notes",
+                    "keyCaption": "Notes",
+                    "mandatory": false,
+                    "type": "object",
+                    "value": [
+                        "sysaid-dmst (04/19/2023 05:48 AM):
+   Darya
+",
+                        "
+sysaid-dmst (04/19/2023 05:34 AM):
+   this is a new note
+",
+                        "
+sysaid-dmst (03/10/2022 12:59:20):
+   THis is a note"
+                    ],
+                    "valueCaption": null,
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "max_support_level",
+                    "keyCaption": "Max Support Level",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 0,
+                    "valueCaption": "0",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "quick_name",
+                    "keyCaption": "Template",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": "Cannot access email - Test ",
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "lock_field",
+                    "keyCaption": "=== Hide/Show Divider ===",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 25,
+                    "valueCaption": "25",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "screen",
+                    "keyCaption": "Screen capture",
+                    "mandatory": false,
+                    "type": "object",
+                    "value": {
+                        "captureExists": false,
+                        "sendScreenCapture": "NO"
+                    },
+                    "valueCaption": null,
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "source",
+                    "keyCaption": "Source",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 4,
+                    "valueCaption": "Self-Service Portal",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "resolution",
+                    "keyCaption": "Resolution",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": "",
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "childs",
+                    "keyCaption": "Child Service Records",
+                    "mandatory": false,
+                    "type": "object",
+                    "value": [],
+                    "valueCaption": null,
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "cust_list2",
+                    "keyCaption": "SR Custom List 2",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 0,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "parent_link",
+                    "keyCaption": "Parent ID",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 0,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "solution",
+                    "keyCaption": "Solution",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": "",
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "project_id",
+                    "keyCaption": "Main project",
+                    "mandatory": false,
+                    "type": "object",
+                    "value": {},
+                    "valueCaption": null,
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "links",
+                    "keyCaption": "Links",
+                    "mandatory": false,
+                    "type": "object",
+                    "value": [
+                        {
+                            "date": 1647129600000,
+                            "id": "1647169062620_-1238538552_-247021602_-2098378845",
+                            "link": "http://google.com",
+                            "name": "test link"
+                        },
+                        {
+                            "date": 1647129600000,
+                            "id": "1647169199022_-1238538552_-247021602_-2098242863",
+                            "link": "http://google.com",
+                            "name": "test link"
+                        },
+                        {
+                            "date": 1647129600000,
+                            "id": "1647169223865_-1146070132_-247021602_-2098217530",
+                            "link": "http://google.com",
+                            "name": "testlink"
+                        }
+                    ],
+                    "valueCaption": null,
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "user_manager_name",
+                    "keyCaption": "Request User Manager",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "survey_status",
+                    "keyCaption": "Survey Status",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 0,
+                    "valueCaption": "The survey has not been sent.",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "sr_weight",
+                    "keyCaption": "Weight",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 0,
+                    "valueCaption": "0",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "followup_planned_date",
+                    "keyCaption": "Followup Planned Date",
+                    "mandatory": false,
+                    "type": "date",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "submit_user",
+                    "keyCaption": "Submit user",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": 1,
+                    "valueCaption": "sysaid-dmst",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "agreement",
+                    "keyCaption": "Agreement",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 1,
+                    "valueCaption": "DEFAULT SLA",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "cust_int2",
+                    "keyCaption": "SR Custom Int 2",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 0,
+                    "valueCaption": "0",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "cust_date1",
+                    "keyCaption": "SR Custom Date 1",
+                    "mandatory": false,
+                    "type": "date",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "cust_int1",
+                    "keyCaption": "SR Custom Int 1",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 0,
+                    "valueCaption": "0",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "totalTime",
+                    "keyCaption": "Total Activities time",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 25,
+                    "valueCaption": "25",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "impact",
+                    "keyCaption": "Impact",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 4,
+                    "valueCaption": "Low",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "reopen_counter",
+                    "keyCaption": "Reopen Counter",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 0,
+                    "valueCaption": "0",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "cust_date2",
+                    "keyCaption": "SR Custom Date 2",
+                    "mandatory": false,
+                    "type": "date",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "archive",
+                    "keyCaption": "Archive",
+                    "mandatory": false,
+                    "type": "boolean",
+                    "value": 0,
+                    "valueCaption": "No",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "close_time",
+                    "keyCaption": "Close time",
+                    "mandatory": false,
+                    "type": "date",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "history",
+                    "keyCaption": "History",
+                    "mandatory": false,
+                    "type": "object",
+                    "value": [
+                        {
+                            "description": "Incident #25 has been modified ",
+                            "extReference": 8,
+                            "fullLogDateTime": "19-04-2023 05:48:02 EST",
+                            "id": 73,
+                            "logTime": 1681862400000,
+                            "type": "Incident changed",
+                            "userName": "sysaid-dmst"
+                        },
+                        {
+                            "description": "Incident #25 has been modified ",
+                            "extReference": 7,
+                            "fullLogDateTime": "19-04-2023 05:34:31 EST",
+                            "id": 72,
+                            "logTime": 1681862400000,
+                            "type": "Incident changed",
+                            "userName": "sysaid-dmst"
+                        },
+                        {
+                            "description": "Incident #25 has been modified ",
+                            "extReference": 6,
+                            "fullLogDateTime": "15-03-2022 04:53:20 EST",
+                            "id": 17,
+                            "logTime": 1647302400000,
+                            "type": "Incident changed",
+                            "userName": "sysaid-dmst"
+                        },
+                        {
+                            "description": "Incident #25 has been modified ",
+                            "extReference": 5,
+                            "fullLogDateTime": "15-03-2022 04:52:57 EST",
+                            "id": 16,
+                            "logTime": 1647302400000,
+                            "type": "Incident changed",
+                            "userName": "sysaid-dmst"
+                        },
+                        {
+                            "description": "Incident #25 has been modified ",
+                            "extReference": 4,
+                            "fullLogDateTime": "10-03-2022 12:59:21 EST",
+                            "id": 15,
+                            "logTime": 1646870400000,
+                            "type": "Incident changed",
+                            "userName": "sysaid-dmst"
+                        },
+                        {
+                            "description": "Incident #25 has been modified ",
+                            "extReference": 3,
+                            "fullLogDateTime": "10-03-2022 12:58:35 EST",
+                            "id": 14,
+                            "logTime": 1646870400000,
+                            "type": "Incident changed",
+                            "userName": "sysaid-dmst"
+                        },
+                        {
+                            "description": " 
+1 Activities added",
+                            "extReference": 2,
+                            "fullLogDateTime": "10-03-2022 09:37:22 EST",
+                            "id": 13,
+                            "logTime": 1646870400000,
+                            "type": "Incident changed",
+                            "userName": "sysaid-dmst"
+                        },
+                        {
+                            "description": "New Incident #25 ",
+                            "extReference": 1,
+                            "fullLogDateTime": "07-03-2022 08:56:35 EST",
+                            "id": 2,
+                            "logTime": 1646611200000,
+                            "type": "Incident changed",
+                            "userName": "sysaid-dmst"
+                        }
+                    ],
+                    "valueCaption": null,
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "priority",
+                    "keyCaption": "Priority",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 5,
+                    "valueCaption": "Low",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "merged_service_records",
+                    "keyCaption": "Merged service records",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "version",
+                    "keyCaption": "Version",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 8,
+                    "valueCaption": "8",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "is_escalated",
+                    "keyCaption": "Is Escalated",
+                    "mandatory": false,
+                    "type": "boolean",
+                    "value": 0,
+                    "valueCaption": "No",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": "string",
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "CustomColumn3sr",
+                    "keyCaption": "Test Field",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": "Demo Test",
+                    "valueCaption": "Demo Test",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "closure_information",
+                    "keyCaption": "Closure Information",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 0,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "assign_counter",
+                    "keyCaption": "Assigned Counter",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 1,
+                    "valueCaption": "1",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "messages",
+                    "keyCaption": "Messages",
+                    "mandatory": false,
+                    "type": "object",
+                    "value": [],
+                    "valueCaption": null,
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "problem_type",
+                    "keyCaption": "Category",
+                    "mandatory": false,
+                    "type": "nested",
+                    "value": "Mobile Devices",
+                    "valueCaption": "Mobile Devices",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "alertID",
+                    "keyCaption": "Alert",
+                    "mandatory": false,
+                    "type": "calculated",
+                    "value": "green",
+                    "valueCaption": "green",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "actions",
+                    "keyCaption": "Actions",
+                    "mandatory": false,
+                    "type": "object",
+                    "value": null,
+                    "valueCaption": null,
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "status",
+                    "keyCaption": "Status",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 1,
+                    "valueCaption": "New",
+                    "valueClass": 0
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "relation_graph",
+                    "keyCaption": "CI Relations Graph",
+                    "mandatory": false,
+                    "type": "object",
+                    "value": null,
+                    "valueCaption": null,
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "attachments",
+                    "keyCaption": "Attachments",
+                    "mandatory": false,
+                    "type": "object",
+                    "value": [
+                        {
+                            "chatSessionId": null,
+                            "fileDate": "04/19/2023 05:36 AM",
+                            "fileId": "-1219080189_-213347140",
+                            "fileName": "hi.txt",
+                            "realFileName": "2023\4\19\5526b93267cfe3be03111e1ceae1d816.dat_"
+                        },
+                        {
+                            "chatSessionId": null,
+                            "fileDate": "04/19/2023 05:48 AM",
+                            "fileId": "-1219080189_-245445074",
+                            "fileName": "hi.txt",
+                            "realFileName": "2023\4\19\5526b93267cfe3be03111e1ceae1d816.dat_"
+                        }
+                    ],
+                    "valueCaption": null,
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "problem_sub_type",
+                    "keyCaption": "Sub-Category",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": "Tablet",
+                    "valueCaption": "Tablet",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "known_error",
+                    "keyCaption": "Known Error",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "linkedSRs",
+                    "keyCaption": "Links to other Items",
+                    "mandatory": false,
+                    "type": "object",
+                    "value": [],
+                    "valueCaption": null,
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "description",
+                    "keyCaption": "Description",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": "This is a test incident",
+                    "valueCaption": "This is a test incident",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "insert_time",
+                    "keyCaption": "Request time",
+                    "mandatory": false,
+                    "type": "date",
+                    "value": 1646661395760,
+                    "valueCaption": "03/07/2022 08:56:35 AM",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "task_id",
+                    "keyCaption": "Main task",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 0,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "video",
+                    "keyCaption": "Video capture",
+                    "mandatory": false,
+                    "type": "object",
+                    "value": {
+                        "captureExists": false,
+                        "filePath": null,
+                        "sendVideoRecording": "NO"
+                    },
+                    "valueCaption": null,
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "title",
+                    "keyCaption": "Title",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": "Cannot access email - Test ",
+                    "valueCaption": "Cannot access email - Test ",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "request_user_name",
+                    "keyCaption": "Request username",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": 1,
+                    "valueCaption": "sysaid-dmst",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "followup_user",
+                    "keyCaption": "Followup User",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "workaround",
+                    "keyCaption": "Workaround",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": "",
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "current_support_level",
+                    "keyCaption": "Current Support Level",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 0,
+                    "valueCaption": "0",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "update_time",
+                    "keyCaption": "Modify time",
+                    "mandatory": false,
+                    "type": "date",
+                    "value": 1681901282560,
+                    "valueCaption": "04/19/2023 05:48:02 AM",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "success_rating",
+                    "keyCaption": "Success Rating",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 0,
+                    "valueCaption": "0",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "update_user",
+                    "keyCaption": "Modify User",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": 1,
+                    "valueCaption": "sysaid-dmst",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "cust_notes",
+                    "keyCaption": "SR Custom Notes",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": "This is a note for the API",
+                    "valueCaption": "This is a note for the API",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "followup_text",
+                    "keyCaption": "Followup Text",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": "",
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "email_account",
+                    "keyCaption": "Email Account",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": " ",
+                    "valueCaption": " ",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "responsibility",
+                    "keyCaption": "Process manager",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 1,
+                    "valueCaption": "sysaid-dmst",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "urgency",
+                    "keyCaption": "Urgency",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 4,
+                    "valueCaption": "Normal",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "request_user",
+                    "keyCaption": "Request user",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 1,
+                    "valueCaption": "sysaid-dmst",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "sub_type",
+                    "keyCaption": "Sub Type",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 6,
+                    "valueCaption": "DEFAULT",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "company",
+                    "keyCaption": "Company",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "followup_actual_date",
+                    "keyCaption": "Followup Actual Date",
+                    "mandatory": false,
+                    "type": "date",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "department",
+                    "keyCaption": "Department",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "all_active_assigned_to",
+                    "keyCaption": "Users assigned to active action items",
+                    "mandatory": false,
+                    "type": "calculated",
+                    "value": "",
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "computer_id",
+                    "keyCaption": "Asset ID",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "cc",
+                    "keyCaption": "CC",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": "",
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "timer1",
+                    "keyCaption": "Time to Repair",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 35240361631,
+                    "valueCaption": "35240361631",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "computer_name",
+                    "keyCaption": "Main Asset",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "timer2",
+                    "keyCaption": "Time to Respond",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 35240361631,
+                    "valueCaption": "35240361631",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "ci",
+                    "keyCaption": "Main CI",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 0,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "due_date",
+                    "keyCaption": "Due Date",
+                    "mandatory": false,
+                    "type": "date",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "cust_text1",
+                    "keyCaption": "SR Custom Text 1",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": "",
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "cust_text2",
+                    "keyCaption": "SR Custom Text 2",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": "",
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "merged_to",
+                    "keyCaption": "Merged to",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "responsible_manager",
+                    "keyCaption": "Responsible Admin",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "account_id",
+                    "keyCaption": "Account",
+                    "mandatory": false,
+                    "type": "text",
+                    "value": "paloaltonetworks_trial",
+                    "valueCaption": "paloaltonetworks_trial",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": false,
+                    "key": "escalation",
+                    "keyCaption": "Escalation Level",
+                    "mandatory": false,
+                    "type": "numeric",
+                    "value": 0,
+                    "valueCaption": "0",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "solutionModel",
+                    "keyCaption": "Solution Model",
+                    "mandatory": false,
+                    "type": "object",
+                    "value": null,
+                    "valueCaption": null,
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "activities",
+                    "keyCaption": "Activities",
+                    "mandatory": false,
+                    "type": "object",
+                    "value": [
+                        {
+                            "accountId": "paloaltonetworks_trial",
+                            "actCustDate1": null,
+                            "actCustDate2": null,
+                            "actCustInt1": 0,
+                            "actCustInt2": 0,
+                            "actCustInt3": 0,
+                            "actCustInt4": 0,
+                            "actCustList1": 0,
+                            "actCustList2": 0,
+                            "actCustNotes": null,
+                            "actCustText1": null,
+                            "actCustText2": null,
+                            "addonsIntegrationsDataMap": {},
+                            "ciId": 0,
+                            "ciattachType": 0,
+                            "custDate1": null,
+                            "custDate2": null,
+                            "custInt1": 0,
+                            "custInt2": 0,
+                            "custInt3": 0,
+                            "custInt4": 0,
+                            "custList1": 0,
+                            "custList1Caption": "",
+                            "custList2": 0,
+                            "custList2Caption": "",
+                            "custNotes": null,
+                            "custText1": null,
+                            "custText2": null,
+                            "description": "Test action",
+                            "displayUserName": "Test User",
+                            "fromTime": 1646922840000,
+                            "id": 1,
+                            "srID": 25,
+                            "toTime": 1648733640000,
+                            "total": "503:00",
+                            "user": "Test-User",
+                            "userId": 2
+                        }
+                    ],
+                    "valueCaption": null,
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "change_category",
+                    "keyCaption": "Classification",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 0,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "assigned_group",
+                    "keyCaption": "Admin group",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": null,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "location",
+                    "keyCaption": "Location",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 0,
+                    "valueCaption": "",
+                    "valueClass": ""
+                },
+                {
+                    "customColumnType": null,
+                    "defaultValue": null,
+                    "editable": true,
+                    "key": "sr_type",
+                    "keyCaption": "Service Record Type",
+                    "mandatory": false,
+                    "type": "list",
+                    "value": 1,
+                    "valueCaption": "Incident",
+                    "valueClass": ""
+                }
+            ],
+            "insert_time": "03/07/2022 08:56:35 AM",
+            "is_escalated": "No",
+            "known_error": "",
+            "linkedSRs": null,
+            "links": null,
+            "location": "",
+            "lock_field": "25",
+            "max_support_level": "0",
+            "merged_service_records": "",
+            "merged_to": "",
+            "messages": null,
+            "notes": null,
+            "parent_link": "",
+            "priority": "Low",
+            "problem_sub_type": "Tablet",
+            "problem_type": "Mobile Devices",
+            "project_id": null,
+            "quick_name": "",
+            "relation_graph": null,
+            "reopen_counter": "0",
+            "request_user": "sysaid-dmst",
+            "request_user_name": "sysaid-dmst",
+            "resolution": "",
+            "responsibility": "sysaid-dmst",
+            "responsible_manager": "",
+            "screen": null,
+            "solution": "",
+            "solutionModel": null,
+            "source": "Self-Service Portal",
+            "sr_type": "Incident",
+            "sr_weight": "0",
+            "status": "New",
+            "sub_type": "DEFAULT",
+            "submit_user": "sysaid-dmst",
+            "success_rating": "0",
+            "survey_status": "The survey has not been sent.",
+            "task_id": "",
+            "third_level_category": "Cannot access email",
+            "timer1": "35240361631",
+            "timer2": "35240361631",
+            "title": "Cannot access email - Test ",
+            "totalTime": "25",
+            "update_time": "04/19/2023 05:48:02 AM",
+            "update_user": "sysaid-dmst",
+            "urgency": "Normal",
+            "user_manager_name": "",
+            "version": "8",
+            "video": null,
+            "workaround": ""
         }
     }
+}
+```
 
 #### Human Readable Output
+
+>### Service Record Results:
+>|Id|Title|Status|Modify Time|Service Record Type|Notes|
+>|---|---|---|---|---|---|
+>| 25 | Cannot access email - Test  | New | 04/19/2023 05:48:02 AM | Incident | sysaid-dmst (04/19/2023 05:48 AM):<br/>   Darya<br/>,<br/><br/>sysaid-dmst (04/19/2023 05:34 AM):<br/>   this is a new note<br/>,<br/><br/>sysaid-dmst (03/10/2022 12:59:20):<br/>   THis is a note |
+
 
 ## Service Record Results:
 
@@ -20170,27 +20981,26 @@ Returns the information for the specified service record.
 
 
 ### sysaid-service-record-add-note
+
 ***
 Add a note to a Service Record
-
 
 #### Base Command
 
 `sysaid-service-record-add-note`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The service record ID. | Required | 
-| note | The solution for deleting the service record. | Required | 
-
+| note | The note to be added to the Service Record. | Required | 
 
 #### Context Output
+
 There is no context output for this command.
-
 #### Command example
-
-`!sysaid-service-record-add-note id=32 note="this is a new note 3"`
-
+```!sysaid-service-record-add-note id=25 note=`this is a new note````
 #### Human Readable Output
+
 >Updated record with new note
