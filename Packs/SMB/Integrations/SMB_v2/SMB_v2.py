@@ -52,7 +52,7 @@ def smb_upload(client: SMBClient, args: dict):
     entry_id = args.get('entryID')
     content = args.get('content')  # The input is text.
     path_input = args['file_path']
-    path = generate_pathlib_object(hostname, path_input, os_type)
+    path = generate_pathlib_object(hostname or client.hostname, path_input, os_type)
 
     if not entry_id and not content:
         raise DemistoException(
@@ -83,7 +83,7 @@ def smb_download(client: SMBClient, args: dict):
     username = args.get('username')
     password = args.get('password')
     path_input = args['file_path']
-    path = generate_pathlib_object(hostname, path_input, os_type)
+    path = generate_pathlib_object(hostname or client.hostname, path_input, os_type)
 
     client.create_session(hostname, username, password)
 
@@ -101,7 +101,7 @@ def smb_remove_file(client: SMBClient, args: dict):
     username = args.get('username')
     password = args.get('password')
     path_input = args['file_path']
-    path = generate_pathlib_object(hostname, path_input, os_type)
+    path = generate_pathlib_object(hostname or client.hostname, path_input, os_type)
 
     client.create_session(hostname, username, password)
 
@@ -117,7 +117,7 @@ def list_dir(client: SMBClient, args: dict):
     username = args.get('username')
     password = args.get('password')
     path_input = args['path']
-    path = generate_pathlib_object(hostname, path_input, os_type)
+    path = generate_pathlib_object(hostname or client.hostname, path_input, os_type)
 
     client.create_session(hostname, username, password)
 
@@ -153,7 +153,7 @@ def smb_mkdir(client: SMBClient, args: dict):
     username = args.get('username')
     password = args.get('password')
     path_input = args['path']
-    path = generate_pathlib_object(hostname, path_input, os_type)
+    path = generate_pathlib_object(hostname or client.hostname, path_input, os_type)
 
     client.create_session(hostname, username, password)
 
@@ -168,7 +168,7 @@ def smb_rmdir(client: SMBClient, args: dict):
     username = args.get('username')
     password = args.get('password')
     path_input = args['path']
-    path = generate_pathlib_object(hostname, path_input, os_type)
+    path = generate_pathlib_object(hostname or client.hostname, path_input, os_type)
 
     client.create_session(hostname, username, password)
 
