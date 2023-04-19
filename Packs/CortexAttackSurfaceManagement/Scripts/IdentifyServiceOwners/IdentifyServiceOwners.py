@@ -113,7 +113,7 @@ def main():
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
+        return_error(f'Failed to execute IdentifyServiceOwners. Error: {str(ex)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
