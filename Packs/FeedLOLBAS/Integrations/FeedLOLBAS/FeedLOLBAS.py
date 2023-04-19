@@ -80,6 +80,33 @@ def create_relationship_list(indicators: List[Dict[str, Any]]) -> List[Dict[str,
     return relationships
 
 
+def map_indicator_fields(pre_indicator):
+    command_keys = ['Command', 'Description', 'Usecase', 'Category', 'Privileges', 'MitreID', 'OperatingSystem']
+
+    mapped_commands = []
+    mapped_detections = []
+    mapped_paths = []
+    commands = pre_indicator.get('Commands', [])
+    detections = pre_indicator.get('Detection', [])
+    paths = pre_indicator.get('Full_Path', [])
+    if commands:
+        for command in commands:
+            mapped_commands.append({lolbas_filed.lower(): command.get(lolbas_filed) for lolbas_filed in command_keys})
+    if detections:
+        for detection in detections:
+            if detection_keys := list(detection.keys()):
+                mapped_detections.append({'type': detection_keys[0], 'content': detection.get(detection_keys[0])})
+    if paths:
+        for path in paths:
+            mapped_paths.append({'path': path.get('Path')})
+
+    return {
+        'Commands': mapped_commands,
+        'Detections': mapped_detections,
+        'Paths': mapped_paths
+    }
+
+
 def create_indicators(client: Client, pre_indicators) -> List[Dict[str, Any]]:
     """
     Create indicators from the response.
@@ -91,11 +118,7 @@ def create_indicators(client: Client, pre_indicators) -> List[Dict[str, Any]]:
             'type': ThreatIntel.ObjectsNames.TOOL,
             'value': pre_indicator.get('Name'),
             'description': pre_indicator.get('Description'),
-            'fields': {
-                'Commands': pre_indicator.get('Commands', []),
-                'Detections': pre_indicator.get('Detections', []),
-                'Paths': pre_indicator.get('Full_Paths', []),
-            },
+            'fields': map_indicator_fields(pre_indicator),
             'rawJSON': pre_indicator,
         }
         if tlp_color := client.tlp_color:
@@ -122,13 +145,15 @@ def create_relationships(client: Client, indicators: List[Dict[str, Any]]) -> Li
     return indicators
 
 
-def fetch_indicators(client: Client) -> List[Dict[str, Any]]:
+def fetch_indicators(client: Client, limit: int = None) -> List[Dict[str, Any]]:
     """
         Fetch indicators from LOLBAS API and create indicators in XSOAR.
     """
     response = client.get_indicators()
     indicators = create_indicators(client, response)
     indicators = create_relationships(client, indicators)
+    if limit:
+        return indicators[:limit]
     return indicators
 
 
@@ -162,10 +187,8 @@ def main() -> None:  # pragma: no cover
 
         if command == 'test-module':
             test_module(client)
-
         elif command == 'fetch-indicators':
             indicators = fetch_indicators(client)
-
             for iter_ in batch(indicators, batch_size=2000):
                 try:
                     demisto.createIndicators(iter_)
@@ -178,8 +201,12 @@ def main() -> None:  # pragma: no cover
                             demisto.debug(f'createIndicators Error: failed to create the following indicator:'
                                           f' {indicator}\n {err}')
                     raise
+        elif command == 'lolbas-get-indicators':
+            return_results(CommandResults(outputs=fetch_indicators(client, arg_to_number(demisto.args().get('limit', None))),
+                                          outputs_prefix='LOLBAS.Indicators'))
+        else:
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
 
-    # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
