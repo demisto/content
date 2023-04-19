@@ -33,8 +33,10 @@ def main(changed_files):
             print(f"Error: Contribution branch includes changes to files under {top_level_directory}, "
                   f"which is a protected directory. Please revert them. (file: {changed_file})")
             found_files.append(changed_file)
-    if len(found_files) > 0:
+    if found_files:
         sys.exit(1)
+    else:
+        print("Done, no files were found in prohibited paths")
 
 
 if __name__ == "__main__":
