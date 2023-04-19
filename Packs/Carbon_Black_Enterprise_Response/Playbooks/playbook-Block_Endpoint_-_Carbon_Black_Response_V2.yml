@@ -239,3 +239,7 @@ outputs:
 - contextPath: CarbonBlackEDR.Sensor.is_isolating
   description: Is sensor isolated.
   type: boolean
+tests:
+- Carbon Black Response Test
+- CBFindIP - Test
+fromversion: 5.5.0
