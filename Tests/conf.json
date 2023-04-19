@@ -3600,6 +3600,10 @@
             "playbookID": "Identity & Access test playbook"
         },
         {
+            "integrations": "MicrosoftPolicyAndComplianceAuditLog",
+            "playbookID": "Audit Log - Test"
+        },
+        {
             "integrations": "Nutanix Hypervisor",
             "playbookID": "Nutanix-test"
         },
