@@ -498,3 +498,4 @@ fromversion: 6.0.0
 tests:
 - No tests (deprecated)
 deprecated: true
+hidden: true
