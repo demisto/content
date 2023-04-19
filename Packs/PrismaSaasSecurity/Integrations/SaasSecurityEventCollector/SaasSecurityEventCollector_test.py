@@ -448,7 +448,22 @@ def test_is_token_expired(mocker, time_mock, token_initiate_time, token_expirati
 @pytest.mark.parametrize(
     'limit, expected_limit',
     [
-        (126, 120), (54, 50), (23, 20), (235, 230), (250, 250), (10000, 5000), (5000, 5000), (3, 10)
+        (126, 120),
+        (54, 50),
+        (23, 20),
+        (235, 230),
+        (250, 250),
+        (10000, 5000),
+        (5000, 5000),
+        (3, 10),
+        (100, 100),
+        (2000, 2000),
+        (150, 150),
+        (404, 400),
+        (120, 120),
+        (1, 10),
+        (4, 10),
+        (487, 480)
     ]
 )
 def test_max_fetch(limit, expected_limit):
@@ -457,10 +472,10 @@ def test_max_fetch(limit, expected_limit):
        - a limit parameter which is not divisible by 100/negative limit.
 
     When -
-        executing validate_limit function
+        executing get_max_fetch function
 
     Then
-      - make sure an exception is raised
+      - make sure the limit gets rounded to a number that is dividable by 10.
     """
     from SaasSecurityEventCollector import get_max_fetch
 

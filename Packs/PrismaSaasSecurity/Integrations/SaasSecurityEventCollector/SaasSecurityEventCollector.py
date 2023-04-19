@@ -137,8 +137,13 @@ def is_token_expired(token_initiate_time: float, token_expiration_seconds: float
 
 def get_max_fetch(limit: Optional[int]) -> int:
     """
-    Validate and get the max fetch. if the max fetch is not dividable by 10,
-    will round it down to a number tht is dividable by 10.
+    Validate and get the max fetch accodring to the following rules:
+
+    1. if limit is negative raise an exception
+    2. if limit is less than 10, limit will be equal to 10
+    3. if limit is not dividable by 10, make sure it gets rounded down to a number that is dividable by 10.
+    4. if limit > MAX_LIMIT (5000) - make sure it will always be MAX_LIMIT (5000).
+    5. if limit is not provided, set it up for the default limit which is 1000.
     """
     if limit:
         if limit <= 0:
