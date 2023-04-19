@@ -3504,7 +3504,7 @@ def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, quer
     }
 
     if query:
-        params["xpath"] = f'{params["xpath"]}[{query}]'
+        params["xpath"] = f'{params["xpath"]}[{query.replace(" eq ", " = ")}]'
     elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
         params["xpath"] = f'{params["xpath"]}[{xpath_filter}]'
 
@@ -4640,8 +4640,6 @@ def panorama_register_ip_tag_command(args: dict):
 
     major_version = get_pan_os_major_version()
 
-    if timeout and persistent == '1':
-        raise DemistoException('When the persistent argument is true, you can not use the timeout argument.')
     if major_version <= 8 and timeout:
         raise DemistoException('The timeout argument is only applicable on 9.x PAN-OS versions or higher.')
 
@@ -13104,7 +13102,7 @@ def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[An
         else:
             raise DemistoException(f'Could not parse fetch results: {result}')
 
-    entries_log_info = {entry.get('seqno',''):entry.get('time_generated') for entry in entries}
+    entries_log_info = {entry.get('@logid',''):entry.get('time_generated') for entry in entries}
     demisto.debug(f'{log_type} log type: {len(entries)} raw incidents (entries) found.')
     demisto.debug(f'fetched raw incidents (entries) are (ID:time_generated): {entries_log_info}')
     return entries
@@ -13128,7 +13126,7 @@ def add_time_filter_to_query_parameter(query: str, last_fetch: datetime) -> str:
 
 def add_unique_id_filter_to_query_parameter(query: str, last_id: str) -> str:
     """append unique id filter parameter to original query parameter.
-    'seqno' is a 64-bit log entry identifier incremented sequentially; each log type has unique number space.
+    '@logid' is a log entry identifier incremented sequentially; each log type has unique number space.
     by adding this filter which gives us only entries that have larger id, we insure not have duplicates in our request.
 
     Args:
@@ -13143,7 +13141,7 @@ def add_unique_id_filter_to_query_parameter(query: str, last_id: str) -> str:
         if isinstance(last_id_int, int):
             # last_id is can be filtered only by '>=' so we need to add 1 to it.
             last_id_int += 1
-            unique_id_filter = f" and (seqno geq '{last_id_int}')"
+            unique_id_filter = f" and (@logid geq '{last_id_int}')"
             return query + unique_id_filter
         else:
             return query
@@ -13192,36 +13190,14 @@ def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[str 
     last_fetch_string = max({entry.get('time_generated', '') for entry in incident_entries})
     new_fetch_datetime = dateparser.parse(last_fetch_string, settings={'TIMEZONE': 'UTC'})
 
-    # calculate largest unique id for each log type query and for each device
-    new_largest_id = find_largest_id_per_device(incident_entries)
+    # calculate largest unique id for each log type query
+    new_largest_id = max({entry.get('@logid', '') for entry in incident_entries})
 
     # convert incident entries to incident context and filter any empty incidents if exists
     parsed_incidents: List[Dict[str, Any]] = [incident_entry_to_incident_context(incident_entry) for incident_entry in incident_entries]
     filtered_parsed_incidents = list(filter(lambda incident: incident, parsed_incidents))
 
     return new_largest_id, new_fetch_datetime, filtered_parsed_incidents
-
-
-def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[str, str]:
-    """
-    This function finds the largest id per device in the incident entries list.
-    Args:
-        incident_entries (List[Dict[str, Any]]): list of dictionaries representing raw incident entries
-    Returns:
-        new_largest_id: a dictionary of the largest id per device
-    """
-
-    new_largest_id = {}
-    for entry in incident_entries:
-        device_name = entry.get('device_name', '')
-        id = entry.get('seqno', '')
-        temp_largest_id_per_device = {device_name: id}
-        if device_name in new_largest_id.keys():
-            if id > new_largest_id[device_name]:
-                new_largest_id[device_name] = id  # update the id if it is larger
-        else:
-            new_largest_id.update(temp_largest_id_per_device)  # add the device and id to the list
-    return new_largest_id
 
 
 def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[str, Any]:
@@ -13238,7 +13214,7 @@ def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[s
     incident_context = {}
     if occurred_datetime:
         incident_context = {
-            'name': incident_entry.get('seqno'),
+            'name': incident_entry.get('@logid'),
             'occurred': occurred_datetime.strftime(DATE_FORMAT),
             'rawJSON': json.dumps(incident_entry),
             'type': incident_entry.get('type')
@@ -13380,8 +13356,8 @@ def test_fetch_incidents_parameters(fetch_params):
                 raise DemistoException(f"{log_type} Log Type Query parameter is empty. Please enter a valid query.")
             if 'time_generated' in log_type_query:
                 raise DemistoException(f"{log_type} Log Type Query parameter cannot contain 'time_generated' filter. Please remove it from the query.")
-            if 'seqno' in log_type_query:
-                raise DemistoException(f"{log_type} Log Type Query parameter cannot contain 'seqno' filter. Please remove it from the query.")
+            if '@logid' in log_type_query:
+                raise DemistoException(f"{log_type} Log Type Query parameter cannot contain '@logid' filter. Please remove it from the query.")
 
     else:
         raise DemistoException("fetch incidents is checked but no Log Types were selected to fetch from the dropdown menu.")
