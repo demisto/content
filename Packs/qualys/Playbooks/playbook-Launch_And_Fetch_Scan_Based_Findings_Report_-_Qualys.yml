@@ -189,7 +189,7 @@ tasks:
       id:
         simple: ${Qualys.Report.ID}
       retry-count:
-        simple: "2"
+        simple: "3"
       retry-interval:
         simple: "5"
     separatecontext: false
