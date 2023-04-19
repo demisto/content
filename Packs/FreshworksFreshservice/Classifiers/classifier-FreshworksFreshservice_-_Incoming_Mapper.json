@@ -75,7 +75,7 @@
                 "FreshworksFreshservice Workspace ID": {
                     "simple": "workspace_id"
                 },
-                "FreshworksFreshservice Task": {
+                "FreshworksFreshservice Task": {
                     "simple": "tasks"
                 },
                 "Source Priority": {
@@ -166,7 +166,7 @@
                 }
             }
         },
-        "FreshworksFreshservice Change Request": {
+        "FreshworksFreshservice Change Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Description": {
@@ -232,7 +232,7 @@
                 "FreshworksFreshservice Sub Category": {
                     "simple": "sub_category"
                 },
-                "FreshworksFreshservice Task": {
+                "FreshworksFreshservice Task": {
                     "simple": "tasks"
                 },
                 "Source Priority": {
@@ -323,7 +323,7 @@
                 }
             }
         },
-        "FreshworksFreshservice Problem Request": {
+        "FreshworksFreshservice Problem Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Description": {
@@ -377,7 +377,7 @@
                 "FreshworksFreshservice Sub Category": {
                     "simple": "sub_category"
                 },
-                "FreshworksFreshservice Task": {
+                "FreshworksFreshservice Task": {
                     "simple": "tasks"
                 },
                 "Source Priority": {
@@ -468,7 +468,7 @@
                 }
             }
         },
-        "FreshworksFreshservice Release Request": {
+        "FreshworksFreshservice Release Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Description": {
@@ -522,7 +522,7 @@
                 "FreshworksFreshservice Sub Category": {
                     "simple": "sub_category"
                 },
-                "FreshworksFreshservice Task": {
+                "FreshworksFreshservice Task": {
                     "simple": "tasks"
                 },
                 "Source Priority": {
