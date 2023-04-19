@@ -820,6 +820,10 @@
             "playbookID": "Akamai_WAF_SIEM-Test"
         },
         {
+            "integrations": "FreshworksFreshservice",
+            "playbookID": "FreshworkFreshservice"
+        },
+        {
             "integrations": "Cofense Triage v2",
             "playbookID": "Cofense Triage v2 Test"
         },
@@ -5635,6 +5639,7 @@
         "Workday": "No instance - License expired Issue: 29595",
         "FireEyeFeed": "No instance - License expired Issue: 31838",
         "Akamai WAF": "No instance - Issue 32318",
+        "FreshworksFreshservice": "No instance - Issue 32318",
         "FraudWatch": "No instance - Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "AzureKeyVault": "No instance - developed by Qmasters",
