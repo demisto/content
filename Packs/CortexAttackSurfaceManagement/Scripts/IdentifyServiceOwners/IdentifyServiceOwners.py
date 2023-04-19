@@ -37,8 +37,8 @@ def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:
     """
     For now, `Justification` is the same as `Source`; in the future, will sophisticate
     """
-    for i in range(len(owners)):
-        owners[i]['Justification'] = owners[i]['Source']
+    for owner in owners:
+        owner['Justification'] = owner.get('Source', '')
     return owners
 
 
