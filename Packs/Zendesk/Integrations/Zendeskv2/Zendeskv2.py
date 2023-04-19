@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from copy import copy
 from functools import lru_cache
-from urllib.parse import urlencode
 from urllib3 import disable_warnings
 from requests.exceptions import HTTPError
 from requests import Response
@@ -772,7 +771,8 @@ class ZendeskClient(BaseClient):
 
     # ---- search releated functions ---- #
 
-    def __zendesk_search_results(self, query: str, limit: int = 50, page_number: Optional[int] = None, page_size: int = 50, additional_params: dict = {}):
+    def __zendesk_search_results(self, query: str, limit: int = 50, page_number: Optional[int] = None, page_size: int = 50,
+                                 additional_params: dict = {}):
         params = {'query': query} | additional_params
         results = []
         if page_number:
@@ -848,13 +848,8 @@ class ZendeskClient(BaseClient):
         }
 
     @staticmethod
-    def _fetch_query_builder(last_fetch: str, zendesk_time_filter_type: str, query: str = None, time_filter_type: str = None,
-                             ticket_priority: str = None, ticket_status: str = None, ticket_types: str = None,
-                             **_kwargs):
-        query_parts = ['type:ticket', f"{zendesk_time_filter_type}>{last_fetch}"]
-        if query:
-            query_parts.append(query)
-            return ' '.join(query_parts)
+    def _fetch_query_builder(ticket_priority: str = None, ticket_status: str = None, ticket_types: str = None, **_):
+        query_parts = []
         if ticket_priority and 'all' not in ticket_priority:
             for priority in argToList(ticket_priority):
                 query_parts.append(f'priority:{priority}')
@@ -866,43 +861,71 @@ class ZendeskClient(BaseClient):
                 query_parts.append(f'ticket_type:{ticket_type}')
         return ' '.join(query_parts)
 
+    @staticmethod
+    def _fetch_args(params, last_run):
+        # from params
+        time_filter = 'updated' if params.get('time_filter') == 'updated-at' else 'created'
+        query = params.get('fetch_query') or ZendeskClient._fetch_query_builder(**params)
+        max_fetch = min(100, int(params.get('max_fetch') or 50))
+
+        # from last_run
+        fetched_tickets = deque(last_run.get('fetched_tickets') or [])
+        if query != last_run.get('query') or time_filter != last_run.get('time_filter'):
+            last_run = {'fetched_tickets': fetched_tickets}
+        page_number = last_run.get('page_number') or 1
+        last_fetch = last_run.get('fetch_time')
+        max_fetch = last_run.get('max_fetch') or max_fetch
+        if not last_fetch:
+            first_fetch = params.get('first_fetch') or '3 days'
+            first_fetch_datetime = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
+            if not first_fetch_datetime:
+                raise DemistoException(f'invalid first fetch time specified ({first_fetch})')
+            last_fetch = first_fetch_datetime.strftime('%Y-%m-%dT%H:%M:00Z')
+
+        return fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number
+
+    @staticmethod
+    def _next_fetch_args(fetched_tickets, search_results_ids, next_run_start_time, query, time_filter,
+                         max_fetch, page_number, last_fetch):
+        next_run = {
+            'fetched_tickets': list(fetched_tickets)[-1000:],
+            'fetch_time': next_run_start_time.strftime('%Y-%m-%dT%H:%M:00Z'),
+            # informative args
+            'query': query,
+            'time_filter': time_filter
+
+        }
+        if not len(search_results_ids) < max_fetch:
+            next_run |= {
+                'max_fetch': max_fetch,
+                'page_number': page_number + 1,
+                'fetch_time': last_fetch,
+            }
+
+        return next_run
+
     def fetch_incidents(self, params: dict, lastRun: Optional[str] = None):
         last_run = json.loads(lastRun or '{}') or demisto.getLastRun()
-        page_number = last_run.get('page_number') or 1
-        fetched_tickets = deque(last_run.get('fetched_tickets') or [])
-        max_fetch = int(last_run.get('max_fetch') or params.get('max_fetch') or 50)
-        now = datetime.utcnow() - timedelta(minutes=1)
-        last_fetch = last_run.get('fetch_time')
-        zendesk_time_filter_type = 'updated' if params.get('time_filter_type') == 'updated-at' else 'created'
+        fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number = self._fetch_args(params, last_run)
+        next_run_start_time = datetime.utcnow() - timedelta(minutes=1)
 
-        if not last_fetch:
-            first_fetch = dateparser.parse(
-                params.get('first_fetch') or '3 days', settings={'TIMEZONE': 'UTC'})
-            last_fetch = first_fetch.strftime('%Y-%m-%dT%H:%M:00Z')
+        query_parts = ["type:ticket", f"{time_filter}>{last_fetch}"]
+        query_parts = query_parts + [query] if query else query_parts
 
-        search_query = self._fetch_query_builder(last_fetch, zendesk_time_filter_type, **params)
-        demisto.error(f'{search_query=}')
         search_results = self.__zendesk_search_results(
-            query=search_query, limit=max_fetch, page_size=max_fetch, page_number=page_number,
-            additional_params={'sort_by': f'{zendesk_time_filter_type}_at', 'sort_order': 'asc'})
-        search_results_ids = list(map(lambda x: x.get('id'), search_results))
+            query=' '.join(query_parts),
+            limit=max_fetch, page_size=max_fetch, page_number=page_number,
+            additional_params={'sort_by': f'{time_filter}_at', 'sort_order': 'asc'}
+        )
+        search_results_ids = list(map(lambda x: x['id'], search_results))
         filtered_search_results_ids = list(filter(lambda x: x not in fetched_tickets, search_results_ids))
-        tickets = list(map(lambda x: self._get_ticket_by_id(x), filtered_search_results_ids))
+        tickets = map(lambda x: self._get_ticket_by_id(x), filtered_search_results_ids)
         incidents = list(map(self._ticket_to_incident, tickets))
 
         demisto.incidents(incidents)
         fetched_tickets.extend(filtered_search_results_ids)
-        next_run = {
-            'fetched_tickets': list(fetched_tickets)[-1000:],
-            'fetch_time': now.strftime('%Y-%m-%dT%H:%M:00Z')
-        }
-        if not len(search_results_ids) < max_fetch:
-            next_run['max_fetch'] = max_fetch
-            next_run['page_number'] = page_number + 1
-            next_run['fetch_time'] = last_fetch
-        demisto.error(
-            f'next run args:\n{next_run.get("fetch_time")=}\n{next_run.get("limit")=}\n{next_run.get("page_number")=}\n{next_run.get("fetch_time")=}\n')
-        demisto.setLastRun(next_run)
+        demisto.setLastRun(self._next_fetch_args(fetched_tickets, search_results_ids,
+                           next_run_start_time, query, time_filter, max_fetch, page_number, last_fetch))
 
     def get_modified_remote_data(self, lastUpdate: Optional[str] = None):
         try:
