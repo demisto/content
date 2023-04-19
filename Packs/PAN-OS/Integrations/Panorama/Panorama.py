@@ -13102,7 +13102,7 @@ def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[An
         else:
             raise DemistoException(f'Could not parse fetch results: {result}')
 
-    entries_log_info = {entry.get('@logid',''):entry.get('time_generated') for entry in entries}
+    entries_log_info = {entry.get('seqno',''):entry.get('time_generated') for entry in entries}
     demisto.debug(f'{log_type} log type: {len(entries)} raw incidents (entries) found.')
     demisto.debug(f'fetched raw incidents (entries) are (ID:time_generated): {entries_log_info}')
     return entries
@@ -13126,7 +13126,7 @@ def add_time_filter_to_query_parameter(query: str, last_fetch: datetime) -> str:
 
 def add_unique_id_filter_to_query_parameter(query: str, last_id: str) -> str:
     """append unique id filter parameter to original query parameter.
-    '@logid' is a log entry identifier incremented sequentially; each log type has unique number space.
+    'seqno' is a 64-bit log entry identifier incremented sequentially; each log type has unique number space.
     by adding this filter which gives us only entries that have larger id, we insure not have duplicates in our request.
 
     Args:
@@ -13141,7 +13141,7 @@ def add_unique_id_filter_to_query_parameter(query: str, last_id: str) -> str:
         if isinstance(last_id_int, int):
             # last_id is can be filtered only by '>=' so we need to add 1 to it.
             last_id_int += 1
-            unique_id_filter = f" and (@logid geq '{last_id_int}')"
+            unique_id_filter = f" and (seqno geq '{last_id_int}')"
             return query + unique_id_filter
         else:
             return query
@@ -13191,7 +13191,7 @@ def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[str 
     new_fetch_datetime = dateparser.parse(last_fetch_string, settings={'TIMEZONE': 'UTC'})
 
     # calculate largest unique id for each log type query
-    new_largest_id = max({entry.get('@logid', '') for entry in incident_entries})
+    new_largest_id = max({entry.get('seqno', '') for entry in incident_entries})
 
     # convert incident entries to incident context and filter any empty incidents if exists
     parsed_incidents: List[Dict[str, Any]] = [incident_entry_to_incident_context(incident_entry) for incident_entry in incident_entries]
@@ -13214,7 +13214,7 @@ def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[s
     incident_context = {}
     if occurred_datetime:
         incident_context = {
-            'name': incident_entry.get('@logid'),
+            'name': incident_entry.get('seqno'),
             'occurred': occurred_datetime.strftime(DATE_FORMAT),
             'rawJSON': json.dumps(incident_entry),
             'type': incident_entry.get('type')
@@ -13356,8 +13356,8 @@ def test_fetch_incidents_parameters(fetch_params):
                 raise DemistoException(f"{log_type} Log Type Query parameter is empty. Please enter a valid query.")
             if 'time_generated' in log_type_query:
                 raise DemistoException(f"{log_type} Log Type Query parameter cannot contain 'time_generated' filter. Please remove it from the query.")
-            if '@logid' in log_type_query:
-                raise DemistoException(f"{log_type} Log Type Query parameter cannot contain '@logid' filter. Please remove it from the query.")
+            if 'seqno' in log_type_query:
+                raise DemistoException(f"{log_type} Log Type Query parameter cannot contain 'seqno' filter. Please remove it from the query.")
 
     else:
         raise DemistoException("fetch incidents is checked but no Log Types were selected to fetch from the dropdown menu.")
