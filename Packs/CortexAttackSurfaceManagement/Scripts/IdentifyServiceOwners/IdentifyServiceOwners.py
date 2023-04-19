@@ -107,12 +107,6 @@ def validate_input(owners: Any) -> List[Dict[str, str]]:
 def main():
     try:
         owners = validate_input(demisto.args()["owners"])
-
-        # TODO: update the source to be more specific in the original json
-        for owner in owners:
-            if owner["Source"] == "GCP":
-                owner["Source"] = "Owner of GCP project of instance"
-
         top_k = justify(rank(score(deduplicate(owners))))
         demisto.executeCommand("setAlert", {"asmserviceowner": top_k})
         return_results(CommandResults(readable_output='top 5 service owners written to asmserviceowner'))
