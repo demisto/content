@@ -8,7 +8,7 @@
             "event_data": {
                 "EventDetails": [
                     {
-                        "OldValue": "",
+                        "OldValue": "old1",
                         "NewValue": "val",
                         "PolicyEnforcementNewValue": null,
                         "PolicyEnforcementOldValue": null,
@@ -16,7 +16,7 @@
                         "PropertyCategory": "ChangedProperty"
                     },
                     {
-                        "OldValue": "",
+                        "OldValue": "old2",
                         "NewValue": "val2",
                         "PolicyEnforcementNewValue": null,
                         "PolicyEnforcementOldValue": null,
@@ -26,19 +26,21 @@
                 ],
                 "EventName": "Script token added",
                 "EventType": "Company administration",
-                "Timestamp": "2022-02-22T22:22:22Z",
+                "Timestamp": "2023-02-22T22:22:22Z",
                 "Author": "author name",
                 "AffectedItem": "1"
             },
             "expected_values": {
+                "xdm.target.resource_before.value": 
+                    "old1,old2",
                 "xdm.event.type": "Company administration",
-                "xdm.target.resource.": "1",
-                "xdm.target.resource.type": ["Name", "Description"],
-                "xdm.target.resource_before.value": ["", ""],
-                "xdm.event.operation_sub_type": ["ChangedProperty", "ChangedProperty"],
+                "xdm.event.operation_sub_type": 
+                    "ChangedProperty,ChangedProperty",
+                "xdm.target.resource.name": null,
+                "xdm.target.resource.type": "Name,Description",
+                "xdm.target.resource.value": "val,val2",
                 "xdm.source.user.username": "author name",
-                "xdm.event.description": "Script token added",
-                "xdm.target.resource.value": ["val", "val2"]
+                "xdm.event.description": "Script token added"
             }
         }
     ]

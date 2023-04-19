@@ -1,4 +1,4 @@
-[MODEL: dataset=teamviewer_teamviewer_raw]
+[MODEL: dataset="teamviewer_teamviewer_raw"]
 alter
 xdm.event.type = EventType,
 xdm.event.description = EventName,
