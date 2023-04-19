@@ -284,7 +284,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
 """ MAIN FUNCTION """
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
