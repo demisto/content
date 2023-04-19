@@ -1,6 +1,0 @@
-[file:PublishThreatIntelReport.yml]
-ignore=BA124
-
-[file:UnpublishThreatIntelReport.yml]
-ignore=BA124
-

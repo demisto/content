@@ -245,7 +245,20 @@ inputs:
   description: For a scan report, the report content will be restricted to the specified
     IPs/ranges. Multiple IPs and/or ranges are comma separated.
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: InfoFile.Name
+  description: The file name.
+- contextPath: InfoFile.EntryID
+  description: The ID for locating the file in the War Room.
+- contextPath: InfoFile.Size
+  description: The size of the file (in bytes).
+- contextPath: InfoFile.Type
+  description: The file type, as determined by libmagic (same as displayed in file
+    entries).
+- contextPath: InfoFile.Extension
+  description: The file extension.
+- contextPath: InfoFile.Info
+  description: Basic information about the file.
 tests:
 - QualysVulnerabilityManagement-Test
 fromversion: 5.5.0
