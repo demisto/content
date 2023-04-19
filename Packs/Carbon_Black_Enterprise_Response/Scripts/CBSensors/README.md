@@ -12,7 +12,7 @@ Returns lists of the Carbon Black sensors.
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* cb-list-sensors
+* cb-edr-sensors-list
 
 ## Inputs
 ---

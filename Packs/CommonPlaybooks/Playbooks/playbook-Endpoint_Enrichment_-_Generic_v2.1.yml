@@ -270,29 +270,29 @@ tasks:
       - "4"
       "yes":
       - "9"
-    scriptarguments:
-      value:
-        complex:
-          root: modules
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: brand
-                iscontext: true
-              right:
-                value:
-                  simple: carbonblack-v2
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: state
-                iscontext: true
-              right:
-                value:
-                  simple: active
-    reputationcalc: 1
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VMware Carbon Black EDR v2
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
     view: |-
       {
         "position": {

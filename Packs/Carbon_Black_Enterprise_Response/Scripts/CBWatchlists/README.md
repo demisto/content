@@ -12,7 +12,7 @@ Displays all watchlists and their details, queries, etc.
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* cb-watchlist-get
+* cb-edr-watchlists-list
 
 ## Inputs
 ---

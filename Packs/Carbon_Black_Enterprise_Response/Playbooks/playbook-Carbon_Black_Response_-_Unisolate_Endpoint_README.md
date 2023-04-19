@@ -7,15 +7,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* carbonblack-v2
+* VMware Carbon Black EDR v2
 
 ### Scripts
 * IsIntegrationAvailable
 
 ### Commands
-* cb-sensor-info
-* cb-list-sensors
-* cb-unquarantine-device
+* endpoint
+* cb-edr-sensors-list
+* cb-edr-unquarantine-device
 
 ## Playbook Inputs
 ---

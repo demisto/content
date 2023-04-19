@@ -21,11 +21,11 @@ Search Carbon Black for connection to specified IP addresses.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Process.Path | Process path. | String |
-| Process.PID | Process PID. | Number |
-| Process.MD5 | Process MD5 hash. | String |
-| Process.Hostname | Process hostname. | String |
-| Process.Name | Process name. | String |
-| Process.CbSegmentID | Carbon Black "segment" where this process instance is stored. Required to fetch additional information for a process. | String |
-| Process.CbID | Carbon Black unique ID for this process instance. Required \(together with CbSegmentID\) to fetch additional information for a process. | String |
-| Process.Endpoint | The endpoint of the process. | String |
+| ProcessSearch.Results.path | Process path. | String |
+| ProcessSearch.Results.id | Process PID. | Number |
+| ProcessSearch.Results.process_md5 | Process MD5 hash. | String |
+| ProcessSearch.Results.hostname | Process hostname. | String |
+| ProcessSearch.Results.process_name | Process name. | String |
+| ProcessSearch.Results.segment_id | Carbon Black "segment" where this process instance is stored. Required to fetch additional information for a process. | String |
+| ProcessSearch.Results.unique_id | Carbon Black unique ID for this process instance. Required \(together with CbSegmentID\) to fetch additional information for a process. | String |
+| ProcessSearch.Results.interface_ip | The endpoint of the process. | String |
