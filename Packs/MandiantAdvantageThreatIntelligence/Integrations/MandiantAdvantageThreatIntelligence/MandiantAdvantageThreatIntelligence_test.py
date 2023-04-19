@@ -1,7 +1,7 @@
 import pytest
 import io
 from CommonServerPython import *
-import ThreatIntelligence
+import MandiantAdvantageThreatIntelligence
 
 SERVER_URL = "https://api.intelligence.mandiant.com"
 
