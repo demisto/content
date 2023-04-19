@@ -1,7 +1,7 @@
 {
     "description": "FreshworksFreshservice - Incoming Mapper",
     "feed": false,
-    "id": "FreshworksFreshservice - Incoming Mapper",
+    "id": "FreshworksFreshservice - Incoming Mapper",
     "mapping": {
         "FreshworksFreshservice Ticket": {
             "dontMapEventToLabels": false,
@@ -618,7 +618,7 @@
             "internalMapping": {}
         }
     },
-    "name": "FreshworksFreshservice - Incoming Mapper",
+    "name": "FreshworksFreshservice - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"
