@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - display: Client token
-  name: clientToken
+  name: clientTokenweagweag
   required: true
   type: 4
 - display: Access token
