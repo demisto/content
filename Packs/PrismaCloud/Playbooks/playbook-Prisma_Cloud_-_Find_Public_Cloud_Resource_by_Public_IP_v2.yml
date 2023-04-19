@@ -400,7 +400,7 @@ tasks:
     task:
       id: 3047b16c-0246-48c1-8ad8-a8e50ad3c9ad
       version: -1
-      name: Prisma Cloud - Find AWS Resource by Public IP v2
+      name: Prisma Cloud - Find AWS Resource by Public IP
       description: |
         Find AWS resources by Public IP using Prisma Cloud inventory.
         Supported services: EC2, Network Load Balancer, ECS, Route53.
@@ -443,7 +443,7 @@ tasks:
     task:
       id: 29b6f5fa-b386-43b0-82c2-3dfca31a242a
       version: -1
-      name: Prisma Cloud - Find Azure Resource by Public IP v2
+      name: Prisma Cloud - Find Azure Resource by Public IP
       description: |
         Find Azure resources by Public IP using Prisma Cloud inventory.
         Supported services: Azure VM, Azure Load Balancer, Azure Application Gateway, Azure Web Apps.
@@ -486,7 +486,7 @@ tasks:
     task:
       id: ca4523b4-7f64-4c09-8c6e-a68a4b73094f
       version: -1
-      name: Prisma Cloud - Find GCP Resource by Public IP v2
+      name: Prisma Cloud - Find GCP Resource by Public IP
       description: |
         Find GCP resources by Public IP using Prisma Cloud inventory.
         Supported services: GCE, Load Balancing, GKE.
