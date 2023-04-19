@@ -407,6 +407,8 @@ script:
     - description: The channel ID associated with the Slack channel
       name: channel_id
       required: true
+    - description: Default is 100. Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
+      name: limit
     description: Fetches a conversation's history of messages     and events
     name: slack-get-conversation-history
   dockerimage: demisto/slackv3:1.0.0.48936
