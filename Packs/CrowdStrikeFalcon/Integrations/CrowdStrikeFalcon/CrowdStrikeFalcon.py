@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 ''' IMPORTS '''
 import base64
 import email
@@ -120,6 +121,51 @@ SEARCH_DEVICE_KEY_MAP = {
     'first_seen': 'FirstSeen',
     'last_seen': 'LastSeen',
     'status': 'Status',
+}
+
+SEARCH_DEVICE_VERBOSE_KEY_MAP = {
+    'agent_load_flags': 'AgentLoadFlags',
+    'agent_local_time': 'AgentLocalTime',
+    'agent_version': 'AgentVersion',
+    'bios_manufacturer': 'BiosManufacturer',
+    'bios_version': 'BiosVersion',
+    'cid': 'CID',
+    'config_id_base': 'ConfigIdBase',
+    'config_id_build': 'ConfigIdBuild',
+    'config_id_platform': 'ConfigIdPlatform',
+    'connection_ip': 'ConnectionIp',
+    'connection_mac_address': 'ConnectionMacAddress',
+    'cpu_signature': 'CpuSignature',
+    'default_gateway_ip': 'DefaultGatewayIP',
+    'device_id': 'DeviceID',
+    'device_policies': 'DevicePolicies',
+    'external_ip': 'ExternalIP',
+    'first_seen': 'FirstSeen',
+    'group_hash': 'GroupHash',
+    'group_name': 'GroupName',
+    'group_names': 'GroupNames',
+    'groups': 'Groups',
+    'hostname': 'Hostname',
+    'kernel_version': 'KernelVersion',
+    'last_seen': 'LastSeen',
+    'local_ip': 'LocalIP',
+    'mac_address': 'MacAddress',
+    'major_version': 'MajorVersion',
+    'meta': 'Meta',
+    'minor_version': 'MinorVersion',
+    'modified_timestamp': 'ModifiedTimestamp',
+    'os_version': 'OSVersion',
+    'platform_id': 'PlatformID',
+    'platform_name': 'PlatformName',
+    'policies': 'Policies',
+    'product_type_desc': 'ProductTypeDesc',
+    'provision_status': 'ProvisionStatus',
+    'reduced_functionality_mode': 'ReducedFunctionalityMode',
+    'serial_number': 'SerialNumber',
+    'status': 'Status',
+    'system_manufacturer': 'SystemManufacturer',
+    'system_product_name': 'SystemProductName',
+    'tags': 'Tags'
 }
 
 ENDPOINT_KEY_MAP = {
@@ -378,26 +424,6 @@ def create_publications(cve: dict) -> list:
         for vendor_advisory in cve.get('vendor_advisory', {}):
             publications.append(Common.Publications(title='vendor_advisory', link=vendor_advisory))
     return publications
-
-
-def build_query_params(query_params: dict) -> str:
-    """
-        Gets a dict of {property: value} and return a string to use as a query param in the requests of exclusion entities.
-        For example: {'name': 'test', 'os_name': 'WINDOWS'} => '?name=test+os_name=WINDOWS'
-
-        Args:
-            query_params: dict of exclusion property: value.
-        Returns:
-            String to use as a query param in the requests of exclusion.
-    """
-    query = ''
-
-    for key, value in query_params.items():
-        if query:
-            query += '+'
-        query += f"{key}:'{value}'"
-
-    return query
 
 
 ''' API FUNCTIONS '''
@@ -749,7 +775,7 @@ def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, tim
 
 
 def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = None, timeout: int = None,
-                      timeout_duration: str = None, offline: bool = False) -> Dict:
+                      timeout_duration: str = None) -> Dict:
     """
         Batch executes `get` command across hosts to retrieve files.
         After this call is made `/real-time-response/combined/batch-get-command/v1` is used to query for the results.
@@ -760,11 +786,10 @@ def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = Non
                              If this list is supplied, only these hosts will receive the command.
       :param timeout: Timeout for how long to wait for the request in seconds
       :param timeout_duration: Timeout duration for for how long to wait for the request in duration syntax
-      :param offline: Whether the command will run against an offline-queued session for execution when the host comes online.
       :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-get-command/v1'
-    batch_id = init_rtr_batch_session(host_ids, offline)
+    batch_id = init_rtr_batch_session(host_ids)
 
     body = assign_params(batch_id=batch_id, file_path=f'"{file_path}"', optional_hosts=optional_hosts)
     params = assign_params(timeout=timeout, timeout_duration=timeout_duration)
@@ -908,7 +933,7 @@ def list_host_files(host_id: str, session_id: str = None) -> Dict:
         :param session_id: optional session_id for the command, if not provided a new session_id will generate
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
-    endpoint_url = '/real-time-response/entities/file/v2'
+    endpoint_url = '/real-time-response/entities/file/v1'
     if not session_id:
         session_id = init_rtr_single_session(host_id)
 
@@ -962,7 +987,7 @@ def get_script(script_id: list) -> Dict:
         :param script_id: ID of script to get
         :return: Response JSON which contains errors (if exist) and retrieved resource
     """
-    endpoint_url = '/real-time-response/entities/scripts/v2'
+    endpoint_url = '/real-time-response/entities/scripts/v1'
     params = {
         'ids': script_id
     }
@@ -989,7 +1014,7 @@ def list_scripts() -> Dict:
         Retrieves list of scripts
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
-    endpoint_url = '/real-time-response/entities/scripts/v2'
+    endpoint_url = '/real-time-response/entities/scripts/v1'
     response = http_request('GET', endpoint_url)
     return response
 
@@ -1063,7 +1088,7 @@ def get_file(file_id: list) -> Dict:
         :param file_id: ID of file to get
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
-    endpoint_url = '/real-time-response/entities/put-files/v2'
+    endpoint_url = '/real-time-response/entities/put-files/v1'
     params = {
         'ids': file_id
     }
@@ -1076,7 +1101,7 @@ def list_files() -> Dict:
         Get a list of put-file ID's that are available to the user for the put command.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
-    endpoint_url = '/real-time-response/entities/put-files/v2'
+    endpoint_url = '/real-time-response/entities/put-files/v1'
     response = http_request('GET', endpoint_url)
     return response
 
@@ -1736,115 +1761,6 @@ def get_detections_by_behaviors(behaviors_id):
     except Exception as e:
         demisto.error(f'Error occurred when trying to get detections by behaviors: {str(e)}')
         return {}
-
-
-def create_exclusion(exclusion_type: str, body: dict) -> dict:
-    """
-        Creates an exclusions based on a given json object.
-
-        Args:
-            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
-            exclusion_ids: A dict contains the exclusion data.
-        Returns:
-            Info about the created exclusion.
-    """
-    return http_request(method='POST', url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1', json=body)
-
-
-def update_exclusion(exclusion_type: str, body: dict) -> dict:
-    """
-        Updates an exclusions based on its ID and a given json object.
-
-        Args:
-            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
-            exclusion_ids: A dict contains the exclusion data.
-        Returns:
-            Info about the updated exclusion.
-    """
-    return http_request('PATCH', f'/policy/entities/{exclusion_type}-exclusions/v1', json=body)
-
-
-def delete_exclusion(exclusion_type: str, exclusion_ids: list) -> dict:
-    """
-        Deletes an exclusions based on its ID.
-
-        Args:
-            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
-            exclusion_ids: A list of exclusion IDs to delete.
-        Returns:
-            Info about the deleted exclusion.
-    """
-    return http_request(method='DELETE',
-                        url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{"?ids=" + "&ids=".join(exclusion_ids)}')
-
-
-def get_exclusions(exclusion_type: str, filter_query: str | None, params: dict) -> dict:
-    """
-        Returns IDs of exclusions that match the filter / value
-
-        Args:
-            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
-            filter_query: Custom filter, For example `value:'<value>'`.
-            params: API query params (sort, limit, offset).
-        Returns:
-            List of exclusion IDs.
-    """
-    return http_request(method='GET', url_suffix=f'/policy/queries/{exclusion_type}-exclusions/v1',
-                        params=assign_params(filter=filter_query, **params))
-
-
-def get_exclusion_entities(exclusion_type: str, exclusion_ids: List) -> dict:
-    """
-        Returns the exclusions based on a list of IDs.
-
-        Args:
-            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
-            exclusion_ids: A list of exclusion IDs to retrieve.
-        Returns:
-            List of exclusions.
-    """
-    return http_request(method='GET',
-                        url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{"?ids=" + "&ids=".join(exclusion_ids)}')
-
-
-def list_quarantined_files_id(files_filter: dict | None, query: dict, pagination: dict) -> dict:
-    """
-        Returns the files ID's that match the filter / value.
-
-        Args:
-            files_filter: The exclusion type can be either ml (machine learning) or IOA`.
-            query: The exclusion type can be either ml (machine learning) or IOA`.
-            pagination: API query params for pagination (limit, offset).
-        Returns:
-            list: List of exclusions.
-    """
-
-    return http_request(method='GET', url_suffix='/quarantine/queries/quarantined-files/v1',
-                        params=assign_params(filter=files_filter, q=build_query_params(query), **pagination))
-
-
-def list_quarantined_files(ids: list) -> dict:
-    """
-        Returns the file's metadata based a list of IDs.
-
-        Args:
-            ids: A list of the IDs of the files.
-        Returns:
-            A list contains metadata about the files.
-    """
-    return http_request(method='POST', url_suffix='/quarantine/entities/quarantined-files/GET/v1', json={'ids': ids})
-
-
-def apply_quarantined_files_action(body: dict) -> dict:
-    """
-        Applies action to quarantined files.
-
-        Args:
-            body: The request body with the parameters to update.
-        Returns:
-            A list contains metadata about the updated files.
-    """
-    return http_request(method='PATCH', url_suffix='/quarantine/entities/quarantined-files/v1', json=body)
 
 
 ''' MIRRORING COMMANDS '''
@@ -2691,10 +2607,14 @@ def search_device_command():
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
 
+    verbose = (demisto.args()['verbose'].lower() == 'true')
+
     command_results = []
     for single_device in devices:
         # demisto.debug(f"single device info: {single_device}")
         # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
+        # print(single_device['groups'])
+        # break
         endpoint = Common.Endpoint(
             id=single_device.get('device_id'),
             hostname=single_device.get('hostname'),
@@ -2706,8 +2626,16 @@ def search_device_command():
             mac_address=single_device.get('mac_address'),
             vendor=INTEGRATION_NAME)
 
-        entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
-        headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
+        if not verbose:
+            entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
+            headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
+        else:
+            device_groups = single_device['groups']
+            single_device.update({'group_names': list(enrich_groups(device_groups).values())})
+            entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_VERBOSE_KEY_MAP)
+            #entry.update({ 'group_names' : enrich_groups(entry['groups'])})
+            # print(entry)
+            headers = list(SEARCH_DEVICE_VERBOSE_KEY_MAP.values())
 
         command_results.append(CommandResults(
             outputs_prefix='CrowdStrike.Device',
@@ -3220,7 +3148,6 @@ def run_script_command():
     script_name = args.get('script_name')
     raw = args.get('raw')
     host_ids = argToList(args.get('host_ids'))
-    offline = argToBoolean(args.get('queue_offline', False))
     try:
         timeout = int(args.get('timeout', 30))
     except ValueError as e:
@@ -3239,7 +3166,7 @@ def run_script_command():
 
     command_type = 'runscript'
 
-    batch_id = init_rtr_batch_session(host_ids, offline)
+    batch_id = init_rtr_batch_session(host_ids)
     timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
     timer.start()
     try:
@@ -3281,7 +3208,7 @@ def run_script_command():
     return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
 
 
-def run_get_command(is_polling=False, offline=False):
+def run_get_command(is_polling=False):
     request_ids_for_polling = []
     args = demisto.args()
     host_ids = argToList(args.get('host_ids'))
@@ -3291,7 +3218,7 @@ def run_get_command(is_polling=False, offline=False):
     timeout_duration = args.get('timeout_duration')
 
     timeout = timeout and int(timeout)
-    response = run_batch_get_cmd(host_ids, file_path, optional_hosts, timeout, timeout_duration, offline)
+    response = run_batch_get_cmd(host_ids, file_path, optional_hosts, timeout, timeout_duration)
 
     resources: dict = response.get('combined', {}).get('resources', {})
 
@@ -3815,8 +3742,7 @@ def rtr_kill_process_command(args: dict) -> CommandResults:
     command_type = "kill"
     raw_response = []
     host_ids = [host_id]
-    offline = argToBoolean(args.get('queue_offline', False))
-    batch_id = init_rtr_batch_session(host_ids, offline)
+    batch_id = init_rtr_batch_session(host_ids)
     outputs = []
 
     for process_id in process_ids:
@@ -3883,12 +3809,11 @@ def match_remove_command_for_os(operating_system, file_path):
 def rtr_remove_file_command(args: dict) -> CommandResults:
     file_path = args.get('file_path')
     host_ids = remove_duplicates_from_list_arg(args, 'host_ids')
-    offline = argToBoolean(args.get('queue_offline', False))
     operating_system = args.get('os')
     full_command = match_remove_command_for_os(operating_system, file_path)
     command_type = "rm"
 
-    batch_id = init_rtr_batch_session(host_ids, offline)
+    batch_id = init_rtr_batch_session(host_ids)
     response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids)
     outputs = parse_rtr_command_response(response, host_ids)
     human_readable = tableToMarkdown(
@@ -3924,12 +3849,12 @@ def execute_run_batch_admin_cmd_with_timer(batch_id, command_type, full_command,
 
 
 def rtr_general_command_on_hosts(host_ids: list, command: str, full_command: str, get_session_function: Callable,
-                                 write_to_context=True, offline=False) -> \
+                                 write_to_context=True) -> \
         List[Union[CommandResults, dict]]:  # type:ignore
     """
     General function to run RTR commands depending on the given command.
     """
-    batch_id = init_rtr_batch_session(host_ids, offline)
+    batch_id = init_rtr_batch_session(host_ids)
     response = get_session_function(batch_id, command_type=command, full_command=full_command,
                                     host_ids=host_ids)  # type:ignore
     output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
@@ -3974,11 +3899,10 @@ def parse_rtr_stdout_response(host_ids, response, command, file_name_suffix=""):
 
 def rtr_read_registry_keys_command(args: dict):
     host_ids = remove_duplicates_from_list_arg(args, 'host_ids')
-    offline = argToBoolean(args.get('queue_offline', False))
     registry_keys = remove_duplicates_from_list_arg(args, 'registry_keys')
     command_type = "reg"
     raw_response = []
-    batch_id = init_rtr_batch_session(host_ids, offline)
+    batch_id = init_rtr_batch_session(host_ids)
     outputs = []
     files = []
     not_found_hosts = set()
@@ -4032,9 +3956,7 @@ def rtr_polling_retrieve_file_command(args: dict):
     if 'hosts_and_requests_ids' not in args:
         # this is the very first time we call the polling function. We don't wont to call this function more that
         # one time, so we store that arg between the different runs
-        offline = argToBoolean(args.get('queue_offline', False))
-        # run the first command to retrieve file
-        args['hosts_and_requests_ids'] = run_get_command(is_polling=True, offline=offline)
+        args['hosts_and_requests_ids'] = run_get_command(is_polling=True)  # run the first command to retrieve file
 
     # we are here after we ran the cs-falcon-run-get-command command at the current run or in previous
     if not args.get('SHA256'):
@@ -4267,338 +4189,6 @@ def get_cve_command(args: dict) -> list[CommandResults]:
     return command_results_list
 
 
-def create_ml_exclusion_command(args: dict) -> CommandResults:
-    """Creates a machine learning exclusion.
-
-    Args:
-        args: Arguments to create the exclusion from.
-
-    Returns:
-        The created exclusion meta data.
-
-    """
-    create_args = assign_params(
-        value=args.get('value'),
-        excluded_from=argToList(args.get('excluded_from')),
-        comment=args.get('comment'),
-        groups=argToList(args.get('groups', 'all'))
-    )
-
-    exclusion = create_exclusion('ml', create_args).get('resources')
-    human_readable = tableToMarkdown('CrowdStrike Falcon machine learning exclusion', exclusion, sort_headers=False,
-                                     headerTransform=underscoreToCamelCase, is_auto_json_transform=True, removeNull=True)
-
-    return CommandResults(
-        outputs_prefix='CrowdStrike.MLExclusion',
-        outputs_key_field='id',
-        outputs=exclusion,
-        readable_output=human_readable,
-    )
-
-
-def update_ml_exclusion_command(args: dict) -> CommandResults:
-    """Updates a machine learning exclusion by providing an ID.
-
-    Args:
-        args: Arguments for updating the exclusion.
-
-    Returns:
-        The updated exclusion meta data.
-
-    """
-    update_args = assign_params(
-        value=args.get('value'),
-        comment=args.get('comment'),
-        groups=argToList(args.get('groups'))
-    )
-    if not update_args:
-        raise Exception('At least one argument (besides the id argument) should be provided to update the exclusion.')
-    update_args.update({'id': args.get('id')})
-
-    exclusion = update_exclusion('ml', update_args).get('resources')
-    human_readable = tableToMarkdown('CrowdStrike Falcon machine learning exclusion', exclusion, sort_headers=False,
-                                     headerTransform=underscoreToCamelCase, is_auto_json_transform=True, removeNull=True)
-
-    return CommandResults(
-        outputs_prefix='CrowdStrike.MLExclusion',
-        outputs_key_field='id',
-        outputs=exclusion,
-        readable_output=human_readable,
-    )
-
-
-def delete_ml_exclusion_command(args: dict) -> CommandResults:
-    """Delete a machine learning exclusion by providing an ID.
-
-    Args:
-        args: Arguments for deleting the exclusion (in particular only the id is needed).
-
-    Returns:
-        A message that the exclusion has been deleted.
-
-    """
-    ids = argToList(args.get('ids'))
-
-    delete_exclusion('ml', ids)
-
-    return CommandResults(
-        readable_output=f'The machine learning exclusions with IDs {" ".join(ids)} was successfully deleted.'
-    )
-
-
-def search_ml_exclusion_command(args: dict) -> CommandResults:
-    """Searches machine learning exclusions by providing an ID / value / cusotm-filter.
-
-    Args:
-        args: Arguments for searching the exclusions.
-
-    Returns:
-        The exclusions meta data.
-
-    """
-    if not (ids := argToList(args.get('ids'))):
-        search_args = assign_params(
-            sort=args.get('sort'),
-            limit=args.get('limit'),
-            offset=args.get('offset'),
-        )
-        if value := args.get('value'):
-            ids = get_exclusions('ml', f"value:'{value}'", search_args).get('resources')
-        else:
-            ids = get_exclusions('ml', args.get('filter'), search_args).get('resources')
-
-    if not ids:
-        return CommandResults(
-            readable_output='The arguments/filters you provided did not match any exclusion.'
-        )
-
-    exclusions = get_exclusion_entities('ml', ids).get('resources')
-    human_readable = tableToMarkdown('CrowdStrike Falcon machine learning exclusions', exclusions, sort_headers=False,
-                                     headerTransform=underscoreToCamelCase, is_auto_json_transform=True, removeNull=True)
-
-    return CommandResults(
-        outputs_prefix='CrowdStrike.MLExclusion',
-        outputs_key_field='id',
-        outputs=exclusions,
-        readable_output=human_readable,
-    )
-
-
-def create_ioa_exclusion_command(args: dict) -> CommandResults:
-    """Creates an IOA exclusion.
-
-    Args:
-        args: Arguments to create the exclusion from.
-
-    Returns:
-        The created exclusion meta data.
-
-    """
-    create_args = assign_params(
-        name=args.get('exclusion_name'),
-        pattern_id=args.get('pattern_id'),
-        pattern_name=args.get('pattern_name'),
-        cl_regex=args.get('cl_regex'),
-        ifn_regex=args.get('ifn_regex'),
-        comment=args.get('comment'),
-        description=args.get('description'),
-        groups=argToList(args.get('groups', 'all')),
-        detection_json=args.get('detection_json')
-    )
-
-    exclusion = create_exclusion('ioa', create_args).get('resources')
-    human_readable = tableToMarkdown('CrowdStrike Falcon IOA exclusion', exclusion, is_auto_json_transform=True,
-                                     headerTransform=underscoreToCamelCase, sort_headers=False, removeNull=True)
-
-    return CommandResults(
-        outputs_prefix='CrowdStrike.IOAExclusion',
-        outputs_key_field='id',
-        outputs=exclusion,
-        readable_output=human_readable,
-    )
-
-
-def update_ioa_exclusion_command(args: dict) -> CommandResults:
-    """Updates an IOA exclusion by providing an ID.
-
-    Args:
-        args: Arguments for updating the exclusion.
-
-    Returns:
-        The updated exclusion meta data.
-
-    """
-    update_args = assign_params(
-        name=args.get('exclusion_name'),
-        pattern_id=args.get('pattern_id'),
-        pattern_name=args.get('pattern_name'),
-        cl_regex=args.get('cl_regex'),
-        ifn_regex=args.get('ifn_regex'),
-        comment=args.get('comment'),
-        description=args.get('description'),
-        groups=argToList(args.get('groups')),
-        detection_json=args.get('detection_json')
-    )
-    if not update_args:
-        raise Exception('At least one argument (besides the id argument) should be provided to update the exclusion.')
-    update_args.update({'id': args.get('id')})
-
-    exclusion = update_exclusion('ioa', update_args).get('resources')
-    human_readable = tableToMarkdown('CrowdStrike Falcon IOA exclusion', exclusion, is_auto_json_transform=True,
-                                     headerTransform=underscoreToCamelCase, removeNull=True, sort_headers=False)
-
-    return CommandResults(
-        outputs_prefix='CrowdStrike.IOAExclusion',
-        outputs_key_field='id',
-        outputs=exclusion,
-        readable_output=human_readable,
-    )
-
-
-def delete_ioa_exclusion_command(args: dict) -> CommandResults:
-    """Delete an IOA exclusion by providing an ID.
-
-    Args:
-        args: Arguments for deleting the exclusion (in particular only the id is needed).
-
-    Returns:
-        A message that the exclusion has been deleted.
-
-    """
-    ids = argToList(args.get('ids'))
-
-    delete_exclusion('ioa', ids)
-
-    return CommandResults(
-        readable_output=f'The IOA exclusions with IDs {" ".join(ids)} was successfully deleted.'
-    )
-
-
-def search_ioa_exclusion_command(args: dict) -> CommandResults:
-    """Searches IOA exclusions by providing an ID / name / cusotm-filter.
-
-    Args:
-        args: Arguments for searching the exclusions.
-
-    Returns:
-        The exclusions meta data.
-
-    """
-    exclusion_name = args.get('name')
-    if not (ids := argToList(args.get('ids'))):
-        search_args = assign_params(
-            limit=args.get('limit'),
-            offset=args.get('offset')
-        )
-        if exclusion_name:
-            ids = get_exclusions('ioa', f"name:~'{exclusion_name}'", search_args).get('resources')
-        else:
-            ids = get_exclusions('ioa', args.get('filter'), search_args).get('resources')
-
-    if not ids:
-        return CommandResults(
-            readable_output='The arguments/filters you provided did not match any exclusion.'
-        )
-
-    exclusions = get_exclusion_entities('ioa', ids).get('resources', [])
-    if exclusion_name and exclusions:
-        exclusions = list(filter(lambda x: x.get('name') == exclusion_name, exclusions))
-    human_readable = tableToMarkdown('CrowdStrike Falcon IOA exclusions', exclusions, is_auto_json_transform=True,
-                                     headerTransform=underscoreToCamelCase, removeNull=True, sort_headers=False)
-
-    return CommandResults(
-        outputs_prefix='CrowdStrike.IOAExclusion',
-        outputs_key_field='id',
-        outputs=exclusions,
-        readable_output=human_readable,
-    )
-
-
-def list_quarantined_file_command(args: dict) -> CommandResults:
-    """Get quarantine file metadata by specified IDs / custom-filter.
-
-    Args:
-        args: Arguments for searching the quarantine files.
-
-    Returns:
-        The quarantine files meta data.
-
-    """
-    if not (ids := argToList(args.get('ids'))):
-        pagination_args = assign_params(
-            limit=args.get('limit', '50'),
-            offset=args.get('offset')
-        )
-        search_args = assign_params(
-            state=args.get('state'),
-            sha256=argToList(args.get('sha256')),
-            filename=argToList(args.get('filename')),
-            hostname=argToList(args.get('hostname')),
-            username=argToList(args.get('username')),
-        )
-
-        ids = list_quarantined_files_id(args.get('filter'), search_args, pagination_args).get('resources')
-
-    if not ids:
-        return CommandResults(
-            readable_output='The arguments/filters you provided did not match any files.'
-        )
-
-    files = list_quarantined_files(ids).get('resources')
-    human_readable = tableToMarkdown('CrowdStrike Falcon Quarantined File', files, is_auto_json_transform=True,
-                                     headerTransform=underscoreToCamelCase, sort_headers=False, removeNull=True)
-
-    return CommandResults(
-        outputs_prefix='CrowdStrike.QuarantinedFile',
-        outputs_key_field='id',
-        outputs=files,
-        readable_output=human_readable,
-    )
-
-
-def apply_quarantine_file_action_command(args: dict) -> CommandResults:
-    """Apply action to quarantine file.
-
-    Args:
-        args: Arguments for searching and applying action to the quarantine files.
-
-    Returns:
-        The applied quarantined files meta data.
-
-    """
-    if not (ids := argToList(args.get('ids'))):
-        pagination_args = assign_params(
-            limit=args.get('limit', '50'),
-            offset=args.get('offset')
-        )
-        search_args = assign_params(
-            state=args.get('state'),
-            sha256=argToList(args.get('sha256')),
-            filename=argToList(args.get('filename')),
-            hostname=argToList(args.get('hostname')),
-            username=argToList(args.get('username')),
-        )
-        if not search_args:
-            raise Exception('At least one search argument (filename, hostname, sha256, state, username, ids, or filter)'
-                            ' is required to update the quarantine file.')
-
-        ids = list_quarantined_files_id(args.get('filter'), search_args, pagination_args).get('resources')
-
-    update_args = assign_params(
-        ids=ids,
-        action=args.get('action'),
-        comment=args.get('comment'),
-    )
-    if not update_args:
-        raise Exception('At least one update argument (action, comment) should be provided to update the quarantine file.')
-
-    apply_quarantined_files_action(update_args).get('resources')
-
-    return CommandResults(
-        readable_output=f'The Quarantined File with IDs {ids} was successfully updated.',
-    )
-
-
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -4733,16 +4323,14 @@ def main():
 
         elif command == 'cs-falcon-rtr-list-processes':
             host_id = args.get('host_id')
-            offline = argToBoolean(args.get('queue_offline', False))
             return_results(
-                rtr_general_command_on_hosts([host_id], "ps", "ps", execute_run_batch_write_cmd_with_timer, True, offline))
+                rtr_general_command_on_hosts([host_id], "ps", "ps", execute_run_batch_write_cmd_with_timer, True))
 
         elif command == 'cs-falcon-rtr-list-network-stats':
             host_id = args.get('host_id')
-            offline = argToBoolean(args.get('queue_offline', False))
             return_results(
                 rtr_general_command_on_hosts([host_id], "netstat", "netstat", execute_run_batch_write_cmd_with_timer,
-                                             True, offline))
+                                             True))
 
         elif command == 'cs-falcon-rtr-read-registry':
             return_results(rtr_read_registry_keys_command(args))
@@ -4750,9 +4338,8 @@ def main():
         elif command == 'cs-falcon-rtr-list-scheduled-tasks':
             full_command = f'runscript -Raw=```schtasks /query /fo LIST /v```'  # noqa: F541
             host_ids = argToList(args.get('host_ids'))
-            offline = argToBoolean(args.get('queue_offline', False))
             return_results(rtr_general_command_on_hosts(host_ids, "runscript", full_command,
-                                                        execute_run_batch_admin_cmd_with_timer, offline))
+                                                        execute_run_batch_admin_cmd_with_timer))
         elif command == 'cs-falcon-rtr-retrieve-file':
             return_results(rtr_polling_retrieve_file_command(args))
         elif command == 'cs-falcon-get-detections-for-incident':
@@ -4771,26 +4358,6 @@ def main():
             return_results(cs_falcon_spotlight_list_host_by_vulnerability_command(args))
         elif command == 'cve':
             return_results(get_cve_command(args))
-        elif command == 'cs-falcon-create-ml-exclusion':
-            return_results(create_ml_exclusion_command(args))
-        elif command == 'cs-falcon-update-ml-exclusion':
-            return_results(update_ml_exclusion_command(args))
-        elif command == 'cs-falcon-delete-ml-exclusion':
-            return_results(delete_ml_exclusion_command(args))
-        elif command == 'cs-falcon-search-ml-exclusion':
-            return_results(search_ml_exclusion_command(args))
-        elif command == 'cs-falcon-create-ioa-exclusion':
-            return_results(create_ioa_exclusion_command(args))
-        elif command == 'cs-falcon-update-ioa-exclusion':
-            return_results(update_ioa_exclusion_command(args))
-        elif command == 'cs-falcon-delete-ioa-exclusion':
-            return_results(delete_ioa_exclusion_command(args))
-        elif command == 'cs-falcon-search-ioa-exclusion':
-            return_results(search_ioa_exclusion_command(args))
-        elif command == 'cs-falcon-list-quarantined-file':
-            return_results(list_quarantined_file_command(args))
-        elif command == 'cs-falcon-apply-quarantine-file-action':
-            return_results(apply_quarantine_file_action_command(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
