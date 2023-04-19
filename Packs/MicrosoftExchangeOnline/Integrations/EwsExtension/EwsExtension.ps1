@@ -66,7 +66,7 @@ function CreateNewSession {
         "AllowRedirection"  = $true
         "SessionOption"     = $session_options
     }
-    $session = New-PSSession @sessions_params -WarningAction:SilentlyContinue -ShowBanner:$false
+    $session = Connect-ExchangeOnline @sessions_params -WarningAction:SilentlyContinue
 
     if (!$session) {
         throw "Fail - establishing session to $url"
