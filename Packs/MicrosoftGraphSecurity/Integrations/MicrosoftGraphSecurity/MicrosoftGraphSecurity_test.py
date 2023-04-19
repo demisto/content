@@ -9,6 +9,8 @@ import demistomock as demisto
 import re
 
 
+API_V2 = "API V2"
+API_V1 = "API V1"
 client_mocker = MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
                               base_url='url', verify='use_ssl', proxy='proxy', self_deployed='self_deployed')
 
@@ -131,12 +133,12 @@ def test_fetch_incidents_command(mocker, test_case):
 
 @pytest.mark.parametrize('args, expected_params, is_fetch, api_version', [
     ({'filter': "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
-     {'$filter': "Category eq 'Malware' and Severity eq 'High'"}, True, "API V1"),
+     {'$filter': "Category eq 'Malware' and Severity eq 'High'"}, True, API_V1),
     ({'filter': "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
-     {'$filter': "Category eq 'Malware' and Severity eq 'High' and relevant_key eq 'resolved'"}, True, "API V2"),
+     {'$filter': "Category eq 'Malware' and Severity eq 'High' and relevant_key eq 'resolved'"}, True, API_V2),
     ({'filter': "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
-     {'$top': '50', '$filter': "Category eq 'Malware' and Severity eq 'High'"}, False, "API V1"),
-    ({'page': "2"}, {'$top': '50', '$skip': 100, '$filter': ''}, False, "API V1")
+     {'$top': '50', '$filter': "Category eq 'Malware' and Severity eq 'High'"}, False, API_V1),
+    ({'page': "2"}, {'$top': '50', '$skip': 100, '$filter': ''}, False, API_V1)
 ])
 def test_create_search_alerts_filters(mocker, args, expected_params, is_fetch, api_version):
     """
@@ -164,10 +166,10 @@ def test_create_search_alerts_filters(mocker, args, expected_params, is_fetch, a
 
 
 @pytest.mark.parametrize('args, expected_error, api_version', [
-    ({"page_size": "1001"}, "Please note that the page size limit for API V1 is 1000", "API V1"),
+    ({"page_size": "1001"}, "Please note that the page size limit for API V1 is 1000", API_V1),
     ({"page_size": "1000", "page": "3"}, 'Please note that the maximum amount of alerts you can skip in API V1 is 500',
-     "API V1"),
-    ({"page_size": "2001"}, "Please note that the page size limit for API V2 is 2000", "API V2")
+     API_V1),
+    ({"page_size": "2001"}, "Please note that the page size limit for API V2 is 2000", API_V2)
 ])
 def test_create_search_alerts_filters_errors(mocker, args, expected_error, api_version):
     """
@@ -228,11 +230,11 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
 @pytest.mark.parametrize('args, expected_results, api_version', [
     ({'vendor_information': 'vendor_information', 'provider_information': 'provider_information', 'assigned_to': 'someone'},
      {'vendorInformation': {'provider': 'provider_information', 'vendor': 'vendor_information'}, 'assignedTo': 'someone'},
-     'API V1'),
+     API_V1),
     ({'vendor_information': 'vendor_information', 'provider_information': 'provider_information', 'comments': 'comment'},
      {'vendorInformation': {'provider': 'provider_information', 'vendor': 'vendor_information'}, 'comments': ['comment']},
-     'API V1'),
-    ({'comments': 'comment', 'status': 'new'}, {'status': 'new'}, 'API V2')
+     API_V1),
+    ({'comments': 'comment', 'status': 'new'}, {'status': 'new'}, API_V2)
 ])
 def test_create_data_to_update(mocker, args, expected_results, api_version):
     """
@@ -262,13 +264,13 @@ def test_create_data_to_update(mocker, args, expected_results, api_version):
 
 @pytest.mark.parametrize('args, expected_error, api_version', [
     ({'assigned_to': 'someone'}, 'When using API V1, both vendor_information and provider_information must be provided.',
-     'API V1'),
+     API_V1),
     ({'vendor_information': 'vendor_information', 'provider_information': 'provider_information', 'status': 'new'},
      "Invalid status value. When using API V1, use newAlert instead of new.",
-     'API V1'),
-    ({'status': 'newAlert'}, "Invalid status value. When using API V2, use new instead of newAlert.", 'API V2'),
+     API_V1),
+    ({'status': 'newAlert'}, "Invalid status value. When using API V2, use new instead of newAlert.", API_V2),
     ({'closed_date_time': 'now'}, "No data relevant for API V2 to update was provided, please provide at least one of the "
-     "following: assigned_to, determination, classification, status.", 'API V2')
+     "following: assigned_to, determination, classification, status.", API_V2)
 ])
 def test_create_data_to_update_errors(mocker, args, expected_error, api_version):
     """
@@ -298,7 +300,7 @@ def test_create_data_to_update_errors(mocker, args, expected_error, api_version)
 
 @pytest.mark.parametrize('args, expected_error, api_version', [
     ({'alert_id': 'alert_id', "comment": "comment"}, "This command is available only for V2."
-     " If you wish to add a comment to an alert with V1 please use 'msg-update-alert' command.", 'API V1')
+     " If you wish to add a comment to an alert with V1 please use 'msg-update-alert' command.", API_V1)
 ])
 def test_create_alert_comment_command_error(mocker, args, expected_error, api_version):
     """
@@ -345,11 +347,11 @@ def test_create_alert_comment_command(mocker, test_case):
 
 
 @pytest.mark.parametrize('param, providers_param, service_sources_param, expected_results, api_version', [
-    ("param", "providers_param", "service_sources_param", "param", "API V1"),
-    ("param", "providers_param", "service_sources_param", "param", "API V2"),
-    ("", "providers_param", "service_sources_param", "vendorInformation/provider eq 'providers_param'", "API V1"),
-    ("", "providers_param", "service_sources_param", "serviceSource eq 'service_sources_param'", "API V2"),
-    ("", "", "", "", "API V2")
+    ("param", "providers_param", "service_sources_param", "param", API_V1),
+    ("param", "providers_param", "service_sources_param", "param", API_V2),
+    ("", "providers_param", "service_sources_param", "vendorInformation/provider eq 'providers_param'", API_V1),
+    ("", "providers_param", "service_sources_param", "serviceSource eq 'service_sources_param'", API_V2),
+    ("", "", "", "", API_V2)
 ])
 def test_create_filter_query(mocker, param, providers_param, service_sources_param, expected_results, api_version):
     """

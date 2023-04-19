@@ -147,7 +147,7 @@ configuration:
   section: Collect
   advanced: true
 - display: Fetch incidents of the given service sources only.
-  additionalinfo: Relevant only for V2. Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftCloudAppSecurity",. If empty, incidents of all providers will be fetched.
+  additionalinfo: Relevant only for V2. Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity",. If empty, incidents of all providers will be fetched.
   hidden: false
   name: fetch_service_sources
   required: false
@@ -258,7 +258,7 @@ script:
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. default is 50, the limit for API V1 is 1000, the limit for API V2 is 2000.
+    - description: Number of results in a page. default is 50, the limit for API V1 is 1000, the limit for API V2 is 2000. When using API V1, the response will provide <page_size> results for each provider.
       isArray: false
       name: page_size
       required: false

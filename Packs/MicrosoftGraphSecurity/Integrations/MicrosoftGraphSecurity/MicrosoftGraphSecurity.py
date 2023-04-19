@@ -10,18 +10,21 @@ urllib3.disable_warnings()
 
 APP_NAME = 'ms-graph-security'
 CMD_URL = 'security/alerts_v2'
-API_VER = 'API V2'
-PAGE_SIZE_LIMIT_DICT = {'API V2': 2000, 'API V1': 1000}
+API_V2 = "API V2"
+API_V1 = "API V1"
+API_VER = API_V2
+PAGE_SIZE_LIMIT_DICT = {API_V2: 2000, API_V1: 1000}
+CORRECT_STATUS_DICT = {API_V2: "new", API_V1: "newAlert"}
 API_V1_PAGE_LIMIT = 500
 POSSIBLE_FIELDS_TO_INCLUDE = ["All", "NetworkConnections", "Processes", "RegistryKeys", "UserStates", "HostStates", "FileStates",
                               "CloudAppStates", "MalwareStates", "CustomerComments", "Triggers", "VendorInformation",
                               "VulnerabilityStates"]
 
-RELEVANT_DATA_TO_UPDATE_PER_VERSION = {'API V1': {'assigned_to': 'assignedTo', 'closed_date_time': 'closedDateTime',
-                                                  'comments': 'comments', 'feedback': 'feedback', 'status': 'status',
-                                                  'tags': 'tags'},
-                                       'API V2': {'assigned_to': 'assignedTo', 'determination': 'determination',
-                                                  'classification': 'classification', 'status': 'status'}
+RELEVANT_DATA_TO_UPDATE_PER_VERSION = {API_V1: {'assigned_to': 'assignedTo', 'closed_date_time': 'closedDateTime',
+                                                'comments': 'comments', 'feedback': 'feedback', 'status': 'status',
+                                                'tags': 'tags'},
+                                       API_V2: {'assigned_to': 'assignedTo', 'determination': 'determination',
+                                                'classification': 'classification', 'status': 'status'}
                                        }
 ''' HELPER FUNCTIONS '''
 
@@ -49,7 +52,7 @@ def create_search_alerts_filters(args, is_fetch=False):
     filters = []
     params: dict[str, str] = {}
     if last_modified:
-        last_modified_query_key: str = "lastModifiedDateTime" if API_VER == "API V1" else "lastUpdateDateTime"
+        last_modified_query_key: str = "lastModifiedDateTime" if API_VER == API_V1 else "lastUpdateDateTime"
         filters.append(f"{last_modified_query_key} gt {get_timestamp(last_modified)}")
     if category:
         filters.append(f"category eq '{category}'")
@@ -68,11 +71,11 @@ def create_search_alerts_filters(args, is_fetch=False):
     if page and page_size:
         page = int(page)
         page = page * page_size
-        if API_VER == 'API V1' and API_V1_PAGE_LIMIT < page:
+        if API_VER == API_V1 and API_V1_PAGE_LIMIT < page:
             raise DemistoException(f"Please note that the maximum amount of alerts you can skip in {API_VER} is"
                                    f" {API_V1_PAGE_LIMIT}")
         params['$skip'] = page
-    if API_VER == 'API V2':
+    if API_VER == API_V2:
         relevant_filters_v2 = ['classification', 'serviceSource', 'status']
         for key in relevant_filters_v2:
             if val := args.get(key):
@@ -90,26 +93,20 @@ def create_data_to_update(args):
     Returns:
         Dict: A dictionary object containing the alert's fields to update.
     """
-    status = args.get('status')
     relevant_data_to_update_per_version_dict: dict = RELEVANT_DATA_TO_UPDATE_PER_VERSION.get(API_VER, {})
     if all(not args.get(key) for key in list(relevant_data_to_update_per_version_dict.keys())):
         raise DemistoException(f"No data relevant for {API_VER} to update was provided, please provide at least one of the"
                                f" following: {(', ').join(list(relevant_data_to_update_per_version_dict.keys()))}.")
     data: Dict[str, Any] = {}
-    if API_VER == 'API V1':
+    if API_VER == API_V1:
         vendor_information = args.get('vendor_information')
         provider_information = args.get('provider_information')
         if not vendor_information or not provider_information:
             raise DemistoException("When using API V1, both vendor_information and provider_information must be provided.")
-        if status == 'new':
-            raise DemistoException("Invalid status value. When using API V1, use newAlert instead of new.")
         data['vendorInformation'] = {
             'provider': provider_information,
             'vendor': vendor_information
         }
-    else:
-        if status == 'newAlert':
-            raise DemistoException("Invalid status value. When using API V2, use new instead of newAlert.")
     if assigned_to := args.get('assigned_to'):
         data['assignedTo'] = assigned_to
     for relevant_args_key, relevant_data_key in relevant_data_to_update_per_version_dict.items():
@@ -122,14 +119,10 @@ def create_data_to_update(args):
 
 
 def validate_fields_list(fields_list):
-    unsupported_fields = []
-    for field in fields_list:
-        if field not in POSSIBLE_FIELDS_TO_INCLUDE:
-            unsupported_fields.append(field)
-    if unsupported_fields:
+    if unsupported_fields := (set(fields_list) - set(POSSIBLE_FIELDS_TO_INCLUDE)):
         raise DemistoException(f"The following fields are not supported by the commands as fields to include: "
-                                f"{(', ').join(unsupported_fields)}.\nPlease make sure to enter only fields from the "
-                                f"following list: {(', ').join(POSSIBLE_FIELDS_TO_INCLUDE)}.")
+                               f"{(', ').join(unsupported_fields)}.\nPlease make sure to enter only fields from the "
+                               f"following list: {(', ').join(POSSIBLE_FIELDS_TO_INCLUDE)}.")
 
 
 def get_timestamp(time_description):
@@ -160,9 +153,9 @@ class MsGraphClient:
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.graph)
-        if api_version == "API V1":
+        if api_version == API_V1:
             global CMD_URL, API_VER
-            API_VER = 'API V1'
+            API_VER = API_V1
             CMD_URL = 'security/alerts'
 
     def search_alerts(self, params):
@@ -210,13 +203,13 @@ def create_filter_query(filter_param: str, providers_param: str, service_sources
     if filter_param:
         filter_query = filter_param
     else:
-        if API_VER == 'API V1' and providers_param:
+        if API_VER == API_V1 and providers_param:
             providers_query = []
             providers_lst = providers_param.split(',')
             for provider in providers_lst:
                 providers_query.append(f"vendorInformation/provider eq '{provider}'")
             filter_query = (" or ".join(providers_query))
-        elif API_VER == 'API V2' and service_sources_param:
+        elif API_VER == API_V2 and service_sources_param:
             service_sources_query = []
             service_sources_lst = service_sources_param.split(',')
             for service_source in service_sources_lst:
@@ -299,7 +292,7 @@ def search_alerts_command(client: MsGraphClient, args):
     if limit < len(alerts):
         alerts = alerts[:limit]
     outputs, table_headers = [], []
-    if API_VER == 'API V1':
+    if API_VER == API_V1:
         for alert in alerts:
             outputs.append({
                 'ID': alert['id'],
@@ -342,7 +335,7 @@ def get_alert_details_command(client: MsGraphClient, args):
     context = alert_details
 
     hr = f'## Microsoft Security Graph Alert Details - {alert_id}\n'
-    if API_VER == 'API V2':
+    if API_VER == API_V2:
         ec = {
             'MsGraph.Alert(val.id && val.id === obj.id)': context
         }
@@ -562,7 +555,10 @@ def get_alert_details_command(client: MsGraphClient, args):
 
 def update_alert_command(client: MsGraphClient, args):
     alert_id = args.get('alert_id')
-    status = args.get('status')
+    status: str = args.get('status', "")
+    if status == "new" or status == "newAlert":
+        args["status"] = CORRECT_STATUS_DICT.get(API_VER)
+        status = CORRECT_STATUS_DICT.get(API_VER)  # type: ignore
     provider_information = args.get('provider_information')
     params = create_data_to_update(args)
     client.update_alert(alert_id, params)
@@ -575,7 +571,7 @@ def update_alert_command(client: MsGraphClient, args):
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': context
     }
     human_readable = f'Alert {alert_id} has been successfully updated.'
-    if status and API_VER == 'API V1' and provider_information in {'IPC', 'MCAS', 'Azure Sentinel'}:
+    if status and API_VER == API_V1 and provider_information in {'IPC', 'MCAS', 'Azure Sentinel'}:
         human_readable += f'\nUpdating status for alerts from provider {provider_information} gets updated across \
 Microsoft Graph Security API integrated applications but not reflected in the provider’s management experience.\n \
         For more details, see the \
@@ -629,7 +625,7 @@ def create_alert_comment_command(client: MsGraphClient, args):
     Returns:
         str, Dict, Dict: the human readable, parsed outputs and request's response.
     """
-    if API_VER == "API V1":
+    if API_VER == API_V1:
         raise DemistoException("This command is available only for V2."
                                " If you wish to add a comment to an alert with V1 please use 'msg-update-alert' command.")
     alert_id = args.get('alert_id', '')
@@ -704,7 +700,7 @@ def main():
     private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
-    api_version: str = params.get('api_version', 'API V2')
+    api_version: str = params.get('api_version', API_V2)
 
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
