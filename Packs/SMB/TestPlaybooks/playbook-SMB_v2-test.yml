@@ -184,10 +184,10 @@ tasks:
     task:
       id: 2ac733bf-0659-4141-8133-75af29cfb6a2
       version: -1
-      name: FileCreateAndUpload
+      name: FileCreateAndUploadV2
       description: |
-        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
-      scriptName: FileCreateAndUpload
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
       type: regular
       iscommand: false
       brand: ""
@@ -197,7 +197,6 @@ tasks:
     scriptarguments:
       data:
         simple: Test file for TPB
-      entryId: {}
       filename:
         simple: test.txt
     separatecontext: false
