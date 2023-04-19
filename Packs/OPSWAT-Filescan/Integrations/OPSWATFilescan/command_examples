@@ -1,0 +1,8 @@
+!opswat-filescan-scan-file entry_id=1010@e0e1a581-1c69-414f-8c50-22fa3afc34ae
+!opswat-filescan-scan-url url="https://www.google.com" timeout="600"
+!opswat-filescan-scan-url https://www.google.com
+!opswat-filescan-search-query query=834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc
+!opswat-filescan-search-query 834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc
+!opswat-filescan-search-query https://www.google.com limit=3
+!opswat-filescan-search-query https://www.google.com page=1 page_size=20
+

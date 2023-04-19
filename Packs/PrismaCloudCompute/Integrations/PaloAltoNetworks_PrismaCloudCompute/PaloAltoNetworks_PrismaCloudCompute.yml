@@ -63,7 +63,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.10.50695
+  dockerimage: demisto/python3:3.10.11.54132
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -1638,6 +1638,423 @@ script:
       description: The limit of the number of alerts to return
     description: Get the audits for the firewall container policies
     outputs: []
+  - arguments:
+    - description: The project to get the alert profiles for.
+      name: project
+    description: Get the available alert alert profiles from a specific project.
+    name: prisma-cloud-compute-get-alert-profiles
+    outputs:
+    - contextPath: PrismaCloudCompute.AlertProfiles.Cortex.Application
+      description: The alert profile application.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Cortex.CredentialId
+      description: The credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Cortex.Enabled
+      description: Whether the alert profile is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Cortex.Url
+      description: The alert profile URL.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Email.CredentialId
+      description: The alert profile credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Email.Enabled
+      description: The email setting for the alert profile.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Email.From
+      description: The from setting for the email profile.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Email.Port
+      description: The email alert profile port.
+      type: Number
+    - contextPath: PrismaCloudCompute.AlertProfiles.Email.SmtpAddress
+      description: The SMTP address.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Email.Ssl
+      description: The email alert profile SSL.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.GcpPubsub.CredentialId
+      description: The credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.GcpPubsub.Enabled
+      description: Whether the GCP Pub Sub is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.GcpPubsub.Topic
+      description: The GCP Pub Sub topic.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Jira.BaseUrl
+      description: The Jira base URL.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Jira.CaCert
+      description: The Jira CA Cert.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Jira.CredentialId
+      description: The Jira credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Jira.Enabled
+      description: Jira alert profile status.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Jira.IssueType
+      description: The Jira issue type.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Jira.Priority
+      description: The Jira priority.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.LastError
+      description: The last error.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Modified
+      description: The modified time.
+      type: Date
+    - contextPath: PrismaCloudCompute.AlertProfiles.Name
+      description: The alert profile name.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Owner
+      description: The alert profile owner.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Pagerduty.RoutingKey.Encrypted
+      description: The PagerDuty routing key encryption status.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Pagerduty.Severity
+      description: The PagerDuty severity.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Pagerduty.Summary
+      description: The PagerDuty summary.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Admission.AllRules
+      description: The policy all rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Admission.Enabled
+      description: Whether the admission is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AgentlessAppFirewall.AllRules
+      description: The agentless app firewall rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AgentlessAppFirewall.Enabled
+      description: Whether the agentless app firewall is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedAppFirewall.AllRules
+      description: App embedded firewall rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedAppFirewall.Enabled
+      description: Whether the app embedded firewall is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedRuntime.AllRules
+      description: App embedded runtime rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedRuntime.Enabled
+      description: Whether the app embedded runtime is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.CloudDiscovery.AllRules
+      description: The cloud discovery rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.CloudDiscovery.Enabled
+      description: Whether the cloud discovery is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.CodeRepoVulnerability.AllRules
+      description: The code repo vulnerability rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.CodeRepoVulnerability.Enabled
+      description: Whether the code repo vulnerability is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerAppFirewall.AllRules
+      description: The container app firewall rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerAppFirewall.Enabled
+      description: Whether the container app firewall is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerCompliance.AllRules
+      description: The container compliance rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerCompliance.Enabled
+      description: Whether the container compliance is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerComplianceScan.AllRules
+      description: The container compliance scan rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerComplianceScan.Enabled
+      description: Whether the container compliance scan is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerRuntime.AllRules
+      description: The container runtime rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerRuntime.Enabled
+      description: Whether the container runtime is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerVulnerability.AllRules
+      description: The container vulnerability rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerVulnerability.Enabled
+      description: Whether the container vulnerability is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Defender.AllRules
+      description: The Defender policy rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Defender.Enabled
+      description: Whether the Defender policy is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Docker.AllRules
+      description: The Docker rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Docker.Enabled
+      description: Whether the Docker rules are enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostAppFirewall.AllRules
+      description: The app host firewall rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostAppFirewall.Enabled
+      description: Whether the host app firewall is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostCompliance.AllRules
+      description: The host compliance rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostCompliance.Enabled
+      description: Whether the host compliance is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostComplianceScan.AllRules
+      description: The host compliance scan rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostComplianceScan.Enabled
+      description: Whether the host compliance scan is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostRuntime.AllRules
+      description: The host runtime rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostRuntime.Enabled
+      description: Whether the host runtime rules are enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostVulnerability.AllRules
+      description: The host vulnerability rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostVulnerability.Enabled
+      description: Whether the host vulnerability rule is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Incident.AllRules
+      description: The policy incident rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Incident.Enabled
+      description: Whether the policy incident is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.KubernetesAudit.AllRules
+      description: The K8S rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.KubernetesAudit.Enabled
+      description: Whether K8S is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.NetworkFirewall.AllRules
+      description: The network firewall rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.NetworkFirewall.Enabled
+      description: Whether the network firewall rule is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.RegistryVulnerability.AllRules
+      description: The registry vulnerability rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.RegistryVulnerability.Enabled
+      description: Whether the registry vulnerability rule is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ServerlessAppFirewall.AllRules
+      description: The servervless app firewall rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ServerlessAppFirewall.Enabled
+      description: Whether the serverless app firewall rule is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ServerlessRuntime.AllRules
+      description: The serverless runtime rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ServerlessRuntime.Enabled
+      description: Whether the serverless runtime rule is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.VmCompliance.AllRules
+      description: The VM compliance rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.VmCompliance.Enabled
+      description: Whether the VM compliance rule is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.VmVulnerability.AllRules
+      description: The VM vulnerability rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.VmVulnerability.Enabled
+      description: Whether the VM vulnerability rules are enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.WaasHealth.AllRules
+      description: The WAAS health rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.WaasHealth.Enabled
+      description: Whether the WAAS health rules are enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.PreviousName
+      description: The alert profile previous name.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityAdvisor.CredentialID
+      description: The security advisor credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityAdvisor.Enabled
+      description: Whether the security advisor is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityAdvisor.FindingsURL
+      description: The security advisor findings URL.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityAdvisor.ProviderId
+      description: The security advisor provider ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityAdvisor.TokenURL
+      description: The security advisor token URL.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityCenter.CredentialId
+      description: The security center crendential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityCenter.Enabled
+      description: Whether the security center is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityCenter.SourceID
+      description: The security center source ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityHub.AccountID
+      description: The security hub account ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityHub.CredentialId
+      description: The security hub credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityHub.Enabled
+      description: Whether the security hub is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityHub.Region
+      description: The security hub region.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.ServiceNow.Application
+      description: The ServiceNow application.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.ServiceNow.Assignee
+      description: The ServiceNow assignee.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.ServiceNow.CredentialID
+      description: The ServiceNow credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.ServiceNow.Project
+      description: The ServiceNow project.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Slack.Enabled
+      description: Whether the Slack alert profile is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Slack.WebhookUrl
+      description: The Slack URL.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Splunk.AuthToken.Encrypted
+      description: The Splunk auth token.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Splunk.SourceType
+      description: The Splunk source type.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Splunk.Url
+      description: The Splunk URL.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.VulnerabilityImmediateAlertsEnabled
+      description: Whether the vulnerability alert is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Webhook.CredentialId
+      description: The webhook credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Webhook.Url
+      description: The webhook URL.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles._Id
+      description: The alert profile ID.
+      type: String
+  - arguments:
+    - description: The Defender hostname.
+      name: hostname
+    description: Get the Defender settings.
+    name: prisma-cloud-compute-get-settings-defender
+    outputs:
+    - contextPath: PrismaCloudCompute.DefenderSettings.AdmissionControlEnabled
+      description: The admission control setting.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.DefenderSettings.AdmissionControlWebhookSuffix
+      description: The webhook suffix.
+      type: String
+    - contextPath: PrismaCloudCompute.DefenderSettings.AppEmbeddedFileSystemTracingEnabled
+      description: The file tracing setting.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.DefenderSettings.AutomaticUpgrade
+      description: The automatic upgrade setting.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.DefenderSettings.DisconnectPeriodDays
+      description: The disconnect period in days.
+      type: Number
+    - contextPath: PrismaCloudCompute.DefenderSettings.HostCustomComplianceEnabled
+      description: The custom compliance setting.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.DefenderSettings.ListeningPort
+      description: The defender listening port.
+      type: Number
+  - arguments:
+    - description: The Defender hostname.
+      name: hostname
+    - description: The number of log lines to fetch.
+      name: lines
+      defaultValue: 10
+    description: Download the Defender logs.
+    name: prisma-cloud-compute-logs-defender
+    outputs:
+    - contextPath: PrismaCloudCompute.Defenders.Hostname
+      description: The hostname the log was retrieved from.
+      type: String
+    - contextPath: PrismaCloudCompute.Defenders.Logs.Level
+      description: The log level.
+      type: String
+    - contextPath: PrismaCloudCompute.Defenders.Logs.Log
+      description: The log message.
+      type: String
+    - contextPath: PrismaCloudCompute.Defenders.Logs.Time
+      description: The time of the log.
+      type: Date
+  - arguments:
+    - description: The Defender hostname.
+      name: hostname
+    - description: The number of log lines to fetch.
+      name: lines
+      defaultValue: 100
+    description: Download a zip of all Defender logs.
+    name: prisma-cloud-compute-logs-defender-download
+    outputs:
+    - contextPath: InfoFile.Name
+      description: The file name.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: The File entry ID.
+      type: String
+    - contextPath: InfoFile.Size
+      description: The file size.
+      type: Number
+    - contextPath: InfoFile.Type
+      description: The file type.
+      type: String
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: String
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: String
+  - arguments:
+    - description: The project to retrieve the backups from.
+      name: project
+    description: Returns the available backups.
+    name: prisma-cloud-compute-get-backups
+    outputs:
+    - contextPath: PrismaCloudCompute.Backups.Id
+      description: The ID of the backup.
+      type: String
+    - contextPath: PrismaCloudCompute.Backups.Name
+      description: The name of the backup.
+      type: String
+    - contextPath: PrismaCloudCompute.Backups.Release
+      description: The release of the backup.
+      type: String
+    - contextPath: PrismaCloudCompute.Backups.Time
+      description: The time of the backup.
+      type: Date
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
