@@ -299,7 +299,7 @@ def main() -> None:
         packs = []
 
     pack_version = "1.2.0"
-    if isinstance(packs, List):
+    if isinstance(packs, list):
         for pack in packs:
             if pack["name"] == "GreyNoise":
                 pack_version = pack["currentVersion"]
