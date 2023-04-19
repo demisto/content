@@ -30,11 +30,11 @@ filter _raw_log ~= "Allow|Detect"
 
 filter _raw_log contains "BYF"
 | alter
-    xdm.source.ipv4 = arraystring(regextract(_raw_log, ".*:\s[\S]+\s[\S]+\s([\S]+)\s"), ""),
-    xdm.target.ipv4 = arraystring(regextract(_raw_log, ".*:\s[\S]+\s[\S]+\s+[\S]+\s([\S]+)"), ""),
-    xdm.network.http.content_type = arraystring(regextract(_raw_log, ".*:\s[\S]+\s[\S]+\s+[\S]+\s[\S]+\s([\S]+)\s"), ""),
-    xdm.network.http.url = arraystring(regextract(_raw_log, ".*:\s[\S]+\s[\S]+\s+[\S]+\s[\S]+\s[\S]+\s\S+\s([\S]+)"), ""),
-    xdm.observer.action = arraystring(regextract(_raw_log, ".*:\s[\S]+\s[\S]+\s+[\S]+\s[\S]+\s[\S]+\s\S+\s[\S]+\s\S+\s\S+\s\S+\s\S+\s+\S+\s\S\s\S\s(\S)"), ""), //1 is blocked, 0 is allowed
-    xdm.network.http.url_category = arraystring(regextract(_raw_log, ".*:\s[\S]+\s[\S]+\s+[\S]+\s[\S]+\s[\S]+\s\S+\s[\S]+\s\S+\s\S+\s\S+\s\S+\s+\S+\s\S\s\S\s\S\s\S\s\S+\s\S\s+(\S+)"), ""),
-    xdm.target.host.hostname = arraystring(regextract(_raw_log, ".*:\s[\S]+\s[\S]+\s+[\S]+\s[\S]+\s[\S]+\s\S+\s[\S]+\s\S+\s\S+\s\S+\s\S+\s+\S+\s\S\s\S\s\S\s\S\s\S+\s\S\s+\S+\s\S\s\S\s(\S+)"), ""),
-    xdm.target.user.username = arraystring(regextract(_raw_log, ".*:\s[\S]+\s[\S]+\s+[\S]+\s[\S]+\s[\S]+\s\S+\s[\S]+\s\S+\s\S+\s\S+\s\S+\s+\S+\s\S\s\S\s\S\s\S\s\S+\s\S\s+\S+\s\S\s\S\s\S+\s+\[([^\[]+)\]"), "");
+    xdm.source.ipv4 = arraystring(regextract(_raw_log, ".*:(?:\s\S+){2}\s(\S+)"), ""),
+    xdm.target.ipv4 = arraystring(regextract(_raw_log, ".*:(?:\s\S+){3}\s(\S+)"), ""),
+    xdm.network.http.content_type = arraystring(regextract(_raw_log, ".*:(?:\s\S+){4}\s(\S+)"), ""),
+    xdm.network.http.url = arraystring(regextract(_raw_log, ".*:(?:\s\S+){6}\s(\S+)"), ""),
+    xdm.observer.action = arraystring(regextract(_raw_log, ".*:(?:\s\S+){11}\s+(?:\S\s){3}(\S)"), ""), //1 is blocked, 0 is allowed
+    xdm.network.http.url_category = arraystring(regextract(_raw_log, ".*:(?:\s\S+){11}\s+(?:\S\s){5}\S+\s\S\s+(\S)"), ""),
+    xdm.target.host.hostname = arraystring(regextract(_raw_log, ".*:(?:\s\S+){11}\s+(?:\S\s){5}\S+\s\S\s+\S\s\S+\s\S\s(\S+)"), ""),
+    xdm.target.user.username = arraystring(regextract(_raw_log, ".*:(?:\s\S+){11}\s+(?:\S\s){5}\S+\s\S\s+\S\s\S+\s\S\s\S+\s+\[([^\[]+)\]"), "");
