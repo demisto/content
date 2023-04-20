@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 996f6507-c3f2-4dca-8eb5-f343a09676a5
+    taskid: 77883c69-f744-478d-860c-99a097248505
     type: start
     task:
-      id: 996f6507-c3f2-4dca-8eb5-f343a09676a5
+      id: 77883c69-f744-478d-860c-99a097248505
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 88cc8b02-35cd-446e-8d8a-93138161f73d
+    taskid: c28817da-c2d0-4520-8147-9838de211cab
     type: regular
     task:
-      id: 88cc8b02-35cd-446e-8d8a-93138161f73d
+      id: c28817da-c2d0-4520-8147-9838de211cab
       version: -1
       name: msg-search-alerts
       description: List alerts (security issues) within a customer's tenant that Microsoft
@@ -68,10 +68,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 35b0daae-9232-4c3b-8b0b-1ea014ac0fc5
+    taskid: 9a171d7d-5138-42bf-8e64-3515df865794
     type: regular
     task:
-      id: 35b0daae-9232-4c3b-8b0b-1ea014ac0fc5
+      id: 9a171d7d-5138-42bf-8e64-3515df865794
       version: -1
       name: msg-get-alert-details
       description: Get details for a specific alert.
@@ -99,7 +99,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1080
+          "y": 900
         }
       }
     note: false
@@ -111,10 +111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 8b072457-06dc-4d9e-8753-3202b0be8b83
+    taskid: 054c37e1-6dc1-433e-81a2-db1885d1db34
     type: regular
     task:
-      id: 8b072457-06dc-4d9e-8753-3202b0be8b83
+      id: 054c37e1-6dc1-433e-81a2-db1885d1db34
       version: -1
       name: msg-update-alert
       description: Update an editable alert property within any integrated solution
@@ -126,7 +126,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "2"
     scriptarguments:
       alert_id:
         complex:
@@ -160,10 +160,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 1b867440-03ed-4ffc-87e8-355484ef2b9d
+    taskid: e85ccb67-c6ba-42bf-87c7-f2c1da233192
     type: title
     task:
-      id: 1b867440-03ed-4ffc-87e8-355484ef2b9d
+      id: e85ccb67-c6ba-42bf-87c7-f2c1da233192
       version: -1
       name: Done
       type: title
@@ -175,7 +175,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1610
+          "y": 1430
         }
       }
     note: false
@@ -187,10 +187,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 7dc674e1-e2cc-4e43-84fd-c0d1001e59bf
+    taskid: 3f0250d4-4149-43d7-8152-81bb012267ac
     type: condition
     task:
-      id: 7dc674e1-e2cc-4e43-84fd-c0d1001e59bf
+      id: 3f0250d4-4149-43d7-8152-81bb012267ac
       version: -1
       name: Verify msg-search-alerts output
       type: condition
@@ -229,10 +229,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 9e497f00-770e-4c15-898c-e46d897f7c0c
+    taskid: 5d998f84-ddc9-42a8-896d-977441b8f8bc
     type: regular
     task:
-      id: 9e497f00-770e-4c15-898c-e46d897f7c0c
+      id: 5d998f84-ddc9-42a8-896d-977441b8f8bc
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -264,10 +264,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: a40ddb37-2931-4d90-8f47-e84742fbab90
+    taskid: fbd2ad37-c098-49d9-8e50-c52a3672de8d
     type: regular
     task:
-      id: a40ddb37-2931-4d90-8f47-e84742fbab90
+      id: fbd2ad37-c098-49d9-8e50-c52a3672de8d
       version: -1
       name: Sleep for 60 seconds
       description: Sleep for X seconds
@@ -287,7 +287,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1440
+          "y": 1260
         }
       }
     note: false
@@ -299,10 +299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: cfc9a59f-1d34-4fea-8b9b-433f32ef37b4
+    taskid: 19a209ad-9892-4e32-8d59-c46e32564e1c
     type: condition
     task:
-      id: cfc9a59f-1d34-4fea-8b9b-433f32ef37b4
+      id: 19a209ad-9892-4e32-8d59-c46e32564e1c
       version: -1
       name: Verify msg-get-alert-details output
       type: condition
@@ -325,54 +325,12 @@ tasks:
           right:
             value:
               simple: other
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: MsGraph.Alert.Comments
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 73e8dbd1-8638-4ddd-8794-18dc3519d937
-    type: regular
-    task:
-      id: 73e8dbd1-8638-4ddd-8794-18dc3519d937
-      version: -1
-      name: msg-create-alert-comment
-      description: Relevant only for V2, create a comment for an existing alert.
-      script: '|||msg-create-alert-comment'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      alert_id:
-        simple: ${MsGraph.Alert.ID}
-      comment:
-        simple: test comment
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 900
+          "y": 1070
         }
       }
     note: false
@@ -387,7 +345,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1625,
+        "height": 1445,
         "width": 380,
         "x": 50,
         "y": 50
