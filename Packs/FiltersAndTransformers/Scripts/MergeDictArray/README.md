@@ -28,3 +28,59 @@ Each entry in an array is merged into the existing array if the keyed-value matc
 ## Outputs
 ---
 There are no outputs for this script.
+
+## Example
+---
+```
+!MergeDictArray value=`${.=[
+    {
+        "Address": "8.8.8.8", 
+        "ANS": 15169, 
+        "Hostname": "dns.google"
+    },
+    {
+        "Address": "8.8.4.4", 
+        "ANS": 15169, 
+        "Hostname": "dns.google"
+    }
+]}` merge_with=`${.=[{
+    "Address": "8.8.8.8", 
+    "ISP": "Google LLC", 
+    "Longitude": -122.0775, 
+    "Port": [
+        53
+    ], 
+    "CountryName": "United States", 
+    "Latitude": 37.4056, 
+    "Org": "Google LLC", 
+    "ASN": "AS15169"
+}]}` mapping="Address:Address" out_path="res"
+```
+
+## Outputs
+```
+{
+  "res": [
+    {
+      "ANS": 15169,
+      "ASN": "AS15169",
+      "Address": "8.8.8.8",
+      "CountryName": "United States",
+      "Hostname": "dns.google",
+      "ISP": "Google LLC",
+      "Latitude": 37.4056,
+      "Longitude": -122.0775,
+      "Org": "Google LLC",
+      "Port": [
+        53
+      ]
+    },
+    {
+      "ANS": 15169,
+      "Address": "8.8.4.4",
+      "Hostname": "dns.google"
+    }
+  ]
+}
+```
+
