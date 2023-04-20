@@ -90,7 +90,8 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 | MsGraph.Alert.CreatedDate | date | Relevant only for V1. Alert created date | 
 | MsGraph.Alert.EventDate | date | Relevant only for V1. Alert event time | 
 | MsGraph.Alert.Status | string | Alert status | 
-| MsGraph.Alert.Vendor | string | Relevant only for V1. Alert vendor/provider | 
+| MsGraph.Alert.Vendor | string | Relevant only for V1. Alert vendor | 
+| MsGraph.Alert.MalwareStates | string | Relevant only for V1. Alert malware states |
 | MsGraph.Alert.Provider | string | Relevant only for V1. Alert provider | 
 | MsGraph.Alert.ActorDisplayName | Unknown | Relevant only for V2. Alert actor name | 
 | MsGraph.Alert.AlertWebUrl | String | Relevant only for V2. Alert web url | 
@@ -323,6 +324,7 @@ Update an editable alert property within any integrated solution to keep alert s
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MsGraph.Alert.ID | string | Alert ID | 
+| MsGraph.Alert.Status | string | Alert status, will appear only if changed. | 
 
 #### Human Readable Output
 

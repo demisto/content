@@ -294,7 +294,10 @@ script:
       description: Alert status
       type: string
     - contextPath: MsGraph.Alert.Vendor
-      description: Relevant only for V1. Alert vendor/provider
+      description: Relevant only for V1. Alert vendor
+      type: string
+    - contextPath: MsGraph.Alert.MalwareStates
+      description: Relevant only for V1. Alert malware states
       type: string
     - contextPath: MsGraph.Alert.Provider
       description: Relevant only for V1. Alert provider
@@ -799,6 +802,9 @@ script:
     outputs:
     - contextPath: MsGraph.Alert.ID
       description: Alert ID
+      type: string
+    - contextPath: MsGraph.Alert.Status
+      description: Alert status, will appear only if changed.
       type: string
   - arguments:
     - default: true
