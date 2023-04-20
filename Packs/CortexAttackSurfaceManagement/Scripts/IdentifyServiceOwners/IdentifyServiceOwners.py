@@ -82,6 +82,9 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
 
     If canonicalized form is email, preserve longest name.
     Preserve max timestamp and union over sources.
+
+    Aggregate remaining keys by type: union over strings, and max over numerical types.
+    If type is neither of the above, all values of that key will be dropped from the aggregated owner.
     """
     deduped = []
     sorted_owners = sorted(owners, key=lambda owner: owner['Canonicalization'])
@@ -95,7 +98,9 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
             # grouped by name
             name = key
             email = ''
-        source = ' | '.join(sorted(set([owner.get('Source', '') for owner in duplicates])))
+
+        # aggregate Source by union and Timestamp by max
+        source = ' | '.join(sorted(set(owner.get('Source', '') for owner in duplicates if owner.get('Source', ''))))
         timestamp = sorted([owner.get('Timestamp', '') for owner in duplicates], reverse=True)[0]
         owner = {
             'Name': name,
@@ -104,6 +109,21 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
             'Timestamp': timestamp,
             'Count': len(duplicates)
         }
+
+        # aggregate remaining keys according to type
+        all_keys = set(k for owner in duplicates for k in owner.keys())
+        keys_to_types = {k: type(owner[k]) for owner in duplicates for k in owner.keys()}
+        other_keys = all_keys - {'Name', 'Email', 'Source', 'Timestamp', 'Canonicalization'}
+        for other in other_keys:
+            if keys_to_types[other] == str:
+                # union over strings
+                owner[other] = ' | ' .join(sorted(set(owner.get(other, '') for owner in duplicates if owner.get(other, ''))))
+            elif keys_to_types[other] in (int, float):
+                # max over numerical types
+                owner[other] = max(owner.get(other, 0) for owner in duplicates)
+            else:
+                demisto.info(f'Cannot aggregate owner detail {other} -- removing from service owner')
+                continue
         deduped.append(owner)
     return deduped
 

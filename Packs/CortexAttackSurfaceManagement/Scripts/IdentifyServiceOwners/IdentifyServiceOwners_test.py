@@ -221,16 +221,68 @@ def test_score(deduplicated, expected_out):
         [],
         []
     ),
-    # ideal input with garbage field added
+    # ideal input with new string field added
     (
         [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'Int Field': 1},
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'String Field': 'val'},
+            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'New Field': 'val1'},
+            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'New Field': 'val2'},
         ],
         [
             {
                 'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Ranking Score': 1, 'Justification': 'source1'
+                'Ranking Score': 1, 'Justification': 'source1', 'New Field': 'val1 | val2'
+            },
+        ]
+    ),
+    # ideal input with new numerical field added
+    (
+        [
+            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'New Field': 1},
+            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'New Field': 2},
+        ],
+        [
+            {
+                'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
+                'Ranking Score': 1, 'Justification': 'source1', 'New Field': 2,
+            },
+        ]
+    ),
+    # ideal input with some new field values added
+    (
+        [
+            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'New Field': 1},
+            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
+        ],
+        [
+            {
+                'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
+                'Ranking Score': 1, 'Justification': 'source1', 'New Field': 1,
+            },
+        ]
+    ),
+    # ideal input with some new field values added
+    (
+        [
+            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'New Field': 'val1'},
+            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
+        ],
+        [
+            {
+                'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
+                'Ranking Score': 1, 'Justification': 'source1', 'New Field': 'val1',
+            },
+        ]
+    ),
+    # ideal input with some new field values added that we can't handle
+    (
+        [
+            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'New Field': None},
+            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
+        ],
+        [
+            {
+                'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
+                'Ranking Score': 1, 'Justification': 'source1',
             },
         ]
     ),
