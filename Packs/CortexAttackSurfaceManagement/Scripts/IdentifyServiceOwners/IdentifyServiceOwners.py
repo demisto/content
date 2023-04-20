@@ -15,23 +15,23 @@ def score(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     Owner score is the number of observations on that owner divided by the max number of observations
     for any owner in the list
 
-    Expects `Count` key and replaces it with `Confidence Score`
+    Expects `Count` key and replaces it with `Ranking Score`
     """
     if owners:
         max_count = max(owner.get('Count', 1) for owner in owners)
         for owner in owners:
             count = owner.pop('Count', 1)
-            owner['Confidence Score'] = count / max_count
+            owner['Ranking Score'] = count / max_count
     return owners
 
 
 def rank(owners: List[Dict[str, Any]], k: int = 5) -> List[Dict[str, Any]]:
     """
-    Return up to k owners with the highest confidence scores
+    Return up to k owners with the highest ranking scores
     """
     if k <= 0:
         raise ValueError(f'Number of owners k={k} must be greater than zero')
-    return sorted(owners, key=lambda x: x['Confidence Score'])[:k]
+    return sorted(owners, key=lambda x: x['Ranking Score'])[:k]
 
 
 def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:

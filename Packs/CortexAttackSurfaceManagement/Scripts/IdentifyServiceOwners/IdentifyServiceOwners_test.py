@@ -11,14 +11,14 @@ from contextlib import nullcontext as does_not_raise
         [
             {
                 'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
-                'Timestamp': '', 'Confidence Score': 1, 'Justification': 'source1'
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': 'source1'
             },
         ],
         1,
         [
             {
                 'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
-                'Timestamp': '', 'Confidence Score': 1, 'Justification': 'source1'
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': 'source1'
             },
         ],
         does_not_raise(),
@@ -27,7 +27,7 @@ from contextlib import nullcontext as does_not_raise
         [
             {
                 'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
-                'Timestamp': '', 'Confidence Score': 1, 'Justification': 'source1'
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': 'source1'
             },
         ],
         0,
@@ -38,7 +38,7 @@ from contextlib import nullcontext as does_not_raise
         [
             {
                 'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
-                'Timestamp': '', 'Confidence Score': 1, 'Justification': 'source1'
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': 'source1'
             },
         ],
         -1,
@@ -177,8 +177,8 @@ def test_aggregate(owners, expected_out):
             {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Count': 2},
         ],
         [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Confidence Score': 1.0},
-            {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Confidence Score': 1.0},
+            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Ranking Score': 1.0},
+            {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Ranking Score': 1.0},
         ]
     ),
     # unequal counts
@@ -188,8 +188,8 @@ def test_aggregate(owners, expected_out):
             {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Count': 2},
         ],
         [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '2', 'Confidence Score': 0.5},
-            {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Confidence Score': 1.0},
+            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '2', 'Ranking Score': 0.5},
+            {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Ranking Score': 1.0},
         ]
     ),
     # empty owners
@@ -212,7 +212,7 @@ def test_score(deduplicated, expected_out):
         [
             {
                 'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Confidence Score': 1.0, 'Justification': 'source1'
+                'Ranking Score': 1.0, 'Justification': 'source1'
             },
         ]
     ),
@@ -230,7 +230,7 @@ def test_score(deduplicated, expected_out):
         [
             {
                 'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Confidence Score': 1, 'Justification': 'source1'
+                'Ranking Score': 1, 'Justification': 'source1'
             },
         ]
     ),
@@ -252,7 +252,7 @@ def test_score(deduplicated, expected_out):
         [
             {
                 'Name': '', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Confidence Score': 1, 'Justification': 'source1'
+                'Ranking Score': 1, 'Justification': 'source1'
             },
         ]
     ),
@@ -264,7 +264,7 @@ def test_score(deduplicated, expected_out):
         [
             {
                 'Name': 'a', 'Email': '', 'Source': 'source1', 'Timestamp': '1',
-                'Confidence Score': 1, 'Justification': 'source1'
+                'Ranking Score': 1, 'Justification': 'source1'
             },
         ]
     ),
@@ -276,7 +276,7 @@ def test_score(deduplicated, expected_out):
         [
             {
                 'Name': 'a', 'Email': 'email1@gmail.com', 'Source': '', 'Timestamp': '1',
-                'Confidence Score': 1, 'Justification': ''
+                'Ranking Score': 1, 'Justification': ''
             },
         ]
     ),
@@ -288,7 +288,7 @@ def test_score(deduplicated, expected_out):
         [
             {
                 'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
-                'Timestamp': '', 'Confidence Score': 1, 'Justification': 'source1'
+                'Timestamp': '', 'Ranking Score': 1, 'Justification': 'source1'
             },
         ]
     ),
@@ -300,7 +300,7 @@ def test_score(deduplicated, expected_out):
         [
             {
                 'Name': '', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Confidence Score': 1, 'Justification': 'source1'
+                'Ranking Score': 1, 'Justification': 'source1'
             },
         ]
     ),
@@ -312,7 +312,7 @@ def test_score(deduplicated, expected_out):
         [
             {
                 'Name': 'a', 'Email': '', 'Source': 'source1', 'Timestamp': '1',
-                'Confidence Score': 1, 'Justification': 'source1'
+                'Ranking Score': 1, 'Justification': 'source1'
             },
         ]
     ),
@@ -324,7 +324,7 @@ def test_score(deduplicated, expected_out):
         [
             {
                 'Name': 'a', 'Email': 'email1@gmail.com', 'Source': '', 'Timestamp': '1',
-                'Confidence Score': 1, 'Justification': ''
+                'Ranking Score': 1, 'Justification': ''
             },
         ]
     ),
@@ -336,7 +336,7 @@ def test_score(deduplicated, expected_out):
         [
             {
                 'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '',
-                'Confidence Score': 1, 'Justification': 'source1'
+                'Ranking Score': 1, 'Justification': 'source1'
             },
         ]
     ),
@@ -349,7 +349,7 @@ def test_score(deduplicated, expected_out):
         [
             {
                 'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': 2,
-                'Confidence Score': 1.0, 'Justification': 'source1'
+                'Ranking Score': 1.0, 'Justification': 'source1'
             },
         ]
     ),

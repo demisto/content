@@ -57,11 +57,11 @@
             "width": 150
         },
         {
-            "displayName": "ConfidenceScore",
+            "displayName": "Ranking Score",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "confidencescore",
+            "key": "rankingscore",
             "orgType": "shortText",
             "required": false,
             "script": "",
