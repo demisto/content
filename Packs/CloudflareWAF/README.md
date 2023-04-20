@@ -36,3 +36,5 @@ In order to configure the logpush on cloudflare side, please read [this document
 <u>Guidelines:</u>
 1. For the **destination_conf**, use the API Url which was copied in section 3 (on the XSIAM side).
 2. For the **X-Auth-Key**, use the newly created token mentioned in section 2 (on the XSIAM side).
+3. Important: Make sure to specify under **logpull_options** in the Logpush API configuration the next string `EdgeEndTimestamp&timestamps=rfc3339`.
+   This is in order to send this time field as a timestamp string, which will be used as the time of the event.
