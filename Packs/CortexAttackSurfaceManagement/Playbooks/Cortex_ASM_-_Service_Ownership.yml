@@ -45,12 +45,12 @@ tasks:
                 - - left:
                       iscontext: true
                       value:
-                        simple: alert.asmserviceownerobservations.Source
+                        simple: alert.asmserviceowner.Source
                     operator: startWith
                     right:
                       value:
                         simple: Service account on instance
-                root: alert.asmserviceownerobservations
+                root: alert.asmserviceowner
           operator: isNotEmpty
           right:
             value: {}
@@ -71,19 +71,19 @@ tasks:
     task:
       brand: ""
       description: Determine whether a service account was included among the potential service owners.
-      id: d641c28f-669f-4532-8c84-dd4327aeb9d9
+      id: 36af0f89-236c-4d42-8d0d-62adedcfd283
       iscommand: false
       name: Is service account defined?
       type: condition
       version: -1
-    taskid: d641c28f-669f-4532-8c84-dd4327aeb9d9
+    taskid: 36af0f89-236c-4d42-8d0d-62adedcfd283
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 510
+          "y": 520
         }
       }
   "4":
@@ -103,12 +103,12 @@ tasks:
           - - left:
                 iscontext: true
                 value:
-                  simple: alert.asmserviceownerobservations.Source
+                  simple: alert.asmserviceowner.Source
               operator: startWith
               right:
                 value:
                   simple: Service account on instance
-          root: alert.asmserviceownerobservations
+          root: alert.asmserviceowner
           transformers:
           - args:
               field:
@@ -136,13 +136,13 @@ tasks:
     task:
       brand: GCP-IAM
       description: Retrieves the IAM access control policy for the specified project.
-      id: 34bafcc9-2b6e-4b2a-82f5-5480d071307a
+      id: 1fc23625-bec5-4f2e-8fe5-3f51e46c32aa
       iscommand: true
       name: Lookup project owner
       script: GCP-IAM|||gcp-iam-project-iam-policy-get
       type: regular
       version: -1
-    taskid: 34bafcc9-2b6e-4b2a-82f5-5480d071307a
+    taskid: 1fc23625-bec5-4f2e-8fe5-3f51e46c32aa
     timertriggers: []
     type: regular
     view: |-
@@ -164,7 +164,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       gridfield:
-        simple: asmserviceownerobservations
+        simple: asmserviceowner
       keys:
         simple: Name,Email,Source,Timestamp
       val1:
@@ -191,7 +191,7 @@ tasks:
                   simple: 'user:'
             operator: replace
       val3:
-        simple: GCP project owner on project where service account is defined
+        simple: Owner of GCP project where service account is defined
       val4:
         complex:
           root: TimeNowUnix
@@ -204,13 +204,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: 4202b86f-6578-4423-8291-8af502fdc341
+      id: 00298ed8-f84b-4444-8207-50f3af9ec22d
       iscommand: false
-      name: Add project owner to service owner observations grid field
+      name: Add project owner to service owner grid field
       script: GridFieldSetup
       type: regular
       version: -1
-    taskid: 4202b86f-6578-4423-8291-8af502fdc341
+    taskid: 00298ed8-f84b-4444-8207-50f3af9ec22d
     timertriggers: []
     type: regular
     view: |-
@@ -229,19 +229,19 @@ tasks:
     quietmode: 0
     scriptarguments:
       owners:
-        simple: ${alert.asmserviceownerobservations}
+        simple: ${alert.asmserviceowner}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
-      id: 7666e986-43b8-46a3-8a16-33d74a6aa206
+      id: aa9cfac4-dace-46f3-80fd-e825b24c675a
       iscommand: false
       name: Normalize and rank likely service owners
       script: IdentifyServiceOwners
       type: regular
       version: -1
-    taskid: 7666e986-43b8-46a3-8a16-33d74a6aa206
+    taskid: aa9cfac4-dace-46f3-80fd-e825b24c675a
     timertriggers: []
     type: regular
     view: |-
@@ -313,13 +313,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: 5e630cc2-c8c4-4054-8c77-47382b4c8879
+      id: beb1aba3-dc17-4cab-8621-3f670166844b
       iscommand: false
       name: Back up service owners gridfield
       script: GridFieldSetup
       type: regular
       version: -1
-    taskid: 5e630cc2-c8c4-4054-8c77-47382b4c8879
+    taskid: beb1aba3-dc17-4cab-8621-3f670166844b
     timertriggers: []
     type: regular
     view: |-
@@ -364,7 +364,9 @@ tasks:
 version: -1
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "2_6_#default#": 0.42
+    },
     "paper": {
       "dimensions": {
         "height": 1325,
