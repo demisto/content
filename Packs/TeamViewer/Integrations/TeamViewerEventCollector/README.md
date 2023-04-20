@@ -3,7 +3,7 @@ This integration was integrated and tested with version 15.40 of TeamViewer Even
 
 ## Configure TeamViewer Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
 2. Search for TeamViewer Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
