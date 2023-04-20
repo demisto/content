@@ -1,0 +1,104 @@
+{
+    "vendors": [
+        {
+            "address": {
+                "line1": "1 Infinite Loop",
+                "city": "Cupertino",
+                "state": "California",
+                "country": "United States",
+                "zipcode": "95014"
+            },
+            "id": 1,
+            "name": "Apple",
+            "description": "",
+            "contact_name": null,
+            "email": null,
+            "mobile": null,
+            "phone": null,
+            "primary_contact_id": null,
+            "custom_fields": {},
+            "created_at": "vendors[0]_created_at",
+            "updated_at": "vendors[0]_updated_at"
+        },
+        {
+            "address": {
+                "line1": "1 Dell Way",
+                "city": "Round Rock",
+                "state": "Texas",
+                "country": "United States",
+                "zipcode": "78664"
+            },
+            "id": 21000275401,
+            "name": "Dell",
+            "description": "",
+            "contact_name": null,
+            "email": null,
+            "mobile": null,
+            "phone": null,
+            "primary_contact_id": null,
+            "custom_fields": {},
+            "created_at": "vendors[1]_created_at",
+            "updated_at": "vendors[1]_updated_at"
+        },
+        {
+            "address": {
+                "line1": "2950 S Delaware St Suite 201",
+                "city": "San Mateo",
+                "state": "California",
+                "country": "United States",
+                "zipcode": "94401"
+            },
+            "id": 21000275403,
+            "name": "Freshworks",
+            "description": "",
+            "contact_name": null,
+            "email": null,
+            "mobile": null,
+            "phone": null,
+            "primary_contact_id": null,
+            "custom_fields": {},
+            "created_at": "vendors[2]_created_at",
+            "updated_at": "vendors[2]_updated_at"
+        },
+        {
+            "address": {
+                "line1": "7700 Gateway Blvd",
+                "city": "Newark",
+                "state": "California",
+                "country": "United States",
+                "zipcode": "94560"
+            },
+            "id": 21000275402,
+            "name": "Logitech",
+            "description": "",
+            "contact_name": null,
+            "email": null,
+            "mobile": null,
+            "phone": null,
+            "primary_contact_id": null,
+            "custom_fields": {},
+            "created_at": "vendors[3]_created_at",
+            "updated_at": "vendors[3]_updated_at"
+        },
+        {
+            "address": {
+                "line1": null,
+                "city": null,
+                "state": null,
+                "country": null,
+                "zipcode": null
+            },
+            "id": 21000275404,
+            "name": "Microsoft",
+            "description": "",
+            "contact_name": null,
+            "email": null,
+            "mobile": null,
+            "phone": null,
+            "primary_contact_id": null,
+            "custom_fields": {},
+            "created_at": "vendors[4]_created_at",
+            "updated_at": "vendors[4]_updated_at"
+        }
+    ]
+}
