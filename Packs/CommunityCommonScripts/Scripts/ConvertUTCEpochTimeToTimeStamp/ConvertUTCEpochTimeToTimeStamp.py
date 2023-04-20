@@ -64,7 +64,7 @@ def main():
             utc_time = epochtime_to_utctime(timestamp_value)
             date_timestamp = parser.parse(utc_time)
             datetime_conversions(date_timestamp, time_format, utc_offset, timezone)
-        elif isinstance(timestamp_value. str):
+        elif isinstance(timestamp_value, str):
             date_timestamp = parser.parse(timestamp_value)
             datetime_conversions(date_timestamp, time_format, utc_offset, timezone)
         else:
