@@ -107,7 +107,6 @@ def fetch_events_command(
         dict: Next run dictionary containing the ids of the next events to fetch.
         list: List of events that will be created in XSIAM.
     """
-    # In the first fetch, get the ids for the first fetch time
     last_fetch = last_run.get('last_fetch')
     last_fetch = first_fetch_time if last_fetch is None else datetime.strptime(last_fetch, DATE_FORMAT)
     demisto.debug(f'last fetch :\n {last_fetch}')
