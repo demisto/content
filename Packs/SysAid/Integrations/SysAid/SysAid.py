@@ -347,13 +347,10 @@ def service_record_response_handler(response: Dict[str, Any]):
 
     :param response: The response to turn to human readable
     """
-    if 'info' in response:
-        for service_record_info in response['info']:
-            response[service_record_info['key']] = service_record_info['valueCaption']
+    for service_record_info in response.get('info', []):
+        response[service_record_info['key']] = service_record_info['valueCaption']
 
-        return response
-
-    return None
+    return response
 
 
 def extract_filters(custom_fields_keys: List[str], custom_fields_values: List[str]) -> Dict[str, Any]:
