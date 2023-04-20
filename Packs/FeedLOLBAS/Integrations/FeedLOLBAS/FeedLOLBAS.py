@@ -103,7 +103,8 @@ def map_indicator_fields(pre_indicator):
     return {
         'Commands': mapped_commands,
         'Detections': mapped_detections,
-        'Paths': mapped_paths
+        'Paths': mapped_paths,
+        'description': pre_indicator.get('Description')
     }
 
 
@@ -117,7 +118,6 @@ def create_indicators(client: Client, pre_indicators) -> List[Dict[str, Any]]:
         indicator: Dict[str, Any] = {
             'type': ThreatIntel.ObjectsNames.TOOL,
             'value': pre_indicator.get('Name'),
-            'description': pre_indicator.get('Description'),
             'fields': map_indicator_fields(pre_indicator),
             'rawJSON': pre_indicator,
         }
@@ -125,6 +125,7 @@ def create_indicators(client: Client, pre_indicators) -> List[Dict[str, Any]]:
             indicator['fields']['trafficlightprotocol'] = tlp_color
         if feed_tags := client.feed_tags:
             indicator['fields']['tags'] = feed_tags
+
         indicators.append(indicator)
     return indicators
 

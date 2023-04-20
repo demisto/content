@@ -3,165 +3,187 @@ commonfields:
   id: LOLBAS Feed
   version: -1
 configuration:
-  - defaultvalue: 'true'
-    display: Fetch indicators
-    name: feed
-    required: false
-    type: 8
-  - additionalinfo: Indicators from this integration instance will be marked with this reputation.
-    display: Indicator Reputation
-    name: feedReputation
-    defaultvalue: None
-    options:
-      - None
-      - Good
-      - Suspicious
-      - Bad
-    required: false
-    type: 18
-  - additionalinfo: Reliability of the source providing the intelligence data.
-    defaultvalue: A - Completely reliable
-    display: Source Reliability
-    name: feedReliability
-    options:
-      - A - Completely reliable
-      - B - Usually reliable
-      - C - Fairly reliable
-      - D - Not usually reliable
-      - E - Unreliable
-      - F - Reliability cannot be judged
-    required: true
-    type: 15
-  - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
-    defaultvalue: CLEAR
-    display: Traffic Light Protocol Color
-    name: tlp_color
-    options:
-      - RED
-      - AMBER+STRICT
-      - AMBER
-      - GREEN
-      - CLEAR
-    required: false
-    type: 15
-  - defaultvalue: never
-    display: ''
-    name: feedExpirationPolicy
-    options:
-      - never
-      - interval
-      - indicatorType
-      - suddenDeath
-    required: false
-    type: 17
-  - defaultvalue: '20160'
-    display: ''
-    name: feedExpirationInterval
-    required: false
-    type: 1
-  - defaultvalue: '1440'
-    display: Feed Fetch Interval
-    name: feedFetchInterval
-    required: false
-    type: 19
-  - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-    defaultvalue: 'false'
-    display: Bypass exclusion list
-    name: feedBypassExclusionList
-    required: false
-    type: 8
-  - display: Use system proxy settings
-    name: proxy
-    required: false
-    type: 8
-  - defaultvalue: 'false'
-    display: Trust any certificate (not secure)
-    name: insecure
-    required: false
-    type: 8
-  - additionalinfo: Supports CSV values.
-    display: Tags
-    name: feedTags
-    required: false
-    type: 0
-  - defaultvalue: 'true'
-    display: Create relationships
-    name: create_relationships
-    required: false
-    type: 8
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+  section: Connect
+  advanced: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  section: Collect
+  advanced: false
+  display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: None
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+  section: Collect
+  advanced: false
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  defaultvalue: CLEAR
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER+STRICT
+  - AMBER
+  - GREEN
+  - CLEAR
+  required: false
+  type: 15
+  section: Collect
+  advanced: true
+- defaultvalue: never
+  display: ''
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+  section: Collect
+  advanced: true
+- defaultvalue: '20160'
+  display: ''
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '1440'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  defaultvalue: 'false'
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+- defaultvalue: 'true'
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
 description: 'Living off the land binaries" is a term used to describe malware or hacking techniques that take advantage of legitimate tools and processes that are already present on a computer or network, rather than introducing new malware or malicious code. The goal is to blend in with normal activity and avoid detection. Examples of this include using built-in Windows commands to move laterally through a network, or using scripting languages that are commonly installed on a system to execute malicious code. LOLBAS project is documenting binaries, scripts, and libraries that can be used for Living Off The Land techniques.'
 display: 'LOLBAS Feed'
 name: LOLBAS Feed
 script:
   commands:
-    - arguments:
-        - default: false
-          description: The maximum number of indicators to return.
-          isArray: false
-          name: limit
-          required: true
-          secret: false
-      description: Retrieves a limited number of indicators.
-      execution: false
-      name: lolbas-get-indicators
-      outputs:
-        - contextPath: LOLBAS.Indicator
-          description: The indicator.
-          type: String
-        - contextPath: LOLBAS.Type
-          description: The indicator type.
-          type: String
-        - contextPath: LOLBAS.Description
-          description: The indicator description.
-          type: String
-        - contextPath: LOLBAS.Command
-          description: The indicator command.
-          type: String
-        - contextPath: LOLBAS.URL
-          description: The indicator URL.
-          type: String
-        - contextPath: LOLBAS.Related
-          description: The indicator related.
-          type: String
-        - contextPath: LOLBAS.RelatedURL
-          description: The indicator related URL.
-          type: String
-        - contextPath: LOLBAS.RelatedCommand
-          description: The indicator related command.
-          type: String
-        - contextPath: LOLBAS.RelatedDescription
-          description: The indicator related description.
-          type: String
-        - contextPath: LOLBAS.RelatedType
-          description: The indicator related type.
-          type: String
-        - contextPath: LOLBAS.RelatedTechnique
-          description: The indicator related technique.
-          type: String
-        - contextPath: LOLBAS.RelatedTechniqueID
-          description: The indicator related technique ID.
-          type: String
-        - contextPath: LOLBAS.RelatedTechniqueDescription
-          description: The indicator related technique description.
-          type: String
-        - contextPath: LOLBAS.RelatedTechniqueURL
-          description: The indicator related technique URL.
-          type: String
-        - contextPath: LOLBAS.RelatedTechniqueTactic
-          description: The indicator related technique tactic.
-          type: String
-        - contextPath: LOLBAS.RelatedTechniqueTacticID
-          description: The indicator related technique tactic ID.
-          type: String
-        - contextPath: LOLBAS.RelatedTechniqueTacticDescription
-          description: The indicator related technique tactic description.
-          type: String
-        - contextPath: LOLBAS.RelatedTechniqueTacticURL
-          description: The indicator related technique tactic URL.
-          type: String
-        - contextPath: LOLBAS.RelatedTechniqueTacticPlatform
-          description: The indicator related technique tactic platform.
-          type: String
+  - arguments:
+    - default: false
+      description: The maximum number of indicators to return.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    description: Retrieves a limited number of indicators.
+    execution: false
+    name: lolbas-get-indicators
+    outputs:
+    - contextPath: LOLBAS.Indicator
+      description: The indicator.
+      type: String
+    - contextPath: LOLBAS.Type
+      description: The indicator type.
+      type: String
+    - contextPath: LOLBAS.Description
+      description: The indicator description.
+      type: String
+    - contextPath: LOLBAS.Command
+      description: The indicator command.
+      type: String
+    - contextPath: LOLBAS.URL
+      description: The indicator URL.
+      type: String
+    - contextPath: LOLBAS.Related
+      description: The indicator related.
+      type: String
+    - contextPath: LOLBAS.RelatedURL
+      description: The indicator related URL.
+      type: String
+    - contextPath: LOLBAS.RelatedCommand
+      description: The indicator related command.
+      type: String
+    - contextPath: LOLBAS.RelatedDescription
+      description: The indicator related description.
+      type: String
+    - contextPath: LOLBAS.RelatedType
+      description: The indicator related type.
+      type: String
+    - contextPath: LOLBAS.RelatedTechnique
+      description: The indicator related technique.
+      type: String
+    - contextPath: LOLBAS.RelatedTechniqueID
+      description: The indicator related technique ID.
+      type: String
+    - contextPath: LOLBAS.RelatedTechniqueDescription
+      description: The indicator related technique description.
+      type: String
+    - contextPath: LOLBAS.RelatedTechniqueURL
+      description: The indicator related technique URL.
+      type: String
+    - contextPath: LOLBAS.RelatedTechniqueTactic
+      description: The indicator related technique tactic.
+      type: String
+    - contextPath: LOLBAS.RelatedTechniqueTacticID
+      description: The indicator related technique tactic ID.
+      type: String
+    - contextPath: LOLBAS.RelatedTechniqueTacticDescription
+      description: The indicator related technique tactic description.
+      type: String
+    - contextPath: LOLBAS.RelatedTechniqueTacticURL
+      description: The indicator related technique tactic URL.
+      type: String
+    - contextPath: LOLBAS.RelatedTechniqueTacticPlatform
+      description: The indicator related technique tactic platform.
+      type: String
   feed: true
   isfetch: false
   longRunning: false
@@ -172,4 +194,4 @@ script:
   dockerimage: demisto/python3:3.10.7.35188
 fromversion: 6.8.0
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
