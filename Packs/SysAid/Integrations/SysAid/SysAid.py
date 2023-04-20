@@ -34,7 +34,20 @@ FETCH_DEFAULT_TIME = '3 days'
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, auth=auth)
-        self._cookies: requests.cookies.RequestsCookieJar = self._get_cookies()
+        try:
+            cookies = self._get_saved_cookies_from_context()
+            demisto.log(f'{cookies=}')
+            # raises TypeError if invalid
+            self._cookies: requests.cookies.RequestsCookieJar = requests.cookies.cookiejar_from_dict(cookies)
+            demisto.log('try using saved cookies')
+            # raises DemistoException if cookies expired
+            self.filter_list_request()
+            demisto.log('worked!')
+
+        except (TypeError, DemistoException):
+            demisto.log('refreshing cookies')
+            self._cookies = self._get_cookies()
+            self._set_cookies_to_context(self._cookies)
 
     def _get_cookies(self) -> requests.cookies.RequestsCookieJar:
         data = {'user_name': self._auth[0], 'password': self._auth[1]}
@@ -43,6 +56,20 @@ class Client(BaseClient):
         response = self._http_request('POST', 'login', json_data=data, resp_type='response')
 
         return response.cookies
+
+    def _set_cookies_to_context(self, cookies: requests.cookies.RequestsCookieJar):
+        context = get_integration_context()
+        if context.get("context"):
+            context = context.get("context")
+        # we can't save requests.cookies.RequestsCookieJar to context, saving it as dict instead
+        context['cookies'] = dict(cookies)
+        set_integration_context({"context": context})
+
+    def _get_saved_cookies_from_context(self) -> Dict:
+        context = get_integration_context()
+        if context.get("context"):
+            context = context.get("context")
+        return context.get('cookies', {})
 
     def table_list_request(self, entity: str = None, fields: str = None):
         params = assign_params(entity=entity, fields=fields)

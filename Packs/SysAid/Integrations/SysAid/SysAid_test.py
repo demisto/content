@@ -5,7 +5,7 @@ from freezegun import freeze_time
 from SysAid import Client
 from test_data import input_data
 
-COOKIES = 'cookies'
+COOKIES = {'JSESSIONID': 'cookies', 'SERVERID': 'serverid'}
 
 
 @pytest.fixture
