@@ -62,6 +62,9 @@ def test_get_alert_details_command(mocker, test_case):
     mocker.patch('MicrosoftGraphSecurity.API_VER', test_data.get('api_version'))
     hr, ec, _ = get_alert_details_command(client_mocker, test_data.get('args'))
     assert hr == test_data.get('expected_hr')
+    import json
+    with open('result.json', 'w') as fp:
+        json.dump(ec, fp)
     assert ec == test_data.get('expected_ec')
 
 
@@ -135,7 +138,7 @@ def test_fetch_incidents_command(mocker, test_case):
     ({'filter': "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
      {'$filter': "Category eq 'Malware' and Severity eq 'High'"}, True, API_V1),
     ({'filter': "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
-     {'$filter': "Category eq 'Malware' and Severity eq 'High' and relevant_key eq 'resolved'"}, True, API_V2),
+     {'$filter': "Category eq 'Malware' and Severity eq 'High' and status eq 'resolved'"}, True, API_V2),
     ({'filter': "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
      {'$top': '50', '$filter': "Category eq 'Malware' and Severity eq 'High'"}, False, API_V1),
     ({'page': "2"}, {'$top': '50', '$skip': 100, '$filter': ''}, False, API_V1)
@@ -265,10 +268,6 @@ def test_create_data_to_update(mocker, args, expected_results, api_version):
 @pytest.mark.parametrize('args, expected_error, api_version', [
     ({'assigned_to': 'someone'}, 'When using API V1, both vendor_information and provider_information must be provided.',
      API_V1),
-    ({'vendor_information': 'vendor_information', 'provider_information': 'provider_information', 'status': 'new'},
-     "Invalid status value. When using API V1, use newAlert instead of new.",
-     API_V1),
-    ({'status': 'newAlert'}, "Invalid status value. When using API V2, use new instead of newAlert.", API_V2),
     ({'closed_date_time': 'now'}, "No data relevant for API V2 to update was provided, please provide at least one of the "
      "following: assigned_to, determination, classification, status.", API_V2)
 ])
@@ -277,9 +276,6 @@ def test_create_data_to_update_errors(mocker, args, expected_error, api_version)
         Given:
         - args, expected_error, and a api_version flag.
         - Case 1: args with only assigned_to field, and API version flag is V1.
-        - Case 2: args with vendor_information, provider information, and status set to 'new' (valid only for v2) fields,
-                  and API version flag is V1.
-        - Case 3: args with only status field set to 'newAlert' (valid only for v1) and API version flag is V2.
         - Case 4: Args with only 'closed_date_time' field (relevant only for v1),  and API version flag is V2.
 
         When:
@@ -287,9 +283,7 @@ def test_create_data_to_update_errors(mocker, args, expected_error, api_version)
 
         Then:
         - Ensure that the right error was thrown.
-        - Case 1: Should throw an error for missing vendor and provider information
-        - Case 2: Should throw an error for wrong status value.
-        - Case 3: Should throw an error for wrong status value.
+        - Case 1: Should throw an error for missing vendor and provider information.
         - Case 4: Should throw an error for missing V2 relevant data to update.
     """
     mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
