@@ -1652,7 +1652,7 @@ def get_non_added_packs_ids(build: Build):
     :return: all non added packs i.e. unchanged packs (dependencies) and modified packs
     """
     compare_against = (
-        'origin/master' if build.branch_name != 'master' else 'master'
+        'origin/master' if build.branch_name != 'master' else 'master~1'
     )
     added_files = run_command(f'git diff --name-only --diff-filter=A '
                               f'{compare_against}..refs/heads/{build.branch_name} -- Packs/*/pack_metadata.json')
