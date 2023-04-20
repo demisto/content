@@ -57,7 +57,8 @@ There are no outputs for this script.
 }]}` mapping="Address:Address" out_path="res"
 ```
 
-## Outputs
+## Example Output
+---
 ```
 {
   "res": [
