@@ -1,4 +1,4 @@
-from ConvertFile import main, find_zombie_processes
+from ConvertFile import main, find_zombie_processes, convert_file
 import demistomock as demisto
 from CommonServerPython import entryTypes
 import logging
@@ -6,6 +6,8 @@ import pytest
 import glob
 import os
 import subprocess
+import pdfx
+import tempfile
 
 RETURN_ERROR_TARGET = 'ConvertFile.return_error'
 
@@ -122,3 +124,27 @@ def test_zombie_prcesses(mocker):
     zombies, output = find_zombie_processes()
     assert len(zombies) == 9
     assert output == ps_output
+
+
+@pytest.mark.parametrize('test_file, hyperlinks_count', [('without_hyperlink', 0),
+                                                         ('with_hyperlink', 1)])
+def test_hyperlinkes_copy(test_file, hyperlinks_count):
+    """
+    Given:
+        - test_file: The name of the docx test file.
+        - hyperlinks_count: The number of hyperlinks in the file.
+
+    When:
+        - executing convert_file method
+
+    Then:
+        - Validate that no hyperlinks are converted to the new pdf file.
+        - Validate that one hyperlink is converted to the new pdf file.
+    """
+    docx_file_path = f'test_data/{test_file}.docx'
+    with tempfile.TemporaryDirectory() as outdir:
+        converted_file = convert_file(file_path=docx_file_path, out_format='pdf', all_files=False, outdir=outdir)
+        pdf = pdfx.PDFx(converted_file[0])
+        references = pdf.get_references()
+
+    assert len(references) == hyperlinks_count
