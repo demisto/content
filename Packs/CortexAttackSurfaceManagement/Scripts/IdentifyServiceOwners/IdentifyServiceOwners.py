@@ -64,7 +64,9 @@ def _canonicalize(owner: Dict[str, Any]) -> Dict[str, Any]:
 
 def canonicalize(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
     """
-    Canonicalize a set of owners
+    Calls _canonicalize on each owner.
+
+    Defensive handling of potentially missing or NoneType inputs
     """
     canonicalized = []
     if owners:
