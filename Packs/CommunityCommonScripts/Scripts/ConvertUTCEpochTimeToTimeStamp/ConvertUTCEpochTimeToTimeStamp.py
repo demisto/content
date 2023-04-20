@@ -2,8 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Dict, Any
-import traceback
 from datetime import datetime, timedelta
 from dateutil import parser
 import pytz
@@ -44,13 +42,13 @@ def epochtime_to_utctime(epoch_time):
     return converted_timestamp
 
 
-def datetime_convertions(date_timestamp, time_format, utc_offset, timezone):
+def datetime_conversions(date_timestamp, time_format, utc_offset, timezone):
     if utc_offset is not None:
         return_results(convert_utctime_with_utc_offset(date_timestamp, time_format, utc_offset))
     elif timezone is not None:
         return_results(convert_utctime_with_timezone(date_timestamp, time_format, timezone))
     else:
-        print("Provide utcoffset or timezone to convert")
+        raise DemistoException("Provide utcoffset or timezone to convert")
 
 
 def main():
@@ -61,15 +59,18 @@ def main():
     utc_offset = demisto.args().get('utcoffset')
     timezone = demisto.args().get('timezone')
 
-    if type(timestamp_value) == int:
-        utc_time = epochtime_to_utctime(timestamp_value)
-        date_timestamp = parser.parse(utc_time)
-        datetime_convertions(date_timestamp, time_format, utc_offset, timezone)
-    elif type(timestamp_value) == str:
-        date_timestamp = parser.parse(timestamp_value)
-        datetime_convertions(date_timestamp, time_format, utc_offset, timezone)
-    else:
-        print("Please select the timestamptype argument")
+    try:
+        if isinstance(timestamp_value, int):
+            utc_time = epochtime_to_utctime(timestamp_value)
+            date_timestamp = parser.parse(utc_time)
+            datetime_conversions(date_timestamp, time_format, utc_offset, timezone)
+        elif isinstance(timestamp_value. str):
+            date_timestamp = parser.parse(timestamp_value)
+            datetime_conversions(date_timestamp, time_format, utc_offset, timezone)
+        else:
+            raise DemistoException("Please select the timestamptype argument")
+    except Exception as e:
+        return_error(f'Failed to execute ConvertUTCEpochTimeToTimeStamp. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
