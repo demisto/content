@@ -139,9 +139,9 @@ def capitalize_dict_keys_first_letter(dict_obj):
     """
     Recursively creates a data dictionary where all key starts with capital letters.
     Args:
-        args (Dict): The command's arguments dictionary.
+        dict_obj (Dict): The dictionary to update.
     Returns:
-        Dict: A dictionary object containing the alert's fields to update.
+        Dict: The updated dictionary.
     """
     new_alert: dict = {}
     for key, value in dict_obj.items():
@@ -327,7 +327,7 @@ def search_alerts_command(client: MsGraphClient, args):
         table_headers = ['ID', 'Vendor', 'Provider', 'Title', 'Category', 'Severity', 'CreatedDate', 'EventDate', 'Status']
     else:
         outputs = [capitalize_dict_keys_first_letter(alert) for alert in alerts]
-        table_headers = ['ID', 'DetectionSource', 'ServiceSource', 'Title', 'Category', 'Severity', 'CreatedDate',
+        table_headers = ['ID', 'DetectionSource', 'ServiceSource', 'Title', 'Category', 'Severity', 'CreatedDateTime',
                          'LastUpdateDateTime', 'Status', 'IncidentId']
     ec = {
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': outputs
@@ -354,7 +354,7 @@ def get_alert_details_command(client: MsGraphClient, args):
     hr = f'## Microsoft Security Graph Alert Details - {alert_id}\n'
     if API_VER == API_V2:
         outputs = capitalize_dict_keys_first_letter(alert_details)
-        table_headers = ['ID', 'DetectionSource', 'ServiceSource', 'Title', 'Category', 'Severity', 'CreatedDate',
+        table_headers = ['ID', 'DetectionSource', 'ServiceSource', 'Title', 'Category', 'Severity', 'CreatedDateTime',
                          'LastUpdateDateTime', 'Status', 'IncidentId']
         ec = {
             'MsGraph.Alert(val.id && val.id === obj.id)': outputs

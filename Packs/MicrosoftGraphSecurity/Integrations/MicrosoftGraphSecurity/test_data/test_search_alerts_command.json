@@ -163,6 +163,6 @@
         "incidentId":"2514","incidentWebUrl":"https://security.microsoft.com/incidents/2514?tid=tenantId","lastActivityDateTime":"2022-09-26T05:01:02.839216Z",
         "lastUpdateDateTime":"2022-10-26T03:46:39.59Z","mitreTechniques":[],"providerAlertId":"pid","recommendedActions":"test alert","resolvedDateTime":null,
         "serviceSource":"microsoftDefenderForEndpoint","severity":"medium","status":"new","tenantId":"tenantId","threatDisplayName":null,"threatFamilyName":null, "title":"test alert"}]},
-        "expected_hr": "### Microsoft Security Graph Alerts\n|id|incidentId|status|severity|detectionSource|serviceSource|title|category|createdDateTime|lastUpdateDateTime|\n|---|---|---|---|---|---|---|---|---|---|\n| pid | 2514 | new | medium | customTi | microsoftDefenderForEndpoint | test alert | None | 2022-10-03T03:39:21.7562976Z | 2022-10-26T03:46:39.59Z |\n"
+        "expected_hr": "### Microsoft Security Graph Alerts\n|ID|DetectionSource|ServiceSource|Title|Category|Severity|CreatedDateTime|LastUpdateDateTime|Status|IncidentId|\n|---|---|---|---|---|---|---|---|---|---|\n| pid | customTi | microsoftDefenderForEndpoint | test alert | None | medium | 2022-10-03T03:39:21.7562976Z | 2022-10-26T03:46:39.59Z | new | 2514 |\n"
     }
 }
