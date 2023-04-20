@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import pytest
-from StixCreator import main, guess_indicator_type
+from StixCreator import main, guess_indicator_type, create_sco_stix_uuid, create_sdo_stix_uuid
 
 FILE_INDICATOR = \
     {
@@ -49,13 +49,13 @@ DOMAIN_INDICATORS = \
         'indicators':
             {
                 '0': {'expirationStatus': 'active', 'firstSeen': '2022-07-31T13:24:44Z',
-                      'indicator_type': 'cve',
+                      'indicator_type': 'CVE',
                       'lastSeen': '2022-07-31T13:24:44Z', 'score': 'Unknown',
                       'timestamp': '2022-07-31T13:24:44Z',
                       'value': 'test.com'
                       },
                 '1': {'expirationStatus': 'active', 'firstSeen': '2022-07-31T13:24:40Z',
-                      'indicator_type': 'attack pattern',
+                      'indicator_type': 'Attack Pattern',
                       'lastSeen': '2022-07-31T13:24:40Z', 'score': 'suspicious',
                       'timestamp': '2022-07-31T13:24:40Z',
                       'value': 'bad.com'
@@ -63,11 +63,43 @@ DOMAIN_INDICATORS = \
             }
     }
 
+IP_INDICATOR_SCO = {  # checking the new logic
+    "indicators": {
+        "0": {
+            "expirationStatus": "active",
+            "firstSeen": "2023-04-18T12:17:38+03:00",
+            "indicator_type": "IP",
+            "lastSeen": "2023-04-18T12:17:38+03:00",
+            "score": "Unknown",
+            "timestamp": "2023-04-18T12:17:38+03:00",
+            "value": "8.8.8.8",
+        }
+    },
+    "sco_flag": "true",
+}
+
+IP_INDICATOR_SDO = {  # checking bc
+    "indicators": {
+        "0": {
+            "expirationStatus": "active",
+            "firstSeen": "2023-04-18T12:17:38+03:00",
+            "indicator_type": "IP",
+            "lastSeen": "2023-04-18T12:17:38+03:00",
+            "score": "Unknown",
+            "timestamp": "2023-04-18T12:17:38+03:00",
+            "value": "8.8.8.8",
+        }
+    },
+    "sco_flag": "false",
+}
+
 
 @pytest.mark.parametrize('indicators, stix_type', [(DOMAIN_INDICATORS, 'bundle'),
                                                    (FILE_INDICATOR, 'indicator'),
                                                    (MALWARE_INDICATOR, 'malware'),
-                                                   (ATTACK_PATTERN_INDICATOR, 'attack-pattern')])
+                                                   (ATTACK_PATTERN_INDICATOR, 'attack-pattern'),
+                                                   (IP_INDICATOR_SCO, 'ipv4-addr'),
+                                                   (IP_INDICATOR_SDO, 'indicator')])
 def test_stixCreator_with_indicators(mocker, indicators, stix_type):
     mocker.patch.object(demisto, 'args', return_value=indicators)
     mocker.patch.object(demisto, 'results')
@@ -85,3 +117,102 @@ def test_stixCreator_with_indicators(mocker, indicators, stix_type):
 def test_guess_indicator_type(k, v, exp):
     a = guess_indicator_type(k, v)
     assert a == exp
+
+
+xsoar_indicator_1 = {'expirationStatus': 'active',
+                     'firstSeen': '2023-04-19T17:43:07+03:00',
+                     'indicator_type': 'Account',
+                     'lastSeen': '2023-04-19T17:43:07+03:00',
+                     'score': 'Unknown',
+                     'timestamp': '2023-04-19T17:43:07+03:00',
+                     'value': 'test@test.com'}
+stix_type_1 = "user-account"
+value_1 = 'test@test.com'
+expected_stix_id_1 = "user-account--783b9e67-d7b0-58f3-b566-58ac7881a3bc"
+
+xsoar_indicator_2 = {'expirationStatus': 'active',
+                     'firstSeen': '2023-04-20T10:20:04+03:00',
+                     'indicator_type': 'File',
+                     'lastSeen': '2023-04-20T10:20:04+03:00',
+                     'score': 'Unknown', 'sourceBrands': 'VirusTotal',
+                     'sourceInstances': 'VirusTotal',
+                     'timestamp': '2023-04-20T10:20:04+03:00',
+                     'value': '701393b3b8e6ae6e70effcda7598a8cf92d0adb1aaeb5aa91c73004519644801'}
+stix_type_2 = "file"
+value_2 = '701393b3b8e6ae6e70effcda7598a8cf92d0adb1aaeb5aa91c73004519644801'
+expected_stix_id_2 = "file--3e26aab3-dfc3-57c5-8fe2-45cfde8fe7c8"
+
+xsoar_indicator_3 = {'expirationStatus': 'active',
+                     'firstSeen': '2023-04-18T12:17:38+03:00',
+                     'indicator_type': 'IP',
+                     'lastSeen': '2023-04-18T12:17:38+03:00',
+                     'score': 'Unknown',
+                     'timestamp': '2023-04-18T12:17:38+03:00',
+                     'value': '8.8.8.8'}
+stix_type_3 = "ipv4-addr"
+value_3 = '8.8.8.8'
+expected_stix_id_3 = "ipv4-addr--2f689bf9-0ff2-545f-aa61-e495eb8cecc7"
+
+test_test_create_sco_stix_uuid_params = [(xsoar_indicator_1, stix_type_1, value_1, expected_stix_id_1),
+                                         (xsoar_indicator_2, stix_type_2, value_2, expected_stix_id_2),
+                                         (xsoar_indicator_3, stix_type_3, value_3, expected_stix_id_3)]
+
+
+@pytest.mark.parametrize('xsoar_indicator, stix_type, value, expected_stix_id', test_test_create_sco_stix_uuid_params)
+def test_create_sco_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_id):
+    """
+    Given:
+        - An indicator from XSOAR, it's stix type and the value of the indicator.
+    When:
+        - Creating a SCO inducator and calling create_sco_stix_uuid
+    Then:
+     - Return the indicator id.
+    """
+    stix_id = create_sco_stix_uuid(xsoar_indicator, stix_type, value)
+    assert expected_stix_id == stix_id
+
+
+sdo_xsoar_indicator_1 = {
+    "expirationStatus": "active",
+    "firstSeen": "2023-04-19T13:05:01+03:00",
+    "indicator_type": "Attack Pattern",
+    "lastSeen": "2023-04-19T13:05:01+03:00",
+    "score": "Unknown",
+    "timestamp": "2023-04-19T13:05:01+03:00",
+    "value": "T111",
+}
+sdo_stix_type_1 = 'attack-pattern'
+sdo_value_1 = 'T111'
+sdo_expected_stix_id_1 = 'attack-pattern--116d410f-50f9-5f0d-b677-2a9b95812a3e'
+
+sdo_xsoar_indicator_2 = {
+    "expirationStatus": "active",
+    "firstSeen": "2023-04-20T17:20:10+03:00",
+    "indicator_type": "Malware",
+    "lastSeen": "2023-04-20T17:20:10+03:00",
+    "score": "Unknown",
+    "timestamp": "2023-04-20T17:20:10+03:00",
+    "value": "bad malware",
+    "ismalwarefamily": "True",
+}
+sdo_stix_type_2 = 'malware'
+sdo_value_2 = 'bad malware'
+sdo_expected_stix_id_2 = 'malware--bddcf01f-9fd0-5107-a013-4b174285babc'
+
+test_test_create_sdo_stix_uuid_params = [(sdo_xsoar_indicator_1, sdo_stix_type_1, sdo_value_1, sdo_expected_stix_id_1),
+                                         (sdo_xsoar_indicator_2, sdo_stix_type_2, sdo_value_2, sdo_expected_stix_id_2)]
+
+
+@pytest.mark.parametrize('xsoar_indicator, stix_type, value, expected_stix_id', test_test_create_sdo_stix_uuid_params)
+def test_create_sdo_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_id):
+    """
+    Given:
+        - An indicator from XSOAR, it's stix type and the value of the indicator.
+    When:
+        - Creating a SDO inducator and calling create_sdo_stix_uuid
+    Then:
+     - Return the indicator id.
+    """
+
+    stix_id = create_sdo_stix_uuid(xsoar_indicator, stix_type, value)
+    assert expected_stix_id == stix_id
