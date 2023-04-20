@@ -23,7 +23,7 @@ configuration:
   required: false
   type: 9
   additionalinfo: "Client Secret. Required for Client Credentials mode)"
-  hiddenusername: false
+  hiddenusername: true
   section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
