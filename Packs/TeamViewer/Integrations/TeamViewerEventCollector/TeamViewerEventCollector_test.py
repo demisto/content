@@ -83,7 +83,7 @@ def test_search_events_retrieves_all_available_events_when_limit_is_higher_than_
     - Ensure that the that the function retrieves all available events when
       the limit is set to a number higher than the number of available events
     """
-    
+
     # Arrange
     client = TeamViewerEventCollector.Client(base_url="https://example.com", verify=False, proxy=False, headers={})
     limit = 10
