@@ -49,14 +49,12 @@ def _canonicalize(owner: Dict[str, Any]) -> Dict[str, Any]:
     `Canonicalization` whose value is either:
         1. whitespace-stripped and lower-cased email, if email exists
         2. whitespace-stripped and lower-cased name
+        3. empty string if neither exists
     """
-    for key in ('Name', 'Source', 'Email', 'Timestamp'):
-        if key not in owner or owner[key] is None:
-            owner[key] = ''
-    if owner['Email']:
+    if owner.get('Email', ''):
         owner['Canonicalization'] = owner['Email'].strip().lower()
         owner['Email'] = owner['Canonicalization']
-    elif owner['Name']:
+    elif owner.get('Name', ''):
         owner['Canonicalization'] = owner['Name'].strip().lower()
         owner['Name'] = owner['Canonicalization']
     else:
@@ -72,6 +70,9 @@ def canonicalize(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
     if owners:
         for owner in owners:
             if owner:
+                for key in ('Name', 'Source', 'Email', 'Timestamp'):
+                    if key not in owner or owner[key] is None:
+                        owner[key] = ''
                 canonicalized.append(_canonicalize(owner))
     return canonicalized
 
@@ -93,15 +94,25 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
         if key == duplicates[0].get('Email', ''):
             # grouped by email
             email = key
-            name = sorted([owner.get('Name', '') for owner in duplicates], key=lambda x: len(x), reverse=True)[0]
+            # take longest name if there's at least one; else empty string
+            names = sorted(
+                [owner.get('Name', '') for owner in duplicates if owner.get('Name', '')],
+                key=lambda x: len(x), reverse=True
+            )
+            name = names[0] if names else ''
         else:
             # grouped by name
-            name = key
             email = ''
-
-        # aggregate Source by union and Timestamp by max
-        source = ' | '.join(sorted(set(owner.get('Source', '') for owner in duplicates if owner.get('Source', ''))))
-        timestamp = sorted([owner.get('Timestamp', '') for owner in duplicates], reverse=True)[0]
+            name = key
+        # aggregate Source by union
+        source = ' | '.join(sorted(
+            set(owner.get('Source', '') for owner in duplicates if owner.get('Source', ''))
+        ))
+        # take max Timestamp if there's at least one; else empty string
+        timestamps = sorted(
+            [owner.get('Timestamp', '') for owner in duplicates if owner.get('Timestamp', '')], reverse=True
+        )
+        timestamp = timestamps[0] if timestamps else ''
         owner = {
             'Name': name,
             'Email': email,
@@ -117,7 +128,9 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
         for other in other_keys:
             if keys_to_types[other] == str:
                 # union over strings
-                owner[other] = ' | ' .join(sorted(set(owner.get(other, '') for owner in duplicates if owner.get(other, ''))))
+                owner[other] = ' | ' .join(sorted(
+                    set(owner.get(other, '') for owner in duplicates if owner.get(other, ''))
+                ))
             elif keys_to_types[other] in (int, float):
                 # max over numerical types
                 owner[other] = max(owner.get(other, 0) for owner in duplicates)
