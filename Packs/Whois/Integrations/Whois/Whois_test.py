@@ -1,5 +1,5 @@
 import datetime
-
+import pickle
 import Whois
 import demistomock as demisto
 import pytest
@@ -265,6 +265,54 @@ def test_parse_raw_whois_empty_nameserver():
         raw_data = f.read()
     result = Whois.parse_raw_whois([raw_data], [], never_query_handles=False, handle_server='whois.eu')
     assert result['nameservers'] == ['ns1060.ui-dns.biz']
+
+
+@pytest.mark.parametrize('input, expected_result', [(['2024-05-09T00:00:00Z'], datetime.datetime(2024, 5, 9, 0, 0, 0)),
+                                                    (['0000-00-00T00:00:00Z'], Whois.InvalidDateHandler(year=0, month=0, day=0)),
+                                                    (['0000-01-02T11:22:33Z'], datetime.datetime(2000, 1, 2, 11, 22, 33)),
+                                                    (['0000-00-02T00:00:00Z'], Whois.InvalidDateHandler(year=0, month=0, day=2))
+                                                    ])
+def test_parse_dates_invalid_time(input, expected_result):
+    assert type(Whois.parse_dates(input)[0]) == type(expected_result)
+
+
+@pytest.mark.parametrize('input, expected_result', [(['2024-05-09T00:00:00Z'], datetime.datetime(2024, 5, 9, 0, 0, 0)),
+                                                    (['2024-20-09T00:00:00Z'], datetime.datetime(2024, 9, 20, 0, 0, 0))])
+def test_swap_month_day_in_parse_dates(input, expected_result):
+    assert Whois.parse_dates(input)[0] == expected_result
+
+
+@pytest.mark.parametrize('updated_date, expected_res',
+                         [({'updated_date': [Whois.InvalidDateHandler(0, 0, 0)]}, '0-0-0'),
+                          ({'updated_date': [datetime.datetime(2025, 6, 8, 0, 0, 0)]}, '08-06-2025')])
+def test_create_outputs_invalid_time(updated_date, expected_res):
+
+    res = Whois.create_outputs(updated_date, 'test_domain', DBotScoreReliability.A)
+    assert res[0]['Updated Date'] == expected_res
+
+
+@pytest.mark.parametrize('args, expected_res', [({"query": "cnn.com", "recursive": "true", "verbose": "true"}, 3),
+                                                ({"query": "cnn.com", "recursive": "true"}, 2)])
+def test_whois_with_verbose(args, expected_res, mocker):
+    """
+    Given:
+        - The args for the whois command with or without the verbose arg.
+    When:
+        - calling the whois command.
+    Then:
+        - validate that another context path is added for the raw-response if verbose arg is true.
+    """
+    mocker.patch.object(demisto, 'command', 'whois')
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
+    with open('test_data/cnn_pickled', 'rb') as f:
+        get_whois_ret_value = pickle.load(f)
+    mocker.patch('Whois.get_whois', return_value=get_whois_ret_value)
+    demisto_results = mocker.patch.object(demisto, 'results')
+
+    Whois.whois_command('B - Usually reliable')
+    demisto_results_call_args = demisto_results.call_args[0][0]
+    assert len(demisto_results_call_args.get('EntryContext')) == expected_res
 
 
 def test_parse_nic_contact():

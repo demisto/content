@@ -1,7 +1,8 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: Thycotic
   version: -1
+deprecated: true
 configuration:
 - display: Server URL (e.g. https://example.net)
   name: url
@@ -20,11 +21,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Secret Server is the only fully featured Privileged Account Management
-  (PAM) solution available both on premise and in the cloud. It empowers security
-  and IT ops teams to secure and manage all types of privileged accounts and offers
-  the fastest time to value of any PAM solution.
-display: Thycotic
+description: Deprecated. Use DelineaSS instead.
+display: Thycotic (Deprecated)
 name: Thycotic
 script:
   commands:

@@ -1,4 +1,4 @@
-Ingest indicators from the OpenCTI feed. Compatible with OpenCTI 4.X API version.
+Ingest indicators from the OpenCTI feed. Compatible with OpenCTI 4.X API and OpenCTI 5.X API versions.
 ## Configure OpenCTI Feed 4.X on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

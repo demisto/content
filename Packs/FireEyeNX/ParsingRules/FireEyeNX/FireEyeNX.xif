@@ -1,0 +1,2 @@
+[INGEST:vendor="fireeye", product="mps", target_dataset="fireeye_mps_raw", no_hit = keep]
+alter _time = to_timestamp(to_integer(RT), "millis");

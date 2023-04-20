@@ -1,8 +1,8 @@
 {
     "name": "XM Cyber",
-    "description": "XMCyber continuously finds attack vectors to critical assets. This integration fetches events (incidents) on new critical assets at risk, new choke points, and trends in the overall risk score. Additionally incidents are enriched with incoming attack vectors to the incident's endpoints, and critical assets at risk form the incident.",
+    "description": "The XM Cyber integration creates unique incidents with valuable data collected daily, and enriches your existing incidents with attack simulation context. This enables you to prioritize your responses based on XM Cyber's insights.",
     "support": "partner",
-    "currentVersion": "1.0.15",
+    "currentVersion": "1.0.20",
     "author": "XM Cyber",
     "url": "https://www.xmcyber.com",
     "email": "support@xmcyber.com",
@@ -11,12 +11,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Breach",
-        "Simulation",
-        "Network",
-        "IT",
-        "Alerts",
-        "Attack"
+        "Breach Simulation"
     ],
     "useCases": [],
     "keywords": [],

@@ -2,13 +2,13 @@
     "name": "GuardiCore",
     "description": "Data center breach detection",
     "support": "xsoar",
-    "currentVersion": "2.0.5",
+    "currentVersion": "2.0.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Deception"
+        "Deception & Breach Simulation"
     ],
     "tags": [],
     "useCases": [],

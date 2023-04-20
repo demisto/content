@@ -1,10 +1,9 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: SafeNetTrustedAccessEventCollector
   version: -1
 configuration:
-- additionalinfo: The URL consists of the root part of the REST API Endpoint URL provided
-    in SafeNet Trusted Access, and has the form https://api.[name].com
+- additionalinfo: The URL consists of the root part of the REST API Endpoint URL provided in SafeNet Trusted Access, and has the form https://api.[name].com
   display: URL
   name: url
   required: true
@@ -61,8 +60,8 @@ script:
       isArray: false
       name: should_push_events
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: true
     - default: false
       description: 'Since date'
@@ -88,7 +87,7 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.10.52956
   feed: false
 marketplaces:
 - marketplacev2

@@ -44,6 +44,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 8f968aa5-26ca-4471-891b-4ac7f9114147
@@ -71,6 +72,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: ecece7aa-0eb6-4f67-8a9b-dfc77bcef34d
@@ -107,6 +109,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
     taskid: 0e2e9b54-cbaa-4f8c-85b2-b5927f30f52a
@@ -149,6 +152,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
     taskid: efeca267-b6d2-4a08-8325-e8fb7c1dd633
@@ -211,6 +215,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "13":
     id: "13"
     taskid: ea188096-e085-4155-884d-a6c9d23ddb1f
@@ -246,12 +251,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "14":
     id: "14"
-    taskid: c0cec4ff-8abe-49a4-8b2d-e67ae4a0af97
+    taskid: a3211000-764a-4ea3-8fea-1cb2a8c2b4cd
     type: playbook
     task:
-      id: c0cec4ff-8abe-49a4-8b2d-e67ae4a0af97
+      id: a3211000-764a-4ea3-8fea-1cb2a8c2b4cd
       version: -1
       name: PAN-OS - Block URL - Custom URL Category
       description: |-
@@ -266,9 +272,11 @@ tasks:
       - "2"
     scriptarguments:
       AutoCommit:
-        simple: "No"
+        complex:
+          root: inputs.AutoCommit
       CustomURLCategory:
-        simple: Demisto Remediation - Malicious URLs
+        complex:
+          root: inputs.CustomURLCategory
       URL:
         complex:
           root: Blocklist
@@ -277,6 +285,15 @@ tasks:
           - operator: uniq
       pre-post:
         simple: pre-rulebase
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      categories:
+        complex:
+          root: inputs.categories
+      device-group:
+        complex:
+          root: inputs.device-group
     separatecontext: true
     loop:
       iscommand: false
@@ -297,6 +314,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "16":
     id: "16"
     taskid: 90b64f91-6db0-4a69-86e3-80aa6fc36ebd
@@ -327,6 +345,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "17":
     id: "17"
     taskid: 0c64c152-533a-4e38-8a33-5ba8499b4c48
@@ -357,6 +376,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "18":
     id: "18"
     taskid: 9e331921-f00a-47d7-8f02-8ab4fbacc053
@@ -387,6 +407,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
     taskid: b9e7db2b-6985-4410-8e01-ccb9950cd8b7
@@ -430,6 +451,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "20":
     id: "20"
     taskid: 47aff5b6-5919-46bb-8979-c342b18f9197
@@ -472,6 +494,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "21":
     id: "21"
     taskid: da7121fa-715d-4010-81ac-e519b88b58e3
@@ -510,6 +533,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "23":
     id: "23"
     taskid: 195a51ea-2a0b-47e3-83f6-c6b6a4938847
@@ -548,6 +572,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "24":
     id: "24"
     taskid: 0dd55a58-9d45-449e-8b9f-3c1630188951
@@ -584,6 +609,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "25":
     id: "25"
     taskid: 21af0a6a-234a-4061-884a-86f3209ae79e
@@ -614,6 +640,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "26":
     id: "26"
     taskid: 42362e33-89e4-4e9a-89ad-8fca62f06425
@@ -644,14 +671,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "27":
     id: "27"
-    taskid: 6f012bfb-f96f-4b8e-8429-22e25716e594
+    taskid: c08fd24c-0333-4f69-8700-69b92c530882
     type: condition
     task:
-      id: 6f012bfb-f96f-4b8e-8429-22e25716e594
+      id: c08fd24c-0333-4f69-8700-69b92c530882
       version: -1
-      name: Is Sophos Integration Is Enabled?
+      name: Is Sophos Integration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -682,6 +710,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "28":
     id: "28"
     taskid: 12ce6945-cd09-46e6-8661-748f50ed220c
@@ -712,6 +741,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "29":
     id: "29"
     taskid: 8d37ba43-fa53-4ab4-83f9-5b9764281c85
@@ -720,8 +750,8 @@ tasks:
       id: 8d37ba43-fa53-4ab4-83f9-5b9764281c85
       version: -1
       name: Update Tag For URLs
-      description: commands.local.cmd.set.indicator
-      script: Builtin|||setIndicator
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
       brand: Builtin
@@ -729,8 +759,15 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      value:
-        simple: ${Blocklist.URL}
+      field:
+        simple: tags
+      fieldValue:
+        complex:
+          root: inputs.Tag
+      indicatorsValues:
+        complex:
+          root: Blocklist
+          accessor: URL
     separatecontext: false
     view: |-
       {
@@ -746,6 +783,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "30":
     id: "30"
     taskid: 7948896f-f14b-4e0b-865e-47a3a0c1da3f
@@ -818,6 +856,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "31":
     id: "31"
     taskid: 6a38d62a-b597-4165-87e8-7b5b92953ca5
@@ -856,6 +895,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "32":
     id: "32"
     taskid: d561f0f8-0d4c-4ba3-8560-187751ca5c85
@@ -886,14 +926,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "34":
     id: "34"
-    taskid: 39802624-7a78-4ac4-8999-7735896a5fcd
+    taskid: 08e14d34-e96d-422a-8640-f5ef9a6eaa7a
     type: condition
     task:
-      id: 39802624-7a78-4ac4-8999-7735896a5fcd
+      id: 08e14d34-e96d-422a-8640-f5ef9a6eaa7a
       version: -1
-      name: Is Sophos Integration Is Enabled?
+      name: Is Forcepoint Integration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -924,6 +965,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "35":
     id: "35"
     taskid: d3a1e7fd-3deb-4910-8567-c5bcb6363576
@@ -958,6 +1000,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "36":
     id: "36"
     taskid: 33d5bf90-736a-4228-8307-53b1d58d4550
@@ -1003,6 +1046,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "37":
     id: "37"
     taskid: 76856aa5-7ff2-415b-8f6f-e4bd1e6798a9
@@ -1040,6 +1084,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "38":
     id: "38"
     taskid: e889ae46-04a0-4514-8923-2291cec2883a
@@ -1070,6 +1115,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "40":
     id: "40"
     taskid: 32024a50-7f4b-47cd-8917-904f2b016e93
@@ -1108,6 +1154,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "41":
     id: "41"
     taskid: 0e06c863-2829-4749-8d1a-6daeb34d89c6
@@ -1146,6 +1193,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {
@@ -1196,11 +1244,6 @@ inputs:
   required: false
   description: Custom URL category type. Insert "URL List"/ "Category Match".
   playbookInputQuery:
-- key: Tag
-  value: {}
-  required: false
-  description: Device group for the Custom URL Category (Panorama instances).
-  playbookInputQuery:
 - key: categories
   value: {}
   required: false
@@ -1217,7 +1260,18 @@ inputs:
 - key: EDLServerIP
   value: {}
   required: false
-  description: EDL Server IP Address
+  description: |-
+    EDL Server IP Address
+  playbookInputQuery:
+- key: device-group
+  value: {}
+  required: false
+  description: Device group for the Custom URL Category (Panorama instances).
+  playbookInputQuery:
+- key: Tag
+  value: {}
+  required: false
+  description: Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query.
   playbookInputQuery:
 outputs: []
 tests:

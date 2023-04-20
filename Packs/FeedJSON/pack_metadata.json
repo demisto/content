@@ -2,7 +2,7 @@
     "name": "JSON Feed",
     "description": "Indicators feed from a JSON file",
     "support": "xsoar",
-    "currentVersion": "1.1.18",
+    "currentVersion": "1.1.27",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,7 +10,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Getting Started"
+    ],
     "useCases": [],
     "keywords": [
         "JSON",

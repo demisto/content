@@ -7,6 +7,7 @@ from typing import Dict, List, Set, Any, Callable, Optional
 from collections import OrderedDict
 import traceback
 import requests
+import urllib3
 
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 from sixgill.sixgill_feed_client import SixgillFeedClient
@@ -14,7 +15,7 @@ from sixgill.sixgill_constants import FeedStream
 from sixgill.sixgill_utils import is_indicator
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 

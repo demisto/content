@@ -1,0 +1,77 @@
+[
+  {
+    "type": "header",
+    "data": "Investigation Summary Report",
+    "layout": {
+      "rowPos": 1,
+      "columnPos": 1,
+      "style": {
+        "textAlign": "center",
+        "fontSize": 32
+      }
+    }
+  },
+  {
+    "type": "text",
+    "data": "Some RDP Alert",
+    "layout": {
+      "rowPos": 2,
+      "columnPos": 1,
+      "style": {
+        "textAlign": "left",
+        "display": "flex",
+        "alignItems": "center",
+        "padding": "20px",
+        "fontSize": 16
+      }
+    }
+  },
+  {
+    "type": "date",
+    "data": "2022-10-25",
+    "layout": {
+      "columnPos": 2,
+      "format": "YYYY-MM-DD",
+      "rowPos": 2,
+      "style": {
+        "fontSize": 16,
+        "fontStyle": "italic",
+        "textAlign": "right"
+      }
+    }
+  },
+  {
+    "type": "header",
+    "data": "Remediation Taken",
+    "layout": {
+      "rowPos": 3,
+      "columnPos": 1,
+      "style": {
+        "textAlign": "left",
+        "fontSize": 16
+      }
+    }
+  },
+  {
+    "type": "table",
+    "data": [
+      {
+        "action": "Notified service owner via ServiceNow",
+        "actiontimestamp": "2022-10-17 19:08:03",
+        "outcome": "Resolved by service owner",
+        "outcometimestamp": "1666033708494"
+      }
+    ],
+    "layout": {
+      "rowPos": 4,
+      "columnPos": 1,
+      "tableColumns": [
+        "action",
+        "actiontimestamp",
+        "outcome",
+        "outcometimestamp"
+      ],
+      "classes": "striped stackable"
+    }
+  }
+]

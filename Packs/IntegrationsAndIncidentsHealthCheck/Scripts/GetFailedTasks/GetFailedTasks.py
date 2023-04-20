@@ -80,22 +80,18 @@ def get_failed_tasks_output(tasks: list, incident: dict):
     return task_outputs, number_of_error_entries
 
 
-def get_incident_data(incident: dict, tenant_name: str, rest_api_instance_to_use: str):
+def get_incident_tasks_using_rest_api_instance(incident: dict, rest_api_instance: str):
     """
-        Returns the failing task objects of an incident.
+        Returns the failing task objects of an incident using the given rest API instance.
 
         Args:
             incident (dict): An incident object.
-            tenant_name (str): The tenant of the incident.
-            rest_api_instance_to_use (str): A Demisto REST API instance name to use for fetching task details.
+            rest_api_instance (str): A Demisto REST API instance name to use for fetching task details.
 
         Returns:
-            tuple of context outputs and total amount of related error entries
+            List of the tasks given from the response.
     """
-    if tenant_name:
-        uri = f'acc_{tenant_name}/investigation/{str(incident["id"])}/workplan/tasks'
-    else:
-        uri = f'investigation/{str(incident["id"])}/workplan/tasks'
+    uri = f'investigation/{str(incident["id"])}/workplan/tasks'
 
     response = demisto.executeCommand(
         "demisto-api-post",
@@ -105,7 +101,7 @@ def get_incident_data(incident: dict, tenant_name: str, rest_api_instance_to_use
                 "states": ["Error"],
                 "types": ["regular", "condition", "collection"],
             },
-            "using": rest_api_instance_to_use,
+            "using": rest_api_instance,
         }
     )
 
@@ -115,7 +111,63 @@ def get_incident_data(incident: dict, tenant_name: str, rest_api_instance_to_use
 is one with sufficient permissions to access that incident.\n' + get_error(response)
         raise Exception(error)
 
-    tasks = response[0]["Contents"]["response"]
+    return response[0]["Contents"]["response"]
+
+
+def get_incident_tasks_using_internal_request(incident: dict):
+    """
+        Returns the failing task objects of an incident using an internal HTTP request.
+
+        Args:
+            incident (dict): An incident object.
+
+        Returns:
+            List of the tasks given from the response.
+    """
+    response = demisto.internalHttpRequest(
+        method='POST',
+        uri=f'investigation/{str(incident["id"])}/workplan/tasks',
+        body={
+            "states": ["Error"],
+            "types": ["regular", "condition", "collection"],
+        }
+    )
+
+    if response and response.get('statusCode') == 200:
+        tasks = json.loads(response.get('body', '{}'))
+    else:
+        demisto.error(f'Failed running POST query to /investigation/{str(incident["id"])}/workplan/tasks.\n{str(response)}')
+        tasks = []
+
+    return tasks
+
+
+def get_incident_data(incident: dict, rest_api_instance: str = None):
+    """
+        Returns the failing task objects of an incident.
+        The request is done using a Demisto Rest API instance if given,
+        otherwise it will be done using the demisto.internalHttpRequest method.
+
+        Args:
+            incident (dict): An incident object.
+            rest_api_instance (str): A Demisto REST API instance name to use for fetching task details.
+
+        Returns:
+            tuple of context outputs and total amount of related error entries
+    """
+    if rest_api_instance:
+        tasks = get_incident_tasks_using_rest_api_instance(incident, rest_api_instance)
+    else:
+        try:
+            tasks = get_incident_tasks_using_internal_request(incident)
+        except ValueError:
+            # using rest api call if using_internal_request fails on the following error:
+            # ValueError: dial tcp connect: connection refused
+            rest_api_instance = get_rest_api_instance_to_use()
+            if not rest_api_instance:
+                raise DemistoException('Could not find which Rest API instance to use, '
+                                       'Please specify the rest_api_instance argument.')
+            tasks = get_incident_tasks_using_rest_api_instance(incident, rest_api_instance)
 
     task_outputs, tasks_error_entries_number = get_failed_tasks_output(tasks, incident)
     if task_outputs:
@@ -130,9 +182,6 @@ def main():
     max_incidents = arg_to_number(args.get("max_incidents")) or 300
     max_incidents = min(max_incidents, 1000)
     rest_api_instance = args.get("rest_api_instance")
-    rest_api_instance_to_use = get_rest_api_instance_to_use() if not rest_api_instance else rest_api_instance
-
-    tenant_name = get_tenant_name()
 
     number_of_failed_incidents = 0
     number_of_error_entries = 0
@@ -151,11 +200,8 @@ def main():
                   f'Elapsed time: {time.time() - start_time}')
 
     for incident in total_incidents:
-        task_outputs, incident_error_entries_num = get_incident_data(
-            incident,
-            tenant_name,
-            rest_api_instance_to_use,
-        )
+        task_outputs, incident_error_entries_num = get_incident_data(incident, rest_api_instance)
+
         if task_outputs:
             incidents_output.extend(task_outputs)
             number_of_failed_incidents += 1

@@ -1,0 +1,18 @@
+ [MODEL: dataset=github_github_audit_raw]
+filter
+    action in("oauth_application*","org_credential_authorization*")
+| alter
+    //_time = timestamp_seconds(to_integer(divide(created_at, 1000))),
+    xdm.source.user.username = actor,
+    xdm.source.location.country = json_extract_scalar(actor_location, "$.country_code"),
+    xdm.event.operation = action;
+
+filter
+    action in("org*","role*","account*","advisory_credit*","billing*","business*","codespaces*","dependabot_alerts*","dependabot_alerts_new_repos*","dependabot_security_updates*","dependabot_security_updates_new_repos*","dependency_graph*","dependency_graph_new_repos*","discussion_post*","discussion_post_reply*","enterprise*","environment*","git*","hook*","integration_installation_request*","ip_allow_list*","ip_allow_list_entry*","issue*","marketplace_agreement_signature*","marketplace_listing*","members_can_create_pages*","org_secret_scanning_custom_pattern*","organization_label*","packages*","payment_method*","profile_picture*","project*","protected_branch*","pull_request*","pull_request_review*","pull_request_review_comment*","repo*","repository_advisory*","repository_content_analysis*","repository_dependency_graph*","repository_secret_scanning*","repository_secret_scanning_custom_pattern*","repository_secret_scanning_push_protection*","repository_vulnerability_alert*","repository_vulnerability_alerts*","secret_scanning*","secret_scanning_new_repos*","sponsors*","team*","team_discussions*","workflows*")
+| alter
+    //_time = timestamp_seconds(to_integer(divide(created_at, 1000))),
+    xdm.source.location.country = json_extract_scalar(actor_location, "$.country_code"),
+    xdm.target.user.username = org,
+    xdm.target.cloud.project = repo,
+    xdm.source.user.username = actor,
+    xdm.event.operation = action;

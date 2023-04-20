@@ -15,6 +15,7 @@ from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, Bucke
     PACKS_FULL_PATH, IGNORED_FILES
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, get_packs_summary
 from Tests.scripts.utils import logging_wrapper as logging
+from Tests.Marketplace.pack_readme_handler import copy_readme_images
 
 LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_.]+/\d+\.\d+\.\d+/'
                               r'[A-Za-z0-9-_.]+\.zip$)')
@@ -62,38 +63,40 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
         storage_base_path (str): the path to upload the index to.
         build_bucket_base_path (str): the path in the build bucket of the index.
     """
+    logging.info('Starting the copy index function')
     try:
         build_index_blob.reload()
         build_current_index_generation = build_index_blob.generation
 
-        # disabling caching for prod index blob
-        prod_index_storage_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_NAME}.zip")
-        prod_index_blob = production_bucket.blob(prod_index_storage_path)
-        prod_index_blob.cache_control = "no-cache,max-age=0"
-        prod_index_json_storage_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_NAME}.json")
-        prod_index_json_blob = production_bucket.blob(prod_index_json_storage_path)
-        prod_index_json_blob.cache_control = "no-cache,max-age=0"
-
         if build_current_index_generation == build_index_generation:
-            copied_index = build_bucket.copy_blob(
-                blob=build_index_blob, destination_bucket=production_bucket, new_name=prod_index_storage_path
-            )
-            if copied_index.exists():
-                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
-            else:
-                logging.error("Failed copying index.zip from build index - blob does not exist.")
-                sys.exit(1)
-            copied_index_json_blob = build_bucket.blob(
-                os.path.join(build_bucket_base_path, f"{GCPConfig.INDEX_NAME}.json")
-            )
-            copied_index_json = build_bucket.copy_blob(
-                blob=copied_index_json_blob, destination_bucket=production_bucket, new_name=prod_index_json_storage_path
-            )
-            if copied_index_json.exists():
-                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.json to storage.")
-            else:
-                logging.error("Failed copying index.json from build index - blob does not exist.")
-                sys.exit(1)
+            # copy index.zip from build to prod
+            index_name = f'{GCPConfig.INDEX_NAME}.zip'
+            prod_index_storage_path = init_index_prod_bucket(storage_base_path=storage_base_path,
+                                                             production_bucket=production_bucket,
+                                                             index_name=index_name)
+            copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_blob,
+                                    production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
+                                    index_name=index_name)
+
+            # copy index.json from build to prod
+            index_json_name = f"{GCPConfig.INDEX_NAME}.json"
+            prod_index_storage_path = init_index_prod_bucket(storage_base_path=storage_base_path,
+                                                             production_bucket=production_bucket,
+                                                             index_name=index_json_name)
+            build_index_json_blob = build_bucket.blob(os.path.join(build_bucket_base_path, index_json_name))
+            copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_json_blob,
+                                    production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
+                                    index_name=index_json_name)
+
+            # copy index_v2.zip from build to prod
+            index_v2_name = f'{GCPConfig.INDEX_V2_NAME}.zip'
+            prod_index_storage_path = init_index_prod_bucket(storage_base_path=storage_base_path,
+                                                             production_bucket=production_bucket,
+                                                             index_name=index_v2_name)
+            build_index_v2_blob = build_bucket.blob(os.path.join(build_bucket_base_path, index_v2_name))
+            copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_v2_blob,
+                                    production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
+                                    index_name=index_v2_name)
         else:
             logging.error(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
             logging.error(f"Downloaded build index generation: {build_index_generation}")
@@ -104,6 +107,26 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
         sys.exit(1)
     finally:
         shutil.rmtree(index_folder_path)
+
+
+def init_index_prod_bucket(storage_base_path, production_bucket, index_name):
+    # disabling caching for prod index blob
+    prod_index_storage_path = os.path.join(storage_base_path, index_name)
+    prod_index_blob = production_bucket.blob(prod_index_storage_path)
+    prod_index_blob.cache_control = "no-cache,max-age=0"
+    logging.info(f'Init prod bucket at {prod_index_storage_path}')
+    return prod_index_storage_path
+
+
+def copy_from_build_to_prod(build_bucket, build_index_blob, production_bucket, prod_index_storage_path, index_name):
+    copied_index = build_bucket.copy_blob(
+        blob=build_index_blob, destination_bucket=production_bucket, new_name=prod_index_storage_path
+    )
+    if copied_index.exists():
+        logging.success(f"Finished uploading {index_name=} to storage.")
+    else:
+        logging.error("Failed copying index.zip from build index - blob does not exist.")
+        sys.exit(1)
 
 
 def upload_core_packs_config(production_bucket: Bucket, build_number: str, extract_destination_path: str,
@@ -347,10 +370,13 @@ def main():
 
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
-    pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict, \
+    pc_successful_packs_dict, pc_successful_uploaded_dependencies_zip_packs_dict, \
+        pc_failed_packs_dict, pc_successful_private_packs_dict, \
         pc_uploaded_images = get_upload_data(packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
 
     logging.debug(f"Successful packs from Prepare Content: {pc_successful_packs_dict}")
+    logging.debug(f"Successful uploaded dependencies zip packs from Prepare Content: "
+                  f"{pc_successful_uploaded_dependencies_zip_packs_dict}")
     logging.debug(f"Failed packs from Prepare Content: {pc_failed_packs_dict}")
     logging.debug(f"Successful private packs from Prepare Content: {pc_successful_private_packs_dict}")
     logging.debug(f"Images from Prepare Content: {pc_uploaded_images}")
@@ -405,8 +431,16 @@ def main():
             pack.cleanup()
             continue
 
+        task_status = pack.copy_preview_images(
+            production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
+        if not task_status:
+            pack.status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name
+            pack.cleanup()
+            continue
+
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(
-            production_bucket, build_bucket, pc_successful_packs_dict, production_base_path, build_bucket_base_path)
+            production_bucket, build_bucket, pc_successful_packs_dict, pc_successful_uploaded_dependencies_zip_packs_dict,
+            production_base_path, build_bucket_base_path)
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
@@ -417,8 +451,12 @@ def main():
             pack.cleanup()
             continue
 
-        pack.status = PackStatus.SUCCESS.name
+        if pack.name in pc_successful_packs_dict:
+            pack.status = PackStatus.SUCCESS.name
+        elif pack.name in pc_successful_uploaded_dependencies_zip_packs_dict:
+            pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
 
+    copy_readme_images(production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
     # upload core packs json to bucket
     upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket,
                              production_base_path, build_bucket_base_path)
@@ -431,16 +469,19 @@ def main():
     copy_id_set(production_bucket, build_bucket, production_base_path, build_bucket_base_path)
 
     # get the lists of packs divided by their status
-    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # Store successful and failed packs list in CircleCI artifacts
     store_successful_and_failed_packs_in_ci_artifacts(
-        packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, successful_packs, failed_packs,
-        list(pc_successful_private_packs_dict)
+        packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, successful_packs,
+        successful_uploaded_dependencies_zip_packs, failed_packs, list(pc_successful_private_packs_dict)
     )
 
     # verify that the successful from Prepare content and are the ones that were copied
+    logging.warning("verify that no packs were mistakenly copied from successful_packs dict")
     verify_copy(successful_packs, pc_successful_packs_dict)
+    logging.warning("verify that no packs were mistakenly copied from successful_uploaded_dependencies dict")
+    verify_copy(successful_uploaded_dependencies_zip_packs, pc_successful_uploaded_dependencies_zip_packs_dict)
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs)

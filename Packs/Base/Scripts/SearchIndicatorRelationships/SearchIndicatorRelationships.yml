@@ -86,6 +86,7 @@ args:
   - injects-into
   - investigates
   - is-also
+  - located-at
   - mitigated-by
   - mitigates
   - originated-from
@@ -115,6 +116,8 @@ args:
   - used-on
   - uses
   - variant-of
+  - detects
+  - detected-by
 - default: false
   defaultValue: '20'
   description: The number of results to return. Default is 20.
@@ -200,7 +203,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.9.40422
 fromversion: 6.2.0
 tests:
 - Relationships scripts - Test

@@ -974,6 +974,104 @@ def test_fetch_incidents(client, requests_mock, topdesk_incidents_override, last
     assert last_fetch == {'last_fetch': updated_fetch_time}
 
 
+@pytest.mark.parametrize('topdesk_incidents_override, last_fetch_time, updated_fetch_time', [
+    ([{  # Last fetch is before incident creation
+        'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
+        'creationDate': '2020-02-10T06:32:36.303000+0000',
+        'occurred': '2020-02-10T06:32:36Z',
+        'will_be_fetched': True
+    }], '2020-01-11T06:32:36.303000+0000', '2020-02-10T06:32:36.303000+0000'),
+    ([{  # Last fetch is after one incident creation and before other.
+        'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
+        'creationDate': '2020-01-10T06:32:36.303000+0000',
+        'occurred': '2020-01-10T06:32:36Z',
+        'will_be_fetched': False
+    }, {
+        'number': 'TEST-2',
+        'briefDescription': 'some_brief_description',
+        'creationDate': '2020-03-10T06:32:36.303000+0000',
+        'occurred': '2020-03-10T06:32:36Z',
+        'will_be_fetched': True
+    }], '2020-02-11T06:32:36.303000+0000', '2020-03-10T06:32:36.303000+0000'),
+    ([{  # Last fetch is at incident creation
+        'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
+        'creationDate': '2020-02-10T06:32:36.303+0000',
+        'occurred': '2020-02-10T06:32:36Z',
+        'will_be_fetched': False
+    }], '2020-02-10T06:32:36.303000+0000', '2020-02-10T06:32:36.303000+0000'),
+    ([{  # Same incident returned twice.
+        'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
+        'creationDate': '2020-03-10T06:32:36.303000+0000',
+        'occurred': '2020-03-10T06:32:36Z',
+        'will_be_fetched': True
+    }, {
+        'number': 'TEST-1',
+        'briefDescription': 'some_brief_description',
+        'creationDate': '2020-03-10T06:32:36.303000+0000',
+        'occurred': '2020-03-10T06:32:36Z',
+        'will_be_fetched': False
+    }], '2020-02-11T06:32:36.303000+0000', '2020-03-10T06:32:36.303000+0000'),
+])
+def test_fetch_incidents_with_no_actions(client, requests_mock, topdesk_incidents_override, last_fetch_time, updated_fetch_time):
+    """Unit test
+    Given
+        - fetch incidents args
+        - empty response of actions from the api
+    When
+        - running fetch incidents command
+    Then
+        - validate The length of the results.
+        - validate the entry context.
+        - validate last_fetch is updated.
+    """
+    mock_topdesk_incident = util_load_json('test_data/topdesk_incident.json')
+    mock_topdesk_response = []
+    requests_mock.get(
+        'https://test.com/api/incidents/id/some-test-id-1/actions',
+        text='')
+
+    expected_incidents = []
+    for incident_override in topdesk_incidents_override:
+        response_incident = mock_topdesk_incident.copy()
+        response_incident['number'] = incident_override['number']
+        response_incident['creationDate'] = incident_override['creationDate']
+        response_incident['mirror_direction'] = None
+        response_incident['mirror_tags'] = ["comments", "ForTOPdesk", "work_notes"]
+        response_incident['mirror_instance'] = ""
+        mock_topdesk_response.append(response_incident)
+        if incident_override['will_be_fetched']:
+            expected_incidents.append({
+                'name': f"{incident_override['briefDescription']}",
+                'details': json.dumps(response_incident),
+                'occurred': incident_override['occurred'],
+                'rawJSON': json.dumps(response_incident),
+            })
+
+    requests_mock.get(
+        'https://test.com/api/incidents', json=mock_topdesk_response)
+
+    last_run = {
+        'last_fetch': last_fetch_time
+    }
+    last_fetch, incidents = fetch_incidents(client=client,
+                                            last_run=last_run,
+                                            demisto_params={
+                                                'mirror_direction': 'both'
+                                            })
+
+    assert len(incidents) == len(expected_incidents)
+    for incident, expected_incident in zip(incidents, expected_incidents):
+        assert incident['name'] == expected_incident['name']
+        assert incident['details'] == expected_incident['details']
+        assert incident['occurred'] == expected_incident['occurred']
+        assert incident['rawJSON'] == expected_incident['rawJSON']
+    assert last_fetch == {'last_fetch': updated_fetch_time}
+
+
 def test_get_mapping_fields(client):
     """
     Given:

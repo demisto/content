@@ -2,28 +2,16 @@
     "name": "SailPoint IdentityNow",
     "description": "SailPoint IdentityNow content pack enables XSOAR customers to utilize the deep, enriched contextual data in the SailPoint IdentityNow platform to better drive identity-aware security practices.",
     "support": "partner",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "SailPoint",
     "url": "https://support.sailpoint.com/hc/en-us/requests/new",
     "email": "support.idplusa@sailpoint.com",
     "created": "2021-01-20T00:00:00Z",
     "categories": [
-        "Identity and Access Management"
+        "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "GDPR",
-        "HIPAA",
-        "IAM",
-        "IT",
-        "Security",
-        "Security Analytics"
-    ],
-    "useCases": [
-        "Compliance",
-        "Access",
-        "Identity and Access Management",
-        "Incident Response"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "SailPoint",
         "Identity",

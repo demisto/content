@@ -1,0 +1,870 @@
+description: |
+  This playbook is used to apply a PAN-OS security profile to a policy rule.
+  The playbook performs the following tasks:
+  - Accepts a rule name to apply the security profile to.
+  - Applies the security profile to the rule if the rule exists. If not, creates the rule and applies.
+  - Commits the configuration.
+id: PAN-OS - Apply Security Profile to Policy Rule
+version: -1
+name: PAN-OS - Apply Security Profile to Policy Rule
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 40327e99-aede-4feb-8895-86ba17375b63
+    type: start
+    task:
+      id: 40327e99-aede-4feb-8895-86ba17375b63
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: c49b9893-728b-4d53-860c-6a6fcd6fa248
+    type: condition
+    task:
+      id: c49b9893-728b-4d53-860c-6a6fcd6fa248
+      version: -1
+      name: Is PAN-OS integration enabled?
+      description: "Is PAN-OS integration enabled?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4ac17db2-8b32-4f7b-87d6-37cd64f80654
+    type: title
+    task:
+      id: 4ac17db2-8b32-4f7b-87d6-37cd64f80654
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 3920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: c9716a59-b36d-49b1-849c-ac63a097f9ec
+    type: title
+    task:
+      id: c9716a59-b36d-49b1-849c-ac63a097f9ec
+      version: -1
+      name: PAN-OS Apply profile to a rule
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: a8abd0f3-28ca-42d5-87f8-9339118e4fa4
+    type: playbook
+    task:
+      id: a8abd0f3-28ca-42d5-87f8-9339118e4fa4
+      version: -1
+      name: PAN-OS - Create Or Edit Rule
+      description: Creates or edits a Panorama rule and moves it into the desired position
+      playbookName: PAN-OS - Create Or Edit Rule
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      action-type:
+        complex:
+          root: Data for rule creation.Answers
+          accessor: "7"
+      device-group:
+        complex:
+          root: Data for rule creation.Answers
+          accessor: "1"
+      element-to-add:
+        complex:
+          root: Data for rule creation.Answers
+          accessor: "6"
+      inbound-or-outbound-rule:
+        complex:
+          root: Data for rule creation.Answers
+          accessor: "5"
+      log-forwarding-object-name:
+        complex:
+          root: Data for rule creation.Answers
+          accessor: "2"
+      pre-post-rulebase:
+        complex:
+          root: Data for rule creation.Answers
+          accessor: "0"
+      relative-rule-name:
+        complex:
+          root: Data for rule creation.Answers
+          accessor: "4"
+      rule-position:
+        complex:
+          root: Data for rule creation.Answers
+          accessor: "3"
+      rule_name:
+        complex:
+          root: Rule
+          accessor: Name
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 366d79d0-5327-4af9-818b-679edda71f0f
+    type: regular
+    task:
+      id: 366d79d0-5327-4af9-818b-679edda71f0f
+      version: -1
+      name: PAN-OS Apply security profile to a rule
+      description: Apply a security profile to specific rules or rules with a specific tag.
+      script: '|||pan-os-apply-security-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      pre_post:
+        complex:
+          root: inputs.pre-post-rulebase
+      profile_name:
+        complex:
+          root: inputs.profile_name
+      profile_type:
+        complex:
+          root: inputs.profile_type
+      rule_name:
+        complex:
+          root: Rule
+          accessor: Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 6c1fbac6-85bb-48ab-8d19-517fe6d71299
+    type: collection
+    task:
+      id: 6c1fbac6-85bb-48ab-8d19-517fe6d71299
+      version: -1
+      name: Insert a rule name
+      description: Insert existing rule name.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Insert existing rule name
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Insert a rule name
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Insert a rule name
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 4151ee31-16d4-4049-8635-5c98f079860d
+    type: condition
+    task:
+      id: 4151ee31-16d4-4049-8635-5c98f079860d
+      version: -1
+      name: Create rule automatically?
+      description: Create rule automatically?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 2880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 1163de5f-b1fe-48df-8220-603ff15c4ae8
+    type: regular
+    task:
+      id: 1163de5f-b1fe-48df-8220-603ff15c4ae8
+      version: -1
+      name: Panorama list rules
+      description: Returns a list of predefined Security Rules.
+      script: '|||pan-os-list-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre-post-rulebase
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 2490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 3b2daafe-3725-4f4a-8977-a49535a6763b
+    type: condition
+    task:
+      id: 3b2daafe-3725-4f4a-8977-a49535a6763b
+      version: -1
+      name: Does the rule exist?
+      description: Does the rule exist in PAN-OS?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.SecurityRule.Name
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Rule
+                accessor: Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 2705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 41b0c72a-1a92-40b4-8f59-53e77810cf89
+    type: regular
+    task:
+      id: 41b0c72a-1a92-40b4-8f59-53e77810cf89
+      version: -1
+      name: Manual - Create rule
+      description: Manual - Create rule in PAN-OS.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1950,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 90e2c03e-50f9-4863-8826-11740bdb7cbd
+    type: regular
+    task:
+      id: 90e2c03e-50f9-4863-8826-11740bdb7cbd
+      version: -1
+      name: Set rule name
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Rule.Name
+      stringify: {}
+      value:
+        complex:
+          root: Insert a rule name.Answers
+          accessor: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: fb60c517-22ca-4c57-89a8-6e24a5a6c023
+    type: regular
+    task:
+      id: fb60c517-22ca-4c57-89a8-6e24a5a6c023
+      version: -1
+      name: Set rule name
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Rule.Name
+      stringify: {}
+      value:
+        complex:
+          root: Insert rule name.Answers
+          accessor: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1950,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: c4e7a98c-be13-4341-8cb4-274c78b82bfd
+    type: collection
+    task:
+      id: c4e7a98c-be13-4341-8cb4-274c78b82bfd
+      version: -1
+      name: Insert rule name
+      description: Insert rule name.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1950,
+          "y": 3220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Insert rule name
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Insert rule name
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Insert rule name
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 5f2f6ab0-6fcf-4032-803f-6c3ce837d0fe
+    type: playbook
+    task:
+      id: 5f2f6ab0-6fcf-4032-803f-6c3ce837d0fe
+      version: -1
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 3750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 3b7a4ce5-9f5e-49a1-8e28-9a550388f629
+    type: title
+    task:
+      id: 3b7a4ce5-9f5e-49a1-8e28-9a550388f629
+      version: -1
+      name: PAN-OS Create rule
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 0c5ade81-eddc-490f-8193-2e82e67cb3ed
+    type: collection
+    task:
+      id: 0c5ade81-eddc-490f-8193-2e82e67cb3ed
+      version: -1
+      name: Provide data for rule creation
+      description: Provide data for rule creation.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 3210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please provide the necessary data for rule creation
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: pre_post
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: device-group
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The device group for which to return addresses (Panorama instances).
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: log-forwarding-object-name
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The server address to which to forward logs.
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: rule-position
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The position of the rule in the ruleset. Valid values are:   * Top   * Bottom   * Before   * After  The default is ''Bottom'''
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          simple: relative-rule-name
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If the rule-position that is chosen is before or after, specify the rule name to which it is related.
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          simple: inbound-or-outbound-rule
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Determines if the rule is inbound or outbound.
+        readonly: false
+      - id: "6"
+        label: ""
+        labelarg:
+          simple: element-to-add
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The element to add to the rule.
+        readonly: false
+      - id: "7"
+        label: ""
+        labelarg:
+          simple: action-type
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The action that will be defined in the rule. Valid values are: * allow * deny * drop'
+        readonly: false
+      title: Data for rule creation
+      description: Please provide the necessary data for rule creation.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.52,
+      "20_29_yes": 0.5,
+      "22_16_yes": 0.45
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2395,
+        "width": 1440,
+        "x": 890,
+        "y": 1590
+      }
+    }
+  }
+inputs:
+- key: device-group
+  value: {}
+  required: false
+  description: The device group to work on. Exists only in panorama!
+  playbookInputQuery:
+- key: profile_type
+  value: {}
+  required: true
+  description: Security profile type. Can be 'data-filtering', 'file-blocking', 'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.'
+  playbookInputQuery:
+- key: profile_name
+  value: {}
+  required: true
+  description: The profile name to apply to the rule.
+  playbookInputQuery:
+- key: pre-post-rulebase
+  value: {}
+  required: false
+  description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
+  playbookInputQuery:
+- key: tag
+  value: {}
+  required: false
+  description: Tag for which to filter the rules.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2

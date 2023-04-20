@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: CyberArkAIM
 display: CyberArk AIM (Deprecated)
-category: Authentication
+category: Authentication & Identity Management
 description: Deprecated. Use the CyberArk AIM v2 integration instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

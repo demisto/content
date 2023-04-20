@@ -1,0 +1,748 @@
+description: "This playbook Remediates the Phishing technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1566: Phishing\n\nKill Chain phases:\n- Initial Access\n\nMITRE ATT&CK Description:\n\nAdversaries may send phishing messages to gain access to victim systems. All forms of phishing are electronically delivered social engineering. Phishing can be targeted, known as spearphishing. In spearphishing, a specific individual, company, or industry will be targeted by the adversary. More generally, adversaries can conduct non-targeted phishing, such as in mass malware spam campaigns.\n\nAdversaries may send victims emails containing malicious attachments or links, typically to execute malicious code on victim systems or to gather credentials for use of Valid Accounts. Phishing may also be conducted via third-party services, like social media platforms.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input."
+id: MITRE ATT&CK CoA - T1566 - Phishing
+inputs:
+- description: Template name to enforce WildFire best practices profile.
+  key: template
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+  key: pre_post
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The device group for which to return addresses (Panorama instances).
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the results.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+name: MITRE ATT&CK CoA - T1566 - Phishing
+outputs:
+- contextPath: Handled.Techniques
+  description: The techniques handled in this playbook
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      id: 19c8b9f6-1020-4d9f-8dc3-15f634ddc14d
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 19c8b9f6-1020-4d9f-8dc3-15f634ddc14d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -830
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Manual - Cortex XDR - Setup file blocking.
+      id: 2d53375f-b379-440c-8281-faf27f7446de
+      iscommand: false
+      name: Manual - Cortex XDR - Setup file blocking
+      type: regular
+      version: -1
+    taskid: 2d53375f-b379-440c-8281-faf27f7446de
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -190
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      id: 19a97534-0d96-4cf1-8f13-fdbc812f1cb5
+      iscommand: false
+      name: PAN-OS - Enforce Anti-Virus Best Practices Profile
+      playbookId: PAN-OS - Enforce Anti-Virus Best Practices Profile
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 19a97534-0d96-4cf1-8f13-fdbc812f1cb5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 120
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      template:
+        complex:
+          root: inputs.template
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      id: 0b5f3a2e-2d36-4f2e-8c0c-2e036e05f07d
+      iscommand: false
+      name: PAN-OS - Enforce WildFire Best Practices Profile
+      playbookId: PAN-OS - Enforce WildFire Best Practices Profile
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 0b5f3a2e-2d36-4f2e-8c0c-2e036e05f07d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Manual - Cortex XDR - Configure Malware Security Profile.
+      id: e9bb301a-76b9-4f38-8741-eb8ed4e1cd27
+      iscommand: false
+      name: Manual - Cortex XDR - Configure Malware Security Profile
+      type: regular
+      version: -1
+    taskid: e9bb301a-76b9-4f38-8741-eb8ed4e1cd27
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 750
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AuthenticateEmail:
+        simple: "False"
+      BlockIndicators:
+        simple: "False"
+      OnCall:
+        simple: "false"
+      Role:
+        simple: Administrator
+      SearchAndDelete:
+        simple: "False"
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |-
+        Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
+
+        The final remediation tasks are always decided by a human analyst.
+      id: dccd6b57-14cb-423e-8a4a-49bb524d268e
+      iscommand: false
+      name: Phishing Investigation - Generic v2
+      playbookId: Phishing Investigation - Generic v2
+      type: playbook
+      version: -1
+    taskid: dccd6b57-14cb-423e-8a4a-49bb524d268e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1240
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoIsolation:
+        simple: "3"
+      Email: {}
+      FilePath:
+        complex:
+          accessor: Path
+          root: File
+      Hostname:
+        complex:
+          accessor: Hostname
+          root: Endpoint
+      MD5:
+        complex:
+          accessor: md5string
+          root: incident
+      SHA1:
+        complex:
+          accessor: sha1
+          root: incident
+      SHA256:
+        complex:
+          accessor: sha256
+          root: incident
+      UseD2:
+        simple: "no"
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |-
+        This playbook is triggered by a malware incident from an 'Endpoint' type integration. The playbook performs enrichment, detonation, and hunting within the organization, and remediation on the malware.
+        Used sub-playbooks:
+        - Endpoint Enrichment - Generic v2.1
+        - Retrieve File from Endpoint - Generic
+        - Detonate File - Generic
+        - File Enrichment - Generic v2
+        - Calculate Severity - Generic v2
+        - Isolate Endpoint - Generic
+        - Block Indicators - Generic v2
+      id: b454b964-1d49-4aa3-8f1d-a1942c67e3d3
+      iscommand: false
+      name: Endpoint Malware Investigation - Generic
+      playbookId: Endpoint Malware Investigation - Generic
+      type: playbook
+      version: -1
+    taskid: b454b964-1d49-4aa3-8f1d-a1942c67e3d3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1730
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Would you like to use "Phishing Investigation - Generic v2 playbook?
+      id: 90d8aa99-edb6-4772-8e78-b0e692dca95f
+      iscommand: false
+      name: Would you like to use "Phishing Investigation - Generic v2?
+      type: condition
+      version: -1
+    taskid: 90d8aa99-edb6-4772-8e78-b0e692dca95f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 920
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Would you like to use "Access Investigation - Generic" playbook?
+      id: 661caf70-78d0-45c8-8855-a9cead5e64cd
+      iscommand: false
+      name: Would you like to use "Access Investigation - Generic" playbook?
+      type: condition
+      version: -1
+    taskid: 661caf70-78d0-45c8-8855-a9cead5e64cd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1415
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Handled.Techniques
+      stringify: {}
+      value:
+        simple: T1566
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 27847884-c59d-4520-8d79-3e3313220c1d
+      iscommand: false
+      name: Set technique handled
+      script: Set
+      type: regular
+      version: -1
+    taskid: 27847884-c59d-4520-8d79-3e3313220c1d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1900
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      id: d179b3c5-55a4-4ae9-8993-0009be78ddfe
+      iscommand: false
+      name: Deploy Cortex XSOAR Playbook – Phishing Investigation - Generic v2
+      type: title
+      version: -1
+      description: ''
+    taskid: d179b3c5-55a4-4ae9-8993-0009be78ddfe
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1090
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      id: e9dd57c0-56af-4845-8bb3-17a48f5fadd0
+      iscommand: false
+      name: Deploy Cortex XSOAR Playbook – Endpoint Malware Investigation - Generic
+      type: title
+      version: -1
+      description: ''
+    taskid: e9dd57c0-56af-4845-8bb3-17a48f5fadd0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1590
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      id: ca4fa64d-0f08-415f-87c4-baa055805ff5
+      iscommand: false
+      name: Setup file blocking in Cortex XDR
+      type: title
+      version: -1
+      description: ''
+    taskid: ca4fa64d-0f08-415f-87c4-baa055805ff5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -330
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      id: 301ace9a-a00f-41e4-8f1c-eec88d21eb0f
+      iscommand: false
+      name: PAN-OS - Enforce Anti-Virus Best Practices Profile
+      type: title
+      version: -1
+      description: ''
+    taskid: 301ace9a-a00f-41e4-8f1c-eec88d21eb0f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -20
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      id: 28258f8a-0aa6-4520-839a-eb1a80b51646
+      iscommand: false
+      name: PAN-OS - Enforce WildFire Best Practices Profile
+      type: title
+      version: -1
+      description: ''
+    taskid: 28258f8a-0aa6-4520-839a-eb1a80b51646
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 300
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      id: 6454dac8-a5eb-4ec7-8975-33e336ca1e3b
+      iscommand: false
+      name: Configure Malware Security Profile in Cortex XDR
+      type: title
+      version: -1
+      description: ''
+    taskid: 6454dac8-a5eb-4ec7-8975-33e336ca1e3b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 610
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      id: 6bdf8c2f-37e1-4f4b-86d6-2a6cce71622e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 6bdf8c2f-37e1-4f4b-86d6-2a6cce71622e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2270
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: 8f7ac68a-6290-460e-8e89-813de391d237
+      iscommand: false
+      name: Is Cortex XDR integration Enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 8f7ac68a-6290-460e-8e89-813de391d237
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -675
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |
+        Enable the Cortex XDR integration to follow this CoA.
+
+        If needed - please contact your Palo Alto Networks account manager for future guidance and assistance.
+      id: d8f9bf82-e8ce-4f39-8047-420de382b072
+      iscommand: false
+      name: Manual - Enable Cortex XDR integration
+      type: regular
+      version: -1
+    taskid: d8f9bf82-e8ce-4f39-8047-420de382b072
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": -500
+        }
+      }
+  "19":
+    continueonerror: true
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: technique
+      context_path:
+        simple: Handled.Techniques
+      grid_id:
+        simple: handledtechniques
+      keys: {}
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: cb49f8d4-2fc7-44ae-857b-d56fa653dcd2
+      iscommand: false
+      name: Set grid field
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: cb49f8d4-2fc7-44ae-857b-d56fa653dcd2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2080
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "7_8_#default#": 0.49,
+      "8_9_#default#": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3165,
+        "width": 780,
+        "x": 450,
+        "y": -830
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

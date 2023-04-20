@@ -1,0 +1,192 @@
+{
+  "href": "/orgs/1/sec_policy/draft/rule_sets/2816",
+  "name": "Trail-101010101",
+  "caps": [
+    "write",
+    "provision"
+  ],
+  "created_at": "2022-10-11T11:06:24.053Z",
+  "updated_at": "2022-10-18T06:52:49.531Z",
+  "update_type": "create",
+  "created_by": {
+    "href": "/users/68"
+  },
+  "updated_by": {
+    "href": "/users/68"
+  },
+  "enabled": true,
+  "scopes": [
+    []
+  ],
+  "rules": [
+    {
+      "href": "/orgs/1/sec_policy/draft/rule_sets/2816/sec_rules/2819",
+      "created_at": "2022-10-18T06:52:49.518Z",
+      "updated_at": "2022-10-18T06:52:49.531Z",
+      "update_type": "create",
+      "created_by": {
+        "href": "/users/68"
+      },
+      "updated_by": {
+        "href": "/users/68"
+      },
+      "ingress_services": [
+        {
+          "href": "/orgs/1/sec_policy/draft/services/1751"
+        }
+      ],
+      "providers": [
+        {
+          "actors": "ams"
+        }
+      ],
+      "consumers": [
+        {
+          "actors": "ams"
+        }
+      ],
+      "enabled": true,
+      "resolve_labels_as": {
+        "providers": [
+          "workloads"
+        ],
+        "consumers": [
+          "virtual_services"
+        ]
+      },
+      "sec_connect": false,
+      "stateless": false,
+      "machine_auth": false,
+      "consuming_security_principals": [],
+      "unscoped_consumers": false,
+      "network_type": "brn"
+    },
+    {
+      "href": "/orgs/1/sec_policy/draft/rule_sets/2816/sec_rules/2817",
+      "created_at": "2022-10-18T06:51:08.928Z",
+      "updated_at": "2022-10-18T06:51:08.939Z",
+      "update_type": "create",
+      "created_by": {
+        "href": "/users/68"
+      },
+      "updated_by": {
+        "href": "/users/68"
+      },
+      "ingress_services": [
+        {
+          "href": "/orgs/1/sec_policy/draft/services/1751"
+        }
+      ],
+      "providers": [
+        {
+          "actors": "ams"
+        }
+      ],
+      "consumers": [
+        {
+          "actors": "ams"
+        }
+      ],
+      "enabled": true,
+      "resolve_labels_as": {
+        "providers": [
+          "workloads"
+        ],
+        "consumers": [
+          "virtual_services"
+        ]
+      },
+      "sec_connect": false,
+      "stateless": false,
+      "machine_auth": false,
+      "consuming_security_principals": [],
+      "unscoped_consumers": false,
+      "network_type": "brn"
+    },
+    {
+      "href": "/orgs/1/sec_policy/draft/rule_sets/2816/sec_rules/2815",
+      "created_at": "2022-10-18T06:50:47.806Z",
+      "updated_at": "2022-10-18T06:50:47.818Z",
+      "update_type": "create",
+      "created_by": {
+        "href": "/users/68"
+      },
+      "updated_by": {
+        "href": "/users/68"
+      },
+      "ingress_services": [
+        {
+          "href": "/orgs/1/sec_policy/draft/services/1751"
+        }
+      ],
+      "providers": [
+        {
+          "actors": "ams"
+        }
+      ],
+      "consumers": [
+        {
+          "actors": "ams"
+        }
+      ],
+      "enabled": true,
+      "resolve_labels_as": {
+        "providers": [
+          "workloads"
+        ],
+        "consumers": [
+          "virtual_services"
+        ]
+      },
+      "sec_connect": false,
+      "stateless": false,
+      "machine_auth": false,
+      "consuming_security_principals": [],
+      "unscoped_consumers": false,
+      "network_type": "brn"
+    },
+    {
+      "href": "/orgs/1/sec_policy/draft/rule_sets/2816/sec_rules/2813",
+      "created_at": "2022-10-18T06:24:22.662Z",
+      "updated_at": "2022-10-18T06:24:22.675Z",
+      "update_type": "create",
+      "created_by": {
+        "href": "/users/68"
+      },
+      "updated_by": {
+        "href": "/users/68"
+      },
+      "ingress_services": [
+        {
+          "href": "/orgs/1/sec_policy/draft/services/1751"
+        }
+      ],
+      "providers": [
+        {
+          "actors": "ams"
+        }
+      ],
+      "consumers": [
+        {
+          "actors": "ams"
+        }
+      ],
+      "enabled": true,
+      "resolve_labels_as": {
+        "providers": [
+          "workloads"
+        ],
+        "consumers": [
+          "virtual_services"
+        ]
+      },
+      "sec_connect": false,
+      "stateless": false,
+      "machine_auth": false,
+      "consuming_security_principals": [],
+      "unscoped_consumers": false,
+      "network_type": "brn"
+    }
+  ],
+  "ip_tables_rules": []
+}

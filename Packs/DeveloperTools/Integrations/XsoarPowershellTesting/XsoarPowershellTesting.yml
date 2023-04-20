@@ -1,4 +1,7 @@
 category: Utilities
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: XsoarPowershellTesting
   version: -1
@@ -13,49 +16,49 @@ script:
     execution: false
     name: pwsh-test-get-integration-context
     outputs:
-      - contextPath: XSOAR.IntegrationContext.Value
-        description: Integration context value.
-        type: String
+    - contextPath: XSOAR.IntegrationContext.Value
+      description: Integration context value.
+      type: String
   - deprecated: false
     description: Get integration versioned context.
     execution: false
     name: pwsh-test-get-integration-versioned-context
     outputs:
-      - contextPath: XSOAR.IntegrationContext.Value
-        description: Integration context object.
-        type: Unknown
-      - contextPath: XSOAR.Version
-        description: Integration context version number.
-        type: Unknown
+    - contextPath: XSOAR.IntegrationContext.Value
+      description: Integration context object.
+      type: Unknown
+    - contextPath: XSOAR.Version
+      description: Integration context version number.
+      type: Unknown
   - arguments:
-      - default: false
-        description: Value to set in integration context.
-        isArray: false
-        name: value
-        required: true
-        secret: false
+    - default: false
+      description: Value to set in integration context.
+      isArray: false
+      name: value
+      required: true
+      secret: false
     deprecated: false
     description: Set integration context.
     execution: false
     name: pwsh-test-set-integration-context
   - arguments:
-      - default: false
-        description: Value to set in integration context.
-        isArray: false
-        name: value
-        required: true
-        secret: false
-      - default: false
-        description: The context version to update.
-        isArray: false
-        name: version
-        required: true
-        secret: false
+    - default: false
+      description: Value to set in integration context.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: The context version to update.
+      isArray: false
+      name: version
+      required: true
+      secret: false
     deprecated: false
     description: Set integration versioned context.
     execution: false
     name: pwsh-test-set-integration-versioned-context
-  dockerimage: demisto/powershell-ubuntu:7.1.3.22304
+  dockerimage: demisto/powershell-ubuntu:7.2.2.29705
   isfetch: false
   longRunning: false
   longRunningPort: false

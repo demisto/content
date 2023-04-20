@@ -1,0 +1,93 @@
+{
+    "resultIdToElementDataMap": {
+        "1899624463.3738670480412115128": {
+            "isMalicious": false,
+            "suspicionCount": 1,
+            "malopPriority": null,
+            "elementValues": {
+                "ownerMachine": {
+                    "totalValues": 1,
+                    "totalSuspicious": 0,
+                    "guessedTotal": 0,
+                    "totalMalicious": 0,
+                    "elementValues": [
+                        {
+                            "guid": "1899624444.1198775089551234567",
+                            "hasSuspicions": false,
+                            "elementType": "Machine",
+                            "name": "desktop-p0m5vad",
+                            "hasMalops": false
+                        }
+                    ]
+                }
+            },
+            "malicious": false,
+            "filterData": {
+                "sortInGroupValue": "1899624463.3738670480412115128",
+                "groupByValue": "FileHashRuntime:0.4272124792099163455 " 
+            },
+            "suspicions": {
+                "reportedByAntiMalwareSuspicion": 1573393767860
+            },
+            "labelsIds": null,
+            "suspect": true,
+            "guidString": "1899624444.1198775089551234567",
+            "simpleValues": {
+                "companyName": {
+                    "totalValues": 1,
+                    "values": [
+                        "test_company_name"
+                    ]
+                },
+                "createdTime": {
+                    "totalValues": 1,
+                    "values": [
+                        "1234567890"
+                    ]
+                },
+                "modifiedTime": {
+                    "totalValues": 1,
+                    "values": [
+                        "1234567890"
+                    ]
+                },
+                "isSigned": {
+                    "totalValues": 1,
+                    "values": [
+                        "true"
+                    ]
+                },
+                "sha1String": {
+                    "totalValues": 1,
+                    "values": [
+                        "984e5a25910edafd4567c0f51c6f2d779530451d"
+                    ]
+                },
+                "elementDisplayName": {
+                    "totalValues": 1,
+                    "values": [
+                        "bdata.bin"
+                    ]
+                },
+                "correctedPath": {
+                    "totalValues": 1,
+                    "values": [
+                        "c:\\windows\\temp\\sb-sim-temp-ymrc7u\\sb_5313555_bs_jwnggm\\bdata.bin"  
+                    ]
+                },
+                "md5String": {
+                    "totalValues": 1,
+                    "values": [
+                        "4778901e54f55d54435b2626123456a8"
+                    ]
+                },
+                "maliciousClassificationType": {
+                    "totalValues": 1,
+                    "values": [
+                        "av_detected"
+                    ]
+                }
+            }
+        }
+    }
+}

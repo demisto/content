@@ -39,7 +39,7 @@ class PathManager:
 
         content_root_files = set(filter(lambda f: f.is_file(), self.content_path.iterdir()))
         non_content_files = self._glob(
-            filter(lambda p: p.is_dir() and p.name != 'Packs', self.content_path.iterdir()))  # type: ignore[union-attr]
+            filter(lambda p: p.is_dir() and p.name != 'Packs', self.content_path.iterdir()))  # type: ignore[arg-type, union-attr]
         non_content = non_content_files | content_root_files
 
         infrastructure_test_data = self._glob(('Tests/scripts/infrastructure_tests/tests_data',))
@@ -49,7 +49,9 @@ class PathManager:
         self.id_set_path = PathManager.ARTIFACTS_PATH / 'id_set.json'
         self.conf_path = PathManager.ARTIFACTS_PATH / 'conf.json'
         self.output_tests_file = PathManager.ARTIFACTS_PATH / 'filter_file.txt'
+        self.output_modeling_rules_to_test_file = PathManager.ARTIFACTS_PATH / 'modeling_rules_to_test.txt'
         self.output_packs_file = PathManager.ARTIFACTS_PATH / 'content_packs_to_install.txt'
+        self.output_packs_to_upload_file = PathManager.ARTIFACTS_PATH / 'content_packs_to_upload.txt'
         self.output_machines_file = PathManager.ARTIFACTS_PATH / 'filter_envs.json'
 
     def _glob_single(self, relative_path: str) -> set[Path]:

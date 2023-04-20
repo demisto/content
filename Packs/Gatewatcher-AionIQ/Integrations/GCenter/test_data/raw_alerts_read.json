@@ -1,0 +1,186 @@
+{
+    "sha256": "f16d19ac9697d9892b0f910601a61d041d64",
+    "id": "45e6ed3c-1082-4d33-9514-162748d7d41f",
+    "flow_id": 1544096072809159,
+    "severity": 1,
+    "src_ip": "192.168.0.2",
+    "dest_ip": "192.168.0.1",
+    "src_port": 80,
+    "dest_port": 35168,
+    "gcap": "test.domain.com",
+    "type": "malcore",
+    "proto": "TCP",
+    "host": "test.domain.com",
+    "app_proto": "http",
+    "alert_type": "malware",
+    "state": "Infected",
+    "matched_event": "3d35e491-cfc8-4271-815b-ff018a036c7c",
+    "domain_name": "nzpzxcox.com",
+    "probability": 0.55555555,
+    "timestamp_detected": "2022-03-21T11:34:47.000Z",
+    "timestamp_analyzed": "2022-03-21T13:58:42.742Z",
+    "dest_geoip": {},
+    "src_geoip": {},
+    "retrohunt": {
+        "timestamp_package": "2022-06-06T22:00:01.632829+0000",
+        "ioc_creation_date": "2022-05-27T18:37:30+00:00",
+        "ioc_updated_date": "2022-06-06T21:05:12+00:00",
+        "description": "'test.domain.com' is a Suspicious Host.",
+        "ioc_type": "Host",
+        "ioc_value": "test.domain.com",
+        "matched_app_proto": "http",
+        "matched_event_type": "http",
+        "meta_data": {},
+        "targeted_organizations": [],
+        "targeted_platforms": [],
+        "targeted_sectors": [],
+        "threat_actor": [],
+        "external_links": [],
+        "relations": [],
+        "campaigns": [],
+        "categories": [],
+        "families": [],
+        "vulnerabilities": [],
+        "ttp": [],
+        "case_id": "1746d38d-58f3-4b43-b4ee-6f0b43527d49",
+        "ioc_id": "183abf8e-b0a5-4ed0-a93f-e5d7927648b8",
+        "risk": "Suspicious",
+        "usage_mode": "hunting",
+        "tlp": "green"
+    },
+    "powershell": {
+        "file_id": "06-08-2022T11:37:11_1348935773_gcap-dean.org",
+        "scores": {
+            "proba_obfuscated": 0.2,
+            "analysis": 241,
+            "analysis_detailed": {}
+        }
+    },
+    "shellcode": {
+        "file_id": "file_id",
+        "encodings": [
+            {
+                "name": "Bloxor",
+                "count": 2
+            }
+        ],
+        "calls": [
+            {
+                "call": "ws2_32_recv",
+                "args": "{'sockfd': 'Socket_1-bind (4)', 'backlog': 19103712}",
+                "ret": "90137289",
+                "index": 0
+            }
+        ]
+    },
+    "malware": {
+        "analyzed_clean": 11,
+        "analyzed_infected": 5,
+        "analyzed_suspicious": 0,
+        "analyzed_other": 0,
+        "analyzed_error": 0,
+        "code": 1,
+        "def_time": "2022-05-31T21:45:33Z",
+        "scan_time": 3785,
+        "threats_found": "Infected : Gen:Variant.Ulise.315566 (B)",
+        "reporting_token": "No GBOX",
+        "engines_report": {
+            "0": {
+                "id": "XXX",
+                "threat_details": "Gen:Variant.Ulise.315566 (B)",
+                "scan_result": "INFECTED"
+            },
+            "1": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "2": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "3": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "4": {
+                "id": "XXX",
+                "threat_details": "WinGo/TrojanDownloader.Agent.BD trojan",
+                "scan_result": "INFECTED"
+            },
+            "5": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "6": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "7": {
+                "id": "XXX",
+                "threat_details": "Trojan.Donut.Win64.545",
+                "scan_result": "INFECTED"
+            },
+            "8": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "9": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "10": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "11": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "12": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "13": {
+                "id": "XXX",
+                "threat_details": "",
+                "scan_result": "CLEAN"
+            },
+            "14": {
+                "id": "XXX",
+                "threat_details": "W64/Donut.B.gen!Eldorado",
+                "scan_result": "INFECTED"
+            },
+            "15": {
+                "id": "XXX",
+                "threat_details": "Trojan.Win64.Crypt",
+                "scan_result": "INFECTED"
+            }
+        },
+        "magic_details": "PE32+ executable (DLL) (GUI) x86-64, for MS Windows",
+        "total_found": "5/16"
+    },
+    "sigflow": {
+        "alert": {
+            "action": "allowed",
+            "signature_id": "202",
+            "gid": "1",
+            "category": "A Network Trojan was detected"
+        },
+        "packet": "XXXXXXXXXXXXXXXXXX",
+        "in_iface": "mon5",
+        "stream": 0,
+        "payload": "XXXXXXXXXXXXXXXXXX",
+        "payload_printable": "XXXXXXXXXXXXXXXXXX",
+        "extra_keys": {}
+    }
+}

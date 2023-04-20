@@ -1,3 +1,4 @@
+// Development container for Content. Poetry hash 1.11.0
 {
 	"name": "XSOAR Content",
 	"build": {
@@ -10,44 +11,15 @@
 	"overrideCommand": false,
 	"mounts": [
 		"source=venv,target=${containerWorkspaceFolder}/.venv,type=volume",
+		"source=poetry-venv,target=/home/demisto/.cache/pypoetry,type=volume",
 		"source=node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
 		"source=dind-var-lib-docker,target=/var/lib/docker,type=volume"
 	],
+	"containerUser": "demisto",
 	"remoteUser": "demisto",
-	"settings": {
-		"terminal.integrated.defaultProfile.linux": "zsh",
-		"terminal.integrated.profiles.linux": {
-			"zsh": {
-				"path": "/bin/zsh"
-			}
-		}
-	},
-	"extensions": [
-		"cortexxsoarext.xsoar",
-		"ms-python.python",
-		"ms-vscode.PowerShell",
-		"ms-toolsai.jupyter",
-		"timonwong.shellcheck",
-		"GitHub.vscode-pull-request-github",
-		"eamodio.gitlens",
-		"ms-azuretools.vscode-docker",
-		"ms-vscode-remote.remote-containers",
-		"streetsidesoftware.code-spell-checker",
-		"njpwerner.autodocstring",
-		"VisualStudioExptTeam.vscodeintellicode",
-		"yzhang.markdown-all-in-one",
-		"shd101wyy.markdown-preview-enhanced",
-		"Gruntfuggly.todo-tree",
-		"redhat.vscode-yaml",
-		"PKief.material-icon-theme",
-		"mikestead.dotenv",
-		"KevinRose.vsc-python-indent",
-		"rangav.vscode-thunder-client",
-		"ms-python.black-formatter"
-	],
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
-		"PATH": "${containerWorkspaceFolder}/.venv/bin:${containerEnv:PATH}",
+		"PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}/.venv/bin",
 		"CONTENT": "${containerWorkspaceFolder}",
 		"DEMISTO_SDK_CONTENT_PATH": "${containerWorkspaceFolder}",
 		"PYTHONPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
@@ -58,26 +30,79 @@
 		"DEMISTO_VERIFY_SSL": "${localEnv:DEMISTO_VERIFY_SSL}",
 		"DEMISTO_API_KEY": "${localEnv:DEMISTO_API_KEY}"
 	},
-	// this is commented out until VSCode will fix self signed certificate issues
-	// "features": {
-	// 	"ghcr.io/devcontainers/features/docker-in-docker:1": {
-	// 		"version": "latest"
-	// 	},
-	// 	"ghcr.io/devcontainers/features/git:1": {
-	// 		"version": "os-provided"
-	// 	},
-	// 	"ghcr.io/devcontainers/features/powershell:1": {
-	// 		"version": "latest"
-	// 	},
-	// 	"ghcr.io/devcontainers/features/common-utils:1": {
-	// 		"version": "latest"
-	// 	},
-	// 	"ghcr.io/devcontainers/features/node:1": {
-	// 		"version": "latest"
-	// 	}
-	// },
-	// "overrideFeatureInstallOrder": [
-	// 	"ghcr.io/devcontainers/features/common-utils:1"
-	// ],
-	"onCreateCommand": "sudo chown demisto .venv && sudo chown demisto node_modules && cp .devcontainer/settings.json .vscode/settings.json && touch ${containerWorkspaceFolder}/CommonServerUserPython.py && path=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH && echo PYTHONPATH=\"$path\" >> .env && echo MYPYPATH=\"$path\" >> .env && NO_HOOKS=1 .hooks/bootstrap"
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "zsh",
+				"terminal.integrated.profiles.linux": {
+					"zsh": {
+						"path": "/bin/zsh"
+					}
+				},
+				"cSpell.words": [
+					"demisto",
+					"xsoar",
+					"xsiam",
+					"fromversion",
+					"toversion",
+					"marketplacev",
+					"ciac",
+					"whois",
+				]
+			},
+			"extensions": [
+				"cortexxsoarext.xsoar",
+				"ms-python.python",
+				"ms-vscode.PowerShell",
+				"ms-toolsai.jupyter",
+				"timonwong.shellcheck",
+				"GitHub.vscode-pull-request-github",
+				"eamodio.gitlens",
+				"ms-azuretools.vscode-docker",
+				"ms-vscode-remote.remote-containers",
+				"streetsidesoftware.code-spell-checker",
+				"njpwerner.autodocstring",
+				"VisualStudioExptTeam.vscodeintellicode",
+				"yzhang.markdown-all-in-one",
+				"shd101wyy.markdown-preview-enhanced",
+				"Gruntfuggly.todo-tree",
+				"redhat.vscode-yaml",
+				"PKief.material-icon-theme",
+				"mikestead.dotenv",
+				"KevinRose.vsc-python-indent",
+				"rangav.vscode-thunder-client",
+				"ms-python.black-formatter",
+				"LittleFoxTeam.vscode-python-test-adapter"
+			]
+		},
+		"codespaces": {
+			"repositories": {
+				"demisto/demisto-sdk": {
+					"permissions": "write-all"
+				}
+			}
+		}
+	},
+// this is commented out until VSCode will fix self signed certificate issues
+// "features": {
+// 	"ghcr.io/devcontainers/features/docker-in-docker:1": {
+// 		"version": "latest"
+// 	},
+// 	"ghcr.io/devcontainers/features/git:1": {
+// 		"version": "os-provided"
+// 	},
+// 	"ghcr.io/devcontainers/features/powershell:1": {
+// 		"version": "latest"
+// 	},
+// 	"ghcr.io/devcontainers/features/common-utils:1": {
+// 		"version": "latest"
+// 	},
+// 	"ghcr.io/devcontainers/features/node:1": {
+// 		"version": "latest"
+// 	}
+// },
+// "overrideFeatureInstallOrder": [
+// 	"ghcr.io/devcontainers/features/common-utils:1"
+// ],
+"onCreateCommand": "dos2unix -n .devcontainer/createCommand.sh .devcontainer/createCommand_unix.sh && chmod +x .devcontainer/createCommand_unix.sh && bash .devcontainer/createCommand_unix.sh"
 }

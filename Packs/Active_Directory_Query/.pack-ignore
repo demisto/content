@@ -9,3 +9,13 @@ ignore=BA101
 
 [file:classifier-User_Profile_-_Active_Directory_(Outgoing).json]
 ignore=BA101
+
+[file:IAMInitADUser.yml]
+ignore=CJ105,BA124
+
+[known_words]
+ldap
+tls
+useraccountcontrol
+zipprotectwithpassword
+

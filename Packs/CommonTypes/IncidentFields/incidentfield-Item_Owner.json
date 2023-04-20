@@ -23,7 +23,8 @@
         "Symantec DLP Discover Incident",
         "Symantec DLP Endpoint Incident",
         "Symantec DLP Network Incident",
-        "ThreatConnect"
+        "ThreatConnect",
+        "Exabeam Incident"
     ],
     "unmapped": false,
     "unsearchable": false,

@@ -16,24 +16,24 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "11"
-        - "13"
-        - "12"
-        - "14"
-        - "15"
-        - "16"
-        - "17"
-        - "18"
-        - "19"
-        - "20"
-        - "21"
-        - "23"
-        - "24"
-        - "25"
-        - "26"
-        - "27"
-        - "28"
+      '#none#':
+      - "11"
+      - "13"
+      - "12"
+      - "15"
+      - "16"
+      - "17"
+      - "18"
+      - "19"
+      - "20"
+      - "21"
+      - "23"
+      - "24"
+      - "25"
+      - "26"
+      - "27"
+      - "28"
+      - "29"
     separatecontext: false
     view: |-
       {
@@ -191,47 +191,6 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: a6e1e56f-f5da-4648-8b0c-a7e8d6122535
-    type: playbook
-    task:
-      id: a6e1e56f-f5da-4648-8b0c-a7e8d6122535
-      version: -1
-      name: Detonate URL - CrowdStrike
-      description: Detonates one or more files using the Wildfire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
-      playbookName: Detonate URL - CrowdStrike
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "#none#":
-        - "3"
-    scriptarguments:
-      URL:
-        complex:
-          root: inputs.URL
-          accessor: Data
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1340,
           "y": 195
         }
       }
@@ -416,38 +375,31 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 07706e7e-800f-408e-8dfa-184841b701f4
-    type: playbook
+    taskid: 0ff5715e-873b-4d67-87da-2080cd4e5f34
+    type: regular
     task:
-      id: 07706e7e-800f-408e-8dfa-184841b701f4
+      id: 0ff5715e-873b-4d67-87da-2080cd4e5f34
       version: -1
-      name: Detonate URL - CrowdStrike Falcon X
-      playbookName: Detonate URL - CrowdStrike Falcon X
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: |-
-        'Detonates one or more URLs using the CrowdStrike Falcon sandbox integration.'
+      name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
+      description: Submits a URL for analysis.
+      script: '|||cs-falcon-sandbox-submit-url'
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon Sandbox V2
     nexttasks:
-      "#none#":
-        - "3"
+      '#none#':
+      - "3"
     scriptarguments:
-      EnvironmentID:
+      environmentID:
         simple: "100"
-      Interval:
-        simple: "5"
-      Timeout:
-        simple: "30"
-      URL:
+      polling:
+        simple: "true"
+      url:
         complex:
-          root: inputs.URL
-          accessor: Data
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
+            root: inputs.URL
+            accessor: Data
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -776,6 +728,52 @@ tasks:
       {
         "position": {
           "x": 6320,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: b12fdeb4-9952-416d-8e01-39eef0662454
+    type: playbook
+    task:
+      id: b12fdeb4-9952-416d-8e01-39eef0662454
+      version: -1
+      name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
+      playbookName: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
+      description: 'Detonate one or more files using the CrowdStrike Falcon Intelligence Sandbox integration.'
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "60"
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1340,
           "y": 195
         }
       }

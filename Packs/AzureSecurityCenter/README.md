@@ -7,3 +7,7 @@ Azure Security Center provides threat protection for data centers within both cl
 - Apply security policies across your workloads.
 - Limit your exposure to threats.
 - Detect and respond to attacks.
+
+
+# License information
+Must be enabled on at least 1 Azure subscription.

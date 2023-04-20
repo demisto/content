@@ -2,25 +2,21 @@
     "name": "PCAP Analysis",
     "description": "Don't miss out on critical forensic data! This Content Pack automates PCAP file analysis such as parsing, searching, extracting indicators, and more.",
     "support": "xsoar",
-    "currentVersion": "2.4.4",
+    "currentVersion": "2.4.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Forensics & Malware Analysis"
     ],
     "tags": [
-        "Pcap",
-        "Network",
         "Forensics"
     ],
     "created": "2020-05-14T06:21:02Z",
     "updated": "2020-05-14T06:21:02Z",
     "beta": false,
     "deprecated": false,
-    "useCases": [
-        "PCAP Analysis"
-    ],
+    "useCases": [],
     "keywords": [
         "Mine"
     ],

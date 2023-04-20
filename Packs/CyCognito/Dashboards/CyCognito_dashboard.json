@@ -1,0 +1,888 @@
+{
+    "id": "CyCognito Issues",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 30,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "CyCognito Issues",
+    "layout": [
+        {
+            "id": "53eca6c0-e0c5-11ec-86cf-074e04efb93b",
+            "forceRange": false,
+            "x": 0,
+            "y": 2,
+            "i": "53eca6c0-e0c5-11ec-86cf-074e04efb93b",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2022-03-08T16:59:52.340705019+05:30",
+                "packID": "CommonWidgets",
+                "itemVersion": "1.2.2",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Issues By Detection Complexity",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "type:\"CyCognito Issue\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "cycognitodetectioncomplexity",
+                        "severity"
+                    ],
+                    "legend": [
+                        {
+                            "color": "#F50057",
+                            "name": "http request"
+                        },
+                        {
+                            "color": "#01A2EC",
+                            "name": "handshake"
+                        },
+                        {
+                            "color": "#229D80",
+                            "name": "service detection"
+                        },
+                        {
+                            "color": "#FED22C",
+                            "name": "password field detection, handshake"
+                        },
+                        {
+                            "color": "#FD5BDE",
+                            "name": "dedicated detection module"
+                        },
+                        {
+                            "color": "#AA00FF",
+                            "name": "human action"
+                        },
+                        {
+                            "color": "#FF8411",
+                            "name": "password field detection, bruteforce"
+                        },
+                        {
+                            "color": "#8f000e",
+                            "name": "critical"
+                        },
+                        {
+                            "color": "#d13c3c",
+                            "name": "high"
+                        },
+                        {
+                            "color": "#EF9700",
+                            "name": "medium"
+                        },
+                        {
+                            "color": "#1db846",
+                            "name": "low"
+                        }
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "e7b45940-e0c8-11ec-86cf-074e04efb93b",
+            "forceRange": false,
+            "x": 8,
+            "y": 0,
+            "i": "e7b45940-e0c8-11ec-86cf-074e04efb93b",
+            "w": 4,
+            "h": 2,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2022-03-08T16:59:52.340705019+05:30",
+                "packID": "CommonWidgets",
+                "itemVersion": "1.2.2",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Issues By Severity",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "type:\"CyCognito Issue\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "severity"
+                    ]
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "8dda8740-e0c9-11ec-86cf-074e04efb93b",
+            "forceRange": false,
+            "x": 0,
+            "y": 5,
+            "i": "8dda8740-e0c9-11ec-86cf-074e04efb93b",
+            "w": 3,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2022-03-08T16:59:52.340705019+05:30",
+                "packID": "CommonWidgets",
+                "itemVersion": "1.2.2",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Issues By Status",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "type:\"CyCognito Issue\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "cycognitoissuestatus"
+                    ],
+                    "legend": [
+                        {
+                            "color": "#01A2EC",
+                            "name": "normal"
+                        },
+                        {
+                            "color": "#1db846",
+                            "name": "new"
+                        }
+                    ]
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "4d828de0-e0ca-11ec-86cf-074e04efb93b",
+            "forceRange": false,
+            "x": 0,
+            "y": 11,
+            "i": "4d828de0-e0ca-11ec-86cf-074e04efb93b",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2022-03-08T16:59:52.340705019+05:30",
+                "packID": "CommonWidgets",
+                "itemVersion": "1.2.2",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Riskiest Locations By Issues",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "type:\"CyCognito Issue\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "sourcegeolocation",
+                        "severity"
+                    ],
+                    "hideLegend": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "3c3e46e0-e0cb-11ec-86cf-074e04efb93b",
+            "forceRange": false,
+            "x": 0,
+            "y": 8,
+            "i": "3c3e46e0-e0cb-11ec-86cf-074e04efb93b",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2022-03-08T16:59:52.340705019+05:30",
+                "packID": "CommonWidgets",
+                "itemVersion": "1.2.2",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Prevalent Issue Types",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "type:\"CyCognito Issue\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "cycognitoissuetype",
+                        "severity"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "638cba00-e0cc-11ec-86cf-074e04efb93b",
+            "forceRange": false,
+            "x": 6,
+            "y": 2,
+            "i": "638cba00-e0cc-11ec-86cf-074e04efb93b",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "e093de68-7e62-4fcc-8b45-8eea0e4e644a",
+                "version": 1,
+                "modified": "2022-05-31T15:58:12.996421642+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Issues By Severity Over Time",
+                "prevName": "Issues By Severity Over Time",
+                "dataType": "incidents",
+                "widgetType": "column",
+                "query": "type:\"CyCognito Issue\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "firstseen",
+                        "severity"
+                    ],
+                    "hideLegend": false,
+                    "legend": [
+                        {
+                            "color": "#8f000e",
+                            "name": "critical"
+                        },
+                        {
+                            "color": "#d13c3c",
+                            "name": "high"
+                        },
+                        {
+                            "color": "#EF9700",
+                            "name": "medium"
+                        },
+                        {
+                            "color": "#1db846",
+                            "name": "low"
+                        }
+                    ],
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "2a39dcd0-e0cf-11ec-86cf-074e04efb93b",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "2a39dcd0-e0cf-11ec-86cf-074e04efb93b",
+            "w": 3,
+            "h": 2,
+            "widget": {
+                "id": "10fc60f5-b340-4d73-8ba6-c54d614415c2",
+                "version": 1,
+                "modified": "2022-05-31T16:18:08.182401071+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Issues Detected",
+                "prevName": "Total Issues",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "type:\"CyCognito Issue\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {},
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "eda0e740-e0cf-11ec-86cf-074e04efb93b",
+            "forceRange": false,
+            "x": 3,
+            "y": 5,
+            "i": "eda0e740-e0cf-11ec-86cf-074e04efb93b",
+            "w": 5,
+            "h": 3,
+            "widget": {
+                "id": "3744e02b-6a4d-4e5d-8e6d-c32c19c2ea7d",
+                "version": 1,
+                "modified": "2022-05-31T16:23:37.949404557+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Issues By Threat",
+                "prevName": "Issues By Threat",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "type:\"CyCognito Issue\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "cycognitopotentialthreat"
+                    ],
+                    "legend": [
+                        {
+                            "color": "#01A2EC",
+                            "name": "decryption"
+                        },
+                        {
+                            "color": "#1db846",
+                            "name": "vulnerable software"
+                        },
+                        {
+                            "color": "#F50057",
+                            "name": "trust"
+                        },
+                        {
+                            "color": "#AA00FF",
+                            "name": "information gathering"
+                        },
+                        {
+                            "color": "#FD5BDE",
+                            "name": "denial of service"
+                        },
+                        {
+                            "color": "#FF8411",
+                            "name": "unsafe authentication"
+                        },
+                        {
+                            "color": "#FED22C",
+                            "name": "authentication bypass"
+                        },
+                        {
+                            "color": "#989898",
+                            "name": "exposed data"
+                        },
+                        {
+                            "color": "#AED581",
+                            "name": "information disclosure"
+                        },
+                        {
+                            "color": "#FFC4C6",
+                            "name": "phishing threat"
+                        }
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "5a2e4e10-e0d6-11ec-86cf-074e04efb93b",
+            "forceRange": false,
+            "x": 3,
+            "y": 0,
+            "i": "5a2e4e10-e0d6-11ec-86cf-074e04efb93b",
+            "w": 2,
+            "h": 2,
+            "widget": {
+                "id": "beec80ab-c22a-46fd-8ad1-7d20193f33b9",
+                "version": 1,
+                "modified": "2022-05-31T17:09:30.527974778+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Issues Under Investigation",
+                "prevName": "Issues Under Investigation",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": " type:\"CyCognito Issue\" and cycognitoinvestigationstatus:investigating",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "2029bad0-e0de-11ec-86cf-074e04efb93b",
+            "forceRange": false,
+            "x": 5,
+            "y": 0,
+            "i": "2029bad0-e0de-11ec-86cf-074e04efb93b",
+            "w": 3,
+            "h": 2,
+            "widget": {
+                "id": "a28efeda-d940-4e86-8875-cb7f783c5605",
+                "version": 1,
+                "modified": "2022-05-31T18:05:07.477456189+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Total Severe Issues With High or Critical Rating",
+                "prevName": "Total Severe Issues With High or Critical Rating",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "type:\"CyCognito Issue\" and severity:Critical or severity:High",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "5b4dc2a0-e0e8-11ec-8079-793d8ab305aa",
+            "forceRange": false,
+            "x": 6,
+            "y": 8,
+            "i": "5b4dc2a0-e0e8-11ec-8079-793d8ab305aa",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "6040616b-bcd7-47ed-85c4-77111cfa70dd",
+                "version": 1,
+                "modified": "2022-05-31T19:18:18.91392188+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Prevalent Issue Types Over Time",
+                "prevName": "Prevalent Issue Types Over Time",
+                "dataType": "incidents",
+                "widgetType": "column",
+                "query": "type:\"CyCognito Issue\" ",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "firstseen",
+                        "cycognitoissuetype"
+                    ],
+                    "legend": [
+                        {
+                            "color": "#F50057",
+                            "name": "exposed data"
+                        },
+                        {
+                            "color": "#01A2EC",
+                            "name": "cryptographic vulnerability"
+                        },
+                        {
+                            "color": "#1db846",
+                            "name": "vulnerable software"
+                        },
+                        {
+                            "color": "#FF8411",
+                            "name": "abandoned asset"
+                        },
+                        {
+                            "color": "#FD5BDE",
+                            "name": "certificate validity"
+                        },
+                        {
+                            "color": "#AA00FF",
+                            "name": "unsafe authentication"
+                        },
+                        {
+                            "color": "#FED22C",
+                            "name": "phishing threat"
+                        }
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "2920cce0-e0e9-11ec-8079-793d8ab305aa",
+            "forceRange": false,
+            "x": 8,
+            "y": 5,
+            "i": "2920cce0-e0e9-11ec-8079-793d8ab305aa",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "0851a9cd-e5a4-49ee-8ec8-a6f54d3d4217",
+                "version": 1,
+                "modified": "2022-05-31T19:24:13.203737638+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Issues by Status Over Time",
+                "prevName": "Issues by Status Over Time",
+                "dataType": "incidents",
+                "widgetType": "column",
+                "query": "type:\"CyCognito Issue\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "firstseen",
+                        "cycognitoissuestatus"
+                    ],
+                    "legend": [
+                        {
+                            "color": "#01A2EC",
+                            "name": "normal"
+                        },
+                        {
+                            "color": "#1db846",
+                            "name": "new"
+                        }
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "0d4f8280-e248-11ec-ac86-41337c6a9359",
+            "forceRange": false,
+            "x": 6,
+            "y": 11,
+            "i": "0d4f8280-e248-11ec-ac86-41337c6a9359",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "8e53dec8-afc2-40eb-88a0-cfc0bd74c8c5",
+                "version": 1,
+                "modified": "2022-06-01T11:26:17.054116176+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Issues By Tag",
+                "prevName": "Issues By Tag",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "type:\"CyCognito Issue\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "cycognitotags",
+                        "severity"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        }
+    ],
+    "fromVersion": "6.2.0",
+    "description": "The dashboard consists of issues overview, prevalent issues, and issues distribution based on various factors (Example: Status, severity, etc) which are detected by the CyCognito platform.",
+    "isPredefined": true
+}

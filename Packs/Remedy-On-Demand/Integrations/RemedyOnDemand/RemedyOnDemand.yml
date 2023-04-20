@@ -35,6 +35,11 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 script:
   script: ''
   type: javascript
@@ -42,9 +47,9 @@ script:
   - name: remedy-incident-create
     arguments:
     - name: first-name
-      description: costumer's first name (make sure costumer already exists)
+      description: customer's first name (make sure customer already exists)
     - name: last-name
-      description: costumer's first name (make sure costumer already exists)
+      description: customer's first name (make sure customer already exists)
     - name: description
       description: Incident description
     - name: status
@@ -98,7 +103,7 @@ script:
       - 4-Low
       description: Incident urgency
     - name: custom-fields
-      description: Custom fields for incident creation. Should be comma separated query (i.e. field1=value1,field2=value2).
+      description: Custom fields for incident creation. Comma separated query (e.g., field1=value1,field2=value2)
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
@@ -145,23 +150,43 @@ script:
     arguments:
     - name: query
       description: Search query/qualification format of '<field> LIKE "<values>"' (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"')
+    - description: integer value to limit the amount of results returned (default no limit)
+      name: limit
+    - description: Sort query results in descending or ascending order. Format:'<field>.asc' or '<field>.desc' (e.g. 'Assigned To.asc').
+      name: sort
     outputs:
-    - contextPath: Ticket.ID
-      description: Ticket ID
-    - contextPath: Ticket.Submitter
-      description: Ticket submitter
-    - contextPath: Ticket.Status
-      description: Ticket status
+    - contextPath: Ticket.Assignee
+      description: Ticket assignee
     - contextPath: Ticket.Description
       description: Ticket description
+    - contextPath: Ticket.Email
+      description: Ticket email
+    - contextPath: Ticket.EntryID
+      description: Ticket entry ID
+    - contextPath: Ticket.ID
+      description: Ticket request ID
+    - contextPath: Ticket.Impact
+      description: Ticket impact
+    - contextPath: Ticket.IncidentNumber
+      description: Ticket number
+    - contextPath: Ticket.ModifiedDate
+      description: Ticket modified date
+    - contextPath: Ticket.Priority
+      description: Ticket priority
+    - contextPath: Ticket.RequestID
+      description: Ticket request ID
+    - contextPath: Ticket.ServiceType
+      description: Ticket service type
     - contextPath: Ticket.Source
       description: Ticket reported source
-    - contextPath: Ticket.Impact
-      description: TicketiImpact
-    - contextPath: Ticket.Urgency
-      description: Ticket urgency
+    - contextPath: Ticket.Status
+      description: Ticket status
+    - contextPath: Ticket.Submitter
+      description: Ticket submitter
     - contextPath: Ticket.Type
       description: Ticket service type
+    - contextPath: Ticket.Urgency
+      description: Ticket urgency
     description: Fetch all incidents
   - name: remedy-incident-update
     arguments:
@@ -221,6 +246,8 @@ script:
       - Infrastructure Event
       - Infrastructure Restoration
       description: Updated service-type (unchanged if not specified)
+    - description: Custom fields for incident update. Comma separated query (e.g., field1=value1,field2=value2)
+      name: custom_fields
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID

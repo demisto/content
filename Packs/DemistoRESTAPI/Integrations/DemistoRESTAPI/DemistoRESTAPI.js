@@ -3,9 +3,31 @@ if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
 }
 
+var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://marketplace.xsoar.paloaltonetworks.com/'
+
+getTenantAccountName = function () {
+    // example: for 'https://account-testing-ysdkvou:443/acc_Test' will return 'acc_Test'
+    const urls = demistoUrls()
+    const server_url = urls['server'].toString()
+    // server_url example - https://account-testing-ysdkvou:443/acc_Test
+    var account_name = ''
+    // check if server_url contains "/acc_" string
+    if (server_url.indexOf("/acc_") >= 0){
+        const words = server_url.split('acc_')
+        const tenant_name = words[words.length - 1]
+        if (tenant_name !== "") {
+            account_name = 'acc_' + tenant_name
+        }
+    }
+    return account_name
+}
+
 sendMultipart = function (uri, entryID, body) {
     var requestUrl = serverURL;
-    if (uri.slice(-1) !== '/') {
+    if (params.use_tenant){
+        requestUrl += '/' + getTenantAccountName();
+    }
+    if (uri.slice(0, 1) !== '/') {
         requestUrl += '/';
     }
     requestUrl += uri;
@@ -54,6 +76,9 @@ sendMultipart = function (uri, entryID, body) {
 
 var sendRequest = function(method, uri, body, raw) {
     var requestUrl = serverURL;
+    if (params.use_tenant){
+        requestUrl += '/' + getTenantAccountName();
+    }
     if (uri.slice(0, 1) !== '/') {
         requestUrl += '/';
     }
@@ -152,6 +177,83 @@ var deleteIncidents = function(ids_to_delete, fields_to_keep) {
     };
 };
 
+var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
+    let file_path;
+    if (entry_id){
+        file_path = entry_id;
+    }
+    else{
+        // download pack zip file
+        var res = http(
+        pack_url,
+        {
+            Method: 'GET',
+            Headers: {},
+            SaveToFile: true
+        });
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Demisto REST APIs - Failed to download pack file from ' + pack_url;
+        }
+        file_path = res.Path;
+    }
+
+    let upload_url = 'contentpacks/installed/upload?'
+
+    // set the skipVerify parameter
+    if(isDemistoVersionGE('6.5.0')){
+        if (skip_verify && skip_verify === 'false') {
+            upload_url+='skipVerify=false'
+        }else{
+            upload_url+='skipVerify=true'
+        }
+    }
+
+    // set the skipValidation parameter
+    if(isDemistoVersionGE('6.6.0')){
+        if (skip_validation && skip_validation === 'false') {
+            upload_url+='&skipValidation=false'
+        }else{
+            upload_url+='&skipValidation=true'
+        }
+    }
+    // upload the pack
+    sendMultipart(upload_url, file_path,'{}');
+};
+
+var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, skip_validation) {
+    if ((!packs_to_install) && (!file_url) && (!entry_id)) {
+        throw 'Either packs_to_install, file_url or entry_id argument must be provided.';
+    }
+    else if (file_url) {
+        installPack(file_url, undefined, skip_verify, skip_validation)
+        logDebug('Pack installed successfully from ' + file_url)
+        return 'The pack installed successfully from the file ' + file_url
+    }
+    else if (entry_id) {
+        installPack(undefined, entry_id, skip_verify, skip_validation)
+        logDebug('The pack installed successfully from the file.')
+        return 'The pack installed successfully from the file.'
+    }
+    else{
+        let installed_packs = []
+        let packs = JSON.parse(packs_to_install);
+
+        for (let pack_index = 0; pack_index < packs.length; pack_index += 1) {
+            let pack = packs[pack_index];
+            let pack_id = Object.keys(pack)[0]
+            let pack_version = pack[pack_id]
+
+            let pack_url = '{0}{1}/{2}/{3}.zip'.format(marketplace_url,pack_id,pack_version,pack_id)
+            installPack(pack_url, undefined, skip_verify, skip_validation)
+            logDebug(pack_id + ' pack installed successfully')
+            installed_packs.push(pack_id)
+        }
+
+        return 'The following packs installed successfully: ' + installed_packs.join(", ")
+    }
+};
+
 switch (command) {
     case 'test-module':
         sendRequest('GET','user');
@@ -189,6 +291,8 @@ switch (command) {
         var ids = argToList(args.ids);
         var fields = argToList(args.fields);
         return deleteIncidents(ids, fields);
+    case 'demisto-api-install-packs':
+        return installPacks(args.packs_to_install, args.file_url, args.entry_id, args.skip_verify, args.skip_validation);
     default:
         throw 'Demisto REST APIs - unknown command';
 }

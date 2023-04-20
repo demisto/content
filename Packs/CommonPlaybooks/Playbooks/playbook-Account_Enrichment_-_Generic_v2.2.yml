@@ -69,6 +69,7 @@ tasks:
       - "11"
       - "32"
       - "42"
+      - "55"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -110,7 +111,7 @@ tasks:
       {
         "position": {
           "x": -1080,
-          "y": 940
+          "y": 1230
         }
       }
     note: false
@@ -168,7 +169,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 30,
           "y": 235
         }
       }
@@ -207,7 +208,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 30,
           "y": 430
         }
       }
@@ -238,7 +239,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -420,
+          "x": -840,
           "y": 105
         }
       }
@@ -269,7 +270,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
+          "x": 450,
           "y": 105
         }
       }
@@ -300,7 +301,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 30,
           "y": 105
         }
       }
@@ -339,7 +340,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -420,
+          "x": -840,
           "y": 235
         }
       }
@@ -378,7 +379,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
+          "x": 450,
           "y": 235
         }
       }
@@ -416,7 +417,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -420,
+          "x": -840,
           "y": 430
         }
       }
@@ -454,7 +455,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
+          "x": 450,
           "y": 430
         }
       }
@@ -485,7 +486,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1290,
+          "x": 870,
           "y": 105
         }
       }
@@ -524,7 +525,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1290,
+          "x": 870,
           "y": 235
         }
       }
@@ -562,7 +563,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1290,
+          "x": 870,
           "y": 430
         }
       }
@@ -593,7 +594,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1710,
+          "x": 1290,
           "y": 105
         }
       }
@@ -632,7 +633,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1710,
+          "x": 1290,
           "y": 235
         }
       }
@@ -646,10 +647,10 @@ tasks:
     continueonerrortype: ""
   "44":
     id: "44"
-    taskid: f1d9cb8a-2bec-4277-8f21-3ee90c93ea93
+    taskid: 263e355a-c219-4c49-833f-5b67b66bdc17
     type: regular
     task:
-      id: f1d9cb8a-2bec-4277-8f21-3ee90c93ea93
+      id: 263e355a-c219-4c49-833f-5b67b66bdc17
       version: -1
       name: Get account info from AWS
       description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
@@ -670,7 +671,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1710,
+          "x": 1290,
           "y": 430
         }
       }
@@ -696,12 +697,12 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "49"
+      - "63"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -820,
+          "x": -1510,
           "y": 105
         }
       }
@@ -709,62 +710,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "49":
-    id: "49"
-    taskid: 3c1d8385-eab5-4d60-8627-65d625adff4c
-    type: regular
-    task:
-      id: 3c1d8385-eab5-4d60-8627-65d625adff4c
-      version: -1
-      name: IAM Get User
-      description: Retrieves a single user resource.
-      script: '|||iam-get-user'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      user-profile:
-        complex:
-          root: inputs.Username
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.Domain
-                iscontext: true
-          - operator: uniq
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: '{"username":"'
-              suffix:
-                value:
-                  simple: '"}'
-          - operator: split
-            args:
-              delimiter: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -820,
-          "y": 235
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -788,7 +733,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
+          "x": -400,
           "y": 105
         }
       }
@@ -827,7 +772,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
+          "x": -400,
           "y": 235
         }
       }
@@ -865,7 +810,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
+          "x": -400,
           "y": 430
         }
       }
@@ -909,7 +854,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 30,
           "y": 600
         }
       }
@@ -961,8 +906,404 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 190,
+          "x": -230,
           "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 285753ae-d884-4485-881c-3a99f77be4d0
+    type: title
+    task:
+      id: 285753ae-d884-4485-881c-3a99f77be4d0
+      version: -1
+      name: MSGraph Users
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: be533930-e327-4945-8fb7-c47ada329a2f
+    type: condition
+    task:
+      id: be533930-e327-4945-8fb7-c47ada329a2f
+      version: -1
+      name: Is Azure Active Directory Users integration enabled?
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "57"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Graph User
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 28d31f65-2e71-4de8-82b3-82da75841c4b
+    type: regular
+    task:
+      id: 28d31f65-2e71-4de8-82b3-82da75841c4b
+      version: -1
+      name: Get account info from Azure Active Directory
+      description: |-
+        Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+        Permissions: - User.Read (Delegated) - User.Read.All (Application)
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      user:
+        complex:
+          root: inputs.Username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 0cc7d1db-2b59-42c7-846a-9859a3d851c9
+    type: condition
+    task:
+      id: 0cc7d1db-2b59-42c7-846a-9859a3d851c9
+      version: -1
+      name: Is there a manager?
+      description: Is there a manager?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.Manager
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: e5aab025-d489-4bc6-89d8-ffde4c23ac36
+    type: regular
+    task:
+      id: e5aab025-d489-4bc6-89d8-ffde4c23ac36
+      version: -1
+      name: Azure Active Directory - Get manager details
+      description: Retrieves the properties from the manager of a user.
+      script: '|||msgraph-user-get-manager'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      user:
+        complex:
+          root: MSGraphUser
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 83d6879d-694b-4091-84cd-6445167b9c75
+    type: regular
+    task:
+      id: 83d6879d-694b-4091-84cd-6445167b9c75
+      version: -1
+      name: Set manager email address to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: UserManagerEmail
+      value:
+        complex:
+          root: MSGraphUserManager.Manager
+          accessor: Mail
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 484e6c54-1d8c-4c94-8fbb-228e86896b60
+    type: regular
+    task:
+      id: 484e6c54-1d8c-4c94-8fbb-228e86896b60
+      version: -1
+      name: IAM Get User - Without specifying a domain
+      description: Retrieves a single user resource.
+      script: '|||iam-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      user-profile:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: RegexReplace
+            args:
+              action_dt: {}
+              ignore_case: {}
+              multi_line: {}
+              output_format: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[\w.0-9]*\\'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '{"username":"'
+              suffix:
+                value:
+                  simple: '"}'
+          - operator: uniq
+          - operator: split
+            args:
+              delimiter: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1710,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: abf098f6-14b8-48f7-89ce-a5ff06d33d28
+    type: regular
+    task:
+      id: abf098f6-14b8-48f7-89ce-a5ff06d33d28
+      version: -1
+      name: IAM Get User - with a domain
+      description: Retrieves a single user resource.
+      script: '|||iam-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      user-profile:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: RegexReplace
+            args:
+              action_dt: {}
+              ignore_case: {}
+              multi_line: {}
+              output_format: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[\w.0-9]*\\'
+          - operator: concat
+            args:
+              prefix:
+                iscontext: true
+              suffix:
+                value:
+                  simple: inputs.Domain
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '{"username":"'
+              suffix:
+                value:
+                  simple: '"}'
+          - operator: uniq
+          - operator: split
+            args:
+              delimiter: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1300,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: e3d4077b-a586-494b-86b3-65e1f408c83a
+    type: condition
+    task:
+      id: e3d4077b-a586-494b-86b3-65e1f408c83a
+      version: -1
+      name: Was a domain provided?
+      description: Was a domain provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "61"
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Domain
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1510,
+          "y": 250
         }
       }
     note: false
@@ -981,13 +1322,15 @@ view: |-
       "33_3_#default#": 0.1,
       "43_3_#default#": 0.1,
       "4_3_#default#": 0.1,
-      "51_3_#default#": 0.1
+      "51_3_#default#": 0.1,
+      "56_3_#default#": 0.1,
+      "58_3_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 1205,
-        "width": 3170,
-        "x": -1080,
+        "height": 1495,
+        "width": 3800,
+        "x": -1710,
         "y": -200
       }
     }
@@ -1066,7 +1409,7 @@ outputs:
 - contextPath: IdentityIQ.Identity.emails
   description: Array of email objects.
 - contextPath: IdentityIQ.Identity.entitlements
-  description: Array of entitlements objects that the identity has.
+  description: Array of entitlement objects that the identity has.
 - contextPath: IdentityIQ.Identity.roles
   description: Array of role objects that the identity has.
 - contextPath: IdentityIQ.Identity.capabilities
@@ -1084,13 +1427,13 @@ outputs:
   description: The account's manager returned from IdentityIQ.
   type: unknown
 - contextPath: IdentityIQ.Identity.manager.userName
-  description: The IdentityIQ username (primary ID) of the identities manager.
+  description: The IdentityIQ username (primary ID) of the identity's manager.
 - contextPath: IdentityIQ.Identity.emails.type
   description: Type of the email being returned.
 - contextPath: IdentityIQ.Identity.emails.value
   description: The email address of the identity.
 - contextPath: IdentityIQ.Identity.emails.primary
-  description: Indicates if this email address is the identities primary email.
+  description: Indicates if this email address is the identity's primary email.
 - contextPath: PingOne.Account.ID
   description: PingOne account ID.
 - contextPath: PingOne.Account.Username
@@ -1221,7 +1564,32 @@ outputs:
 - contextPath: UserManagerDisplayName
   description: The display name of the user's manager.
   type: unknown
+- contextPath: MSGraphUser.ID
+  description: User's ID.
+- contextPath: MSGraphUser.DisplayName
+  description: User's display name.
+- contextPath: MSGraphUser.GivenName
+  description: User's given name.
+- contextPath: MSGraphUser.JobTitle
+  description: User's job title.
+- contextPath: MSGraphUser.Mail
+  description: User's mail address.
+- contextPath: MSGraphUser.Surname
+  description: User's surname.
+- contextPath: MSGraphUser.UserPrincipalName
+  description: User's principal name.
+- contextPath: MSGraphUserManager.Manager.ID
+  description: Manager's user ID.
+- contextPath: MSGraphUserManager.Manager.DisplayName
+  description: User's display name.
+- contextPath: MSGraphUserManager.Manager.GivenName
+  description: User's given name.
+- contextPath: MSGraphUserManager.Manager.Mail
+  description: User's mail address.
+- contextPath: MSGraphUserManager.Manager.Surname
+  description: User's surname.
+- contextPath: MSGraphUserManager.Manager.UserPrincipalName
+  description: User's principal name.
 tests:
 - Account Enrichment - Generic v2.1 - Test
 fromversion: 6.5.0
-system: true

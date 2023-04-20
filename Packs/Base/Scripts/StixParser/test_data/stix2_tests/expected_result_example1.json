@@ -1,0 +1,400 @@
+[
+    {
+        "value": "Fake BPP (Branistan Peoples Party)",
+        "indicator_type": "Threat Actor",
+        "score": 3,
+        "rawJSON": {
+            "type": "threat-actor",
+            "spec_version": "2.1",
+            "id": "threat-actor--56f3f0db-b5d5-431c-ae56-c18f02caf500",
+            "created": "2016-08-08T15:50:10.983Z",
+            "modified": "2016-08-08T15:50:10.983Z",
+            "name": "Fake BPP (Branistan Peoples Party)",
+            "threat_actor_types": [
+                "nation-state"
+            ],
+            "roles": [
+                "director"
+            ],
+            "goals": [
+                "Influence the election in Branistan"
+            ],
+            "sophistication": "strategic",
+            "resource_level": "government",
+            "primary_motivation": "ideology",
+            "secondary_motivations": [
+                "dominance"
+            ]
+        },
+        "customFields": {
+            "stixid": "threat-actor--56f3f0db-b5d5-431c-ae56-c18f02caf500",
+            "firstseenbysource": "2016-08-08T15:50:10.983Z",
+            "modified": "2016-08-08T15:50:10.983Z",
+            "description": "",
+            "aliases": [],
+            "threat_actor_types": [
+                "nation-state"
+            ],
+            "roles": [
+                "director"
+            ],
+            "goals": [
+                "Influence the election in Branistan"
+            ],
+            "sophistication": "strategic",
+            "resource_level": "government",
+            "primary_motivation": "ideology",
+            "secondary_motivations": [
+                "dominance"
+            ],
+            "tags": []
+        },
+        "relationships": [
+            {
+                "name": "uses",
+                "reverseName": "used-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "Fake BPP (Branistan Peoples Party)",
+                "entityAFamily": "Indicator",
+                "entityAType": "Threat Actor",
+                "entityB": "Content Spoofing",
+                "entityBFamily": "Indicator",
+                "entityBType": "STIX Attack Pattern",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T17:41:44.942Z",
+                    "firstseenbysource": "2020-02-29T17:41:44.942Z"
+                }
+            },
+            {
+                "name": "uses",
+                "reverseName": "used-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "Fake BPP (Branistan Peoples Party)",
+                "entityAFamily": "Indicator",
+                "entityAType": "Threat Actor",
+                "entityB": "HTTP Flood",
+                "entityBFamily": "Indicator",
+                "entityBType": "STIX Attack Pattern",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T17:41:44.942Z",
+                    "firstseenbysource": "2020-02-29T17:41:44.942Z"
+                }
+            }
+        ]
+    },
+    {
+        "value": "Content Spoofing",
+        "indicator_type": "STIX Attack Pattern",
+        "score": 2,
+        "rawJSON": {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--19da6e1c-71ab-4c2f-886d-d620d09d3b5a",
+            "created": "2016-08-08T15:50:10.983Z",
+            "modified": "2017-01-30T21:15:04.127Z",
+            "name": "Content Spoofing",
+            "external_references": [
+                {
+                    "source_name": "capec",
+                    "url": "http://example.com/data/definitions/148.html",
+                    "external_id": "CAPEC-148"
+                }
+            ]
+        },
+        "customFields": {
+            "stixid": "attack-pattern--19da6e1c-71ab-4c2f-886d-d620d09d3b5a",
+            "firstseenbysource": "2016-08-08T15:50:10.983Z",
+            "modified": "2017-01-30T21:15:04.127Z",
+            "operatingsystemrefs": null,
+            "publications": [
+                {
+                    "link": "http://example.com/data/definitions/148.html",
+                    "title": "",
+                    "source": "capec"
+                }
+            ],
+            "stixkillchainphases": [],
+            "stixdescription": ""
+        }
+    },
+    {
+        "value": "HTTP Flood",
+        "indicator_type": "STIX Attack Pattern",
+        "score": 2,
+        "rawJSON": {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--f6050ea6-a9a3-4524-93ed-c27858d6cb3c",
+            "created": "2016-08-08T15:50:10.983Z",
+            "modified": "2017-01-30T21:15:04.127Z",
+            "name": "HTTP Flood",
+            "external_references": [
+                {
+                    "source_name": "capec",
+                    "url": "http://example.com/data/definitions/488.html",
+                    "external_id": "CAPEC-488"
+                }
+            ]
+        },
+        "customFields": {
+            "stixid": "attack-pattern--f6050ea6-a9a3-4524-93ed-c27858d6cb3c",
+            "firstseenbysource": "2016-08-08T15:50:10.983Z",
+            "modified": "2017-01-30T21:15:04.127Z",
+            "operatingsystemrefs": null,
+            "publications": [
+                {
+                    "link": "http://example.com/data/definitions/488.html",
+                    "title": "",
+                    "source": "capec"
+                }
+            ],
+            "stixkillchainphases": [],
+            "stixdescription": ""
+        }
+    },
+    {
+        "value": "Operation Bran Flakes",
+        "indicator_type": "Campaign",
+        "score": 3,
+        "rawJSON": {
+            "type": "campaign",
+            "spec_version": "2.1",
+            "id": "campaign--e5268b6e-4931-42f1-b379-87f48eb41b1e",
+            "created": "2016-08-08T15:50:10.983Z",
+            "modified": "2016-08-08T15:50:10.983Z",
+            "name": "Operation Bran Flakes",
+            "description": "A concerted effort to insert false information into the BPP's web pages.",
+            "aliases": [
+                "OBF"
+            ],
+            "first_seen": "2016-01-08T12:50:40.123Z",
+            "objective": "Hack www.bpp.bn"
+        },
+        "customFields": {
+            "stixid": "campaign--e5268b6e-4931-42f1-b379-87f48eb41b1e",
+            "firstseenbysource": "2016-08-08T15:50:10.983Z",
+            "modified": "2016-08-08T15:50:10.983Z",
+            "description": "A concerted effort to insert false information into the BPP's web pages.",
+            "aliases": [
+                "OBF"
+            ],
+            "objective": "Hack www.bpp.bn"
+        },
+        "relationships": [
+            {
+                "name": "attributed-to",
+                "reverseName": "attributed-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "Operation Bran Flakes",
+                "entityAFamily": "Indicator",
+                "entityAType": "Campaign",
+                "entityB": "Fake BPP (Branistan Peoples Party)",
+                "entityBFamily": "Indicator",
+                "entityBType": "Threat Actor",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T17:41:44.938Z",
+                    "firstseenbysource": "2020-02-29T17:41:44.938Z"
+                }
+            },
+            {
+                "name": "attributed-to",
+                "reverseName": "attributed-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "Operation Bran Flakes",
+                "entityAFamily": "Indicator",
+                "entityAType": "Campaign",
+                "entityB": "APT BPP",
+                "entityBFamily": "Indicator",
+                "entityBType": "Intrusion Set",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T17:41:44.939Z",
+                    "firstseenbysource": "2020-02-29T17:41:44.939Z"
+                }
+            },
+            {
+                "name": "uses",
+                "reverseName": "used-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "Operation Bran Flakes",
+                "entityAFamily": "Indicator",
+                "entityAType": "Campaign",
+                "entityB": "Content Spoofing",
+                "entityBFamily": "Indicator",
+                "entityBType": "STIX Attack Pattern",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T17:41:44.940Z",
+                    "firstseenbysource": "2020-02-29T17:41:44.940Z"
+                }
+            }
+        ]
+    },
+    {
+        "value": "Operation Raisin Bran",
+        "indicator_type": "Campaign",
+        "score": 3,
+        "rawJSON": {
+            "type": "campaign",
+            "spec_version": "2.1",
+            "id": "campaign--1d8897a7-fdc2-4e59-afc9-becbe04df727",
+            "created": "2016-08-08T15:50:10.983Z",
+            "modified": "2016-08-08T15:50:10.983Z",
+            "name": "Operation Raisin Bran",
+            "description": "A DDOS campaign to flood BPP web servers.",
+            "aliases": [
+                "ORB"
+            ],
+            "first_seen": "2016-02-07T19:45:32.126Z",
+            "objective": "Flood www.bpp.bn"
+        },
+        "customFields": {
+            "stixid": "campaign--1d8897a7-fdc2-4e59-afc9-becbe04df727",
+            "firstseenbysource": "2016-08-08T15:50:10.983Z",
+            "modified": "2016-08-08T15:50:10.983Z",
+            "description": "A DDOS campaign to flood BPP web servers.",
+            "aliases": [
+                "ORB"
+            ],
+            "objective": "Flood www.bpp.bn"
+        },
+        "relationships": [
+            {
+                "name": "attributed-to",
+                "reverseName": "attributed-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "Operation Raisin Bran",
+                "entityAFamily": "Indicator",
+                "entityAType": "Campaign",
+                "entityB": "Fake BPP (Branistan Peoples Party)",
+                "entityBFamily": "Indicator",
+                "entityBType": "Threat Actor",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T17:41:44.938Z",
+                    "firstseenbysource": "2020-02-29T17:41:44.938Z"
+                }
+            },
+            {
+                "name": "attributed-to",
+                "reverseName": "attributed-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "Operation Raisin Bran",
+                "entityAFamily": "Indicator",
+                "entityAType": "Campaign",
+                "entityB": "APT BPP",
+                "entityBFamily": "Indicator",
+                "entityBType": "Intrusion Set",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T17:41:44.939Z",
+                    "firstseenbysource": "2020-02-29T17:41:44.939Z"
+                }
+            },
+            {
+                "name": "uses",
+                "reverseName": "used-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "Operation Raisin Bran",
+                "entityAFamily": "Indicator",
+                "entityAType": "Campaign",
+                "entityB": "HTTP Flood",
+                "entityBFamily": "Indicator",
+                "entityBType": "STIX Attack Pattern",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T17:41:44.941Z",
+                    "firstseenbysource": "2020-02-29T17:41:44.941Z"
+                }
+            }
+        ]
+    },
+    {
+        "value": "APT BPP",
+        "indicator_type": "Intrusion Set",
+        "score": 3,
+        "rawJSON": {
+            "type": "intrusion-set",
+            "spec_version": "2.1",
+            "id": "intrusion-set--ed69450a-f067-4b51-9ba2-c4616b9a6713",
+            "created": "2016-08-08T15:50:10.983Z",
+            "modified": "2016-08-08T15:50:10.983Z",
+            "name": "APT BPP",
+            "description": "An advanced persistent threat that seeks to disrupt Branistan's election with multiple attacks.",
+            "aliases": [
+                "Bran-teaser"
+            ],
+            "first_seen": "2016-01-08T12:50:40.123Z",
+            "goals": [
+                "Influence the Branistan election",
+                "Disrupt the BPP"
+            ],
+            "resource_level": "government",
+            "primary_motivation": "ideology",
+            "secondary_motivations": [
+                "dominance"
+            ]
+        },
+        "customFields": {
+            "stixid": "intrusion-set--ed69450a-f067-4b51-9ba2-c4616b9a6713",
+            "firstseenbysource": "2016-08-08T15:50:10.983Z",
+            "modified": "2016-08-08T15:50:10.983Z",
+            "description": "An advanced persistent threat that seeks to disrupt Branistan's election with multiple attacks.",
+            "aliases": [
+                "Bran-teaser"
+            ],
+            "goals": [
+                "Influence the Branistan election",
+                "Disrupt the BPP"
+            ],
+            "resource_level": "government",
+            "primary_motivation": "ideology",
+            "secondary_motivations": [
+                "dominance"
+            ],
+            "publications": []
+        },
+        "relationships": [
+            {
+                "name": "attributed-to",
+                "reverseName": "attributed-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "APT BPP",
+                "entityAFamily": "Indicator",
+                "entityAType": "Intrusion Set",
+                "entityB": "Fake BPP (Branistan Peoples Party)",
+                "entityBFamily": "Indicator",
+                "entityBType": "Threat Actor",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T17:41:44.939Z",
+                    "firstseenbysource": "2020-02-29T17:41:44.939Z"
+                }
+            },
+            {
+                "name": "uses",
+                "reverseName": "used-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "APT BPP",
+                "entityAFamily": "Indicator",
+                "entityAType": "Intrusion Set",
+                "entityB": "Content Spoofing",
+                "entityBFamily": "Indicator",
+                "entityBType": "STIX Attack Pattern",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T17:41:44.940Z",
+                    "firstseenbysource": "2020-02-29T17:41:44.940Z"
+                }
+            },
+            {
+                "name": "uses",
+                "reverseName": "used-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "APT BPP",
+                "entityAFamily": "Indicator",
+                "entityAType": "Intrusion Set",
+                "entityB": "HTTP Flood",
+                "entityBFamily": "Indicator",
+                "entityBType": "STIX Attack Pattern",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T17:41:44.940Z",
+                    "firstseenbysource": "2020-02-29T17:41:44.940Z"
+                }
+            }
+        ]
+    }
+]

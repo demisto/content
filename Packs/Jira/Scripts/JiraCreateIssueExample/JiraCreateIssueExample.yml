@@ -8,7 +8,9 @@ subtype: python3
 tags:
 - jira
 - example
-comment: This script is used to simplify the process of creating a new Issue in Jira. You can add fields that you want in the record as script arguments and or in the code and have a newly created Issue easily.
+comment: |
+  This script is used to simplify the process of creating a new Issue in Jira. 
+  You can specify custom fields using the `customFields` argument.
 enabled: true
 args:
 - name: summary
@@ -25,11 +27,12 @@ args:
 - name: description
   description: Issue description
 - name: labels
-  description: 'comma separated list of label '
+  description: 'comma separated list of labels'
+  isArray: true
 - name: priority
-  description: priorty name , like High/Medium
+  description: priority name, e.g. High/Medium.
 - name: dueDate
-  description: DueDate for the issue, in format of 2018-03-11
+  description: Due date for the issue, in format YYYY-MM-DD
 - name: assignee
   description: assignee name
 - name: reporter
@@ -38,6 +41,9 @@ args:
   description: Parent issue key if you create a sub-task
 - name: parentIssueId
   description: Parent issue ID if you create a sub-task
+- name: customFields
+  description: Comma-separated custom field keys and values to include in the created incident, e.g. `customfield_10101=foo,customfield_10102=bar`
+  isArray: true
 outputs:
 - contextPath: Ticket.Id
   description: Id of ticket
@@ -47,9 +53,8 @@ scripttarget: 0
 dependson:
   must:
   - jira-create-issue
-  - jira-delete-issue
 runonce: false
 tests:
 - No tests
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.9.42476

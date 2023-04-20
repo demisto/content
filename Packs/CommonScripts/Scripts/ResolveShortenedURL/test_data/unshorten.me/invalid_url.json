@@ -1,0 +1,8 @@
+{
+  "requested_url": "https://invalid.url",
+  "success": false,
+  "resolved_url": "",
+  "usage_count": 0,
+  "remaining_calls": 10,
+  "error": "Connection Error"
+}

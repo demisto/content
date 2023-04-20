@@ -1,0 +1,222 @@
+{
+    "args": {
+        "ip": "1.2.3.4"
+    },
+    "crowdsec_result": {
+        "ip_range_score": 1,
+        "ip": "1.2.3.4",
+        "ip_range": null,
+        "as_name": "N/A",
+        "as_num": 0,
+        "location": {
+            "country": "AU",
+            "city": null,
+            "latitude": -33.494,
+            "longitude": 143.2104
+        },
+        "reverse_dns": null,
+        "behaviors": [
+            {
+                "name": "ssh:bruteforce",
+                "label": "SSH Bruteforce",
+                "description": "IP has been reported for performing brute force on ssh services."
+            },
+            {
+                "name": "http:scan",
+                "label": "HTTP Scan",
+                "description": "IP has been reported for performing actions related to HTTP vulnerability scanning and discovery."
+            }
+        ],
+        "history": {
+            "first_seen": "2021-12-04T10:45:00+00:00",
+            "last_seen": "2022-10-18T15:45:00+00:00",
+            "full_age": 318,
+            "days_age": 318
+        },
+        "classifications": {
+            "false_positives": [],
+            "classifications": [
+                {
+                    "name": "proxy:vpn",
+                    "label": "VPN",
+                    "description": "IP exposes a VPN service or is being flagged as one."
+                }
+            ]
+        },
+        "attack_details": [
+            {
+                "name": "crowdsecurity/ssh-bf",
+                "label": "SSH Bruteforce",
+                "description": "Detect ssh brute force",
+                "references": []
+            },
+            {
+                "name": "crowdsecurity/ssh-slow-bf",
+                "label": "Slow SSH Bruteforce",
+                "description": "Detect slow ssh brute force",
+                "references": []
+            },
+            {
+                "name": "crowdsecurity/http-probing",
+                "label": "HTTP Scanner",
+                "description": "Detect site scanning/probing from a single ip",
+                "references": []
+            }
+        ],
+        "target_countries": {
+            "FR": 35,
+            "US": 19,
+            "IN": 19,
+            "DE": 7,
+            "GB": 4,
+            "SE": 4,
+            "AU": 2,
+            "HU": 2,
+            "CM": 2,
+            "IT": 2
+        },
+        "background_noise_score": 1,
+        "scores": {
+            "overall": {
+                "aggressiveness": 0,
+                "threat": 0,
+                "trust": 2,
+                "anomaly": 2,
+                "total": 1
+            },
+            "last_day": {
+                "aggressiveness": 0,
+                "threat": 0,
+                "trust": 0,
+                "anomaly": 2,
+                "total": 0
+            },
+            "last_week": {
+                "aggressiveness": 0,
+                "threat": 0,
+                "trust": 0,
+                "anomaly": 2,
+                "total": 0
+            },
+            "last_month": {
+                "aggressiveness": 0,
+                "threat": 0,
+                "trust": 1,
+                "anomaly": 2,
+                "total": 1
+            }
+        },
+        "references": []
+    },
+    "mock_response": {
+        "outputs": {
+            "ip_range_score": 1,
+            "ip": "1.2.3.4",
+            "ip_range": null,
+            "as_name": "N/A",
+            "as_num": 0,
+            "location": {
+                "country": "AU",
+                "city": null,
+                "latitude": -33.494,
+                "longitude": 143.2104
+            },
+            "reverse_dns": null,
+            "behaviors": [
+                {
+                    "name": "ssh:bruteforce",
+                    "label": "SSH Bruteforce",
+                    "description": "IP has been reported for performing brute force on ssh services."
+                },
+                {
+                    "name": "http:scan",
+                    "label": "HTTP Scan",
+                    "description": "IP has been reported for performing actions related to HTTP vulnerability scanning and discovery."
+                }
+            ],
+            "history": {
+                "first_seen": "2021-12-04T10:45:00+00:00",
+                "last_seen": "2022-10-18T15:45:00+00:00",
+                "full_age": 318,
+                "days_age": 318
+            },
+            "classifications": {
+                "false_positives": [],
+                "classifications": [
+                    {
+                        "name": "proxy:vpn",
+                        "label": "VPN",
+                        "description": "IP exposes a VPN service or is being flagged as one."
+                    }
+                ]
+            },
+            "attack_details": [
+                {
+                    "name": "crowdsecurity/ssh-bf",
+                    "label": "SSH Bruteforce",
+                    "description": "Detect ssh brute force",
+                    "references": []
+                },
+                {
+                    "name": "crowdsecurity/ssh-slow-bf",
+                    "label": "Slow SSH Bruteforce",
+                    "description": "Detect slow ssh brute force",
+                    "references": []
+                },
+                {
+                    "name": "crowdsecurity/http-probing",
+                    "label": "HTTP Scanner",
+                    "description": "Detect site scanning/probing from a single ip",
+                    "references": []
+                }
+            ],
+            "target_countries": {
+                "FR": 35,
+                "US": 19,
+                "IN": 19,
+                "DE": 7,
+                "GB": 4,
+                "SE": 4,
+                "AU": 2,
+                "HU": 2,
+                "CM": 2,
+                "IT": 2
+            },
+            "background_noise_score": 1,
+            "scores": {
+                "overall": {
+                    "aggressiveness": 0,
+                    "threat": 0,
+                    "trust": 2,
+                    "anomaly": 2,
+                    "total": 1
+                },
+                "last_day": {
+                    "aggressiveness": 0,
+                    "threat": 0,
+                    "trust": 0,
+                    "anomaly": 2,
+                    "total": 0
+                },
+                "last_week": {
+                    "aggressiveness": 0,
+                    "threat": 0,
+                    "trust": 0,
+                    "anomaly": 2,
+                    "total": 0
+                },
+                "last_month": {
+                    "aggressiveness": 0,
+                    "threat": 0,
+                    "trust": 1,
+                    "anomaly": 2,
+                    "total": 1
+                }
+            },
+            "references": []
+        },
+        "readable_output": "### IP 1.2.3.4 status: Good\n### CrowdSec IP Enrichment\n|IP|AS Name|AS Num|Behaviors|First Seen|Last Seen|Activity in days|Attacks Details|Confidence|CrowdSec Score|Background Noise Score|CrowdSec Console Link|CrowdSec Taxonomy|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1.2.3.4 | N/A | 0 | SSH Bruteforce<br>HTTP Scan<br> | 2021-12-04T10:45:00+00:00 | 2022-10-18T15:45:00+00:00 | 318 | SSH Bruteforce<br>Slow SSH Bruteforce<br>HTTP Scanner<br> | 2/5 | 1/5 | 1/10 | https://app.crowdsec.net/cti/1.2.3.4 | https://docs.crowdsec.net/docs/next/cti_api/taxonomy |\n",
+        "outputs_prefix": "CrowdSec.Info",
+        "outputs_key_field": "ip"
+    }
+}

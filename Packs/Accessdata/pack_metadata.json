@@ -1,8 +1,9 @@
 {
-    "name": "Accessdata",
-    "description": "Use the Accessdata integration to protect against and provide additional visibility into phishing and other malicious email attacks.",
+    "name": "Accessdata (Deprecated)",
+    "description": "Deprecated. Use Exterro/AccessData instead",
     "support": "partner",
-    "currentVersion": "1.0.13",
+    "hidden": true,
+    "currentVersion": "1.0.14",
     "author": "Accessdata",
     "url": "https://support.accessdata.com/hc/en-us",
     "email": "support@accessdata.com",

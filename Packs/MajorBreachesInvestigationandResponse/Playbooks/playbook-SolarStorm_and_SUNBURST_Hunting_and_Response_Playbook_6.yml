@@ -519,12 +519,12 @@ tasks:
     task:
       id: ff78093a-70f4-4b4b-85d0-295d38234445
       version: -1
-      name: Isolate Endpoint - Generic
+      name: Isolate Endpoint - Generic V2
       description: |-
-        This playbook isolates a given endpoint using the following integrations:
-        - Carbon Black Enterprise Response
-        - Palo Alto Networks Traps
-      playbookName: Isolate Endpoint - Generic
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
+
+      playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
@@ -532,8 +532,7 @@ tasks:
       '#none#':
       - "83"
     scriptarguments:
-      EndpointId: {}
-      Hostname:
+      Endpoint_hostname:
         complex:
           root: Endpoint
           accessor: Hostname
@@ -545,20 +544,22 @@ tasks:
                   simple: foundIncidents.CustomFields.xdralerts.host_name
                 iscontext: true
           - operator: uniq
-      IP:
+      Endpoint_id:
+        complex:
+          root: PaloAltoNetworksXDR.Endpoint
+          accessor: endpoint_id
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Endpoint.endpoint_id
+          - operator: uniq
+      Endpoint_ip:
         complex:
           root: PANWHunting
           accessor: DetectedInternalIPs
-      xdr_endpoint_id:
-        complex:
-          root: Endpoint.endpoint_id
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: Endpoint.endpoint_id
-                iscontext: true
-    separatecontext: false
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
@@ -3301,12 +3302,6 @@ view: |-
     }
   }
 inputs:
-- key: ThreatIDs
-  value:
-    simple: 86246,86237,34801,39934,58049,38399,55378,37582,36709,37781,38388,56269
-  required: false
-  description: Threat IDs to hunt through NGFW Threat Logs.
-  playbookInputQuery:
 - key: IsolateEndpointAutomatically
   value:
     simple: "False"

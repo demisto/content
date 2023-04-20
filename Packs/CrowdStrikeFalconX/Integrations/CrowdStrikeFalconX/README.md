@@ -1,10 +1,10 @@
-Use the CrowdStrike Falcon X integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
-This integration was integrated and tested with version 2 of CrowdStrike Falcon X
+Use the CrowdStrike Falcon Intelligence Sandbox integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
+This integration was integrated and tested with version 2 of CrowdStrike Falcon Intelligence Sandbox
 
-## Configure CrowdStrike Falcon X on Cortex XSOAR
+## Configure CrowdStrike Falcon Intelligence Sandbox on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CrowdStrike Falcon X.
+2. Search for CrowdStrike Falcon Intelligence Sandbox.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -144,7 +144,7 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 
 #### Human Readable Output
 
->### CrowdStrike Falcon X response:
+>### CrowdStrike Falcon Intelligence Sandbox response:
 >|file_name|sha256|
 >|---|---|
 >| test.pdf | c5fdd1fb2c53cd00aba5b01270f91fd5598f315bef99938ddeb92c23667ec2c9 |
@@ -279,6 +279,7 @@ Notice that the file identifiers, SHA and ID are not the same.
             "environment_id": 160,
             "sha256": "d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee",
             "state": "created",
+            "file_name": "test.pdf",
             "submitted_id": "20879a8064904ecfbb62c118a6a19411_5d620c1322444253ad2be284de3756fa"
         }
     }
@@ -287,10 +288,10 @@ Notice that the file identifiers, SHA and ID are not the same.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon X response:
->|created_timestamp|environment_id|sha256|state|submitted_id|
+>### CrowdStrike Falcon Intelligence Sandbox response:
+>|created_timestamp|environment_id|sha256|state|submitted_id|file_name|
 >|---|---|---|---|---|
->| 2022-03-09T08:58:33Z | 160 | d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee | created | 20879a8064904ecfbb62c118a6a19411_5d620c1322444253ad2be284de3756fa |
+>| 2022-03-09T08:58:33Z | 160 | d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee | created | 20879a8064904ecfbb62c118a6a19411_5d620c1322444253ad2be284de3756fa | test.pdf |
 
 
 ### cs-fx-get-full-report
@@ -1478,7 +1479,7 @@ Gets a full version of a sandbox report.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon X response:
+>### CrowdStrike Falcon Intelligence Sandbox response:
 >|sha256|environment_description|environment_id|created_timestamp|id|submission_type|threat_score|verdict|
 >|---|---|---|---|---|---|---|---|
 >| d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee | Windows 7 64 bit | 110 | 2022-02-13T14:20:21Z | 20879a8064904ecfbb62c118a6a19411_a71f2c6e06a94e8495615803c66d8730 | file | 100 | malicious |
@@ -1569,7 +1570,7 @@ Gets a short summary version of a sandbox report.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon X response:
+>### CrowdStrike Falcon Intelligence Sandbox response:
 >|created_timestamp|environment_description|environment_id|id|ioc_report_broad_csv_artifact_id|ioc_report_broad_json_artifact_id|ioc_report_broad_maec_artifact_id|ioc_report_broad_stix_artifact_id|ioc_report_strict_csv_artifact_id|ioc_report_strict_json_artifact_id|ioc_report_strict_maec_artifact_id|ioc_report_strict_stix_artifact_id|sha256|submission_type|submit_url|verdict|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2022-03-03T14:39:19Z | Windows 10 64 bit | 160 | 20879a8064904ecfbb62c118a6a19411_8cb7c75003264edfaf5a60c33d2846fc | 46915810cc20d82d879c81c2b35d20ab720f2dc287fcb3acc5f921f6bd408be6 | e8ac23ff7d0ce989cae5730bfd5df1ba39e16069e772a0496bd681d3b50137f9 | 029a36683578573726f2a39a7ff2ad22da97ff55e84a0a2ca73284283bbbc39a | 9e62387d0f8bb854a932c61ad0f418a8721033f46bfe879877bb0b4f0af2ad86 | 46915810cc20d82d879c81c2b35d20ab720f2dc287fcb3acc5f921f6bd408be6 | e8ac23ff7d0ce989cae5730bfd5df1ba39e16069e772a0496bd681d3b50137f9 | 029a36683578573726f2a39a7ff2ad22da97ff55e84a0a2ca73284283bbbc39a | 9e62387d0f8bb854a932c61ad0f418a8721033f46bfe879877bb0b4f0af2ad86 | 15fea7cc23194aea10dce58cff8fff050c81e1be0d16e4da542f4fedd5a421c3 | page_url | hxxps://www.google.com | no specific threat |
@@ -1633,7 +1634,7 @@ Checks the status of a sandbox analysis.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon X response:
+>### CrowdStrike Falcon Intelligence Sandbox response:
 >|created_timestamp|environment_id|id|sha256|state|
 >|---|---|---|---|---|
 >| 2020-05-26T21:24:41Z | 160 | 1c9fe398b2294301aa3080ede8d77356_8cfaaf951fff412090df3d27d4b4193d | 05cca3437abcb4057c157ed8b933b07fb198aa0fa0eb7f7c27e97029e9e0ad61 | success |
@@ -1678,7 +1679,7 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon X response:
+>### CrowdStrike Falcon Intelligence Sandbox response:
 >|in_progress|total|used|
 >|---|---|---|
 >| 3 | 500 | 11 |
@@ -1734,7 +1735,7 @@ Finds sandbox reports by providing an FQL filter and paging details.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon X response:
+>### CrowdStrike Falcon Intelligence Sandbox response:
 >|resources|
 >|---|
 >| 20879a8064904ecfbb62c118a6a19411_944bce16178742c58beccd0e6eb1a000 |
@@ -1791,7 +1792,7 @@ Finds submission IDs for uploaded files by providing an FQL filter and paging de
 
 #### Human Readable Output
 
->### CrowdStrike Falcon X response:
+>### CrowdStrike Falcon Intelligence Sandbox response:
 >|resources|
 >|---|
 >| 20879a8064904ecfbb62c118a6a19411_5d620c1322444253ad2be284de3756fa |
@@ -1876,7 +1877,7 @@ Gets reputation info for one or more files, by their sha256 hash.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon X response:
+>### CrowdStrike Falcon Intelligence Sandbox response:
 >|file_size|sha256|threat_score|verdict|
 >|---|---|---|---|
 >| 177195 | d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee | 100 | malicious |
@@ -1984,6 +1985,7 @@ Submits a URL or FTP for sandbox analysis.
 | csfalconx.resource.sandbox.signatures.description | String | The sndbox signatures description. | 
 | csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. | 
 | csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. | 
+| csfalconx.resource.url_name | String | Submitted URL. | 
 
 
 #### Command Example
@@ -1997,7 +1999,8 @@ Submits a URL or FTP for sandbox analysis.
             "created_timestamp": "2020-07-03T06:36:19Z",
             "environment_id": 160,
             "state": "created",
-            "submitted_id": "1c9fe398b2294301aa3080ede8d77356_472d590fdd4e49639e41f81928df2542"
+            "submitted_id": "1c9fe398b2294301aa3080ede8d77356_472d590fdd4e49639e41f81928df2542",
+            "url_name": "https://www.google.com"
         }
     }
 }
@@ -2005,10 +2008,10 @@ Submits a URL or FTP for sandbox analysis.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon X response:
->|created_timestamp|environment_id|state|submitted_id|
->|---|---|---|---|
->| 2020-07-03T06:36:19Z | 160 | created | 1c9fe398b2294301aa3080ede8d77356_472d590fdd4e49639e41f81928df2542 |
+>### CrowdStrike Falcon Intelligence Sandbox response:
+>|created_timestamp|environment_id|state|submitted_id|url_name|
+>|---|---|---|---|---|
+>| 2020-07-03T06:36:19Z | 160 | created | 1c9fe398b2294301aa3080ede8d77356_472d590fdd4e49639e41f81928df2542 | https://www.google.com |
 
 
 ### cs-fx-download-ioc
@@ -3889,6 +3892,6 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon X response:
+>### CrowdStrike Falcon Intelligence Sandbox response:
 >**No entries.**
 

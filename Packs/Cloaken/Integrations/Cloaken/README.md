@@ -108,3 +108,24 @@ Cloaken:{
 </tr>
 </tbody>
 </table>
+### cloaken-screenshot-url
+***
+Creates a screenshot of the specified URL.
+
+
+#### Base Command
+
+`cloaken-screenshot-url`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | The URL for which to take a screenshot. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CloakenScreenshot.Url | string | Url | 
+| CloakenScreenshot.Status | string | Status of the screenshot. | 

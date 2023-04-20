@@ -9,3 +9,6 @@ ignore=IN145
 
 [file:BoxV2_image.png]
 ignore=IM111
+
+[file:Box_image.png]
+ignore=IM111

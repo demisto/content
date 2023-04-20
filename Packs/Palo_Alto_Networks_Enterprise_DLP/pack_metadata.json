@@ -1,15 +1,17 @@
 {
-    "name": "Palo Alto Networks Enterprise DLP",
+    "name": "Enterprise DLP by Palo Alto Networks",
     "description": "Palo Alto Networks Enterprise DLP Integration",
     "created": "2020-11-04T18:13:35Z",
     "support": "xsoar",
     "author": "Palo Alto Networks Enterprise DLP",
     "url": "https://www.paloaltonetworks.com/enterprise-data-loss-prevention",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.2.5",
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

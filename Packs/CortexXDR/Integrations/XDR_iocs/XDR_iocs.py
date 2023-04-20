@@ -6,7 +6,7 @@ import secrets
 import string
 import tempfile
 from datetime import timezone
-from typing import Dict, Optional, List, Tuple, Union, Iterable
+from typing import Dict, Optional, List, Sequence, Tuple, Union, Iterable
 from dateparser import parse
 from urllib3 import disable_warnings
 
@@ -18,6 +18,15 @@ xdr_types_to_demisto: Dict = {
     "HASH": 'File',
     "IP": 'IP'
 }
+xdr_severity_to_demisto: dict[str, str] = {
+    'SEV_010_INFO': 'INFO',
+    'SEV_020_LOW': 'LOW',
+    'SEV_030_MEDIUM': 'MEDIUM',
+    'SEV_040_HIGH': 'HIGH',
+    'SEV_050_CRITICAL': 'CRITICAL',
+    'SEV_090_UNKNOWN': 'UNKNOWN',
+}
+
 xdr_reputation_to_demisto: Dict = {
     'GOOD': 1,
     'SUSPICIOUS': 2,
@@ -43,21 +52,26 @@ def batch_iocs(generator, batch_size=200):
 
 
 class Client:
-    severity: str = ''
+    # All values here are the defaults, which may be changed via params, on main()
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
+    override_severity: bool = True
+    severity: str = ''  # used when override_severity is True
+    xsoar_severity_field: str = 'sourceoriginalseverity'  # used when override_severity is False
+    xsoar_comments_field: str = 'comments'
+    comments_as_tags: bool = False
     tag = 'Cortex XDR'
     tlp_color = None
     error_codes: Dict[int, str] = {
         500: 'XDR internal server error.',
-        401: 'Unauthorized access. An issue occurred during authentication. This can indicate an '    # noqa: W504
-             + 'incorrect key, id, or other invalid authentication parameters.',
+        401: 'Unauthorized access. An issue occurred during authentication. '
+             'This can indicate an incorrect key, id, or other invalid authentication parameters.',
         402: 'Unauthorized access. User does not have the required license type to run this API.',
         403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.',
         404: 'XDR Not found: The provided URL may not be of an active XDR server.',
         413: 'Request entity too large. Please reach out to the XDR support team.'
     }
 
-    def __init__(self, params: Dict):
+    def __init__(self, params: dict):
         self._base_url: str = urljoin(params.get('url'), '/public_api/v1/indicators/')
         self._verify_cert: bool = not params.get('insecure', False)
         self._params = params
@@ -80,7 +94,9 @@ class Client:
 
         try:
             return res.json()
-        except json.decoder.JSONDecodeError as e:
+        # when installing simplejson the type of exception is requests.exceptions.JSONDecodeError when it is not
+        # possible to load json.
+        except (json.decoder.JSONDecodeError, requests.exceptions.JSONDecodeError) as e:
             raise DemistoException(f'Could not parse json out of {res.content.decode()}', exception=e, res=res)
 
     @property
@@ -90,8 +106,8 @@ class Client:
 
 
 def get_headers(params: Dict) -> Dict:
-    api_key: str = str(params.get('apikey'))
-    api_key_id: str = str(params.get('apikey_id'))
+    api_key: str = params.get('apikey_creds', {}).get('password', '') or str(params.get('apikey'))
+    api_key_id: str = params.get('apikey_id_creds', {}).get('password', '') or str(params.get('apikey_id'))
     nonce: str = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
     timestamp: str = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
     auth_key = "%s%s%s" % (api_key, nonce, timestamp)
@@ -156,7 +172,7 @@ def create_file_sync(file_path, batch_size: int = 200):
 
 
 def get_iocs_generator(size=200, query=None) -> Iterable:
-    query = query if query else Client.query
+    query = query or Client.query
     query = f'expirationStatus:active AND ({query})'
     try:
         for iocs in map(lambda x: x.get('iocs', []), IndicatorsSearcher(size=size, query=query)):
@@ -208,34 +224,69 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
+def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> list[str] | None:
+    if comment_field_name == 'comments':
+        if comments_as_tags:
+            raise DemistoException("When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)."
+                                   "Set a different value.")
+
+        # default behavior, take last comment's content value where type==IndicatorCommentRegular
+        last_comment_dict: dict = next(
+            filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', ()))), {}
+        )
+        if not last_comment_dict or not (comment := last_comment_dict.get('content')):
+            return None
+        return [comment]
+
+    else:  # custom comments field
+        if not (raw_comment := ioc.get('CustomFields', {}).get(comment_field_name)):
+            return None
+
+        if comments_as_tags:
+            return raw_comment.split(",")
+        else:
+            return [raw_comment]
+
+
 def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
     try:
+        demisto.debug(f'Raw outgoing IOC: {ioc}')
         xdr_ioc: Dict = {
             'indicator': ioc['value'],
-            'severity': Client.severity,
+            'severity': Client.severity,  # default, may be overwritten, see below
             'type': demisto_types_to_xdr(str(ioc['indicator_type'])),
             'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
             'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
         }
-        # get last 'IndicatorCommentRegular'
-        comment: Dict = next(filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', []))), {})
-        if comment:
-            xdr_ioc['comment'] = comment.get('content')
-        if ioc.get('aggregatedReliability'):
-            xdr_ioc['reliability'] = ioc['aggregatedReliability'][0]
-        vendors = demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {}))
-        if vendors:
+        if aggregated_reliability := ioc.get('aggregatedReliability'):
+            xdr_ioc['reliability'] = aggregated_reliability[0]
+        if vendors := demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {})):
             xdr_ioc['vendors'] = vendors
+        if (comment := _parse_demisto_comments(ioc=ioc, comment_field_name=Client.xsoar_comments_field,
+                                               comments_as_tags=Client.comments_as_tags)):
+            xdr_ioc['comment'] = comment
 
-        threat_type = ioc.get('CustomFields', {}).get('threattypes', {})
-        if threat_type:
+        custom_fields = ioc.get('CustomFields', {})
+
+        if threat_type := custom_fields.get('threattypes', {}):
             threat_type = threat_type[0] if isinstance(threat_type, list) else threat_type
             threat_type = threat_type.get('threatcategory')
             if threat_type:
                 xdr_ioc['class'] = threat_type
-        if ioc.get('CustomFields', {}).get('xdrstatus') == 'disabled':
+
+        if custom_fields.get('xdrstatus') == 'disabled':
             xdr_ioc['status'] = 'DISABLED'
+
+        if (not Client.override_severity) and (custom_severity := custom_fields.get(Client.xsoar_severity_field)):
+            # Override is True: use Client.severity
+            # Override is False: use the value from the xsoar_severity_field, or Client.severity as default
+            xdr_ioc['severity'] = custom_severity  # NOTE: these do NOT need translation to XDR's 0x0_xxxx_xxxx format
+
+        xdr_ioc['severity'] = validate_fix_severity_value(xdr_ioc['severity'], ioc['value'])
+
+        demisto.debug(f'Processed outgoing IOC: {xdr_ioc}')
         return xdr_ioc
+
     except KeyError as error:
         demisto.debug(f'unexpected IOC format in key: {str(error)}, {str(ioc)}')
         return {}
@@ -293,7 +344,7 @@ def get_indicators(indicators: str) -> List:
     if indicators:
         iocs: list = []
         not_found = []
-        for indicator in indicators.split(','):
+        for indicator in argToList(indicators):
             search_indicators = IndicatorsSearcher()
             data = search_indicators.search_indicators_by_version(value=indicator).get('iocs')
             if data:
@@ -328,7 +379,7 @@ def iocs_command(client: Client):
     indicators = demisto.args().get('indicator', '')
     if command == 'enable':
         path, iocs = prepare_enable_iocs(indicators)
-    else:   # command == 'disable'
+    else:  # command == 'disable'
         path, iocs = prepare_disable_iocs(indicators)
     requests_kwargs: Dict = get_requests_kwargs(_json=iocs)
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
@@ -353,24 +404,61 @@ def xdr_expiration_to_demisto(expiration) -> Union[str, None]:
     return None
 
 
+def _parse_xdr_comments(raw_comment: str, comments_as_tags: bool) -> list[str]:
+    if not raw_comment:
+        return []
+
+    if comments_as_tags:
+        return raw_comment.split(',')
+
+    return [raw_comment]
+
+
+def dedupe_keep_order(values: Iterable[str]) -> tuple[str, ...]:
+    return tuple({k: None for k in values}.keys())
+
+
+def list_of_single_to_str(values: Sequence[str]) -> list[str] | str:
+    if len(values) == 1:
+        return values[0]
+    return list(values)
+
+
 def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
+    demisto.debug(f'Raw incoming IOC: {ioc}')
     indicator = ioc.get('RULE_INDICATOR', '')
     xdr_server_score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
     score = get_indicator_xdr_score(indicator, xdr_server_score)
+    severity = Client.severity if Client.override_severity else xdr_severity_to_demisto[ioc['RULE_SEVERITY']]
+
+    comments = _parse_xdr_comments(raw_comment=ioc.get('RULE_COMMENT', ''),
+                                   comments_as_tags=Client.comments_as_tags)
+
+    if Client.xsoar_comments_field == 'tags':
+        tag_comment_fields = {"tags": list_of_single_to_str(dedupe_keep_order(filter(None, comments + [Client.tag])))}
+    else:
+        tag_comment_fields = {
+            "tags": Client.tag,
+            Client.xsoar_comments_field: list_of_single_to_str(comments)
+        }
+
+    tag_comment_fields = {k: v for k, v in tag_comment_fields.items() if v}  # ommits falsey values
+
     entry: Dict = {
         "value": indicator,
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
         "score": score,
         "fields": {
-            "tags": Client.tag,
             "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
             "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
-        },
+            Client.xsoar_severity_field: severity,
+        } | tag_comment_fields,
         "rawJSON": ioc
     }
     if Client.tlp_color:
         entry['fields']['trafficlightprotocol'] = Client.tlp_color
 
+    demisto.debug(f'Processed incoming entry: {entry}')
     return entry
 
 
@@ -380,11 +468,15 @@ def get_changes(client: Client):
         raise DemistoException('XDR is not synced.')
     path, requests_kwargs = prepare_get_changes(from_time['ts'])
     requests_kwargs: Dict = get_requests_kwargs(_json=requests_kwargs)
-    iocs: List = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
-    if iocs:
+    demisto.debug(f'creating http request to {path} with {str(requests_kwargs)}')
+    if iocs := client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', []):
         from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
+        demisto.debug(f'setting integration context with {from_time=}')
         set_integration_context(from_time)
-        demisto.createIndicators(list(map(xdr_ioc_to_demisto, iocs)))
+        demisto_indicators = list(map(xdr_ioc_to_demisto, iocs))
+        for indicator in demisto_indicators:
+            demisto.debug(f'indicator: {indicator}')
+        demisto.createIndicators(demisto_indicators)
 
 
 def module_test(client: Client):
@@ -464,7 +556,7 @@ def set_sync_time(time: str):
     set_integration_context({'ts': int(date_time_obj.timestamp() * 1000),
                              'time': date_time_obj.strftime(DEMISTO_TIME_FORMAT),
                              'iocs_to_keep_time': create_iocs_to_keep_time()})
-    return_results(f'set sync time to {time} seccedded.')
+    return_results(f'set sync time to {time} succeeded.')
 
 
 def get_sync_file():
@@ -477,15 +569,53 @@ def get_sync_file():
         os.remove(temp_file_path)
 
 
-def main():   # pragma: no cover
-    # """
-    # Executes an integration command
-    # """
+def to_cli_name(field_name: str):
+    return field_name.lower().replace(' ', '')
+
+
+def validate_fix_severity_value(severity: str, indicator_value: Optional[str] = None) -> str:
+    """raises error if the value is invalid, returns the value (fixes informational->info)
+
+    Args:
+        severity (str): the severity value, must be of INFO,LOW,MEDIUM,HIGH,CRITICAL,UNKNOWN
+        indicator_value (Optional[str]): displayed in case of error
+
+    Raises:
+        DemistoException: when the value isn't allowed (nor can be fixed automatically)
+
+    Returns:
+        _type_: str, validated severity value
+    """
+    allowed_values = xdr_severity_to_demisto.values()
+    severity_upper = severity.upper()
+
+    if severity_upper == "INFORMATIONAL":
+        severity_upper = "INFO"
+
+    if severity_upper not in allowed_values:
+        prefix = f'indicator {indicator_value}: ' if indicator_value else ''
+        raise DemistoException(f"{prefix}the severity value must be one of {', '.join(allowed_values)} (got {severity})")
+
+    return severity_upper
+
+
+def main():  # pragma: no cover
     params = demisto.params()
-    Client.severity = params.get('severity', '').upper()
-    Client.query = params.get('query', Client.query)
-    Client.tag = params.get('feedTags', params.get('tag', Client.tag))
+    # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
+    Client.severity = params.get('severity', '')
+    Client.override_severity = argToBoolean(params.get('override_severity', True))
     Client.tlp_color = params.get('tlp_color')
+    Client.comments_as_tags = argToBoolean(params.get('comments_as_tags', False))
+
+    if query := params.get('query'):
+        Client.query = query
+    if tag := (params.get('feedTags') or params.get('tag')):
+        Client.tag = tag
+    if xsoar_severity_field := params.get('xsoar_severity_field'):
+        Client.xsoar_severity_field = to_cli_name(xsoar_severity_field)
+    if xsoar_comment_field := params.get('xsoar_comments_field'):
+        Client.xsoar_comments_field = xsoar_comment_field
+
     client = Client(params)
     commands = {
         'test-module': module_test,

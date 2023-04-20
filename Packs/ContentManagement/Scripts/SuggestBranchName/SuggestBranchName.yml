@@ -2,6 +2,14 @@ args:
 - description: The name of the pack.
   name: pack
   required: true
+- auto: PREDEFINED
+  description: Which command to use.
+  name: use_command
+  required: false
+  predefined:
+  - gitlab-branch-list
+  - GitHub-get-branch
+  - bitbucket-branch-get
 comment: |
   The script gets the pack name as input and suggests an available branch name, for example:
   pack name is "MyPack" the branch name will be "MyPack".
@@ -12,7 +20,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: demisto/python3:3.10.10.48392
 enabled: true
 name: SuggestBranchName
 outputs:

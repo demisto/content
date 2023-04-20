@@ -1,0 +1,438 @@
+{
+   "response":{
+      "@status":"success",
+      "@code":"19",
+      "result":{
+         "@total-count":"1",
+         "@count":"1",
+         "pbf":{
+            "@admin":"admin",
+            "@dirtyId":"802",
+            "@time":"2022/09/10 03:10:17",
+            "rules":{
+               "@admin":"admin",
+               "@dirtyId":"802",
+               "@time":"2022/09/10 03:10:17",
+               "entry":[
+                  {
+                     "@name":"test",
+                     "@uuid":"d0b28bfe-c999-4bb1-8404-3a0032fdc947",
+                     "@admin":"admin",
+                     "@dirtyId":"802",
+                     "@time":"2022/09/10 03:10:17",
+                     "action":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:10:17",
+                        "forward":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:10:17",
+                           "nexthop":{
+                              "@admin":"admin",
+                              "@dirtyId":"802",
+                              "@time":"2022/09/10 03:10:17",
+                              "ip-address":{
+                                 "@admin":"admin",
+                                 "@dirtyId":"802",
+                                 "@time":"2022/09/10 03:10:17",
+                                 "#text":"2.2.2.2"
+                              }
+                           },
+                           "monitor":{
+                              "@admin":"admin",
+                              "@dirtyId":"802",
+                              "@time":"2022/09/10 03:10:17",
+                              "profile":{
+                                 "@admin":"admin",
+                                 "@dirtyId":"802",
+                                 "@time":"2022/09/10 03:10:17",
+                                 "#text":"profile"
+                              },
+                              "disable-if-unreachable":{
+                                 "@admin":"admin",
+                                 "@dirtyId":"802",
+                                 "@time":"2022/09/10 03:10:17",
+                                 "#text":"no"
+                              },
+                              "ip-address":{
+                                 "@admin":"admin",
+                                 "@dirtyId":"802",
+                                 "@time":"2022/09/10 03:10:17",
+                                 "#text":"1.1.1.1"
+                              }
+                           },
+                           "egress-interface":{
+                              "@admin":"admin",
+                              "@dirtyId":"802",
+                              "@time":"2022/09/10 03:10:17",
+                              "#text":"a2"
+                           }
+                        }
+                     },
+                     "from":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:10:17",
+                        "zone":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:10:17",
+                           "member":{
+                              "@admin":"admin",
+                              "@dirtyId":"802",
+                              "@time":"2022/09/10 03:10:17",
+                              "#text":"1.1.1.1"
+                           }
+                        }
+                     },
+                     "enforce-symmetric-return":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:10:17",
+                        "nexthop-address-list":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:10:17",
+                           "entry":{
+                              "@name":"1.1.1.1",
+                              "@admin":"admin",
+                              "@dirtyId":"802",
+                              "@time":"2022/09/10 03:10:17"
+                           }
+                        },
+                        "enabled":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:10:17",
+                           "#text":"yes"
+                        }
+                     },
+                     "target":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:10:17",
+                        "negate":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:10:17",
+                           "#text":"no"
+                        }
+                     },
+                     "source":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:10:17",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:10:17",
+                           "#text":"1.1.1.1"
+                        }
+                     },
+                     "destination":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:10:17",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:10:17",
+                           "#text":"1.1.1.1"
+                        }
+                     },
+                     "source-user":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:10:17",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:10:17",
+                           "#text":"pre-logon"
+                        }
+                     },
+                     "application":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:10:17",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:10:17",
+                           "#text":"3pc"
+                        }
+                     },
+                     "service":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:10:17",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:10:17",
+                           "#text":"application-default"
+                        }
+                     },
+                     "description":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:10:17",
+                        "#text":"this is a test description"
+                     },
+                     "tag":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:10:17",
+                        "member":[
+                           {
+                              "@admin":"admin",
+                              "@dirtyId":"802",
+                              "@time":"2022/09/10 03:10:17",
+                              "#text":"test tag"
+                           },
+                           {
+                              "@admin":"admin",
+                              "@dirtyId":"802",
+                              "@time":"2022/09/10 03:10:17",
+                              "#text":"dag_test_tag"
+                           }
+                        ]
+                     }
+                  },
+                  {
+                     "@name":"test2",
+                     "@admin":"admin",
+                     "@dirtyId":"802",
+                     "@time":"2022/09/10 03:03:37",
+                     "@uuid":"ccfb45cf-3034-4061-924c-5f423007565e",
+                     "action":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:37",
+                        "no-pbf":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:37"
+                        }
+                     },
+                     "from":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:37",
+                        "zone":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:37",
+                           "member":[
+                              {
+                                 "@admin":"admin",
+                                 "@dirtyId":"802",
+                                 "@time":"2022/09/10 03:03:37",
+                                 "#text":"1.1.1.1"
+                              },
+                              {
+                                 "@admin":"admin",
+                                 "@dirtyId":"802",
+                                 "@time":"2022/09/10 03:03:37",
+                                 "#text":"2.2.2.2"
+                              }
+                           ]
+                        }
+                     },
+                     "enforce-symmetric-return":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:37",
+                        "enabled":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:37",
+                           "#text":"no"
+                        }
+                     },
+                     "target":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:37",
+                        "negate":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:37",
+                           "#text":"no"
+                        }
+                     },
+                     "source":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:37",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:37",
+                           "#text":"any"
+                        }
+                     },
+                     "destination":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:37",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:37",
+                           "#text":"any"
+                        }
+                     },
+                     "source-user":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:37",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:37",
+                           "#text":"any"
+                        }
+                     },
+                     "application":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:37",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:37",
+                           "#text":"any"
+                        }
+                     },
+                     "service":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:37",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:37",
+                           "#text":"any"
+                        }
+                     },
+                     "disabled": "yes"
+                  },
+                  {
+                     "@name":"test3",
+                     "@admin":"admin",
+                     "@dirtyId":"802",
+                     "@time":"2022/09/10 03:03:57",
+                     "@uuid":"d3659b9c-9d38-4825-81e5-0036b9e322cc",
+                     "action":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:57",
+                        "discard":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:57"
+                        }
+                     },
+                     "from":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:57",
+                        "interface":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:57",
+                           "member":{
+                              "@admin":"admin",
+                              "@dirtyId":"802",
+                              "@time":"2022/09/10 03:03:57",
+                              "#text":"a2"
+                           }
+                        }
+                     },
+                     "enforce-symmetric-return":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:57",
+                        "enabled":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:57",
+                           "#text":"no"
+                        }
+                     },
+                     "target":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:57",
+                        "negate":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:57",
+                           "#text":"no"
+                        }
+                     },
+                     "source":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:57",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:57",
+                           "#text":"any"
+                        }
+                     },
+                     "destination":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:57",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:57",
+                           "#text":"any"
+                        }
+                     },
+                     "source-user":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:57",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:57",
+                           "#text":"any"
+                        }
+                     },
+                     "application":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:57",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:57",
+                           "#text":"any"
+                        }
+                     },
+                     "disabled": "no",
+                     "service":{
+                        "@admin":"admin",
+                        "@dirtyId":"802",
+                        "@time":"2022/09/10 03:03:57",
+                        "member":{
+                           "@admin":"admin",
+                           "@dirtyId":"802",
+                           "@time":"2022/09/10 03:03:57",
+                           "#text":"any"
+                        }
+                     }
+                  }
+               ]
+            }
+         }
+      }
+   }
+}

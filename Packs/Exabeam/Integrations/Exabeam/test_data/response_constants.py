@@ -233,3 +233,14 @@ DELETE_RECORD_RESPONSE = {'sessionId': '56a5b19a-4193-4616-9978-0bbabb1e2d60',
                               'record': {'key': '', 'id': 'test_key'}
                           }],
                           'metadata': {'createdSize': 0, 'updatedSize': 0, 'removedSize': 1, 'duplicates': []}}
+
+
+RESPONSE_INCIDENT_LIST = {'totalCount': 341, 'offset': 0, 'count': 1, 'maxCount': 10000,
+                          'incidents': [{'incidentId': 'SOC-19', 'name': 'phil: Notable AA Session',
+                                         'fields': {'updatedAt': 1608020359407, 'priority': 'medium',
+                                                    'source': 'Exabeam AA', 'queue': '1', 'startedDate': 1607999470130,
+                                                    'incidentType': ['generic', 'ueba'], 'status': 'new',
+                                                    'createdAt': 1608020359194, 'createdBy': 'admin',
+                                                    'owner': 'unassigned', 'vendor': 'Exabeam', 'updatedBy': 'admin',
+                                                    'restrictTo': None, 'sourceId': 'phil-20201215023110'}}]}
+

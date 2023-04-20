@@ -1,0 +1,210 @@
+{
+    "addresses": [
+        {
+            "ip": "192.0.2.0"
+        }
+    ],
+    "assessedForPolicies": false,
+    "assessedForVulnerabilities": true,
+    "history": [
+        {
+            "date": "2020-10-01T22:40:41.396Z",
+            "scanId": 650,
+            "type": "SCAN",
+            "version": 1
+        },
+        {
+            "date": "2021-06-29T07:06:35.829Z",
+            "scanId": 763,
+            "type": "SCAN",
+            "version": 2
+        }
+    ],
+    "hostName": "test-hostname.com",
+    "hostNames": [
+        {
+            "name": "test.com",
+            "source": "dns"
+        }
+    ],
+    "id": 13,
+    "ip": "192.0.2.0",
+    "os": "Linux 2.6.18",
+    "osFingerprint": {
+        "cpe": {
+            "part": "o",
+            "product": "linux_kernel",
+            "v2.2": "cpe:/o:linux:linux_kernel:2.6.18",
+            "v2.3": "cpe:2.3:o:linux:linux_kernel:2.6.18:*:*:*:*:*:*:*",
+            "vendor": "linux",
+            "version": "2.6.18"
+        },
+        "description": "Linux 2.6.18",
+        "family": "Linux",
+        "id": 19,
+        "product": "Linux",
+        "systemName": "Linux",
+        "type": "General",
+        "vendor": "Linux",
+        "version": "2.6.18"
+    },
+    "rawRiskScore": 1321.88427734375,
+    "riskScore": 1321.88427734375,
+    "services": [
+        {
+            "configurations": [
+                {
+                    "name": "http.banner",
+                    "value": "nginx"
+                },
+                {
+                    "name": "http.banner.server",
+                    "value": "nginx"
+                }
+            ],
+            "family": "nginx",
+            "name": "HTTP",
+            "port": 80,
+            "product": "nginx",
+            "protocol": "tcp",
+            "vendor": "nginx"
+        },
+        {
+            "configurations": [
+                {
+                    "name": "http.banner",
+                    "value": "nginx"
+                },
+                {
+                    "name": "http.banner.server",
+                    "value": "nginx"
+                },
+                {
+                    "name": "ssl",
+                    "value": "true"
+                },
+                {
+                    "name": "ssl.cert.issuer.dn",
+                    "value": "CN=RapidSSL RSA CA 2018, OU=www.digicert.com, O=DigiCert Inc, C=US"
+                },
+                {
+                    "name": "ssl.cert.key.alg.name",
+                    "value": "RSA"
+                },
+                {
+                    "name": "ssl.cert.key.rsa.modulusBits",
+                    "value": "2048"
+                },
+                {
+                    "name": "ssl.cert.not.valid.after",
+                    "value": "Sun, 29 Aug 2021 15:00:00 IDT"
+                },
+                {
+                    "name": "ssl.cert.not.valid.before",
+                    "value": "Mon, 01 Jul 2019 03:00:00 IDT"
+                },
+                {
+                    "name": "ssl.cert.selfsigned",
+                    "value": "false"
+                },
+                {
+                    "name": "ssl.cert.serial.number",
+                    "value": "6851373033688357139444286552416378126"
+                },
+                {
+                    "name": "ssl.cert.sha1.fingerprint",
+                    "value": "c6a00220562bb921d359e1cb2f74e579da6eddd0"
+                },
+                {
+                    "name": "ssl.cert.sig.alg.name",
+                    "value": "SHA256withRSA"
+                },
+                {
+                    "name": "ssl.cert.subject.alt.name-1",
+                    "value": "*.wpengine.com"
+                },
+                {
+                    "name": "ssl.cert.subject.alt.name-2",
+                    "value": "wpengine.com"
+                },
+                {
+                    "name": "ssl.cert.subject.alt.name-count",
+                    "value": "2"
+                },
+                {
+                    "name": "ssl.cert.subject.dn",
+                    "value": "CN=*.wpengine.com"
+                },
+                {
+                    "name": "ssl.cert.validchain",
+                    "value": "true"
+                },
+                {
+                    "name": "ssl.cert.version",
+                    "value": "3"
+                },
+                {
+                    "name": "ssl.protocols",
+                    "value": "tlsv1_2"
+                },
+                {
+                    "name": "sslv2",
+                    "value": "false"
+                },
+                {
+                    "name": "sslv3",
+                    "value": "false"
+                },
+                {
+                    "name": "tlsv1_0",
+                    "value": "false"
+                },
+                {
+                    "name": "tlsv1_1",
+                    "value": "false"
+                },
+                {
+                    "name": "tlsv1_2",
+                    "value": "true"
+                },
+                {
+                    "name": "tlsv1_2.ciphers",
+                    "value": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_GCM_SHA256"
+                },
+                {
+                    "name": "tlsv1_2.extensions",
+                    "value": "RENEGOTIATION_INFO,EXTENDED_MASTER_SECRET,EC_POINT_FORMATS,ENCRYPT_THEN_MAC"
+                }
+            ],
+            "family": "nginx",
+            "name": "HTTPS",
+            "port": 443,
+            "product": "nginx",
+            "protocol": "tcp",
+            "vendor": "nginx"
+        },
+        {
+            "configurations": [
+                {
+                    "name": "ssh.banner",
+                    "value": "SSH-2.0-mod_sftp"
+                },
+                {
+                    "name": "ssh.protocol.version",
+                    "value": "2.0"
+                }
+            ],
+            "name": "SSH",
+            "port": 2222,
+            "protocol": "tcp"
+        }
+    ],
+    "vulnerabilities": {
+        "critical": 0,
+        "exploits": 0,
+        "malwareKits": 0,
+        "moderate": 1,
+        "severe": 1,
+        "total": 2
+    }
+}

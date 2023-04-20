@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: mysql_enterprise_modeling_rule
+name: MySQL Enterprise Modeling Rules
+rules: ''
+schema: ''
+tags: MySQL Enterprise

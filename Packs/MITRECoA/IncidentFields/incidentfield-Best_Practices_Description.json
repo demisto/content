@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "MITRE ATT\u0026CK CoA"
+    ],
+    "caseInsensitive": true,
+    "cliName": "bestpracticesdescription",
+    "closeForm": false,
+    "content": true,
+    "description": "This field will be automatically populated by the \"MITRE ATT\u0026CK - Courses of Action\" playbook with a description of the \"Best Practices\" layout tab. ",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_bestpracticesdescription",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Best Practices Description",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

@@ -1,0 +1,78 @@
+{
+    "data": {
+      "messages": {
+        "sdrAge": "30 days (or greater)",
+        "attachments": [
+          "test.jpg"
+        ],
+        "hostName": "(Name unresolved,  SN:1231321-1231321)",
+        "direction": "incoming",
+        "isCompleteData": false,
+        "messageStatus": "Quarantined by Multiple Engines",
+        "mailPolicy": [
+          "DEFAULT"
+        ],
+        "senderGroup": "ACCEPTLIST",
+        "subject": "test",
+        "showSummaryTimeBox": true,
+        "sdrCategory": "N/A",
+        "mid": [
+          765,
+          766,
+          767
+        ],
+        "sendingHostSummary": {
+          "reverseDnsHostname": "test.test.com (verified)",
+          "ipAddress": "1.1.1.1",
+          "sbrsScore": "2.7"
+        },
+        "ampTgCategories": [
+          
+        ],
+        "smtpAuthId": "",
+        "midHeader": "<test@test.com>",
+        "timestamp": "20 Sep 2022 13:30:51 (GMT +00:00)",
+        "showDLP": false,
+        "messageSize": "439.25 (KB)",
+        "sdrThreatLevels": "3",
+        "sdrReputation": "Neutral",
+        "showURL": true,
+        "recipient": [
+          "test@test.com"
+        ],
+        "sender": "test@test.com",
+        "showAMP": true,
+        "summary": [
+          {
+            "timestamp": "20 Sep 2022 13:30:50 (GMT +00:00)",
+            "description": "Incoming connection (ICID 23092) has sender_group: ACCEPTLIST, sender_ip: 1.1.1.1 and sbrs: 2.7",
+            "lastEvent": false
+          },
+          {
+            "timestamp": "20 Sep 2022 13:30:50 (GMT +00:00)",
+            "description": "Protocol SMTP interface Data 1  (IP 1.1.1.1) on incoming connection (ICID 23092) from sender IP 1.1.1.1. Reverse DNS  test.test.com verified yes.",
+            "lastEvent": false
+          },
+          {
+            "timestamp": "20 Sep 2022 13:30:50 (GMT +00:00)",
+            "description": "(ICID 23092) ACCEPT sender group ACCEPTLIST match sbrs[0.0:10.0] SBRS 2.7 country United States",
+            "lastEvent": false
+          },
+          {
+            "timestamp": "20 Sep 2022 13:30:50 (GMT +00:00)",
+            "description": "Incoming connection (ICID 23092) successfully accepted TLS protocol TLSv1.2 cipher 123123-123132-123-132132.",
+            "lastEvent": false
+          },
+          {
+            "timestamp": "20 Sep 2022 13:30:54 (GMT +00:00)",
+            "description": "Message 767 to test@test.com received remote SMTP response 'ok:  Message 89 accepted'.",
+            "lastEvent": true
+          }
+        ],
+        "allIcid": [
+          23092
+        ],
+        "headerFrom": "test@test.com"
+      }
+    }
+  }

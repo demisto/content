@@ -6,7 +6,6 @@
     "recommendations": [
         "cortexxsoarext.xsoar",
         "ms-python.python",
-        "ms-vscode.PowerShell",
         "ms-toolsai.jupyter",
         "timonwong.shellcheck",
         "GitHub.vscode-pull-request-github",
@@ -24,7 +23,8 @@
         "mikestead.dotenv",
         "KevinRose.vsc-python-indent",
         "rangav.vscode-thunder-client",
-        "ms-python.black-formatter"
+        "ms-python.black-formatter",
+        "LittleFoxTeam.vscode-python-test-adapter"
     ],
     // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
     "unwantedRecommendations": [

@@ -8,29 +8,34 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   type: 9
   required: true
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - defaultvalue: '50'
   display: Max incidents to fetch
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
-    months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - defaultvalue: 'concise'
   display: Info level for fetched alerts
   name: info_level
@@ -40,14 +45,19 @@ configuration:
   - 'extended'
   required: false
   type: 15
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: "FireEye Central Management (CM Series) is the FireEye threat intelligence hub. It services the FireEye ecosystem, ensuring that FireEye products share the latest intelligence and correlate across attack vectors to detect and prevent cyber attacks"
 display: FireEye Central Management
 name: FireEye Central Management
@@ -61,9 +71,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "The time interval to search. This filter is used with either the start_time or end_time filter.
-      If duration, start time, and end time are not specified, the system defaults to duration=12_hours, end_time=current_time.
-      If only the duration is specified, the end_time defaults to the current_time."
+      description: "The time interval to search. This filter is used with either the start_time or end_time filter. If duration, start time, and end time are not specified, the system defaults to duration=12_hours, end_time=current_time. If only the duration is specified, the end_time defaults to the current_time."
       auto: PREDEFINED
       predefined:
       - '1_hour'
@@ -119,9 +127,9 @@ script:
       description: 'The level of information to be returned. Possible values: "concise", "normal", and "extended".'
       auto: PREDEFINED
       predefined:
-        - 'concise'
-        - 'normal'
-        - 'extended'
+      - 'concise'
+      - 'normal'
+      - 'extended'
       isArray: false
       name: info_level
       required: false
@@ -135,14 +143,14 @@ script:
     - default: false
       description: 'The type of the malware object. Possible values: "domain_match", "malware_callback", "malware_object", "web_infection", "infection_match", "riskware-infection", "riskware-callback", "riskware-object".'
       predefined:
-        - 'domain_match'
-        - 'malware_callback'
-        - 'malware_object'
-        - 'web_infection'
-        - 'infection_match'
-        - 'riskware-infection'
-        - 'riskware-callback'
-        - 'riskware-object'
+      - 'domain_match'
+      - 'malware_callback'
+      - 'malware_object'
+      - 'web_infection'
+      - 'infection_match'
+      - 'riskware-infection'
+      - 'riskware-callback'
+      - 'riskware-object'
       isArray: false
       name: malware_type
       required: false
@@ -173,7 +181,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of alerts to return. 
+      description: Maximum number of alerts to return.
       isArray: false
       name: limit
       required: false
@@ -240,7 +248,7 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Timeout (in seconds) to retrieve the alert details. 
+      description: Timeout (in seconds) to retrieve the alert details.
       isArray: false
       name: timeout
     deprecated: false
@@ -393,8 +401,8 @@ script:
       defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-        - 'false'
-        - 'true'
+      - 'false'
+      - 'true'
       description: 'Specifies whether to include all IPS events or MVX-correlated events only. Possible values: "true" and "false".'
       isArray: false
       name: mvx_correlated_only
@@ -402,7 +410,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of events to return. 
+      description: Maximum number of events to return.
       isArray: false
       name: limit
       required: false
@@ -512,7 +520,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Number of emails to return. 
+      description: Number of emails to return.
       isArray: false
       name: limit
       required: false
@@ -665,7 +673,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: The maximum number of items covered by each report. This option is required only for IPS TopN reports. 
+      description: The maximum number of items covered by each report. This option is required only for IPS TopN reports.
       isArray: false
       name: limit
       required: false
@@ -676,7 +684,7 @@ script:
       - 'A'
       - 'B'
       - 'AB'
-      description: The internet interface to one of the values. This option is required only for IPS reports. 
+      description: The internet interface to one of the values. This option is required only for IPS reports.
       isArray: false
       name: interface
       required: false
@@ -697,11 +705,11 @@ script:
       description: 'Infection type. Possible values: "malware-object", "malware-callback", "infection-match", "domain-match", "web-infection". This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_id argument.'
       auto: PREDEFINED
       predefined:
-        - 'malware-object'
-        - 'malware-callback'
-        - 'infection-match'
-        - 'domain-match'
-        - 'web-infection'
+      - 'malware-object'
+      - 'malware-callback'
+      - 'infection-match'
+      - 'domain-match'
+      - 'web-infection'
       name: infection_type
       required: false
       secret: false
@@ -740,7 +748,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.10.48392
 fromversion: 5.5.0
 tests:
 - FireEye Central Management - Test

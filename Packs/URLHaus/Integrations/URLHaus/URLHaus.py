@@ -1,4 +1,6 @@
 from typing import Tuple
+
+import urllib3
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -10,7 +12,7 @@ import re
 from datetime import datetime as dt
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # disable-secrets-detection-start
 # Whether compromised websites are considered malicious or not. See the blacklists output in

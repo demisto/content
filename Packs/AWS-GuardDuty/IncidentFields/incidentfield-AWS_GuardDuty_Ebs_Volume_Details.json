@@ -1,0 +1,32 @@
+{
+    "id": "incident_awsguarddutyebsvolumedetails",
+    "version": -1,
+    "modified": "2022-11-10T10:25:34.673507Z",
+    "name": "AWS GuardDuty Ebs Volume Details",
+    "ownerOnly": false,
+    "description": "Contains list of scanned and skipped EBS volumes with details.",
+    "cliName": "awsguarddutyebsvolumedetails",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "AWS Guard Duty Malware Protection Finding"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

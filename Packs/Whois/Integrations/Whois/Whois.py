@@ -7183,7 +7183,12 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
     # (3 tries led to errno.ECONNRESET)
     else:
         raise WhoisException('(104) Connection Reset By Peer')
-
+    if not response:
+        msg = f"Got an empty response for the requested domain {request_domain} from the server {target_server}. Please check your firewall or proxy settings."
+        if SHOULD_ERROR:
+            raise Exception(msg)
+        else:
+            return_warning(msg)
     if never_cut:
         # If the caller has requested to 'never cut' responses, he will get the original response from the server (
         # this is useful for callers that are only interested in the raw data). Otherwise, if the target is
@@ -7679,6 +7684,23 @@ else:
         return isinstance(data, str)
 
 
+class InvalidDateHandler:
+    """
+        A class to represent an anparseble date by the datetime module.
+        mainly for dates containing day, year, or month with an unvalid value of 0.
+        """
+
+    def __init__(self, year, month, day):
+        self.year = year
+        self.month = month 
+        self.day = day
+
+    def strftime(self, *args):
+        if self.year == 2000:
+            return f'{self.day}-{self.month}-{0}'
+        return f'{self.day}-{self.month}-{self.year}'
+
+
 def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_server=""):
     normalized = normalized or []
     data = {}  # type: dict
@@ -8000,7 +8022,7 @@ def normalize_name(value, abbreviation_threshold=4, length_threshold=8, lowercas
 
 def parse_dates(dates):
     global grammar
-    parsed_dates = []
+    parsed_dates: List[datetime | InvalidDateHandler] = []
 
     for date in dates:
         for rule in grammar['_dateformats']:  # type: ignore
@@ -8062,12 +8084,13 @@ def parse_dates(dates):
                     demisto.debug(e)
         try:
             if year > 0:
-                try:
+                if month > 12:
+                    # We might have gotten the day and month the wrong way around, let's try it the other way around.
+                    month, day = day, month
+                if 0 in [year, month, day]:
+                    parsed_dates.append(InvalidDateHandler(year=year, month=month, day=day))
+                else:
                     parsed_dates.append(datetime(year, month, day, hour, minute, second))
-                except ValueError as e:
-                    # We might have gotten the day and month the wrong way around, let's try it the other way around
-                    # If you're not using an ISO-standard date format, you're an evil registrar!
-                    parsed_dates.append(datetime(year, day, month, hour, minute, second))
         except UnboundLocalError as e:
             pass
 
@@ -8482,19 +8505,31 @@ def ip_command(ips, reliability):
 
 
 def whois_command(reliability):
-    query = demisto.args().get('query')
-    is_recursive = argToBoolean(demisto.args().get('recursive'))
+    args = demisto.args()
+    query = args.get('query')
+    is_recursive = argToBoolean(args.get('recursive', 'false'))
+    verbose = argToBoolean(args.get('verbose', 'false'))
+    demisto.info(f'whois command is called with the query {query}')
     for query in argToList(query):
         domain = get_domain_from_query(query)
         whois_result = get_whois(domain, is_recursive=is_recursive)
         md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
-        dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
+        context_res = {}
+        context_res.update(dbot_score)
+        context_res.update({Common.Domain.CONTEXT_PATH: standard_ec})
+
+        if verbose: 
+            demisto.info('Verbose response')
+            whois_result['query'] = query
+            json_res = json.dumps(whois_result, indent=4, sort_keys=True, default=str)
+            context_res.update({'Whois(val.query==obj.query)': json.loads(json_res)})
+
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': str(whois_result),
             'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-            'EntryContext': dbot_score,
+            'EntryContext': context_res,
         })
 
 

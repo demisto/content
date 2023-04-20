@@ -21,7 +21,7 @@ Configure Prisma Cloud Compute to send alerts to Demisto by creating an alert pr
 1. On the right, select the alert triggers. Alert triggers specify which alerts are sent to Demisto.
 1. Click **Save** to save the alert profile
 
-## Configure Demisto
+## Configure Cortex XSOAR
 
 1. Navigate to **Settings > Integrations > Servers & Services**.
 1. Search for **Prisma Cloud Compute**.
@@ -53,20 +53,18 @@ To better understand how playbooks and scripts interoperate, consider the _Prism
 * When the playbook is triggered, a task called **Parse Vulnerability Alert** runs.
 * The task runs the **PrismaCloudComputeParseVulnerabilityAlert** script, which takes the `prismacloudcomputerawalertjson` field of the incident (the raw JSON alert data) as input.
 
-![image](https://user-images.githubusercontent.com/49071222/72902982-1601d000-3d35-11ea-8be2-a12ac8ea8862.png)
+![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_raw_input.png)
 
 
 * Click **outputs** to see how the script transformed the raw JSON input into a Demisto object.
 
 
-![image](https://user-images.githubusercontent.com/49071222/72903545-1189e700-3d36-11ea-9a35-81b756a5fc6d.png)
-
+![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_outputs.png)
 
 At this point, you can add tasks that extend the playbook to check and respond to alerts depending on the properties of the Demisto object.
-
 
 ## Troubleshooting
 
 If any alerts are missing in Demisto, check the status of the integration:
 
-![image](https://user-images.githubusercontent.com/49071222/72086124-18b0fe00-330f-11ea-894b-6b2f9f0528fd.png)
+![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_instance.png)

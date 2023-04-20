@@ -1,5 +1,6 @@
 from JSONFeedApiModule import Client, fetch_indicators_command, jmespath, get_no_update_value
 from CommonServerPython import *
+import pytest
 import requests_mock
 import demistomock as demisto
 
@@ -25,19 +26,47 @@ def test_json_feed_no_config():
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
 
-def test_json_feed_with_config():
+CONFIG_PARAMETERS = [
+    (
+        {
+            'AMAZON': {
+                'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
+                'extractor': "prefixes[?service=='AMAZON']",
+                'indicator': 'ip_prefix',
+                'indicator_type': FeedIndicatorType.CIDR,
+                'fields': ['region', 'service']
+            }
+        },
+        1117,
+        0
+    ),
+    (
+        {
+            'AMAZON': {
+                'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
+                'extractor': "prefixes[?service=='AMAZON']",
+                'indicator': 'ip_prefix',
+                'indicator_type': FeedIndicatorType.CIDR,
+                'fields': ['region', 'service']
+            },
+            'CLOUDFRONT': {
+                'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
+                'extractor': "prefixes[?service=='CLOUDFRONT']",
+                'indicator': 'ip_prefix',
+                'indicator_type': FeedIndicatorType.CIDR,
+                'fields': ['region', 'service']
+            }
+        },
+        1148,
+        36
+    )
+]
+
+
+@pytest.mark.parametrize('config, total_indicators, indicator_with_several_tags', CONFIG_PARAMETERS)
+def test_json_feed_with_config(config, total_indicators, indicator_with_several_tags):
     with open('test_data/amazon_ip_ranges.json') as ip_ranges_json:
         ip_ranges = json.load(ip_ranges_json)
-
-    feed_name_to_config = {
-        'AMAZON': {
-            'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
-            'extractor': "prefixes[?service=='AMAZON']",
-            'indicator': 'ip_prefix',
-            'indicator_type': FeedIndicatorType.CIDR,
-            'fields': ['region', 'service']
-        }
-    }
 
     with requests_mock.Mocker() as m:
         m.get('https://ip-ranges.amazonaws.com/ip-ranges.json', json=ip_ranges)
@@ -45,13 +74,14 @@ def test_json_feed_with_config():
         client = Client(
             url='https://ip-ranges.amazonaws.com/ip-ranges.json',
             credentials={'username': 'test', 'password': 'test'},
-            feed_name_to_config=feed_name_to_config,
+            feed_name_to_config=config,
             insecure=True
         )
 
         indicators, _ = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
                                                  auto_detect=False)
-        assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
+        assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == total_indicators
+        assert len([i for i in indicators if ',' in i.get('rawJSON').get('service', '')]) == indicator_with_several_tags
 
 
 def test_json_feed_with_config_mapping():
@@ -286,3 +316,37 @@ def test_get_no_update_value_without_headers(mocker):
 
 def test_version_6_2_0(mocker):
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+
+
+def test_fetch_indicators_command_google_ip_ranges(mocker):
+    """
+    Given
+    - indicators response from google ip feed
+
+    When
+    - Running fetch indicators command
+
+    Then
+    - Ensure that all indicators values exist and are not 'None'
+    """
+    from JSONFeedApiModule import fetch_indicators_command
+    client = Client(
+        url='',
+        headers={},
+        feed_name_to_config={
+            'CIDR': {
+                'url': 'https://www.test.com/ipranges/goog.json',
+                'extractor': 'prefixes[]', 'indicator': 'ipv4Prefix', 'indicator_type': 'CIDR'
+            }
+        }
+    )
+
+    mocker.patch.object(
+        client, 'build_iterator', return_value=(
+            [{'ipv4Prefix': '1.1.1.1'}, {'ipv4Prefix': '1.2.3.4'}, {'ipv6Prefix': '1111:1111::/28'}], True
+        ),
+    )
+
+    indicators, _ = fetch_indicators_command(client, indicator_type=None, feedTags=[], auto_detect=None, limit=100)
+    for indicator in indicators:
+        assert indicator.get('value')

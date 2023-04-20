@@ -622,9 +622,9 @@ def main():
     user_profile = None
     params = demisto.params()
     base_url = params['url'].strip('/')
-    tenant_id = params.get('tenant_id')
+    tenant_id = params.get('credentials', {}).get('identifier') or params.get('tenant_id')
     url_with_tenant = f'{base_url}/{tenant_id}'
-    authentication_token = params.get('authentication_token')
+    authentication_token = params.get('credentials', {}).get('password') or params.get('authentication_token')
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')
     verify_certificate = not params.get('insecure', False)

@@ -8,11 +8,11 @@
     "email": "",
     "created": "2020-05-25T11:52:50Z",
     "categories": [
-        "Utilities"
+        "IT Services"
     ],
-    "tags": [],
+    "tags": ["Use Case"],
     "useCases": [
-        "Lost or Stolen Device"
+        "Compliance"
     ],
     "keywords": [
         "Stolen Device",

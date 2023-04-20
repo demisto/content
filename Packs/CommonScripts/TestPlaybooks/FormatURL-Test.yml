@@ -1,16 +1,14 @@
 id: FormatURL-Test
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: FormatURL-Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 992a1aa0-984f-4815-8395-9eebef9750b5
+    taskid: 0b89562e-828b-48c9-82f3-c4a57e6b2d9e
     type: start
     task:
-      id: 992a1aa0-984f-4815-8395-9eebef9750b5
+      id: 0b89562e-828b-48c9-82f3-c4a57e6b2d9e
       version: -1
       name: ""
       iscommand: false
@@ -34,16 +32,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 6fcc77f4-8cec-45f3-8f83-98cca3df09b1
+    taskid: 5e6b0029-c1e2-4394-8956-0924edd4f425
     type: regular
     task:
-      id: 6fcc77f4-8cec-45f3-8f83-98cca3df09b1
+      id: 5e6b0029-c1e2-4394-8956-0924edd4f425
       version: -1
       name: Extract ATP URL
-      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint
-        or ATP URL, extracts its redirect URL.
+      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL, extracts its redirect URL.
       scriptName: FormatURL
       type: regular
       iscommand: false
@@ -69,30 +67,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    reputationcalc: 2
+    continueonerrortype: ""
   "2":
     id: "2"
-    taskid: ae7f6777-9fb4-4b57-8a3c-c834a6d927ef
-    type: regular
+    taskid: 3a237766-32bc-48b0-8d28-6ce5fb7769db
+    type: condition
     task:
-      id: ae7f6777-9fb4-4b57-8a3c-c834a6d927ef
+      id: 3a237766-32bc-48b0-8d28-6ce5fb7769db
       version: -1
       name: Assert Expected URL is Extracted
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
+      description: This script checks that a context key exists (and contains data), and optionally checks the value of the context key for a match against an input value. If a regex is not supplied, the script checks that the key is not empty. This script can be used with the "GenericPolling" playbook to poll for field population or that a field contains a specific value. This scripts does not support a context key which holds a list of values.
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "3"
-    scriptarguments:
-      humanReadableEntryId:
-        complex:
-          root: lastCompletedTaskEntries
-          transformers:
-          - operator: LastArrayElement
-      substring:
-        simple: https://office.memoriesflower.com/Permission/office.php
     separatecontext: false
     view: |-
       {
@@ -108,16 +99,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: URL
+            iscontext: true
+          right:
+            value:
+              simple: https://office.memoriesflower.com/Permission/office.php
+    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: e0cfcbce-529c-479b-8afe-d7bc88976667
+    taskid: 06824d4f-18f3-4a26-8613-5dcfd6112c10
     type: regular
     task:
-      id: e0cfcbce-529c-479b-8afe-d7bc88976667
+      id: 06824d4f-18f3-4a26-8613-5dcfd6112c10
       version: -1
       name: 'Extract Proof Point V1 URL '
-      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint
-        or ATP URL, extracts its redirect URL.
+      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL, extracts its redirect URL.
       scriptName: FormatURL
       type: regular
       iscommand: false
@@ -143,30 +145,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 0fd0876c-559a-478a-8177-ad872f417c3c
-    type: regular
+    taskid: 9dda8742-0267-40ae-8750-e06884ed3e1a
+    type: condition
     task:
-      id: 0fd0876c-559a-478a-8177-ad872f417c3c
+      id: 9dda8742-0267-40ae-8750-e06884ed3e1a
       version: -1
       name: Assert Expected URL is Extracted
       description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "5"
-    scriptarguments:
-      humanReadableEntryId:
-        complex:
-          root: lastCompletedTaskEntries
-          transformers:
-          - operator: LastArrayElement
-      substring:
-        simple: http://www.bouncycastle.org/
     separatecontext: false
     view: |-
       {
@@ -182,16 +176,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: URL
+            iscontext: true
+          right:
+            value:
+              simple: http://www.bouncycastle.org/
+    continueonerrortype: ""
   "5":
     id: "5"
-    taskid: cbfbe89d-d40b-4a90-8447-841e2b9a117f
+    taskid: 7145ba2e-d6bf-49ad-88ce-6bef572c5837
     type: regular
     task:
-      id: cbfbe89d-d40b-4a90-8447-841e2b9a117f
+      id: 7145ba2e-d6bf-49ad-88ce-6bef572c5837
       version: -1
       name: Extract Proof Point V2 URL
-      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint
-        or ATP URL, extracts its redirect URL.
+      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL, extracts its redirect URL.
       scriptName: FormatURL
       type: regular
       iscommand: false
@@ -217,30 +222,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
-    taskid: 41ae7a6c-5444-4088-8ec2-58dd383933b8
-    type: regular
+    taskid: 6e4c393b-b789-4646-8d38-6edf4922bfc6
+    type: condition
     task:
-      id: 41ae7a6c-5444-4088-8ec2-58dd383933b8
+      id: 6e4c393b-b789-4646-8d38-6edf4922bfc6
       version: -1
       name: Assert Expected URL is Extracted
       description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "7"
-    scriptarguments:
-      humanReadableEntryId:
-        complex:
-          root: lastCompletedTaskEntries
-          transformers:
-          - operator: LastArrayElement
-      substring:
-        simple: http://links.mkt3337.com/ctt?kn=3&ms=MzQ3OTg3MDQS1&r=MzkxNzk3NDkwMDA0S0&b=0&j=MTMwMjA1ODYzNQS2&mt=1&rt=0
     separatecontext: false
     view: |-
       {
@@ -256,16 +253,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: URL
+            iscontext: true
+          right:
+            value:
+              simple: http://links.mkt3337.com/ctt?kn=3&ms=MzQ3OTg3MDQS1&r=MzkxNzk3NDkwMDA0S0&b=0&j=MTMwMjA1ODYzNQS2&mt=1&rt=0
+    continueonerrortype: ""
   "7":
     id: "7"
-    taskid: f9f090fb-0490-4b0a-86cc-2ae1e287f102
+    taskid: de9a0974-5a20-4103-8a51-a535f67eb762
     type: regular
     task:
-      id: f9f090fb-0490-4b0a-86cc-2ae1e287f102
+      id: de9a0974-5a20-4103-8a51-a535f67eb762
       version: -1
       name: Extract Proof Point V3 URL
-      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint
-        or ATP URL, extracts its redirect URL.
+      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL, extracts its redirect URL.
       scriptName: FormatURL
       type: regular
       iscommand: false
@@ -291,30 +299,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
-    taskid: b6417b5e-4ad6-4b61-8023-493ad3f7c7b7
-    type: regular
+    taskid: 30ca758e-a848-4e83-840e-d5ca37f3b22f
+    type: condition
     task:
-      id: b6417b5e-4ad6-4b61-8023-493ad3f7c7b7
+      id: 30ca758e-a848-4e83-840e-d5ca37f3b22f
       version: -1
       name: Assert Expected URL is Extracted
       description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "9"
-    scriptarguments:
-      humanReadableEntryId:
-        complex:
-          root: lastCompletedTaskEntries
-          transformers:
-          - operator: LastArrayElement
-      substring:
-        simple: https://google.com:443/search?q=a*test&gs=ps
     separatecontext: false
     view: |-
       {
@@ -330,16 +330,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: URL
+            iscontext: true
+          right:
+            value:
+              simple: https://google.com:443/search?q=a*test&gs=ps
+    continueonerrortype: ""
   "9":
     id: "9"
-    taskid: 229a1199-272b-4c38-8c31-feda86e99c1b
+    taskid: f2f6a05d-2d41-4e4a-8da7-6dd01724233e
     type: regular
     task:
-      id: 229a1199-272b-4c38-8c31-feda86e99c1b
+      id: f2f6a05d-2d41-4e4a-8da7-6dd01724233e
       version: -1
       name: Extract Proof Point V3 Gov URL
-      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint
-        or ATP URL, extracts its redirect URL.
+      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL, extracts its redirect URL.
       scriptName: FormatURL
       type: regular
       iscommand: false
@@ -349,7 +360,7 @@ tasks:
       - "10"
     scriptarguments:
       input:
-        simple: https://urldefense.us/v3/__https://google.com:443/search?q=a*test&gs=ps__;Kw!-612Flbf0JvQ3kNJkRi5Jg!Ue6tQudNKaShHg93trcdjqDP8se2ySE65jyCIe2K1D_uNjZ1Lnf6YLQERujngZv9UWf66ujQIQ$
+        simple: https://urldefense.us/v3/__https://google.com:443/search?q=a*test__;Kw!-612Flbf0JvQ3kNJkRi5Jg!Ue6tQudNKaShHg93trcdjqDP8se2ySE65jyCIe2K1D_uNjZ1Lnf6YLQERujngZv9UWf66ujQIQ$
     separatecontext: false
     view: |-
       {
@@ -365,30 +376,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
-    taskid: bc20d083-87b8-403c-80d8-8e8701644a1b
-    type: regular
+    taskid: 1b6df94c-226c-46dc-88ae-801740dedc0f
+    type: condition
     task:
-      id: bc20d083-87b8-403c-80d8-8e8701644a1b
+      id: 1b6df94c-226c-46dc-88ae-801740dedc0f
       version: -1
       name: Assert Expected URL is Extracted
       description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "11"
-    scriptarguments:
-      humanReadableEntryId:
-        complex:
-          root: lastCompletedTaskEntries
-          transformers:
-          - operator: LastArrayElement
-      substring:
-        simple: https://google.com:443/search?q=a*test&gs=ps
     separatecontext: false
     view: |-
       {
@@ -404,16 +407,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: URL
+            iscontext: true
+          right:
+            value:
+              simple: https://google.com:443/search?q=a*test
+    continueonerrortype: ""
   "11":
     id: "11"
-    taskid: 49281140-1ea1-4d6f-8ede-68648ec0cf3c
+    taskid: 4e495df6-633a-48ff-8af2-8a79c8832289
     type: regular
     task:
-      id: 49281140-1ea1-4d6f-8ede-68648ec0cf3c
+      id: 4e495df6-633a-48ff-8af2-8a79c8832289
       version: -1
       name: Extract Test URL
-      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint
-        or ATP URL, extracts its redirect URL.
+      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL, extracts its redirect URL.
       scriptName: FormatURL
       type: regular
       iscommand: false
@@ -423,7 +437,7 @@ tasks:
       - "12"
     scriptarguments:
       input:
-        simple: https://www.test.com
+        simple: https://www.test.com/
     separatecontext: false
     view: |-
       {
@@ -439,30 +453,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
-    taskid: 249c5610-aba2-4128-8118-504aba0a3ad7
-    type: regular
+    taskid: 934bc5ba-f6a7-498c-888c-3c718155e86c
+    type: condition
     task:
-      id: 249c5610-aba2-4128-8118-504aba0a3ad7
+      id: 934bc5ba-f6a7-498c-888c-3c718155e86c
       version: -1
       name: Assert Expected URL is Extracted
       description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "13"
-    scriptarguments:
-      humanReadableEntryId:
-        complex:
-          root: lastCompletedTaskEntries
-          transformers:
-          - operator: LastArrayElement
-      substring:
-        simple: https://www.test.com
     separatecontext: false
     view: |-
       {
@@ -478,12 +484,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: URL
+            iscontext: true
+          right:
+            value:
+              simple: https://www.test.com/
+    continueonerrortype: ""
   "13":
     id: "13"
-    taskid: 569ff6b4-bd7a-4c85-8650-6a55a19ac554
+    taskid: d0e4bcac-0a4a-453e-8387-440f134bb5c7
     type: title
     task:
-      id: 569ff6b4-bd7a-4c85-8650-6a55a19ac554
+      id: d0e4bcac-0a4a-453e-8387-440f134bb5c7
       version: -1
       name: Playbook Done
       type: title
@@ -505,7 +523,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {},
@@ -522,3 +540,6 @@ inputs: []
 outputs: []
 fromversion: 5.5.0
 description: Format URL test playbook
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

@@ -1,0 +1,18 @@
+{
+    "next": "YXNzb2NpYXRpb25zO9",
+    "result": [
+        {
+            "first_seen": "2022-10-22T11:23:26.561Z",
+            "last_seen": "2022-10-22T11:23:26.561Z",
+            "data_source_url": "http://msedge.b.tlu.dl.delivery.mp.microsoft.com/",
+            "data_source_url_domain": "msedge.b.tlu.dl.delivery.mp.microsoft.com",
+            "sha2": "1291d6eb30cd1683544666692a382aecf325dc2624da9ef395047a64642059dc",
+            "name": "microsoftedge_x64_106.0.1370.52_106.0.1370.47.exe",
+            "signature_company_name": "Microsoft Corporation",
+            "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
+            "device_ip": "127.0.0.1",
+            "device_name": "win-tfb8l7bi77h"
+        }
+    ],
+    "total": 4
+}

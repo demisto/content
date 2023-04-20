@@ -1,0 +1,88 @@
+[
+    {
+        "value": "http://example.com/4712/",
+        "indicator_type": "URL",
+        "rawJSON": {
+            "type": "URL",
+            "spec_version": "2.1",
+            "id": "indicator--d81f86b9-975b-4c0b-875e-810c5ad45a4f",
+            "created": "2014-06-29T13:49:37.079Z",
+            "modified": "2014-06-29T13:49:37.079Z",
+            "name": "Malicious site hosting downloader",
+            "description": "This organized threat actor group operates to create profit from all types of crime.",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value = 'http://example.com/4712/']",
+            "pattern_type": "stix",
+            "valid_from": "2014-06-29T13:49:37.079Z",
+            "value": "http://example.com/4712/"
+        },
+        "customFields": {
+            "description": "This organized threat actor group operates to create profit from all types of crime.",
+            "tags": []
+        },
+        "relationships": [
+            {
+                "name": "indicated-by",
+                "reverseName": "indicator-of",
+                "type": "IndicatorToIndicator",
+                "entityA": "http://example.com/4712/",
+                "entityAFamily": "Indicator",
+                "entityAType": "URL",
+                "entityB": "x4z9arb backdoor",
+                "entityBFamily": "Indicator",
+                "entityBType": "Malware",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T18:03:58.029Z",
+                    "firstseenbysource": "2020-02-29T18:03:58.029Z"
+                }
+            }
+        ]
+    },
+    {
+        "value": "x4z9arb backdoor",
+        "indicator_type": "Malware",
+        "score": 3,
+        "rawJSON": {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--162d917e-766f-4611-b5d6-652791454fca",
+            "created": "2014-06-30T09:15:17.182Z",
+            "modified": "2014-06-30T09:15:17.182Z",
+            "name": "x4z9arb backdoor",
+            "description": "This malware attempts to download remote files after establishing a foothold as a backdoor.",
+            "malware_types": [
+                "backdoor",
+                "remote-access-trojan"
+            ],
+            "is_family": false,
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "mandiant-attack-lifecycle-model",
+                    "phase_name": "establish-foothold"
+                }
+            ]
+        },
+        "customFields": {
+            "stixid": "malware--162d917e-766f-4611-b5d6-652791454fca",
+            "firstseenbysource": "2014-06-30T09:15:17.182Z",
+            "modified": "2014-06-30T09:15:17.182Z",
+            "description": "This malware attempts to download remote files after establishing a foothold as a backdoor.",
+            "malware_types": [
+                "backdoor",
+                "remote-access-trojan"
+            ],
+            "is_family": false,
+            "aliases": [],
+            "kill_chain_phases": [
+                null
+            ],
+            "os_execution_envs": [],
+            "architecture_execution_envs": [],
+            "capabilities": [],
+            "sample_refs": [],
+            "tags": []
+        }
+    }
+]

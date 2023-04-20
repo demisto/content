@@ -1,0 +1,6 @@
+name: Jira Parsing Rule
+id: Jira_Parsing_Rule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

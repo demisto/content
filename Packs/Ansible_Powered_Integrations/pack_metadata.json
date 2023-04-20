@@ -1,8 +1,9 @@
 {
     "name": "Ansible Powered Integrations (Deprecated)",
     "description": "Deprecated. Use Ansible Microsoft Windows instead.",
+    "hidden": true,
     "support": "community",
-    "currentVersion": "2.0.2",
+    "currentVersion": "2.0.3",
     "author": "Serge Bakharev",
     "url": "https://github.com/SergeBakharev/Ansible-for-XSOAR",
     "email": "serge.bakharev@gmail.com",

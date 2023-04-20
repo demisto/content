@@ -2,24 +2,15 @@
     "name": "Qintel",
     "description": "Supports the Qintel suite of products including Patch Management Intelligence (PMI), QSentry and QWatch.",
     "support": "partner",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.7",
     "author": "Qintel, LLC",
     "url": "https://qintel.com",
     "email": "integrations-support@qintel.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Alerts",
-        "Dark Web",
-        "Threat Intelligence"
-    ],
-    "useCases": [
-        "Identity and Access Management",
-        "Impossible Traveler",
-        "Threat Intelligence Management",
-        "Vulnerability Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "qintel",
         "enrichment",

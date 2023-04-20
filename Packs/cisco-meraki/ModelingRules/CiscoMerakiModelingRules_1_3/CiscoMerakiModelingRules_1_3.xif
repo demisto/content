@@ -1,0 +1,102 @@
+[MODEL: dataset="Cisco_Meraki_raw"]
+filter
+    _raw_log contains "security_event" or _raw_log contains "ids_alerted" or _raw_log contains "ids-alerts" or _raw_log contains "disposition = " or _raw_log contains "signature="
+| alter appliance_name = arrayindex(regextract(_raw_log,"\.\d+\s(\w+)\s[security]"),0),
+    signuture = arrayindex(regextract(_raw_log,"signature\=([^\s]+)"),0),
+    mac_address1 = arrayindex(regextract(_raw_log,"mac\=([^\s]+)"),0),
+    mac_address2 = arrayindex(regextract(_raw_log,"shost\=([^\s]+)"),0)
+| alter source_mac_address = coalesce(mac_address1,mac_address2),
+    direction = arrayindex(regextract(_raw_log,"direction\=([^\s]+)"),0),
+    source_ip = arrayindex(regextract(_raw_log,"src\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    destination_ip = arrayindex(regextract(_raw_log,"dst\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    event_type1 = arrayindex(regextract(_raw_log,"security\_event\s(\w+)"),0),
+    event_type2 = arrayindex(regextract(_raw_log,"\d+\.\d+\s\w+\s(\S+)\ssignature"),0)
+| alter event_type = coalesce(event_type1,event_type2),
+    message = arrayindex(regextract(_raw_log,"message\:\s([^\$]+)"),0),
+    sha_256 = arrayindex(regextract(_raw_log,"sha256\=([^\s]+)"),0),
+    found_malisious = arrayindex(regextract(_raw_log,"disposition\=(\w+)"),0),
+    url = arrayindex(regextract(_raw_log,"url\=(https?\:[^\s]+)"),0),
+    priority = arrayindex(regextract(_raw_log,"priority\=(\d+)"),0),
+    file_name = arrayindex(regextract(_raw_log,"name\=\'?([^\'?\s]+)"),0),
+    action1 = arrayindex(regextract(_raw_log,"action\=(\w+)"),0),
+    action2 = arrayindex(regextract(_raw_log,"decision\=(\w+)"),0)
+| alter action = coalesce(action1,action2)
+| alter
+    xdm.observer.name = appliance_name,
+    xdm.source.process.identifier = signuture,
+    xdm.source.host.mac_addresses = arraycreate(coalesce(source_mac_address, "")),
+    xdm.event.description = direction,
+    xdm.target.host.ipv4_addresses = arraycreate(coalesce(source_ip, "")),
+    xdm.source.host.ipv4_addresses = arraycreate(coalesce(destination_ip, "")),
+    xdm.event.type = event_type,
+    xdm.event.outcome = if(action ~= "block", XDM_CONST.OUTCOME_FAILED, action = "allow", XDM_CONST.OUTCOME_SUCCESS, action = null, null, to_string(action)),
+    xdm.event.outcome_reason = message,
+    xdm.source.process.executable.sha256 = sha_256,
+    xdm.source.process.executable.filename = found_malisious,
+    xdm.source.process.executable.path = url,
+    xdm.alert.severity = priority,
+    xdm.target.file.filename = file_name;
+filter
+    _raw_log contains "urls src=" or (_raw_log contains "flows" and _raw_log contains "src=") or _raw_log contains "vpn_connectivity_change" or _raw_log contains "events dhcp" or _raw_log contains "Site-to-site VPN" or _raw_log contains "events"
+| alter appliance_name1 = arrayindex(regextract(_raw_log,"\.\d+\s(\w+)\s[events]"),0),
+    appliance_name2 = arrayindex(regextract(_raw_log,"\.\d+\s(\w+)\s[flows|\s?urls]"),0)
+| alter appliance_name = coalesce(appliance_name1,appliance_name2),
+    source_ip1 = arrayindex(regextract(_raw_log,"\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    source_ip2 = arrayindex(regextract(_raw_log,"src\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
+| alter source_ip = coalesce(source_ip1,source_ip2),
+    source_port1 = arrayindex(regextract(_raw_log,"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"),0),
+    source_port2 = arrayindex(regextract(_raw_log,"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\[(\d+)\]\-?\<?"),0),
+    source_port3 = arrayindex(regextract(_raw_log,"src\=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"),0),
+    source_port4 = arrayindex(regextract(_raw_log,"sport\=(\d+)"),0)
+| alter source_port = coalesce(source_port1,source_port2,source_port3,source_port4),
+    destination_ip1 = arrayindex(regextract(_raw_log,"\-(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    destination_ip2 = arrayindex(regextract(_raw_log,"\>(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    destination_ip3 = arrayindex(regextract(_raw_log,"peer\_contact\=\'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    destination_ip4 = arrayindex(regextract(_raw_log,"ip\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    destination_ip5 = arrayindex(regextract(_raw_log,"dst\=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
+| alter destination_ip = coalesce(destination_ip1,destination_ip2,destination_ip3,destination_ip4,destination_ip5),
+    destination_port1 = arrayindex(regextract(_raw_log,"dst\=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"),0),
+    destination_port2 = arrayindex(regextract(_raw_log,"dport\=(\d+)"),0)
+|alter destination_port = coalesce(destination_port1,destination_port2),
+    source_mac1 = arrayindex(regextract(_raw_log,"mac\s(\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"),0),
+    source_mac2 = arrayindex(regextract(_raw_log,"mac\=([^\s]+)"),0)
+| alter source_mac = coalesce(source_mac1,source_mac2),
+    destination_mac = arrayindex(regextract(_raw_log,"client\smac\s(\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"),0),
+    Message1 = arrayindex(regextract(_raw_log,"VPN\:([^\#]+)"),0),
+    Message2 = arrayindex(regextract(_raw_log,"events\s([A-Z]\D+)"),0),
+    Message3 = arrayindex(regextract(_raw_log,"events\s\w+\sto?\s\w+"),0),
+    Message4 = arrayindex(regextract(_raw_log,"events\s(dhcp[^\!]+)"),0)
+| alter Message = coalesce(Message1,Message2,Message3,Message4),
+    Dns_server_ips = arrayindex(regextract(_raw_log,"dns(\s\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\,?\s\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    connectivity = arrayindex(regextract(_raw_log,"connectivity\=\'(\w+)"),0),
+    vpn_type = arrayindex(regextract(_raw_log,"vpn\_type\=\'(\S+)\'"),0),
+    spi_unique_identifier = arrayindex(regextract(_raw_log,"spi\:?\=?([^\s]+)"),0),
+    peer_unique_identifier = arrayindex(regextract(_raw_log,"peer\_ident\=\'([^\']+)"),0),
+    subnet_mask = arrayindex(regextract(_raw_log,"subnet\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d)"),0),
+    user_agent = arrayindex(regextract(_raw_log,"agent\=\'([^\']+)"),0),
+    url = arrayindex(regextract(_raw_log,"request\:\s\w+\s([^\@]+)"),0),
+    http_method = arrayindex(regextract(_raw_log,"request\:\s(\w+)"),0),
+    action = arrayindex(regextract(_raw_log,"flows\s(\w+)"),0),
+    protocl = arrayindex(regextract(_raw_log,"protocol\=(\w+)"),0),
+    protocl_type = arrayindex(regextract(_raw_log,"type\=(\d+)"),0)
+| alter
+    xdm.observer.name = appliance_name,
+    xdm.source.ipv4 = source_ip,
+    xdm.source.port = to_number(source_port),
+    xdm.target.ipv4 = destination_ip,
+    xdm.target.port = to_number(destination_port),
+    xdm.source.host.mac_addresses = arraycreate(coalesce(source_mac, "")),
+    xdm.target.interface = destination_mac,
+    xdm.alert.description = Message,
+    xdm.network.dhcp.dns_server = arraycreate(coalesce(Dns_server_ips, "")),
+    xdm.event.outcome = if(connectivity = "false", XDM_CONST.OUTCOME_FAILED, connectivity = "true", XDM_CONST.OUTCOME_SUCCESS, connectivity = null, null, to_string(connectivity)),    
+    xdm.event.operation_sub_type = vpn_type,
+    xdm.network.session_id = spi_unique_identifier,
+    xdm.observer.unique_identifier = peer_unique_identifier,
+    xdm.source.subnet = subnet_mask,
+    xdm.source.user_agent = user_agent,
+    xdm.network.http.url = url,
+    xdm.network.http.method = http_method,
+    xdm.network.rule = action,
+    xdm.network.ip_protocol = protocl,
+    xdm.network.icmp.type = to_number (protocl_type);

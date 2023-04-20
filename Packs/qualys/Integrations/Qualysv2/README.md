@@ -180,7 +180,7 @@ Lists vulnerability scans in the user’s account
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_ref | Show only a scan with a certain scan referenc ecode. | Optional | 
+| scan_ref | Show only a scan with a certain scan reference code. | Optional | 
 | state | Show only one or more scan states. | Optional | 
 | processed | Specify 0 to show only scans that are not processed. Specify 1 to show only scans that have been processed. Possible values are: 0, 1. | Optional | 
 | type | Show only a certain scan type. Possible values are: On-Demand, Scheduled, API. | Optional | 
@@ -216,7 +216,7 @@ Lists vulnerability scans in the user’s account
 | Qualys.Scan.SCHEDULE | unknown | Scan Schedule. | 
 | Qualys.Scan.TARGET | unknown | Scan Target. | 
 | Qualys.Scan.ASSET_GROUP_TITLE | unknown | Target Asset Group Title. | 
-| Qualys.Scan.DEFAULT_FLAG | unknown | Scan Deafualt Flag. | 
+| Qualys.Scan.DEFAULT_FLAG | unknown | Scan Default Flag. | 
 | Qualys.Scan.USER_LOGIN | unknown | The user that created the scan. | 
 
 
@@ -605,7 +605,7 @@ Gives you a list of SCAP scans in your account
 | Qualys.SCAP.Scan.Schedule | unknown | Scan Schedule. | 
 | Qualys.SCAP.Scan.Target | unknown | Scan Target. | 
 | Qualys.SCAP.Scan.AssetGroupTitle | unknown | Target Asset Group Title. | 
-| Qualys.SCAP.Scan.DeafualtFlag | unknown | Scan Deafualt Flag. | 
+| Qualys.SCAP.Scan.DeafualtFlag | unknown | Scan Default Flag. | 
 | Qualys.SCAP.Scan.UserLogin | unknown | The user that created the scan. | 
 
 
@@ -714,7 +714,7 @@ Shows schedule scans
 | Qualys.Scan.STATUS.SUB_STATE | unknown | Scan status sub state. | 
 | Qualys.Scan.TARGET | unknown | Scan Target. | 
 | Qualys.Scan.ASSET_GROUP_TITLE | unknown | Target Asset Group Title. | 
-| Qualys.Scan.DEFAULT_FLAG | unknown | Scan Deafualt Flag. | 
+| Qualys.Scan.DEFAULT_FLAG | unknown | Scan Default Flag. | 
 | Qualys.Scan.USER_LOGIN | unknown | The user that created the scan. | 
 | Qualys.Scan.ACTIVE | unknown | Scheduled scan active. | 
 | Qualys.Scan.USER_ENTERED_IPS.RANGE.START | unknown | IP range requested start. | 
@@ -809,14 +809,15 @@ View a list of scanned hosts in the user account.
 | tag_set_by | (Optional when use_tags=1) Specify “id” (the default) to select a tag set by providing tag IDs. Specify “name” to select a tag set by providing tag names. Possible values are: id, name. | Optional | 
 | tag_include_selector | (Optional when use_tags=1) Select “any” (the default) to include hosts that match at least one of the selected tags. Select “all” to include hosts that match all of the selected tags. Possible values are: any, all. | Optional | 
 | tag_exclude_selector | (Optional when use_tags=1) Select “any” (the default) to exclude hosts that match at least one of the selected tags. Select “all” to exclude hosts that match all of the selected tags. Possible values are: any, all. | Optional | 
-| tag_set_include | (Optional when use_tags=1) Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated. | Optional | 
-| tag_set_exclude | (Optional when use_tags=1) Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated. | Optional | 
+| tag_set_include | (Optional when use_tags=1) Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated. | Optional | 
+| tag_set_exclude | (Optional when use_tags=1) Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated. | Optional | 
 | show_tags | (Optional) Specify 1 to display asset tags associated with each host in the XML output. Possible values are: 0, 1. | Optional | 
 | host_metadata | Specify the name of the cloud provider to show the assets managed by the cloud provider. Valid values: ec2, google, azure. | Optional | 
 | host_metadata_fields | (Optional when host_metadata is specified) Specify metadata fields to only return data for certain attributes. | Optional | 
 | show_cloud_tags | (Optional) Specify 1 to display cloud provider tags for each scanned host asset in the output. The default value of the parameter is set to 0. When set to 0, we will not show the cloud provider tags for the scanned assets. Possible values are: 0, 1. | Optional | 
 | cloud_tag_fields | (Optional when show_cloud_tags is specified) Specify cloud tags or cloud tag and name combinations to only return information for specified cloud tags. A cloud tag name and value combination is specified with a colon (for example:SomeTag6:AY_ec2). For each cloud tag, we show the cloud tag’s name, its value, and last success date (the tag last success date/time, fetched from instance). If this parameter is not specified and "show_cloud_tags" is set to 1, we will show all the cloud provider tags for the assets. | Optional | 
 | limit | Specify a positive numeric value to limit the amount of results in the requested list. | Optional | 
+| details | (Optional) Show the requested amount of host information for each host. A valid value is: Basic, Basic/AGs, All, All/AGs, or None. | Optional |
 
 
 #### Context Output
@@ -1009,8 +1010,8 @@ Show the excluded host list for the user's account. Hosts in your excluded host 
 | tag_include_selector | (Optional when use_tags=1) Specify "any" (the default) to include excluded hosts that match at least one of the selected tags. Specify "all" to include excluded hosts that match all of the selected tags. Possible values are: any, all. | Optional | 
 | tag_exclude_selector | (Optional when use_tags=1) Specify "any" (the default) to ignore excluded hosts that match at least one of the selected tags. Specify "all" to ignore excluded hosts that match all of the selected tags. Possible values are: any, all. | Optional | 
 | tag_set_by | (Optional when use_tags=1) Specify "id" (the default) to select a tag set by providing tag IDs. Specify "name" to select a tag set by providing tag names. Possible values are: id, name. | Optional | 
-| tag_set_include | (Optional when use_tags=1) Specify a tag set to include. Excluded hosts that match these tags will be included. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated. | Optional | 
-| tag_set_exclude | (Optional when use_tags=1) Specify a tag set to exclude. Excluded hosts that match these tags will be ignored. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated. | Optional | 
+| tag_set_include | (Optional when use_tags=1) Specify a tag set to include. Excluded hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated. | Optional | 
+| tag_set_exclude | (Optional when use_tags=1) Specify a tag set to exclude. Excluded hosts that match these tags will be ignored. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated. | Optional | 
 | limit | Specify a positive numeric value to limit the amount of results in the requested list. | Optional | 
 
 
@@ -1090,7 +1091,7 @@ Get list of scheduled reports
 | Qualys.Report.SCHEDULE.START_DATE_UTC | unknown | Start date of the scheduled report in UTC format. | 
 | Qualys.Report.SCHEDULE.START_HOUR | unknown | Start hour of the scheduled report. | 
 | Qualys.Report.SCHEDULE.START_MINUTE | unknown | Start minute of the scheduled report. | 
-| Qualys.Report.SCHEDULE.DAILY.@frequency_days | unknown | Frequency of the schduled report. | 
+| Qualys.Report.SCHEDULE.DAILY.@frequency_days | unknown | Frequency of the scheduled report. | 
 | Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_CODE | unknown | Timezone of the scheduled report. | 
 | Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_DETAILS | unknown | Timezone details of the scheduled report. | 
 
@@ -20007,11 +20008,11 @@ Launch a vulnerability scorecard report.
 | tag_include_selector |  Select “any” (the default) to include hosts that match at least one of the selected tags. Select “all” to include hosts that match all of the selected tags. Possible values are: all, any. | Optional | 
 | tag_exclude_selector | Select “any” (the default) to exclude hosts that match at least one of the selected tags. Select “all” to exclude hosts that match all of the selected tags. Possible values are: all, any. | Optional | 
 | tag_set_by | Specify “id” (the default) to select a tag set by providing tag IDs. Specify “name” to select a tag set by providing tag names. Possible values are: id, name. | Optional | 
-| tag_set_include | Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated. | Optional | 
-| tag_set_exclude | Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated. | Optional | 
-| use_ip_nt_range_tags_include | Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected. valid only when target_from=tags is specified. Possible values are: 0, 1. | Optional | 
-| use_ip_nt_range_tags_exclude | Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to exclude all IP addresses defined in tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.  valid only when target_from=tags is specified. Possible values are: 0, 1. | Optional | 
-| use_ip_nt_range_tags | Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in tags. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected. Possible values are: 0, 1. | Optional | 
+| tag_set_include | Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated. | Optional | 
+| tag_set_exclude | Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated. | Optional | 
+| use_ip_nt_range_tags_include | Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in the tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected. valid only when target_from=tags is specified. Possible values are: 0, 1. | Optional | 
+| use_ip_nt_range_tags_exclude | Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to exclude all IP addresses defined in the tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.  valid only when target_from=tags is specified. Possible values are: 0, 1. | Optional | 
+| use_ip_nt_range_tags | Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in tags. When this ispecified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected. Possible values are: 0, 1. | Optional | 
 | iscanner_id | The IDs of the scanner appliances to be used. Multiple entries are comma separated. For an Express Lite user, Internal Scanning must be enabled in the user's account. One of these parameters must also be specified in a request: iscanner_name, iscanner_id, default_scanner, scanners_in_ag, scanners_in_tagset. When none of these are specified, External scanners are used. These parameters are mutually exclusive and cannot be specified in the same request: iscanner_id and iscanner_name. | Optional | 
 | iscanner_name | Specifies the name of the Scanner Appliance for the map, when the map target has private use internal IPs. Using Express Lite, Internal Scanning must be enabled in your account. | Optional | 
 | default_scanner | Specify 1 to use the default scanner in each target asset group. For an Express Lite user, Internal Scanning must be enabled in the user’s account. Possible values are: 0, 1. | Optional | 
@@ -20181,8 +20182,8 @@ launch compliance scans.
 | tag_include_selector |  Select “any” (the default) to include hosts that match at least one of the selected tags. Select “all” to include hosts that match all of the selected tags. Possible values are: all, any. | Optional | 
 | tag_exclude_selector | Select “any” (the default) to exclude hosts that match at least one of the selected tags. Select “all” to exclude hosts that match all of the selected tags. Possible values are: all, any. | Optional | 
 | tag_set_by | Specify “id” (the default) to select a tag set by providing tag IDs. Specify “name” to select a tag set by providing tag names. Possible values are: id, name. | Optional | 
-| tag_set_include | Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated. | Optional | 
-| tag_set_exclude | Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated. | Optional | 
+| tag_set_include | Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated. | Optional | 
+| tag_set_exclude | Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated. | Optional | 
 | use_ip_nt_range_tags | Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in tags. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected. Possible values are: 0, 1. | Optional | 
 | ip_network_id | The ID of a network used to filter the IPs/ranges specified in the“ip” parameter. Set to a custom network ID (note this does not filter IPs/ranges specified in “asset_groups” or “asset_group_ids”). Or set to “0” (the default) for the Global Default Network - this is used to scan hosts outside of your custom networks. | Optional | 
 | runtime_http_header | Set a custom value in order to drop defenses (such as logging, IPs, etc) when an authorized scan is being run. The value you enter will be used in the “Qualys-Scan:” header that will be set for many CGI and web application fingerprinting checks. Some discovery and web server fingerprinting checks will not use this header. | Optional | 
@@ -20348,7 +20349,7 @@ Manage your excluded IPs list using the Excluded IP. The IPs in your excluded IP
 | --- | --- | --- |
 | action | Select add/remove/remove_all ips. Possible values are: add, remove, remove_all. | Required | 
 | comment | User-defined notes (up to 1024 characters). | Required | 
-| ips | The IP addresses to be added to the excluded IPs list. Enter a comma separated list of IPv4 singletons or ranges. For example: 10.10.10.13,10.10.10.25-10.10.10.29. | Optional | 
+| ips | The IP addresses to be added to the excluded IPs list. Enter a comm-separated list of IPv4 singletons or ranges. For example: 10.10.10.13,10.10.10.25-10.10.10.29. | Optional | 
 | expiry_days | (Optional when action=add) The number of days the IPs being added to the excluded IPs list will be considered valid for exclusion. When the expiration is reached, the IPs are removed from the list and made available again for scanning. When unspecified, the IPs being added have no expiration and will remain on the list until removed by a user. | Optional | 
 | dg_names | (Optional when action=add) Specify users who will be notified 7 days before hosts are removed from the excluded hosts list (i.e. supply distribution group names as defined in the Qualys UI). | Optional | 
 | network_id | Assign a network ID to the IPs being added to the excluded IPs list. By default, the user’s default network ID is assigned. | Optional | 
@@ -20619,7 +20620,7 @@ Run patch report
 | output_format | One output format may be specified. When output_format=pdf is specified, the Secure PDF Distribution may be used. Possible values are: pdf, online, xml, csv. | Required | 
 | report_title | A user-defined report title. The title may have a maximum of 128 characters. For a PCI compliance report, the report title is provided by Qualys and cannot be changed. | Optional | 
 | hide_header | (Valid for CSV format report only). Specify hide_header=1 to omit the header information from the report. By default this information is included. | Optional | 
-| recipient_group_id | pecify users who will receive the email notification when the report is complete (i.e. supply a distribution group ID). Where do I find this ID? Log in to your Qualys account, go to Users &gt; Distribution Groups and select Info for a group in the list. | Optional | 
+| recipient_group_id | Specify users who will receive the email notification when the report is complete (i.e. supply a distribution group ID). Where do I find this ID? Log in to your Qualys account, go to Users &gt; Distribution Groups and select Info for a group in the list. | Optional | 
 | pdf_password | (Optional; Required for secure PDF distribution) The password to be used for encryption. Requirements: - the password must have a minimum of 8 characters (ascii), and a maximum of 32 characters - the password must contain alpha and numeric characters - the password cannot match the password for the user’s Qualys account. - the password must follow the password security guidelines defined for your subscription (log in and go to Subscription Setup—&gt;Security Options). | Optional | 
 | recipient_group | Optional; Optional for secure PDF distribution) The report recipients in the form of one or more distribution groups, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}. | Optional | 
 | ips | Specify IPs/ranges to change (override) the report target, as defined in the patch report template. Multiple IPs/ranges are comma separated. When specified, hosts defined in the report template are not included in the report. See also “Using Asset Tags.”. | Optional | 
@@ -20675,7 +20676,7 @@ Run remediation report
 | output_format | One output format may be specified. When output_format=pdf is specified, the Secure PDF Distribution may be used. Possible values are: pdf, html, mht, csv. | Required | 
 | report_title | A user-defined report title. The title may have a maximum of 128 characters. For a PCI compliance report, the report title is provided by Qualys and cannot be changed. | Optional | 
 | hide_header | (Valid for CSV format report only). Specify hide_header=1 to omit the header information from the report. By default this information is included. | Optional | 
-| recipient_group_id | pecify users who will receive the email notification when the report is complete (i.e. supply a distribution group ID). Where do I find this ID? Log in to your Qualys account, go to Users &gt; Distribution Groups and select Info for a group in the list. | Optional | 
+| recipient_group_id | Specify users who will receive the email notification when the report is complete (i.e. supply a distribution group ID). Where do I find this ID? Log in to your Qualys account, go to Users &gt; Distribution Groups and select Info for a group in the list. | Optional | 
 | pdf_password | (Optional; Required for secure PDF distribution) The password to be used for encryption. Requirements: - the password must have a minimum of 8 characters (ascii), and a maximum of 32 characters - the password must contain alpha and numeric characters - the password cannot match the password for the user’s Qualys account. - the password must follow the password security guidelines defined for your subscription (log in and go to Subscription Setup—&gt;Security Options). | Optional | 
 | recipient_group | Optional; Optional for secure PDF distribution) The report recipients in the form of one or more distribution groups, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}. | Optional | 
 | ips | (Optional for remediation report) Specify IPs/ranges you want to include in the report. Multiple IPs and/or ranges are comma separated. | Optional | 
@@ -20963,7 +20964,14 @@ Create a scan schedule in the user’s account.
 | exclude_ip_per_scan | A comma-separated list of IP addresses/ranges to be excluded from the scan when the scan target is specified as IP addresses (not asset tags). One of the following parameters must be set: 'scanners_in_ag', 'default_scanner'. | Optional | 
 | default_scanner | Specify 1 to use the default scanner in each target asset group. For an Express Lite user, Internal Scanning must be enabled in the user’s account. At most, one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
 | scanners_in_ag | Specify 1 to distribute the scan to the target asset groups’ scanner appliances. Appliances in each asset group are tasked with scanning the IPs in the group. By default, up to 5 appliances per group will be used and this can be configured for your account (contact your Account Manager or Support). For an Express Lite user, Internal Scanning must be enabled in the user’s account. At most, one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
-
+target_from | Specify "assets" (the default) when your scan target will include IP addresses/ranges and/or asset groups. Specify "tags" when your scan target will include asset tags. | Optional | 
+tag_include_selector | Select "any" (the default) to include hosts that match at least one of the selected tags. Select "all" to include hosts that match all of the selected tags. | Optional |
+tag_exclude_selector | Select "any" (the default) to exclude hosts that match at least one of the selected tags. Select "all" to exclude hosts that match all of the selected tags. | Optional |
+tag_set_by | Specify "id" (the default) to select a tag set by providing tag IDs. Specify "name" to select a tag set by providing tag names. | Optional |
+tag_set_include | Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated. | Optional |
+tag_set_exclude | Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated. | Optional |
+use_ip_nt_range_tags_include | Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in the tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected. | Optional |
+use_ip_nt_range_tags_exclude | Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to exclude all IP addresses defined in the tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected. | Optional |
 
 #### Context Output
 
@@ -21031,7 +21039,14 @@ Updates a scan schedule in the user’s account.
 | default_scanner | Specify 1 to use the default scanner in each target asset group. For an Express Lite user, Internal Scanning must be enabled in the user’s account. At most, one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
 | scanners_in_ag | Specify 1 to distribute the scan to the target asset groups’ scanner appliances. Appliances in each asset group are tasked with scanning the IPs in the group. By default, up to 5 appliances per group will be used and this can be configured for your account (contact your Account Manager or Support). For an Express Lite user, Internal Scanning must be enabled in the user’s account. At most, one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
 | active | Whether the scheduled scan is activated. Possible values are: 0, 1. | Optional | 
-
+target_from | Specify "assets" (the default) when your scan target will include IP addresses/ranges and/or asset groups. Specify "tags" when your scan target will include asset tags. | Optional | 
+tag_include_selector | Select "any" (the default) to include hosts that match at least one of the selected tags. Select "all" to include hosts that match all of the selected tags. | Optional |
+tag_exclude_selector | Select "any" (the default) to exclude hosts that match at least one of the selected tags. Select "all" to exclude hosts that match all of the selected tags. | Optional |
+tag_set_by | Specify "id" (the default) to select a tag set by providing tag IDs. Specify "name" to select a tag set by providing tag names. | Optional |
+tag_set_include | Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated. | Optional |
+tag_set_exclude | Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated. | Optional |
+use_ip_nt_range_tags_include | Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in the tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected. | Optional |
+use_ip_nt_range_tags_exclude | Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to exclude all IP addresses defined in the tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected. | Optional |
 
 #### Context Output
 
@@ -21704,3 +21719,189 @@ Update Unix records for authenticated scans of hosts running on Unix
 #### Context Output
 
 There is no context output for this command.
+
+### qualys-asset-tag-list
+***
+List asset tags based on a search criteria.
+
+
+#### Base Command
+
+`qualys-asset-tag-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| criteria | Criteria field to search by predefined types. Possible values are: parent, provider, ruleType, name, id, criticalityScore. | Required | 
+| operator | Operator assigned to the search criteria. | Required | 
+| search_data | search content. | Required | 
+| limit | Automatic Pagination. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Qualys.AssetTags.id | Number | Parent asset tag ID. | 
+| Qualys.AssetTags.name | String | Parent asset tag name. | 
+| Qualys.AssetTags.criticality_score | Number | Criticality score assigned to the asset tag. | 
+| Qualys.AssetTags.chlid_id | Number | Child asset tags ID. | 
+| Qualys.AssetTags.chlid_id.child_name | String | Child asset tags name. | 
+| Qualys.AssetTags.tag_name.rule_type | String | Created tag rule type. | 
+| Qualys.AssetTags.tag_name.rule_text | String | Created tag rule text. | 
+
+#### Command example
+```!qualys-asset-tag-list criteria=name operator=EQUALS search_data="example_tag"```
+#### Context Example
+```json
+{
+    "Qualys": {
+        "AssetTags": {
+            "childTags": [
+                {
+                    "id": "1",
+                    "name": "child1"
+                },
+                {
+                    "id": "2",
+                    "name": "child2"
+                }
+            ],
+            "created": "2022-11-29T12:54:52Z",
+            "criticalityScore": "3",
+            "id": "0",
+            "modified": "2022-11-29T12:54:52Z",
+            "name": "example_tag",
+            "ruleText": "example"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tags identified by the specified filter
+>|Id|Name|Criticality Score|Rule Text|Child Tags|
+>|---|---|---|---|---|
+>| 0 | example_tag | 3 | example | **-**	***id***: 1<br/>	***name***: child1<br/>**-**	***id***: 2<br/>	***name***: child2 |
+
+
+### qualys-asset-tag-create
+***
+Create a new asset tag.
+
+
+#### Base Command
+
+`qualys-asset-tag-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the created tag. | Required | 
+| child_name | Names of the created child tags. | Optional | 
+| rule_type | Type of rule to dynamically tagging host.<br>The Rule Type argument determines the type of the Rule Text argument that is acceptable.<br>Possible values are: INSTALLED_SOFTWARE, NETWORK_RANGE, NAME_CONTAINS, OPEN_PORTS, VULN_EXIST, STATIC. | Required | 
+| rule_text | Criteria for the rule. <br/>Optional for STATIC rule type, required for the rest of the rule types. <br/>Acceptable formats for each Rule Type argument: <br/>NETWORK_RANGE - formats: IP Range OR IP Subnet Mask (Exmaple: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24)<br/>VULN_EXIST(QID) - format: Number (Exmple: 12345)<br/>OPEN_PORTS - format: List of numbers (Exmaple: 443,888,12034)<br/>NAME_CONTAINS - format: REGEX (Exmaple: "/^example/")<br/>INSTALLED_SOFTWARE - format: REGEX (Exmaple: "/^example/")<br/>STATIC - *RULE TEXT OPTIONAL* | Optional | 
+| criticality_score | Criticality score of the asset tag. Values between 1 (lowest) and 5 (highest). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Qualys.AssetTags.id | String | Parent asset tag ID. | 
+| Qualys.AssetTags.name | String | Parent asset tag name. | 
+| Qualys.AssetTags.criticality_score | Number | Criticality score assigned to the asset tag. | 
+| Qualys.AssetTags.chlid_id | Number | Child asset tags ID. | 
+| Qualys.AssetTags.chlid_id.child_name | String | Child asset tags name. | 
+| Qualys.AssetTags.tag_name.rule_type | String | Created tag rule type. | 
+| Qualys.AssetTags.tag_name.rule_text | String | Created tag rule text. | 
+
+#### Command example
+```!qualys-asset-tag-create name=example_tag rule_type=STATIC rule_text="example" child_name=child1,child2 criticality_score=3```
+#### Context Example
+```json
+{
+    "Qualys": {
+        "AssetTags": {
+            "childTags": [
+                {
+                    "id": "1",
+                    "name": "child2"
+                },
+                {
+                    "id": "2",
+                    "name": "child1"
+                }
+            ],
+            "created": "2022-11-29T12:54:52Z",
+            "criticalityScore": "3",
+            "id": "0",
+            "modified": "2022-11-29T12:54:52Z",
+            "name": "example_tag",
+            "ruleText": "example"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Asset Tags Created
+>|Id|Name|Criticality Score|Rule Text|Child Tags|
+>|---|---|---|---|---|
+>| 0 | example_tag | 3 | example | **-**	***id***: 1<br/>	***name***: child2<br/>**-**	***id***: 2<br/>	***name***: child1 |
+
+
+### qualys-asset-tag-update
+***
+Update an existing asset tag.
+
+
+#### Base Command
+
+`qualys-asset-tag-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the tag to update. | Required | 
+| name | Name of the created tag. | Required | 
+| rule_type | Type of rule to dynamically tagging host.<br>The Rule Type argument determines the type of the Rule Text argument that is acceptable.<br>Possible values are: INSTALLED_SOFTWARE, NETWORK_RANGE, NAME_CONTAINS, OPEN_PORTS, VULN_EXIST, STATIC. | Required | 
+| rule_text | Criteria for the rule. <br/>Optional for STATIC rule type, required for the rest of the rule types. <br/>Acceptable formats for each Rule Type argument: <br/>NETWORK_RANGE - formats: IP Range OR IP Subnet Mask (Exmaple: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24)<br/>VULN_EXIST(QID) - format: Number (Exmple: 12345)<br/>NAME_CONTAINS - format: REGEX (Exmaple: "/^example/")<br/>INSTALLED_SOFTWARE - format: REGEX (Exmaple: "/^example/")<br/>STATIC - *RULE TEXT OPTIONAL* | Optional | 
+| child_to_remove | Comma-separated list of child tag ID's to remove. | Optional | 
+| criticality_score | Criticality score of the asset tag. Values between 1 (lowest) and 5 (highest). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!qualys-asset-tag-update name=example_tag_updated rule_type=STATIC rule_text="example" id=12345```
+#### Human Readable Output
+
+>Asset tag updated.
+
+### qualys-asset-tag-delete
+***
+Delete an existing asset tag.
+
+
+#### Base Command
+
+`qualys-asset-tag-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the tag to delete. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!qualys-asset-tag-delete id=12345```
+#### Human Readable Output
+
+>Asset tag deleted.

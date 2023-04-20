@@ -34,7 +34,15 @@ if (args.saveAsFile === 'yes') {
 
 var unsecure = (args.unsecure === 'true' || args.insecure === 'true');
 var proxy = (args.proxy === 'true');
-var res = http(args.url, requestObj, unsecure, proxy);
+
+// Add scheme if needed
+var url = args.url;
+var urlLowerCase = url.toLowerCase();
+if (!urlLowerCase.startsWith('http://') && !urlLowerCase.startsWith('https://')) {
+    url = 'http://' + url;
+}
+
+var res = http(url, requestObj, unsecure, proxy);
 var fileName;
 if (args.filename) {
     fileName = args.filename;

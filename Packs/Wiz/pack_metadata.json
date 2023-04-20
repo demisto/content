@@ -2,21 +2,13 @@
     "name": "Wiz",
     "description": "Integrate with Wiz for bidirectional Issue management and fetching of resource information. \n",
     "support": "partner",
-    "currentVersion": "1.2.0",
+    "currentVersion": "1.2.3",
     "author": "Wiz Inc.",
     "url": "https://wiz.io/",
     "email": "support@wiz.io",
     "created": "2021-12-15T7:49:32Z",
     "categories": [
-        "External Expsoure",
-        "Cloud Entitlement Management",
-        "Secure Configuration",
-        "Secure Use of Secrets",
-        "Containers",
-        "Vulnerability Management",
-        "Patch Management",
-        "Malware",
-        "Toxic Combination"
+        "Cloud Services"
     ],
     "tags": [],
     "useCases": [],
@@ -31,5 +23,5 @@
             "name": "Generic Webhook"
         }
     },
-    "githubUser": "solalraveh"
+    "githubUser": "ariel-wiz"
 }

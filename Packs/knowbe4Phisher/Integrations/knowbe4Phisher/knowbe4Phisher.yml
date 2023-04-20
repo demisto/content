@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Network Security
 commonfields:
   id: Phisher
   version: -1
@@ -234,7 +234,7 @@ script:
     description: Removes tags from a given message.
     execution: false
     name: phisher-tags-delete
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.9.46807
   feed: false
   isfetch: true
   longRunning: false

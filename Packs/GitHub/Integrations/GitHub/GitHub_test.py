@@ -73,7 +73,6 @@ LIST_TEAM_MEMBERS_CASES = [
     (40, {'page': 1, 'per_page': 40})
 ]
 
-
 RETURN_ERROR_TARGET = 'GitHub.return_error'
 
 
@@ -396,3 +395,35 @@ def test_list_issue_comments_since(mocker):
     list_issue_comments(issue_number, since_date)
     request_args = patched_request.call_args
     assert 'since' in request_args.kwargs['params']
+
+
+@pytest.mark.parametrize('args, response_content, expected_result', [
+    ({'assignee': 'user1', 'pull_request_number': '1'}, b'{"message": "success"}',
+     "The following users were assigned successfully to PR #1: \n['user1']"),
+    ({'assignee': 'user1, user2', 'pull_request_number': '1'}, b'{"message": "success"}',
+     "The following users were assigned successfully to PR #1: \n['user1', 'user2']"),
+    ({'assignee': 'user3', 'pull_request_number': '1'}, b'{"message": "success"}',
+     "\nThe following users were not assigned to #1: \n['user3'] \nVerify that the users exist and that you have the "
+     "right permissions."),
+])
+def test_assignee(mocker, args, response_content, expected_result):
+    """
+    Given:
+      - Case 1: one valid user to be assigned to PR
+      - Case 2: two valid users to be assigned to a PR
+      - Case 3: invalid user to be assigned to a PR
+    When:
+      - Calling the 'github_add_assignee_command' funciton
+    Then:
+      - Ensure the correct behaviour
+      - Case 1: Should return Success for one provided user
+      - Case 2: Should return Success for two provided users
+      - Case 3: Should return that assignment failed for provided user
+    """
+    mocker.patch.object(demisto, 'args', return_value=args)
+    GitHub.USER_SUFFIX = '/repos/user/repo'
+    mocker.patch('GitHub.http_request', return_value={"assignees": [{"login": "user1"}, {"login": "user2"}]})
+    mocker_results = mocker.patch('GitHub.return_results')
+    GitHub.github_add_assignee_command()
+    mocker_results.assert_called_once()
+    assert mocker_results.call_args_list[0].args[0].readable_output == expected_result

@@ -109,6 +109,11 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
+    scriptarguments:
+      Path:
+        simple: ${inputs.Path}
+      Sensor_ID:
+        simple: ${inputs.Agent_ID}
     separatecontext: true
     loop:
       iscommand: false

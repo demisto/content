@@ -4,9 +4,7 @@ import pytest
 import requests_mock
 
 from CommonServerPython import *
-from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
-    list_mails_command, item_result_creator, create_attachment, reply_email_command, \
-    send_email_command, list_attachments_command, main, API_DATE_FORMAT
+from MicrosoftGraphMail import *
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
@@ -74,7 +72,8 @@ def test_params_working(mocker, params, expected_results):
     MsGraphClient.__init__.assert_called_with(False, expected_results[0], expected_results[1], expected_results[2],
                                               'ms-graph-mail', '/v1.0', True, False, (200, 201, 202, 204), '', 'Inbox',
                                               '15 minutes', 50, 10, 'com', certificate_thumbprint='', private_key='',
-                                              display_full_email_body=False, look_back=0)
+                                              display_full_email_body=False, mark_fetched_read=False, look_back=0,
+                                              managed_identities_client_id=None)
 
 
 def test_build_mail_object():
@@ -266,15 +265,48 @@ def expected_incident():
 
 
 @pytest.fixture()
-def emails_data():
-    with open('test_data/emails_data') as emails_json:
+def emails_data_as_html():
+    return emails_data_as_html_including_body()
+
+
+def emails_data_as_html_including_body():
+    with open('test_data/emails_data_html') as emails_json:
         mocked_emails = json.load(emails_json)
         return mocked_emails
 
 
 @pytest.fixture()
-def emails_data_full_body():
-    with open('test_data/emails_data_full_body') as emails_json:
+def emails_data_as_text():
+    return emails_data_as_text_including_body()
+
+
+def emails_data_as_text_including_body():
+    with open('test_data/emails_data_text') as emails_json:
+        mocked_emails = json.load(emails_json)
+        return mocked_emails
+
+
+def emails_data_as_html_without_body():
+    with open('test_data/emails_data_html_without_body') as emails_json:
+        mocked_emails = json.load(emails_json)
+        return mocked_emails
+
+
+def emails_data_as_text_without_body():
+    with open('test_data/emails_data_text_without_body') as emails_json:
+        mocked_emails = json.load(emails_json)
+        return mocked_emails
+
+
+@pytest.fixture()
+def emails_data_full_body_as_html():
+    with open('test_data/emails_data_full_body_html') as emails_json:
+        return json.load(emails_json)
+
+
+@pytest.fixture()
+def emails_data_full_body_as_text():
+    with open('test_data/emails_data_full_body_text') as emails_json:
         return json.load(emails_json)
 
 
@@ -297,10 +329,39 @@ def last_run_data():
     return last_run
 
 
-@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_fetch_incidents(mocker, client, emails_data, expected_incident, last_run_data):
-    mocker.patch('MicrosoftGraphMail.get_now_utc', return_value='2019-11-12T15:01:00Z')
-    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
+@pytest.mark.parametrize(
+    'client, email_content_html, email_content_text', [
+        (
+            oproxy_client(),
+            emails_data_as_html_including_body(),
+            emails_data_as_text_including_body()
+        ),
+        (
+            self_deployed_client(),
+            emails_data_as_html_without_body(),
+            emails_data_as_text_without_body()
+        )
+    ]
+)
+def test_fetch_incidents(client, email_content_html, email_content_text, mocker, last_run_data, expected_incident):
+    """
+    Given
+     - Case A: emails as text and html including the full body key in the api response.
+     - Case B: emails as text and html without the full body key in the api response.
+
+    When
+     - fetching incidents when there is a body key and when there isn't a body key.
+
+    Then
+     - Case A: make sure the 'body' key is being taken even when 'uniqueBody' key exists.
+     - Case B: make sure the 'uniqueBody' is being taken instead of the 'body' key.
+    """
+    mocker.patch(
+        'CommonServerPython.get_current_time',
+        return_value=dateparser.parse('2019-11-12T15:01:00', settings={'TIMEZONE': 'UTC'})
+    )
+    # the third argument in side effect is for attachments (no-attachments here)
+    mocker.patch.object(client.ms_client, 'http_request', side_effect=[email_content_html, email_content_text, {}])
     mocker.patch.object(demisto, "info")
     result_next_run, result_incidents = client.fetch_incidents(last_run_data)
 
@@ -333,7 +394,7 @@ class TestFetchIncidentsWithLookBack:
         first_email = {
             'id': '1',
             'subject': 'email-1',
-            'lastModifiedDateTime': (
+            'receivedDateTime': (
                 self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=2)
             ).strftime(API_DATE_FORMAT)
         }
@@ -341,7 +402,7 @@ class TestFetchIncidentsWithLookBack:
         second_email = {
             'id': '2',
             'subject': 'email-2',
-            'lastModifiedDateTime': (
+            'receivedDateTime': (
                 self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=5)
             ).strftime(API_DATE_FORMAT)
         }
@@ -349,7 +410,7 @@ class TestFetchIncidentsWithLookBack:
         third_email = {
             'id': '3',
             'subject': 'email-3',
-            'lastModifiedDateTime': (
+            'receivedDateTime': (
                 self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=10)
             ).strftime(API_DATE_FORMAT)
         }
@@ -408,49 +469,54 @@ class TestFetchIncidentsWithLookBack:
             assert next_run['time'] == expected_last_run_timestamps[i - 1]
             assert len(incidents) == 1
             assert incidents[0]['name'] == f'email-{i}'
-            assert 'ID' not in incidents
+            assert 'ID' not in incidents[0]
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_fetch_incidents_changed_folder(mocker, client, emails_data, last_run_data):
+def test_fetch_incidents_changed_folder(mocker, client, emails_data_as_html, emails_data_as_text, last_run_data):
     changed_folder = "Changed_Folder"
     client._folder_to_fetch = changed_folder
     mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
                                                 return_value={'id': 'some_dummy_folder_id'})
-    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
+    # the third argument in side effect is for attachments (no-attachments here)
+    mocker.patch.object(client.ms_client, 'http_request', side_effect=[emails_data_as_html, emails_data_as_text, {}])
     mocker.patch.object(demisto, "info")
     client.fetch_incidents(last_run_data)
 
-    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder)
+    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder, overwrite_rate_limit_retry=True)
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_fetch_incidents_changed_account(mocker, client, emails_data, last_run_data):
+def test_fetch_incidents_changed_account(mocker, client, emails_data_as_html, emails_data_as_text, last_run_data):
     changed_account = "Changed_Account"
     client._mailbox_to_fetch = changed_account
     mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
                                                 return_value={'id': 'some_dummy_folder_id'})
-    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
+    # the third argument in side effect is for attachments (no-attachments here)
+    mocker.patch.object(client.ms_client, 'http_request', side_effect=[emails_data_as_html, emails_data_as_text, {}])
     mocker.patch.object(demisto, "info")
     client.fetch_incidents(last_run_data)
 
-    mocker_folder_by_path.assert_called_once_with(changed_account, last_run_data['LAST_RUN_FOLDER_PATH'])
+    mocker_folder_by_path.assert_called_once_with(changed_account, last_run_data['LAST_RUN_FOLDER_PATH'],
+                                                  overwrite_rate_limit_retry=True)
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_fetch_incidents_detect_initial(mocker, client, emails_data):
+def test_fetch_incidents_detect_initial(mocker, client, emails_data_as_html, emails_data_as_text):
     mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
                                                 return_value={'id': 'some_dummy_folder_id'})
-    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
+    # the third argument in side effect is for attachments (no-attachments here)
+    mocker.patch.object(client.ms_client, 'http_request', side_effect=[emails_data_as_html, emails_data_as_text, {}])
     mocker.patch.object(demisto, "info")
     client.fetch_incidents({})
 
-    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', "Phishing")
+    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', "Phishing", overwrite_rate_limit_retry=True)
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_fetch_incidents_with_full_body(
-    mocker, client, emails_data_full_body, expected_incident_full_body, last_run_data
+    mocker, client, emails_data_full_body_as_html,
+    emails_data_full_body_as_text, expected_incident_full_body, last_run_data
 ):
     """
     Given -
@@ -462,9 +528,15 @@ def test_fetch_incidents_with_full_body(
     Then -
         Make sure that in the details section, there is the full email body content.
     """
-    mocker.patch('MicrosoftGraphMail.get_now_utc', return_value='2019-11-12T15:01:00Z')
+    mocker.patch(
+        'CommonServerPython.get_current_time',
+        return_value=dateparser.parse('2019-11-12T15:01:00', settings={'TIMEZONE': 'UTC'})
+    )
     client.display_full_email_body = True
-    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data_full_body)
+    # the third argument in side effect is for attachments (no-attachments here)
+    mocker.patch.object(
+        client.ms_client, 'http_request', side_effect=[emails_data_full_body_as_html, emails_data_full_body_as_text, {}]
+    )
     mocker.patch.object(demisto, "info")
     result_next_run, result_incidents = client.fetch_incidents(last_run_data)
 
@@ -577,6 +649,35 @@ def test_get_attachment(client):
         output = res.to_context().get('EntryContext', {})
         assert output.get(output_prefix).get('ID') == 'exampleID'
         assert output.get(output_prefix).get('Subject') == 'Test it'
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_get_attachments_without_attachment_id(mocker, client):
+    """
+    Given:
+        - A user ID 'ex@example.com'
+
+    When:
+        - Calling 'get_attachment_command' method.
+
+    Then:
+        - Validate that the message object created successfully and all the attachment where downloaded.
+
+    """
+    from MicrosoftGraphMail import get_attachment_command
+    output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
+    with open('test_data/mail_with_attachments') as mail_json:
+        user_id = 'ex@example.com'
+        test_args = {'user_id': user_id}
+        raw_response = json.load(mail_json)
+        mocker.patch.object(client, 'get_attachment', return_value=raw_response)
+        res = get_attachment_command(client, test_args)
+        assert isinstance(res, List)
+        assert len(res) == len(raw_response)
+        for i, attachment in enumerate(res):
+            output = attachment.to_context().get('EntryContext', {})
+            assert output.get(output_prefix).get('ID') == f'exampleID{i}'
+            assert output.get(output_prefix).get('Subject') == f'Test it{i}'
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
@@ -1234,3 +1335,72 @@ def test_fetch_last_emails__all_mails_in_exclude(mocker):
     fetched_emails, ids = client._fetch_last_emails('', last_fetch='2', exclude_ids=['1', '2'])
     assert len(fetched_emails) == 0
     assert ids == ['1', '2']
+
+
+@pytest.mark.parametrize("args",
+                         [
+                             ({"user_id": "test@mail.com", "message_ids": "EMAIL1", "status": "Read"}),
+                             ({"user_id": "test@mail.com", "message_ids": "EMAIL1", "folder_id": "Inbox",
+                               "status": "Read"}),
+                             ({"user_id": "test@mail.com", "message_ids": "EMAIL1", "status": "Unread"}),
+                             ({"user_id": "test@mail.com", "message_ids": "EMAIL1", "folder_id": "Inbox",
+                               "status": "Unread"}),
+                         ])
+def test_update_email_status_command(mocker, args: dict):
+    mark_as_read = (args["status"].lower() == 'read')
+
+    client = self_deployed_client()
+    http_request = mocker.patch.object(MicrosoftClient, "http_request", return_value={})
+
+    result = update_email_status_command(client=client, args=args)
+
+    if "folder_id" in args:
+        http_request.assert_called_with(
+            method="PATCH",
+            url_suffix=f"/users/{args['user_id']}/"
+                       f"{build_folders_path(args['folder_id'])}/messages/{args['message_ids']}",
+            json_data={'isRead': mark_as_read},
+        )
+
+    else:
+        http_request.assert_called_with(
+            method="PATCH",
+            url_suffix=f"/users/{args['user_id']}/messages/{args['message_ids']}",
+            json_data={'isRead': mark_as_read},
+        )
+
+    assert result.outputs is None
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+    from MicrosoftGraphMail import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import re
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    requests_mock.get(re.compile(f'^{Resources.graph}.*'), json={})
+
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'results', return_value=params)
+    mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
+
+    main()
+
+    assert 'ok' in demisto.results.call_args[0][0]
+    qs = get_mock.last_request.qs
+    assert qs['resource'] == [Resources.graph]
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs

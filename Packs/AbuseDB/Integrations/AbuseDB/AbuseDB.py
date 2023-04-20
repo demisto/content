@@ -4,18 +4,18 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 import csv
 import os
-
+import urllib3
 import requests
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS '''
 VERBOSE = True
 SERVER = demisto.params().get('server')
 if not SERVER.endswith('/'):
     SERVER += '/'
-API_KEY = demisto.params().get('apikey')
+API_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('apikey')
 MAX_AGE = demisto.params().get('days')
 THRESHOLD = demisto.params().get('threshold')
 INSECURE = demisto.params().get('insecure')
@@ -114,7 +114,7 @@ def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THR
         return REPORT_SUCCESS if url_suffix == REPORT_CMD else analysis.json()
     except Exception as e:
         LOG(e)
-        return_error(e.message)
+        return_error(str(e))
 
 
 def analysis_to_entry(info, reliability, threshold=THRESHOLD, verbose=VERBOSE):
@@ -183,7 +183,7 @@ def blacklist_to_entry(data, saveToContext):
     ips = [d.get("ipAddress") for d in data]
     context = {"Blacklist": ips}
     temp = demisto.uniqueFile()
-    with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
+    with open(demisto.investigation()['id'] + '_' + temp, 'w') as f:
         wr = csv.writer(f, quoting=csv.QUOTE_ALL)
         for ip in ips:
             wr.writerow([ip])
@@ -278,7 +278,7 @@ def test_module(reliability):
         check_ip_command(ip=TEST_IP, verbose=False, reliability=reliability)
     except Exception as e:
         LOG(e)
-        return_error(e.message)
+        return_error(str(e))
     demisto.results('ok')
 
 
@@ -320,4 +320,4 @@ try:
 
 except Exception as e:
     LOG.print_log()
-    return_error(e.message)
+    return_error(str(e))

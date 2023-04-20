@@ -39,7 +39,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| File | An EML or MSG file. | File.None | Optional |
+| File | An EML or MSG file. | File | Optional |
 | Email | The receiver email address. | incident.emailto | Optional |
 | EmailCC | The email CC addresses. | incident.emailcc | Optional |
 | EmailFrom | The sender email address. | incident.emailfrom | Optional |

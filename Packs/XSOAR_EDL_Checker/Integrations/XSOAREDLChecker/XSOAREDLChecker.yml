@@ -1,0 +1,44 @@
+category: Utilities
+commonfields:
+  id: XSOAR EDL Checker
+  version: -1
+configuration:
+- additionalinfo: The name of the edl from the generic indicator export service
+  display: EDL Name
+  name: edl_name
+  required: true
+  type: 0
+- display: Username
+  displaypassword: Password
+  name: credentials
+  required: false
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Checks an XSOAR hosted EDL to make sure it's returning a valid response.   Supports PAN-OS (text), CSV, or JSON EDLs.
+display: XSOAR EDL Checker
+name: XSOAR EDL Checker
+script:
+  commands:
+  - arguments: []
+    description: 'Checks the EDL and returns the response. '
+    name: xsoaredlchecker-get-edl
+    outputs:
+    - contextPath: EDLChecker.Name
+      description: The Name of the EDL from the Generic Indicators Export Service instance
+    - contextPath: EDLChecker.Status
+      description: The HTTP Status Code returned by the EDL
+    - contextPath: EDLChecker.Response
+      description: The Response or Error from the check.
+    - contextPath: EDLChecker.ItemsOnList
+      description: The number of indicators on the list, assuming a successful response!
+  dockerimage: demisto/python3:3.10.9.40422
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.5.0
+tests:
+- TestXSOAREDLCheckerPlaybook

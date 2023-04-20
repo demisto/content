@@ -321,3 +321,19 @@ def test_connection_response(requests_mock):
         error_response(None)
     except Exception as e:
         assert e == SNXErrorMsg.INVALID_ERR
+
+
+def test_quoto_cmd(requests_mock):
+    from SecneurXAnalysis import Client, get_quota_cmd
+
+    res = util_load_json('test_data/get_response_example.json')
+    mock_response = res['quota_response']
+    requests_mock.get(f'{SERVER_URL}/get_quota', json=mock_response)
+    client = Client(
+        base_url=SERVER_URL,
+        verify=False,
+        headers=HEADERS,
+        proxy=False
+    )
+    res = get_quota_cmd(client)
+    assert res.outputs == mock_response[DATA_KEY]

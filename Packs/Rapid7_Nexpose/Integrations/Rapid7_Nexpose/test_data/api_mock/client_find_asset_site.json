@@ -1,0 +1,73 @@
+{
+    "records": [
+        {
+            "scanID": 759,
+            "scanStatus": null,
+            "siteID": 1,
+            "nodeID": 821,
+            "operatingSystem": "Linux 3.10",
+            "siteName": "Test",
+            "completed": 1606404084592,
+            "vulnCount": 7,
+            "ipAddress": "192.0.2.0",
+            "viewSite": true,
+            "isMobile": false,
+            "hostname": null,
+            "duration": 37771,
+            "scanEngineName": "Local scan engine"
+        },
+        {
+            "scanID": 758,
+            "scanStatus": null,
+            "siteID": 1,
+            "nodeID": 819,
+            "operatingSystem": "Linux 3.10",
+            "siteName": "Test",
+            "completed": 1606399245780,
+            "vulnCount": 7,
+            "ipAddress": "192.0.2.0",
+            "viewSite": true,
+            "isMobile": false,
+            "hostname": null,
+            "duration": 37202,
+            "scanEngineName": "Local scan engine"
+        },
+        {
+            "scanID": 757,
+            "scanStatus": null,
+            "siteID": 1,
+            "nodeID": 818,
+            "operatingSystem": "Linux 3.10",
+            "siteName": "Test",
+            "completed": 1606399009900,
+            "vulnCount": 7,
+            "ipAddress": "192.0.2.0",
+            "viewSite": true,
+            "isMobile": false,
+            "hostname": null,
+            "duration": 38148,
+            "scanEngineName": "Local scan engine"
+        },
+        {
+            "scanID": 756,
+            "scanStatus": null,
+            "siteID": 1,
+            "nodeID": 817,
+            "operatingSystem": "Linux 3.10",
+            "siteName": "Test",
+            "completed": 1606398765616,
+            "vulnCount": 7,
+            "ipAddress": "192.0.2.0",
+            "viewSite": true,
+            "isMobile": false,
+            "hostname": null,
+            "duration": 37518,
+            "scanEngineName": "Local scan engine"
+        }
+    ],
+    "totalRecords": 690,
+    "rowsPerPage": 10,
+    "sortColumn": "completed",
+    "recordOffset": 0,
+    "sortDirection": "DESC"
+}

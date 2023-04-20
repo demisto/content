@@ -1,0 +1,64 @@
+{
+    "data": {
+      "messages": {
+        "sdrAge": "30 days (or greater)",
+        "attachments": "",
+        "hostName": "esa1.test.eu.iphmx.com (1.1.1.1)",
+        "direction": "incoming",
+        "isCompleteData": true,
+        "messageStatus": "Delivered",
+        "mailPolicy": [
+          "DEFAULT"
+        ],
+        "senderGroup": "ACCEPTLIST",
+        "subject": "Test Test",
+        "showSummaryTimeBox": true,
+        "sdrCategory": "N/A",
+        "mid": [
+          349
+        ],
+        "sendingHostSummary": {
+          "reverseDnsHostname": "test.test.net (verified)",
+          "ipAddress": "1.1.1.1",
+          "sbrsScore": "3.5"
+        },
+        "ampTgCategories": [
+          
+        ],
+        "smtpAuthId": "",
+        "midHeader": "test.westeurope.production.microsoft.com>",
+        "timestamp": "07 Sep 2022 09:08:03 (GMT)",
+        "showDLP": false,
+        "messageSize": "70.14 (KB)",
+        "sdrThreatLevels": "3",
+        "sdrReputation": "Neutral",
+        "showURL": false,
+        "recipient": [
+          "test@test.com"
+        ],
+        "sender": "test1@test.com",
+        "showAMP": false,
+        "summary": [
+          {
+            "timestamp": "07 Sep 2022 09:08:03 (GMT)",
+            "description": "Incoming connection (ICID 13646) has sender_group: ACCEPTLIST, sender_ip: 1.1.1.1 and sbrs: 3.5",
+            "lastEvent": false
+          },
+          {
+            "timestamp": "07 Sep 2022 09:08:03 (GMT)",
+            "description": "Protocol SMTP interface Data 1  (IP 1.1.1.1) on incoming connection (ICID 13646) from sender IP 1.1.1.1 Reverse DNS  test.test.net verified yes.",
+            "lastEvent": false
+          },
+          {
+            "timestamp": "07 Sep 2022 09:08:06 (GMT)",
+            "description": "Message 349 to test@test.com received remote SMTP response '2.6.0 <test.test.com> [InternalId=54654658468, Hostname=test.PROD.OUTLOOK.COM] 92283 bytes in 0.146, 613.600 KB/sec Queued mail for delivery'.",
+            "lastEvent": true
+          }
+        ],
+        "allIcid": [
+          13646
+        ],
+        "headerFrom": "test@test.com"
+      }
+    }
+  }

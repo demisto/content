@@ -1,0 +1,43 @@
+{
+    "name": "CVE-2022-41040 & CVE-2022-41082 - ProxyNotShell",
+    "description": "This pack handles Microsoft Exchange SSRF CVE-2022-41040 & RCE CVE-2022-41082 vulnerabilities, aka ProxyNotShell, a 0-day exploits in Microsoft Exchange Servers",
+    "support": "xsoar",
+    "currentVersion": "1.0.5",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "zero-day",
+        "0-day",
+        "Exchange",
+        "Microsoft Exchange",
+        "IIS",
+        "Microsoft",
+        "ProxyNotShell",
+        "CVE-2022-41040",
+        "CVE-2022-41082",
+        "CVE-2022-41080",
+        "41080",
+        "41040",
+        "41082",
+        "RCE",
+        "SSRF",
+        "OWA",
+        "OWASSRF"
+    ],
+    "dependencies": {
+        "MajorBreachesInvestigationandResponse": {
+            "mandatory": true,
+            "display_name": "Rapid Breach Response"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

@@ -414,15 +414,30 @@ tasks:
     task:
       id: 5c66cddf-70e8-4d22-8b27-e7e327f5c52a
       version: -1
-      name: Isolate Endpoint - Generic
-      playbookName: Isolate Endpoint - Generic
-      description: Isolate Endpoint - Generic
+      name: Isolate Endpoint - Generic V2
+      description: |-
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
+      playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "18"
+    scriptarguments:
+      Endpoint_hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      Endpoint_ip:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
     separatecontext: true
     view: |-
       {
@@ -465,7 +480,7 @@ outputs:
   description: The total number of vulnerabilities.
   type: number
 - contextPath: XMCyber.Entity.isAsset
-  description: Is Entity a Critical Asset
+  description: Entity is a critical asset
   type: boolean
 - contextPath: XMCyber.Entity.averageComplexityLevel
   description: Level of the average complexity to compromise this entity

@@ -1,0 +1,423 @@
+id: Palo Alto Networks BPA - Submit Scan
+description: 'This playbook accepts a list of BPA checks, triggers a job and returns the checks results.'
+inputs:
+- description: A comma-separated list of the BPA IDs of the results to return.
+  key: check_id
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: A comma-separated list of the name of the results to return.
+  key: check_name
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Palo Alto Networks BPA - Submit Scan
+outputs:
+- contextPath: PAN-OS-BPA.JobResults.JobID
+  description: The submitted job ID.
+  type: string
+- contextPath: PAN-OS-BPA.JobResults.Checks.check_id
+  description: The list of check IDs.
+  type: string
+- contextPath: PAN-OS-BPA.JobResults.Checks.check_name
+  description: The list of check names.
+  type: string
+- contextPath: PAN-OS-BPA.JobResults.Checks.check_message
+  description: The list of check messages.
+  type: string
+- contextPath: PAN-OS-BPA.JobResults.Checks.check_passed
+  description: Indicates whether the check has passed.
+  type: boolean
+- contextPath: BPA.Passed
+  description: BPA passed checks
+  type: unknown
+- contextPath: BPA.Failed
+  description: BPA failed checks
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7305c0a3-c22c-43b2-8c80-7949ad1d16a9
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 7305c0a3-c22c-43b2-8c80-7949ad1d16a9
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": -140
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: BPA
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: cd20097c-17bf-44f2-8ced-94f52d4a0fc2
+      iscommand: false
+      name: Is Palo Alto Networks BPA integration enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: cd20097c-17bf-44f2-8ced-94f52d4a0fc2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 10
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e2173184-1408-44a4-8c62-c9a659a258d9
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: e2173184-1408-44a4-8c62-c9a659a258d9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1200
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Submits a job to the BPA job queue. PAN-OS devices with large configuration files may take a few minutes for the job to be submitted.
+      id: 7daa2b30-154e-4ead-8389-a7aa7edb1f7d
+      iscommand: true
+      name: BPA - Submit job
+      script: '|||pan-os-bpa-submit-job'
+      type: regular
+      version: -1
+    taskid: 7daa2b30-154e-4ead-8389-a7aa7edb1f7d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 360
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Ids:
+        simple: ${PAN-OS-BPA.SubmittedJob.JobID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: task_id
+      PollingCommandName:
+        simple: pan-os-bpa-get-job-results
+      Timeout:
+        simple: "10"
+      dt:
+        simple: PAN-OS-BPA.JobResults(val.Status!=='complete').JobID
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: db4b7465-2fd0-46d8-884c-fda8ec3a4228
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: db4b7465-2fd0-46d8-884c-fda8ec3a4228
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 540
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      check_id:
+        complex:
+          root: inputs.check_id
+      check_name:
+        complex:
+          root: inputs.check_name
+      task_id:
+        complex:
+          accessor: JobID
+          root: PAN-OS-BPA.SubmittedJob
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: BPA
+      description: Returns the results of the BPA job.
+      id: 88865323-d064-4972-84dc-b94b42ab5ee9
+      iscommand: true
+      name: BPA -get job results
+      script: BPA|||pan-os-bpa-get-job-results
+      type: regular
+      version: -1
+    taskid: 88865323-d064-4972-84dc-b94b42ab5ee9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5d95bc51-be1b-4bb2-8044-6e5001ccdd7c
+      iscommand: false
+      name: Set check results to layout
+      type: title
+      version: -1
+      description: ''
+    taskid: 5d95bc51-be1b-4bb2-8044-6e5001ccdd7c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 890
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: PAN-OS-BPA
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 1322dd6c-932c-4190-80ab-9b502bd2b5d3
+      iscommand: false
+      name: Delete past BPA jobs from context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 1322dd6c-932c-4190-80ab-9b502bd2b5d3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 180
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: BPA.Passed
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: PAN-OS-BPA.JobResults.Checks.check_passed
+              operator: isEqualString
+              right:
+                value:
+                  simple: "true"
+          root: PAN-OS-BPA.JobResults.Checks
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      id: 4ff58f6c-be67-48e9-838d-91798f4fddbc
+      iscommand: false
+      name: Set passed checks to context
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 4ff58f6c-be67-48e9-838d-91798f4fddbc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1030
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: BPA.Failed
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: PAN-OS-BPA.JobResults.Checks.check_passed
+              operator: isEqualString
+              right:
+                value:
+                  simple: "false"
+          root: PAN-OS-BPA.JobResults.Checks
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      id: e0f3eff7-9267-422e-845f-735035950ee2
+      iscommand: false
+      name: Set failed checks to context
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: e0f3eff7-9267-422e-845f-735035950ee2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 1030
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.2
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 1070,
+        "x": 430,
+        "y": -140
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2

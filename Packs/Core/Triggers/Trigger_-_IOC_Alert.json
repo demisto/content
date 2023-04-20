@@ -1,0 +1,18 @@
+{
+  "trigger_id": "674abe1c33857b48c54832d8244db1a8",
+  "playbook_id": "IOC Alert",
+  "suggestion_reason": "Recommended for alerts triggered by XDR IOC",
+  "description": "This trigger is responsible for XDR IOC alerts",
+  "trigger_name": "IOC Alert",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_source",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "IOC"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,6 @@
+name: Azure Events Hub Modeling Rule
+id: azure_events_hub_modeling_rule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

@@ -1,0 +1,12 @@
+[MODEL: dataset="microsoft_ata_raw"]
+alter
+    xdm.network.application_protocol = app, 
+    xdm.event.description = msg,
+    xdm.source.host.hostname = shost, 
+    xdm.source.user.username = suser,
+    xdm.event.id = externalId,
+    xdm.alert.severity = cefSeverity,
+    xdm.observer.version = cefDeviceVersion,
+    xdm.alert.subcategory = cefDeviceEventClassId,
+    xdm.intermediate.host.fqdn = cs1,
+    xdm.target.host.fqdn = request;

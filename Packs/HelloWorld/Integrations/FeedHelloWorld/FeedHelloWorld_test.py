@@ -81,7 +81,7 @@ def test_build_iterator(requests_mock):
     with open('test_data/FeedHelloWorld_mock.txt', 'r') as file:
         response = file.read()
     requests_mock.get(URL, text=response)
-    expected_url = 'https://url1.com'
+    expected_url = 'https://url1.com/path'
     client = Client(
         base_url=URL,
         verify=False,

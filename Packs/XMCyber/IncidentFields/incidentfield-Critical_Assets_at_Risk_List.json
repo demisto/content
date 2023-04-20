@@ -30,7 +30,7 @@
     "columns": [
         {
             "key": "name",
-            "displayName": "Name",
+            "displayName": "Critical asset",
             "type": "shortText",
             "required": false,
             "script": "",

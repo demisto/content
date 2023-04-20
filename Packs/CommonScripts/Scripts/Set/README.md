@@ -43,7 +43,7 @@ Cortex XDR incident handling v2
 CrowdStrike Falcon Sandbox - Detonate file
 Darkfeed Threat hunting-research
 Detonate File - BitDam
-Detonate File - CrowdStrike Falcon X
+Detonate File - CrowdStrike Falcon Intelligence Sandbox
 Detonate File - FireEye AX
 Detonate File - JoeSecurity
 Detonate File - Lastline

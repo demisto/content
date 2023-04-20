@@ -1,0 +1,151 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Recorded Future - Incoming Mapper",
+    "mapping": {
+        "Recorded Future Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Alert Name": {
+                    "simple": "title"
+                },
+                "Event ID": {
+                    "simple": "rule.id"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Rule Name": {
+                    "simple": "rule.name"
+                },
+                "details": {
+                    "simple": "url"
+                },
+                "occurred": {
+                    "simple": "triggered"
+                }
+            }
+        },
+        "Recorded Future Leaked Credential Monitoring": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Alert Name": {
+                    "simple": "title"
+                },
+                "Event ID": {
+                    "simple": "rule.id"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Recorded Future Alert Entities": {
+                    "complex": {
+                        "accessor": "entities",
+                        "filters": [],
+                        "root": "entities.documents.references",
+                        "transformers": []
+                    }
+                },
+                "Rule Name": {
+                    "simple": "rule.name"
+                },
+                "details": {
+                    "simple": "url"
+                },
+                "occurred": {
+                    "simple": "triggered"
+                }
+            }
+        },
+        "Recorded Future Potential Typosquat": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Alert Name": {
+                    "simple": "title"
+                },
+                "Domain Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "entities.entity",
+                        "transformers": []
+                    }
+                },
+                "Event ID": {
+                    "simple": "rule.id"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Recorded Future Alert Entities": {
+                    "complex": {
+                        "accessor": "entity",
+                        "filters": [],
+                        "root": "entities",
+                        "transformers": []
+                    }
+                },
+                "Rule Name": {
+                    "simple": "rule.name"
+                },
+                "details": {
+                    "simple": "url"
+                },
+                "occurred": {
+                    "simple": "triggered"
+                }
+            }
+        },
+        "Recorded Future New Critical or Pre NVD Vulnerabilities": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Alert Name": {
+                    "simple": "title"
+                },
+                "Event ID": {
+                    "simple": "rule.id"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Recorded Future Alert Entities": {
+                    "complex": {
+                        "accessor": "entity",
+                        "filters": [],
+                        "root": "entities",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Rule Name": {
+                    "simple": "rule.name"
+                },
+                "details": {
+                    "simple": "url"
+                },
+                "occurred": {
+                    "simple": "triggered"
+                }
+            }
+        }
+    },
+    "name": "Recorded Future - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

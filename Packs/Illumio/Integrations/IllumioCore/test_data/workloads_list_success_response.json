@@ -1,0 +1,34 @@
+[
+  {
+    "href": "/orgs/1/workloads/dummy-uuid",
+    "deleted": false,
+    "description": "Updated by System Administrator [dummy.service.com] at July 2, 2022 3:44:28 PM PDT",
+    "hostname": "Perf_test 8314",
+    "enforcement_mode": "visibility_only",
+    "visibility_level": "flow_summary",
+    "public_ip": "0.0.0.0",
+    "interfaces": [],
+    "ignored_interface_names": [],
+    "online": true,
+    "labels": [],
+    "services": {},
+    "agent": {
+      "config": {
+        "log_traffic": false,
+        "visibility_level": "flow_summary",
+        "mode": "illuminated"
+      }
+    },
+    "created_at": "2022-03-14T14:45:38.810397Z",
+    "created_by": {
+      "href": "/users/22"
+    },
+    "updated_at": "2022-07-03T00:23:18.579242Z",
+    "updated_by": {
+      "href": "/users/22"
+    },
+    "caps": [
+      "write"
+    ]
+  }
+]

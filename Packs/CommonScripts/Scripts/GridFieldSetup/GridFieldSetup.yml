@@ -1,0 +1,45 @@
+args:
+- description: columns for the grid field in comma separated format
+  name: keys
+  required: true
+- description: value for 1st key (can be string or context path)
+  name: val1
+  required: true
+- description: value for 2nd key (can be string or context path)
+  name: val2
+- description: value for 3rd key (can be string or context path)
+  name: val3
+- description: value for 4th key (can be string or context path)
+  name: val4
+- description: value for 5th key (can be string or context path)
+  name: val5
+- description: Grid field to populate
+  name: gridfield
+  required: true
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: whether to overwrite what is in the gridfield or not (default is to append)
+  name: overwrite
+  predefined:
+  - "true"
+  - "false"
+comment: |-
+  Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+  `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+commonfields:
+  id: GridFieldSetup
+  version: -1
+dockerimage: demisto/python3:3.10.10.48392
+enabled: true
+name: GridFieldSetup
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.5.0
+tests:
+- GridFieldSetup_test

@@ -1,0 +1,33 @@
+{
+    "id": "indicator_feedcycognitosevereissues",
+    "version": -1,
+    "modified": "2022-05-28T17:02:37.897977609+05:30",
+    "name": "FeedCyCognito Severe Issues",
+    "ownerOnly": false,
+    "cliName": "feedcycognitosevereissues",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "IP",
+        "Domain",
+        "CyCognito Asset"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

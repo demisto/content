@@ -81,9 +81,10 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies -idp $ARTIFACTS_FOLDER/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
     - section_end "Calculate Packs Dependencies"
+    - job-done
 
 
-demisto-sdk-nightly:create-instance:
+demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   tags:
     - gke
   extends:
@@ -91,15 +92,17 @@ demisto-sdk-nightly:create-instance:
     - .sdk-nightly-schedule-rule
   variables:
     IFRA_ENV_TYPE: "Server Master"
+    KUBERNETES_CPU_REQUEST: 2000m
   cache:
     policy: pull-push
   needs: []
-  stage: create-instances
+  stage: prepare-testing-bucket
   script:
     - !reference [.download-demisto-conf]
     - |
       [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
       python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
+    - job-done
 
 
 demisto-sdk-nightly:run-commands-against-instance:
@@ -116,13 +119,13 @@ demisto-sdk-nightly:run-commands-against-instance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
+  needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
     - !reference [.open-ssh-tunnel]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - !reference [.download-demisto-conf]
     - |
-      export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')
       export DEMISTO_BASE_URL="https://localhost:$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].TunnelPort')"
       echo "Server URL: $DEMISTO_BASE_URL"
     - section_start "Unlock HelloWorld Integration and Playbook" --collapsed
@@ -153,17 +156,24 @@ demisto-sdk-nightly:run-commands-against-instance:
     - section_start "Destroy instances"
     - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
     - section_end "Destroy instances"
+    - job-done
 
 
 demisto-sdk-nightly:run-end-to-end-tests:
   tags:
-    - gke # Better when not needing docker-in-docker
+    - gce
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
+  services: # needed for running e2e tests for docker
+    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+      alias: docker
   variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
-  needs: ["demisto-sdk-nightly:create-instance"]
+  needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
     - !reference [.open-ssh-tunnel]
@@ -174,7 +184,9 @@ demisto-sdk-nightly:run-end-to-end-tests:
       TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
       export DEMISTO_BASE_URL="https://localhost:$TUNNEL_PORT"
       echo "Server URL: $DEMISTO_BASE_URL"
+      unset DEMISTO_API_KEY # a temporary fix 
       python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/ || EXIT_CODE=$?
+    - job-done
     - exit $EXIT_CODE
 
 demisto-sdk-nightly:fan-in:

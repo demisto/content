@@ -1,0 +1,16 @@
+{
+    "id": "6fc69838-f552-4ae0-80b9-a909382733bc",
+    "name": "Sophos Central Cosmos",
+    "description": "User devices in Seattle office",
+    "type": "computer",
+    "endpoints": {
+        "total": 0,
+        "itemsCount": 0,
+        "items": []
+    },
+    "tenant": {
+        "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+    },
+    "createdAt": "2022-09-19T17:15:23.279Z",
+    "updatedAt": "2022-09-20T11:07:58.645Z"
+}

@@ -2,20 +2,14 @@
     "name": "PhishER",
     "description": "A pack for KnowBe4 PhishER integration",
     "support": "partner",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.10",
     "author": "KnowBe4",
     "url": "https://www.knowbe4.com/products/phisher",
     "email": "support@knowbe4.com",
     "categories": [
-        "Email Gateway"
+        "Network Security"
     ],
-    "tags": [
-        "Alerts",
-        "Breach",
-        "Email",
-        "Scam",
-        "Spam"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [],

@@ -48,6 +48,8 @@ script:
     - name: domain
       required: true
       description: Domain name to get information for.
+      default: true
+      isArray: true
     outputs:
     - contextPath: ThreatMiner.Domain.Whois.Server
       description: Whois server address.
@@ -129,6 +131,8 @@ script:
     - name: ip
       required: true
       description: IP address to get information for.
+      default: true
+      isArray: true
     outputs:
     - contextPath: ThreatMiner.IP.Address
       description: IP address that was searched.
@@ -196,6 +200,8 @@ script:
     - name: file
       required: true
       description: File hash (md5, sha1, sha256)
+      default: true
+      isArray: true
     - name: threshold
       description: If ThreatScore is greater or equal than the threshold, then file will be considered malicious
       defaultValue: "10"
@@ -286,7 +292,7 @@ script:
       type: string
     description: Retrieves data from ThreatMiner about a specified file.
   runonce: false
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.8.36650
 tests:
 - ThreatMiner-Test
 fromversion: 5.0.0

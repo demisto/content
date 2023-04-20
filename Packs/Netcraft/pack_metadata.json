@@ -1,14 +1,15 @@
 {
-    "name": "Netcraft",
-    "description": "An integration for Netcraft, allowing you to open and handle takedown requests.",
+    "name": "Netcraft (Deprecated)",
+    "description": "Deprecated. No available replacement.",
     "support": "xsoar",
-    "currentVersion": "1.0.13",
+    "hidden": true,
+    "currentVersion": "1.0.15",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Network Security"
+        "Utilities"
     ],
     "tags": [],
     "useCases": [],

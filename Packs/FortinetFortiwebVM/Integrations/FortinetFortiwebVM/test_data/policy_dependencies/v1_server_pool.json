@@ -1,0 +1,14 @@
+[
+    {
+        "id": 1,
+        "_id": "dsasda",
+        "name": "dsasda",
+        "poolCount": 0,
+        "dissingleServerOrServerBalance": "Single Server",
+        "distype": "Reverse Proxy",
+        "type": 1,
+        "comments": "",
+        "singleServerOrServerBalance": 1,
+        "can_delete": false
+    }
+]

@@ -2,7 +2,7 @@ import demistomock as demisto
 import os
 
 import pytest
-from ReadPDFFileV2 import ShellException
+from ReadPDFFileV2 import PdfInvalidCredentialsException, PdfPermissionsException
 
 CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test_data'
 
@@ -27,6 +27,29 @@ def test_urls_are_found_correctly(mocker):
     assert urls == {'http://www.w3.org/1999/xhtml'}
 
 
+def test_incorrect_authentication():
+    """
+    Given
+        - An encrypted pdf file and an incorrect password.
+    When
+        - Trying to decrypt the file(using the password) to extract data.
+    Then
+        - The program will catch this error and raise the appropriate exception.
+    """
+    from ReadPDFFileV2 import get_pdf_metadata, handling_pdf_credentials
+    file_path = f'{CWD}/encrypted.pdf'
+    dec_file_path = f'{CWD}/decrypted.pdf'
+
+    with pytest.raises(PdfInvalidCredentialsException) as e:
+        get_pdf_metadata(file_path=file_path, user_password='12')
+    assert 'Incorrect password' in str(e)
+
+    with pytest.raises(PdfInvalidCredentialsException) as e:
+        handling_pdf_credentials(cpy_file_path=file_path, dec_file_path=dec_file_path, encrypted='yes',
+                                 user_password='12')
+    assert 'Incorrect password' in str(e)
+
+
 def test_get_files_names_in_path():
     from ReadPDFFileV2 import get_files_names_in_path
     pdf_file_names = get_files_names_in_path('test_data', '*.pdf')
@@ -43,68 +66,63 @@ def test_get_images_paths_in_path():
     assert 'test_data/scanned.pdf' not in img_file_paths
 
 
-def test_get_pdf_metadata_with_encrypted():
+ENC_PDF_META_DATA_CASES = [
+    ((b'Title:          sample1.pdf\nKeywords:       \nCreator:        Preview\n'
+      b'Producer:       macOS Version 10.14.4 (Build 18E226) Quartz PDFContext\nCreationDate:   Wed May 15 08:18:48 2019\n'
+      b'ModDate:        Wed May 15 08:18:48 2019\nTagged:         no\nForm:           none\nPages:          2\n'
+      b'Encrypted:      AES 128-bit\nPermissions:    print:yes copy:yes change:yes addNotes:yes\n'
+      b'Page size:      595 x 842 pts (A4) (rotated 0 degrees)\nFile size:      71085 bytes\nOptimized:      no\n'
+      b'PDF version:    1.6\n'),
+     {'Title': 'sample1.pdf', 'Keywords': '', 'Creator': 'Preview',
+      'Producer': 'macOS Version 10.14.4 (Build 18E226) Quartz PDFContext', 'CreationDate': 'Wed May 15 08:18:48 2019',
+      'ModDate': 'Wed May 15 08:18:48 2019', 'Tagged': 'no',
+      'Form': 'none', 'Pages': '2', 'Encrypted': 'AES 128-bit', 'Permissions': 'print:yes copy:yes change:yes addNotes:yes',
+      'PageSize': '595 x 842 pts (A4) (rotated 0 degrees)', 'FileSize': '71085 bytes', 'Optimized': 'no', 'PDFVersion': '1.6'})
+]
+
+
+@pytest.mark.parametrize('raw_result, expected_result', ENC_PDF_META_DATA_CASES)
+def test_get_pdf_metadata_with_encrypted(mocker, raw_result, expected_result):
     from ReadPDFFileV2 import get_pdf_metadata
     file_path = f'{CWD}/encrypted.pdf'
+    mocker.patch('ReadPDFFileV2.run_shell_command', return_value=raw_result)
     metadata = get_pdf_metadata(file_path, user_password='1234')
-    expected = {
-        'Title': 'sample1.pdf',
-        'Keywords': '',
-        'Creator': 'Preview',
-        'Producer': 'macOS Version 10.14.4 (Build 18E226) Quartz PDFContext',
-        'Tagged': 'no',
-        'UserProperties': 'no',
-        'Suspects': 'no', 'Form': 'none',
-        'JavaScript': 'no',
-        'Pages': '2',
-        'Encrypted': 'yes (print:yes copy:yes change:yes addNotes:yes algorithm:AES)',
-        'PageSize': '595 x 842 pts (A4)',
-        'PageRot': '0',
-        'FileSize': '71085 bytes',
-        'Optimized': 'no',
-        'PDFVersion': '1.6'
-    }
-
-    assert expected.items() <= metadata.items()
+    assert metadata == expected_result
 
 
-def test_get_metadata_without_encrypted(tmp_path):
+PDF_META_DATA_CASES = [
+    ((b'Title:          Microsoft Word - Document1\nKeywords:       \nCreator:        Word\n'
+      b'Producer:       macOS Version 10.14.4 (Build 18E226) Quartz PDFContext\nCreationDate:   Wed May 15 11:47:28 2019\n'
+      b'ModDate:        Wed May 15 11:47:28 2019\nTagged:         no\nForm:           none\nPages:          1\n'
+      b'Encrypted:      no\nPage size:      595 x 842 pts (A4) (rotated 0 degrees)\nFile size:      18920 bytes\n'
+      b'Optimized:      no\nPDF version:    1.3\n'),
+     {'Title': 'Microsoft Word - Document1', 'Keywords': '', 'Creator': 'Word',
+      'Producer': 'macOS Version 10.14.4 (Build 18E226) Quartz PDFContext', 'CreationDate': 'Wed May 15 11:47:28 2019',
+      'ModDate': 'Wed May 15 11:47:28 2019', 'Tagged': 'no', 'Form': 'none', 'Pages': '1', 'Encrypted': 'no',
+      'PageSize': '595 x 842 pts (A4) (rotated 0 degrees)', 'FileSize': '18920 bytes', 'Optimized': 'no', 'PDFVersion': '1.3'})
+]
+
+
+@pytest.mark.parametrize('raw_result, expected_result', PDF_META_DATA_CASES)
+def test_get_metadata_without_encrypted(mocker, raw_result, expected_result):
     from ReadPDFFileV2 import get_pdf_metadata
     try:
         get_pdf_metadata(f'{CWD}/encrypted.pdf')
         raise Exception("Incorrect password exception should've been thrown")
-    except ShellException as e:
+    except PdfPermissionsException as e:
         assert 'Incorrect password' in str(e)
-        assert 'error code: 1' in str(e)
 
+    mocker.patch('ReadPDFFileV2.run_shell_command', return_value=raw_result)
     metadata = get_pdf_metadata(f'{CWD}/text-only.pdf')
-    expected = {
-        'Title': 'Microsoft Word - Document1',
-        'Keywords': '',
-        'Creator': 'Word',
-        'Producer': 'macOS Version 10.14.4 (Build 18E226) Quartz PDFContext',
-        'Tagged': 'no',
-        'UserProperties': 'no',
-        'Suspects': 'no',
-        'Form': 'none',
-        'JavaScript': 'no',
-        'Pages': '1',
-        'Encrypted': 'no',
-        'PageSize': '595 x 842 pts (A4)',
-        'PageRot': '0',
-        'FileSize': '18920 bytes',
-        'Optimized': 'no',
-        'PDFVersion': '1.3'
-    }
-
-    assert expected.items() <= metadata.items()
+    assert metadata == expected_result
 
 
 def test_get_pdf_text_with_encrypted(tmp_path):
-    from ReadPDFFileV2 import get_pdf_text, decrypt_pdf_file
+    from ReadPDFFileV2 import get_pdf_text, handling_pdf_credentials
     file_path = f'{CWD}/encrypted.pdf'
     dec_file_path = f'{CWD}/decrypted.pdf'
-    decrypt_pdf_file(file_path, '1234', dec_file_path)
+    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='1234',
+                                             dec_file_path=dec_file_path, encrypted='yes')
     text = get_pdf_text(dec_file_path, f'{tmp_path}/encrypted.txt')
     expected = "XSL FO Sample Copyright © 2002-2005 Antenna House, Inc. All rights reserved.\n\n" \
                "Links in PDF\nPDF link is classified into two parts, link to the specified position in the PDF " \
@@ -127,9 +145,8 @@ def test_get_pdf_text_without_encrypted(tmp_path):
     try:
         get_pdf_text(f'{CWD}/encrypted.pdf', f'{tmp_path}/encrypted.txt')
         raise Exception("Incorrect password exception should've been thrown")
-    except ShellException as e:
+    except PdfInvalidCredentialsException as e:
         assert 'Incorrect password' in str(e)
-        assert 'error code: 1' in str(e)
 
     # assert not warnings are raised
     text = get_pdf_text(f'{CWD}/warning_trigger.pdf', f'{tmp_path}/warning_trigger.txt')
@@ -152,10 +169,12 @@ def test_get_pdf_text_without_encrypted(tmp_path):
 
 def test_get_pdf_htmls_content_with_encrypted(mocker, tmp_path):
     mocker.patch.object(demisto, 'args', return_value={'userPassword': '1234'})
-    from ReadPDFFileV2 import get_pdf_htmls_content, get_images_paths_in_path, decrypt_pdf_file
+    from ReadPDFFileV2 import get_pdf_htmls_content, get_images_paths_in_path, handling_pdf_credentials
     file_path = f'{CWD}/encrypted.pdf'
     dec_file_path = f'{CWD}/decrypted.pdf'
-    decrypt_pdf_file(file_path, '1234', dec_file_path)
+    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='1234',
+                                             dec_file_path=dec_file_path, encrypted='yes')
+    # to_html_output_folder = f'{tmp_path}/PDF_html'
     html_text = get_pdf_htmls_content(dec_file_path, tmp_path)
     expected = 'If you are end user who wishes to use XSL Formatter yourself, you may purchase ' \
                'from our Reseller or direct from Antenna<br/>House.<br/>'
@@ -172,10 +191,9 @@ def test_get_pdf_htmls_content_without_encrypted(tmp_path):
     try:
         get_pdf_htmls_content(f'{CWD}/encrypted.pdf', tmp_path)
         raise Exception("Incorrect password exception should've been thrown")
-    except ShellException as e:
+    except PdfPermissionsException as e:
         assert 'Incorrect password' in str(e)
-        assert 'error code: 1' in str(e)
-
+    # to_html_output_folder = f'{tmp_path}/PDF_html'
     html_text = get_pdf_htmls_content(f'{CWD}/hyperlinks.pdf', tmp_path)
     assert 'http://www.antennahouse.com/purchase.htm' in html_text
     assert len(get_images_paths_in_path(tmp_path)) != 0, 'Failed to get images from html'
@@ -188,10 +206,9 @@ def test_get_urls_from_binary_file():
 
 
 def test_build_readpdf_entry_object_empty_extract(mocker):
-    from ReadPDFFileV2 import build_readpdf_entry_object
+    from ReadPDFFileV2 import build_readpdf_entry_object, DEFAULT_NUM_IMAGES
     mocker.patch.object(demisto, 'executeCommand', return_value=[{u'Contents': ''}])
-    pdf_file = {'Text': 'test'}
-    res = build_readpdf_entry_object(pdf_file, {}, '', '', '', '')
+    res = build_readpdf_entry_object('test', {}, '', [], [], [], DEFAULT_NUM_IMAGES)
     assert res[0]['HumanReadable'] == '### Metadata\n\n### URLs\n\n### Text\n'
 
 
@@ -226,7 +243,7 @@ def test_get_urls_and_emails_from_pdf_annots_with_encrypt(file_path):
             Verify that the URLs Emails was extracted successfully.
 
     """
-    from ReadPDFFileV2 import get_urls_and_emails_from_pdf_annots, decrypt_pdf_file
+    from ReadPDFFileV2 import get_urls_and_emails_from_pdf_annots, handling_pdf_credentials
 
     expected_urls = {'https://test1.com', 'https://test2.com', 'http://www.test3.net',
                      'https://test5.com.co/ed/trn/update?email=user@test6.net', 'http://www.test7.com',
@@ -235,9 +252,13 @@ def test_get_urls_and_emails_from_pdf_annots_with_encrypt(file_path):
     expected_emails = {'user@test4.com', 'user@test6.net'}
 
     # Decrypt the PDF:
-    file_path = f'{CWD}/{file_path}'
     dec_file_path = f'{CWD}/decrypted.pdf'
-    decrypt_pdf_file(file_path, '123456', dec_file_path)
+    file_path = f'{CWD}/{file_path}'
+    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path,
+                                             user_password='123456',
+                                             dec_file_path=dec_file_path,
+                                             encrypted='')
+    # decrypt_pdf_file(file_path, '1234', dec_file_path)
 
     # Extract URLs and Emails:
     urls, emails = get_urls_and_emails_from_pdf_annots(dec_file_path)
@@ -312,7 +333,7 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
             Verify that the URLs Emails was extracted successfully.
 
     """
-    from ReadPDFFileV2 import extract_urls_and_emails_from_pdf_file, decrypt_pdf_file
+    from ReadPDFFileV2 import extract_urls_and_emails_from_pdf_file, handling_pdf_credentials
 
     expected_urls = {'www.hiddenvirusaddress.cn', 'www.msn.com', 'http://www.docxtesturl.com', 'www.google.com',
                      'www.docxtesturl.com', 'http://www.msn.com'}
@@ -322,7 +343,9 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
     # Decrypt the PDF:
     file_path = f'{CWD}/URLs_Extraction_Test_PDF_Encoding_LibreOffice_protected.pdf'
     dec_file_path = f'{CWD}/decrypted.pdf'
-    decrypt_pdf_file(file_path, '123456', dec_file_path)
+    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='123456',
+                                             dec_file_path=dec_file_path, encrypted='')
+    # decrypt_pdf_file(file_path, '123456', dec_file_path)
 
     # Extract URLs and Emails:
     urls, emails = extract_urls_and_emails_from_pdf_file(dec_file_path, tmp_path)
@@ -331,8 +354,8 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
     if os.path.exists(dec_file_path):
         os.remove(dec_file_path)
 
-    assert urls == expected_urls
-    assert emails == expected_emails
+    assert set(url_data['Data'] for url_data in urls) == expected_urls
+    assert set(emails) == expected_emails
 
 
 def test_get_urls_and_emails_from_pdf_file_without_encrypt(tmp_path):
@@ -361,8 +384,8 @@ def test_get_urls_and_emails_from_pdf_file_without_encrypt(tmp_path):
     # Extract URLs and Emails:
     urls, emails = extract_urls_and_emails_from_pdf_file(file_path, tmp_path)
 
-    assert urls == expected_urls
-    assert emails == expected_emails
+    assert set(emails) == expected_emails
+    assert set(url_data['Data'] for url_data in urls) == expected_urls
 
 
 def test_handle_error_read_only(mocker):

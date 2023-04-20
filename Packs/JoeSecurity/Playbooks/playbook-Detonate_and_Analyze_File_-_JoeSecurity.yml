@@ -1,0 +1,757 @@
+id: Detonate and Analyze File - JoeSecurity
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Detonate and Analyze File - JoeSecurity
+description: |-
+  Deprecated. Use the joe-submit-sample command instead.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
+    type: start
+    task:
+      id: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
+      version: -1
+      name: ""
+      description: Detonates a file using JoeSecurity.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 315,
+          "y": -440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 93fac7de-168e-4b60-8172-1d0d8cc46702
+    type: title
+    task:
+      id: 93fac7de-168e-4b60-8172-1d0d8cc46702
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 315,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 942e1e7f-d8dd-4ece-8eb9-d8ece9c0711b
+    type: condition
+    task:
+      id: 942e1e7f-d8dd-4ece-8eb9-d8ece9c0711b
+      version: -1
+      name: Is there a File to detonate?
+      description: Look for files to detonate.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.File.EntryID
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: inputs.File.EntryID
+                      iscontext: true
+                transformers:
+                - operator: uniq
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 8daf6b47-b716-46dd-8347-6649d3cce6fd
+    type: condition
+    task:
+      id: 8daf6b47-b716-46dd-8347-6649d3cce6fd
+      version: -1
+      name: Is JoeSecurity sandbox enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "20"
+    scriptarguments:
+      brandname:
+        simple: JoeSecurityV2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 315,
+          "y": -305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: cd5393f4-1aef-4a2e-8bf0-07add4cd9b58
+    type: regular
+    task:
+      id: cd5393f4-1aef-4a2e-8bf0-07add4cd9b58
+      version: -1
+      name: 'Detonate File - Joe Security Sandbox '
+      script: '|||joe-submit-sample'
+      description: Submit a sample for sandbox analysis.
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      archive_password:
+        complex:
+          root: inputs.ArchivePassword
+          transformers:
+          - operator: uniq
+      command_line_argument:
+        complex:
+          root: inputs.CommandLineArgument
+          transformers:
+          - operator: uniq
+      comments:
+        complex:
+          root: inputs.Comments
+      cookbook:
+        complex:
+          root: inputs.Cookbook
+          transformers:
+          - operator: uniq
+      document_password:
+        complex:
+          root: inputs.DocumentPassword
+          transformers:
+          - operator: uniq
+      email_notification:
+        complex:
+          root: inputs.EmailNotification
+      encrypt_with_password:
+        complex:
+          root: inputs.EncryptWithPassword
+          transformers:
+          - operator: uniq
+      entry_id:
+        complex:
+          root: inputs.File.EntryID
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.File.EntryID
+                iscontext: true
+          transformers:
+          - operator: uniq
+      fast_mode:
+        complex:
+          root: inputs.FastMode
+          transformers:
+          - operator: uniq
+      hybrid_code_analysis:
+        complex:
+          root: inputs.HybridCodeAnalysis
+          transformers:
+          - operator: uniq
+      internet_access:
+        complex:
+          root: inputs.InternetAccess
+          transformers:
+          - operator: uniq
+      report_type:
+        complex:
+          root: inputs.ReportFileType
+          transformers:
+          - operator: uniq
+      ssl_inspection:
+        complex:
+          root: inputs.SSLInspection
+      start_as_normal_user:
+        complex:
+          root: inputs.StartAsNormalUser
+      systems:
+        complex:
+          root: inputs.Systems
+          transformers:
+          - operator: uniq
+      tags:
+        complex:
+          root: inputs.Tags
+          transformers:
+          - operator: uniq
+      timeout:
+        complex:
+          root: inputs.Timeout
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -65,
+          "y": 730
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Joe Security - Submission Analysis
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: e5eafcae-d1ad-4d31-8f8e-14dfe8090170
+    type: regular
+    task:
+      id: e5eafcae-d1ad-4d31-8f8e-14dfe8090170
+      version: -1
+      name: Check Joe Security Sandbox Quota
+      description: Retrieve the account quota.
+      script: '|||joe-get-account-quota'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -65,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: ba9ae6f0-78bf-4045-8fa3-a9a0b4bcb311
+    type: condition
+    task:
+      id: ba9ae6f0-78bf-4045-8fa3-a9a0b4bcb311
+      version: -1
+      name: Is there enough quota for submission?
+      description: Is there enough quota for submission?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Joe.AccountQuota.quota.daily.remaining
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -65,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 8ee5852c-4658-4d36-8cbc-1b2db474c586
+    type: regular
+    task:
+      id: 8ee5852c-4658-4d36-8cbc-1b2db474c586
+      version: -1
+      name: Get Joe Sandbox Status
+      description: Check if the Joe Sandbox analysis backend is online or in maintenance mode.
+      script: JoeSecurityV2|||joe-is-online
+      type: regular
+      iscommand: true
+      brand: JoeSecurityV2
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e0d67191-a6fa-43f1-80ba-60a5812df6eb
+    type: condition
+    task:
+      id: e0d67191-a6fa-43f1-80ba-60a5812df6eb
+      version: -1
+      name: Check if Joe Security is online
+      description: Check if Joe Security is online.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: Joe.ServerStatus.Online
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 760,
+        "x": -65,
+        "y": -440
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: File object of the file to detonate. The file is taken from the context.
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Duration for executing the pooling (in minutes).
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "1200"
+  required: false
+  description: The duration after which to stop pooling and to resume the playbook (in minutes).
+  playbookInputQuery:
+- key: Systems
+  value: {}
+  required: false
+  description: 'Comma-separated list of operating systems to run the analysis on. Supported values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+  playbookInputQuery:
+- key: Comments
+  value: {}
+  required: false
+  description: Comments for the analysis.
+  playbookInputQuery:
+- key: InternetAccess
+  value:
+    simple: "True"
+  required: false
+  description: Enable internet access (boolean). True= internet access (default), False= no internet access.
+  playbookInputQuery:
+- key: ReportFileType
+  value: {}
+  required: false
+  description: 'The resource type to download. Default is html. Supported values are: html, lighthtml, executive, pdf, classhtml, xml, lightxml, classxml, clusterxml, irxml, json, jsonfixed, lightjson, lightjsonfixed, irjson, irjsonfixed, shoots (screenshots), openioc, maec, misp, graphreports, memstrings, binstrings, sample, cookbook, bins (dropped files), unpackpe (unpacked PE files), unpack, ida, pcap, pcapslim, memdumps, yara'
+  playbookInputQuery:
+- key: Cookbook
+  value: {}
+  required: false
+  description: Uploads a cookbook together with the sample. Needs to be a file-like object or a tuple in the format (filename, file-like object).
+  playbookInputQuery:
+- key: FullDisplay
+  value:
+    simple: "True"
+  required: false
+  description: If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary.
+  playbookInputQuery:
+- key: Tags
+  value: {}
+  required: false
+  description: A comma-separated list of tags to be added to the analysis.
+  playbookInputQuery:
+- key: SSLInspection
+  value:
+    simple: "False"
+  required: false
+  description: Whether to enable SSL inspection.
+  playbookInputQuery:
+- key: HybridCodeAnalysis
+  value:
+    simple: "True"
+  required: false
+  description: Whether to enable hybrid code analysis.
+  playbookInputQuery:
+- key: FastMode
+  value:
+    simple: "false"
+  required: false
+  description: Whether to enable fast mode. Focuses on fast analysis and detection versus deep forensic analysis.
+  playbookInputQuery:
+- key: CommandLineArgument
+  value: {}
+  required: false
+  description: A command line argument is to be passed to the sample.
+  playbookInputQuery:
+- key: LiveInteraction
+  value:
+    simple: "False"
+  required: false
+  description: Whether to enable live interaction.
+  playbookInputQuery:
+- key: DocumentPassword
+  value: {}
+  required: false
+  description: The document password.
+  playbookInputQuery:
+- key: ArchivePassword
+  value: {}
+  required: false
+  description: An archive password.
+  playbookInputQuery:
+- key: EmailNotification
+  value:
+    simple: "False"
+  required: false
+  description: Send an email notification once the analysis completes.
+  playbookInputQuery:
+- key: StartAsNormalUser
+  value:
+    simple: "False"
+  required: false
+  description: Whether to start the analysis as a normal user.
+  playbookInputQuery:
+- key: EncryptWithPassword
+  value: {}
+  required: false
+  description: The password to encrypt the analysis with.
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+  type: string
+- contextPath: Joe.Analysis.ID
+  description: Web ID.
+  type: string
+- contextPath: Joe.Analysis.Status
+  description: Analysis status.
+  type: string
+- contextPath: Joe.Analysis.Comments
+  description: Analysis comments.
+  type: string
+- contextPath: Joe.Analysis.Time
+  description: Submitted time.
+  type: date
+- contextPath: Joe.Analysis.Runs
+  description: Sub-Analysis information.
+- contextPath: Joe.Analysis.Result
+  description: Analysis results.
+  type: string
+- contextPath: Joe.Analysis.Errors
+  description: Raised errors during sampling.
+- contextPath: Joe.Analysis.Systems
+  description: Analysis operating system.
+- contextPath: Joe.Analysis.MD5
+  description: MD5 hash of analysis sample.
+  type: string
+- contextPath: Joe.Analysis.SHA1
+  description: SHA1 hash of analysis sample.
+  type: string
+- contextPath: Joe.Analysis.SHA256
+  description: SHA256 hash of analysis sample.
+  type: string
+- contextPath: Joe.Analysis.SampleName
+  description: Sample data. Can be a file name or URL.
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: number
+- contextPath: DBotScore.Malicious.Vendor
+  description: The vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Malicious.Detections
+  description: The sub-analysis detection statuses.
+  type: string
+- contextPath: DBotScore.Malicious.SHA1
+  description: The SHA1 hash of the file.
+  type: string
+- contextPath: InfoFile.Name
+  description: File name.
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The entry ID of the sample.
+  type: string
+- contextPath: InfoFile.Size
+  description: File size.
+  type: number
+- contextPath: InfoFile.Type
+  description: File type, e.g., "PE".
+  type: string
+- contextPath: InfoFile.Info
+  description: Basic information of the file.
+  type: string
+- contextPath: File.Extension
+  description: File extension.
+  type: string
+- contextPath: InfoFile
+  description: Report file object.
+  type: unknown
+- contextPath: File
+  description: File object.
+  type: unknown
+- contextPath: Joe.Analysis
+  description: Joe Analysis object.
+  type: unknown
+- contextPath: DBotScore
+  description: DBotScore object.
+  type: unknown
+- contextPath: DBotScore.Malicious
+  description: DBotScore malicious object.
+  type: unknown
+- contextPath: DBotScore.Reliability
+  description: Reliability of the score.
+- contextPath: File.Hashes
+  description: The hashes of the file.
+  type: unknown
+- contextPath: File.Hashes.type
+  description: Types of the hashes.
+- contextPath: File.Hashes.value
+  description: Hash value.
+- contextPath: File.MD5
+  description: MD5 hash value.
+- contextPath: File.Name
+  description: File name.
+- contextPath: File.SHA1
+  description: SHA1 hash value.
+- contextPath: File.SHA256
+  description: SHA256 hash value.
+- contextPath: Joe.Analysis.analysisid
+  description: Joe Security Sandbox analysis ID value.
+- contextPath: Joe.Analysis.classification
+  description: Joe Security Sandbox analysis classification.
+- contextPath: Joe.Analysis.comments
+  description: Joe Security Sandbox analysis comments (if any).
+- contextPath: Joe.Analysis.detection
+  description: Joe Security Sandbox analysis detection.
+- contextPath: Joe.Analysis.duration
+  description: Joe Security Sandbox analysis duration.
+- contextPath: Joe.Analysis.encrypted
+  description: Joe Security Sandbox value that indicates if the results are encrypted.
+- contextPath: Joe.Analysis.filename
+  description: The filename information listed in the analysis.
+- contextPath: Joe.Analysis.md5
+  description: MD5 hash value.
+- contextPath: Joe.Analysis.score
+  description: Joe Security Sandbox score for the analysis.
+- contextPath: Joe.Analysis.scriptname
+  description: Joe Security Sandbox analysis script name.
+- contextPath: Joe.Analysis.sha1
+  description: SHA1 hash value.
+- contextPath: Joe.Analysis.sha256
+  description: SHA256 hash value.
+- contextPath: Joe.Analysis.status
+  description: Analysis status in Joe Security Sandbox.
+- contextPath: Joe.Analysis.threatname
+  description: Threat name associated with the Joe Security Sandbox analysis verdict.
+- contextPath: Joe.Analysis.time
+  description: Analysis time.
+- contextPath: Joe.Analysis.webid
+  description: WebID value for the analysis in Joe Security Sandbox.
+- contextPath: Joe.Analysis.runs
+  description: Analysis running information.
+  type: unknown
+- contextPath: Joe.Analysis.runs.detection
+  description: Detection in that particular run.
+- contextPath: Joe.Analysis.runs.error
+  description: Indicates if any errors occurred during the analysis.
+- contextPath: Joe.Analysis.runs.score
+  description: Analysis score for that particular run.
+- contextPath: Joe.Analysis.runs.sigma
+  description: Sigma value.
+- contextPath: Joe.Analysis.runs.snort
+  description: Any snort detected rules.
+- contextPath: Joe.Analysis.runs.system
+  description: The system that was involved in the analysis.
+- contextPath: Joe.Analysis.runs.yara
+  description: Detected YARA rules.
+- contextPath: Joe.Submission.most_relevant_analysis
+  description: Joe Security Sandbox most relevant analysis information.
+  type: unknown
+- contextPath: Joe.Submission.most_relevant_analysis.detection
+  description: Joe Security Sandbox most relevant analysis detection.
+- contextPath: Joe.Submission.most_relevant_analysis.score
+  description: Joe Security Sandbox most relevant analysis score.
+- contextPath: Joe.Submission.most_relevant_analysis.webid
+  description: Joe Security Sandbox most relevant analysis web ID.
+- contextPath: Joe.Submission
+  description: Joe Security Sandbox submission information.
+  type: unknown
+- contextPath: Joe.Submission.name
+  description: Joe Security Sandbox submission name.
+- contextPath: Joe.Submission.status
+  description: Joe Security Sandbox submission status.
+- contextPath: Joe.Submission.submission_id
+  description: Joe Security Sandbox submission submission ID.
+- contextPath: Joe.Submission.time
+  description: Joe Security Sandbox submission time.
+- contextPath: Joe
+  description: Joe Secuirity Sandbox information.
+  type: unknown
+- contextPath: Joe.AccountQuota
+  description: The account quota.
+- contextPath: Joe.AccountQuota.quota.daily
+  description: The current daily quota information.
+  type: unknown
+- contextPath: Joe.AccountQuota.quota.daily.current
+  description: The current daily quota.
+- contextPath: Joe.AccountQuota.quota.daily.limit
+  description: The daily quota limit.
+- contextPath: Joe.AccountQuota.quota.daily.remaining
+  description: The remaining daily quota.
+- contextPath: Joe.AccountQuota.quota.monthly
+  description: The remaining monthly quota information.
+  type: unknown
+- contextPath: Joe.AccountQuota.quota.monthly.current
+  description: The current monthly quota.
+- contextPath: Joe.AccountQuota.quota.monthly.limit
+  description: The monthly quota limit.
+- contextPath: Joe.AccountQuota.quota.monthly.remaining
+  description: The remaining monthly quota.
+- contextPath: Joe.AccountQuota.type
+  description: The quota type.
+- contextPath: Joe.ServerStatus.Online
+  description: The server status.
+- contextPath: Joe.ServerStatus
+  description: Joe Security Sandbox server status.
+  type: unknown
+tests:
+- No test
+fromversion: 6.8.0
+deprecated: true

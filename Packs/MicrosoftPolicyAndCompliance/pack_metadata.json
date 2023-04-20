@@ -8,7 +8,7 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2021-01-20T14:03:07Z",
-    "categories": [],
+    "categories": ["Forensics & Malware Analysis"],
     "tags": [],
     "useCases": [],
     "keywords": [],

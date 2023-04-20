@@ -4,12 +4,12 @@ import demistomock as demisto  # noqa: F401
 from armorblox.client import Client as AbxBaseClient
 from CommonServerPython import *  # noqa: F401
 import dateparser
-import requests
+import urllib3
 import json
 import collections
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_INCIDENTS_TO_FETCH = demisto.params().get('max_fetch')

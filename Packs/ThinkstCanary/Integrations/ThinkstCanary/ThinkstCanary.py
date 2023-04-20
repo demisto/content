@@ -1,3 +1,4 @@
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -6,7 +7,7 @@ from CommonServerUserPython import *
 import requests
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # remove proxy if not set to true in params
 if not demisto.params().get('proxy', False):

@@ -19,8 +19,7 @@
     "myXSIAMOnlyPack"
   ],
   "unmockable_integrations": {},
-  "nightly_integrations": [],
   "parallel_integrations": [],
   "private_tests": [],
-  "test_marketplacev2": []
+  "test_marketplacev2": ["Sanity Test - Playbook with Unmockable Whois Integration"]
 }

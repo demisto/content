@@ -1,0 +1,577 @@
+id: Search in mailboxes Gmail (Loop) with polling
+version: -1
+name: Search in mailboxes Gmail (Loop) with polling
+description: This playbook should only run as a sub-playbook for the Search-all-mailboxes - Gmail playbook, it should not run alone.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ffd081fd-2d32-4c72-887f-849c7bb34923
+    type: start
+    task:
+      id: ffd081fd-2d32-4c72-887f-849c7bb34923
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 0b7fe62d-601c-4968-8049-f46b1ba4ccb4
+    type: title
+    task:
+      id: 0b7fe62d-601c-4968-8049-f46b1ba4ccb4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4d42bafa-1d6d-4991-8547-c948982ad34d
+    type: regular
+    task:
+      id: 4d42bafa-1d6d-4991-8547-c948982ad34d
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: Gmail,NewPageToken,Stop,SearchFromAccountIndex,SearchToAccountIndex
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b6a073df-cacd-4878-85ea-6c191ef3ef8c
+    type: regular
+    task:
+      id: b6a073df-cacd-4878-85ea-6c191ef3ef8c
+      version: -1
+      name: Set Stop
+      description: |-
+        Set a value in context under the key you entered.
+
+        When the nextPageToken value is not received, this task determines that the loop is ending.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Stop
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: ae04c6e3-b927-4648-8008-28fdd16a8371
+    type: regular
+    task:
+      id: ae04c6e3-b927-4648-8008-28fdd16a8371
+      version: -1
+      name: Set NewPageToken
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: NewPageToken
+      value:
+        complex:
+          root: PageToken
+          accessor: NextPageToken
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 88d4d553-cf57-460d-8c91-272f69370990
+    type: condition
+    task:
+      id: 88d4d553-cf57-460d-8c91-272f69370990
+      version: -1
+      name: Is there NextPageToken
+      description: Checks if there is a new NextPageToken for next iteration.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PageToken
+                accessor: NextPageToken
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 856ec299-25b1-417d-84c5-f75660e999c4
+    type: regular
+    task:
+      id: 856ec299-25b1-417d-84c5-f75660e999c4
+      version: -1
+      name: Search in mailboxes
+      description: Searches the Gmail records for all Google users.
+      script: '|||gmail-search-all-mailboxes'
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      after:
+        complex:
+          root: inputs.after
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.after
+                iscontext: true
+      before:
+        complex:
+          root: inputs.before
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.before
+                iscontext: true
+      fields:
+        complex:
+          root: inputs.fields
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.fields
+                iscontext: true
+      filename:
+        complex:
+          root: inputs.filename
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.filename
+                iscontext: true
+      from:
+        complex:
+          root: inputs.from
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.from
+                iscontext: true
+      has-attachments:
+        complex:
+          root: inputs.has-attachments
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.has-attachments
+                iscontext: true
+      in:
+        complex:
+          root: inputs.in
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.in
+                iscontext: true
+      include-spam-trash:
+        complex:
+          root: inputs.include-spam-trash
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.include-spam-trash
+                iscontext: true
+      labels-ids:
+        complex:
+          root: inputs.labels-ids
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.labels-ids
+                iscontext: true
+      page-token:
+        complex:
+          root: inputs.page-token
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.page-token
+                iscontext: true
+      query:
+        complex:
+          root: inputs.query
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.query
+                iscontext: true
+      search_to:
+        complex:
+          root: inputs.search_to
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.search_to
+                iscontext: true
+      search_from:
+        complex:
+          root: inputs.search_from
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.search_from
+                iscontext: true
+      show-only-mailboxes:
+        simple: "true"
+      subject:
+        complex:
+          root: inputs.subject
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.subject
+                iscontext: true
+      to:
+        complex:
+          root: inputs.to
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.to
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 3c4418eb-a8d8-446a-874a-1f9ec2c6607c
+    type: regular
+    task:
+      id: 3c4418eb-a8d8-446a-874a-1f9ec2c6607c
+      version: -1
+      name: Delete SearchFromAccountIndex and SearchToAccountIndex keys previous
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      key:
+        simple: SearchFromAccountIndex,SearchToAccountIndex
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "19_17_#default#": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: after
+  value: {}
+  required: false
+  description: Search for messages sent after a specific date. For example, 2018/05/06
+  playbookInputQuery:
+- key: before
+  value: {}
+  required: false
+  description: Search for messages sent before a specific date. For example, 2018/05/09
+  playbookInputQuery:
+- key: fields
+  value: {}
+  required: false
+  description: Enables partial responses to be retrieved in a comma-separated list. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse.
+  playbookInputQuery:
+- key: filename
+  value: {}
+  required: false
+  description: Attachments with a certain name or file type. For example, "pdf" or "report.pdf"
+  playbookInputQuery:
+- key: from
+  value: {}
+  required: false
+  description: Specifies the sender. For example, "john"
+  playbookInputQuery:
+- key: to
+  value: {}
+  required: false
+  description: Specifies the receiver. For example, "john"
+  playbookInputQuery:
+- key: has-attachments
+  value: {}
+  required: false
+  description: Whether to search for messages sent with attachments.
+  playbookInputQuery:
+- key: in
+  value: {}
+  required: false
+  description: Messages in any folder, including Spam and Trash. For example, shopping
+  playbookInputQuery:
+- key: include-spam-trash
+  value: {}
+  required: false
+  description: 'Includes messages from SPAM and TRASH in the results. (Default: false)'
+  playbookInputQuery:
+- key: labels-ids
+  value: {}
+  required: false
+  description: Returns messages with labels that match all of the specified label IDs in a comma-separated list.
+  playbookInputQuery:
+- key: page-token
+  value: {}
+  required: false
+  description: This argument is not usable
+  playbookInputQuery:
+- key: query
+  value: {}
+  required: false
+  description: 'Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en"'
+  playbookInputQuery:
+- key: subject
+  value: {}
+  required: false
+  description: Words in the subject line. For example, "alert"
+  playbookInputQuery:
+- key: search_to
+  value: {}
+  required: false
+  description: Used to track a search's progress
+  playbookInputQuery:
+- key: search_from
+  value: {}
+  required: false
+  description: Used to track a search's progress
+  playbookInputQuery:
+outputs:
+- contextPath: Gmail.Mailboxes
+  description: The Gmail mailbox.
+- contextPath: Gmail.ID
+  description: The inner ID of the Gmail message.
+- contextPath: Gmail.ThreadId
+  description: The thread ID.
+- contextPath: Gmail.Format
+  description: The MIME type of the email.
+- contextPath: Gmail.Labels
+  description: The labels of a specific email.
+- contextPath: Gmail.To
+  description: The email address of the receiver.
+- contextPath: Gmail.From
+  description: The email address of the sender.
+- contextPath: Gmail.Cc
+  description: The additional recipient email address (CC).
+- contextPath: Gmail.Bcc
+  description: The additional recipient email address (BCC).
+- contextPath: Gmail.Subject
+  description: The subject of the specific email.
+- contextPath: Gmail.Body
+  description: The content of the email.
+- contextPath: Gmail.Attachments
+  description: The attachments of the email. IDs are separated by commas.
+- contextPath: Gmail.Headers
+  description: All headers of specific mail (list).
+- contextPath: Email.Attachments.entryID
+  description: Email Attachments. IDs are separated by commas.
+- contextPath: NewPageToken
+  description: In the next iteration, additional accounts will be imported using this output.
+- contextPath: Stop
+  description: The result of this output causes the loop to end.
+  type: unknown
+- contextPath: SearchFromAccountIndex
+  description: A search is performed from an account index (Enables the search process to be followed).
+  type: String
+- contextPath: SearchToAccountIndex
+  description: A search is performed to an account index (Enables the search process to be followed).
+  type: String
+tests:
+- No tests
+fromversion: 6.5.0

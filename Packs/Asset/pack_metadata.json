@@ -8,13 +8,14 @@
     "email": "",
     "created": "2020-11-12T11:31:46Z",
     "categories": [
-        "Analytics & SIEM"
+        "Utilities"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "xpanse"
     ]
 }

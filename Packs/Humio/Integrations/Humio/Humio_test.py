@@ -55,6 +55,7 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 import json
 import io
 import os
+import demistomock as demisto
 
 
 def util_load_json(path):
@@ -202,8 +203,8 @@ def test_humio_list_notifiers(requests_mock):
     from Humio import Client, humio_list_notifiers
 
     mock_response = util_load_json("test_data/list_notifiers_results.json")
-    requests_mock.get(
-        "https://test.com/api/v1/repositories/sandbox/alertnotifiers",
+    requests_mock.post(
+        "https://test.com/graphql",
         json=mock_response,
     )
 
@@ -211,7 +212,7 @@ def test_humio_list_notifiers(requests_mock):
     args = {"repository": "sandbox"}
 
     _, outputs, _ = humio_list_notifiers(client, args, headers)
-    assert outputs["Humio.Notifier(val.id == obj.id)"] == mock_response
+    assert outputs["Humio.Notifier(val.id == obj.id)"] == mock_response.get("data").get("searchDomain").get("actions")
 
 
 def test_humio_get_notifier_by_id(requests_mock):
@@ -219,8 +220,8 @@ def test_humio_get_notifier_by_id(requests_mock):
     from Humio import Client, humio_get_notifier_by_id
 
     mock_response = util_load_json("test_data/notifier_by_id_results.json")
-    requests_mock.get(
-        "https://test.com/api/v1/repositories/sandbox/alertnotifiers/BTkuj8QArhIFMh_L39FoN0tnyTUEXplc",
+    requests_mock.post(
+        "https://test.com/graphql",
         json=mock_response,
     )
 
@@ -228,4 +229,26 @@ def test_humio_get_notifier_by_id(requests_mock):
     args = {"repository": "sandbox", "id": "BTkuj8QArhIFMh_L39FoN0tnyTUEXplc"}
 
     _, outputs, _ = humio_get_notifier_by_id(client, args, headers)
-    assert outputs["Humio.Notifier(val.id == obj.id)"] == mock_response
+    assert outputs["Humio.Notifier(val.id == obj.id)"] == mock_response.get("data").get("searchDomain").get("action")
+
+
+def test_fetch_incidents(requests_mock, mocker):
+    from Humio import Client, fetch_incidents
+
+    mocker.patch.object(demisto, "params", return_value={
+        'queryParameter': '0',
+        'queryRepository': 'sandbox',
+        'queryTimeZoneOffsetMinutes': '0'
+    })
+
+    mock_response = util_load_json("test_data/fetch_incidents.json")
+    requests_mock.post(
+        "http://test.com/api/v1/repositories/sandbox/query",
+        json=mock_response,
+    )
+
+    client = Client(base_url="http://test.com", verify=False, proxies=None)
+
+    outputs = fetch_incidents(client, {})
+    assert outputs[0]["name"] == "Humio Incident a"
+    assert outputs[0]["occurred"] == "2022-12-02T13:17:17Z"

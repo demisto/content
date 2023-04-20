@@ -1,0 +1,44 @@
+{
+    "name": "AWS Enrichment and Remediation",
+    "description": "Playbooks using multiple AWS content packs for enrichment and remediation purposes",
+    "support": "xsoar",
+    "currentVersion": "1.1.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "xpanse"
+    ],
+    "dependencies": {
+        "AWS-IAM": {
+            "mandatory": true,
+            "display_name": "AWS - IAM"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "AWS-EC2": {
+            "mandatory": true,
+            "display_name": "AWS - EC2"
+        },
+        "AWS-S3": {
+            "mandatory": true,
+            "display_name": "AWS - S3"
+        }
+    },
+    "displayedImages": [
+        "AWS-IAM",
+        "CommonScripts",
+        "AWS-EC2",
+        "AWS-S3"
+    ]
+}

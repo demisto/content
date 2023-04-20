@@ -27,3 +27,30 @@
 !sophos-central-exploit-mitigation-delete mitigation_id=ff9d87d0-c944-4ca5-9f76-c5efd1f89ded
 !sophos-central-detected-exploit-list
 !sophos-central-detected-exploit-get detected_exploit_id=ff9dc6d1-c444-4a23-1a76-c5efd1f89ded
+!sophos-central-usergroups-users-add groupId="733cce06-5ad0-487b-9547-03af02b5722e" ids="09c515b2-009e-4e78-a83f-a5423e6def9a, f9029e98-311a-4c19-9908-15bafff9f39f, 86e0ae0f-77ef-423a-bbbf-d95e49edd468"
+!sophos-central-usergroups-membership-get groupId="733cce06-5ad0-487b-9547-03af02b5722e" sourceType=custom
+!sophos-central-usergroups-user-delete groupId="733cce06-5ad0-487b-9547-03af02b5722e" userId="86e0ae0f-77ef-423a-bbbf-d95e49edd468"
+!sophos-central-usergroups-create groupName=GroupNameTestReadMe groupDescription=GroupDescriptionReadMe userIds="86e0ae0f-77ef-423a-bbbf-d95e49edd468"
+!sophos-central-usergroups-update groupId="733cce06-5ad0-487b-9547-03af02b5722e" groupName=NewGroupNameReadMe description=NewDescriptionReadMe
+!sophos-central-usergroups-get groupId="733cce06-5ad0-487b-9547-03af02b5722e"
+!sophos-central-usergroups-list groupsIds="733cce06-5ad0-487b-9547-03af02b5722e" sourceType=custom page=1 pageSize=10
+!sophos-central-usergroups-delete groupId="0210d539-66ab-46ac-afa2-eb8928856340"
+!sophos-central-group-create name="Name-readme2" description=description type=computer endpointIds="3413a306-5227-40f1-8b86-53195d927566,1abcf612-d426-457b-8088-10d921112f1b"
+!sophos-central-group-update name="Name-readme2-update" groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af"
+!sophos-central-group-get groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af"
+!sophos-central-group-membership-get groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af"
+!sophos-central-group-endpoints-add groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af" ids="3413a306-5227-40f1-8b86-53195d927566,1abcf612-d426-457b-8088-10d921112f1b"
+!sophos-central-group-endpoint-remove groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af" endpointId="3413a306-5227-40f1-8b86-53195d927566"
+!sophos-central-group-endpoints-remove groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af" ids="3413a306-5227-40f1-8b86-53195d927566,1abcf612-d426-457b-8088-10d921112f1b"
+!sophos-central-group-list page_size=10
+!sophos-central-group-delete groupId="b3dec702-5d56-4cb9-8961-b0dba3194c94"
+!sophos-central-users-add firstName=playbook lastName=test email=email.forplaybook2@playbook.com groupIds=733cce06-5ad0-487b-9547-03af02b5722e
+!sophos-central-users-update userId=4c994c63-c252-4ac9-8840-bcccb095d5a2 firstName="updatedPlaybook" lastName="updatedTest" email="updatedemail.forplaybook@playbook.com"
+!sophos-central-users-get userId=4c994c63-c252-4ac9-8840-bcccb095d5a2
+!sophos-central-users-list searchFields="firstname, lastname, email"  search="playbook" pageSize=5
+!sophos-central-users-delete userId=9d79e670-3846-45b7-a119-12ca1ee46933
+!sophos-central-endpoint-policy-search page_size=10 page=1
+!sophos-central-endpoint-policy-get policy_id=67074d6e-ce83-40c2-a7f4-8a94a1beac10
+!sophos-central-endpoint-policy-reorder policy_id=67074d6e-ce83-40c2-a7f4-8a94a1beac10 priority=1
+!sophos-central-endpoint-policy-clone policy_id=c4f066d4-9a6d-48c9-b72c-45c56d1c13ae name=testclonenew
+!sophos-central-endpoint-policy-search-delete policy_id=67074d6e-ce83-40c2-a7f4-8a94a1beac10

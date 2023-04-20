@@ -1,0 +1,91 @@
+id: Test XDR Playbook quarantine file command
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Test XDR Playbook quarantine file command
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 74d8d9d3-4a7f-4576-84d3-e546cc88ff9a
+    type: start
+    task:
+      id: 74d8d9d3-4a7f-4576-84d3-e546cc88ff9a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 14f3f209-501e-4660-8da3-d48e7e02dbf8
+    type: playbook
+    task:
+      id: 14f3f209-501e-4660-8da3-d48e7e02dbf8
+      version: -1
+      name: Cortex XDR - quarantine file
+      playbookName: Cortex XDR - quarantine file
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      endpoint_id:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+      file_hash:
+        simple: 55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
+      file_path:
+        simple: /home/ec2-user/test_file.txt
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 255,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: false
+fromversion: 5.0.0

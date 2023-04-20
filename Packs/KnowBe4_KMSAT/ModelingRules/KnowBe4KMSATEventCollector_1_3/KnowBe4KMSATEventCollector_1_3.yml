@@ -1,6 +1,6 @@
-name: KnowBe4KMSATEventCollector
+fromversion: 6.10.0
 id: KnowBe4KMSATEventCollector
+name: KnowBe4KMSATEventCollector
 rules: ''
 schema: ''
-from_xdr_version: 3.5.0
-fromversion: 6.10.0
+tags: KnowBe4KMSAT

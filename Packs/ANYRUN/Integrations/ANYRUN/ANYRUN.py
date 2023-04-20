@@ -9,6 +9,7 @@ import re
 import os
 import json
 import requests
+import urllib3
 from base64 import b64encode
 
 ''' GLOBAL VARS / INSTANCE CONFIGURATION '''
@@ -47,7 +48,7 @@ THREAT_TEXT_TO_DBOTSCORE = {
 ''' SETUP '''
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # Remove proxy if not set to true in params
 if not PROXY:

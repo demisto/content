@@ -2,11 +2,9 @@ commonfields:
   id: Twitter
   version: -1
 name: Twitter
-display: Twitter
+display: Twitter (Deprecated)
 category: Utilities
-description: 'The Twitter Integration allows users to parse Twitter for Users,
-  Tweets, and additional info about users. Perform enhanced searches with additional
-  search arguments. Search results are returned as a markdown table. '
+description: 'Deprecated. Use Twitter v2 instead.'
 configuration:
 - display: API Key
   name: apikey
@@ -38,8 +36,7 @@ script:
       required: true
       description: The string to search for accounts with similar names
     - name: count
-      description: 'Number of accounts to return. Note: The max is 20. Any number
-        greater than 20 will return 20 accounts.'
+      description: 'Number of accounts to return. Note: The max is 20.'
       defaultValue: "15"
     - name: page
       description: Page to look for search results on
@@ -49,6 +46,7 @@ script:
       description: Results of the twitter-get-users command
       type: string
     description: Search for public users on Twitter
+    deprecated: true
   - name: twitter-get-user-info
     arguments:
     - name: usernames
@@ -58,8 +56,8 @@ script:
     - contextPath: TwitterSOARx
       description: Results of the twitter-get-user-info command
       type: string
-    description: 'Lookup users by name to display information about them. Search multiple
-      users simultaneously by separating them by commas. Ex: "name="user1,user2,user3"'
+    description: 'Lookup users by name to display information about them. Search multiple users simultaneously by separating them by commas. Ex: "name="user1,user2,user3"'
+    deprecated: true
   - name: twitter-get-tweets
     arguments:
     - name: q
@@ -72,25 +70,24 @@ script:
     - name: lang
       description: 'The language code of tweets to search for. List of supported languages:  https://developer.twitter.com/en/docs/twitter-for-websites/supported-languages'
     - name: count
-      description: The number of tweets to return. The max is 100. Any number greater
-        than 100  will return 100.
+      description: The number of tweets to return. The max is 100. 
     - name: include_entities
       description: Display entities (True/False), Defaults to True
       defaultValue: "True"
     - name: from_user
-      description: 'Search tweets from a given user. Ex: "from_user=PaloAltoNtwks"
-        returns only tweets from Palo Alto Networks'
+      description: 'Search tweets from a given user. Ex: "from_user=PaloAltoNtwks" returns only tweets from Palo Alto Networks.'
     - name: to_user
-      description: 'Search tweets to a given user. Ex: "to_user=PaloAltoNtwks" returns
-        only tweets in reply to Palo Alto Networks'
+      description: 'Search tweets to a given user. Ex: "to_user=PaloAltoNtwks" returns only tweets in reply to Palo Alto Networks.'
     outputs:
     - contextPath: TwitterSOARx
       description: Results of the twitter-get-tweets command
       type: string
     description: Search for tweets on Twitter.
+    deprecated: true
   dockerimage: demisto/tweepy:1.0.0.23810
   runonce: false
   subtype: python3
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
+deprecated: true

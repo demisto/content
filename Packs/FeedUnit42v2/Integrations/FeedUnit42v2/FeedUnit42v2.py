@@ -3,9 +3,10 @@ from taxii2client.common import TokenAuth
 from taxii2client.v20 import Server, as_pages
 
 from CommonServerPython import *
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 UNIT42_TYPES_TO_DEMISTO_TYPES = {
     'ipv4-addr': FeedIndicatorType.IP,
@@ -699,7 +700,7 @@ def main():  # pragma: no cover
     """
     params = demisto.params()
     args = demisto.args()
-    api_key = str(params.get('api_key', ''))
+    api_key = params.get('credentials', {}).get('password') or str(params.get('api_key', ''))
     verify = not params.get('insecure', False)
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')

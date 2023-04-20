@@ -1,0 +1,30 @@
+{
+    "id": "incident_xmcybercriticalassetstrend",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "modified": "2020-10-29T07:04:02.929771107Z",
+    "name": "XM Cyber critical assets trend",
+    "ownerOnly": false,
+    "cliName": "xmcybercriticalassetstrend",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "XM Cyber Technique"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

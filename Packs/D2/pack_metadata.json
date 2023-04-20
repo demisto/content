@@ -1,6 +1,7 @@
 {
-    "name": "D2",
-    "description": "D2 Agent pack",
+    "name": "D2 (Deprecated)",
+    "description": "Deprecated. No available replacement.",
+    "hidden": true,
     "support": "xsoar",
     "currentVersion": "1.0.7",
     "author": "Cortex XSOAR",
@@ -17,7 +18,6 @@
         "agent tools"
     ],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }

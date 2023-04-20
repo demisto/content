@@ -260,3 +260,60 @@ def test_fetch_incidents_command(mocker):
 
     incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=0, providers='', filter='')
     assert len(incidents) == 0
+
+
+def mock_request(method, url_suffix, params):
+    return params
+
+
+@pytest.mark.parametrize('filter_query, expected_filter_query', [
+    ("Category eq 'Malware' and Severity eq 'High'", "Category eq 'Malware' and Severity eq 'High'"),
+    ("Severity eq 'High'", "Severity eq 'High'"),
+    ("Category eq 'Malware'", "Category eq 'Malware'")
+])
+def test_filter_query(filter_query, expected_filter_query, mocker):
+    from MicrosoftGraphSecurity import MicrosoftClient
+    mocker.patch.object(MicrosoftClient, 'http_request', side_effect=mock_request)
+
+    response = client_mocker.search_alerts(last_modified=None, severity=None, category=None, vendor=None,
+                                           time_from=None, time_to=None, filter_query=filter_query)
+
+    assert response.get('$filter') == expected_filter_query
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+
+    from MicrosoftGraphSecurity import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import demistomock as demisto
+    import re
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    requests_mock.get(re.compile(f'^{Resources.graph}.*'), json={'value': []})
+
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True',
+        'resource_group': 'test_resource_group',
+        'host': Resources.graph
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
+
+    main()
+
+    assert 'ok' in demisto.results.call_args[0][0]['Contents']
+    qs = get_mock.last_request.qs
+    assert qs['resource'] == [Resources.graph]
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs

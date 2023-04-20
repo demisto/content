@@ -1,0 +1,6 @@
+[file:README.md]
+ignore=RM104
+
+[file:FeedCyCognitoGetAssetEndpoint.yml]
+ignore=BA124
+

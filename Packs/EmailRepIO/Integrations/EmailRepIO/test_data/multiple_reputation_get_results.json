@@ -1,0 +1,70 @@
+[
+    {
+        "email": "test@example.com",
+        "reputation": "none",
+        "suspicious": true,
+        "references": 143,
+        "details": {
+            "blacklisted": true,
+            "malicious_activity": true,
+            "malicious_activity_recent": true,
+            "credentials_leaked": true,
+            "credentials_leaked_recent": false,
+            "data_breach": true,
+            "first_seen": "07/01/2008",
+            "last_seen": "10/18/2020",
+            "domain_exists": true,
+            "domain_reputation": "n/a",
+            "new_domain": false,
+            "days_since_domain_creation": 9197,
+            "suspicious_tld": false,
+            "spam": true,
+            "free_provider": true,
+            "disposable": false,
+            "deliverable": false,
+            "accept_all": false,
+            "valid_mx": true,
+            "spoofable": true,
+            "spf_strict": true,
+            "dmarc_enforced": false,
+            "profiles": [
+                "twitter"
+            ]
+        }
+    },
+    {
+        "details": {
+            "accept_all": false,
+            "blacklisted": false,
+            "credentials_leaked": true,
+            "credentials_leaked_recent": false,
+            "data_breach": true,
+            "days_since_domain_creation": 9900,
+            "deliverable": true,
+            "disposable": false,
+            "dmarc_enforced": false,
+            "domain_exists": true,
+            "domain_reputation": "n/a",
+            "first_seen": "07/01/2008",
+            "free_provider": true,
+            "last_seen": "05/21/2022",
+            "malicious_activity": false,
+            "malicious_activity_recent": false,
+            "new_domain": false,
+            "primary_mx": "",
+            "profiles": [
+                "lastfm",
+                "twitter"
+            ],
+            "spam": true,
+            "spf_strict": true,
+            "spoofable": true,
+            "suspicious_tld": false,
+            "valid_mx": true
+        },
+        "email": "example@example.com",
+        "references": 229,
+        "reputation": "high",
+        "suspicious": false
+    }
+]

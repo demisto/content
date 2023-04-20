@@ -1,0 +1,15 @@
+{
+    "id": "3",
+    "created": "2022-03-21T16:44:26.214241Z",
+    "username": "admin",
+    "user_agent": "Mozilla/5.0",
+    "ip_address": "10.10.10.10",
+    "file_name": "Arch.jpg",
+    "sha256": "1a9487d49d842ebdee5ad870065eb74dc7044",
+    "is_clean": true,
+    "is_analysis_successful": true,
+    "status": "Clean",
+    "architecture": null,
+    "encodings": [],
+    "is_whiteblack_listed": false
+}

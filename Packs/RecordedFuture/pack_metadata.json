@@ -1,22 +1,30 @@
 {
-    "name": "RecordedFuture v2",
-    "description": "Recorded Future App v2",
+    "name": "Recorded Future Intelligence",
+    "description": "Recorded Future App, this pack is previously known as 'RecordedFuture v2'",
     "support": "partner",
-    "currentVersion": "1.2.2",
+    "currentVersion": "1.5.1",
     "author": "Recorded Future",
     "url": "https://www.recordedfuture.com/support/demisto-integration/",
     "email": "support@recordedfuture.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
+    "itemPrefix": [
+        "Recorded Future",
+        "Recorded Future Intelligence"
+    ],
     "tags": [],
     "created": "2020-05-12T13:09:02Z",
-    "updated": "2021-05-20T11:28:02Z",
+    "updated": "2022-09-05T10:10:02Z",
     "certification": "certified",
     "useCases": [],
     "keywords": [
         "recorded future",
         "recordedfuture",
+        "recorded future v2",
+        "recordedfuture v2",
+        "recorded future app v2",
+        "recordedfuture app v2",
         "rf",
         "threat intelligence",
         "ti",

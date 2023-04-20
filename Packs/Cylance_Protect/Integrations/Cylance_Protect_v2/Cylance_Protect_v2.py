@@ -4,6 +4,7 @@ from CommonServerPython import *
 import jwt
 import uuid
 import requests
+import urllib3
 import json
 import re
 import zipfile
@@ -11,7 +12,7 @@ from io import BytesIO
 from datetime import datetime, timedelta
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 TOKEN_TIMEOUT = 300  # 5 minutes
@@ -95,7 +96,7 @@ def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=Fals
             raise Warning(res.content)
         if not res.status_code == 404 and not accept_404:
             return_error(
-                'Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(
+                'Got status code ' + str(res.status_code) + ' with body ' + str(res.content) + ' with headers ' + str(
                     res.headers))
     return json.loads(res.text) if res.text else res.ok
 

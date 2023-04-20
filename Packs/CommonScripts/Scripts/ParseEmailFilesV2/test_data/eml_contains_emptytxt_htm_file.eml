@@ -1,0 +1,60 @@
+Received: from MN2PR11MB3856.namprd11.prod.outlook.com (2603:10b6:208:160::47)
+ by MN2PR11MB3904.namprd11.prod.outlook.com with HTTPS via
+ MN2PR13CA0034.NAMPRD13.PROD.OUTLOOK.COM; Thu, 18 Apr 2019 14:14:33 +0000
+Received: from MN2PR11MB3904.namprd11.prod.outlook.com (10.255.180.79) by
+ MN2PR11MB3856.namprd11.prod.outlook.com (20.178.251.203) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1813.12; Thu, 18 Apr 2019 14:14:32 +0000
+Received: from MN2PR11MB3904.namprd11.prod.outlook.com
+ ([fe80::c423:879c:b2fc:fc5d]) by MN2PR11MB3904.namprd11.prod.outlook.com
+ ([fe80::c423:879c:b2fc:fc5d%5]) with mapi id 15.20.1813.013; Thu, 18 Apr 2019
+ 14:14:32 +0000
+From: Woo Demisto <woo@demisto.com>
+To: Doo Demisto <doo@demisto.com>
+Subject: Hello dear friend
+Thread-Topic: Hello dear friend
+Thread-Index: AQHU9fELP4ruMigPx0qSB65gS9eACA==
+Date: Thu, 18 Apr 2019 14:14:32 +0000
+Message-ID: <C718CB8A-E78C-4EA8-AB24-61B8DCD8C8D4@demisto.com>
+Content-Language: en-US
+Content-Type: multipart/mixed;
+ boundary="_000000000000ba7e3f05a211dc87_"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment
+
+--_000000000000ba7e3f05a211dc87_
+Content-Type: text/plain; charset="us-ascii"
+
+
+--_000000000000ba7e3f05a211dc87_
+Content-Type: text/html; name="SomeTest.HTM"
+Content-Description: SomeTest.HTM
+Content-Disposition: attachment; filename="SomeTest.HTM"; size=758;
+ creation-date="Tue, 14 Jul 2020 21:41:20 GMT";
+ modification-date="Tue, 14 Jul 2020 21:41:20 GMT"
+Content-ID: <randomName@randomDomain.com>
+Content-Transfer-Encoding: base64
+
+PCFET0NUWVBFIEhUTUw+CjxodG1sIGxhbmc9ImVuLVVTIj4KICAgIDxoZWFkPgog
+ICAgICAgIDxwPgpJdCB0b29rIGEgdmVyeSBsb25nIHRpbWUgdG8gZ2V0IHRoaXMg
+ZW1haWwgdG8gYmUgc2FuaXRpemVkIGZvciB0ZXN0aW5nLiBJdCBhbGwgYmVnYW4g
+d2hlbiBJIGRpc2NvdmVyZWQgdGhhdCB0aGUgZW5jb2Rpbmcgd2FzIGRpZmZlcmVu
+dC4gU28gSSBhc2sgb3VyIHRlYW0gbGVhZC4gSSBzYXkgIkhleSwgd2Ugd2FudCB0
+byB1c2UgdGhpcyBlbWFpbCBmb3IgdGVzdGluZywgYnV0IGl0J3Mga2luZGEgcHJv
+YmxlbWF0aWMuIi4gSGUgc2FpZCB0byBzZW5kIG92ZXIgdGhlIGVtYWlsIGFuZCBo
+ZSB3b3VsZCB0YWtlIGEgbG9vay4gQWJvdXQgYSBmZXcgZGF5cyBsYXRlciBJIGFz
+a2VkIGFuZCBJIHNhaWQgIkhleSwgaG93IGlzIHRoZSBzYW5pdGl6YXRpb24gb2Yg
+dGhlIGVtYWlsIGdvaW5nPyIgYW5kIGhlIHJlcGxpZXMgYmFjayB3aXRoICJOb3Bl
+LCBjYW4ndCBiZSBkb25lLiBJdCdzIHRvbyBjb21wbGV4LiIuIFNvIEkgYXNrIGhp
+bSB3aGF0IHdlIG5lZWQgdG8gZG8gdG8gZ2V0IHRoaXMgdG8gd29yay4gSGUgbGVh
+bnMgaW4gY2xvc2UgYW5kIHdoaXNwZXJzIGluIG15IGVhciAiSSBuZWVkIGFib3V0
+IHRyZWUgZmlkZHkiLiBJdCB3YXMgYWJvdXQgdGhpcyB0aW1lIEkgcmVhbGl6ZWQg
+bXkgdGVhbSBsZWFkZXIgd2FzIGFib3V0IGVpZ2h0IHN0b3JpZXMgdGFsbCBhbmQg
+d2FzIGEgY3J1c3RhY2VhbiBmcm9tIHRoZSBwYWxlb3pvaWMgZXJhLiBTbyBJIHRv
+bGQgaGltLCAiRGFtbiBpdCBtb25zdGEsIGdldCBvdXR0YSB0aGlzIGVtYWlsISBJ
+IGFpbid0IGdpdmluJyB5b3Ugbm8gZGFtbiB0cmVlIGZpZGR5ISIKPC9wPgoKPC9o
+dG1sPg==
+
+
+--_000000000000ba7e3f05a211dc87_--

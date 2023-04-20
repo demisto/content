@@ -1,5 +1,5 @@
 Use the Tanium Threat Response integration to manage endpoints processes, evidence, alerts, files, snapshots, and connections. This Integration works with Tanium Threat Response version 3.0.159 and above.
-This integration was integrated and tested with version 3.5.284 of Tanium Threat Response v2
+This integration was integrated and tested with versions 3.5.284 and 4.x of Tanium Threat Response v2.
 
 
 ## Configure Tanium Threat Response v2 on Cortex XSOAR
@@ -20,6 +20,7 @@ This integration was integrated and tested with version 3.5.284 of Tanium Threat
     | Alert states to filter by in fetch incidents command. Empty list won't filter the incidents by state. | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
+    | API Version | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -149,10 +150,10 @@ Returns a list of all intel documents.
                 "AlertCount": 0,
                 "CreatedAt": "2021-09-26T20:42:12.761Z",
                 "ID": 538,
-                "IntrinsicId": "file.None",
+                "IntrinsicId": "file",
                 "IsSchemaValid": true,
                 "Md5": "45d4f6197504b0cf17ca4425b27c4123",
-                "Name": "file.None",
+                "Name": "file",
                 "RevisionId": 1,
                 "Size": 2211,
                 "SourceId": 1,
@@ -187,7 +188,7 @@ Returns a list of all intel documents.
 >### Intel docs
 >|ID|Name|Type|Alert Count|Unresolved Alert Count|Created At|Updated At|Label Ids|
 >|---|---|---|---|---|---|---|---|
->| 538 | file.None | yara | 0 | 0 | 2021-09-26T20:42:12.761Z | 2021-09-26T20:42:12.761Z |  |
+>| 538 | file | yara | 0 | 0 | 2021-09-26T20:42:12.761Z | 2021-09-26T20:42:12.761Z |  |
 >| 537 | 111-72ad-40cc-abbf-90846fa4afec | openioc | 0 | 0 | 2021-09-26T15:40:18.967Z | 2021-09-26T20:47:53.586Z |  |
 >| 536 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-26T08:18:57.462Z | 2021-09-26T08:18:57.462Z |  |
 >| 535 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-26T08:11:30.717Z | 2021-09-26T08:11:30.717Z |  |

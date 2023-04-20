@@ -1,0 +1,6 @@
+[known_words]
+ansii
+
+[file:AnsibleVMware.yml]
+ignore=BA124
+

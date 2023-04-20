@@ -1,25 +1,22 @@
 {
-    "name": "Compliance",
-    "description": "Compliance pack is the base pack for compliance-related packs, such as HIPAA, GDPR and US breach notification.",
+    "name": "Compliance (Deprecated)",
+    "description": "Deprecated. Use from CommonScripts instead.",
     "support": "xsoar",
-    "currentVersion": "1.0.11",
+    "currentVersion": "1.0.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": [],
-    "tags": [
-        "Breach",
-        "GDPR",
-        "HIPAA"
+    "categories": [
+        "Case Management"
     ],
+    "tags": [],
     "created": "2020-05-10T10:50:52Z",
-    "useCases": [
-        "Compliance"
-    ],
+    "useCases": [],
     "keywords": [
         "Compliance",
         "Breach",
         "GDPR",
+        "HIPAA",
         "US",
         "Notification",
         "Breach notification",
@@ -28,5 +25,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }

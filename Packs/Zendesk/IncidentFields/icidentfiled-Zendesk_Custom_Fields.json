@@ -1,0 +1,31 @@
+{
+    "id": "incident_zendeskcustomfields",
+    "version": -1,
+    "modified": "2022-07-06T14:09:42.868797+03:00",
+    "name": "Zendesk Custom Fields",
+    "ownerOnly": false,
+    "cliName": "zendeskcustomfields",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Zendesk Ticket"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

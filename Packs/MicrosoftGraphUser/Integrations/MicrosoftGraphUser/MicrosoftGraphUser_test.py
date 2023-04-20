@@ -1,3 +1,5 @@
+import pytest
+
 
 users_list_mock = [
     {
@@ -113,7 +115,6 @@ def test_get_unsupported_chars_in_user():
 
 
 def test_suppress_errors(mocker):
-
     from MicrosoftGraphUser import unblock_user_command, disable_user_account_command, \
         update_user_command, change_password_user_command, delete_user_command, \
         get_direct_reports_command, get_manager_command, assign_manager_command, \
@@ -128,7 +129,7 @@ def test_suppress_errors(mocker):
          'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
          'expected_result': '#### User -> 123456789 does not exist'},
         {'fun': update_user_command, 'mock_fun': 'update_user',
-         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789', 'updated_fields': 'test1=test2'},
          'expected_result': '#### User -> 123456789 does not exist'},
         {'fun': change_password_user_command, 'mock_fun': 'password_change_user',
          'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
@@ -161,3 +162,185 @@ def test_suppress_errors(mocker):
         mocker.patch.object(client, test['mock_fun'], side_effect=test['mock_value'])
         results, _, _ = test['fun'](client, test['args'])
         assert results == test['expected_result']
+
+
+USERS_LIST_MOCK = [
+    {
+        'ID': '08779ba7-f3ed-4344-b9d7-98b9911ea8a8',
+        'DisplayName': 'Test User',
+        'UserPrincipalName': None,
+        'JobTitle': "Magician",
+        'MobilePhone': None,
+        'Mail': None
+    },
+    {
+        'ID': '670edadc-0197-45b0-90e6-ee061e25ab73',
+        'DisplayName': 'Test1',
+        'UserPrincipalName': 'PrincipalTest',
+        'JobTitle': 'TESTER',
+        'MobilePhone': '050505050',
+        'Mail': 'test@test.com',
+    }
+]
+USERS_JSON_MOCK = {
+    'ID': '6705dadc-0197-45b4-9fe6-ee061e25abf7',
+    'DisplayName': 'Test2',
+    'UserPrincipalName': 'PrincipalTest2',
+    'JobTitle': 'TESTER2',
+    'MobilePhone': '02020202',
+    'Mail': 'test2@test2.com',
+}
+
+
+@pytest.mark.parametrize('users_mock',
+                         [
+                             (USERS_LIST_MOCK),
+                             (USERS_JSON_MOCK)
+                         ])
+def test_create_account_outputs(users_mock):
+    from MicrosoftGraphUser import create_account_outputs
+    results = create_account_outputs(users_mock)
+
+    if not isinstance(users_mock, list):
+        users_mock = [users_mock]
+
+    for i in range(len(results)):
+        assert results[i]['DisplayName'] == users_mock[i]['DisplayName']
+        assert results[i]['Email']['Address'] == users_mock[i]['Mail']
+        assert results[i]['Username'] == users_mock[i]['UserPrincipalName']
+
+
+@pytest.mark.parametrize('user, updated_fields, updated_fields_delimiter, expected_request_params',
+                         [
+                             # A case with a single field to update.
+                             ('1875cf67-ebf9-4a29-b5e2-54e36591296e', 'displayName=test_name1', None,
+                              {'json_data': {'displayName': 'test_name1'},
+                               'method': 'PATCH',
+                               'resp_type': 'text',
+                               'url_suffix': 'users/1875cf67-ebf9-4a29-b5e2-54e36591296e'}
+                              ),
+
+                             # A case with multiple fields to update.
+                             ('1875cf67-ebf9-4a29-b5e2-54e36591296e',
+                              'displayName=test_name2,jobTitle=test_title,phoneNumber=123456789', None,
+                              {'json_data': {'displayName': 'test_name2',
+                                             'jobTitle': 'test_title',
+                                             'phoneNumber': '123456789'},
+                               'method': 'PATCH',
+                               'resp_type': 'text',
+                               'url_suffix': 'users/1875cf67-ebf9-4a29-b5e2-54e36591296e'}
+                              ),
+
+                             # A case with multiple fields to update and a custom delimiter.
+                             ('1875cf67-ebf9-4a29-b5e2-54e36591296e',
+                              'displayName=test_name3;jobTitle=test_title;phoneNumber=123456789', ';',
+                              {'json_data': {'displayName': 'test_name3',
+                                             'jobTitle': 'test_title',
+                                             'phoneNumber': '123456789'},
+                               'method': 'PATCH',
+                               'resp_type': 'text',
+                               'url_suffix': 'users/1875cf67-ebf9-4a29-b5e2-54e36591296e'}
+                              ),
+                         ])
+def test_update_user_command(mocker, user: str, updated_fields: str,
+                             updated_fields_delimiter: str, expected_request_params: dict):
+    """
+    Given:
+        - User to update with fields to update.
+    When:
+        - Calling update_user.
+    Then:
+        - Ensure the user is updated.
+    """
+    from MicrosoftGraphUser import MsGraphClient, update_user_command
+
+    client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
+                           auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
+                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed', handle_error=True,
+                           auth_code='', redirect_uri='')
+    request = mocker.patch.object(client.ms_client, 'http_request', return_value={})
+    mocker.patch.object(client, 'get_user', return_value={})
+
+    args = {'user': user, 'updated_fields': updated_fields}
+
+    if updated_fields_delimiter is not None:
+        args['updated_fields_delimiter'] = updated_fields_delimiter
+
+    update_user_command(client=client, args=args)
+
+    request.assert_called_with(**expected_request_params)
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+    from MicrosoftGraphUser import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import demistomock as demisto
+    import re
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    requests_mock.get(re.compile(f'^{Resources.graph}.*'), json={})
+
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True',
+        'host': Resources.graph
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'results', return_value=params)
+    mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
+
+    main()
+
+    assert 'ok' in demisto.results.call_args[0][0]['Contents']
+    qs = get_mock.last_request.qs
+    assert qs['resource'] == [Resources.graph]
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+def test_generate_login_url(mocker):
+    """
+    Given:
+        - Self-deployed are true and auth code are the auth flow
+    When:
+        - Calling function msgraph-user-generate-login-url
+        - Ensure the generated url are as expected.
+    """
+    # prepare
+    import demistomock as demisto
+    from MicrosoftGraphUser import main, Scopes
+    import MicrosoftGraphUser
+
+    redirect_uri = 'redirect_uri'
+    tenant_id = 'tenant_id'
+    client_id = 'client_id'
+    mocked_params = {
+        'redirect_uri': redirect_uri,
+        'auth_type': 'Authorization Code',
+        'self_deployed': 'True',
+        'creds_tenant_id': {'password': tenant_id},
+        'creds_auth_id': {'password': client_id},
+        'creds_enc_key': {'password': 'client_secret'}
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='msgraph-user-generate-login-url')
+    mocker.patch.object(MicrosoftGraphUser, 'return_results')
+
+    # call
+    main()
+
+    # assert
+    expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
+                   f'response_type=code&scope=offline_access%20{Scopes.graph}' \
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+    res = MicrosoftGraphUser.return_results.call_args[0][0].readable_output
+    assert expected_url in res

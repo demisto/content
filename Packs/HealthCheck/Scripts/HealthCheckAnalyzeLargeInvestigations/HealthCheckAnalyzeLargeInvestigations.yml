@@ -17,7 +17,7 @@ name: HealthCheckAnalyzeLargeInvestigations
 script: ''
 subtype: python3
 type: python
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.10.10.48392
 runas: DBotWeakRole
 runonce: false
 tests:
@@ -25,3 +25,5 @@ tests:
 fromversion: 6.0.0
 scripttarget: 0
 tags: []
+marketplaces:
+- xsoar

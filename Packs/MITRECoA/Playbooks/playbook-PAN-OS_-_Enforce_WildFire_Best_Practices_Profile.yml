@@ -1,0 +1,1272 @@
+id: PAN-OS - Enforce WildFire Best Practices Profile
+name: PAN-OS - Enforce WildFire Best Practices Profile
+description: |
+  This playbook enforces the WildFire Best Practices Profile as defined by Palo Alto Networks BPA.
+  The playbook performs the following tasks:
+  - Check for WildFire license (If license is not activated, the playbook refers users to their Palo Alto Networks account manager for further instructions).
+  - Get the existing profile information.
+  - Get the best practices profile information.
+  - Check if the best practices profile set by Cortex XSOAR is enforced. (If not, the playbook allows the user to compare the existing profile with the best practices and decide on the action to take).
+  - Create best practices profile.
+  - Apply profile to policy rules on PAN-OS firewall or Panorama.
+inputs:
+- description: Template name to enforce WildFire best practices profile.
+  key: template
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The device group to work on. Exists only in panorama!
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the results.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
+  key: pre-post-rulebase
+  playbookInputQuery:
+  required: false
+  value: {}
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 22a844ca-6cc7-42b2-8b11-0fa0e1659480
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 22a844ca-6cc7-42b2-8b11-0fa0e1659480
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": -250
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets information about available PAN-OS licenses and their statuses.
+      id: ffa53525-038e-44b5-8d5a-68fa2b6d35f7
+      iscommand: true
+      name: Panorama - Get Licenses
+      script: '|||pan-os-get-licenses'
+      type: regular
+      version: -1
+    taskid: ffa53525-038e-44b5-8d5a-68fa2b6d35f7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 75
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Feature
+                root: Panorama.License
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: wildfire
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.License.Expired
+          operator: isEqualString
+          right:
+            value:
+              simple: "no"
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is there a WildFire license?
+      id: f8be3302-3615-49e3-88a0-23f43d838f76
+      iscommand: false
+      name: Is there a WildFire license?
+      type: condition
+      version: -1
+    taskid: f8be3302-3615-49e3-88a0-23f43d838f76
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 250
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bc78a5da-f08f-4485-8aa8-38a414d1b68b
+      iscommand: false
+      name: Missing License
+      type: title
+      version: -1
+      description: ''
+    taskid: bc78a5da-f08f-4485-8aa8-38a414d1b68b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 420
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      security_profile:
+        simple: wildfire-analysis
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets information for the specified security profile.
+      id: daf606c1-ede5-4ca1-82a9-b62b76ba12d8
+      iscommand: true
+      name: PAN-OS - Get security profiles
+      script: '|||pan-os-get-security-profiles'
+      type: regular
+      version: -1
+    taskid: daf606c1-ede5-4ca1-82a9-b62b76ba12d8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: View WildFire best practices.
+      id: c01fe63a-5a4b-4a8f-8a8f-0d028b2c2cd5
+      iscommand: true
+      name: PAN-OS - Get WildFire best practice
+      script: '|||pan-os-get-wildfire-best-practice'
+      type: regular
+      version: -1
+    taskid: c01fe63a-5a4b-4a8f-8a8f-0d028b2c2cd5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1070
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: WildFire.ExistingProfile
+      value:
+        complex:
+          accessor: WildFire
+          root: Panorama
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      id: cbe34cfd-168b-4709-8fe6-5bc0d161c038
+      iscommand: false
+      name: Set existing WildFire profile
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: cbe34cfd-168b-4709-8fe6-5bc0d161c038
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Panorama.WildFire
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 0b8429f9-a7b1-495c-8a2f-8a824655468d
+      iscommand: false
+      name: Delete context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 0b8429f9-a7b1-495c-8a2f-8a824655468d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 895
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Name
+                root: WildFire.ExistingProfile
+          operator: isEqualString
+          right:
+            value:
+              simple: WF Best Practices - XSOAR
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "20"
+      - "21"
+      "yes":
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is WildFire best practice profile by XSOAR enforced?
+      id: 15dd5028-7d59-4c84-8b89-db435f95dea3
+      iscommand: false
+      name: Is WildFire best practice profile by XSOAR enforced?
+      type: condition
+      version: -1
+    taskid: 15dd5028-7d59-4c84-8b89-db435f95dea3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1240
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6cd7e47a-86f1-4beb-84eb-a7491f683a9c
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 6cd7e47a-86f1-4beb-84eb-a7491f683a9c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 4580
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      profile_name:
+        simple: WF Best Practices - XSOAR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a WildFire analysis best practice profile.
+      id: ef757809-c553-4f13-8438-cd2fd4e5cd82
+      iscommand: true
+      name: PAN-OS - Create WildFire best practice profile
+      script: '|||pan-os-create-wildfire-best-practice-profile'
+      type: regular
+      version: -1
+    taskid: ef757809-c553-4f13-8438-cd2fd4e5cd82
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 1920
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      template:
+        complex:
+          root: inputs.template
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Enforces wildfire best practices to upload files to the maximum size, forwards all file types, and updates the schedule.
+      id: fd128974-925c-4089-8a7c-76ea2a8566ec
+      iscommand: true
+      name: PAN-OS - Enforce WildFire best practice
+      script: '|||pan-os-enforce-wildfire-best-practice'
+      type: regular
+      version: -1
+    taskid: fd128974-925c-4089-8a7c-76ea2a8566ec
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 2450
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is PAN-OS integration enabled?
+      id: fca127c2-6feb-43b5-87d2-a553bfb09c0c
+      iscommand: false
+      name: Is PAN-OS integration enabled?
+      type: condition
+      version: -1
+    taskid: fca127c2-6feb-43b5-87d2-a553bfb09c0c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": -100
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "You are missing a WildFire license which is a prerequisite for this \"PAN-OS - Enforce WildFire Best Practices Profile\" playbook, and for the related \"Courses of Action\" playbooks. \nPlease contact your Palo Alto Networks account manager for future guidance and assistance."
+      id: e260f7dd-8ed3-421f-8174-75f8807f76fe
+      iscommand: false
+      name: Missing License - Please contact your Palo Alto Networks account manager
+      type: regular
+      version: -1
+    taskid: e260f7dd-8ed3-421f-8174-75f8807f76fe
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 545
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.template
+          operator: isNotEmpty
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Enforce WildFire best practices?
+      id: 64a1e98a-ced1-42d0-8aa5-374fec0459a7
+      iscommand: false
+      name: Enforce WildFire best practices?
+      type: condition
+      version: -1
+    taskid: 64a1e98a-ced1-42d0-8aa5-374fec0459a7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 2280
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Apply profile to policy rule in PAN-OS?
+      id: ac8f4b34-ba67-4267-84c9-7fdad53ebeca
+      iscommand: false
+      name: Apply profile to policy rule?
+      type: condition
+      version: -1
+    taskid: ac8f4b34-ba67-4267-84c9-7fdad53ebeca
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 3260
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b791c0df-d340-4d28-8333-9fcc145eb763
+      iscommand: false
+      name: PAN-OS Apply profile to a rule
+      type: title
+      version: -1
+      description: ''
+    taskid: b791c0df-d340-4d28-8333-9fcc145eb763
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 945,
+          "y": 3430
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre-post-rulebase
+      profile_name:
+        simple: WF Best Practices - XSOAR
+      profile_type:
+        simple: wildfire-analysis
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ff75241a-e2aa-412e-8948-ee6287f54651
+      iscommand: false
+      name: PAN-OS - Apply Security Profile to Policy Rule
+      playbookId: PAN-OS - Apply Security Profile to Policy Rule
+      type: playbook
+      version: -1
+      description: ''
+    taskid: ff75241a-e2aa-412e-8948-ee6287f54651
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 945,
+          "y": 3570
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f8a6c599-9428-4a71-8ba5-3f1e70cd4c8a
+      iscommand: false
+      name: PAN-OS Commit Configuration
+      playbookId: PAN-OS Commit Configuration
+      type: playbook
+      version: -1
+      description: ''
+    taskid: f8a6c599-9428-4a71-8ba5-3f1e70cd4c8a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 2100
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      csvArray:
+        complex:
+          accessor: ExistingProfile
+          root: WildFire
+      fileName:
+        simple: WildFire Existing Profiles
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Export given array to csv file
+      id: 71ff981d-ee43-497d-8eef-50cf783a68d3
+      iscommand: false
+      name: Export WildFire existing profiles to CSV
+      script: ExportToCSV
+      type: regular
+      version: -1
+    taskid: 71ff981d-ee43-497d-8eef-50cf783a68d3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1355,
+          "y": 1410
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      csvArray:
+        complex:
+          accessor: WildFire
+          root: Panorama
+      fileName:
+        simple: WildFire Existing Best Practices
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Export given array to csv file
+      id: 05379310-7643-4e63-81e1-6f2984801cc6
+      iscommand: false
+      name: Export WildFire best practices to CSV
+      script: ExportToCSV
+      type: regular
+      version: -1
+    taskid: 05379310-7643-4e63-81e1-6f2984801cc6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1410
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        To understand the difference between the existing policies and the best practices, please compare between the policies by:
+
+        1) Comparing the context data under "WildFire.ExistingProfile" key to the data under "Panorama.WildFire" key.
+        2) Comparing between the exported CSV files - "WildFire Best Practices" and "WildFire Existing Profiles".
+
+        If you have differences between your profiles and the best practices profiles recommended, you are not following the best practices Courses of Action
+      id: 1127a7e0-19f8-42a6-8b9c-466321d60b4f
+      iscommand: false
+      name: Create WildFire best practice profile?
+      type: condition
+      version: -1
+    taskid: 1127a7e0-19f8-42a6-8b9c-466321d60b4f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 1750
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 622356ae-a015-49ae-80e1-5b661a6d2390
+      iscommand: false
+      name: Remediation and Policy Updates
+      type: title
+      version: -1
+      description: ''
+    taskid: 622356ae-a015-49ae-80e1-5b661a6d2390
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 1580
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4af0ff0c-7a6d-4c01-88c4-e0156f356122
+      iscommand: false
+      name: Gather Profiles Information
+      type: title
+      version: -1
+      description: ''
+    taskid: 4af0ff0c-7a6d-4c01-88c4-e0156f356122
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 420
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b6c6139d-ab61-4be5-805b-d45abb7bef67
+      iscommand: false
+      name: BPA profile exists
+      type: title
+      version: -1
+      description: ''
+    taskid: b6c6139d-ab61-4be5-805b-d45abb7bef67
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1410
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      wildfireprofilename:
+        simple: WF Best Practices - XSOAR
+      wildfireprofilestatus:
+        simple: The best practices profile by XSOAR already exists.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 376cbb97-5dd4-4f7f-818c-95a67ecf39aa
+      iscommand: true
+      name: Set best practices profile information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 376cbb97-5dd4-4f7f-818c-95a67ecf39aa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1565
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 805eaf35-e41d-4c4e-8648-e0caad944f75
+      iscommand: false
+      name: BPA profile created
+      type: title
+      version: -1
+      description: ''
+    taskid: 805eaf35-e41d-4c4e-8648-e0caad944f75
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 2620
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      wildfireprofilename:
+        simple: WF Best Practices - XSOAR
+      wildfireprofilestatus:
+        simple: The best practices profile has been created by XSOAR.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 5a2daf78-d2b9-42e4-8d4b-2ee6eccb7f93
+      iscommand: true
+      name: Set best practices profile information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 5a2daf78-d2b9-42e4-8d4b-2ee6eccb7f93
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 2770
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bd6063b1-ec04-4e9d-858e-ad88265d1dfa
+      iscommand: false
+      name: Set Profile information to layout
+      type: title
+      version: -1
+      description: ''
+    taskid: bd6063b1-ec04-4e9d-858e-ad88265d1dfa
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 945,
+          "y": 3760
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      wildfirerules:
+        complex:
+          accessor: Name
+          root: Rule
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: bc611e0d-9b64-4553-8f69-209e98605575
+      iscommand: true
+      name: Set best practices profile rules to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: bc611e0d-9b64-4553-8f69-209e98605575
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 945,
+          "y": 3900
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5769b77c-219c-411a-81a9-849b5b1f1055
+      iscommand: false
+      name: Not according to BPA
+      type: title
+      version: -1
+      description: ''
+    taskid: 5769b77c-219c-411a-81a9-849b5b1f1055
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 2090
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      wildfireprofilename:
+        simple: WF Best Practices - XSOAR
+      wildfireprofilestatus:
+        simple: The best practices profile was not created by XSOAR.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 64b50300-35bb-4be5-85a5-e227b3011a35
+      iscommand: true
+      name: Set best practices profile information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 64b50300-35bb-4be5-85a5-e227b3011a35
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 2250
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3e3b75df-73b0-4f23-88bb-e8a2dcfa9c20
+      iscommand: false
+      name: Trigger BPA Scan
+      type: title
+      version: -1
+      description: ''
+    taskid: 3e3b75df-73b0-4f23-88bb-e8a2dcfa9c20
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 4070
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "47"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      check_id:
+        simple: 255,47,53,109,110,111,112,113,114,115,117,118,119,203,204,205,251
+      failed_grid_id:
+        simple: bpafailedcheckswildfire
+      passed_grid_id:
+        simple: bpapassedcheckswildfire
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 55ed3638-4dea-43d1-8c90-915bc5167a5a
+      iscommand: false
+      name: Palo Alto Networks BPA - Submit Scan
+      playbookId: 629bfb7f-d719-4b74-8f1b-7f5a97b816db
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 55ed3638-4dea-43d1-8c90-915bc5167a5a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 4220
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      wildfirerules:
+        simple: The best practices profile was not applied to rules by XSOAR.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 2b974f09-de55-44d1-88a0-01005d9f52ce
+      iscommand: true
+      name: Set rules information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 2b974f09-de55-44d1-88a0-01005d9f52ce
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 3440
+        }
+      }
+  "47":
+    id: "47"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      bpafailedcheckswildfire:
+        complex:
+          accessor: Failed
+          root: BPA
+          transformers:
+          - operator: uniq
+      bpapassedcheckswildfire:
+        complex:
+          accessor: Passed
+          root: BPA
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 869537cf-3650-4d8b-8c1a-cec9cee4c341
+      iscommand: true
+      name: Set BPA scan results to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 869537cf-3650-4d8b-8c1a-cec9cee4c341
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 4410
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "22_11_yes": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4895,
+        "width": 3020,
+        "x": -440,
+        "y": -250
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2

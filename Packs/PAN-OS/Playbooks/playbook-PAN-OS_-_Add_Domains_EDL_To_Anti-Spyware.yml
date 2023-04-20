@@ -1,0 +1,487 @@
+id: PAN-OS - Add Domains EDL To Anti-Spyware
+version: -1
+name: PAN-OS - Add Domains EDL To Anti-Spyware
+description: |-
+  This playbook add domains EDL to Panorama Anti-Spyware. It assigns External Dynamic List URLs that contain domains to block to Panorama Anti-Spyware. You can create an External Dynamic List (EDL) and add domains to it using the Cortex XSOAR pack called "Generic Export Indicators Service".
+  We recommend using this playbook as a one-time job. Once EDL is created and assigned to anti-spyware, domains can be blocked by adding them to the EDL.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3ff02a42-bd2b-4cc3-8499-71a9992beb37
+    type: start
+    task:
+      id: 3ff02a42-bd2b-4cc3-8499-71a9992beb37
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": -155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 28b51cf7-fa4c-4a0e-8996-5a9804a232fe
+    type: condition
+    task:
+      id: 28b51cf7-fa4c-4a0e-8996-5a9804a232fe
+      version: -1
+      name: Add to existing PAN-OS EDL?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "Yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Add_To_Existing_PAN-OS_EDL
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d8b2ac5e-1013-4ef3-89b0-d10800f96fee
+    type: regular
+    task:
+      id: d8b2ac5e-1013-4ef3-89b0-d10800f96fee
+      version: -1
+      name: Add URL to existing PAN-OS EDL
+      description: Modifies an element of an external dynamic list.
+      script: '|||pan-os-edit-edl'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.Device_Group
+      element_to_change:
+        simple: url
+      element_value:
+        complex:
+          root: inputs.EDL_URL
+      name:
+        complex:
+          root: Panorama.EDL
+          accessor: Name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7b739ebb-3ead-4112-80a6-d5fa9f8c9235
+    type: regular
+    task:
+      id: 7b739ebb-3ead-4112-80a6-d5fa9f8c9235
+      version: -1
+      name: Create New PAN-OS EDL
+      description: Creates an external dynamic list.
+      script: '|||pan-os-create-edl'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      certificate_profile:
+        complex:
+          root: inputs.Certificate_Profile
+      device-group:
+        complex:
+          root: inputs.Device_Group
+      name:
+        complex:
+          root: inputs.PAN-OS_EDL_Name
+      recurring:
+        simple: hourly
+      type:
+        simple: domain
+      url:
+        complex:
+          root: inputs.EDL_URL
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 432e66f9-084b-45ad-8617-b47efd5b00e8
+    type: regular
+    task:
+      id: 432e66f9-084b-45ad-8617-b47efd5b00e8
+      version: -1
+      name: Add PAN-OS EDL To Anti-Spyware
+      description: Enables assigning EDL to the anti-spyware profile under "DNS Signature Policies".
+      script: '|||pan-os-apply-dns-signature-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      action:
+        simple: block
+      anti_spyware_profile_name:
+        complex:
+          root: inputs.Anti_Spyware_Profile
+      dns_signature_source:
+        complex:
+          root: inputs.PAN-OS_EDL_Name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a82ce2bc-c12b-4fb8-8759-e2b7c794387f
+    type: playbook
+    task:
+      id: a82ce2bc-c12b-4fb8-8759-e2b7c794387f
+      version: -1
+      name: PAN-OS Commit Configuration
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama, it also pushes the policies to the specified device group in the instance.
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 2719d7bd-164a-4b5d-8f26-9e0e1ccd3586
+    type: title
+    task:
+      id: 2719d7bd-164a-4b5d-8f26-9e0e1ccd3586
+      version: -1
+      name: Commit
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 057f52b0-fc28-4fb5-81b7-78bc1dbe074b
+    type: condition
+    task:
+      id: 057f52b0-fc28-4fb5-81b7-78bc1dbe074b
+      version: -1
+      name: Use Existing Anti-Spyware Profile?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Use_Existing_AntiSpyware_Profile
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: a3b3626a-b792-41b8-861e-7c205c9407db
+    type: regular
+    task:
+      id: a3b3626a-b792-41b8-861e-7c205c9407db
+      version: -1
+      name: Create Anti Spyware Profile
+      description: Creates an Anti-Spyware best practice profile.
+      script: '|||pan-os-create-anti-spyware-best-practice-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      profile_name:
+        complex:
+          root: inputs.Anti_Spyware_Profile
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: e1880ea0-2488-4ae5-803d-a763b1216a64
+    type: title
+    task:
+      id: e1880ea0-2488-4ae5-803d-a763b1216a64
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 9d169c5d-9a7b-4fe7-823c-eab0caa57382
+    type: regular
+    task:
+      id: 9d169c5d-9a7b-4fe7-823c-eab0caa57382
+      version: -1
+      name: Get PAN-OS EDL Details by name
+      description: Returns information for an external dynamic list
+      script: Panorama|||pan-os-get-edl
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.PAN-OS_EDL_Name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1310,
+        "width": 860,
+        "x": 0,
+        "y": -155
+      }
+    }
+  }
+inputs:
+- key: EDL_URL
+  value: {}
+  required: true
+  description: The URL from which to pull the EDL.
+  playbookInputQuery:
+- key: Add_To_Existing_PAN-OS_EDL
+  value: {}
+  required: false
+  description: Set to "true" to use the existing PAN-OS EDL.
+  playbookInputQuery:
+- key: PAN-OS_EDL_Name
+  value: {}
+  required: true
+  description: PAN-OS EDL name to create/edit if it exists (depending on the value in Add_To_Existing_PAN-OS_EDL).
+  playbookInputQuery:
+- key: Device_Group
+  value: {}
+  required: false
+  description: |
+    The device group for which to return addresses for the EDL (Panorama instances).
+  playbookInputQuery:
+- key: Certificate_Profile
+  value: {}
+  required: false
+  description: |
+    The certificate profile name for the URL that was previously uploaded to PAN OS.
+  playbookInputQuery:
+- key: Anti_Spyware_Profile
+  value: {}
+  required: true
+  description: Name of the anti-spyware profile to create OR to edit if it exists (depending on the value in Use_Existing_AntiSpyware_Profile).
+  playbookInputQuery:
+- key: Use_Existing_AntiSpyware_Profile
+  value: {}
+  required: false
+  description: Set to "true" to create a new anti-spyware profile.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

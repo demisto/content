@@ -43,4 +43,5 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Detonate File - ReversingLabs TitaniumScale](doc_imgs/Detonate_File_-_ReversingLabs_TitaniumScale_Fri_Oct_08_2021.png)
+![Detonate File - ReversingLabs TitaniumScale](../doc_files/Detonate_File_-_ReversingLabs_TitaniumScale.png)
+

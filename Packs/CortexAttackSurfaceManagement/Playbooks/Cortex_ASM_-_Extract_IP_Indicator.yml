@@ -1,7 +1,7 @@
 id: Cortex ASM - Extract IP Indicator
 version: -1
 name: Cortex ASM - Extract IP Indicator
-description: Identifies IPv4 Address associated with Alert and creates a new Indicator.
+description: Deprecated. No available replacement. Identifies IPv4 Address associated with Alert and creates a new Indicator.
 starttaskid: "0"
 tasks:
   "0":
@@ -248,3 +248,4 @@ outputs:
 tests:
 - No tests
 fromversion: 6.5.0
+deprecated: true

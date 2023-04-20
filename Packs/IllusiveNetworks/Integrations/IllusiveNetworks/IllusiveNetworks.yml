@@ -1,4 +1,7 @@
-category: Deception
+category: Deception & Breach Simulation
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: IllusiveNetworks
   version: -1
@@ -8,33 +11,42 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: API Token
   hidden: false
   name: api_token
   required: true
   type: 4
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - defaultvalue: 3 days
   display: The initial time to fetch from
   hidden: false
   name: fetch_time
   required: false
   type: 0
+  section: Collect
 - defaultvalue: ALL
   display: Fetch only incidents with forensics
   hidden: false
@@ -45,6 +57,7 @@ configuration:
   - ALL
   required: true
   type: 15
+  section: Collect
 description: The Illusive Attack Management API allows customers to retrieve detected incidents with a forensics timeline, attack surface insights, collect forensics on-demand, and manage a variety of operations with regard to deceptive entities, deception policies, and more.
 display: IllusiveNetworks
 name: IllusiveNetworks
@@ -637,7 +650,7 @@ script:
     description: Retrieve forensics artifacts from Illusive's forensics
     execution: false
     name: illusive-get-forensics-artifacts
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false
@@ -649,3 +662,5 @@ script:
 defaultmapperin: Illusive Networks-mapper
 defaultclassifier: Illusive Networks
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -24,11 +24,6 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: The original email subject.
-  key: EmailSubject
-  playbookInputQuery:
-  required: false
-  value: {}
 - description: |-
     If this value is provided, only the relevant playbook runs. If no value is provided, all sub-playbooks are run.
     Possible values:
@@ -163,9 +158,6 @@ tasks:
       MessageID:
         complex:
           root: inputs.MessageID
-      ThreadTopic:
-        complex:
-          root: inputs.EmailSubject
       UserID:
         complex:
           root: inputs.UserID

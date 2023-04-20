@@ -2,6 +2,7 @@ import tempfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import StringIO
 import paramiko
+import urllib3
 from paramiko import SSHClient, AutoAddPolicy, transport, Transport
 from paramiko.ssh_exception import NoValidConnectionsError
 from scp import SCPClient, SCPException
@@ -10,7 +11,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 DEFAULT_TIMEOUT = 10.0
 DEFAULT_PORT = 22
 ''' HELPER FUNCTIONS '''
@@ -171,7 +172,7 @@ def create_clients(host_name: str, user: str, password: str, ciphers: Set[str], 
                     for host in hosts])
 
     if not clients and host_name:
-        client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms, certificate)
+        client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms, certificate, port)
         clients.append(client)
 
     return clients

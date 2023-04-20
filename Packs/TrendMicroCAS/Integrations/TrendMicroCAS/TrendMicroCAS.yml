@@ -1,4 +1,7 @@
-category: Authentication
+category: Authentication & Identity Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: TrendMicro Cloud App Security
   version: -1
@@ -16,14 +19,17 @@ configuration:
   - Canada
   required: true
   type: 15
+  section: Connect
 - display: Token
   name: token
   required: true
   type: 4
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Service event to fetch
   name: service
   options:
@@ -38,6 +44,7 @@ configuration:
   - exchangeserver
   required: false
   type: 16
+  section: Collect
 - display: Event type to fetch
   hidden: false
   name: event_type
@@ -48,29 +55,37 @@ configuration:
   - dlp
   required: false
   type: 16
+  section: Collect
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
   hidden: false
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: 'Use Trend Micro Cloud App Security integration to protect against ransomware, phishing, malware, and unauthorized transmission of sensitive data for cloud applications, such as Microsoft 365, Box, Dropbox, Google G Suite and Salesforce.'
 display: Trend Micro Cloud App Security
 name: TrendMicro Cloud App Security
@@ -726,7 +741,7 @@ script:
     - contextPath: TrendMicroCAS.BlockedList.urls
       description: A list of blocked URLs.
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false

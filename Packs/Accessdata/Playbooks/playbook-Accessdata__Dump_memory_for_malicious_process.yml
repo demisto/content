@@ -2,7 +2,8 @@ id: Accessdata_Dump_memory_for_malicious_process
 version: -1
 fromversion: 5.0.0
 name: 'Accessdata: Dump memory for malicious process'
-description: Use as a sub-playbook to dump memory if given process is running on legacy AD agent
+description: Deprecated. No available replacement.
+deprecated: true
 starttaskid: "0"
 tasks:
   "0":

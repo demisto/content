@@ -29,7 +29,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| File | The file to extract indicators from. | File.None | Optional |
+| File | The file to extract indicators from. | File | Optional |
 
 ## Playbook Outputs
 ---
