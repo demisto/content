@@ -112,7 +112,7 @@ else
     echo "Skipping uploading index.json file."
   fi
   if [ -f "$ARTIFACTS_FOLDER/corepacks.json" ]; then
-    gsutil cp -z json "$ARTIFACTS_FOLDER/corepacks.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
+    gsutil cp -z json "$ARTIFACTS_FOLDER/corepacks-X.X.X.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
   else
     echo "Skipping uploading corepacks.json file."
   fi
