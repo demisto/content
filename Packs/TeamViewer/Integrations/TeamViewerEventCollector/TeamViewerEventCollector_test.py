@@ -3,6 +3,16 @@ from freezegun import freeze_time
 
 
 def test_constructor():
+    """
+    Given:
+    - mocker
+
+    When:
+    - Calling the constructor function
+
+    Then:
+    - Ensure that the that the function return valid response
+    """
     from TeamViewerEventCollector import Client
     base_url = "https://example.com"
     verify = False
@@ -14,9 +24,17 @@ def test_constructor():
     assert client._headers == headers
 
 
-# Tests that the http_request method handles an invalid request
-# (invalid parameters and body) and returns an error response from the api.
 def test_invalid_request(mocker):
+    """
+    Given:
+    - mocker
+
+    When:
+    - Calling the http_request function
+
+    Then:
+    - Ensure that the that the http_request method handles an invalid request
+    """
     from TeamViewerEventCollector import Client
     # Mocking the http_request method to return an error response
     mocker.patch.object(Client, 'http_request', return_value={'error': 'Invalid request'})
@@ -27,8 +45,17 @@ def test_invalid_request(mocker):
     assert response == {'error': 'Invalid request'}
 
 
-# Tests that the function successfully retrieves the requested number of events.
 def test_search_events_retrieves_requested_number_of_events(mocker):
+    """
+    Given:
+    - mocker
+
+    When:
+    - Calling the search_events function
+
+    Then:
+    - Ensure that the that the function successfully retrieves the requested number of events.
+    """
     # Arrange
     client = TeamViewerEventCollector.Client(base_url="https://example.com", verify=False, proxy=False, headers={})
     limit = 5
@@ -44,9 +71,19 @@ def test_search_events_retrieves_requested_number_of_events(mocker):
     assert results[0] == expected_results
 
 
-# Tests that the function retrieves all available events when
-# the limit is set to a number higher than the number of available events.
 def test_search_events_retrieves_all_available_events_when_limit_is_higher_than_number_of_available_events(mocker):
+    """
+    Given:
+    - mocker
+
+    When:
+    - Calling the search_events function
+
+    Then:
+    - Ensure that the that the function retrieves all available events when
+      the limit is set to a number higher than the number of available events
+    """
+    
     # Arrange
     client = TeamViewerEventCollector.Client(base_url="https://example.com", verify=False, proxy=False, headers={})
     limit = 10
@@ -62,8 +99,17 @@ def test_search_events_retrieves_all_available_events_when_limit_is_higher_than_
     assert results[0] == expected_results + [{"event_id": 6}]
 
 
-# Tests that the function retrieves no events when the limit is set to 0.
 def test_search_events_retrieves_no_events_when_limit_is_zero(mocker):
+    """
+    Given:
+    - mocker
+
+    When:
+    - Calling the search_events function
+
+    Then:
+    - Ensure that the that the function retrieves no events when the limit is set to 0.
+    """
     # Arrange
     client = TeamViewerEventCollector.Client(base_url="https://example.com", verify=False, proxy=False, headers={})
     limit = 0

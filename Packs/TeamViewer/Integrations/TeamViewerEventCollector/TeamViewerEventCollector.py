@@ -26,9 +26,10 @@ class Client(BaseClient):
     def __init__(self, base_url, verify, proxy, headers):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
-    def http_request(self, params=None, body=None):
+    def get_events(self, params=None, body=None):
         return self._http_request(
-            method='POST', headers=self._headers, params=params, data=body)
+            method='POST', url_suffix='/api/v1/EventLogging',
+            headers=self._headers, params=params, data=body)
 
 
 ''' HELPER FUNCTIONS '''
@@ -51,7 +52,7 @@ def search_events(client: Client, limit: int,
     next_page = True
     params: Dict[str, Any] = {}
     while next_page and len(results) < limit:
-        response = client.http_request(params=params, body=body)
+        response = client.get_events(params=params, body=body)
         demisto.debug(f'http response:\n {response}')
         results += response.get('AuditEvents', [])
         next_page = response.get('ContinuationToken')
@@ -84,7 +85,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        client.http_request()
+        client.get_events()
         message = 'ok'
     except DemistoException as e:
         if 'Wrong' in str(e) or 'Authorization' in str(e):
