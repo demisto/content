@@ -62,9 +62,6 @@ def test_get_alert_details_command(mocker, test_case):
     mocker.patch('MicrosoftGraphSecurity.API_VER', test_data.get('api_version'))
     hr, ec, _ = get_alert_details_command(client_mocker, test_data.get('args'))
     assert hr == test_data.get('expected_hr')
-    import json
-    with open('result.json', 'w') as fp:
-        json.dump(ec, fp)
     assert ec == test_data.get('expected_ec')
 
 
