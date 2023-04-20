@@ -26,7 +26,7 @@ class Client:  # pragma: no cover
             set_integration_context(integration_context)
         elif not enc_key and not (certificate_thumbprint and private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided. For further information see '
-                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
         args = {
             "azure_ad_endpoint": azure_ad_endpoint,
             "self_deployed": True,
@@ -39,7 +39,7 @@ class Client:  # pragma: no cover
             "enc_key": enc_key,
             "managed_identities_client_id": managed_identities_client_id,
             "managed_identities_resource_uri": Resources.graph,
-            "certificate_thumbprint": certificate_thumbprint, 
+            "certificate_thumbprint": certificate_thumbprint,
             "private_key": private_key
         }
         if not client_credentials:
@@ -883,7 +883,7 @@ def main():  # pragma: no cover
             client_credentials=params.get("client_credentials", False),
             enc_key=(params.get('credentials') or {}).get('password'),
             managed_identities_client_id=get_azure_managed_identities_client_id(params),
-            certificate_thumbprint=params.get('certificate_thumbprint'),
+            certificate_thumbprint=params.get('certificate_thumbprint', {}).get('password'),
             private_key=params.get('private_key')
         )
         if command == 'test-module':

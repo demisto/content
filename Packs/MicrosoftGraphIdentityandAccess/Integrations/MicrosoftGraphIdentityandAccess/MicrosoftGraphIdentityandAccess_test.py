@@ -113,7 +113,8 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
 
     params = {
         'managed_identities_client_id': {'password': client_id},
-        'use_managed_identities': 'True'
+        'use_managed_identities': 'True',
+        'credentials': {'password': 'pass'}
     }
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'command', return_value='test-module')
