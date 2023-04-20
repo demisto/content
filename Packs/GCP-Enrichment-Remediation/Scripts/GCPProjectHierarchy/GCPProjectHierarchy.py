@@ -72,12 +72,15 @@ def gcp_project_heirarchy(args: Dict[str, Any]) -> CommandResults:
     if next_one == "NONE":
         return CommandResults('could not find specified folder/organization info')
     hierarchy.append(to_append)
-    while 'stop' not in next_one:
-        level += 1
-        next_one, to_append = lookup(next_one, level)
-        if next_one == "NONE":
-            return CommandResults('could not find specified folder/organization info')
-        hierarchy.append(to_append)
+    try:
+        while 'stop' not in next_one:
+            level += 1
+            next_one, to_append = lookup(next_one, level)
+            if next_one == "NONE" or next_one is None:
+                return CommandResults('could not find specified folder/organization info')
+            hierarchy.append(to_append)
+    except TypeError:
+        return CommandResults('could not find specified folder/organization info')
 
     return CommandResults(
         outputs_prefix='GCPHierarchy',
