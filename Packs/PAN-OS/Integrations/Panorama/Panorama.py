@@ -3504,7 +3504,7 @@ def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, quer
     }
 
     if query:
-        params["xpath"] = f'{params["xpath"]}[{query}]'
+        params["xpath"] = f'{params["xpath"]}[{query.replace(" eq ", " = ")}]'
     elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
         params["xpath"] = f'{params["xpath"]}[{xpath_filter}]'
 
@@ -4245,12 +4245,16 @@ def panorama_list_applications_command(args:Dict[str, str]):
 
 
 def prettify_edls_arr(edls_arr: Union[list, dict]):
+
+    if isinstance(edls_arr, dict):  # handle case of only one edl in the instance
+        parse_pan_os_un_committed_data(edls_arr, ['@admin', '@dirtyId', '@time'])
+        return prettify_edl(edls_arr)
+
     for edl in edls_arr:
         parse_pan_os_un_committed_data(edl, ['@admin', '@dirtyId', '@time'])
 
     pretty_edls_arr = []
-    if not isinstance(edls_arr, list):  # handle case of only one edl in the instance
-        return prettify_edl(edls_arr)
+
     for edl in edls_arr:
         pretty_edl = {
             'Name': edl['@name'],
@@ -4636,8 +4640,6 @@ def panorama_register_ip_tag_command(args: dict):
 
     major_version = get_pan_os_major_version()
 
-    if timeout and persistent == '1':
-        raise DemistoException('When the persistent argument is true, you can not use the timeout argument.')
     if major_version <= 8 and timeout:
         raise DemistoException('The timeout argument is only applicable on 9.x PAN-OS versions or higher.')
 
