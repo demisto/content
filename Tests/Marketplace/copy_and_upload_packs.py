@@ -148,15 +148,15 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
         # download the corepacks.json stored in the build bucket to temp dir
         build_corepacks_file_path = os.path.join(build_bucket_base_path, corepacks_file_name)
         build_corepacks_blob = build_bucket.blob(build_corepacks_file_path)
-    
+
         if not build_corepacks_blob.exists():
             logging.critical(f"{corepacks_file_name} is missing in {build_bucket.name} bucket, exiting...")
             sys.exit(1)
-    
+
         temp_corepacks_file_path = os.path.join(extract_destination_path, corepacks_file_name)
         build_corepacks_blob.download_to_filename(temp_corepacks_file_path)
         corepacks_file = load_json(temp_corepacks_file_path)
-    
+
         # change the storage paths to the prod bucket
         corepacks_list = corepacks_file.get('corePacks', [])
         try:
@@ -168,19 +168,19 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
                               f"{GCPConfig.GCS_PUBLIC_URL}/<BUCKET_NAME>/.../content/packs/...\n"
                               f"List of build bucket corepacks paths:\n{corepacks_list_str}")
             sys.exit(1)
-    
+
         # construct core pack data with public gcs urls
         core_packs_data = {
             'corePacks': corepacks_list,
             'upgradeCorePacks': corepacks_file.get('upgradeCorePacks', []),
             'buildNumber': build_number
         }
-    
+
         # upload core pack json file to gcs
         prod_corepacks_file_path = os.path.join(storage_base_path, corepacks_file_name)
         prod_corepacks_blob = production_bucket.blob(prod_corepacks_file_path)
         prod_corepacks_blob.upload_from_string(json.dumps(core_packs_data, indent=4))
-    
+
         logging.success(f"Finished uploading {corepacks_file_name} to storage.")
 
 
