@@ -4,56 +4,54 @@ This integration replaces the Gmail functionality in the GoogleApps API and G Su
 
 ### Prerequisites
 
-You need to do the following in Google before configuring the integration in Cortex XSOAR.
+You need to do the following in Google before configuring your integration instance in Cortex XSOAR.
 
 * [Get a New Private Key](#get-a-new-private-key)
 * [Delegate Domain-wide Authority to Your Service Account](#delegate-domain-wide-authority-to-your-service-account)
-* [Get an Immutable Google Apps ID](#get-an-immutable-google-apps-id-parameters)
-
-### Delegate Domain-wide Authority to Your Service Account
-
-1. Access the [Google Administrator Console](http://admin.google.com/).
-2. Enter a client name (the Unique ID) and paste the following into the **One or more API Scopes** textbox. 
-    
-``` https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/admin.directory.user,https://www.googleapis.com/auth/admin.directory.device.mobile.action,https://www.googleapis.com/auth/admin.directory.device.mobile.readonly,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/gmail.send,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/admin.directory.device.chromeos,https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.user.security,https://www.googleapis.com/auth/admin.directory.rolemanagement,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/gmail.readonly,https://mail.google.com,https://www.googleapis.com/auth/gmail.compose ```
-    
-![Setup Account](./doc_imgs/mceclip1-1.png)
+* [Enable APIs](#Enable-APIs)
+* [Get an Immutable Google Apps ID](#get-an-immutable-google-apps-id)
 
 ### Get a New Private Key
 
 1.  Access your [Google Service Account](https://console.developers.google.com/projectselector/iam-admin/serviceaccounts%C2%A0).
 2.  In the IAM & admin section select **Service accounts**.
-3.  If you need to create a new project, click **CREATE** do the following:
+3.  If you need to create a new project, click **CREATE PROJECT** and do the following:
     1.  In the **New Project** window, type a project name, select an organization from the drop-down list, and then select a location.
     2.  Click **CREATE**.
-4.  In the Service accounts section, click **Create Service Account**.
-5.  In the **Create service account** window, type a name for the service account, add a description and then click **CREATE**.
-6.  Click **Continue.**
-7.  In the **Create key** section, click **CREATE KEY**.
-8.  Select Key type **JSON** and click **CREATE**.
-9.  Click **DONE**.<br/>A Service Account file with a key pair is generated and automatically downloads.  
+4.  In the **Service accounts** section, click **+ CREATE SERVICE ACCOUNT**.</br>![gmail_section1_step4](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step4.png)
+5.  In the **Create service account** dialog, type a name for the service account, add a description, and then click **CREATE AND CONTINUE**.</br>![gmail_section1_step5](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step5.png)
+6.  In the **Grant this service account access to project** section,click **Continue**.
+7.  In the **Grant users access to this service account** section, click **DONE**.</br>
+8.  In the **Actions** column for the newly created service account, click the verticle elipses, then click **Manage keys**.</br>![gmail_section1_step8](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step8.png)   
+9. Click the **ADD KEY** dropdown, and select **Create new key**.
+10. Select Key type **JSON** and click **CREATE**.</br>This will generate a json **Private key** file that will be downloaded and saved locally.
+11. Click **CLOSE** to close the dialog.
+12. Navigate to **DETAILS** -> **Advanced Settings**.  Copy the **Client ID**.
 
-    ![mceclip1.png](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip1.png) 
-10.  Navigate to the Google Administrator Console **Security** > **Access and data control** > **API controls** and select **Manage Domain Wide Delegation**.  
-11.  Select **Add new** and then:  
-    - Complete the configuration using the Client ID from the service account you just created.  
-    - Add the API Scopes from step 2 of [Delegate Domain-wide Authority to Your Service Account](#delegate-domain-wide-authority-to-your-service-account).      
-    NOTE: Copy the value of the Unique ID for the client name in step 2 of [Delegate Domain-wide Authority to Your Service Account](#delegate-domain-wide-authority-to-your-service-account). 
-12.  Click Save.
-13.  Navigate to the Google Service Account **APIs & Services** > **Library**, and in the top search bar search for **admin sdk**. 
-14.  Select **Admin SDK API** and click **Enable**.
+### Enable APIs
 
-![Setup Account](./doc_imgs/mceclip1-1.png)
+Both the **GMail API** and the **Admin SDK API** are required to use this integration.
 
-### Get an Immutable Google Apps ID Parameters
-In order to revoke/fetch a user role, you need an Immutable Google Apps ID param.
+1. From the main **Navigation Menu** hamburger icon, navigate to **APIs & Services** -> **Library**.
+2. In **Search for APIs & Services**, search for **gmail**.
+3. Click **Gmail API**, then click **ENABLE**.
+4. Repeat steps 2 & 3 for **Admin SDK API**.
 
-1. Open [https://admin.google.com](https://admin.google.com) (as in step 2).
-2. Navigate to **Security > Set up single sign-on (SSO)**. 
-   The SSO URL is the Immutable Google Apps ID.
-3. Record the SSO URL, which is the Immutable Google Apps ID, and copy it for later use.
+### Delegate Domain-wide Authority to Your Service Account
 
-![Setup Account](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip2.png)
+1. In the [Google Administrator Console](http://admin.google.com/), navigate to **Security** -> **Access and data control** -> **API Controls**.
+2. Click **MANAGE DOMAIN WIDE DELEGATION**.
+3. Click **Add new** to open the **Add a new client ID** dialog.
+4. Complete the dialog using the **Client ID** copied in **Step 12** above, and the **OAuth scopes** noted below, then click **AUTHORIZE** to close the dialog.
+    
+``` https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/admin.directory.user,https://www.googleapis.com/auth/admin.directory.device.mobile.action,https://www.googleapis.com/auth/admin.directory.device.mobile.readonly,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/gmail.send,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/admin.directory.device.chromeos,https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.user.security,https://www.googleapis.com/auth/admin.directory.rolemanagement,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/gmail.readonly,https://mail.google.com,https://www.googleapis.com/auth/gmail.compose ```
+
+### Get an Immutable Google Apps ID
+To revoke or fetch a user role, you need an Immutable Google Apps ID.
+
+1. Continue within the [Google Administrator Console](https://admin.google.com) from the previous step.
+2. Navigate to **Security** -> **Authentication** -> **SSO with SAML applications**.
+3. Copy the **idpid** value from the **SSO URL**, this is the Immutable Google Apps ID.</br>![gmail_section4_step3](https://raw.githubusercontent.com/demisto/content-docs/d8ca78236562702cd1347af133fbba09972a8160/docs/doc_imgs/integrations/gmail_section4_step3.png)
 
 ## Required Scopes
 | Function | API to Authorize |
