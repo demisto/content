@@ -30,17 +30,17 @@ def test_invalid_request(mocker):
     - mocker
 
     When:
-    - Calling the http_request function
+    - Calling the get_events function
 
     Then:
-    - Ensure that the that the http_request method handles an invalid request
+    - Ensure that the that the get_events method handles an invalid request
     """
     from TeamViewerEventCollector import Client
-    # Mocking the http_request method to return an error response
-    mocker.patch.object(Client, 'http_request', return_value={'error': 'Invalid request'})
-    # Creating a client instance and calling the http_request method with invalid parameters and body
+    # Mocking the get_events method to return an error response
+    mocker.patch.object(Client, 'get_events', return_value={'error': 'Invalid request'})
+    # Creating a client instance and calling the get_events method with invalid parameters and body
     client = Client(base_url='https://example.com', verify=False, proxy=False, headers=None)
-    response = client.http_request(params='invalid', body='invalid')
+    response = client.get_events(params='invalid', body='invalid')
     # Asserting that the response contains the expected error message
     assert response == {'error': 'Invalid request'}
 
@@ -61,7 +61,7 @@ def test_search_events_retrieves_requested_number_of_events(mocker):
     limit = 5
     expected_results = [{"event_id": i} for i in range(1, limit + 1)]
     response = {"AuditEvents": expected_results}
-    mocker.patch.object(client, 'http_request', return_value=response)
+    mocker.patch.object(client, 'get_events', return_value=response)
 
     # Act
     results = TeamViewerEventCollector.search_events(client=client, limit=limit)
@@ -89,7 +89,7 @@ def test_search_events_retrieves_all_available_events_when_limit_is_higher_than_
     limit = 10
     expected_results = [{"event_id": i} for i in range(1, 6)]
     response = {"AuditEvents": expected_results, "ContinuationToken": "abc123"}
-    mocker.patch.object(client, 'http_request', side_effect=[response, {"AuditEvents": [{"event_id": 6}]}, {}])
+    mocker.patch.object(client, 'get_events', side_effect=[response, {"AuditEvents": [{"event_id": 6}]}, {}])
 
     # Act
     results = TeamViewerEventCollector.search_events(client=client, limit=limit)
@@ -113,7 +113,7 @@ def test_search_events_retrieves_no_events_when_limit_is_zero(mocker):
     # Arrange
     client = TeamViewerEventCollector.Client(base_url="https://example.com", verify=False, proxy=False, headers={})
     limit = 0
-    mocker.patch.object(client, 'http_request', return_value={"AuditEvents": [{"event_id": 1}]})
+    mocker.patch.object(client, 'get_events', return_value={"AuditEvents": [{"event_id": 1}]})
 
     # Act
     results = TeamViewerEventCollector.search_events(client=client, limit=limit)
@@ -137,7 +137,7 @@ def test_search_events_retrieves_no_events_when_time_parameters_have_no_events(m
     Then:
     - Ensure that the function retrieves no events
     """
-    mock_http_request = mocker.patch.object(TeamViewerEventCollector.Client, 'http_request',
+    mock_http_request = mocker.patch.object(TeamViewerEventCollector.Client, 'get_events',
                                             return_value={'AuditEvents': [], 'ContinuationToken': None})
     client = TeamViewerEventCollector.Client(base_url='https://test.com', verify=False, proxy=False, headers={})
     results = TeamViewerEventCollector.search_events(client=client, limit=10,
@@ -161,7 +161,7 @@ def test_search_events_handles_empty_response_and_missing_fields(mocker):
     Then:
     - Ensure that the function handles the case and returns an empty list
     """
-    mock_http_request = mocker.patch.object(TeamViewerEventCollector.Client, 'http_request', return_value={})
+    mock_http_request = mocker.patch.object(TeamViewerEventCollector.Client, 'get_events', return_value={})
     client = TeamViewerEventCollector.Client(base_url='https://test.com', verify=False, proxy=False, headers={})
     results = TeamViewerEventCollector.search_events(client=client, limit=10)
     assert len(results[0]) == 0
@@ -197,7 +197,7 @@ def test_fetch_events_command(mocker):
     expected_events = [{'id': 1, 'Timestamp': '2023-01-01T01:00:00Z'}, {'id': 2, 'Timestamp': "2023-04-16T10:46:49Z"}]
 
     mocker.patch('datetime.datetime.utcnow', return_value=datetime(2023, 4, 16, 10, 46, 49))
-    http_request_mock = mocker.patch.object(TeamViewerEventCollector.Client, 'http_request',
+    http_request_mock = mocker.patch.object(TeamViewerEventCollector.Client, 'get_events',
                                             return_value={'AuditEvents': expected_events})
     next_run, events = fetch_events_command(client, max_fetch, last_run, first_fetch_time)
 
@@ -250,13 +250,9 @@ def test_main_function(mocker):
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_fetch': '2023-04-16T10:46:49Z'})
     mocker.patch.object(demisto, 'setLastRun')
     demisto_debug_mocker = mocker.patch.object(demisto, 'debug')
-    mocker.patch.object(demisto, 'info')
     demisto_results_mocker = mocker.patch.object(demisto, 'results')
-    mocker.patch.object(demisto, 'error')
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
-    mocker.patch.object(demisto, 'setIntegrationContext')
     mocker.patch.object(TeamViewerEventCollector, 'send_events_to_xsiam')
-    mocker.patch.object(Client, 'http_request')
+    mocker.patch.object(Client, 'get_events')
     demisto_results_mocker = mocker.patch.object(TeamViewerEventCollector, 'fetch_events_command',
                                                  return_value=({'last_fetch': '2023-04-16T10:46:49Z'},
                                                                [{'id': 1, 'Timestamp': '2023-01-01T01:00:00Z'},
