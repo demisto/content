@@ -192,6 +192,8 @@ class ContentItem(DictFileBased):
             return self['global_rule_id']
         if self.path.parent.name == 'XSIAMDashboards' and self.path.suffix == '.json':
             return self['dashboards_data'][0]['global_id']
+        if self.path.parent.name == 'XSIAMReports' and self.path.suffix == '.json':
+            return self['templates_data'][0]['global_id']
         if self.path.parent.name == 'Triggers' and self.path.suffix == '.json':
             return self['trigger_id']
         if self.path.parent.parent.name == 'XDRCTemplates' and self.path.suffix == '.json':
