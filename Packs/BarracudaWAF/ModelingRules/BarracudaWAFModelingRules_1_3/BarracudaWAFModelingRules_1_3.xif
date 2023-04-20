@@ -1,0 +1,135 @@
+[MODEL: dataset="barracuda_waf_raw"]
+filter _raw_log ~= "\s(WF)\s"
+| alter
+    xdm.event.type = "Web Firewall Log",
+    xdm.observer.name = arraystring(regextract(_raw_log, "(\S+)\sWF\s"), ""),
+    xdm.alert.severity = arraystring(regextract(_raw_log, "WF\s(\S+)"), ""),
+    xdm.alert.original_threat_name = arraystring(regextract(_raw_log, "WF\s\S+\s(\S+)"), ""),
+    extract_source_ip = arraystring(regextract(_raw_log, "WF\s\S+\s\S+\s(\S+)"), "")
+| alter
+    src_ip_v4 = if(extract_source_ip !~= ":", extract_source_ip, null),
+    src_ip_v6 = if(extract_source_ip ~= ":", extract_source_ip, null)
+| alter
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6
+| alter
+    xdm.source.port = to_number(arraystring(regextract(_raw_log, "WF(?:\s\S+){3}\s(\S+)"), "")),
+    extract_target_ip = arraystring(regextract(_raw_log, "WF(?:\s\S+){4}\s(\S+)"), "")
+| alter
+    trg_ip_v4 = if(extract_target_ip !~= ":", extract_target_ip, null),
+    trg_ip_v6 = if(extract_target_ip ~= ":", extract_target_ip, null)
+| alter
+    xdm.target.ipv4 = trg_ip_v4,
+    xdm.target.ipv6 = trg_ip_v6
+| alter
+    xdm.target.port = to_number(arraystring(regextract(_raw_log, "WF(?:\s\S+){5}\s(\S+)"), "")),
+    xdm.network.rule = arraystring(regextract(_raw_log, "WF(?:\s\S+){6}\s(\S+)"), ""),
+    //rule_type = arraystring(regextract(_raw_log, "WF\s\S+\s\S+\s\S+\s\S+\s\S+\s\S+\s\S+\s(\S+)"), "")
+    xdm.observer.action = arraystring(regextract(_raw_log, "WF(?:\s\S+){8}\s(\S+)"), ""),
+    xdm.alert.description = arraystring(regextract(_raw_log, "\[([^]]+)\]"), ""),
+    xdm.network.http.method = arraystring(regextract(_raw_log, "\[[^]]+\]\s(\S+)"), ""),
+    xdm.target.url = arraystring(regextract(_raw_log, "\[[^]]+\]\s\S+\s(\S+)"), ""),
+    xdm.network.application_protocol =  arraystring(regextract(_raw_log, "\[[^]]+\]\s\S+\s\S+\s(\S+)"), "");
+    //session_id = arraystring(regextract(_raw_log, "\[[^]]+\]\s\S+\s\S+\s\S+\s(\S+)"), "")
+    //user_agent =  arraystring(regextract(_raw_log, "\[[^]]+\]\s\S+\s\S+\s\S+\s\S+\s\S([^\"]+)"), ""),
+    //proxy_ip =  arraystring(regextract(_raw_log, "\[[^]]+\]\s\S+\s\S+\s\S+\s\S+\s\S[^\"]+\"\s(\S+)"), ""),
+    //proxy_port =  arraystring(regextract(_raw_log, "\[[^]]+\]\s\S+\s\S+\s\S+\s\S+\s\S[^\"]+\"\s\S+\s(\S+)"), ""),
+    //authenticated_user = arraystring(regextract(_raw_log, "\[[^]]+\]\s\S+\s\S+\s\S+\s\S+\s\S[^\"]+\"\s\S+\s\S+\s(\S+)"), ""),
+    //referrer = arraystring(regextract(_raw_log, "\[[^]]+\]\s\S+\s\S+\s\S+\s\S+\s\S[^\"]+\"\s\S+\s\S+\s\S+\s(\S+)"), "")
+
+filter _raw_log ~= "\s(TR)\s"
+| alter
+    xdm.event.type = "Access Log",
+    xdm.observer.name = arraystring(regextract(_raw_log, "(\S+)\sTR\s"), ""),
+    extract_target_ip = arraystring(regextract(_raw_log, "TR\s(\S+)"), ""),
+    extract_source_ip = arraystring(regextract(_raw_log, "TR\s\S+\s\S+\s(\S+)"), ""),
+    extract_target_host_ip = arraystring(regextract(_raw_log, "TR(?:\s\S+){8}\s(\S+)"), ""),
+    extract_server_intermediate_ip = arraystring(regextract(_raw_log, "TR(?:\s\S+){15}\s(\S+)"), "")
+| alter
+    trg_ip_v4 = if(extract_target_ip !~= ":", extract_target_ip, null),
+    trg_ip_v6 = if(extract_target_ip ~= ":", extract_target_ip, null),
+    src_ip_v4 = if(extract_source_ip !~= ":", extract_source_ip, null),
+    src_ip_v6 = if(extract_source_ip ~= ":", extract_source_ip, null),
+    trg_host_ip_v4 = if(extract_target_host_ip !~= ":", extract_target_host_ip, null),
+    trg_host_ip_v6 = if(extract_target_host_ip ~= ":", extract_target_host_ip, null),
+    server_intermediate_ip_v4 = if(extract_server_intermediate_ip !~= ":", extract_server_intermediate_ip, null),
+    server_intermediate_ip_v6 = if(extract_server_intermediate_ip ~= ":", extract_server_intermediate_ip, null)
+| alter
+    xdm.target.ipv4 = trg_ip_v4,
+    xdm.target.ipv6 = trg_ip_v6,
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.target.host.ipv4_addresses = arraycreate(trg_host_ip_v4),
+    xdm.target.host.ipv6_addresses = arraycreate(trg_host_ip_v6),
+    xdm.intermediate.ipv4 = server_intermediate_ip_v4,
+    xdm.intermediate.ipv6 = server_intermediate_ip_v6
+| alter
+    xdm.target.port = to_number(arraystring(regextract(_raw_log, "TR\s\S+\s(\S+)"), "")),
+    xdm.source.port = to_number(arraystring(regextract(_raw_log, "TR(?:\s\S+){3}\s(\S+)"), "")),
+    xdm.source.user.username = arraystring(regextract(_raw_log, "TR(?:\s\S+){4}\s(\S+)"), ""),
+    //certificate_user = arraystring(regextract(_raw_log, "TR\s\S+\s\S+\s\S+\s\S+\s\S+\s(\S+)"), "")
+    xdm.network.http.method = arraystring(regextract(_raw_log, "TR(?:\s\S+){6}\s(\S+)"), ""),
+    xdm.network.application_protocol = arraystring(regextract(_raw_log, "TR(?:\s\S+){7}\s(\S+)"), ""),
+    //version = arraystring(regextract(_raw_log, "TR\s\S+\s\S+\s\S+\s\S+\s\S+\s\S+\s\S+\s\S+\s\S+\s(\S+)"), "")
+    xdm.network.http.response_code = arraystring(regextract(_raw_log, "TR(?:\s\S+){10}\s(\S+)"), ""),
+    xdm.source.sent_bytes = to_number(arraystring(regextract(_raw_log, "TR(?:\s\S+){11}\s(\S+)"), "")),
+    xdm.target.sent_bytes = to_number(arraystring(regextract(_raw_log, "TR(?:\s\S+){12}\s(\S+)"), "")),
+    xdm.event.duration = to_number(arraystring(regextract(_raw_log, "TR(?:\s\S+){14}\s(\S+)"), "")),
+    xdm.intermediate.port = to_number(arraystring(regextract(_raw_log, "TR(?:\s\S+){16}\s(\S+)"), "")),
+    xdm.observer.action = arraystring(regextract(_raw_log, "TR(?:\s\S+){21}\s(\S+)"), ""),
+    xdm.target.url = arraystring(regextract(_raw_log, "TR(?:\s\S+){23}\s(\S+)"), ""),
+    //query_part = arraystring(regextract(_raw_log, "TR(?:\s\S+){24}\s(\S+)"), ""),
+    xdm.network.http.referrer = arraystring(regextract(_raw_log, "TR(?:\s\S+){25}\s(\S+)"), "");
+
+filter _raw_log ~= "\s(SYS)\s"
+| alter
+    xdm.event.type = "System Log",
+    xdm.observer.name = arraystring(regextract(_raw_log, "(\S+)\sSYS\s"), ""),
+    xdm.alert.severity = arraystring(regextract(_raw_log, "SYS\s(\S+)"), ""),
+    xdm.alert.original_alert_id = arraystring(regextract(_raw_log, "SYS\s\S+\s\S+\s(\S+)"), ""),
+    xdm.alert.description = arraystring(regextract(_raw_log, "SYS\s\S+\s\S+\s\S+\s(.*)$"), "");
+
+filter _raw_log ~= "\s(AUDIT)\s"
+| alter
+    xdm.event.type = "Audit Log",
+    xdm.observer.name = arraystring(regextract(_raw_log, "(\S+)\sAUDIT\s"), ""),
+    xdm.source.user.username = arraystring(regextract(_raw_log, "AUDIT\s(\S+)"), ""),
+    extract_source_ip = arraystring(regextract(_raw_log, "AUDIT\s\S+\s\S+\s(\S+)"), "")
+| alter
+    src_ip_v4 = if(extract_source_ip !~= ":", extract_source_ip, null),
+    src_ip_v6 = if(extract_source_ip ~= ":", extract_source_ip, null)
+| alter
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6
+| alter
+    xdm.source.port = to_number(arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){3}\s(\S+)"), "")),
+    xdm.event.operation = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){4}\s(\S+)"), ""),
+    xdm.source.process.name = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){6}\s(\S+)"), ""),
+    xdm.target.resource.type = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){8}\s(\S+)"), ""),
+    xdm.target.resource.name = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){9}\s(\S+)"), ""),
+    xdm.target.resource_before.value = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){11}\s(\S+)"), ""),
+    xdm.target.resource.value = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){12}\s(\S+)"), "");
+
+filter _raw_log ~= "\s(NF)\s"
+| alter
+    xdm.event.type = "Network Firewall Log",
+    xdm.observer.name = arraystring(regextract(_raw_log, "(\S+)\sNF\s"), ""),
+    xdm.alert.severity = arraystring(regextract(_raw_log, "NF\s(\S+)"), ""),
+    xdm.network.application_protocol = arraystring(regextract(_raw_log, "NF\s\S+\s(\S+)"), ""),
+    extract_source_ip = arraystring(regextract(_raw_log, "NF\s\S+\s\S+\s(\S+)"), ""),
+    extract_target_ip = arraystring(regextract(_raw_log, "NF(?:\s\S+){4}\s(\S+)"), "")
+| alter
+    src_ip_v4 = if(extract_source_ip !~= ":", extract_source_ip, null),
+    src_ip_v6 = if(extract_source_ip ~= ":", extract_source_ip, null),
+    trg_ip_v4 = if(extract_target_ip !~= ":", extract_target_ip, null),
+    trg_ip_v6 = if(extract_target_ip ~= ":", extract_target_ip, null)
+| alter
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.target.ipv4 = trg_ip_v4,
+    xdm.target.ipv6 = trg_ip_v6
+| alter
+    xdm.source.port = to_number(arraystring(regextract(_raw_log, "NF(?:\s\S+){3}\s(\S+)"), "")),
+    xdm.target.port = to_number(arraystring(regextract(_raw_log, "NF(?:\s\S+){5}\s(\S+)"), "")),
+    xdm.observer.action = arraystring(regextract(_raw_log, "NF(?:\s\S+){6}\s(\S+)"), ""),
+    xdm.network.rule = arraystring(regextract(_raw_log, "NF(?:\s\S+){7}\s(\S+)"), "");
