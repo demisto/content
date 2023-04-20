@@ -77,4 +77,4 @@ This playbook does not use any sub-playbooks.
 
 ---
 
-![Detonate File - JoeSecurity V2](../doc_files/Detonate_File_-_JoeSecurity_V2.png)
+![Detonate File - JoeSecurity V2](https://raw.githubusercontent.com/demisto/content/ddc6b4e89895ba5f82c9585dffe5c434a7b89c08/Packs/JoeSecurity/doc_files/Detonate_File_-_JoeSecurity_V2.png)
