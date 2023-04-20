@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 import pytest
 import unittest
-from IdentifyServiceOwners import deduplicate, score, main, rank
+from IdentifyServiceOwners import score, main, rank, _canonicalize, aggregate
 from contextlib import nullcontext as does_not_raise
 
 
@@ -51,7 +51,7 @@ from contextlib import nullcontext as does_not_raise
         ],
         1,
         None,
-        pytest.raises(ValueError),
+        pytest.raises(KeyError),
     ),
 ])
 def test_rank(owners, k, expected_out, expected_raises):
@@ -59,127 +59,104 @@ def test_rank(owners, k, expected_out, expected_raises):
         assert rank(owners, k=k) == expected_out
 
 
-@pytest.mark.parametrize('owners,expected_out', [
-    # different names
+@pytest.mark.parametrize('owner,expected_out', [
+    # email with casing, whitespace
     (
-        [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
-        ],
-        [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'Count': 2},
-        ]
+        {'Name': 'Alice ', 'Email': 'aLiCe@example.com ', 'Source': 'source1', 'Timestamp': '1'},
+        {'Name': 'Alice ', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1',
+         'Canonicalization': 'alice@example.com'},
     ),
-    # empty names
+    # name with casing, whitespace
     (
-        [
-            {'Name': '', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
-            {'Name': '', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
-        ],
-        [
-            {'Name': '', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'Count': 2},
-        ]
+        {'Name': 'Alice ', 'Email': '', 'Source': 'source1', 'Timestamp': '1'},
+        {'Name': 'alice', 'Email': '', 'Source': 'source1', 'Timestamp': '1', 'Canonicalization': 'alice'},
     ),
-    # different sources
+    # neither
     (
-        [
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source2', 'Timestamp': '1'},
-        ],
-        [
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1 | source2', 'Timestamp': '1', 'Count': 2},
-        ]
-    ),
-    # different timestamps
-    (
-        [
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '2'},
-        ],
-        [
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '2', 'Count': 2},
-        ]
-    ),
-    # different names, sources, and timestamps
-    (
-        [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source2', 'Timestamp': '2'},
-        ],
-        [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
-        ]
-    ),
-    # same names
-    (
-        [
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
-            {'Name': 'a', 'Email': 'email2@gmail.com', 'Source': 'source2', 'Timestamp': '2'},
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source2', 'Timestamp': '2'},
-        ],
-        [
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
-            {'Name': 'a', 'Email': 'email2@gmail.com', 'Source': 'source2', 'Timestamp': '2', 'Count': 1},
-        ]
-    ),
-    # whitespace
-    (
-        [
-            {'Name': 'a', 'Email': 'email1@gmail.com  ', 'Source': 'source1', 'Timestamp': '1'},
-            {'Name': 'a', 'Email': '   email1@gmail.com  ', 'Source': 'source1', 'Timestamp': '1'},
-        ],
-        [
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1', 'Count': 2},
-        ]
+        {'Name': '', 'Email': '', 'Source': 'source1', 'Timestamp': '1'},
+        {'Name': '', 'Email': '', 'Source': 'source1', 'Timestamp': '1', 'Canonicalization': ''},
     ),
 ])
-def test_dedup_email(owners, expected_out):
-    assert sorted(deduplicate(owners), key=lambda x: sorted(x.items())) == sorted(expected_out, key=lambda x: sorted(x.items()))
+def test_canonicalize(owner, expected_out):
+    assert _canonicalize(owner) == expected_out
 
 
 @pytest.mark.parametrize('owners,expected_out', [
-    # different names
+    # same email, different names, sources, timestamps
     (
         [
-            {'Name': 'aa', 'Email': '', 'Source': 'source1', 'Timestamp': '1'},
-            {'Name': 'a', 'Email': '', 'Source': 'source1', 'Timestamp': '2'},
+            {'Name': 'Alice ', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1',
+             'Canonicalization': 'alice@example.com'},
+            {'Name': 'Bob ', 'Email': 'alice@example.com', 'Source': 'source2', 'Timestamp': '2',
+             'Canonicalization': 'alice@example.com'},
         ],
         [
-            {'Name': 'a', 'Email': '', 'Source': 'source1', 'Timestamp': '2', 'Count': 1},
-            {'Name': 'aa', 'Email': '', 'Source': 'source1', 'Timestamp': '1', 'Count': 1},
+            {'Name': 'Alice ', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
         ]
     ),
-    # same names, same source
+    # same email, no names
     (
         [
-            {'Name': 'a', 'Email': '', 'Source': 'source1', 'Timestamp': '1'},
-            {'Name': 'a', 'Email': '', 'Source': 'source1', 'Timestamp': '2'},
+            {'Name': '', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1',
+             'Canonicalization': 'alice@example.com'},
+            {'Name': '', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1',
+             'Canonicalization': 'alice@example.com'},
         ],
         [
-            {'Name': 'a', 'Email': '', 'Source': 'source1', 'Timestamp': '2', 'Count': 2},
+            {'Name': '', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1', 'Count': 2},
         ]
     ),
-    # same names, different source
+    # same email, same names
     (
         [
-            {'Name': 'a', 'Email': '', 'Source': 'source1', 'Timestamp': '1'},
-            {'Name': 'a', 'Email': '', 'Source': 'source2', 'Timestamp': '2'},
+            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1',
+             'Canonicalization': 'alice@example.com'},
+            {'Name': 'Alice', 'Email': 'bob@example.com', 'Source': 'source2', 'Timestamp': '2',
+             'Canonicalization': 'bob@example.com'},
+            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source2', 'Timestamp': '2',
+             'Canonicalization': 'alice@example.com'},
         ],
         [
-            {'Name': 'a', 'Email': '', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
+            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
+            {'Name': 'Alice', 'Email': 'bob@example.com', 'Source': 'source2', 'Timestamp': '2', 'Count': 1},
+        ]
+    ),
+    # no email, different names
+    (
+        [
+            {'Name': 'alice', 'Email': '', 'Source': 'source1', 'Timestamp': '1', 'Canonicalization': 'alice'},
+            {'Name': 'bob', 'Email': '', 'Source': 'source2', 'Timestamp': '2', 'Canonicalization': 'bob'},
+        ],
+        [
+            {'Name': 'alice', 'Email': '', 'Source': 'source1', 'Timestamp': '1', 'Count': 1},
+            {'Name': 'bob', 'Email': '', 'Source': 'source2', 'Timestamp': '2', 'Count': 1},
+        ]
+    ),
+    # no email, same names
+    (
+        [
+            {'Name': 'alice', 'Email': '', 'Source': 'source1', 'Timestamp': '1', 'Canonicalization': 'alice'},
+            {'Name': 'alice', 'Email': '', 'Source': 'source2', 'Timestamp': '2', 'Canonicalization': 'alice'},
+        ],
+        [
+            {'Name': 'alice', 'Email': '', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
         ]
     ),
     # some emails present, others missing
     (
         [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1'},
-            {'Name': 'aa', 'Email': '', 'Source': 'source3', 'Timestamp': '3'},
-            {'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source2', 'Timestamp': '2'},
-            {'Name': 'aa', 'Email': '', 'Source': 'source4', 'Timestamp': '4'},
+            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1',
+             'Canonicalization': 'alice@example.com'},
+            {'Name': 'alice', 'Email': '', 'Source': 'source3', 'Timestamp': '3',
+             'Canonicalization': 'alice'},
+            {'Name': 'Bob', 'Email': 'alice@example.com', 'Source': 'source2', 'Timestamp': '2',
+             'Canonicalization': 'alice@example.com'},
+            {'Name': 'alice', 'Email': '', 'Source': 'source4', 'Timestamp': '4',
+             'Canonicalization': 'alice'},
         ],
         [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
-            {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Count': 2},
+            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
+            {'Name': 'alice', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Count': 2},
         ]
     ),
     # empty input
@@ -188,8 +165,8 @@ def test_dedup_email(owners, expected_out):
         []
     )
 ])
-def test_dedup_name(owners, expected_out):
-    assert sorted(deduplicate(owners), key=lambda x: sorted(x.items())) == sorted(expected_out, key=lambda x: sorted(x.items()))
+def test_aggregate(owners, expected_out):
+    assert sorted(aggregate(owners), key=lambda x: sorted(x.items())) == sorted(expected_out, key=lambda x: sorted(x.items()))
 
 
 @pytest.mark.parametrize('deduplicated, expected_out', [
@@ -235,7 +212,7 @@ def test_score(deduplicated, expected_out):
         [
             {
                 'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Confidence Score': 1, 'Justification': 'source1'
+                'Confidence Score': 1.0, 'Justification': 'source1'
             },
         ]
     ),
@@ -371,8 +348,8 @@ def test_score(deduplicated, expected_out):
         ],
         [
             {
-                'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '2',
-                'Confidence Score': 1, 'Justification': 'source1'
+                'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': 2,
+                'Confidence Score': 1.0, 'Justification': 'source1'
             },
         ]
     ),

@@ -8,7 +8,6 @@ from those surfaced by Cortex ASM Enrichment.
 from typing import Dict, List, Any
 import traceback
 from itertools import groupby
-from collections.abc import Iterable, Mapping
 
 
 def score(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -32,10 +31,7 @@ def rank(owners: List[Dict[str, Any]], k: int = 5) -> List[Dict[str, Any]]:
     """
     if k <= 0:
         raise ValueError(f'Number of owners k={k} must be greater than zero')
-    try:
-        return sorted(owners, key=lambda x: x['Confidence Score'])[:k]
-    except KeyError:
-        raise ValueError('Owners must contain key `Confidence Score` to be ranked; please score using `score` function.')
+    return sorted(owners, key=lambda x: x['Confidence Score'])[:k]
 
 
 def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:
@@ -47,71 +43,75 @@ def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:
     return owners
 
 
-def deduplicate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+def _canonicalize(owner: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Deduplicate by white-stripped email address; if none provided, deduplicate by name.
-    Take max timestamp for each deduplicated owner and take a union over their sources.
+    Canonicalizes an owner dictionary and adds a deduplication key
+    `Canonicalization` whose value is either:
+        1. whitespace-stripped and lower-cased email, if email exists
+        2. whitespace-stripped and lower-cased name
+    """
+    for key in ('Name', 'Source', 'Email', 'Timestamp'):
+        if key not in owner or owner[key] is None:
+            owner[key] = ''
+    if owner['Email']:
+        owner['Canonicalization'] = owner['Email'].strip().lower()
+        owner['Email'] = owner['Canonicalization']
+    elif owner['Name']:
+        owner['Canonicalization'] = owner['Name'].strip().lower()
+        owner['Name'] = owner['Canonicalization']
+    else:
+        owner['Canonicalization'] = ''
+    return owner
+
+
+def canonicalize(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+    """
+    Canonicalize a set of owners
+    """
+    canonicalized = []
+    if owners:
+        for owner in owners:
+            if owner:
+                canonicalized.append(_canonicalize(owner))
+    return canonicalized
+
+
+def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+    """
+    Aggregate owners by their canonicalization.
+
+    If canonicalized form is email, preserve longest name.
+    Preserve max timestamp and union over sources.
     """
     deduped = []
-    for email, group in groupby(sorted(owners, key=lambda x: x["Email"]), key=lambda x: x["Email"].strip()):
-        if email == '':
-            # deduplicate by name if no email is found
-            for name, subgroup in groupby(sorted(group, key=lambda x: x["Name"]), key=lambda x: x['Name']):
-                sg = list(subgroup)
-                source = ' | '.join(sorted(set([x['Source'] for x in sg])))
-                timestamp = sorted([x['Timestamp'] for x in sg], reverse=True)[0]
-                owner = {
-                    'Name': name,
-                    'Email': email,
-                    'Source': source,
-                    'Timestamp': timestamp,
-                    'Count': len(sg)
-                }
-                deduped.append(owner)
-
+    sorted_owners = sorted(owners, key=lambda owner: owner['Canonicalization'])
+    for key, group in groupby(sorted_owners, key=lambda owner: owner['Canonicalization']):
+        duplicates = list(group)
+        if key == duplicates[0].get('Email', ''):
+            # grouped by email
+            email = key
+            name = sorted([owner.get('Name', '') for owner in duplicates], key=lambda x: len(x), reverse=True)[0]
         else:
-            # deduplicate by email
-            g = list(group)
-            source = ' | '.join(sorted(set([x['Source'] for x in g])))
-            name = sorted([x['Name'] for x in g], key=lambda x: len(x), reverse=True)[0]
-            timestamp = sorted([x['Timestamp'] for x in g], reverse=True)[0]
-            owner = {
-                'Name': name,
-                'Email': email.strip(),
-                'Source': source,
-                'Timestamp': timestamp,
-                'Count': len(g)
-            }
-            deduped.append(owner)
+            # grouped by name
+            name = key
+            email = ''
+        source = ' | '.join(sorted(set([owner.get('Source', '') for owner in duplicates])))
+        timestamp = sorted([owner.get('Timestamp', '') for owner in duplicates], reverse=True)[0]
+        owner = {
+            'Name': name,
+            'Email': email,
+            'Source': source,
+            'Timestamp': timestamp,
+            'Count': len(duplicates)
+        }
+        deduped.append(owner)
     return deduped
-
-
-def validate_input(owners: Any) -> List[Dict[str, str]]:
-    """
-    Drop inputs of invalid type and ensure required dictionary keys are present
-    """
-    if not isinstance(owners, Iterable):
-        return []
-
-    # drop non-dictionary inputs
-    owners = [dict(owner) for owner in owners if isinstance(owner, Mapping)]
-
-    # ensure required keys are present and replace invalidly-typed values with empty strings
-    for i in range(len(owners)):
-        for key in ('Name', 'Source', 'Email', 'Timestamp'):
-            if key not in owners[i] or owners[i][key] is None:
-                owners[i][key] = ''
-
-            # cast values to strings if not already
-            owners[i][key] = str(owners[i][key])
-
-    return owners
 
 
 def main():
     try:
-        owners = validate_input(demisto.args()["owners"])
-        top_k = justify(rank(score(deduplicate(owners))))
+        owners = demisto.args().get("owners", [])
+        top_k = justify(rank(score(aggregate(canonicalize(owners)))))
         demisto.executeCommand("setAlert", {"asmserviceowner": top_k})
         return_results(CommandResults(readable_output='top 5 service owners written to asmserviceowner'))
 
