@@ -69,7 +69,7 @@ def search_events(client: Client, limit: int,
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, first_fetch_time: datetime) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -85,7 +85,8 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        client.get_events()
+        client.get_events(body={'StartDate': first_fetch_time.strftime(DATE_FORMAT),
+                                'EndDate': datetime.utcnow().strftime(DATE_FORMAT)})
         message = 'ok'
     except DemistoException as e:
         if 'Wrong' in str(e) or 'Authorization' in str(e):
@@ -146,7 +147,7 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
     api_key = params.get('credentials', {}).get('password')
-    base_url = urljoin(params.get('url'), '/api/v1/EventLogging')
+    base_url = params.get('url')
     verify_certificate = not params.get('insecure', True)
     proxy = params.get('proxy', False)
     first_fetch_time: datetime = arg_to_datetime(
@@ -163,7 +164,7 @@ def main() -> None:
         )
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, first_fetch_time)
             return_results(result)
 
         elif command in ('teamviewer-get-events', 'fetch-events'):
@@ -177,6 +178,9 @@ def main() -> None:
                         'EndDate': datetime.utcnow().strftime(DATE_FORMAT)
                     }  # type: ignore
                 )
+                if should_push_events:
+                    next_run = {'last_fetch': max(events, key=lambda x: x['Timestamp'])['Timestamp']}
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 return_results(results)
 
             else:
