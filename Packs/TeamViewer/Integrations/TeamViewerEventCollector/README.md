@@ -1,7 +1,7 @@
 TeamViewer event collector integration for Cortex XSIAM.
 This integration was integrated and tested with version 15.40 of TeamViewer Event Collector
 
-## Configure TeamViewer Event Collector on Cortex XSOAR
+## Configure TeamViewer Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for TeamViewer Event Collector.
