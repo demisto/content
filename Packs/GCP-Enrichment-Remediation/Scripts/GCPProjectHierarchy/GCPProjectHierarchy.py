@@ -21,23 +21,27 @@ def lookup(parent_obj: str, level: int) -> tuple[str, dict]:
 
     """
     temp: Dict[str, str] = {}
-    if "folder" in parent_obj:
-        folder_info = execute_command("gcp-iam-folders-get", {"folder_name": parent_obj})
-        if not folder_info:
-            return "NONE", temp
-        name = "folders/" + folder_info['displayName']
-        temp["level"] = str(level)
-        temp["id"] = name
-        temp["number"] = folder_info['name']
-        next_one = folder_info['parent']
-    elif "organization" in parent_obj:
-        next_one = "stop"
-        temp["level"] = str(level)
-        temp["id"] = parent_obj
-        temp["number"] = parent_obj
+    try:
+        if "folder" in parent_obj:
+            folder_info = execute_command("gcp-iam-folders-get", {"folder_name": parent_obj})
+            if not folder_info:
+                return "NONE", temp
+            name = "folders/" + folder_info.get('displayName', '')
+            temp["level"] = str(level)
+            temp["id"] = name
+            temp["number"] = folder_info.get('name', '')
+            next_one = folder_info.get('parent', '')
+        elif "organization" in parent_obj:
+            next_one = "stop"
+            temp["level"] = str(level)
+            temp["id"] = parent_obj
+            temp["number"] = parent_obj
+        else:
+            raise ValueError('unexpected object type')
+    except TypeError:
+        return "NONE", temp
     else:
-        raise ValueError('unexpected object type')
-    return next_one, temp
+        return next_one, temp
 
 
 ''' COMMAND FUNCTION '''
@@ -63,8 +67,8 @@ def gcp_project_heirarchy(args: Dict[str, Any]) -> CommandResults:
     if not project_info:
         return CommandResults('could not find specified project info')
     level = 1
-    hierarchy = [{"level": "project", "id": full_project, "number": project_info['name']}]
-    next_one, to_append = lookup(project_info['parent'], level)
+    hierarchy = [{"level": "project", "id": full_project, "number": project_info.get('name', '')}]
+    next_one, to_append = lookup(project_info.get('parent', ''), level)
     if next_one == "NONE":
         return CommandResults('could not find specified folder/organization info')
     hierarchy.append(to_append)
