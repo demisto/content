@@ -10,7 +10,7 @@ To use the TeamViewer collector, you would need to create a script token.
 3. Select Apps.
 4. Select Create script token.
 5. Tick all the permissions you need for your token.
-6. Select Create.
+6. Select **Create**.
 7. The token has now been added to the Apps and Scripts list. To get your token, click on the newly created token. The token will be displayed under the token name.
 
 [For more information, click here](https://community.teamviewer.com/English/kb/articles/109647-use-the-teamviewer-api).
