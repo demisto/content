@@ -6685,7 +6685,7 @@ script:
     execution: false
     name: microsoft-atp-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.52480
+  dockerimage: demisto/crypto:1.0.0.54410
   feed: false
   isfetch: true
   longRunning: false
