@@ -24,9 +24,6 @@ class Client:  # pragma: no cover
             integration_context = get_integration_context()
             integration_context['current_refresh_token'] = refresh_token
             set_integration_context(integration_context)
-        if not self_deployed and not enc_key:
-            raise DemistoException('Key must be provided. For further information see '
-                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
         elif not enc_key and not (certificate_thumbprint and private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be providedFor further information see '
                                 'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
