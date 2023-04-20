@@ -820,6 +820,10 @@
             "playbookID": "Akamai_WAF_SIEM-Test"
         },
         {
+            "integrations": "FreshworksFreshservice",
+            "playbookID": "FreshworkFreshservice"
+        },
+        {
             "integrations": "Cofense Triage v2",
             "playbookID": "Cofense Triage v2 Test"
         },
@@ -1731,7 +1735,8 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 500
+            "timeout": 500,
+            "is_mockable": false
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
@@ -2137,11 +2142,6 @@
             "playbookID": "MSGraph_DeviceManagement_Test_self_deployed_prod",
             "instance_names": "ms_graph_device_management_self_deployed_prod",
             "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest",
-            "nightly": true
         },
         {
             "integrations": "PrismaCloud v2",
@@ -2733,7 +2733,7 @@
         {
             "playbookID": "Account Enrichment - Generic v2.1 - Test",
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja",
+            "instance_names": "active_directory_80k",
             "has_api": false
         },
         {
@@ -5505,7 +5505,6 @@
         "Recorded Future Test": "Issue 26741",
         "Git_Integration-Test": "Issue 37800",
         "RecordedFutureFeed - Test": "Issue 43923",
-        "RedLockTest": "Issue 24600",
         "SymantecEndpointProtection_Test": "Issue 30157",
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
         "TestCloudflareWAFPlaybook": "No instance",
@@ -5640,6 +5639,7 @@
         "Workday": "No instance - License expired Issue: 29595",
         "FireEyeFeed": "No instance - License expired Issue: 31838",
         "Akamai WAF": "No instance - Issue 32318",
+        "FreshworksFreshservice": "No instance - Issue 32318",
         "FraudWatch": "No instance - Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "AzureKeyVault": "No instance - developed by Qmasters",
@@ -5787,7 +5787,6 @@
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
-        "RedLock": "SSL Issues",
         "Microsoft Graph User": "Test direct access to oproxy",
         "Azure Security Center v2": "Test direct access to oproxy",
         "Azure Compute v2": "Test direct access to oproxy",
