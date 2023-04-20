@@ -80,6 +80,7 @@ class Client(BaseClient):
             method='GET',
             full_url=self._base_url,
             url_suffix='',
+            headers={'User-Agent': 'PANW-XSOAR'},
             stream=False,
             timeout=self._polling_timeout,
             resp_type='text'
