@@ -10,7 +10,7 @@ This integration was integrated and tested with version 15.40 of TeamViewer Even
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Your server URL |  | True |
-    | Script Token | The Script Token to use for connection | True |
+    | Script Token | The script token to use for connection | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | First fetch time |  | False |
