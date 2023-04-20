@@ -690,18 +690,27 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     lock = Lock()
 
-    with ThreadPoolExecutor(max_workers=130) as pool:
+    if not install_packs_one_by_one:
+        with ThreadPoolExecutor(max_workers=130) as pool:
+            for pack_id in pack_ids:
+                if is_pack_hidden(pack_id):
+                    logging.debug(f'pack {pack_id} is hidden, skipping installation and not searching for dependencies')
+                    continue
+                pool.submit(search_pack_and_its_dependencies,
+                            client, pack_id, packs_to_install, installation_request_body, lock,
+                            install_packs_one_by_one,
+                            batch_packs_install_request_body)
+        batch_packs_install_request_body = [installation_request_body]
+
+    else:
         for pack_id in pack_ids:
             if is_pack_hidden(pack_id):
                 logging.debug(f'pack {pack_id} is hidden, skipping installation and not searching for dependencies')
                 continue
-            pool.submit(search_pack_and_its_dependencies,
-                        client, pack_id, packs_to_install, installation_request_body, lock,
-                        install_packs_one_by_one,
-                        batch_packs_install_request_body)
-
-    if not install_packs_one_by_one:
-        batch_packs_install_request_body = [installation_request_body]
+            search_pack_and_its_dependencies(
+                client, pack_id, packs_to_install, installation_request_body, lock,
+                install_packs_one_by_one,
+                batch_packs_install_request_body)
 
     for packs_to_install_body in batch_packs_install_request_body:
         install_packs(client, host, packs_to_install_body)
