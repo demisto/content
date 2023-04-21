@@ -100,5 +100,4 @@ curl -k -v --request POST \
   --form "variables[GCS_MARKET_XPANSE_BUCKET]=${_bucket_xpanse}" \
   --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
   --form "variables[TEST_UPLOAD]=false" \
-
   "$BUILD_TRIGGER_URL"

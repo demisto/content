@@ -1,0 +1,235 @@
+{
+    "links": {
+        "self": "links_self"
+    },
+    "items": [
+        {
+            "name": "Balanced Security and Connectivity",
+            "id": "items[0]_id",
+            "type": "NetworkAnalysisPolicy",
+            "links": {
+                "self": "items[0]_links_self"
+            },
+            "description": "Balanced Security and Connectivity",
+            "inspectionMode": "PREVENTION",
+            "isSystemDefined": true,
+            "metadata": {
+                "mappedPolicy": {
+                    "name": "Balanced Security and Connectivity",
+                    "id": "items[0]_metadata_mappedPolicy_id",
+                    "type": "NetworkAnalysisPolicy",
+                    "inspectionMode": "PREVENTION",
+                    "snortEngine": "SNORT2"
+                },
+                "usage": {
+                    "asscoiatedAcPolicies": [
+                        {
+                            "type": "AccessPolicy",
+                            "name": "Qmasters",
+                            "id": "items[0]_metadata_usage_asscoiatedAcPolicies[0]_id"
+                        }
+                    ],
+                    "accesspolicy": 1,
+                    "devices": 1
+                },
+                "domain": {
+                    "name": "Global",
+                    "id": "items[0]_metadata_domain_id",
+                    "type": "Domain"
+                },
+                "snortEngine": "SNORT3"
+            },
+            "inspectorConfig": {
+                "type": "InspectorConfig",
+                "links": {
+                    "self": "items[0]_inspectorConfig_links_self"
+                }
+            },
+            "inspectorOverrideConfig": {
+                "type": "InspectorOverrideConfig",
+                "links": {
+                    "self": "items[0]_inspectorOverrideConfig_links_self"
+                }
+            }
+        },
+        {
+            "name": "Connectivity Over Security",
+            "id": "items[1]_id",
+            "type": "NetworkAnalysisPolicy",
+            "links": {
+                "self": "items[1]_links_self"
+            },
+            "description": "Connectivity Over Security",
+            "inspectionMode": "PREVENTION",
+            "isSystemDefined": true,
+            "metadata": {
+                "mappedPolicy": {
+                    "name": "Connectivity Over Security",
+                    "id": "items[1]_metadata_mappedPolicy_id",
+                    "type": "NetworkAnalysisPolicy",
+                    "inspectionMode": "PREVENTION",
+                    "snortEngine": "SNORT2"
+                },
+                "usage": {
+                    "accesspolicy": 0,
+                    "devices": 0
+                },
+                "domain": {
+                    "name": "Global",
+                    "id": "items[1]_metadata_domain_id",
+                    "type": "Domain"
+                },
+                "snortEngine": "SNORT3"
+            },
+            "inspectorConfig": {
+                "type": "InspectorConfig",
+                "links": {
+                    "self": "items[1]_inspectorConfig_links_self"
+                }
+            },
+            "inspectorOverrideConfig": {
+                "type": "InspectorOverrideConfig",
+                "links": {
+                    "self": "items[1]_inspectorOverrideConfig_links_self"
+                }
+            }
+        },
+        {
+            "name": "Maximum Detection",
+            "id": "items[2]_id",
+            "type": "NetworkAnalysisPolicy",
+            "links": {
+                "self": "items[2]_links_self"
+            },
+            "description": "Maximum Detection",
+            "inspectionMode": "PREVENTION",
+            "isSystemDefined": true,
+            "metadata": {
+                "mappedPolicy": {
+                    "name": "Maximum Detection",
+                    "id": "items[2]_metadata_mappedPolicy_id",
+                    "type": "NetworkAnalysisPolicy",
+                    "inspectionMode": "PREVENTION",
+                    "snortEngine": "SNORT2"
+                },
+                "usage": {
+                    "accesspolicy": 0,
+                    "devices": 0
+                },
+                "domain": {
+                    "name": "Global",
+                    "id": "items[2]_metadata_domain_id",
+                    "type": "Domain"
+                },
+                "snortEngine": "SNORT3"
+            },
+            "inspectorConfig": {
+                "type": "InspectorConfig",
+                "links": {
+                    "self": "items[2]_inspectorConfig_links_self"
+                }
+            },
+            "inspectorOverrideConfig": {
+                "type": "InspectorOverrideConfig",
+                "links": {
+                    "self": "items[2]_inspectorOverrideConfig_links_self"
+                }
+            }
+        },
+        {
+            "name": "Security Over Connectivity",
+            "id": "items[3]_id",
+            "type": "NetworkAnalysisPolicy",
+            "links": {
+                "self": "items[3]_links_self"
+            },
+            "description": "Security Over Connectivity",
+            "inspectionMode": "PREVENTION",
+            "isSystemDefined": true,
+            "metadata": {
+                "mappedPolicy": {
+                    "name": "Security Over Connectivity",
+                    "id": "items[3]_metadata_mappedPolicy_id",
+                    "type": "NetworkAnalysisPolicy",
+                    "inspectionMode": "PREVENTION",
+                    "snortEngine": "SNORT2"
+                },
+                "usage": {
+                    "accesspolicy": 0,
+                    "devices": 0
+                },
+                "domain": {
+                    "name": "Global",
+                    "id": "items[3]_metadata_domain_id",
+                    "type": "Domain"
+                },
+                "snortEngine": "SNORT3"
+            },
+            "inspectorConfig": {
+                "type": "InspectorConfig",
+                "links": {
+                    "self": "items[3]_inspectorConfig_links_self"
+                }
+            },
+            "inspectorOverrideConfig": {
+                "type": "InspectorOverrideConfig",
+                "links": {
+                    "self": "items[3]_inspectorOverrideConfig_links_self"
+                }
+            }
+        },
+        {
+            "name": "Test2Updateupdate",
+            "id": "items[4]_id",
+            "type": "NetworkAnalysisPolicy",
+            "links": {
+                "self": "items[4]_links_self"
+            },
+            "basePolicy": {
+                "name": "Connectivity Over Security",
+                "id": "items[4]_basePolicy_id",
+                "type": "NetworkAnalysisPolicy"
+            },
+            "description": "Test2Updateupdate",
+            "inspectionMode": "DETECTION",
+            "isSystemDefined": false,
+            "metadata": {
+                "mappedPolicy": {
+                    "name": "Test2Updateupdate",
+                    "id": "items[4]_metadata_mappedPolicy_id",
+                    "type": "NetworkAnalysisPolicy",
+                    "inspectionMode": "DETECTION",
+                    "snortEngine": "SNORT2"
+                },
+                "usage": {
+                    "accesspolicy": 0,
+                    "devices": 0
+                },
+                "domain": {
+                    "name": "Global",
+                    "id": "items[4]_metadata_domain_id",
+                    "type": "Domain"
+                },
+                "snortEngine": "SNORT3"
+            },
+            "inspectorConfig": {
+                "type": "InspectorConfig",
+                "links": {
+                    "self": "items[4]_inspectorConfig_links_self"
+                }
+            },
+            "inspectorOverrideConfig": {
+                "type": "InspectorOverrideConfig",
+                "links": {
+                    "self": "items[4]_inspectorOverrideConfig_links_self"
+                }
+            }
+        }
+    ],
+    "paging": {
+        "offset": 0,
+        "limit": 1000,
+        "count": 5,
+        "pages": 1
+    }
+}

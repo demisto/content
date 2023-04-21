@@ -3,11 +3,11 @@ commonfields:
   id: Lacework
   version: -1
 configuration:
-- display: 'Lacework Account Name (i.e. Subdomain of the URL: <ACCOUNT>.lacework.net)'
+- display: 'Lacework Account Name (i.e. Sub-Domain of the URL: <ACCOUNT>.lacework.net)'
   name: lacework_account
   required: true
   type: 0
-- display: Lacework Subaccount Name (for use with Lacework Organizations)
+- display: Lacework Sub-Account Name (If Required)
   name: lacework_subaccount
   required: false
   type: 0
@@ -20,7 +20,7 @@ configuration:
   required: true
   type: 4
 - defaultvalue: high
-  display: Lacework Event Severity Threshold
+  display: Lacework Alert Severity Threshold
   hidden: false
   name: lacework_event_severity
   options:
@@ -40,7 +40,7 @@ configuration:
   required: false
   type: 13
 - defaultvalue: '7'
-  display: Lacework Event History to Import (in days)
+  display: Lacework Alert History to Import (in days)
   hidden: false
   name: lacework_event_history
   options:
@@ -59,6 +59,65 @@ display: Lacework
 name: Lacework
 script:
   commands:
+  - arguments:
+    - default: false
+      description: The Lacework Alert ID to be retrieved.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Details
+      description: The scope of data to retrieve from Lacework for the specified Alert
+        ID
+      isArray: false
+      name: scope
+      predefined:
+      - Details
+      - Investigation
+      - Events
+      - RelatedAlerts
+      - Integrations
+      - Timeline
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch details for a specific Alert in Lacework.
+    execution: false
+    name: lw-get-alert-details
+    outputs:
+    - contextPath: Lacework.Alert.startTime
+      description: The start time of the alert.
+      type: Date
+    - contextPath: Lacework.Alert.endTime
+      description: The end time of the alert.
+      type: Date
+    - contextPath: Lacework.Alert.alertType
+      description: The type of the alert.
+      type: String
+    - contextPath: Lacework.Alert.alertName
+      description: The name of the alert.
+      type: String
+    - contextPath: Lacework.Alert.alertId
+      description: The ID of the alert.
+      type: String
+    - contextPath: Lacework.Alert.severity
+      description: The severity of the alert.
+      type: String
+    - contextPath: Lacework.Alert.status
+      description: The status of the alert.
+      type: String
+    - contextPath: Lacework.Alert.alertInfo.description
+      description: The alert description provides why the potential threat occurred.
+      type: String
+    - contextPath: Lacework.Alert.alertInfo.subject
+      description: The alert subject. In some cases, the alert subject can be the
+        same as the alert name.
+      type: String
+    - contextPath: Lacework.Alert.entityMap
+      description: The entity map for the alert.
+      type: Unknown
   - arguments:
     - default: false
       description: The AWS Account ID to use when fetching compliance data.
@@ -101,7 +160,7 @@ script:
       description: The Title of the compliance report.
       type: String
     - contextPath: Lacework.Compliance.recommendations.SUPPRESSIONS
-      description: The supressions for the current recommendation.
+      description: The suppressions for the current recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.INFO_LINK
       description: The URL to the compliance violation information.
@@ -252,7 +311,7 @@ script:
       description: The Title of the compliance report.
       type: String
     - contextPath: Lacework.Compliance.recommendations.SUPPRESSIONS
-      description: The supressions for the current recommendation.
+      description: The suppressions for the current recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.INFO_LINK
       description: The URL to the compliance violation information.
@@ -360,12 +419,6 @@ script:
       description: The time the report completed.
       type: String
   - arguments:
-    - default: false
-      description: The GCP Organization ID to use when fetching compliance data.
-      isArray: false
-      name: organization_id
-      required: true
-      secret: false
     - default: false
       description: The GCP Project ID to use when fetching compliance data.
       isArray: false
@@ -403,7 +456,7 @@ script:
       description: The Title of the compliance report.
       type: String
     - contextPath: Lacework.Compliance.recommendations.SUPPRESSIONS
-      description: The supressions for the current recommendation.
+      description: The suppressions for the current recommendation.
       type: String
     - contextPath: Lacework.Compliance.recommendations.INFO_LINK
       description: The URL to the compliance violation information.
@@ -512,323 +565,6 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The AWS Account ID to run a compliance assessment against.
-      isArray: false
-      name: account_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Run an AWS compliance assessment in Lacework.
-    execution: false
-    name: lw-run-aws-compliance-assessment
-  - arguments:
-    - default: false
-      description: The Azure Tenant ID to run a compliance assessment against.
-      isArray: false
-      name: tenant_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Run an Azure compliance assessment in Lacework.
-    execution: false
-    name: lw-run-azure-compliance-assessment
-  - arguments:
-    - default: false
-      description: The GCP Project ID to run a compliance assessment against.
-      isArray: false
-      name: project_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Run a GCP compliance assessment in Lacework.
-    execution: false
-    name: lw-run-gcp-compliance-assessment
-  - arguments:
-    - default: false
-      description: The Lacework Event ID to be retrieved.
-      isArray: false
-      name: event_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Fetch Event Details for a specific Event in Lacework.
-    execution: false
-    name: lw-get-event-details
-    outputs:
-    - contextPath: Lacework.Event.START_TIME
-      description: The start time of the event.
-      type: Date
-    - contextPath: Lacework.Event.END_TIME
-      description: The end time of the event.
-      type: Date
-    - contextPath: Lacework.Event.EVENT_TYPE
-      description: The type of the event.
-      type: String
-    - contextPath: Lacework.Event.EVENT_ID
-      description: The ID of the event.
-      type: String
-    - contextPath: Lacework.Event.EVENT_ACTOR
-      description: The actor of the event.
-      type: String
-    - contextPath: Lacework.Event.EVENT_MODEL
-      description: The model of the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.User.MACHINE_HOSTNAME
-      description: The machine hostname associated to the user in the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.User.USERNAME
-      description: The username associated to the user in the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Application.APPLICATION
-      description: The application associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Application.HAS_EXTERNAL_CONNS
-      description: An integer representing whether the application has external connections.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.Application.IS_CLIENT
-      description: An integer representing whether the application is the client.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.Application.IS_SERVER
-      description: An integer representing whether the application is the server.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.Application.EARLIEST_KNOWN_TIME
-      description: The time when then application was first seen.
-      type: Date
-    - contextPath: Lacework.Event.ENTITY_MAP.Machine.HOSTNAME
-      description: The hostname of the machine associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Machine.EXTERNAL_IP
-      description: The external IP of the machine associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Machine.INSTANCE_ID
-      description: The instance ID of the machine associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Machine.INSTANCE_NAME
-      description: The instance name of the machine associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Machine.CPU_PERCENTAGE
-      description: The CPU utiliztion percentage of the machine associated with the
-        event.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.Machine.INTERNAL_IP_ADDRESS
-      description: The internal IP of the machine associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Container.IMAGE_REPO
-      description: The image repository of the container associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Container.IMAGE_TAG
-      description: The image tag of the container associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Container.HAS_EXTERNAL_CONNS
-      description: An integer representing whether the container has external connections.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.Container.IS_CLIENT
-      description: An integer representing whether the container is the client.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.Container.IS_SERVER
-      description: An integer representing whether the container is the server.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.Container.FIRST_SEEN_TIME
-      description: The time when the container was first seen.
-      type: Date
-    - contextPath: Lacework.Event.ENTITY_MAP.Container.POD_NAMESPACE
-      description: The pod namespace the container associated with the event resides
-        within.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Container.POD_IP_ADDR
-      description: The pod IP address of the container associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.DnsName.HOSTNAME
-      description: The hostname used in a DNS query associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.DnsName.PORT_LIST
-      description: The ports used to communicate to a specific DNS name associated
-        with the event.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.DnsName.TOTAL_IN_BYTES
-      description: The total bytes in for a specific DNS name associated with the
-        event.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.DnsName.TOTAL_OUT_BYTES
-      description: The total bytes out for a specific DNS name associated with the
-        event.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.IP_ADDRESS
-      description: An IP address associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.TOTAL_IN_BYTES
-      description: The total bytes in for a specific IP address associated with the
-        event.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.TOTAL_OUT_BYTES
-      description: The total bytes out for a specific IP address associated with the
-        event.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.THREAT_TAGS
-      description: A treat tag associated with the IP.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.COUNTRY
-      description: The country that the IP address resides within.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.REGION
-      description: The region that the IP address resides within.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.PORT_LIST
-      description: The ports used to communicate to the IP address associated with
-        the event.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.FIRST_SEEN_TIME
-      description: The time when the IP address was first seen.
-      type: Date
-    - contextPath: Lacework.Event.ENTITY_MAP.Process.HOSTNAME
-      description: The hostname of the process associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Process.PROCESS_ID
-      description: The process ID (PID) of the process associated with the event.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.Process.PROCESS_START_TIME
-      description: The start time of the process associated with the event.
-      type: Date
-    - contextPath: Lacework.Event.ENTITY_MAP.Process.CMDLINE
-      description: The command-line entry used to run the process associated with
-        the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Process.CPU_PERCENTAGE
-      description: The CPU utilization percentage of the process associated with the
-        event.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.FileDataHash.FILEDATA_HASH
-      description: The hash of the binary associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.FileDataHash.MACHINE_COUNT
-      description: The machine count of the binary associated with the event.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.FileDataHash.EXE_PATH_LIST
-      description: The path to the binary associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.FileDataHash.FIRST_SEEN_TIME
-      description: The time that the binary was first seen.
-      type: Date
-    - contextPath: Lacework.Event.ENTITY_MAP.FileDataHash.IS_KNOWN_BAD
-      description: An integer representing whether the binary is known bad.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.FileExePath.EXE_PATH
-      description: The path of the binary associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.FileExePath.FIRST_SEEN_TIME
-      description: The time that the binary path was first seen.
-      type: Date
-    - contextPath: Lacework.Event.ENTITY_MAP.FileExePath.LAST_FILEDATA_HASH
-      description: The hash of the binary located at the given path.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.FileExePath.LAST_PACKAGE_NAME
-      description: The package name of the binary at the given path.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.FileExePath.LAST_VERSION
-      description: The version of the binary at the given path.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.FileExePath.LAST_FILE_OWNER
-      description: The file owner of the binary at the given path.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.SourceIpAddress.IP_ADDRESS
-      description: The IP address of the source IP associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.SourceIpAddress.REGION
-      description: The region of the source IP associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.SourceIpAddress.COUNTRY
-      description: The country of the source IP associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.API.SERVICE
-      description: The service endpoint of the API associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.API.API
-      description: The API identifier of the API associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Region.REGION
-      description: The region identifier associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Region.ACCOUNT_LIST
-      description: The account list of the region associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.CT_User.USERNAME
-      description: The username of the CloudTrail user associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.CT_User.ACCOUT_ID
-      description: The account ID of the CloudTrail user associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.CT_User.MFA
-      description: An integer representing whether MFA was used for the CloudTrail
-        user.
-      type: Number
-    - contextPath: Lacework.Event.ENTITY_MAP.CT_User.API_LIST
-      description: A list of APIs used by the CloudTrail user associated with the
-        event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.CT_User.REGION_LIST
-      description: A list of regions used by the CloudTrail user associated with the
-        event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.CT_User.PRINCIPAL_ID
-      description: The principal ID used by the CloudTrail user associated with the
-        event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Resource.NAME
-      description: The name of the resource associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.Resource.VALUE
-      description: The value of the resource associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.RecId.REC_ID
-      description: The recommendation ID associated with the event.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.RecId.ACCOUNT_ID
-      description: The account ID associated to the recommendation.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.RecId.ACCOUNT_ALIAS
-      description: The account alias associated to the recommendation.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.RecId.TITLE
-      description: The title of the recommendation.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.RecId.STATUS
-      description: The status of the recommendation.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.RecId.EVAL_TYPE
-      description: The evaluation type of the recommendation.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.RecId.EVAL_GUID
-      description: The evaluation GUID of the recommednation.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.CustomRule.LAST_UPDATED_TIME
-      description: The last updated time of the recommendation.
-      type: Date
-    - contextPath: Lacework.Event.ENTITY_MAP.CustomRule.LAST_UPDATED_USER
-      description: The last updated user of the recommendation.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.CustomRule.DISPLAY_FILTER
-      description: The display filter attributed to the custom rule.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.CustomRule.RULE_GUID
-      description: The rule GUID associated to the custom rule.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.NewViolation.REC_ID
-      description: The recommendation ID of the new violation.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.NewViolation.REASON
-      description: The reason for the new violation.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.NewViolation.RESOURCE
-      description: The resource associated with the new violation.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.ViolationReason.REC_ID
-      description: The recommendation ID of the violation reason.
-      type: String
-    - contextPath: Lacework.Event.ENTITY_MAP.ViolationReason.REASON
-      description: The violation reason.
-      type: String
-  - arguments:
-    - default: false
       description: The GCP Organization ID to use when fetching projects data.
       isArray: false
       name: organization_id
@@ -846,218 +582,212 @@ script:
       description: The GCP Projects associated to the Organization.
       type: String
   - arguments:
+    - default: false
+      description: The primary ID that is used to fetch the report; for example, AWS
+        Account ID or Azure Tenant ID.
+      isArray: false
+      name: primary_query_id
+      required: false
+      secret: false
+    - default: false
+      description: The secondary ID that is used to fetch the report; for example,
+        GCP Project ID or Azure Subscription ID.
+      isArray: false
+      name: secondary_query_id
+      required: false
+      secret: false
+    - default: false
+      description: The report definition's name that is used when generating the report.
+      isArray: false
+      name: report_name
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: image_digest
-      description: The identifier type for the container. (Image ID or Image Digest)
-        The corresponding argument, image_id or image_digest, must also be provided.
+      defaultValue: LW_AWS_SEC_ADD_1_0
+      description: The report's notification type; for example, AZURE_NIST_CSF.
       isArray: false
-      name: id_type
+      name: report_type
       predefined:
-      - image_digest
-      - image_id
+      - AZURE_CIS
+      - AZURE_CIS_131
+      - AZURE_SOC
+      - AZURE_SOC_Rev2
+      - AZURE_PCI
+      - AZURE_PCI_Rev2
+      - AZURE_ISO_27001
+      - AZURE_NIST_CSF
+      - AZURE_NIST_800_53_REV5
+      - AZURE_NIST_800_171_REV2
+      - AZURE_HIPAA
+      - AWS_CIS_S3
+      - NIST_800-53_Rev4
+      - NIST_800-171_Rev2
+      - ISO_2700
+      - HIPAA
+      - SOC
+      - AWS_SOC_Rev2
+      - GCP_HIPAA
+      - PCI
+      - GCP_CIS
+      - GCP_SOC
+      - GCP_CIS12
+      - GCP_K8S
+      - GCP_PCI_Rev2
+      - GCP_SOC_Rev2
+      - GCP_HIPAA_Rev2
+      - GCP_ISO_27001
+      - GCP_NIST_CSF
+      - GCP_NIST_800_53_REV4
+      - GCP_NIST_800_171_REV2
+      - GCP_PCI
+      - AWS_CIS_14
+      - GCP_CIS13
+      - AWS_CMMC_1.02
+      - AWS_HIPAA
+      - AWS_ISO_27001:2013
+      - AWS_NIST_CSF
+      - AWS_NIST_800-171_rev2
+      - AWS_NIST_800-53_rev5
+      - AWS_PCI_DSS_3.2.1
+      - AWS_SOC_2
+      - LW_AWS_SEC_ADD_1_0
+      required: false
+      secret: false
+    - default: false
+      defaultValue: Default
+      description: The template's name that is used for the report; for example, Default.
+      isArray: false
+      name: template_name
       required: true
       secret: false
     - default: false
-      description: A string representing the container image ID for which to fetch
-        vulnerabilities.
+      description: Setting the 'rec_id' will filter compliance results for the specified
+        Recommendation ID.
       isArray: false
-      name: image_id
-      required: false
-      secret: false
-    - default: false
-      description: A string representing the container image digest for which to fetch
-        vulnerabilities.
-      isArray: false
-      name: image_digest
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A string representing the severity of vulnerabilities to fetch.
-      isArray: false
-      name: severity
-      predefined:
-      - critical
-      - high
-      - medium
-      - info
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A boolean which filters for fixable vulnerabilities.
-      isArray: false
-      name: fixable
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex.
-        "2020-01-01T01:10:00Z")
-      isArray: false
-      name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
-      isArray: false
-      name: end_time
+      name: rec_id
       required: false
       secret: false
     deprecated: false
-    description: Fetch the container vulnerability information from Lacework.
+    description: Fetch a specified compliance report from Lacework.
     execution: false
-    name: lw-get-container-vulnerabilities
+    name: lw-get-compliance-report
     outputs:
-    - contextPath: Lacework.Vulnerability.Container.image.image_info.created_time
-      description: The creation time of the container image.
+    - contextPath: Lacework.Compliance.reportType
+      description: The Type of the compliance report.
       type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_info.image_digest
-      description: The digest of the container image.
+    - contextPath: Lacework.Compliance.reportTitle
+      description: The Title of the compliance report.
       type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_info.image_id
-      description: The ID of the container image.
+    - contextPath: Lacework.Compliance.recommendations.SUPPRESSIONS
+      description: The suppressions for the current recommendation.
       type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_info.registry
-      description: The registry of the container image.
+    - contextPath: Lacework.Compliance.recommendations.INFO_LINK
+      description: The URL to the compliance violation information.
       type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_info.repository
-      description: The repository of the container image.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_info.size
-      description: The size of the container image.
+    - contextPath: Lacework.Compliance.recommendations.ASSESSED_RESOURCE_COUNT
+      description: The number of assessed resources for the violation.
       type: Number
-    - contextPath: Lacework.Vulnerability.Container.image.image_info.tags
-      description: The tags of the container image.
+    - contextPath: Lacework.Compliance.recommendations.STATUS
+      description: The status of the recommendation.
       type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.hash
-      description: The hash of the container image layer.
+    - contextPath: Lacework.Compliance.recommendations.REC_ID
+      description: The ID of the recommendation.
       type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.created_by
-      description: The 'created by' of the container image layer.
+    - contextPath: Lacework.Compliance.recommendations.CATEGORY
+      description: The category of the recommendation
       type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.name
-      description: The package names that exist in the container image layer.
+    - contextPath: Lacework.Compliance.recommendations.SERVICE
+      description: The service associated with the recommendation.
       type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.namespace
-      description: The package namespaces that exist in the container image layer.
+    - contextPath: Lacework.Compliance.recommendations.TITLE
+      description: The title of the recommendation.
       type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.fix_available
-      description: A variable representing if a fix is available for a vulnerability
-        in the container image layer.
+    - contextPath: Lacework.Compliance.recommendations.VIOLATIONS.region
+      description: The region of the violating resource.
       type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.version
-      description: The package versions that exist in the contianer image layer.
+    - contextPath: Lacework.Compliance.recommendations.VIOLATIONS.reasons
+      description: The reason for the violation.
       type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.vulnerabilities.name
-      description: The vulnerability names that exist in packages in the container
-        image layer.
+    - contextPath: Lacework.Compliance.recommendations.VIOLATIONS.resource
+      description: The resource causing the violation.
       type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.vulnerabilities.description
-      description: The vulnerability descriptions that exist in packages in the container
-        image layer.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.vulnerabilities.link
-      description: The informational links for vulnerabilities that exist in packages
-        in the container image layer.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.vulnerabilities.severity
-      description: The vulnerability severities that exist in packages in the container
-        image layer.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.vulnerabilities.fix_version
-      description: The vulnerability fix versions that exist for packages in the container
-        image layer.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.fixed_version
-      description: The fixed version of vulnerabilities in packages of the container
-        image layer.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.host_count
-      description: The host count of the packages in the container image layer.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.severity
-      description: The severity of package vulnerabilities of the container image
-        layer.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.cve_link
-      description: The informational links for package vulnerabilities in the container
-        image layer.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.cvss_score
-      description: The CVSS score for package vulnerabilities in the container image
-        layer.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.cvss_v3_score
-      description: The CVSS v3 score for package vulnerabilities in the container
-        image layer.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.cvss_v2_score
-      description: The CVSS v2 score for package vulnerabilities in the container
-        image layer.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.status
-      description: The status for package vulnerabilities in the container image layer.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.package_status
-      description: The status for package activity status in the container image layer.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.first_seen_time
-      description: The first seen time for packages in the container image layer.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.scan_status
-      description: The scan status for the container.
-      type: String
-    - contextPath: Lacework.Vulnerability.Container.total_vulnerabilities
-      description: The total vulnerabilties for the container.
+    - contextPath: Lacework.Compliance.recommendations.RESOURCE_COUNT
+      description: The number of resources associated with the compliance failure.
       type: Number
-    - contextPath: Lacework.Vulnerability.Container.critical_vulnerabilities
-      description: The critical severity vulnerabilties for the container.
+    - contextPath: Lacework.Compliance.recommendations.SEVERITY
+      description: The severity of the compliance failure.
       type: Number
-    - contextPath: Lacework.Vulnerability.Container.high_vulnerabilities
-      description: The high severity vulnerabilties for the container.
+    - contextPath: Lacework.Compliance.summary.NUM_RECOMMENDATIONS
+      description: The number of recommendations contained in the report.
       type: Number
-    - contextPath: Lacework.Vulnerability.Container.medium_vulnerabilities
-      description: The medium severity vulnerabilties for the container.
+    - contextPath: Lacework.Compliance.summary.NUM_SEVERITY_2_NON_COMPLIANCE
+      description: The number of Severity 2 compliance violations.
       type: Number
-    - contextPath: Lacework.Vulnerability.Container.low_vulnerabilities
-      description: The low severity vulnerabilties for the container.
+    - contextPath: Lacework.Compliance.summary.NUM_SEVERITY_4_NON_COMPLIANCE
+      description: The number of Severity 4 compliance violations.
       type: Number
-    - contextPath: Lacework.Vulnerability.Container.info_vulnerabilities
-      description: The informational severity vulnerabilties for the container.
+    - contextPath: Lacework.Compliance.summary.NUM_SEVERITY_1_NON_COMPLIANCE
+      description: The number of severity 1 compliance violations.
       type: Number
-    - contextPath: Lacework.Vulnerability.Container.fixable_vulnerabilities
-      description: The fixable vulnerabilties for the container.
+    - contextPath: Lacework.Compliance.summary.NUM_COMPLIANT
+      description: The number of compliant resources.
       type: Number
-    - contextPath: Lacework.Vulnerability.Container.last_evaluation_time
-      description: The last evaluation time for the container.
+    - contextPath: Lacework.Compliance.summary.NUM_SEVERITY_3_NON_COMPLIANCE
+      description: The number of severity 3 compliance violations.
+      type: Number
+    - contextPath: Lacework.Compliance.summary.ASSESSED_RESOURCE_COUNT
+      description: The number of assessed resources.
+      type: Number
+    - contextPath: Lacework.Compliance.summary.NUM_SUPPRESSED
+      description: The number of suppressed alerts.
+      type: Number
+    - contextPath: Lacework.Compliance.summary.NUM_SEVERITY_5_NON_COMPLIANCE
+      description: The number of severity 5 compliance violations.
+      type: Number
+    - contextPath: Lacework.Compliance.summary.NUM_NOT_COMPLIANT
+      description: The number of resources not in compliance.
+      type: Number
+    - contextPath: Lacework.Compliance.summary.VIOLATED_RESOURCE_COUNT
+      description: The number of resources violating compliance.
+      type: Number
+    - contextPath: Lacework.Compliance.summary.SUPPRESSED_RESOURCE_COUNT
+      description: The number of resources with suppressed violations.
+      type: Number
+    - contextPath: Lacework.Compliance.accountId
+      description: The AWS account ID.
+      type: String
+    - contextPath: Lacework.Compliance.accountAlias
+      description: The AWS account alias.
+      type: String
+    - contextPath: Lacework.Compliance.tenantId
+      description: The Azure tenant ID.
+      type: String
+    - contextPath: Lacework.Compliance.tenantName
+      description: The Azure tenant name.
+      type: String
+    - contextPath: Lacework.Compliance.subscriptionId
+      description: The Azure subscription ID.
+      type: String
+    - contextPath: Lacework.Compliance.subscriptionName
+      description: The Azure subscription name.
+      type: String
+    - contextPath: Lacework.Compliance.projectId
+      description: The GCP project ID.
+      type: String
+    - contextPath: Lacework.Compliance.projectName
+      description: The GCP project name.
+      type: String
+    - contextPath: Lacework.Compliance.organizationId
+      description: The GCP organization ID.
+      type: String
+    - contextPath: Lacework.Compliance.organizationName
+      description: The GCP organization name.
+      type: String
+    - contextPath: Lacework.Compliance.reportTime
+      description: The time the report completed.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      description: A string representing the severity of vulnerabilities to fetch.
-      isArray: false
-      name: severity
-      predefined:
-      - critical
-      - high
-      - medium
-      - info
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A boolean which filters for fixable vulnerabilities.
-      isArray: false
-      name: fixable
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - default: false
       description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex.
         "2020-01-01T01:10:00Z")
@@ -1072,97 +802,203 @@ script:
       required: false
       secret: false
     - default: false
-      description: A string representing the CVE ID for which to filter returned results.
+      description: An array of objects to add information to refine your search results.
       isArray: false
-      name: cve
+      name: filters
       required: false
       secret: false
     - default: false
-      description: A string representing the package namespace for which to filter
-        results.
+      description: An array of strings to specify which top-level fields of the response
+        schema you want to receive.
       isArray: false
-      name: namespace
+      name: returns
       required: false
       secret: false
     - default: false
-      defaultValue: '100'
-      description: An integer representing the maximum number of results to return.
+      description: An integer representing a limit on the number or results to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Fetch the host vulnerability information from Lacework.
+    description: Fetch container vulnerability information from Lacework.
+    execution: false
+    name: lw-get-container-vulnerabilities
+    outputs:
+    - contextPath: Lacework.Vulnerability.Container.evalCtx.exception_props
+      description: The exception properties that were applied in the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.evalCtx.image_info
+      description: The image information for the container scanned in the evaluation
+      type: Date
+    - contextPath: Lacework.Vulnerability.Container.evalCtx.integration_props
+      description: The properties of the integration that performed the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.evalCtx.is_reeval
+      description: A boolean representing whether the evaluation was a re-evaluation
+      type: Boolean
+    - contextPath: Lacework.Vulnerability.Container.evalCtx.request_source
+      description: The source of the evaluation request
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.evalCtx.scan_batch_id
+      description: The scan batch ID for the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.evalCtx.scan_request_props
+      description: The scan request properties for the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.evalCtx.vuln_batch_id
+      description: The vulnerability batch ID for the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.evalCtx.vuln_created_time
+      description: The time at which the vulnerability was created
+      type: Date
+    - contextPath: Lacework.Vulnerability.Container.featureKey.name
+      description: The name of the package identified in the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.featureKey.namespace
+      description: The namespace of the package identified in the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.featureKey.version
+      description: The version of the package identified in the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.featureProps.feed
+      description: The type of data feed used in the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.featureProps.introduced_in
+      description: The Dockerfile command which introduced the vulnerability
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.featureProps.layer
+      description: The SHA256 hash of the layer which introduced the vulnerability
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.featureProps.src
+      description: The path within the container identifying the source of the vulnerability
+        data
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.featureProps.version_format
+      description: The format of the version data for the vulnerable package
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.fixInfo.fix_available
+      description: An integer representing whether a fix is available for the vulnerability
+      type: Number
+    - contextPath: Lacework.Vulnerability.Container.fixInfo.fixed_version
+      description: The version in which the vulnerability is fixed for the CVE and
+        package
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.imageId
+      description: The image ID of the container identified in the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.severity
+      description: The severity of the vulnerability identified in the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.startTime
+      description: The start time for the vulnerability evaluation
+      type: Date
+    - contextPath: Lacework.Vulnerability.Container.status
+      description: The status of the vulnerability identified in the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.vulnId
+      description: The vulnerability ID (CVE, ALAS, etc.)
+      type: String
+    - contextPath: Lacework.Vulnerability.Container.vulnHash
+      description: A unique hash of all data contained in the vulnerability
+      type: String
+  - arguments:
+    - default: false
+      description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex.
+        "2020-01-01T01:10:00Z")
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      description: An array of objects to add information to refine your search results.
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
+      description: An array of strings to specify which top-level fields of the response
+        schema you want to receive.
+      isArray: false
+      name: returns
+      required: false
+      secret: false
+    - default: false
+      description: An integer representing a limit on the number or results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch host vulnerability information from Lacework.
     execution: false
     name: lw-get-host-vulnerabilities
     outputs:
-    - contextPath: Lacework.Vulnerability.Host.cve_id
-      description: The CVE ID of a host vulnerability.
+    - contextPath: Lacework.Vulnerability.Host.cveProps.description
+      description: The CVE Properties description
       type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.name
-      description: The vulnerable package names for a host vulnerability.
+    - contextPath: Lacework.Vulnerability.Host.cveProps.link
+      description: The CVE Properties description URL
       type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.namespace
-      description: The package namespaces for a host vulnerability.
+    - contextPath: Lacework.Vulnerability.Host.endTime
+      description: The end time for the vulnerability evaluation period
+      type: Date
+    - contextPath: Lacework.Vulnerability.Host.evalCtx.exception_props.status
+      description: The status of any exception properties for the evaluation
       type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.fix_available
-      description: A string representing if a fix is available for a host vulnerability.
+    - contextPath: Lacework.Vulnerability.Host.evalCtx.hostname
+      description: The hostname of the host assessed in the evaluation
       type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.version
-      description: The package version of a host vulnerability.
+    - contextPath: Lacework.Vulnerability.Host.evalCtx.mc_eval_guid
+      description: The GUID for the evaluation
       type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.vulnerabilities.name
-      description: The name of a package vulnerability.
+    - contextPath: Lacework.Vulnerability.Host.featureKey.name
+      description: The name of the package identified in the evaluation
       type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.vulnerabilities.description
-      description: The description of a package vulnerability.
+    - contextPath: Lacework.Vulnerability.Host.featureKey.namespace
+      description: The namespace of the package identified in the evaluation
       type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.vulnerabilities.link
-      description: The informational link for a package vulnerability.
-      type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.vulnerabilities.severity
-      description: The severity of a package vulnerability.
-      type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.vulnerabilities.fix_version
-      description: The fixed version for a package vulnerability.
-      type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.fixed_version
-      description: The fixed version for a vulnerable package.
-      type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.host_count
-      description: The host count of a vulnerable package.
-      type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.severity
-      description: The severity of a vulnerable package.
-      type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.cve_link
-      description: The informational link for a CVE.
-      type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.cvss_score
-      description: The CVSS score for a package vulnerability.
-      type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.cvss_v3_score
-      description: The CVSS v3 score for a package vulnerability.
-      type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.cvss_v2_score
-      description: The CVSS v2 score for a package vulnerability.
-      type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.status
-      description: The status of a package vulnerability.
-      type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.package_status
-      description: The package activity status on the host.
-      type: String
-    - contextPath: Lacework.Vulnerability.Host.packages.first_seen_time
-      description: The first seen time for a package vulnerability.
-      type: String
-    - contextPath: Lacework.Vulnerability.Host.summary.total_vulnerabilities
-      description: The total vulnerabilities for hte host.
+    - contextPath: Lacework.Vulnerability.Host.featureKey.package_active
+      description: An integer representing whether the package is Active on the host
       type: Number
-    - contextPath: Lacework.Vulnerability.Host.summary.last_evaluation_time
-      description: The time of the last vulnerability evaluation.
+    - contextPath: Lacework.Vulnerability.Host.featureKey.version_installed
+      description: The version of the package identified in the evaluation
       type: String
-  dockerimage: demisto/lacework:1.0.0.24154
+    - contextPath: Lacework.Vulnerability.Host.fixInfo.fix_available
+      description: An integer representing whether a fix is available for the vulnerability
+      type: String
+    - contextPath: Lacework.Vulnerability.Host.fixInfo.fixed_version
+      description: The version in which the vulnerability is fixed for the CVE and
+        package
+      type: String
+    - contextPath: Lacework.Vulnerability.Host.machineTags
+      description: A string representing the machine tags in key/value pairs
+      type: String
+    - contextPath: Lacework.Vulnerability.Host.mid
+      description: The machine ID for the host identified in the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Host.severity
+      description: The severity of the vulnerability identified in the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Host.startTime
+      description: The start time for the vulnerability evaluation period
+      type: Date
+    - contextPath: Lacework.Vulnerability.Host.status
+      description: The status of the vulnerability identified in the evaluation
+      type: String
+    - contextPath: Lacework.Vulnerability.Host.vulnId
+      description: The vulnerability ID (CVE, ALAS, etc.)
+      type: String
+    - contextPath: Lacework.Vulnerability.Host.vulnHash
+      description: A unique hash of all data contained in the vulnerability
+      type: String
+  dockerimage: demisto/lacework:1.0.0.47313
   feed: false
   isfetch: true
   longRunning: false
@@ -1173,6 +1009,6 @@ script:
   type: python
 tests:
 - No Tests
-fromversion: 5.0.0
 defaultmapperin: Lacework - Incoming Mapper
 defaultclassifier: Lacework - Classifier
+fromversion: 5.0.0

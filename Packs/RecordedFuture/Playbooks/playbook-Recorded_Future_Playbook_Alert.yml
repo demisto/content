@@ -1,0 +1,83 @@
+id: Recorded Future Playbook Alert Details
+version: -1
+description: A default playbook to fetch details of Playbook alert that does not yet have mapping made by Recorded Future
+name: Recorded Future Playbook Alert Details
+starttaskid: "0"
+fromversion: "6.5.0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 05a84883-71da-45c9-81db-5f5cbcba9a21
+    type: start
+    task:
+      id: 05a84883-71da-45c9-81db-5f5cbcba9a21
+      version: -1
+      description: Playbook Triggered
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 909c3c54-d3ad-427f-827a-96c671a95f69
+    type: regular
+    task:
+      id: 909c3c54-d3ad-427f-827a-96c671a95f69
+      version: -1
+      name: Get Alerts Details
+      description: Get Playbook alert details by id.
+      script: RecordedFuturePlaybookAlerts|||recordedfuture-playbook-alerts-details
+      type: regular
+      iscommand: true
+      brand: RecordedFuturePlaybookAlerts
+    scriptarguments:
+      alert_ids:
+        simple: ${incident.labels.playbook_alert_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)

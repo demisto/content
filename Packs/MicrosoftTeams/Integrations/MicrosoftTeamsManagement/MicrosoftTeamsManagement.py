@@ -16,8 +16,9 @@ SCOPE_BY_CONNECTION = {'Device Code': 'offline_access Group.ReadWrite.All TeamMe
 class Client:
     def __init__(self, app_id: str, verify: bool, proxy: bool,
                  connection_type: str, tenant_id: str, enc_key: str,
-                 azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
-        if '@' in app_id:
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.com',
+                 managed_identities_client_id: Optional[str] = None):
+        if app_id and '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
@@ -31,14 +32,16 @@ class Client:
             self_deployed=True,
             auth_id=app_id,
             token_retrieval_url=token_retrieval_url,
-            grant_type=GRANT_BY_CONNECTION[connection_type],
+            grant_type=GRANT_BY_CONNECTION.get(connection_type),
             base_url='https://graph.microsoft.com',
             verify=verify,
             proxy=proxy,
-            scope=SCOPE_BY_CONNECTION[connection_type],
+            scope=SCOPE_BY_CONNECTION.get(connection_type),
             azure_ad_endpoint=azure_ad_endpoint,
             tenant_id=tenant_id,
-            enc_key=enc_key
+            enc_key=enc_key,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.graph
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.connection_type = connection_type
@@ -595,9 +598,9 @@ def test_module(client: Client) -> str:
     """
     # This should validate all the inputs given in the integration configuration panel,
     # either manually or by using an API that uses them.
-    if 'Client' not in client.connection_type:
+    if client.connection_type not in {'Client Credentials', 'Azure Managed Identities'}:
         raise DemistoException(
-            "Test module is avilable for Client Credentials only."
+            "Test module is avilable for Client Credentials or Azure Managed Identities only."
             " For other authentication types use the msgraph-apps-auth-start command")
 
     test_connection(client)
@@ -619,7 +622,8 @@ def main() -> None:
                                          'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
             enc_key=(params.get('credentials', {})).get('password'),
             tenant_id=params.get('tenant_id'),
-            connection_type=params.get('authentication_type', 'Device Code')
+            connection_type=params.get('authentication_type', 'Device Code'),
+            managed_identities_client_id=get_azure_managed_identities_client_id(params)
         )
         if command == 'test-module':
             return_results(test_module(client))

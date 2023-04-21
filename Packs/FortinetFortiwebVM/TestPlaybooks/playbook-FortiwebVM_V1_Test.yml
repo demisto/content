@@ -1,0 +1,2348 @@
+id: playbook-FortiwebVM_V1_Test
+name: playbook-FortiwebVM_V1_Test
+version: -1
+fromversion: 5.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a00'
+    type: start
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a00'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a01'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a01'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a02'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a02'
+      version: -1
+      name: fortiwebvm-protected-hostname-group-create
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-protected-hostname-group-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      name:
+        simple: ronhadad
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: 3
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a03'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a03'
+      version: -1
+      name: fortiwebvm-protected-hostname-group-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-protected-hostname-group-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      name:
+        simple: ronhadad
+    separatecontext: false
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a04'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a04'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.ProtectedHostnameGroup.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.ProtectedHostnameGroup.default_action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.ProtectedHostnameGroup.protected_hostname_count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ProtectedHostnameGroup.can_delete
+            iscontext: true
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: 5
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a05'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a05'
+      version: -1
+      name: fortiwebvm-protected-hostname-group-update
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-protected-hostname-group-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      name:
+        simple: ${FortiwebVM.ProtectedHostnameGroup.id}
+      default_action:
+        simple: Deny
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a06'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a06'
+      version: -1
+      name: fortiwebvm-protected-hostname-member-create
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-protected-hostname-member-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      group_name:
+        simple: ${FortiwebVM.ProtectedHostnameGroup.id}
+      host:
+        simple: 1.2.3.4
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: 7
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a07'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a07'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.ProtectedHostnameMember.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a08'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a08'
+      version: -1
+      name: fortiwebvm-protected-hostname-member-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-protected-hostname-member-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      group_name:
+        simple: ${FortiwebVM.ProtectedHostnameGroup.id}
+      member_id:
+        simple: ${FortiwebVM.ProtectedHostnameMember.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: 9
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a09'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a09'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.ProtectedHostnameMember.group_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.ProtectedHostnameMember.Members.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.ProtectedHostnameMember.Members.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.ProtectedHostnameMember.Members.host
+            iscontext: true
+    view: '{"position":{"x":50,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a10'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a10'
+      version: -1
+      name: fortiwebvm-protected-hostname-member-update
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-protected-hostname-member-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      group_name:
+        simple: ${FortiwebVM.ProtectedHostnameGroup.id}
+      member_id:
+        simple: ${FortiwebVM.ProtectedHostnameMember.id}
+      ignore_port:
+        simple: disable
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: 11
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a11'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a11'
+      version: -1
+      name: fortiwebvm-protected-hostname-member-delete
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-protected-hostname-member-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      group_name:
+        simple: ${FortiwebVM.ProtectedHostnameGroup.id}
+      member_id:
+        simple: ${FortiwebVM.ProtectedHostnameMember.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a12'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a12'
+      version: -1
+      name: fortiwebvm-protected-hostname-group-delete
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-protected-hostname-group-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      name:
+        simple: ${FortiwebVM.ProtectedHostnameGroup.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: 13
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a13'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a13'
+      version: -1
+      name: fortiwebvm-ip-list-group-create
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-ip-list-group-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      name:
+        simple: ronhadad
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a14'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a14'
+      version: -1
+      name: fortiwebvm-ip-list-group-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-ip-list-group-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      name:
+        simple: ronhadad
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: 15
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a15'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a15'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.IpListGroup.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.IpListGroup.ip_list_count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.IpListGroup.can_delete
+            iscontext: true
+    view: '{"position":{"x":50,"y":3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a16'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a16'
+      version: -1
+      name: fortiwebvm-ip-list-member-create
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-ip-list-member-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      group_name:
+        simple: ${FortiwebVM.IpListGroup.id}
+      ip_address:
+        simple: 1.2.3.4
+      type:
+        simple: 'Trust IP'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: 17
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a17'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a17'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.IpListMember.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a18'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a18'
+      version: -1
+      name: fortiwebvm-ip-list-member-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-ip-list-member-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      group_name:
+        simple: ${FortiwebVM.IpListGroup.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: 19
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a19'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a19'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.IpListMember.group_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.IpListMember.Members.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.IpListMember.Members.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.IpListMember.Members.severity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.IpListMember.Members.trigger_policy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.IpListMember.Members.ip
+            iscontext: true
+    view: '{"position":{"x":50,"y":3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a20'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a20'
+      version: -1
+      name: fortiwebvm-ip-list-member-update
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-ip-list-member-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      group_name:
+        simple: ${FortiwebVM.IpListGroup.id}
+      member_id:
+        simple: ${FortiwebVM.IpListMember.id}
+      ip_address:
+        simple: 1.2.3.6
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: 21
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a21'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a21'
+      version: -1
+      name: fortiwebvm-ip-list-member-delete
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-ip-list-member-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    scriptarguments:
+      group_name:
+        simple: ${FortiwebVM.IpListGroup.id}
+      member_id:
+        simple: ${FortiwebVM.IpListMember.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a22'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a22'
+      version: -1
+      name: fortiwebvm-ip-list-group-delete
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-ip-list-group-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments:
+      name:
+        simple: ${FortiwebVM.IpListGroup.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: 23
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a23'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a23'
+      version: -1
+      name: fortiwebvm-geo-ip-group-create
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-geo-ip-group-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '24'
+    scriptarguments:
+      name:
+        simple: ronhadad
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a24'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a24'
+      version: -1
+      name: fortiwebvm-geo-ip-group-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-geo-ip-group-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      name:
+        simple: ronhadad
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: 25
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a25'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a25'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.GeoIpGroup.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.GeoIpGroup.count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.GeoIpGroup.trigger_policy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.GeoIpGroup.severity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.GeoIpGroup.except
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.GeoIpGroup.can_delete
+            iscontext: true
+    view: '{"position":{"x":50,"y":5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: 26
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a26'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a26'
+      version: -1
+      name: fortiwebvm-geo-ip-group-update
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-geo-ip-group-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments:
+      name:
+        simple: ${FortiwebVM.GeoIpGroup.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: 27
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a27'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a27'
+      version: -1
+      name: fortiwebvm-geo-ip-member-add
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-geo-ip-member-add
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments:
+      group_name:
+        simple: ${FortiwebVM.GeoIpGroup.id}
+      countries:
+        simple: Algeria
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: 28
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a28'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a28'
+      version: -1
+      name: fortiwebvm-geo-ip-member-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-geo-ip-member-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments:
+      group_name:
+        simple: ${FortiwebVM.GeoIpGroup.id}
+      member_id:
+        simple: ${FortiwebVM.GeoIpMember.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '29':
+    id: 29
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a29'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a29'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.GeoIpMember.group_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.GeoIpMember.countries.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.GeoIpMember.countries.country
+            iscontext: true
+    view: '{"position":{"x":50,"y":5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '30':
+    id: 30
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a30'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a30'
+      version: -1
+      name: fortiwebvm-geo-ip-member-delete
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-geo-ip-member-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments:
+      group_name:
+        simple: ${FortiwebVM.GeoIpGroup.id}
+      member_id:
+        simple: ${FortiwebVM.GeoIpMember.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '31':
+    id: 31
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a31'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a31'
+      version: -1
+      name: fortiwebvm-geo-ip-group-delete
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-geo-ip-group-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '32'
+    scriptarguments:
+      name:
+        simple: ${FortiwebVM.GeoIpGroup.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '32':
+    id: 32
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a32'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a32'
+      version: -1
+      name: fortiwebvm-custom-predefined-whitelist-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-custom-predefined-whitelist-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '33'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '33':
+    id: 33
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a33'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a33'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '34'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.CustomPredefinedGlobalWhitelist.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.CustomPredefinedGlobalWhitelist.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.CustomPredefinedGlobalWhitelist.path
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.CustomPredefinedGlobalWhitelist.domain
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.CustomPredefinedGlobalWhitelist.status
+            iscontext: true
+    view: '{"position":{"x":50,"y":6600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '34':
+    id: 34
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a34'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a34'
+      version: -1
+      name: fortiwebvm-custom-predefined-whitelist-update
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-custom-predefined-whitelist-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '35'
+    scriptarguments:
+      id:
+        simple: ${FortiwebVM.CustomPredefinedGlobalWhitelist.id}
+      status:
+        simple: disable
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '35':
+    id: 35
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a35'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a35'
+      version: -1
+      name: fortiwebvm-custom-whitelist-url-create
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-custom-whitelist-url-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '36'
+    scriptarguments:
+      request_url:
+        simple: /123
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '36':
+    id: 36
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a36'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a36'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '37'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.CustomGlobalWhitelist.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":7200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '37':
+    id: 37
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a37'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a37'
+      version: -1
+      name: fortiwebvm-custom-whitelist-url-update
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-custom-whitelist-url-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '38'
+    scriptarguments:
+      id:
+        simple: ${FortiwebVM.CustomGlobalWhitelist.id}
+      status:
+        simple: disable
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '38':
+    id: 38
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a38'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a38'
+      version: -1
+      name: fortiwebvm-custom-whitelist-parameter-create
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-custom-whitelist-parameter-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '39'
+    scriptarguments:
+      name:
+        simple: ron
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '39':
+    id: 39
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a39'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a39'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '40'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.CustomGlobalWhitelist.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":7800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '40':
+    id: 40
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a40'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a40'
+      version: -1
+      name: fortiwebvm-custom-whitelist-parameter-update
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-custom-whitelist-parameter-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '41'
+    scriptarguments:
+      id:
+        simple: ${FortiwebVM.CustomGlobalWhitelist.[1].id}
+      status:
+        simple: disable
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '41':
+    id: 41
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a41'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a41'
+      version: -1
+      name: fortiwebvm-custom-whitelist-cookie-create
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-custom-whitelist-cookie-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '42'
+    scriptarguments:
+      name:
+        simple: ronhadad
+      domain:
+        simple: abc
+      path:
+        simple: /abc
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '42':
+    id: 42
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a42'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a42'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '43'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.CustomGlobalWhitelist.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":8400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '43':
+    id: 43
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a43'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a43'
+      version: -1
+      name: fortiwebvm-custom-whitelist-cookie-update
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-custom-whitelist-cookie-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '44'
+    scriptarguments:
+      id:
+        simple: ${FortiwebVM.CustomGlobalWhitelist.[2].id}
+      status:
+        simple: disable
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '44':
+    id: 44
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a44'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a44'
+      version: -1
+      name: fortiwebvm-custom-whitelist-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-custom-whitelist-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '45'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '45':
+    id: 45
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a45'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a45'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '46'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.CustomGlobalWhitelist.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.CustomGlobalWhitelist.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.CustomGlobalWhitelist.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.CustomGlobalWhitelist.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.CustomGlobalWhitelist.request_type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.CustomGlobalWhitelist.request_url
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.CustomGlobalWhitelist.domain
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.CustomGlobalWhitelist.path
+            iscontext: true
+    view: '{"position":{"x":50,"y":9000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '46':
+    id: 46
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a46'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a46'
+      version: -1
+      name: fortiwebvm-custom-whitelist-delete
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-custom-whitelist-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '47'
+    scriptarguments:
+      id:
+        simple: ${FortiwebVM.CustomGlobalWhitelist.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":9200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '47':
+    id: 47
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a47'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a47'
+      version: -1
+      name: fortiwebvm-virtual-server-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-virtual-server-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '48'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":9400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '48':
+    id: 48
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a48'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a48'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '49'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.VirtualServer.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":9600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '49':
+    id: 49
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a49'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a49'
+      version: -1
+      name: fortiwebvm-http-service-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-http-service-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '50'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":9800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '50':
+    id: 50
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a50'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a50'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '51'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.HttpServiceList.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":10000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '51':
+    id: 51
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a51'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a51'
+      version: -1
+      name: fortiwebvm-server-pool-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-server-pool-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '52'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":10200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '52':
+    id: 52
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a52'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a52'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '53'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.ServerPool.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":10400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '53':
+    id: 53
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a53'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a53'
+      version: -1
+      name: fortiwebvm-inline-protection-profile-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-inline-protection-profile-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '54'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":10600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '54':
+    id: 54
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a54'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a54'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '55'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.InlineProtectionProfile.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":10800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '55':
+    id: 55
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a55'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a55'
+      version: -1
+      name: fortiwebvm-geo-exception-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-geo-exception-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '56'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":11000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '56':
+    id: 56
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a56'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a56'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '57'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.GeoExceptionGroup.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":11200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '57':
+    id: 57
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a57'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a57'
+      version: -1
+      name: fortiwebvm-trigger-policy-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-trigger-policy-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '58'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":11400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '58':
+    id: 58
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a58'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a58'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '59'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.TriggerPolicy.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":11600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '59':
+    id: 59
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a59'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a59'
+      version: -1
+      name: fortiwebvm-certificate-intermediate-group-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-certificate-intermediate-group-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '60'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":11800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '60':
+    id: 60
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a60'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a60'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '61'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.CertificateIntermediateGroup.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":12000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '61':
+    id: 61
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a61'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a61'
+      version: -1
+      name: fortiwebvm-server-policy-create
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-server-policy-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '62'
+    scriptarguments:
+      name:
+        simple: bdika
+      virtual_server:
+        simple: ${FortiwebVM.VirtualServer.id}
+      http_service:
+        simple: ${FortiwebVM.HttpServiceList.id}
+      deployment_mode:
+        simple: 'HTTP Content Routing'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":12200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '62':
+    id: 62
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a62'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a62'
+      version: -1
+      name: fortiwebvm-server-policy-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-server-policy-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '63'
+    scriptarguments:
+      name:
+        simple: bdika
+    separatecontext: false
+    view: '{"position":{"x":50,"y":12400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '63':
+    id: 63
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a63'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a63'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '64'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.deployment_mode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.protocol
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.web_protection_profile
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.monitor_mode
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.http_service
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.https_service
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.certificate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.certificate_intermediate_group
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.server_pool
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.protected_hostnames
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.client_real_ip
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.syn_cookie
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.redirect_to_https
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.http2
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.url_case_sensitivity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.ServerPolicy.comments
+            iscontext: true
+    view: '{"position":{"x":50,"y":12600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '64':
+    id: 64
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a64'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a64'
+      version: -1
+      name: fortiwebvm-server-policy-update
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-server-policy-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '65'
+    scriptarguments:
+      name:
+        simple: ${FortiwebVM.ServerPolicy.name}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":12800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '65':
+    id: 65
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a65'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a65'
+      version: -1
+      name: fortiwebvm-content-routing-policy-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-content-routing-policy-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '66'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":13000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '66':
+    id: 66
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a66'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a66'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '67'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.HttpContentRoutingPolicy.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":13200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '67':
+    id: 67
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a67'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a67'
+      version: -1
+      name: fortiwebvm-http-content-routing-member-add
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-http-content-routing-member-add
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '68'
+    scriptarguments:
+      policy_name:
+        simple: ${FortiwebVM.ServerPolicy.name}
+      http_content_routing_policy:
+        simple: ${FortiwebVM.HttpContentRoutingPolicy.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":13400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '68':
+    id: 68
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a68'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a68'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '69'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.HttpContentRoutingMember.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":13600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '69':
+    id: 69
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a69'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a69'
+      version: -1
+      name: fortiwebvm-http-content-routing-member-update
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-http-content-routing-member-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '70'
+    scriptarguments:
+      policy_name:
+        simple: ${FortiwebVM.ServerPolicy.name}
+      id:
+        simple: ${FortiwebVM.HttpContentRoutingMember.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":13800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '70':
+    id: 70
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a70'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a70'
+      version: -1
+      name: fortiwebvm-http-content-routing-member-list
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-http-content-routing-member-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '71'
+    scriptarguments:
+      policy_name:
+        simple: ${FortiwebVM.ServerPolicy.name}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":14000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '71':
+    id: 71
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a71'
+    type: condition
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a71'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '72'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.HttpContentRoutingMember.policy_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.HttpContentRoutingMember.Members.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.HttpContentRoutingMember.Members.default
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiwebVM.HttpContentRoutingMember.Members.http_content_routing_policy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.HttpContentRoutingMember.Members.inherit_web_protection_profile
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiwebVM.HttpContentRoutingMember.Members.profile
+            iscontext: true
+    view: '{"position":{"x":50,"y":14200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '72':
+    id: 72
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a72'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a72'
+      version: -1
+      name: fortiwebvm-http-content-routing-member-delete
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-http-content-routing-member-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '73'
+    scriptarguments:
+      policy_name:
+        simple: ${FortiwebVM.ServerPolicy.name}
+      id:
+        simple: ${FortiwebVM.HttpContentRoutingMember.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":14400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '73':
+    id: 73
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a73'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a73'
+      version: -1
+      name: fortiwebvm-server-policy-delete
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-server-policy-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '74'
+    scriptarguments:
+      name:
+        simple: ${FortiwebVM.ServerPolicy.name}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":14600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '74':
+    id: 74
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a74'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a74'
+      version: -1
+      name: fortiwebvm-system-operation-status-get
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-system-operation-status-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '75'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":14800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '75':
+    id: 75
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a75'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a75'
+      version: -1
+      name: fortiwebvm-system-status-get
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-system-status-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '76'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":15000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '76':
+    id: 76
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a76'
+    type: regular
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a76'
+      version: -1
+      name: fortiwebvm-system-policy-status-get
+      description: ''
+      script: fortiweb_vm|||fortiwebvm-system-policy-status-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '77'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":15200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '77':
+    id: '77'
+    taskid: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a77'
+    type: title
+    task:
+      id: 'f668b316-e6e2-4d1a-8fbc-48bc1c5a8a77'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position":{"x":50,"y":15400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []

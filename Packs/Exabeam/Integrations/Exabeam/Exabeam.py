@@ -21,19 +21,23 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool,
-                 proxy: bool, headers):
+                 proxy: bool, headers, api_key: str = '', is_fetch: bool = None):
+        self.validate_authentication_params(username=username, password=password, api_key=api_key, is_fetch=is_fetch)
         super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy)
         self.username = username
         self.password = password
+        self.api_key = api_key
         self.session = requests.Session()
         self.session.headers = headers
         if not proxy:
             self.session.trust_env = False
-        if self.username != TOKEN_INPUT_IDENTIFIER:
+        if self.is_token_auth():
+            self.session.headers['ExaAuthToken'] = self.password or self.api_key
+        else:
             self._login()
 
     def __del__(self):
-        if self.username != TOKEN_INPUT_IDENTIFIER:
+        if not self.is_token_auth():
             self._logout()
         super().__del__()
 
@@ -54,6 +58,44 @@ class Client(BaseClient):
             self._http_request('GET', full_url=f'{self._base_url}/api/auth/logout')
         except Exception as err:
             demisto.debug(f'An error occurred during the logout.\n{str(err)}')
+
+    def validate_authentication_params(self, username: str = None,
+                                       password: str = None,
+                                       api_key: str = None,
+                                       is_fetch: bool = None):
+        if username == TOKEN_INPUT_IDENTIFIER:
+            if is_fetch:
+                raise ValueError('In order to use the “Fetch Incident” functionality,'
+                                 ' the username must be provided in the “Username” parameter.\n'
+                                 ' Please see documentation `Authentication Methods`')
+            if api_key:
+                raise ValueError(f'When specifying {username=}, the API Token must be provieded using in the password field'
+                                 ' please empty the other field')
+            if not password:
+                raise ValueError('Please insert API Token in the password field'
+                                 ' or see documentation `Authentication Methods` for another authentication methods')
+        elif not username:
+            if not api_key:
+                raise ValueError('If an API token is not provided, it is mandatory to insert username and password.')
+            if is_fetch:
+                raise ValueError('In order to use the “Fetch Incident” functionality,'
+                                 ' the username must be provided in the “Username” parameter.\n'
+                                 ' Please see documentation `Authentication Methods`')
+        else:
+            if not password and not api_key:
+                raise ValueError('Please insert password or API token.')
+            if password and api_key:
+                raise ValueError('Please insert API token OR password and not both.')
+
+    def is_token_auth(self) -> bool:
+
+        if not self.username:
+            return True
+        if self.username == TOKEN_INPUT_IDENTIFIER:
+            return True
+        if self.api_key:
+            return True
+        return False
 
     def test_module_request(self):
         """
@@ -707,10 +749,13 @@ class Client(BaseClient):
                                   headers=headers)
 
     def get_incidents(self, query: dict[str, Any]):
-
+        headers = self._headers
+        if not self.password:
+            headers = headers | {'EXA_USERNAME': self.username}
         return self._http_request(
             'POST',
             url_suffix='/ir/api/incidents/search',
+            headers=headers,
             json_data=query,
         )
 
@@ -1186,7 +1231,6 @@ def test_module(client: Client, args: dict[str, str], params: dict[str, str]):
     Returns:
         ok if successful
     """
-
     client.test_module_request()
     demisto.results('ok')
 
@@ -2006,7 +2050,7 @@ def list_incidents(client: Client, args: dict[str, str]):
     page_number = arg_to_number(args.get('page_number', 0))
     username = args.get('username')
 
-    if incident_ids and client.username == TOKEN_INPUT_IDENTIFIER and not username:
+    if incident_ids and client.is_token_auth() and not username and not client.username:
         raise ValueError('The username argument is necessary be for this command if the instance configured by api key')
 
     incidents = []
@@ -2050,8 +2094,10 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
         date_format=DATETIME_FORMAT_MILISECONDS,
     )
 
-    demisto.debug(f"fetching incidents between {start_time=}, {end_time=}")
+    demisto.debug(f"fetching incidents between {start_time=} and {end_time=}")
     start_time_as_milisecound, end_time_as_milisecound = order_time_as_milisecound_for_fetch(start_time, end_time)
+
+    demisto.debug(f'fetching incidents between {start_time_as_milisecound=}, {end_time_as_milisecound=}')
 
     incident_type = argToList(args.get('incident_type'))
     priority = argToList(args.get('priority'))
@@ -2062,7 +2108,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
             "status": status,
             "incidentType": incident_type,
             "priority": priority,
-            "startedDate": [
+            "createdAt": [
                 start_time_as_milisecound,
                 end_time_as_milisecound
             ],
@@ -2073,9 +2119,11 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
         "offset": 0,
         "length": last_run.get('limit') or limit
     }
+    demisto.debug(f'The query for fetch: {q}')
 
     resp = client.get_incidents(q)
     incidents_res: List[dict] = resp.get('incidents', [])
+    demisto.debug(f'Got {len(incidents_res)} incidents from the API, before filtering')
 
     incidents_filtered = filter_incidents_by_duplicates_and_limit(
         incidents_res=incidents_res,
@@ -2083,6 +2131,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
         fetch_limit=limit,
         id_field='incidentId'
     )
+    demisto.debug(f'After filtering, there are {len(incidents_filtered)} incidents')
 
     incidents: List[dict] = []
     for incident in incidents_filtered:
@@ -2117,14 +2166,14 @@ def main():
     """
     params = demisto.params()
     args = demisto.args()
-    username = params.get('credentials').get('identifier')
-    password = params.get('credentials').get('password')
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
+    api_key = params.get('api_token', {}).get('password')
     base_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    is_fetch = argToBoolean(params.get('isFetch'))
     headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
-    if username == TOKEN_INPUT_IDENTIFIER:
-        headers['ExaAuthToken'] = password
 
     commands = {
         'get-notable-users': get_notable_users,
@@ -2169,7 +2218,7 @@ def main():
 
     try:
         client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username,
-                        password=password, proxy=proxy, headers=headers)
+                        password=password, proxy=proxy, headers=headers, api_key=api_key, is_fetch=is_fetch)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
         if command == 'fetch-incidents':

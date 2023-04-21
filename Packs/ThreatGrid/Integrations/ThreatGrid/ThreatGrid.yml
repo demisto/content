@@ -2,9 +2,9 @@ commonfields:
   id: Threat Grid
   version: -1
 name: Threat Grid
-display: Cisco Threat Grid
+display: Cisco Threat Grid (Deprecated)
 category: Forensics & Malware Analysis
-description: Query and upload samples to Cisco threat grid.
+description: Deprecated. Use Cisco Secure Malware Analytics (Threat Grid) v2 instead.
 detaileddescription: |-
   1. In your threat grid instance, click your user name at the right top corner.
   2. Select my account.
@@ -86,6 +86,7 @@ script:
     - contextPath: ThreatGrid.Sample.CompletedAt
       description: The sample completion time
     description: Search samples on the Threat Grid platform. Input parameters are ANDed together. Only finished samples can be searched (that is, the ones that are having a status of succ or fail.)
+    deprecated: true
   - name: threat-grid-get-sample-by-id
     arguments:
     - name: id
@@ -116,6 +117,7 @@ script:
     - contextPath: ThreatGrid.Sample.CompletedAt
       description: The sample completion time
     description: Get threat grid sample by id
+    deprecated: true
   - name: threat-grid-get-sample-state-by-id
     arguments:
     - name: id
@@ -129,6 +131,7 @@ script:
     - contextPath: ThreatGrid.Sample.State
       description: The state of the sample, one of a stable set of strings “wait, prep, run, proc, succ, fail”
     description: Get threat grid sample state by id
+    deprecated: true
   - name: threat-grid-upload-sample
     arguments:
     - name: file-id
@@ -187,6 +190,7 @@ script:
     - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
     description: Submits a sample to threat grid for analysis
+    deprecated: true
   - name: threat-grid-search-submissions
     arguments:
     - name: q
@@ -235,6 +239,7 @@ script:
     - contextPath: ThreatGrid.Sample.ThreatScore
       description: The threat score of the sample
     description: Search threat grid submissions
+    deprecated: true
   - name: threat-grid-get-video-by-id
     arguments:
     - name: id
@@ -248,6 +253,7 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Get the sample analysis video by id
+    deprecated: true
   - name: threat-grid-get-analysis-by-id
     arguments:
     - name: id
@@ -319,6 +325,7 @@ script:
     - contextPath: ThreatGrid.Artifact.ThreatName
       description: Artifact threat name.
     description: The detailed overview of dynamic and static analysis results for the sample
+    deprecated: true
   - name: threat-grid-get-processes-by-id
     arguments:
     - name: id
@@ -330,6 +337,7 @@ script:
       description: The ID of the sample for which the PCAP needs to be downloaded.
       type: string
     description: Get a JSON object which contains a timeline of all process activities as determined by the dynamic analysis engine.
+    deprecated: true
   - name: threat-grid-get-pcap-by-id
     arguments:
     - name: id
@@ -343,6 +351,7 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Get the tcpdump PCAP file for a specific Sample ID, with all the network activity of the sample
+    deprecated: true
   - name: threat-grid-get-warnings-by-id
     arguments:
     - name: id
@@ -356,6 +365,7 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Gets a JSON structure describing any warnings that occured during the analysis
+    deprecated: true
   - name: threat-grid-get-summary-by-id
     arguments:
     - name: id
@@ -385,6 +395,7 @@ script:
       description: The timestamp when the sample was last seen.
       type: date
     description: Returns summary analysis information
+    deprecated: true
   - name: threat-grid-get-threat-summary-by-id
     arguments:
     - name: id
@@ -422,6 +433,7 @@ script:
     - contextPath: ThreatGrid.Sample.ThreatFeeds
       description: The sample threat feeds
     description: Returns a summary of the threats detected during analysis
+    deprecated: true
   - name: threat-grid-get-html-report-by-id
     arguments:
     - name: id
@@ -435,6 +447,7 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Get the report.html file for a specific Sample ID. This is a stand-alone file with a complete report on the sample run. It is designed to be emailed or printed.
+    deprecated: true
   - name: threat-grid-download-sample-by-id
     arguments:
     - name: id
@@ -448,6 +461,7 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Download a sample by using its ID. The downloaded file is an archive of the sample itself, in a zip format as a form of quarantine.
+    deprecated: true
   - name: threat-grid-get-analysis-iocs
     arguments:
     - name: id
@@ -490,6 +504,7 @@ script:
     - contextPath: ThreatGrid.IOCs.Tags
       description: The tags of the IOC
     description: Returns a JSON list of the Indicators of Compromise identified in this sample run
+    deprecated: true
   - name: threat-grid-download-artifact
     deprecated: true
     arguments:
@@ -516,6 +531,7 @@ script:
     - contextPath: ThreatGrid.User.Role
       description: The logged in user Role
     description: Get logged in user
+    deprecated: true
   - name: threat-grid-user-get-rate-limit
     arguments:
     - name: login
@@ -536,6 +552,7 @@ script:
       description: The number of submissions available for the specified username
       type: number
     description: Get rate limit for a specific user name. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by a user. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.
+    deprecated: true
   - name: threat-grid-get-specific-feed
     arguments:
     - name: feed-name
@@ -551,6 +568,7 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Gets a specific threat feed
+    deprecated: true
   - name: threat-grid-detonate-file
     deprecated: true
     arguments:
@@ -607,6 +625,7 @@ script:
       default: true
       description: Comma separated list of URLs to convert
     description: Convert a URL into a file for Threat Grid file detonation.
+    deprecated: true
   - name: threat-grid-organization-get-rate-limit
     arguments:
     - name: adminLogin
@@ -627,6 +646,7 @@ script:
       description: The number of submissions available for the entire organization.
       type: number
     description: Get rate limits applied to an organization. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by an entire organization and/or per a license basis. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.
+    deprecated: true
   - name: threat-grid-search-ips
     arguments:
     - name: network_dst
@@ -650,6 +670,7 @@ script:
     - name: tag
       description: search by tag name
     description: Search IPs. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
+    deprecated: true
   - name: threat-grid-get-analysis-annotations
     arguments:
     - name: id
@@ -670,6 +691,7 @@ script:
     - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP.Timestamp
       description: Timestamp of the IP found
     description: Returns data regarding the annotations of the anlysis
+    deprecated: true
   - name: threat-grid-search-samples
     arguments:
     - name: ioc
@@ -712,6 +734,7 @@ script:
     - contextPath: ThreatGrid.Sample.Details
       description: Detail of sample
     description: Search Samples. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
+    deprecated: true
   - name: threat-grid-search-urls
     arguments:
     - name: url
@@ -745,6 +768,7 @@ script:
     - name: tag
       description: search by url tag
     description: Search urls. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
+    deprecated: true
   - name: threat-grid-get-samples-state
     arguments:
     - name: ids
@@ -755,6 +779,7 @@ script:
     - contextPath: ThreatGrid.Sample.State
       description: The state of the sample, one of a stable set of strings “wait, prep, run, proc, succ, fail”
     description: Get threat grid samples state
+    deprecated: true
   - name: threat-grid-feeds-artifacts
     arguments:
     - name: sha256
@@ -785,6 +810,7 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Get artifacts threat feed
+    deprecated: true
   - name: threat-grid-feeds-domain
     arguments:
     - name: domain
@@ -809,6 +835,7 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Get domain threat feed
+    deprecated: true
   - name: threat-grid-feeds-ip
     arguments:
     - name: ip
@@ -833,6 +860,7 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Get ips threat feed
+    deprecated: true
   - name: threat-grid-feeds-network-stream
     arguments:
     - name: ip
@@ -859,6 +887,7 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Get network stream threat feed
+    deprecated: true
   - name: threat-grid-feeds-path
     arguments:
     - name: path
@@ -883,6 +912,7 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Get path threat feed
+    deprecated: true
   - name: threat-grid-feeds-url
     arguments:
     - name: url
@@ -907,6 +937,7 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Get url threat feed
+    deprecated: true
   - name: threat-grid-get-analysis-artifact
     arguments:
     - name: id
@@ -917,6 +948,7 @@ script:
       required: true
       description: The artificat id requested
     description: Returns the sample id artifact with artifact id
+    deprecated: true
   - name: threat-grid-get-analysis-artifacts
     arguments:
     - name: id
@@ -927,6 +959,7 @@ script:
     - contextPath: ThreatGrid.Sample.Analysis
       description: Analysis datat of the sample
     description: Returns the sample id artifacts
+    deprecated: true
   - name: threat-grid-get-analysis-ioc
     arguments:
     - name: id
@@ -968,6 +1001,7 @@ script:
     - contextPath: ThreatGrid.IOCs.Tags
       description: The tags of the IOC
     description: Returns data regarding the specified Indicator of Compromise
+    deprecated: true
   - name: threat-grid-get-analysis-metadata
     arguments:
     - name: id
@@ -975,6 +1009,7 @@ script:
       default: true
       description: the sample id
     description: Returns metadata about the analysis
+    deprecated: true
   - name: threat-grid-get-analysis-network-stream
     arguments:
     - name: id
@@ -985,6 +1020,7 @@ script:
       required: true
       description: The network stream id
     description: Returns data regarding a specific network stream
+    deprecated: true
   - name: threat-grid-get-analysis-network-streams
     arguments:
     - name: id
@@ -992,6 +1028,7 @@ script:
       default: true
       description: the sample id
     description: Returns the network stream analysis
+    deprecated: true
   - name: threat-grid-get-analysis-process
     arguments:
     - name: id
@@ -1005,6 +1042,7 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Returns data regarding the specifiic process id in the analysis
+    deprecated: true
   - name: threat-grid-get-analysis-processes
     arguments:
     - name: id
@@ -1015,6 +1053,7 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Returns data regarding the analysis processes
+    deprecated: true
   - name: threat-grid-submit-urls
     arguments:
     - name: url
@@ -1034,6 +1073,7 @@ script:
     - contextPath: ThreatGrid.URLs.analyzing
       description: True/False if submitted URL is analyzing
     description: Submit urls for analysis.
+    deprecated: true
   - name: threat-grid-advanced-search
     arguments:
     - name: query
@@ -1042,11 +1082,12 @@ script:
     outputs:
     - contextPath: Threatgrid.SearchResult
       description: Result for the searched query
-    description: Advanced search that allows searching URLS, Submissions, Samples
-      etc...
-  
+    description: Advanced search that allows searching URLS, Submissions, Samples etc...
+
+    deprecated: true
   runonce: false
   dockerimage: demisto/python3:3.10.9.42476
 tests:
-- ThreatGridTest
+- No tests (deprecated)
 fromversion: 5.0.0
+deprecated: true

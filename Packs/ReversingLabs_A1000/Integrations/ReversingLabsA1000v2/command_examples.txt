@@ -1,4 +1,4 @@
-!reversinglabs-a1000-advanced-search query="av-count:5 available:TRUE" result_limit=5
+!reversinglabs-a1000-advanced-search query="av-count:5 available:TRUE" ticloud="False" result_limit=5
 !reversinglabs-a1000-delete-sample hash="024e73a62d01e3a9c030c5e8aafa8a02cdbe17c9"
 !reversinglabs-a1000-download-extracted-files hash="a94775deb818a4d68635eeed3d16abc7f7b8bdd6"
 !reversinglabs-a1000-download-sample hash="a94775deb818a4d68635eeed3d16abc7f7b8bdd6"

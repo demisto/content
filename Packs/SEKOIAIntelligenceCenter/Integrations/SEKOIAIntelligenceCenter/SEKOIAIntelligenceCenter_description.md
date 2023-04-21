@@ -3,4 +3,4 @@
 - An API Key is necessary to start working with this integration
 
 ---
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/sekoia-io)
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/sekoia-intelligence-center)

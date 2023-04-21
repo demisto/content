@@ -38,3 +38,6 @@ dockerimage: demisto/python3:3.9.8.24399
 fromversion: 6.0.0
 tests:
 - TestEditServerConfig
+marketplaces:
+  - xsoar
+  - marketplacev2

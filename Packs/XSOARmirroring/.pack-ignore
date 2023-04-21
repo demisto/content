@@ -6,3 +6,6 @@ ignore=BA101
 
 [file:XSOARmirroring.yml]
 ignore=IN145
+
+[known_words]
+playbookId

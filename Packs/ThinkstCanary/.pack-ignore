@@ -1,2 +1,5 @@
 [file:ThinkstCanary.yml]
 ignore=IN126,IN145
+
+[known_words]
+Thinkst

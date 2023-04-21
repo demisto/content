@@ -1,6 +1,6 @@
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
+    rev: v4.4.0
     hooks:
     -   id: check-yaml
         exclude: .gitlab/ci/|.circleci/
@@ -9,3 +9,9 @@ repos:
     -   id: check-ast
     -   id: check-toml
     -   id: check-xml
+    -   id: check-merge-conflict
+
+-   repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.10.1
+    hooks:
+    -   id: validate-pyproject

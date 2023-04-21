@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Mitre Attack - Extract Technique Information From ID
 * Wildfire Detonate and Analyze File
 * Detonate and Analyze File - JoeSecurity
-* FalconX Detonate and Analyze File
+* CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File
 
 ### Integrations
 This playbook does not use any integrations.

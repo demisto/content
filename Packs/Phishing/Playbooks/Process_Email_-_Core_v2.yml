@@ -137,7 +137,7 @@ tasks:
       version: -1
       name: Extract and save email details
       description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
-      scriptName: ParseEmailFiles
+      scriptName: ParseEmailFilesV2
       type: regular
       iscommand: false
       brand: ''

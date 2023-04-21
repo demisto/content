@@ -1,5 +1,5 @@
 Use the Tanium Threat Response integration to manage endpoints processes, evidence, alerts, files, snapshots, and connections. This Integration works with Tanium Threat Response version 3.0.159 and above.
-This integration was integrated and tested with version 3.5.284 of Tanium Threat Response v2
+This integration was integrated and tested with versions 3.5.284 and 4.x of Tanium Threat Response v2.
 
 
 ## Configure Tanium Threat Response v2 on Cortex XSOAR
@@ -20,6 +20,7 @@ This integration was integrated and tested with version 3.5.284 of Tanium Threat
     | Alert states to filter by in fetch incidents command. Empty list won't filter the incidents by state. | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
+    | API Version | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

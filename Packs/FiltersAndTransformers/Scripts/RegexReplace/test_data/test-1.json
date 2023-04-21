@@ -108,5 +108,15 @@
     "period_matches_newline": "",
     "action_dt": ".=true",
     "result": "atruec"
+  },
+  {
+    "value": "abc",
+    "regex": "b",
+    "output_format": null,
+    "ignore_case": "",
+    "multi_line": "",
+    "period_matches_newline": "",
+    "action_dt": ".=null",
+    "result": "ac"
   }
 ]

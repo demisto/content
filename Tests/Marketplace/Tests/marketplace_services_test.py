@@ -14,7 +14,6 @@ from freezegun import freeze_time
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple, Any
 from demisto_sdk.commands.common.constants import MarketplaceVersions
-from pathlib import Path
 
 # pylint: disable=no-member
 
@@ -946,23 +945,21 @@ class TestChangelogCreation:
         mocker.patch("os.listdir", return_value=dir_list)
         assert is_the_only_rn_in_block(release_notes_dir, version, AGGREGATED_CHANGELOG) == boolean_value
 
-    def test_get_version_to_pr_numbers(self, mocker):
+    def test_get_pr_numbers_for_version(self, mocker):
         """
            Given:
                - Mocked pr numbers for 3 files.
            When:
-               - Calling get_version_to_pr_numbers.
+               - Calling get_pr_numbers_for_version.
            Then:
                - Receive a dict with the proper version to pr number.
         """
-        dir_list = ['1_0_1.md', '1_0_2.md', '1_0_3.md']
-        mocker.patch("os.listdir", return_value=dir_list)
         mocker.patch("os.path.exists", return_value=True)
 
         mocker.patch("git.Git", return_value=GitMock())
 
-        versions_dict = Pack(pack_name='SomeName', pack_path='SomePath').get_version_to_pr_numbers('')
-        assert versions_dict == {'1.0.1': ['11', '111'], '1.0.2': ['22'], '1.0.3': ['33']}
+        versions_pr_numbers = Pack(pack_name='SomeName', pack_path='SomePath').get_pr_numbers_for_version('1.0.2')
+        assert versions_pr_numbers == ['22']
 
     def test_get_pull_request_numbers_from_file(self, mocker):
         """
@@ -1929,66 +1926,6 @@ class TestImagesUpload:
                                                    GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
         assert task_status
 
-    def test_copy_readme_images(self, mocker, dummy_pack):
-        """
-           Given:
-               - Readme Image.
-           When:
-               - Performing copy and upload of all the pack's Readme images.
-           Then:
-               - Validate that the image has been copied from build bucket to prod bucket
-       """
-        dummy_build_bucket = mocker.MagicMock()
-        dummy_prod_bucket = mocker.MagicMock()
-        blob_name = "content/packs/TestPack/readme_images/test_image.png"
-        mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
-        images_data = {"TestPack": {BucketUploadFlow.README_IMAGES: [os.path.basename(blob_name)]}}
-        task_status = dummy_pack.copy_readme_images(dummy_prod_bucket, dummy_build_bucket, images_data,
-                                                    GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
-        assert task_status
-
-    def test_collect_images_from_readme_and_replace_with_storage_path(self, dummy_pack):
-        """
-           Given:
-               - A README.md file with external urls
-           When:
-               - uploading the pack images to gcs
-           Then:
-               - replace the readme images url with the new path to gcs return a list of all replaces urls.
-       """
-        readme_images_test_folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data',
-                                                      'readme_images_test_data')
-        path_readme_to_replace_url = os.path.join(readme_images_test_folder_path, 'url_replace_README.md')
-        with open(os.path.join(readme_images_test_folder_path, 'original_README.md')) as original_readme:
-            data = original_readme.read()
-        with open(path_readme_to_replace_url, 'w') as to_replace:
-            to_replace.write(data)
-
-        expected_urls_ret = {
-            'original_read_me_url': 'https://raw.githubusercontent.com/crestdatasystems/content/'
-                                    '4f707f8922d7ef1fe234a194dcc6fa73f96a4a87/Packs/Lansweeper/doc_files/'
-                                    'Retrieve_Asset_Details_-_Lansweeper.png',
-            'new_gcs_image_path': Path('gcs_test_path/readme_images/Retrieve_Asset_Details_-_Lansweeper.png'),
-            'image_name': 'Retrieve_Asset_Details_-_Lansweeper.png'
-        }
-        ret = dummy_pack.collect_images_from_readme_and_replace_with_storage_path(path_readme_to_replace_url,
-                                                                                  'gcs_test_path', 'marketplacev2')
-        assert ret == [expected_urls_ret]
-
-        with open(path_readme_to_replace_url) as replaced_readme:
-            replaced = replaced_readme.read()
-        with open(os.path.join(readme_images_test_folder_path, 'README_after_replace.md')) as expected_res:
-            expected = expected_res.read()
-
-        assert replaced == expected
-
-    @pytest.mark.parametrize('path, expected_res', [('Packs/TestPack/README.md', True),
-                                                    ('Packs/Integrations/dummyIntegration/README.md', False),
-                                                    ('Packs/NotExists/README.md', False)])
-    def test_is_file_readme(self, dummy_pack, path, expected_res):
-        assert expected_res == dummy_pack.is_raedme_file(path)
-
 
 class TestCopyAndUploadToStorage:
     """ Test class for copying and uploading a pack to storage.
@@ -2026,7 +1963,7 @@ class TestCopyAndUploadToStorage:
         }
 
         task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
-            dummy_prod_bucket, dummy_build_bucket, successful_packs_dict,
+            dummy_prod_bucket, dummy_build_bucket, successful_packs_dict, {},
             GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH
         )
         assert not task_status
@@ -2045,7 +1982,7 @@ class TestCopyAndUploadToStorage:
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, {},
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, {}, {},
                                                                           GCPConfig.CONTENT_PACKS_PATH,
                                                                           GCPConfig.BUILD_BASE_PATH)
         assert task_status
@@ -2069,6 +2006,34 @@ class TestCopyAndUploadToStorage:
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
         task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
             dummy_prod_bucket, dummy_build_bucket, {
+                "TestPack": {
+                    BucketUploadFlow.STATUS: "status1",
+                    BucketUploadFlow.AGGREGATED: "False",
+                    BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
+                }
+            }, {}, GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH
+        )
+        assert task_status
+        assert not skipped_pack
+
+    def test_copy_and_upload_to_storage_dependencies(self, mocker, dummy_pack):
+        """
+           Given:
+               - A pack that updated its dependencies file in the build bucket but not in the production bucket.
+           When:
+               - Copying the pack from the build bucket to the production bucket.
+           Then:
+               - Validate that the task succeeds and that the pack isn't skipped
+       """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+        blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
+        dummy_pack.latest_version = "2.0.0"
+        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
+        dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
+            dummy_prod_bucket, dummy_build_bucket, {}, {
                 "TestPack": {
                     BucketUploadFlow.STATUS: "status1",
                     BucketUploadFlow.AGGREGATED: "False",
@@ -2133,63 +2098,6 @@ class TestSetDependencies:
 
         return pack_metadata
 
-    def test_set_dependencies_new_dependencies(self):
-        """
-           Given:
-               - Pack with user dependencies
-               - New generated dependencies
-           When:
-               - Formatting metadata
-           Then:
-               - The dependencies in the metadata file should be merged with the generated ones
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-        generated_dependencies = {
-            'ImpossibleTraveler': {
-                'dependencies': {
-                    'HelloWorld': {
-                        'mandatory': False,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'HelloWorld',
-                        'certification': 'certified'
-                    },
-                    'ServiceNow': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'ServiceNow',
-                        'certification': 'certified'
-                    },
-                    'Ipstack': {
-                        'mandatory': False,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Ipstack',
-                        'certification': 'certified'
-                    },
-                    'Active_Directory_Query': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Active Directory Query v2',
-                        'certification': 'certified'
-                    }
-                }
-            }
-        }
-        generated_dependencies['ImpossibleTraveler']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
-        p = Pack('ImpossibleTraveler', 'dummy_path')
-        dependencies = json.dumps(metadata['dependencies'])
-        dependencies = json.loads(dependencies)
-        dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
-        p._user_metadata = metadata
-        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
-
-        assert p.user_metadata['dependencies'] == dependencies
-
     def test_set_dependencies_no_user_dependencies(self):
         """
            Given:
@@ -2245,25 +2153,6 @@ class TestSetDependencies:
         p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert p.user_metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
-
-    def test_set_dependencies_no_generated_dependencies(self):
-        """
-           Given:
-               - Pack with user dependencies
-               - No generated dependencies
-           When:
-               - Formatting metadata
-           Then:
-               - The dependencies in the metadata file should be the user ones
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-        dependencies = metadata['dependencies']
-        p = Pack('ImpossibleTraveler', 'dummy_path')
-        p._user_metadata = metadata
-        p.set_pack_dependencies({}, {})
-        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack(self):
         """
@@ -2350,53 +2239,6 @@ class TestSetDependencies:
             p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
-
-    def test_set_dependencies_core_pack_mandatory_dependency_override(self):
-        """
-           Given:
-               - Core pack with new dependencies
-               - Mandatory dependencies that are not core packs that were overridden in the user metadata
-           When:
-               - Formatting metadata
-           Then:
-               - Metadata should be formatted correctly
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-
-        generated_dependencies = {
-            'HelloWorld': {
-                'dependencies': {
-                    'CommonPlaybooks': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'ServiceNow',
-                        'certification': 'certified'
-                    },
-                    'Ipstack': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Ipstack',
-                        'certification': 'certified'
-                    }
-                }
-            }
-        }
-
-        generated_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
-        p = Pack('HelloWorld', 'dummy_path')
-        user_dependencies = metadata['dependencies']
-        dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
-        dependencies = json.loads(dependencies)
-        dependencies.update(user_dependencies)
-        p._user_metadata = metadata
-
-        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
-
-        assert p.user_metadata['dependencies'] == dependencies
 
 
 class TestReleaseNotes:
@@ -2900,6 +2742,10 @@ class TestStoreInCircleCIArtifacts:
         BucketUploadFlow.AGGREGATED: '[1.0.0, 1.0.1] => 1.0.1',
         BucketUploadFlow.LATEST_VERSION: '1.0.1'
     }
+    SUCCESSFUL_DEPENDENCIES_PACK_DICT = {
+        BucketUploadFlow.STATUS: PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name,
+        BucketUploadFlow.LATEST_VERSION: '1.0.1'
+    }
 
     @staticmethod
     def get_successful_packs():
@@ -2929,6 +2775,17 @@ class TestStoreInCircleCIArtifacts:
     def get_updated_private_packs():
         return ['TestPack5', 'TestPack6']
 
+    @staticmethod
+    def get_successful_dependencies_packs():
+        successful_dependencies = [
+            Pack(pack_name='TestPack7', pack_path='.'),
+            Pack(pack_name='TestPack8', pack_path='.'),
+        ]
+        for pack in successful_dependencies:
+            pack._status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
+            pack.latest_version = '1.0.1'
+        return successful_dependencies
+
     def test_store_successful_and_failed_packs_in_ci_artifacts_both(self, tmp_path):
         """
            Given:
@@ -2945,10 +2802,11 @@ class TestStoreInCircleCIArtifacts:
         successful_packs = self.get_successful_packs()
         failed_packs = self.get_failed_packs()
         updated_private_packs = self.get_updated_private_packs()
+        successful_uploaded_dependencies = list()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs,
-            updated_private_packs
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
+            successful_uploaded_dependencies, failed_packs, updated_private_packs
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
@@ -2981,7 +2839,7 @@ class TestStoreInCircleCIArtifacts:
         successful_packs = self.get_successful_packs()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, list(), list()
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, list(), list(), list()
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
@@ -3006,7 +2864,7 @@ class TestStoreInCircleCIArtifacts:
         failed_packs = self.get_failed_packs()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), failed_packs, list()
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), list(), failed_packs, list()
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
@@ -3031,7 +2889,7 @@ class TestStoreInCircleCIArtifacts:
         updated_private_packs = self.get_updated_private_packs()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), list(), updated_private_packs
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), list(), list(), updated_private_packs
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
@@ -3039,6 +2897,39 @@ class TestStoreInCircleCIArtifacts:
                 f'{BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS}': {
                     'TestPack5': {},
                     'TestPack6': {}
+                }
+            }
+        }
+
+    def test_store_successful_and_successful_dependencies_in_ci_artifacts(self, tmp_path):
+        """
+           Given:
+               - Successful packs list - TestPack1, TestPack2
+               - Successful dependencies packs list - TestPack7, TestPack8
+               - A path to the circle ci artifacts dir
+           When:
+               - Storing the packs results in the $ARTIFACTS_FOLDER/packs_results.json file
+           Then:
+               - Verify that the file content contains the successful packs TestPack1 & TestPack2.
+               - Verify that the file content contains the successful dependencies packs TestPack7 & TestPack8.
+       """
+        successful_packs = self.get_successful_packs()
+        successful_dependencies_packs = self.get_successful_dependencies_packs()
+        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
+        store_successful_and_failed_packs_in_ci_artifacts(
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
+            successful_dependencies_packs, list(), list()
+        )
+        packs_results_file = load_json(packs_results_file_path)
+        assert packs_results_file == {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
+                f'{BucketUploadFlow.SUCCESSFUL_PACKS}': {
+                    'TestPack1': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
+                    'TestPack2': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
+                },
+                f'{BucketUploadFlow.SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS}': {
+                    'TestPack7': TestStoreInCircleCIArtifacts.SUCCESSFUL_DEPENDENCIES_PACK_DICT,
+                    'TestPack8': TestStoreInCircleCIArtifacts.SUCCESSFUL_DEPENDENCIES_PACK_DICT
                 }
             }
         }
@@ -3066,10 +2957,11 @@ class TestGetSuccessfulAndFailedPacks:
         file = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
 
         # Case 1: assert file does not exist
-        successful, failed, private_packs, images = get_upload_data(
+        successful, successful_uploaded_dependencies, failed, private_packs, images = get_upload_data(
             file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
         )
         assert successful == {}
+        assert successful_uploaded_dependencies == {}
         assert failed == {}
         assert private_packs == {}
         assert images == {}
@@ -3077,10 +2969,11 @@ class TestGetSuccessfulAndFailedPacks:
         # Case 2: assert empty file
         with open(file, "w") as f:
             f.write('')
-        successful, failed, private_packs, images = get_upload_data(
+        successful, successful_uploaded_dependencies, failed, private_packs, images = get_upload_data(
             file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
         )
         assert successful == {}
+        assert successful_uploaded_dependencies == {}
         assert failed == {}
         assert private_packs == {}
         assert images == {}
@@ -3115,7 +3008,7 @@ class TestGetSuccessfulAndFailedPacks:
                     }
                 }
             }))
-        successful, failed, private_packs, images = get_upload_data(
+        successful, successful_uploaded_dependencies, failed, private_packs, images = get_upload_data(
             file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
         )
         assert successful == {"TestPack1": {

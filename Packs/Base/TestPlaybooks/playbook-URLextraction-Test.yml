@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7d58553c-af3a-46a3-86fc-18550a743376
+    taskid: 0bf25d8b-9488-4cfb-8dcf-dae5f0a1cded
     type: start
     task:
-      id: 7d58553c-af3a-46a3-86fc-18550a743376
+      id: 0bf25d8b-9488-4cfb-8dcf-dae5f0a1cded
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 0b1d7e00-29da-4d23-804c-05b7592e4b6e
+    taskid: 8e8a7766-da6d-432c-8780-17dd405baf43
     type: regular
     task:
-      id: 0b1d7e00-29da-4d23-804c-05b7592e4b6e
+      id: 8e8a7766-da6d-432c-8780-17dd405baf43
       version: -1
       name: Set valid URLs
       description: Sets a value into the context with the given context key
@@ -72,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7504e217-587f-4a23-8d0e-fb99de6a5723
+    taskid: afb63060-5959-4813-8cb6-24d8f2c6a2bc
     type: regular
     task:
-      id: 7504e217-587f-4a23-8d0e-fb99de6a5723
+      id: afb63060-5959-4813-8cb6-24d8f2c6a2bc
       version: -1
       name: Print valid URLs
       description: Prints text to war room (Markdown supported)
@@ -93,7 +93,6 @@ tasks:
       - "10"
       - "14"
       - "15"
-      - "16"
     scriptarguments:
       value:
         simple: ${valid_urls}
@@ -116,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 6b6ffd6c-5814-4825-80b3-66246e477793
+    taskid: e3155f24-44bd-44ee-80e0-797ea9d74a45
     type: condition
     task:
-      id: 6b6ffd6c-5814-4825-80b3-66246e477793
+      id: e3155f24-44bd-44ee-80e0-797ea9d74a45
       version: -1
       name: Check URL case
       type: condition
@@ -157,10 +156,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 82e06ed9-2854-4563-88a0-13361d4fe05f
+    taskid: c5185b66-195c-44d3-88f0-0c539eef628a
     type: regular
     task:
-      id: 82e06ed9-2854-4563-88a0-13361d4fe05f
+      id: c5185b66-195c-44d3-88f0-0c539eef628a
       version: -1
       name: Set invalid URLs
       description: Sets a value into the context with the given context key
@@ -194,10 +193,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: e628858e-2d27-4db7-8f42-5bbe6ff06b52
+    taskid: 37d4c822-62a7-488d-86ae-2e202be860a6
     type: regular
     task:
-      id: e628858e-2d27-4db7-8f42-5bbe6ff06b52
+      id: 37d4c822-62a7-488d-86ae-2e202be860a6
       version: -1
       name: Print invalid URLs
       description: Prints text to war room (Markdown supported)
@@ -233,10 +232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: d01a567d-1cbb-4911-806a-3ec825ae42e5
+    taskid: d5057c4c-e39f-4455-8782-4da74a01117a
     type: condition
     task:
-      id: d01a567d-1cbb-4911-806a-3ec825ae42e5
+      id: d5057c4c-e39f-4455-8782-4da74a01117a
       version: -1
       name: Check non extraction of invalid URLs - Numbers
       type: condition
@@ -274,10 +273,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 74d80b22-1758-4d59-8442-8975db8bef52
+    taskid: ff568217-5862-4da2-8be8-331c4a6435a8
     type: regular
     task:
-      id: 74d80b22-1758-4d59-8442-8975db8bef52
+      id: ff568217-5862-4da2-8be8-331c4a6435a8
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -306,10 +305,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: e66234b8-81a0-49ed-8de9-8da47bc09169
+    taskid: c4ff4dee-0de4-4714-8585-31b68cfdbf7e
     type: condition
     task:
-      id: e66234b8-81a0-49ed-8de9-8da47bc09169
+      id: c4ff4dee-0de4-4714-8585-31b68cfdbf7e
       version: -1
       name: Check URL with port
       type: condition
@@ -347,10 +346,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 92676c11-fd4d-48bd-80e9-5e2ffbd038bd
+    taskid: 683209f8-f9a8-4a78-83d8-d528f28418cf
     type: condition
     task:
-      id: 92676c11-fd4d-48bd-80e9-5e2ffbd038bd
+      id: 683209f8-f9a8-4a78-83d8-d528f28418cf
       version: -1
       name: URL with port and path
       type: condition
@@ -388,10 +387,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 1054c3b2-9e4f-4e88-8dd8-ba9c96e37e07
+    taskid: 93548cb0-040b-4810-8f14-e494ec92c841
     type: condition
     task:
-      id: 1054c3b2-9e4f-4e88-8dd8-ba9c96e37e07
+      id: 93548cb0-040b-4810-8f14-e494ec92c841
       version: -1
       name: Check URL with non ASCII
       type: condition
@@ -429,10 +428,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 514ec6e5-68fd-4a16-8392-20b2406ad9c2
+    taskid: 73a75fcc-4c8c-4b24-81a6-479622f1e4cc
     type: condition
     task:
-      id: 514ec6e5-68fd-4a16-8392-20b2406ad9c2
+      id: 73a75fcc-4c8c-4b24-81a6-479622f1e4cc
       version: -1
       name: Check URL with path
       type: condition
@@ -470,10 +469,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 86735273-4fc7-416c-8f3d-9930f49af923
+    taskid: d0802bb0-96b9-4b10-89ed-ae85cde45102
     type: condition
     task:
-      id: 86735273-4fc7-416c-8f3d-9930f49af923
+      id: d0802bb0-96b9-4b10-89ed-ae85cde45102
       version: -1
       name: IP as a URL
       type: condition
@@ -511,10 +510,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: ed48c3c4-aef9-48fd-8e39-051b7884e106
+    taskid: 517a280d-15e1-4b3a-84f3-8c026883092a
     type: condition
     task:
-      id: ed48c3c4-aef9-48fd-8e39-051b7884e106
+      id: 517a280d-15e1-4b3a-84f3-8c026883092a
       version: -1
       name: Check URL Query
       type: condition
@@ -552,10 +551,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: beeda4c1-084b-41e0-8496-c6b53bf0f6d2
+    taskid: f48805f8-3ecc-4276-82c1-e86244ed1c3a
     type: condition
     task:
-      id: beeda4c1-084b-41e0-8496-c6b53bf0f6d2
+      id: f48805f8-3ecc-4276-82c1-e86244ed1c3a
       version: -1
       name: Check URL fragment
       type: condition
@@ -591,205 +590,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: aa265836-09c8-4adf-84fd-d7de4481df99
-    type: condition
-    task:
-      id: aa265836-09c8-4adf-84fd-d7de4481df99
-      version: -1
-      name: Check auto-extract
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://öevil.tld/
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://öevil.tld:5000/
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://öevil.tld/anypath
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: www.evilö.tld/evil.aspx
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: https://www.evöl.tld/
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: https://www.evöl.tld/anypath
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: www.evil.tld:443/path/to/resource.html
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: https://www.evil.tld:443/path/to/resource.html
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: 1.2.3.4/path
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: google.com/path
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: ftp://foo.bar/resource
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: ftp://foo.bar/
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: www.ru.wikipedia.org/wiki/Елизавета_I
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: www.golang.org/pkg/regexp/syntax/
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://www.mock.com?gbdfs
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://www.mock.com?e=P6wGLG
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://test.com#fragment3
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://test.com#fragment3/
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://_23_11.redacted.com./#redactedredactedredacted
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: https://Test.com/this-that
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 3490,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 44ff2572-54ca-4515-8b7c-b31bb3498622
+    taskid: e4ecb1b3-d026-4ecd-88b6-76f5a95f6e4f
     type: condition
     task:
-      id: 44ff2572-54ca-4515-8b7c-b31bb3498622
+      id: e4ecb1b3-d026-4ecd-88b6-76f5a95f6e4f
       version: -1
       name: Check non extraction of invalid URLs - invalid path
       type: condition
@@ -827,10 +633,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 75196521-1dea-43f5-842c-4c88e63671e8
+    taskid: 268a4639-c147-45c6-83e9-4bf749692ae8
     type: condition
     task:
-      id: 75196521-1dea-43f5-842c-4c88e63671e8
+      id: 268a4639-c147-45c6-83e9-4bf749692ae8
       version: -1
       name: Check non extraction of invalid URLs - space in sub domain
       type: condition
@@ -868,10 +674,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: f7950349-a9d1-4d3f-8b5c-c0802359a9ea
+    taskid: ebaf78fa-016f-4245-8f6d-6e67084aa7ce
     type: condition
     task:
-      id: f7950349-a9d1-4d3f-8b5c-c0802359a9ea
+      id: ebaf78fa-016f-4245-8f6d-6e67084aa7ce
       version: -1
       name: Check non extraction of invalid URLs - invalid subdomain
       type: condition
@@ -909,10 +715,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: e3162182-3c3a-4a07-89cd-5577b9d7fe3a
+    taskid: 476e05e6-a4d3-4089-855a-45a47cd625af
     type: regular
     task:
-      id: e3162182-3c3a-4a07-89cd-5577b9d7fe3a
+      id: 476e05e6-a4d3-4089-855a-45a47cd625af
       version: -1
       name: DeleteContext
       description: |-
@@ -920,7 +726,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -953,7 +759,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1465,
-        "width": 3820,
+        "width": 3390,
         "x": 50,
         "y": 50
       }

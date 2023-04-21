@@ -2,6 +2,6 @@ fromversion: 6.10.0
 id: jamf_modeling_rule
 name: Jamf Modeling Rule
 rules: ''
-schema: ''
-tags: jamf
+tags:
+ - jamf
 samples: ''

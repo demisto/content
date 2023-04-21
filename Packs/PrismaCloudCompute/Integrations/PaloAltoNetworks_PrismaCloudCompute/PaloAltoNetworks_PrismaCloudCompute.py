@@ -1,3 +1,4 @@
+import urllib.parse
 from collections import defaultdict
 
 
@@ -10,7 +11,7 @@ import ipaddress
 import dateparser
 import tempfile
 from typing import Tuple
-
+import urllib
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -298,6 +299,138 @@ class PrismaCloudComputeClient(BaseClient):
             params=params
         )
 
+    def get_waas_policies(self) -> dict:
+        """
+        Get the current WAAS policy
+
+        Returns:
+            dict: the current policy.
+        """
+        return self._http_request(
+            method="GET", url_suffix="policies/firewall/app/container"
+        )
+
+    def update_waas_policies(self, policy: dict) -> dict:
+        """
+        Update the waas policy.
+
+        Args:
+            policy (dict): the previous waas policy.
+
+        Returns:
+            dict: the updated policy.
+        """
+        return self._http_request(
+            method="PUT", url_suffix="policies/firewall/app/container", json_data=policy, resp_type="response", ok_codes=(200),
+            error_handler=lambda res: f"Error: {res.status_code} - {res.text}"
+        )
+
+    def get_firewall_audit_container_alerts(self, image_name: str, from_time: str, to_time: str, limit: int, audit_type: str):
+        """
+        Get the container audit alerts for a specific image.
+
+        Args:
+            image_name (str): The container image name.
+            from_time (str): The start time of the query for alerts.
+            to_time (str): The end time to query alerts.
+            limit (num): the limit of alerts returned.
+            audit_type (str): the alert audit type.
+
+        Returns:
+            dict: the container alerts.
+        """
+        params = {
+            "type": audit_type,
+            "imageName": image_name,
+            "from": from_time,
+            "to": to_time,
+            "limit": limit
+        }
+        return self._http_request(
+            method="GET", url_suffix="audits/firewall/app/container", params=params
+        )
+
+    def get_alert_profiles_request(self, project):
+        """
+        Get the alert profiles.
+
+        Args:
+            project (str): The project name
+
+        Returns:
+            dict: the alert profiles
+        """
+        params = assign_params(project=project)
+        headers = self._headers
+
+        return self._http_request('get', 'alert-profiles', headers=headers, params=params)
+
+    def get_settings_defender_request(self, hostname):
+        """
+        Get the defender settings.
+
+        Returns:
+            dict: the defender settings
+        """
+        headers = self._headers
+        params = assign_params(hostname=hostname)
+
+        return self._http_request('get', 'settings/defender', headers=headers, params=params)
+
+    def get_logs_defender_request(self, hostname, lines):
+        """
+        Get the defender logs.
+
+        Returns:
+            list: the defender logs
+        """
+        params = assign_params(hostname=hostname, lines=lines)
+        headers = self._headers
+
+        return self._http_request('get', 'logs/defender', params=params, headers=headers)
+
+    def get_backups_request(self, project):
+        """
+        Get the defender backups.
+
+        Args:
+            project (str): The project name
+
+        Returns:
+            list: the defender backups
+        """
+        params = assign_params(project=project)
+        headers = self._headers
+
+        return self._http_request('get', 'backups', headers=headers, params=params)
+
+    def get_logs_defender_download_request(self, hostname, lines):
+        """
+        Download all logs for a certain defender
+
+        Args:
+            hostname (str): The hostname to get the logs for
+            lines (int): The number of logs to return
+
+        Returns:
+            list: the logs to download
+        """
+        params = assign_params(hostname=hostname, lines=lines)
+
+        headers = self._headers
+        return self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type="content")
+
+
+def format_context(context):
+    """
+    Format the context keys
+    """
+    if context and isinstance(context, dict):
+        context = {pascalToSpace(key).replace(" ", ""): format_context(value) for key, value in context.items()}
+    elif context and isinstance(context, list):
+        context = [format_context(item) for item in context]
+    return context
+
 
 def str_to_bool(s):
     """
@@ -386,6 +519,25 @@ def test_module(client):
     return 'ok'
 
 
+def is_command_is_fetch():
+    """
+    Rules wether the executed command is fetch_incidents or classifier
+    - If Last Run is set, then it's a fetch_incident command.
+    Otherwise, the results are dependent on the fetched_incidents_list section in integration context:
+    If it's empty, then it means that fetch_incidents already ran once and therefore it must be a classifier.
+
+    :return: True if this is a fetch_incidents command, otherwise return false.
+    :rtype: ``bool``
+    """
+    if demisto.getLastRun():
+        return True
+    else:
+        if demisto.getIntegrationContext().get('fetched_incidents_list', []):
+            return False
+        else:
+            return True
+
+
 def fetch_incidents(client):
     """
     Fetches new alerts from Prisma Cloud Compute and returns them as a list of Demisto incidents
@@ -398,60 +550,68 @@ def fetch_incidents(client):
         list of incidents
     """
     incidents = []
-    alerts = client.list_incidents()
+    if is_command_is_fetch():
+        alerts = client.list_incidents()
 
-    if alerts:
-        for a in alerts:
-            alert_type = a.get('kind')
-            name = ALERT_TITLE
-            severity = 0
+        if alerts:
+            for a in alerts:
+                alert_type = a.get('kind')
+                name = ALERT_TITLE
+                severity = 0
 
-            # fix the audit category from camel case to display properly
-            if alert_type == ALERT_TYPE_AUDIT:
-                a['category'] = camel_case_transformer(a.get('category'))
+                # fix the audit category from camel case to display properly
+                if alert_type == ALERT_TYPE_AUDIT:
+                    a['category'] = camel_case_transformer(a.get('category'))
 
-            # always save the raw JSON data under this argument (used in scripts)
-            a['rawJSONAlert'] = json.dumps(a)
+                # always save the raw JSON data under this argument (used in scripts)
+                a['rawJSONAlert'] = json.dumps(a)
 
-            # parse any list into a markdown table, since tableToMarkdown takes the headers from the first object in
-            # the list check headers manually since some entries might have omit empty fields
-            tables = {}
-            for key, value in a.items():
-                # check only if we got a non empty list of dict
-                if isinstance(value, list) and value and isinstance(value[0], dict):
-                    tables[key + 'MarkdownTable'] = tableToMarkdown(camel_case_transformer(key + ' table'),
-                                                                    value,
-                                                                    headers=get_headers(key, value),
-                                                                    headerTransform=camel_case_transformer,
-                                                                    removeNull=True)
+                # parse any list into a markdown table, since tableToMarkdown takes the headers from the first object in
+                # the list check headers manually since some entries might have omit empty fields
+                tables = {}
+                for key, value in a.items():
+                    # check only if we got a non empty list of dict
+                    if isinstance(value, list) and value and isinstance(value[0], dict):
+                        tables[key + 'MarkdownTable'] = tableToMarkdown(camel_case_transformer(key + ' table'),
+                                                                        value,
+                                                                        headers=get_headers(key, value),
+                                                                        headerTransform=camel_case_transformer,
+                                                                        removeNull=True)
 
-            a.update(tables)
+                a.update(tables)
 
-            if alert_type == ALERT_TYPE_VULNERABILITY:
-                # E.g. "Prisma Cloud Compute Alert - imageName Vulnerabilities"
-                name += a.get('imageName') + ' Vulnerabilities'
-                # Set the severity to the highest vulnerability, take the first from the list
-                severity = translate_severity(a.get('vulnerabilities')[0].get('severity'))
+                if alert_type == ALERT_TYPE_VULNERABILITY:
+                    # E.g. "Prisma Cloud Compute Alert - imageName Vulnerabilities"
+                    name += a.get('imageName') + ' Vulnerabilities'
+                    # Set the severity to the highest vulnerability, take the first from the list
+                    severity = translate_severity(a.get('vulnerabilities')[0].get('severity'))
 
-            elif alert_type == ALERT_TYPE_COMPLIANCE or alert_type == ALERT_TYPE_AUDIT:
-                # E.g. "Prisma Cloud Compute Alert - Incident"
-                name += camel_case_transformer(a.get('type'))
-                # E.g. "Prisma Cloud Compute Alert - Image Compliance" \ "Prisma Compute Alert - Host Runtime Audit"
-                if a.get('type') != "incident":
-                    name += ' ' + camel_case_transformer(alert_type)
+                elif alert_type == ALERT_TYPE_COMPLIANCE or alert_type == ALERT_TYPE_AUDIT:
+                    # E.g. "Prisma Cloud Compute Alert - Incident"
+                    name += camel_case_transformer(a.get('type'))
+                    # E.g. "Prisma Cloud Compute Alert - Image Compliance" \ "Prisma Compute Alert - Host Runtime Audit"
+                    if a.get('type') != "incident":
+                        name += ' ' + camel_case_transformer(alert_type)
 
-            else:
-                # E.g. "Prisma Cloud Compute Alert - Cloud Discovery"
-                name += camel_case_transformer(alert_type)
+                else:
+                    # E.g. "Prisma Cloud Compute Alert - Cloud Discovery"
+                    name += camel_case_transformer(alert_type)
 
-            incidents.append({
-                'name': name,
-                'occurred': a.get('time'),
-                'severity': severity,
-                'rawJSON': json.dumps(a)
-            })
+                incidents.append({
+                    'name': name,
+                    'occurred': a.get('time'),
+                    'severity': severity,
+                    'rawJSON': json.dumps(a)
+                })
+        demisto.setLastRun({"id": "a"})
+        ctx = demisto.getIntegrationContext()
+        incidents_to_update = incidents or ctx.get('fetched_incidents_list')
+        ctx.update({'fetched_incidents_list': incidents_to_update})
+        demisto.setIntegrationContext(ctx)
+        return incidents
 
-    return incidents
+    else:
+        return demisto.getIntegrationContext().get('fetched_incidents_list', [])
 
 
 def parse_limit_and_offset_values(limit: str, offset: str = "0") -> Tuple[int, int]:
@@ -1573,6 +1733,223 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
     )
 
 
+def get_waas_policies(client: PrismaCloudComputeClient, args: dict) -> List[CommandResults]:
+    """
+    Get the WAAS policies.
+    Implement the command 'prisma-cloud-compute-get-waas-policies'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-waas-policies command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    policies = client.get_waas_policies()
+    entry = []
+    for rule in policies.get("rules") or {}:
+        for spec in rule.get("applicationsSpec") or {}:
+            formatted_waas_policy = {
+                "SQLInjection": spec.get("sqli").get("effect"),
+                "CrossSiteScriptingXSS": spec.get("xss").get("effect"),
+                "OSCommandInjetion": spec.get("cmdi").get("effect"),
+                "CodeInjection": spec.get("codeInjection").get("effect"),
+                "LocalFileInclusion": spec.get("lfi").get("effect"),
+                "AttackToolsAndVulnScanners": spec.get("attackTools").get("effect"),
+                "Shellshock": spec.get("shellshock").get("effect"),
+                "MalformedHTTPRequest": spec.get("malformedReq").get("effect"),
+                "ATP": spec.get("networkControls").get("advancedProtectionEffect"),
+                "DetectInformationLeakage": spec.get("intelGathering").get("infoLeakageEffect")
+            }
+            data = {
+                "Name": rule.get("name"),
+                "WaasPolicy": formatted_waas_policy
+            }
+
+            entry.append(CommandResults(
+                outputs_prefix="PrismaCloudCompute.Policies",
+                outputs_key_field="Name",
+                outputs=data,
+                readable_output=tableToMarkdown(data["Name"], data["WaasPolicy"]),
+                raw_response=policies
+            ))
+
+    return entry
+
+
+def update_waas_policies(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Update the WAAS policy.
+    Implement the command 'prisma-cloud-compute-update-waas-policies'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-update-waas-policies command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    # waas_settings = ["sqli", "xss", "attackTools", "shellshock", "malformedReq", "cmdi", "lfi", "codeInjection"]
+
+    policy = args.get("policy", {})
+
+    for index, rule in enumerate(policy.get("rules")):
+        if rule["name"] != args.get("rule_name"):
+            continue
+        for spec in policy.get("rules")[index].get("applicationsSpec"):
+            spec[args.get("attack_type")] = {"effect": args.get("action")}
+
+    client.update_waas_policies(policy)
+    txt = "Successfully updated the WaaS policy"
+
+    return CommandResults(
+        readable_output=txt
+    )
+
+
+def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Get the firewall container alerts.
+    Implement the command 'prisma-cloud-compute-get-audit-firewall-container-alerts'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-audit-firewall-container-alerts command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    now = datetime.now()
+    from_day = arg_to_number(args.get("FromDays", 2))
+    from_time = now - timedelta(days=from_day)      # type: ignore
+    image_name = urllib.parse.quote(args.get("ImageName"), safe='')     # type: ignore
+    audit_type = args.get("audit_type")
+    limit = arg_to_number(args.get("limit", 25))
+    data = client.get_firewall_audit_container_alerts(
+        image_name=image_name, from_time=f"{from_time.isoformat()}Z", to_time=f"{now.isoformat()}Z",
+        limit=limit, audit_type=audit_type)  # type: ignore
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.Audits",
+        outputs_key_field="_id",
+        outputs=data,
+        readable_output=tableToMarkdown("Audits", data),
+        raw_response=data
+    )
+
+
+def get_alert_profiles_command(client: PrismaCloudComputeClient, args: dict):
+    """
+    Get the alert profiles.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-alert-profiles command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    project = args.get("project")
+    response = client.get_alert_profiles_request(project)
+    policies = []
+    for res in response:
+        policies.append(res.get("policy"))
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.AlertProfiles',
+        outputs_key_field='_Id',
+        outputs=format_context(response),
+        readable_output=tableToMarkdown("Alert Profiles", policies),
+        raw_response=response
+    )
+
+
+def get_settings_defender_command(client: PrismaCloudComputeClient, args: dict):
+    """
+    Get the defender settings.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-settings-defender command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    hostname = args.get("hostname")
+    response = client.get_settings_defender_request(hostname)
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.DefenderSettings',
+        outputs=format_context(response),
+        raw_response=response
+    )
+
+
+def get_logs_defender_command(client: PrismaCloudComputeClient, args: dict):
+    """
+    Get the defender logs.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-logs-defender command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    hostname = args.get('hostname', '')
+    lines = args.get('lines')
+
+    response = client.get_logs_defender_request(hostname, lines) or []
+    entry = {
+        "Hostname": hostname,
+        "Logs": response
+    }
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.Defenders',
+        outputs=format_context(entry),
+        outputs_key_field='Hostname',
+        raw_response=response,
+        readable_output=tableToMarkdown("Logs", entry.get("Logs"))
+    )
+
+
+def get_backups_command(client: PrismaCloudComputeClient, args: dict):
+    """
+    Get the defender backups.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-backups command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    project = args.get("project")
+    response = client.get_backups_request(project) or []
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.Backups',
+        outputs_key_field='Id',
+        outputs=format_context(response),
+        raw_response=response
+    )
+
+
+def get_logs_defender_download_command(client: PrismaCloudComputeClient, args: dict):
+    """
+    Get the defender logs download bundle.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-logs-defender-download command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    hostname = args.get('hostname')
+    lines = args.get('lines')
+
+    response = client.get_logs_defender_download_request(hostname, lines)
+    return fileResult(f"{hostname}-logs.tar.gz", response, entryTypes["entryInfoFile"])
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1670,6 +2047,22 @@ def main():
             return_results(results=get_hosts_scan_list(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-vulnerabilities-impacted-resources-list':
             return_results(results=get_impacted_resources(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-get-waas-policies':
+            return_results(results=get_waas_policies(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-update-waas-policies':
+            return_results(update_waas_policies(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-get-audit-firewall-container-alerts':
+            return_results(results=get_audit_firewall_container_alerts(client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-get-alert-profiles":
+            return_results(results=get_alert_profiles_command(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-get-settings-defender":
+            return_results(results=get_settings_defender_command(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-logs-defender":
+            return_results(results=get_logs_defender_command(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-get-backups":
+            return_results(results=get_backups_command(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-logs-defender-download":
+            return_results(results=get_logs_defender_download_command(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

@@ -1,4 +1,5 @@
 Returns indicators that appear under resolved incidents, and resolved incident IDs.
+
 ## Script Data
 ---
 

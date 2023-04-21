@@ -41,6 +41,11 @@ args:
 - name: max_symbols
   description: Maximum number of symbols to include in password. Used with the GeneratePassword script.
   defaultValue: "10"
+- name: ZipProtectWithPassword
+  description: The password to protect the zip file that contains the generated password. if not provided, the generated password will be send in the body of the email.
+  defaultValue: ""
+- name: email_body
+  description: The body of the email that will be sent to the user.
 comment: |-
   Generates password,
   Set an AD user account with this password.
@@ -73,7 +78,7 @@ tags:
 - active directory
 - Utility
 type: python
-dockerimage: demisto/python3:3.10.9.40422
+dockerimage: demisto/py3-tools:1.0.0.49929
 runas: DBotWeakRole
 runonce: false
 tests:

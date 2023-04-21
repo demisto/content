@@ -1,0 +1,291 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        }
+    },
+    "data": {
+        "name": "data_name",
+        "description": "data_description",
+        "guid": "data_guid",
+        "source": "data_source",
+        "creator": "data_creator",
+        "created_at": "data_created_at",
+        "computers_count": "data_computers_count",
+        "descendant_computers_count": "data_descendant_computers_count",
+        "policies": [
+            {
+                "name": "data_policies[0]_name",
+                "description": "data_policies[0]_description",
+                "guid": "data_policies[0]_guid",
+                "product": "data_policies[0]_product",
+                "default": "data_policies[0]_default",
+                "serial_number": "data_policies[0]_serial_number",
+                "links": {
+                    "policy_xml": "data_policies[0]_links_policy_xml",
+                    "policy": "data_policies[0]_links_policy"
+                },
+                "file_lists": [
+                    {
+                        "name": "data_policies[0]_file_lists[0]_name",
+                        "guid": "data_policies[0]_file_lists[0]_guid",
+                        "type": "data_policies[0]_file_lists[0]_type"
+                    },
+                    {
+                        "name": "data_policies[0]_file_lists[1]_name",
+                        "guid": "data_policies[0]_file_lists[1]_guid",
+                        "type": "data_policies[0]_file_lists[1]_type"
+                    },
+                    {
+                        "name": "data_policies[0]_file_lists[2]_name",
+                        "guid": "data_policies[0]_file_lists[2]_guid",
+                        "type": "data_policies[0]_file_lists[2]_type"
+                    }
+                ],
+                "ip_lists": [],
+                "isolation_ip_lists": [],
+                "exclusion_sets": [
+                    {
+                        "name": "data_policies[0]_exclusion_sets[0]_name",
+                        "guid": "data_policies[0]_exclusion_sets[0]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[1]_name",
+                        "guid": "data_policies[0]_exclusion_sets[1]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[2]_name",
+                        "guid": "data_policies[0]_exclusion_sets[2]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[3]_name",
+                        "guid": "data_policies[0]_exclusion_sets[3]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[4]_name",
+                        "guid": "data_policies[0]_exclusion_sets[4]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[5]_name",
+                        "guid": "data_policies[0]_exclusion_sets[5]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[6]_name",
+                        "guid": "data_policies[0]_exclusion_sets[6]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[7]_name",
+                        "guid": "data_policies[0]_exclusion_sets[7]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[8]_name",
+                        "guid": "data_policies[0]_exclusion_sets[8]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[9]_name",
+                        "guid": "data_policies[0]_exclusion_sets[9]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[10]_name",
+                        "guid": "data_policies[0]_exclusion_sets[10]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[11]_name",
+                        "guid": "data_policies[0]_exclusion_sets[11]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[12]_name",
+                        "guid": "data_policies[0]_exclusion_sets[12]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[13]_name",
+                        "guid": "data_policies[0]_exclusion_sets[13]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[14]_name",
+                        "guid": "data_policies[0]_exclusion_sets[14]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[15]_name",
+                        "guid": "data_policies[0]_exclusion_sets[15]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[16]_name",
+                        "guid": "data_policies[0]_exclusion_sets[16]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[17]_name",
+                        "guid": "data_policies[0]_exclusion_sets[17]_guid"
+                    },
+                    {
+                        "name": "data_policies[0]_exclusion_sets[18]_name",
+                        "guid": "data_policies[0]_exclusion_sets[18]_guid"
+                    }
+                ],
+                "used_in_groups": [
+                    {
+                        "name": "data_policies[0]_used_in_groups[0]_name",
+                        "description": "data_policies[0]_used_in_groups[0]_description",
+                        "guid": "data_policies[0]_used_in_groups[0]_guid"
+                    }
+                ],
+                "inherited": "data_policies[0]_inherited"
+            },
+            {
+                "name": "data_policies[1]_name",
+                "description": "data_policies[1]_description",
+                "guid": "data_policies[1]_guid",
+                "product": "data_policies[1]_product",
+                "default": "data_policies[1]_default",
+                "serial_number": "data_policies[1]_serial_number",
+                "links": {
+                    "policy_xml": "data_policies[1]_links_policy_xml",
+                    "policy": "data_policies[1]_links_policy"
+                },
+                "file_lists": [],
+                "ip_lists": [],
+                "isolation_ip_lists": [],
+                "used_in_groups": [
+                    {
+                        "name": "data_policies[1]_used_in_groups[0]_name",
+                        "description": "data_policies[1]_used_in_groups[0]_description",
+                        "guid": "data_policies[1]_used_in_groups[0]_guid"
+                    }
+                ],
+                "inherited": "data_policies[1]_inherited"
+            },
+            {
+                "name": "data_policies[2]_name",
+                "description": "data_policies[2]_description",
+                "guid": "data_policies[2]_guid",
+                "product": "data_policies[2]_product",
+                "default": "data_policies[2]_default",
+                "serial_number": "data_policies[2]_serial_number",
+                "links": {
+                    "policy_xml": "data_policies[2]_links_policy_xml",
+                    "policy": "data_policies[2]_links_policy"
+                },
+                "file_lists": [
+                    {
+                        "name": "data_policies[2]_file_lists[0]_name",
+                        "guid": "data_policies[2]_file_lists[0]_guid",
+                        "type": "data_policies[2]_file_lists[0]_type"
+                    },
+                    {
+                        "name": "data_policies[2]_file_lists[1]_name",
+                        "guid": "data_policies[2]_file_lists[1]_guid",
+                        "type": "data_policies[2]_file_lists[1]_type"
+                    },
+                    {
+                        "name": "data_policies[2]_file_lists[2]_name",
+                        "guid": "data_policies[2]_file_lists[2]_guid",
+                        "type": "data_policies[2]_file_lists[2]_type"
+                    }
+                ],
+                "ip_lists": [],
+                "isolation_ip_lists": [],
+                "exclusion_sets": [
+                    {
+                        "name": "data_policies[2]_exclusion_sets[0]_name",
+                        "guid": "data_policies[2]_exclusion_sets[0]_guid"
+                    },
+                    {
+                        "name": "data_policies[2]_exclusion_sets[1]_name",
+                        "guid": "data_policies[2]_exclusion_sets[1]_guid"
+                    },
+                    {
+                        "name": "data_policies[2]_exclusion_sets[2]_name",
+                        "guid": "data_policies[2]_exclusion_sets[2]_guid"
+                    },
+                    {
+                        "name": "data_policies[2]_exclusion_sets[3]_name",
+                        "guid": "data_policies[2]_exclusion_sets[3]_guid"
+                    },
+                    {
+                        "name": "data_policies[2]_exclusion_sets[4]_name",
+                        "guid": "data_policies[2]_exclusion_sets[4]_guid"
+                    },
+                    {
+                        "name": "data_policies[2]_exclusion_sets[5]_name",
+                        "guid": "data_policies[2]_exclusion_sets[5]_guid"
+                    },
+                    {
+                        "name": "data_policies[2]_exclusion_sets[6]_name",
+                        "guid": "data_policies[2]_exclusion_sets[6]_guid"
+                    }
+                ],
+                "used_in_groups": [
+                    {
+                        "name": "data_policies[2]_used_in_groups[0]_name",
+                        "description": "data_policies[2]_used_in_groups[0]_description",
+                        "guid": "data_policies[2]_used_in_groups[0]_guid"
+                    }
+                ],
+                "inherited": "data_policies[2]_inherited"
+            },
+            {
+                "name": "data_policies[3]_name",
+                "description": "data_policies[3]_description",
+                "guid": "data_policies[3]_guid",
+                "product": "data_policies[3]_product",
+                "default": "data_policies[3]_default",
+                "serial_number": "data_policies[3]_serial_number",
+                "links": {
+                    "policy_xml": "data_policies[3]_links_policy_xml",
+                    "policy": "data_policies[3]_links_policy"
+                },
+                "file_lists": [
+                    {
+                        "name": "data_policies[3]_file_lists[0]_name",
+                        "guid": "data_policies[3]_file_lists[0]_guid",
+                        "type": "data_policies[3]_file_lists[0]_type"
+                    },
+                    {
+                        "name": "data_policies[3]_file_lists[1]_name",
+                        "guid": "data_policies[3]_file_lists[1]_guid",
+                        "type": "data_policies[3]_file_lists[1]_type"
+                    },
+                    {
+                        "name": "data_policies[3]_file_lists[2]_name",
+                        "guid": "data_policies[3]_file_lists[2]_guid",
+                        "type": "data_policies[3]_file_lists[2]_type"
+                    }
+                ],
+                "ip_lists": [],
+                "isolation_ip_lists": [],
+                "used_in_groups": [
+                    {
+                        "name": "data_policies[3]_used_in_groups[0]_name",
+                        "description": "data_policies[3]_used_in_groups[0]_description",
+                        "guid": "data_policies[3]_used_in_groups[0]_guid"
+                    }
+                ],
+                "inherited": "data_policies[3]_inherited"
+            },
+            {
+                "name": "data_policies[4]_name",
+                "description": "data_policies[4]_description",
+                "guid": "data_policies[4]_guid",
+                "product": "data_policies[4]_product",
+                "default": "data_policies[4]_default",
+                "serial_number": "data_policies[4]_serial_number",
+                "links": {
+                    "policy_xml": "data_policies[4]_links_policy_xml",
+                    "policy": "data_policies[4]_links_policy"
+                },
+                "file_lists": [],
+                "ip_lists": [],
+                "isolation_ip_lists": [],
+                "used_in_groups": [
+                    {
+                        "name": "data_policies[4]_used_in_groups[0]_name",
+                        "description": "data_policies[4]_used_in_groups[0]_description",
+                        "guid": "data_policies[4]_used_in_groups[0]_guid"
+                    }
+                ],
+                "inherited": "data_policies[4]_inherited"
+            }
+        ]
+    }
+}

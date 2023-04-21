@@ -1,0 +1,15 @@
+{
+    "defaultIncidentType": "Microsoft Sentinel Incident",
+    "description": "",
+    "feed": false,
+    "id": "Microsoft Sentinel - Classifier",
+    "keyTypeMap": {},
+    "name": "Microsoft Sentinel - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {},
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

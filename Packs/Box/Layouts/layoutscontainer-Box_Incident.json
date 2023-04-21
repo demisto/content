@@ -422,5 +422,6 @@
 	"group": "incident",
 	"id": "Box Incident",
 	"name": "Box Incident",
-	"version": -1
+	"version": -1,
+ "marketplaces": ["xsoar"]
 }

@@ -795,5 +795,6 @@
     "name": "Qualys FIM Layout",
     "system": false,
     "version": -1,
-    "description": ""
+    "description": "",
+    "marketplaces": ["xsoar"]
 }

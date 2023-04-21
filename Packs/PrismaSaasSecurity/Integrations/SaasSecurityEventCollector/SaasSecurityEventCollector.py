@@ -1,6 +1,5 @@
 import demistomock as demisto
 import urllib3
-import time
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from typing import Dict, Tuple
@@ -10,10 +9,13 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-MAX_EVENTS_PER_REQUEST = 100
 VENDOR = 'paloaltonetworks'
 PRODUCT = 'saassecurity'
 
+MAX_ITERATIONS = 50
+MAX_EVENTS_PER_REQUEST = 1000
+MAX_LIMIT = 5000
+DEFAULT_LIMIT = 1000
 
 ''' CLIENT CLASS '''
 
@@ -101,7 +103,7 @@ class Client(BaseClient):
         token_response = self._http_request('POST', url_suffix='/oauth/token', params=params, headers=headers)
         return token_response.get('access_token'), token_response.get('expires_in')
 
-    def get_events_request(self):
+    def get_events_request(self, size: int = MAX_EVENTS_PER_REQUEST):
         """
         Get up to 100 event logs.
         """
@@ -110,6 +112,7 @@ class Client(BaseClient):
             url_suffix='/api/v1/log_events_bulk',
             resp_type='response',
             ok_codes=[200, 204],
+            params={"size": size}
         )
 
 
@@ -132,17 +135,30 @@ def is_token_expired(token_initiate_time: float, token_expiration_seconds: float
     return time.time() - token_initiate_time >= token_expiration_seconds - 60
 
 
-def validate_limit(limit: Optional[int]):
+def get_max_fetch(limit: Optional[int]) -> int:
     """
-    Validate that the limit/max fetch is a number divisible by the MAX_EVENTS_PER_REQUEST (100) and that it is not
-    a negative number.
+    Validate and get the max fetch accodring to the following rules:
+
+    1. if limit is negative raise an exception
+    2. if limit is less than 10, limit will be equal to 10
+    3. if limit is not dividable by 10, make sure it gets rounded down to a number that is dividable by 10.
+    4. if limit > MAX_LIMIT (5000) - make sure it will always be MAX_LIMIT (5000).
+    5. if limit is not provided, set it up for the default limit which is 1000.
     """
     if limit:
-        if limit % MAX_EVENTS_PER_REQUEST != 0:
-            raise DemistoException(f'fetch limit parameter should be divisible by {MAX_EVENTS_PER_REQUEST}')
-
         if limit <= 0:
             raise DemistoException('fetch limit parameter cannot be negative number or zero')
+        if limit < 10:
+            limit = 10
+        if limit > MAX_LIMIT:  # do not allow limit of more than 5000 to avoid timeouts
+            limit = MAX_LIMIT
+        if limit % 10 != 0:  # max limit must be a multiplier of 10 (SaaS api limit)
+            # round down the limit
+            limit = int(limit // 10) * 10
+    else:
+        limit = DEFAULT_LIMIT
+
+    return limit
 
 
 ''' COMMAND FUNCTIONS '''
@@ -158,14 +174,21 @@ def test_module(client: Client):
 
 
 def get_events_command(
-    client: Client, args: Dict, max_fetch: Optional[int], vendor=VENDOR, product=PRODUCT
+    client: Client,
+    args: Dict,
+    max_fetch: Optional[int],
+    vendor: str = VENDOR,
+    product: str = PRODUCT,
+    max_iterations: int = MAX_ITERATIONS
 ) -> Union[str, CommandResults]:
     """
     Fetches events from the saas-security queue and return them to the war-room.
     in case should_push_events is set to True, they will be also sent to XSIAM.
     """
     should_push_events = argToBoolean(args.get('should_push_events'))
-    events, exception = fetch_events_from_saas_security(client=client, max_fetch=max_fetch)
+    events, exception = fetch_events_from_saas_security(
+        client=client, max_fetch=max_fetch, max_iterations=max_iterations
+    )
     if exception:
         raise exception
 
@@ -192,7 +215,9 @@ def get_events_command(
     return 'No events were found.'
 
 
-def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = None) -> Tuple[List[Dict], Exception | None]:
+def fetch_events_from_saas_security(
+    client: Client, max_fetch: Optional[int] = None, max_iterations: int = MAX_ITERATIONS
+) -> Tuple[List[Dict], Exception | None]:
     """
     Fetches events from the saas-security queue.
 
@@ -206,7 +231,8 @@ def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = N
 
     #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
     try:
-        while under_max_fetch:
+        iteration_num = 0  # this is done in order to prevent timeouts
+        while under_max_fetch and iteration_num < max_iterations:
             response = client.get_events_request()
             if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
                 break
@@ -216,6 +242,7 @@ def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = N
             events.extend(fetched_events)
             if max_fetch:
                 under_max_fetch = len(events) < max_fetch
+            iteration_num += 1
     except Exception as exc:
         demisto.info(f'Got error get_events: {exc}')
         return events, exc
@@ -231,8 +258,9 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     args = demisto.args()
-    max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch'))
-    validate_limit(max_fetch)
+
+    max_fetch = get_max_fetch(arg_to_number(args.get('limit') or params.get('max_fetch')))
+    max_iterations = arg_to_number(params.get('max_iterations')) or MAX_ITERATIONS
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -247,13 +275,17 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'fetch-events':
-            last_run = demisto.getLastRun()
-            if not last_run.get('events'):
-                events, exception = fetch_events_from_saas_security(client=client, max_fetch=max_fetch)
+            integration_context = demisto.getIntegrationContext()
+            demisto.info(f'{integration_context=}')
+            if not integration_context.get('events'):
+                events, exception = fetch_events_from_saas_security(
+                    client=client, max_fetch=max_fetch, max_iterations=max_iterations
+                )
                 if len(events) == 0 and exception:
-                    raise exception
+                    demisto.info(f'got exception when trying to fetch events: [{exception}]')
             else:
-                events = last_run.get('events')
+                events = integration_context.get('events')
+                demisto.info('fetching events from integration context')
             try:
                 demisto.info(f'sending the following amount of events into XSIAM: {len(events)}')
                 send_events_to_xsiam(
@@ -261,16 +293,19 @@ def main() -> None:  # pragma: no cover
                     vendor=VENDOR,
                     product=PRODUCT
                 )
-                demisto.setLastRun({})
+                demisto.setIntegrationContext({})
             except Exception as e:
-                demisto.setLastRun({'events': events})
-                raise e
+                demisto.info(f'got error when trying to send events to XSIAM: [{e}]')
+                demisto.setIntegrationContext({'events': events})
+                demisto.info(f'set the following events into integration context: {events}')
         elif command == 'saas-security-get-events':
-            return_results(get_events_command(client, args, max_fetch=max_fetch))
+            return_results(get_events_command(client, args, max_fetch=max_fetch, max_iterations=max_iterations))
         else:
             raise NotImplementedError(f'Command {command} is not implemented in saas-security integration.')
     except Exception as e:
-        raise Exception(f'Error in Palo Alto Saas Security Event Collector Integration [{e}]')
+        return_error(
+            f'Failed to execute {command} command. Error in Palo Alto Saas Security Event Collector Integration [{e}].'
+        )
 
 
 ''' ENTRY POINT '''

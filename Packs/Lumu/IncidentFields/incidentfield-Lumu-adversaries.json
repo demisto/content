@@ -1,0 +1,30 @@
+{
+    "id": "incident_adversaries",
+    "name": "adversaries",
+    "ownerOnly": false,
+    "cliName": "adversaries",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Lumu"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

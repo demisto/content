@@ -1,6 +1,8 @@
 name: Microsoft ADFS Collection Parsing Rule
 id: microsoft_adfs_collection_Parsing_Rule
 fromversion: 6.10.0
-tags: Microsoft Windows Active Directory Federation Services ADFS Event Colletion
+toversion: 6.9.9
+tags:
+ - Microsoft Windows Active Directory Federation Services ADFS Event Colletion
 rules: ''
 samples: ''

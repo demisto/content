@@ -15,4 +15,4 @@ Understanding malware behavior can help you identify and address potential areas
 ## Playbooks
 This pack includes the following built-in playbooks:
 - **Detonate File - CrowdStrike Falcon Intelligence Sandbox**: Detonate a file using CrowdStrike Falcon Intelligence Sandbox.
-- **Detonate URL - CrowdStrike Falcon Intelligence Sandbox**: Detonate one or more files using the CrowdStrike Falcon Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+- **Detonate URL - CrowdStrike Falcon Intelligence Sandbox**: Detonate one or more files using the CrowdStrike Falcon Intelligence Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
