@@ -95,7 +95,8 @@ mock_alerts_response = {
                 "severity": "compromised",
                 "low_since": None,
                 "high_since": "2020-12-15T15:33:49+00:00",
-                "in_verification": None
+                "in_verification": None,
+                "risk_level": "low",
             },
             "priv": {
                 "key": "3ea22222274111114b011111bb311111",
@@ -213,11 +214,12 @@ mock_alerts_response = {
                 "status_time": "2020-11-08T12:58:54+00:00",
                 "created_at": "2020-11-08T12:58:54+00:00",
                 "last_seen": "2020-12-30T10:35:48+00:00",
-                "score": 1,
+                "score": 9,
                 "severity": "compromised",
                 "low_since": None,
                 "high_since": "2020-11-08T13:04:32+00:00",
-                "in_verification": None
+                "in_verification": None,
+                "risk_level": "critical",
             },
             "priv": {
                 "key": "3696080647d937b881eee2cfdd6c3943",
@@ -450,7 +452,7 @@ def test_fetch_incidents_first_run_should_succeed(requests_mock, orca_client: Or
     )
     assert fetched_incidents[0]['name'] == 'orca-59'
     loaded_raw_alert = json.loads(fetched_incidents[0]['rawJSON'])
-    assert loaded_raw_alert['demisto_score'] == 4
+    assert loaded_raw_alert['demisto_score'] == 1
     assert fetched_incidents[1]['name'] == 'orca-242'
     loaded_raw_alert = json.loads(fetched_incidents[1]['rawJSON'])
     assert loaded_raw_alert['demisto_score'] == 4

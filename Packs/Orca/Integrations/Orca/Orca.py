@@ -218,18 +218,24 @@ class OrcaClient:
         return {"filename": file_name, "file": file_response.content}
 
 
-def map_orca_score_to_demisto_score(orca_score: int) -> Union[int, float]:  # pylint: disable=E1136
+def map_orca_score_to_demisto_score(orca_score: str) -> Union[int, float]:  # pylint: disable=E1136
     # demisto_unknown = 0  (commented because of linter issues)
     demisto_informational = 0.5
-    # demisto_low = 1  (commented because of linter issues)
+    demisto_low = 1
     demisto_medium = 2
     demisto_high = 3
     demisto_critical = 4
 
     # LHS is Orca score
-    MAPPING = {1: demisto_critical, 2: demisto_high, 3: demisto_medium, 4: demisto_informational}
+    MAPPING = {
+        "critical": demisto_critical,
+        "high": demisto_high,
+        "medium": demisto_medium,
+        "low": demisto_low,
+        "informational": demisto_informational
+    }
 
-    return MAPPING[orca_score]
+    return MAPPING[orca_score] if orca_score in MAPPING else 0
 
 
 def get_incident_from_alert(alert: Dict[str, Any]) -> Dict[str, Any]:
@@ -241,7 +247,7 @@ def get_incident_from_alert(alert: Dict[str, Any]) -> Dict[str, Any]:
         'name': alert.get('state', {}).get('alert_id'),
         'occurred': last_seen_time,
         'rawJSON': json.dumps(alert),
-        'severity': map_orca_score_to_demisto_score(orca_score=alert.get('state', {}).get('score'))
+        'severity': map_orca_score_to_demisto_score(orca_score=alert.get('state', {}).get('risk_level'))
     }
 
 
@@ -249,7 +255,7 @@ def get_incidents_from_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, An
     demisto.info("get_incidents_from_alerts enter")
     incidents = []
     for alert in alerts:
-        alert['demisto_score'] = map_orca_score_to_demisto_score(orca_score=alert.get("state", {}).get("score", 1))
+        alert['demisto_score'] = map_orca_score_to_demisto_score(orca_score=alert.get("state", {}).get("risk_level"))
         incident = get_incident_from_alert(alert=alert)
         incidents.append(incident)
 
