@@ -2639,7 +2639,13 @@ script:
       description: The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room.
       isArray: false
       name: file_id
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: The “meta” section will be added to this json, and we will send this json to the api endpoint.
+      isArray: false
+      name: indicators_json
+      required: false
       secret: false
     deprecated: false
     description: Imports indicators (observables) into ThreatStream. Approval is not required for the imported data. You must have the Approve Intel user permission to import without approval using the API.
@@ -7285,7 +7291,7 @@ script:
     execution: false
     description: Creates associations between threat model entities on the ThreatStream platform.
     name: threatstream-add-threat-model-association
-  dockerimage: demisto/py3-tools:1.0.0.53611
+  dockerimage: demisto/py3-tools:1.0.0.54695
   feed: false
   isfetch: false
   longRunning: false
