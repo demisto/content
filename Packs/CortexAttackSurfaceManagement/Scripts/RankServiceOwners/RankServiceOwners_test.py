@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 import pytest
 import unittest
-from IdentifyServiceOwners import score, main, rank, _canonicalize, aggregate
+from RankServiceOwners import score, main, rank, _canonicalize, aggregate
 from contextlib import nullcontext as does_not_raise
 
 

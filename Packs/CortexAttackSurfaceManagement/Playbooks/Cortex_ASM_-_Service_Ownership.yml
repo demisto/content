@@ -16,7 +16,7 @@ tasks:
     note: false
     quietmode: 0
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ""
       id: 7d8acddf-5ee0-460f-8fef-2d0d24385bcb
@@ -67,7 +67,7 @@ tasks:
     note: false
     quietmode: 0
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ""
       description: Determine whether a service account was included among the potential service owners.
@@ -231,17 +231,17 @@ tasks:
       owners:
         simple: ${alert.asmserviceowner}
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ""
       description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
-      id: aa9cfac4-dace-46f3-80fd-e825b24c675a
+      id: 7eb4fb8d-14f3-4c09-82ae-6b5893d7f8c4
       iscommand: false
       name: Normalize and rank likely service owners
-      script: IdentifyServiceOwners
+      script: RankServiceOwners
       type: regular
       version: -1
-    taskid: aa9cfac4-dace-46f3-80fd-e825b24c675a
+    taskid: 7eb4fb8d-14f3-4c09-82ae-6b5893d7f8c4
     timertriggers: []
     type: regular
     view: |-
@@ -307,7 +307,7 @@ tasks:
                   simple: Timestamp
             operator: getField
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ""
       description: |-

@@ -12,7 +12,7 @@ This playbook does not use any sub-playbooks.
 ### Scripts
 * GetTime
 * GridFieldSetup
-* IdentifyServiceOwners
+* RankServiceOwners
 
 ### Commands
 * gcp-iam-project-iam-policy-get
