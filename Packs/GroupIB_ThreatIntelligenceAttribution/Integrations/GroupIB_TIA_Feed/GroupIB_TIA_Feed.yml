@@ -189,7 +189,7 @@ script:
     description: Get limited count of indicators for specified collection and get all indicators from particular events by id.
     execution: false
     name: gibtia-get-indicators
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.11.54132
   feed: true
   isfetch: false
   longRunning: false
