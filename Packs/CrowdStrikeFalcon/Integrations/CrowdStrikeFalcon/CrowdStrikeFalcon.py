@@ -2725,6 +2725,25 @@ def get_proccesses_ran_on_command(ioc_type, value, device_id):
     hr = tableToMarkdown(f"Processes with custom IOC {ioc_id} on device {device_id}.", proc_ids, headers="Process ID")
     return create_entry_object(contents=raw_res, hr=hr, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context})
 
+def enrich_groups(all_group_ids) -> Dict[str, Any]:
+    """
+        Receives a list of group_ids
+        Returns a dict {group_id: group_name}
+    """
+
+    result = dict()
+    for group_id in all_group_ids:
+        params = { 'ids': group_id }
+        #response = requests.get(self.groups_api, headers=headers, params=params)
+        response_json = http_request('GET', '/devices/entities/host-groups/v1', params, status_code=404)
+        #response_json = response.json()
+        try:
+            group_name = response_json['resources'][0]['name']
+        except KeyError as e:
+            logging.error(f"Group ID {group_id} not found")
+            group_name = "GROUP_NOT_FOUND"
+        result.update({ group_id: group_name })
+    return result
 
 def search_device_command():
     """
