@@ -3,21 +3,18 @@ commonfields:
   id: OpenSSL
   version: -1
 configuration:
-- additionalinfo: The credentials to associate with the instance. SSH keys can be
-    configured using the credential manager.
+- additionalinfo: The credentials to associate with the instance. SSH keys can be configured using the credential manager, under the Certificate field.
   display: Username
   name: creds
   required: true
   type: 9
-- additionalinfo: The default port to use if one is not specified in the commands
-    `host` argument.
+- additionalinfo: The default port to use if one is not specified in the commands `host` argument.
   defaultvalue: "22"
   display: Default SSH Port
   name: port
   required: true
   type: 0
-- additionalinfo: If multiple hosts are specified in a command, how many hosts should
-    be interacted with concurrently.
+- additionalinfo: If multiple hosts are specified in a command, how many hosts should be interacted with concurrently.
   defaultvalue: "4"
   display: Concurrecy Factor
   name: concurrency
@@ -29,23 +26,19 @@ name: OpenSSL
 script:
   commands:
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: Whether the certificate should exist or not, taking action if the
-        state is different from what is stated.
+      description: Whether the certificate should exist or not, taking action if the state is different from what is stated.
       name: state
       predefined:
       - absent
       - present
-    - description: Remote absolute path where the generated certificate file should
-        be created or is already located.
+    - description: Remote absolute path where the generated certificate file should be created or is already located.
       name: path
       required: true
     - auto: PREDEFINED
@@ -431,11 +424,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -474,9 +465,7 @@ script:
     description: Generate and/or check OpenSSL certificates
     name: openssl-certificate
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -514,25 +503,21 @@ script:
       description: The Base64 encoded value (in DER format) of the extension
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: Whether the certificate signing request should exist or not, taking
-        action if the state is different from what is stated.
+      description: Whether the certificate signing request should exist or not, taking action if the state is different from what is stated.
       name: state
       predefined:
       - absent
       - present
     - default: false
       defaultValue: sha256
-      description: The digest used when signing the certificate signing request with
-        the private key.
+      description: The digest used when signing the certificate signing request with the private key.
       name: digest
     - description: |-
         The path to the private key to use when signing the certificate signing request.
@@ -550,11 +535,9 @@ script:
       name: version
     - default: false
       defaultValue: "False"
-      description: Should the certificate signing request be forced regenerated by
-        this ansible module.
+      description: Should the certificate signing request be forced regenerated by this ansible module.
       name: force
-    - description: The name of the file into which the generated OpenSSL certificate
-        signing request will be written.
+    - description: The name of the file into which the generated OpenSSL certificate signing request will be written.
       name: path
       required: true
     - description: |-
@@ -564,15 +547,13 @@ script:
       name: subject
     - description: The countryName field of the certificate signing request subject.
       name: country_name
-    - description: The stateOrProvinceName field of the certificate signing request
-        subject.
+    - description: The stateOrProvinceName field of the certificate signing request subject.
       name: state_or_province_name
     - description: The localityName field of the certificate signing request subject.
       name: locality_name
     - description: The organizationName field of the certificate signing request subject.
       name: organization_name
-    - description: The organizationalUnitName field of the certificate signing request
-        subject.
+    - description: The organizationalUnitName field of the certificate signing request subject.
       name: organizational_unit_name
     - description: The commonName field of the certificate signing request subject.
       name: common_name
@@ -590,17 +571,14 @@ script:
       name: subject_alt_name_critical
     - default: false
       defaultValue: "True"
-      description: If set to `yes`, the module will fill the common name in for `subject_alt_name`
-        with `DNS:` prefix if no SAN is specified.
+      description: If set to `yes`, the module will fill the common name in for `subject_alt_name` with `DNS:` prefix if no SAN is specified.
       name: use_common_name_for_san
-    - description: This defines the purpose (e.g. encipherment, signature, certificate
-        signing) of the key contained in the certificate.
+    - description: This defines the purpose (e.g. encipherment, signature, certificate signing) of the key contained in the certificate.
       isArray: true
       name: key_usage
     - description: Should the keyUsage extension be considered as critical.
       name: key_usage_critical
-    - description: Additional restrictions (e.g. client authentication, server authentication)
-        on the allowed purposes for which the public key may be used.
+    - description: Additional restrictions (e.g. client authentication, server authentication) on the allowed purposes for which the public key may be used.
       isArray: true
       name: extended_key_usage
     - description: Should the extkeyUsage extension be considered as critical.
@@ -610,8 +588,7 @@ script:
       name: basic_constraints
     - description: Should the basicConstraints extension be considered as critical.
       name: basic_constraints_critical
-    - description: Indicates that the certificate should contain the OCSP Must Staple
-        extension (`https://tools.ietf.org/html/rfc7633`).
+    - description: Indicates that the certificate should contain the OCSP Must Staple extension (`https://tools.ietf.org/html/rfc7633`).
       name: ocsp_must_staple
     - description: |-
         Should the OCSP Must Staple extension be considered as critical
@@ -633,8 +610,7 @@ script:
       - pyopenssl
     - default: false
       defaultValue: "False"
-      description: Create a backup file including a timestamp so you can get the original
-        CSR back if you overwrote it with a new one by accident.
+      description: Create a backup file including a timestamp so you can get the original CSR back if you overwrote it with a new one by accident.
       name: backup
     - default: false
       defaultValue: "False"
@@ -682,11 +658,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -725,9 +699,7 @@ script:
     description: Generate OpenSSL Certificate Signing Request (CSR)
     name: openssl-csr
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -758,17 +730,14 @@ script:
       description: The Base64 encoded value (in DER format) of the extension
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: Whether the parameters should exist or not, taking action if the
-        state is different from what is stated.
+      description: Whether the parameters should exist or not, taking action if the state is different from what is stated.
       name: state
       predefined:
       - absent
@@ -786,8 +755,7 @@ script:
       required: true
     - default: false
       defaultValue: "False"
-      description: Create a backup file including a timestamp so you can get the original
-        DH params back if you overwrote them with new ones by accident.
+      description: Create a backup file including a timestamp so you can get the original DH params back if you overwrote them with new ones by accident.
       name: backup
     - description: |-
         The permissions the resulting file or directory should have.
@@ -797,11 +765,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -840,9 +806,7 @@ script:
     description: Generate OpenSSL Diffie-Hellman Parameters
     name: openssl-dhparam
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -854,8 +818,7 @@ script:
       predefined:
       - export
       - parse
-    - description: List of other certificates to include. Pre 2.8 this parameter was
-        called `ca_certificates`
+    - description: List of other certificates to include. Pre 2.8 this parameter was called `ca_certificates`
       isArray: true
       name: other_certificates
     - description: |-
@@ -888,8 +851,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: Whether the file should exist or not. All parameters except `path`
-        are ignored when state is `absent`.
+      description: Whether the file should exist or not. All parameters except `path` are ignored when state is `absent`.
       name: state
       predefined:
       - absent
@@ -898,8 +860,7 @@ script:
       name: src
     - default: false
       defaultValue: "False"
-      description: Create a backup file including a timestamp so you can get the original
-        output file back if you overwrote it with a new one by accident.
+      description: Create a backup file including a timestamp so you can get the original output file back if you overwrote it with a new one by accident.
       name: backup
     - description: |-
         The permissions the resulting file or directory should have.
@@ -909,11 +870,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -952,17 +911,14 @@ script:
     description: Generate OpenSSL PKCS#12 archive
     name: openssl-pkcs12
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: Whether the private key should exist or not, taking action if the
-        state is different from what is stated.
+      description: Whether the private key should exist or not, taking action if the state is different from what is stated.
       name: state
       predefined:
       - absent
@@ -1016,8 +972,7 @@ script:
       defaultValue: "False"
       description: Should the key be regenerated even if it already exists.
       name: force
-    - description: Name of the file in which the generated TLS/SSL private key will
-        be written. It will have 0600 mode.
+    - description: Name of the file in which the generated TLS/SSL private key will be written. It will have 0600 mode.
       name: path
       required: true
     - description: The passphrase for the private key.
@@ -1042,8 +997,7 @@ script:
       - pyopenssl
     - default: false
       defaultValue: "False"
-      description: Create a backup file including a timestamp so you can get the original
-        private key back if you overwrote it with a new one by accident.
+      description: Create a backup file including a timestamp so you can get the original private key back if you overwrote it with a new one by accident.
       name: backup
     - description: |-
         The permissions the resulting file or directory should have.
@@ -1053,11 +1007,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -1096,9 +1048,7 @@ script:
     description: Generate OpenSSL private keys
     name: openssl-privatekey
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1131,17 +1081,14 @@ script:
     description: Provide information for OpenSSL private keys
     name: openssl-privatekey-info
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: Whether the public key should exist or not, taking action if the
-        state is different from what is stated.
+      description: Whether the public key should exist or not, taking action if the state is different from what is stated.
       name: state
       predefined:
       - absent
@@ -1158,8 +1105,7 @@ script:
       predefined:
       - OpenSSH
       - PEM
-    - description: Name of the file in which the generated TLS/SSL public key will
-        be written.
+    - description: Name of the file in which the generated TLS/SSL public key will be written.
       name: path
       required: true
     - description: |-
@@ -1170,8 +1116,7 @@ script:
       name: privatekey_passphrase
     - default: false
       defaultValue: "False"
-      description: Create a backup file including a timestamp so you can get the original
-        public key back if you overwrote it with a different one by accident.
+      description: Create a backup file including a timestamp so you can get the original public key back if you overwrote it with a different one by accident.
       name: backup
     - auto: PREDEFINED
       default: false
@@ -1194,11 +1139,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -1237,9 +1180,7 @@ script:
     description: Generate an OpenSSL public key from its private key.
     name: openssl-publickey
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1268,9 +1209,7 @@ script:
     description: Complete certificate chain given a set of untrusted and root certificates
     name: openssl-certificate-complete-chain
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true

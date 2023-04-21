@@ -44,7 +44,7 @@ tasks:
       version: -1
       name: 'Falcon Intelligence Sandbox Detonate and Analyze File'
       description: Env ID - return to transformer.
-      playbookName: FalconX Detonate and Analyze File
+      playbookName: CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File
       type: playbook
       iscommand: false
       brand: ""
@@ -163,8 +163,8 @@ tasks:
     task:
       id: 1e2efc1c-d878-46c7-835f-ea5c802dd878
       version: -1
-      name: Is Falcon Intelligence Sandbox enabled?
-      description: Returns 'yes' if the Falcon Intelligence Sandbox integration is available.
+      name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
+      description: Returns 'yes' if the CrowdStrike Falcon Intelligence Sandbox integration is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false

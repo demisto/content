@@ -15,8 +15,8 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* SearchIndicatorRelationships
 * Set
+* SearchIndicatorRelationships
 
 ### Commands
 This playbook does not use any commands.
@@ -26,7 +26,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Indicator | Input indicator to analyze its relationships. |  | Optional |
+| Indicator | Input an indicator to analyze its relationships. |  | Optional |
 | LimitResults | The number of results to return. If the input is empty, the limit will be 20. | 200 | Optional |
 
 ## Playbook Outputs

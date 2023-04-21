@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: AWS IAM User Access Investigation - Remediation
-description: "Respond to Cortex XDR Cloud alerts where an AWS IAM user`s access key\
+description: "Deprecated. Use `Cloud IAM User Access Investigation` instead. Respond to Cortex XDR Cloud alerts where an AWS IAM user`s access key\
   \ is used suspiciously to access the cloud environment. \nThe following alerts are\
   \ supported for AWS environments.\n- Penetration testing tool attempt\n- Penetration\
   \ testing tool activity\n- Suspicious API call from a Tor exit node\n This is a\
@@ -13,6 +13,7 @@ description: "Respond to Cortex XDR Cloud alerts where an AWS IAM user`s access 
   \ might include non-backward compatible features. We encourage your feedback on\
   \ the quality and usability of the content to help us identify and fix issues,\
   \ so we can continually improve the content.\n"
+deprecated: true
 starttaskid: "0"
 tasks:
   "0":
@@ -692,3 +693,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.6.0
+marketplaces:
+  - marketplacev2

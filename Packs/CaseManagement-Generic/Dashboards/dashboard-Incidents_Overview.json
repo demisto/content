@@ -1055,7 +1055,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "runStatus:error",
+                "query": "-status:closed and runStatus:error",
                 "shouldCommit": false,
                 "toServerVersion": "",
                 "vcShouldIgnore": false,

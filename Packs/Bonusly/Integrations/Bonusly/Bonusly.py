@@ -7,7 +7,7 @@ This integration only has a few commands and more maybe added depending on feedb
 import json
 
 import demistomock as demisto
-import requests
+import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
@@ -17,7 +17,7 @@ import dateparser
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'

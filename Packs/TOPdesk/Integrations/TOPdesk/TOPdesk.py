@@ -1,3 +1,5 @@
+import requests
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -1277,7 +1279,15 @@ def fetch_incidents(client: Client,
         topdesk_incident['mirror_instance'] = demisto.integrationInstance()
         if float(last_fetch_datetime.timestamp()) < float(incident_created_time.timestamp()):
             labels = []
-            actions = client.list_actions(incident_id=topdesk_incident['id'], incident_number=None)
+            try:
+                actions = client.list_actions(incident_id=topdesk_incident['id'], incident_number=None)
+            except DemistoException as error:
+                demisto.debug(f'{error=}')
+                # make sure we catch only JSONDecodeError errors, in case it is a different exception, should be raised.
+                if isinstance(error.exception, (json.decoder.JSONDecodeError, requests.exceptions.JSONDecodeError)):
+                    actions = []
+                else:
+                    raise error
             for action in actions:
                 entry_date = dateparser.parse(action["entryDate"], settings={'TIMEZONE': 'UTC'})  # type: ignore
                 if action["operator"]:

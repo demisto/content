@@ -30,6 +30,7 @@ ignore=BA101
 
 [file:classifier-mapper-outgoing-PaloAltoNetworks_CortexXDR.json]
 ignore=BA101
+
 [file:incidentfield-XDR_Alert_Category.json]
 ignore=IF100
 
@@ -49,6 +50,9 @@ ignore=RM108
 XDR
 CoreIRApiModule
 CortexCoreIR
+XQL
+indicatorsValues
+setIndicators
 
 [file:classifier-PaloAltoNetworks_CortexXDR.json]
 ignore=BA101
@@ -61,3 +65,55 @@ ignore=PB121
 
 [file:Cortex_XDR_incident_handling_v3.yml]
 ignore=PB121
+
+[file:playbook-Cortex_XDR_-_Cloud_Cryptomining_-_Set_Verdict.yml]
+ignore=BA101
+
+[file:playbook-Cortex_XDR_-_Cloud_Cryptomining.yml]
+ignore=BA101
+
+[file:layoutscontainer-Cortex_XDR_-_XCLOUD_Cryptomining.json]
+ignore=BA101
+
+[file:Cortex_XDR_incident_handling_v2_README.md]
+ignore=RM106
+
+[file:Cortex_XDR_Incident_Handling_README.md]
+ignore=RM106,RM108
+
+[file:playbook-Cortex_XDR_-_AWS_IAM_user_access_investigation_README.md]
+ignore=RM108
+
+[file:Cortex_XDR_incident_handling_v3_6_5.yml]
+ignore=PB121
+
+[file:XCloudResourcesPieWidget.yml]
+ignore=BA124
+
+[file:EntryWidgetNumberResourcesXCLOUD.yml]
+ignore=BA124
+
+[file:EntryWidgetNumberHostsXDR.yml]
+ignore=BA124
+
+[file:EntryWidgetNumberUsersXDR.yml]
+ignore=BA124
+
+[file:XDRConnectedEndpoints.yml]
+ignore=BA124
+
+[file:DBotGroupXDRIncidents.yml]
+ignore=BA124
+
+[file:EntryWidgetNumberRegionsXCLOUD.yml]
+ignore=BA124
+
+[file:XDRDisconnectedEndpoints.yml]
+ignore=BA124
+
+[file:EntryWidgetPieAlertsXDR.yml]
+ignore=BA124
+
+[file:XCloudRegionsPieWidget.yml]
+ignore=BA124
+

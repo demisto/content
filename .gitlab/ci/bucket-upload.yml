@@ -22,6 +22,7 @@
       LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" "svc -xsoar-gitlab-mirror" "${USERS_ALLOWED_TRIGGER_UPLOAD}" )
       if [[ -z "$GITLAB_USER_NAME" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "$GITLAB_USER_NAME"`" ]]; then
         echo -e "User '$GITLAB_USER_NAME' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
+        job-done
         exit 1
       else
         echo "User '${GITLAB_USER_NAME}' is allowed to upload packs / force upload packs."
@@ -33,7 +34,7 @@
     - |
       if [[ $TEST_UPLOAD == "false" ]]; then
         section_start "Upload content graph CSVs to GCP" --collapsed
-        gsutil cp $ARTIFACTS_FOLDER/content_graph/$MARKETPLACE_VERSION.zip "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION.zip"
+        # gsutil cp $ARTIFACTS_FOLDER/content_graph/$MARKETPLACE_VERSION.zip "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION.zip"
         section_end "Upload content graph CSVs to GCP"
       fi
 
@@ -59,6 +60,15 @@ run-unittests-and-lint-upload-flow:
     - .run-unittests-and-lint
     - .bucket-upload-rule
 
+jobs-done-check-upload-flow:
+  extends:
+    - .jobs-done-check
+    - .bucket-upload-rule
+  needs: ['run-unittests-and-lint-upload-flow', 'run-validations-upload-flow', 'mpv2-prepare-testing-bucket-upload-flow', 'upload-id-set-bucket', 'xpanse-prepare-testing-bucket-upload-flow', 'xsoar-prepare-testing-bucket-upload-flow', 'install-packs-in-server6_5', 'install-packs-in-server6_6', 'install-packs-in-server6_8', 'install-packs-in-server-master', 'install-packs-in-xsiam-ga', 'sync-buckets-between-projects', 'upload-packs-to-marketplace', 'upload-packs-to-marketplace-v2', 'upload-packs-to-xpanse-marketplace']
+  tags:
+    - gke
+
+
 
 xsoar-prepare-testing-bucket-upload-flow:
   extends:
@@ -71,7 +81,7 @@ xsoar-prepare-testing-bucket-upload-flow:
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
-  
+
 
 mpv2-prepare-testing-bucket-upload-flow:
  extends:
@@ -108,6 +118,7 @@ xpanse-prepare-testing-bucket-upload-flow:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
@@ -119,7 +130,6 @@ xpanse-prepare-testing-bucket-upload-flow:
     - .bucket-upload-rule
     - .default-job-settings
   script:
-    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - section_start "Download configuration"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
@@ -140,6 +150,7 @@ xpanse-prepare-testing-bucket-upload-flow:
     - section_start "Destroy instances"
     - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - section_end "Destroy instances"
+    - job-done
     - exit "$EXIT_CODE"
 
 
@@ -174,35 +185,36 @@ install-packs-in-server-master:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
     INSTANCE_CREATED: "true"
     TIME_TO_LIVE: ""
+    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
   extends:
     - .bucket-upload-rule
     - .default-job-settings
   script:
-    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - section_start "Download configuration"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
     - SECRET_CONF_PATH=$(cat secret_conf_path)
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID"
     - section_end "Download configuration"
-    - section_start "Lock XSIAM Machine"
+    - section_start "Lock Machine"
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
     - echo "Auth done successfully"
-    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
-    - source XSIAMEnvVariables
-    - echo "XSIAM chosen_machine_id is $XSIAM_CHOSEN_MACHINE_ID"
-    - section_end "Lock XSIAM Machine"
+    - ./Tests/scripts/wait_in_line_for_cloud_env.sh
+    - source CloudEnvVariables
+    - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
+    - section_end "Lock Machine"
 
-    - section_start "Clean XSIAM Machine"
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_xsiam.sh
-    - section_end "Clean XSIAM Machine"
+    - section_start "Clean Machine"
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh
+    - section_end "Clean Machine"
 
     - section_start "Get Instance Variables"
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
@@ -213,27 +225,32 @@ install-packs-in-server-master:
     - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - section_end "Install Packs"
 
+    - job-done
     - exit "$EXIT_CODE"
   after_script:
     - echo "Job finished, removing lock file"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_JOB_ID"
+    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/machines_locks/*-lock-$CI_JOB_ID"
     - echo "Finished removing lock file"
 
 
 #install-packs-in-xsiam-dev:
 #  extends: .install-mpv2-packs-on-xsiam-instances
 #  variables:
-#    INSTANCE_ROLE: "XSIAM Master"
+#    INSTANCE_ROLE: "XSIAM"
 #    GCS_QUEUE_FILE: "queue-master"
 #    TEST_MACHINES_LIST: "test-machines-master"
 
 install-packs-in-xsiam-ga:
   extends: .install-mpv2-packs-on-xsiam-instances
   variables:
-    INSTANCE_ROLE: "XSIAM 1.2"
+    INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
+    GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
+    GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
+    CLOUD_SERVERS_FILE: "xsiam_servers_path"
+    CLOUD_API_KEYS: $XSIAM_API_KEYS
 
 
 upload-packs-to-marketplace:
@@ -245,6 +262,7 @@ upload-packs-to-marketplace:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     MARKETPLACE_VERSION: "xsoar"
@@ -312,6 +330,7 @@ upload-packs-to-marketplace:
         echo "Skipping Premium Packs Validation"
       fi
     - section_end "Validate Premium Packs"
+    - job-done
 
 upload-packs-to-marketplace-v2:
   tags:
@@ -322,6 +341,7 @@ upload-packs-to-marketplace-v2:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     MARKETPLACE_VERSION: "marketplacev2"
@@ -370,6 +390,7 @@ upload-packs-to-marketplace-v2:
     - section_start "Zip Content Packs From GCS"
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
     - section_end "Zip Content Packs From GCS"
+    - job-done
 
 upload-packs-to-xpanse-marketplace:
   tags:
@@ -380,6 +401,7 @@ upload-packs-to-xpanse-marketplace:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     MARKETPLACE_VERSION: "xpanse"
@@ -429,6 +451,7 @@ upload-packs-to-xpanse-marketplace:
     - section_start "Zip Content Packs From GCS"
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
     - section_end "Zip Content Packs From GCS"
+    - job-done
 
 force-pack-upload:
   tags:
@@ -494,3 +517,42 @@ upload-id-set-bucket:
     - !reference [.create-id-set-xsoar]
     - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY"
     - gsutil cp $ARTIFACTS_FOLDER/id_set.json "gs://$GCS_MARKET_BUCKET/content/id_set.json"
+    - job-done
+
+
+sync-buckets-between-projects:
+  # syncs buckets from oproxy-dev project to xdr-xsoar-content-dev-01 project
+  tags:
+    - gke
+  extends:
+    - .bucket-upload-rule
+  stage: upload-to-marketplace
+  needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace"]
+  when: always
+  script:
+    - |
+      if [[ -z "$GCS_XSOAR_CONTENT_DEV_KEY" ]] || [[ -z "$GCS_XSOAR_CONTENT_PROD_KEY" ]]; then
+        echo "GCS_XSOAR_CONTENT_DEV_KEY or GCS_XSOAR_CONTENT_PROD_KEY not set, cannot perform sync"
+        job-done
+        exit 1
+      else
+        gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_DEV_KEY"
+
+        echo "Syncing gs://marketplace-xsoar-dev"
+        gsutil -m rsync -r gs://marketplace-dist gs://marketplace-xsoar-dev
+        echo "Syncing gs://marketplace-xsiam-dev"
+        gsutil -m rsync -r gs://marketplace-v2-dist gs://marketplace-xsiam-dev
+        echo "Syncing gs://marketplace-xpanse-dev"
+        gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-dev
+
+        gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_PROD_KEY"
+
+        echo "Syncing gs://marketplace-xsoar-prod-us"
+        gsutil -m rsync -r gs://marketplace-dist gs://marketplace-xsoar-prod-us
+        echo "Syncing gs://marketplace-xsiam-prod-us"
+        gsutil -m rsync -r gs://marketplace-v2-dist gs://marketplace-xsiam-prod-us
+        echo "Syncing gs://marketplace-xpanse-prod-us"
+        gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-prod-us
+
+        echo "Bucket sync completed"
+      fi

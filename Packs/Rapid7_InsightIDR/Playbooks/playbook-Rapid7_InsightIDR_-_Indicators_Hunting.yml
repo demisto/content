@@ -1,0 +1,1194 @@
+id: Rapid7 InsightIDR - Indicators Hunting
+version: -1
+name: Rapid7 InsightIDR - Indicators Hunting
+description: "This playbook facilitates threat hunting and detection of IOCs within Rapid7 InsightIDR SIEM logs utilizing four sub-playbooks. The sub-playbooks query Rapid7 InsightIDR SIEM for different indicators including files, traffic, HTTP requests, and execution flows indicators.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters). \n\nSupported IOCs for this playbook:\n- MD5\n- SHA1\n- SHA256\n- IP Address\n- URLDomain\n- Registry Value\n- Registry Key\n- Registry Hives\n- Command Line\n- File Name\n- Process Name\n- HTTP Request Methods\n- User Agent\n- Port Number\n- File Path\n- Geolocation\n- Email Address\n- CIDR\n- URI\n- Ja3\n- FileType"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a52d8420-7a8c-4987-866d-15dd05511bae
+    type: start
+    task:
+      id: a52d8420-7a8c-4987-866d-15dd05511bae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "60"
+      - "59"
+      - "61"
+      - "58"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 7652dd58-24f8-49fc-89b1-7c0e029e856e
+    type: title
+    task:
+      id: 7652dd58-24f8-49fc-89b1-7c0e029e856e
+      version: -1
+      name: Traffic Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: fa774f82-2fe7-4479-879c-b295d8b4093a
+    type: title
+    task:
+      id: fa774f82-2fe7-4479-879c-b295d8b4093a
+      version: -1
+      name: File Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 61f9fdd3-9b61-48b7-86d3-b327936a3218
+    type: title
+    task:
+      id: 61f9fdd3-9b61-48b7-86d3-b327936a3218
+      version: -1
+      name: HTTP Requests Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "62"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: f54af5c7-aecb-454d-8323-ee76f2f9f842
+    type: title
+    task:
+      id: f54af5c7-aecb-454d-8323-ee76f2f9f842
+      version: -1
+      name: Execution Flow Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: b73107ea-ba31-46f9-8cf3-2f8642208024
+    type: playbook
+    task:
+      id: b73107ea-ba31-46f9-8cf3-2f8642208024
+      version: -1
+      name: Rapid7 InsightIDR - HTTP Requests Indicators Hunting
+      description: "This playbook queries Rapid7 InsightIDR SIEM for indicators associated with HTTP requests, including HTTP request methods, user agents, URIs, and Ja3.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters). "
+      playbookName: Rapid7 InsightIDR - HTTP Requests Indicators Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      HTTPRequestMethods:
+        complex:
+          root: inputs.HTTPRequestMethods
+      InsightIDRHttpMethodsField:
+        complex:
+          root: inputs.InsightIDRHttpMethodsField
+      InsightIDRJa3Field:
+        complex:
+          root: inputs.InsightIDRJa3Field
+      InsightIDRURIField:
+        complex:
+          root: inputs.InsightIDRURIField
+      InsightIDRUserAgentField:
+        complex:
+          root: inputs.InsightIDRUserAgentField
+      Ja3:
+        complex:
+          root: inputs.Ja3
+      LogSetId:
+        complex:
+          root: inputs.LogSetId
+      URI:
+        complex:
+          root: inputs.URI
+      UserAgent:
+        complex:
+          root: inputs.UserAgent
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 2f3ba7ea-52a6-4341-8806-3d44270ca1c9
+    type: playbook
+    task:
+      id: 2f3ba7ea-52a6-4341-8806-3d44270ca1c9
+      version: -1
+      name: Rapid7 InsightIDR - File Indicators Hunting
+      description: |-
+        This playbook queries Rapid7 InsightIDR SIEM for file indicators, including MD5 hashes, SHA256 hashes, SHA1 hashes, file names, file types, and file paths.
+
+        Note that multiple search values should be separated by commas only (without spaces or any special characters).
+      playbookName: Rapid7 InsightIDR - File Indicators Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      FileName:
+        complex:
+          root: inputs.FileName
+      FilePath:
+        complex:
+          root: inputs.FilePath
+      FileType:
+        complex:
+          root: inputs.FileType
+      InsightIDRFileNameField:
+        complex:
+          root: inputs.InsightIDRFileNameField
+      InsightIDRFilePathField:
+        complex:
+          root: inputs.InsightIDRFilePathField
+      InsightIDRFileTypeField:
+        complex:
+          root: inputs.InsightIDRFileTypeField
+      InsightIDRMD5Field:
+        complex:
+          root: inputs.InsightIDRMD5Field
+      InsightIDRSHA1Field:
+        complex:
+          root: inputs.InsightIDRSHA1Field
+      InsightIDRSHA256Field:
+        complex:
+          root: inputs.InsightIDRSHA256Field
+      LogSetId:
+        complex:
+          root: inputs.LogSetId
+      MD5:
+        complex:
+          root: inputs.MD5
+      SHA1:
+        complex:
+          root: inputs.SHA1
+      SHA256:
+        complex:
+          root: inputs.SHA256
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 1591aa93-06af-4ff0-8916-e362dd92808b
+    type: playbook
+    task:
+      id: 1591aa93-06af-4ff0-8916-e362dd92808b
+      version: -1
+      name: 'Rapid7 InsightIDR - Execution Flow Indicators Hunting'
+      description: "This playbook queries Rapid7 InsightIDR SIEM for execution flow indicators, including registry values, registry keys, registry hives, commands, processes name, and applications. \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
+      playbookName: Rapid7 InsightIDR - Execution Flow Indicators Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      Application:
+        complex:
+          root: inputs.Application
+      CommandLine:
+        complex:
+          root: inputs.CommandLine
+      InsightIDRAppField:
+        complex:
+          root: inputs.InsightIDRAppField
+      InsightIDRCommandLineField:
+        complex:
+          root: inputs.InsightIDRCommandLineField
+      InsightIDRProcessNameField:
+        complex:
+          root: inputs.InsightIDRProcessNameField
+      InsightIDRRegistryHivesField:
+        complex:
+          root: inputs.InsightIDRRegistryHivesField
+      InsightIDRRegistryKeyField:
+        complex:
+          root: inputs.InsightIDRRegistryKeyField
+      InsightIDRRegistryValueField:
+        complex:
+          root: inputs.InsightIDRRegistryValueField
+      LogSetId:
+        complex:
+          root: inputs.LogSetId
+      ProcessName:
+        complex:
+          root: inputs.ProcessName
+      RegistryHives:
+        complex:
+          root: inputs.RegistryHives
+      RegistryKey:
+        complex:
+          root: inputs.RegistryKey
+      RegistryValue:
+        complex:
+          root: inputs.RegistryValue
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: f95e23db-156b-48d5-8071-546400ecd52e
+    type: title
+    task:
+      id: f95e23db-156b-48d5-8071-546400ecd52e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: da4d566b-a15a-4a7e-8bcb-bf98aed13699
+    type: playbook
+    task:
+      id: da4d566b-a15a-4a7e-8bcb-bf98aed13699
+      version: -1
+      name: Rapid7 InsightIDR - Traffic Indicators Hunting
+      description: "This playbook queries Rapid7 InsightIDR SIEM for traffic indicators, including URLs, domains, ports, IP addresses, IP ranges (CIDR), email addresses, geolocations, \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
+      playbookName: Rapid7 InsightIDR - Traffic Indicators Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      CIDR:
+        complex:
+          root: inputs.CIDR
+      EmailAddress:
+        complex:
+          root: inputs.EmailAddress
+      Geolocation:
+        complex:
+          root: inputs.Geolocation
+      IPAddress:
+        complex:
+          root: inputs.IPAddress
+      InsightIDRRecipientField:
+        complex:
+          root: inputs.InsightIDRRecipientField
+      InsightIDRSdstGeolocationField:
+        complex:
+          root: inputs.InsightIDRSdstGeolocationField
+      InsightIDRSenderField:
+        complex:
+          root: inputs.InsightIDRSenderField
+      InsightIDRURLDomainField:
+        complex:
+          root: inputs.InsightIDRURLDomainField
+      InsightIDRdstIPField:
+        complex:
+          root: inputs.InsightIDRdstIPField
+      InsightIDRdstPortField:
+        complex:
+          root: inputs.InsightIDRdstPortField
+      InsightIDRsrcGeolocationField:
+        complex:
+          root: inputs.InsightIDRsrcGeolocationField
+      InsightIDRsrcIPField:
+        complex:
+          root: inputs.InsightIDRsrcIPField
+      InsightIDRsrcPortField:
+        complex:
+          root: inputs.InsightIDRsrcPortField
+      LogSetId:
+        complex:
+          root: inputs.LogSetId
+      PortNumber:
+        complex:
+          root: inputs.PortNumber
+      URLDomain:
+        complex:
+          root: inputs.URLDomain
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 530,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IPAddress
+  value: {}
+  required: false
+  description: |-
+    A single or multiple IP addresses to search for within Rapid7 InsightIDR logs. Used for both source and destination IP addresses.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRdstIPField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the destination IPs.
+  playbookInputQuery:
+- key: InsightIDRsrcIPField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the source IPs.
+  playbookInputQuery:
+- key: Application
+  value: {}
+  required: false
+  description: |-
+    A single or multiple application names to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRAppField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the application names.
+  playbookInputQuery:
+- key: PortNumber
+  value: {}
+  required: false
+  description: |-
+    A single or multiple IP addresses to search for within Rapid7 InsightIDR logs. Used for both source and destination ports.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRsrcPortField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the source ports.
+  playbookInputQuery:
+- key: InsightIDRdstPortField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the destination ports.
+  playbookInputQuery:
+- key: Geolocation
+  value: {}
+  required: false
+  description: |-
+    A single or multiple country names or codes to search for within Rapid7 InsightIDR logs. Used for both source and destination geolocations.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRsrcGeolocationField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the source geolocations.
+  playbookInputQuery:
+- key: InsightIDRSdstGeolocationField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the destination geolocations.
+  playbookInputQuery:
+- key: UserAgent
+  value: {}
+  required: false
+  description: |-
+    A single or multiple user agents to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRUserAgentField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the user agents.
+  playbookInputQuery:
+- key: FileType
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file types to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRFileTypeField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the file types.
+  playbookInputQuery:
+- key: FileName
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file names to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRFileNameField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the file names.
+  playbookInputQuery:
+- key: URLDomain
+  value: {}
+  required: false
+  description: |-
+    Single or multiple URLs and/or domains to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRURLDomainField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the URLs or domains.
+  playbookInputQuery:
+- key: URI
+  value: {}
+  required: false
+  description: |-
+    A single or multiple URIs to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRURIField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the URIs.
+  playbookInputQuery:
+- key: EmailAddress
+  value: {}
+  required: false
+  description: |-
+    A single or multiple email addresses to search for within Rapid7 InsightIDR logs. Used for both sender and recipient email addresses.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRSenderField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the sender's email addresses.
+  playbookInputQuery:
+- key: InsightIDRRecipientField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the recipient's email addresses.
+  playbookInputQuery:
+- key: HTTPRequestMethods
+  value: {}
+  required: false
+  description: |-
+    A single or multiple HTTP requests methods to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRHttpMethodsField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the HTTP request methods.
+  playbookInputQuery:
+- key: MD5
+  value: {}
+  required: false
+  description: |-
+    A single or multiple MD5 file hashes to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRMD5Field
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the MD5 hashes.
+  playbookInputQuery:
+- key: SHA256
+  value: {}
+  required: false
+  description: |-
+    A single or multiple SHA256 file hashes to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRSHA256Field
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the SHA256 hashes.
+  playbookInputQuery:
+- key: SHA1
+  value: {}
+  required: false
+  description: |-
+    A single or multiple SHA1 file hashes to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRSHA1Field
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the SHA1 hashes.
+  playbookInputQuery:
+- key: RegistryValue
+  value: {}
+  required: false
+  description: |-
+    A single or multiple registry values to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRRegistryValueField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the registry values.
+  playbookInputQuery:
+- key: RegistryKey
+  value: {}
+  required: false
+  description: |-
+    A single or multiple registry keys to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRRegistryKeyField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the registry keys.
+  playbookInputQuery:
+- key: RegistryHives
+  value: {}
+  required: false
+  description: |-
+    Only relevant for hunting on Windows hosts.
+    A single or multiple registry hives to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRRegistryHivesField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the registry hives.
+  playbookInputQuery:
+- key: CommandLine
+  value: {}
+  required: false
+  description: |-
+    A single or multiple commands to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRCommandLineField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the command's lines.
+  playbookInputQuery:
+- key: ProcessName
+  value: {}
+  required: false
+  description: |-
+    A single or multiple process names to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRProcessNameField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the process names.
+  playbookInputQuery:
+- key: FilePath
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file paths to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRFilePathField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the file paths.
+  playbookInputQuery:
+- key: CIDR
+  value: {}
+  required: false
+  description: |-
+    A single or multiple IP ranges to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: Ja3
+  value: {}
+  required: false
+  description: |-
+    A single or multiple Ja3s to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+
+    JA3 is a method for creating SSL/TLS client fingerprints that should be easy to produce on any platform and can be easily shared for threat intelligence.
+  playbookInputQuery:
+- key: InsightIDRJa3Field
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the Ja3s.
+  playbookInputQuery:
+- key: LogSetId
+  value: {}
+  required: true
+  description: An identifier for a Rapid7 InsightIDR log set to query.
+  playbookInputQuery:
+- key: time_range
+  value: {}
+  required: false
+  description: |-
+    Specify the timeframe in which the Rapid7 InsightIDR logs will be searched. Most start with 'last' (e.g., last 2 months, last 10 minutes).
+    The 'start_time' and 'end_time' inputs should not be used if the time_range input is specified.
+
+    Supported time units (case insensitive):
+    min(s) or minute(s)
+    hr(s) or hour(s)
+    day(s)
+    week(s)
+    month(s)
+    year(s)
+  playbookInputQuery:
+- key: logs_per_page
+  value: {}
+  required: false
+  description: Specify the maximum number of log entries to return per page, up to 500 (the maximum allowed). By default, 50 is set.
+  playbookInputQuery:
+- key: sequence_number
+  value: {}
+  required: false
+  description: |-
+    The earliest sequence number of a log entry to start searching.
+
+    If this query parameter is included, the query results will additionally include all log entries received in the 'start_time' millisecond which have sequence numbers larger than the one specified.
+
+    Sequence numbers are identifiers used to distinguish between log entries received in the same millisecond. If a log entry was split up into several log entries during ingestion, then those chunks are ordered by sequence number.
+  playbookInputQuery:
+- key: start_time
+  value: {}
+  required: false
+  description: |-
+    Specify the query start time at which the Rapid7 InsightIDR logs will be searched, as a UNIX timestamp in milliseconds.
+
+    For example, if you wish to begin searching 1 week ago, the UNIX timestamp value is 604800.
+  playbookInputQuery:
+- key: end_time
+  value: {}
+  required: false
+  description: |-
+    Specify the query end time at which the Rapid7 InsightIDR logs will be searched, as a UNIX timestamp in milliseconds.
+
+    For example, to end searching a day ago, the UNIX timestamp value would be 86400.
+  playbookInputQuery:
+outputs:
+- contextPath: Rapid7InsightIDR.HuntingResults
+  description: Events log objects containing relevant fields.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

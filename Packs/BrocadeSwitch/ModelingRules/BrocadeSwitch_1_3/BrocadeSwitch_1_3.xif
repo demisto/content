@@ -1,9 +1,5 @@
 [MODEL: dataset = brocade_switch_raw]
-// create timestamp part
-alter timestamp_extract =  arrayindex( regextract(_raw_log , "\<\d+\>\s*(\w+\s\d+\s\d+\:\d+\:\d+)\s" ) ,0)
-| alter timestamp_format = parse_timestamp("%b %d %H:%M:%S", timestamp_extract )
-// end timestamp part
-| alter
+alter
     observer_name = arrayindex( regextract(_raw_log , "\<\d+\>\s*[A-Za-z]+\s\d+\s\d+:\d+:\d+\s([a-zA-Z0-9-_]+)\s" ),0),
     original_event_type = arrayindex( regextract(_raw_log , "\d{2}\:\d{2}\:\d{2}\s\S+\s(\w+)\:" ),0),
     original_event_sub_type = arrayindex( regextract(_raw_log , "[A-Z]+[a-z]*\:\s(\S+\s\w+)" ),0),
@@ -20,7 +16,7 @@ alter timestamp_extract =  arrayindex( regextract(_raw_log , "\<\d+\>\s*(\w+\s\d
     src_ip3 = arrayindex( regextract(_raw_log , "from\stelnet\sclient\s(\d+\.\d+\.\d+\.\d+)") ,0)
 // end create Source_ipv4 field
 | alter
-    xdm.event.outcome =auth_status,
+    xdm.event.outcome = if(auth_status ~= "fail", XDM_CONST.OUTCOME_FAILED, auth_status = null, null, to_string(auth_status)),
     xdm.event.operation = coalesce(operation , state_status ),
     xdm.observer.name = observer_name,
     xdm.event.type = original_event_type,

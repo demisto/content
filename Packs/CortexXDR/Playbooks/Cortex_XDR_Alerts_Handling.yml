@@ -1,8 +1,7 @@
 id: Cortex XDR Alerts Handling
 version: -1
 name: Cortex XDR Alerts Handling
-description: "This playbook is used to loop over every alert in a Cortex XDR incident.\
-  \ \nSupported alert categories:\n- Malware\n- Port Scan"
+description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cryptojacking\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation"
 starttaskid: "0"
 tasks:
   "0":
@@ -34,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 7e32b542-4fd0-4a05-8f6a-914194fc2313
+    taskid: a47291e4-58cb-40b4-8eb5-306b2ffbbd0b
     type: condition
     task:
-      id: 7e32b542-4fd0-4a05-8f6a-914194fc2313
+      id: a47291e4-58cb-40b4-8eb5-306b2ffbbd0b
       version: -1
       name: Choose playbook by category
       description: Choose the playbook to run by the alert category.
@@ -49,10 +48,14 @@ tasks:
       - "7"
       Cloud:
       - "11"
+      First SSO Access:
+      - "14"
       Malware:
       - "9"
       Port Scan:
       - "8"
+      RDP Brute-Force:
+      - "13"
     separatecontext: false
     conditions:
     - label: Malware
@@ -111,6 +114,72 @@ tasks:
           right:
             value:
               simple: Cloud Audit Log
+    - label: RDP Brute-Force
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: Possible external RDP Brute-Force
+    - label: First SSO Access
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
+                    ignorecase: true
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: First SSO access from ASN in organization
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
+                    ignorecase: true
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: First successful SSO connection from a country in organization
     continueonerrortype: ""
     view: |-
       {
@@ -143,7 +212,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 720
+          "y": 1100
         }
       }
     note: false
@@ -204,8 +273,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 545
+          "x": 1360,
+          "y": 565
         }
       }
     note: false
@@ -246,8 +315,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 920,
+          "y": 565
         }
       }
     note: false
@@ -382,8 +451,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 545
+          "x": 480,
+          "y": 565
         }
       }
     note: false
@@ -400,8 +469,8 @@ tasks:
     task:
       id: 819510f8-39d8-4237-82e5-fb57fd806749
       version: -1
-      name: Cortex XDR - Cloud Cryptomining
-      playbookName: Cortex XDR - Cloud Cryptomining
+      name: Cortex XDR - XCloud Cryptojacking
+      playbookName: Cortex XDR - XCloud Cryptojacking
       type: playbook
       iscommand: false
       brand: ""
@@ -441,8 +510,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 900
+          "x": -750,
+          "y": 920
         }
       }
     note: false
@@ -498,8 +567,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -400,
-          "y": 545
+          "x": -520,
+          "y": 565
         }
       }
     note: false
@@ -516,19 +585,21 @@ tasks:
     task:
       id: 18ea3ba1-78ee-4ce3-844b-44853df600da
       version: -1
-      name: Was XCLOUD Cryptomining alert found?
-      description: Checks if XCLOUD Cryptomining alert is present in the incident.
+      name: Which XCLOUD alert was found?
+      description: Checks which XCLOUD alert was found in the incident.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "5"
-      "yes":
+      'Cryptojacking':
       - "10"
+      IAM User Access:
+      - "15"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'Cryptojacking'
       condition:
       - - operator: containsGeneral
           left:
@@ -541,12 +612,44 @@ tasks:
             value:
               simple: Unusual allocation of multiple cloud compute resources
           ignorecase: true
+    - label: IAM User Access
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious API call from a Tor exit node
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: Penetration testing tool activity
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: Penetration testing tool attempt
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -400,
-          "y": 710
+          "x": -520,
+          "y": 730
         }
       }
     note: false
@@ -556,19 +659,364 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f2999d13-c387-4ef3-8e20-c44109eec244
+    type: playbook
+    task:
+      id: f2999d13-c387-4ef3-8e20-c44109eec244
+      version: -1
+      name: Cortex XDR - Possible External RDP Brute-Force
+      description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search -XDR Alerts related to the same username and endpoint\n\nSet verdict method:\n* Suspicious Element - The \"Suspicious Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n\nUsed Sub-playbooks:\n* Account Enrichment - Generic v2.1\n* Block Indicators - Generic v3\n* Cortex XDR - Get entity alerts by MITRE tactics - Endpoint\n* Cortex XDR - Get entity alerts by MITRE tactics - user\n* User Investigation - Generic\n* TIM - Indicator Relationships Analysis\n* Threat Hunting - Generic\n* Cortex XDR - Possible External RDP Brute Force - Set Verdict\n* Cortex XDR - Isolate Endpoint\n"
+      playbookName: Cortex XDR - Possible External RDP Brute-Force
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Alert_Name:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: name
+      AlertDescription:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: description
+      AutoRemediation:
+        simple: "false"
+      Country:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts.action_country
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+      EndpointID:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: endpoint_id
+      ExternalIP:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: action_local_ip
+      Final_Threshold:
+        simple: "3"
+      Hostname:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: host_name
+      IsolateEndpoint:
+        simple: "false"
+      Username:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: user_name
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 14129f69-d407-4640-8114-b5548a37dbc0
+    type: playbook
+    task:
+      id: 14129f69-d407-4640-8114-b5548a37dbc0
+      version: -1
+      name: Cortex XDR - First SSO Access
+      description: |-
+        Investigates a Cortex XDR incident containing First SSO access from ASN in an organization
+         or First successful SSO connection from a country in an organization.
+
+        The playbook executes the following:
+        - IP and User Enrichment.
+        - User Investigation - Using 'User Investigation - Generic' sub-playbook.
+        - First SSO Access investigation - Using 'Cortex XDR - First SSO Investigation' sub-playbook.
+        - Set alert's verdict - Using 'Cortex XDR - First SSO access - Set Verdict' sub-playbook.
+        - Response based on the verdict.
+
+        The playbook is used as a sub-playbook in ‘Cortex XDR Incident Handling - v3’.
+      playbookName: Cortex XDR - First SSO Access
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AlertID:
+        complex:
+          root: inputs.alert_id
+      AlertName:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+              ignorecase: true
+          accessor: name
+      AutomaticallyBlockAccount:
+        simple: "False"
+      AutomaticallyIsolateEndpoint:
+        simple: "False"
+      ContactUserManager:
+        simple: "True"
+      EndpointID:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+              ignorecase: true
+          accessor: endpoint_id
+      FailedlogonFromASNThreshold:
+        simple: "20"
+      FailedlogonUserThreshold:
+        simple: "30"
+      IPAddress:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: host_ip_list
+      LoginCountry:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+              ignorecase: true
+          accessor: action_country
+      NumOfXdrAlertsThreshold:
+        simple: "3"
+      Username:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+          accessor: user_name
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1100,
+          "y": 565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: f9856c2e-ccdd-4156-8173-1867d2bd48f9
+    type: playbook
+    task:
+      id: f9856c2e-ccdd-4156-8173-1867d2bd48f9
+      version: -1
+      name: Cortex XDR - Cloud IAM User Access Investigation
+      description: "Investigate and respond to Cortex XDR Cloud alerts where a Cloud IAM user`s access key is used suspiciously to access the cloud environment. \nThe following alerts are supported for AWS, Azure, and GCP environments.\n- Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n\n"
+      playbookName: Cortex XDR - Cloud IAM User Access Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AWS-accessKeyRemediationType:
+        simple: Disable
+      AWS-resourceRemediationType:
+        simple: Stop
+      AWS-userRemediationType:
+        simple: Revoke
+      Azure-resourceRemediationType:
+        simple: Poweroff
+      Azure-userRemediationType:
+        simple: Disable
+      GCP-accessKeyRemediationType:
+        simple: Disable
+      GCP-resourceRemediationType:
+        simple: Stop
+      GCP-userRemediationType:
+        simple: Disable
+      alert_id:
+        complex:
+          root: inputs.alert_id
+      autoAccessKeyRemediation:
+        simple: "False"
+      autoBlockIndicators:
+        simple: "False"
+      autoResourceRemediation:
+        simple: "False"
+      autoUserRemediation:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "12_5_#default#": 0.18,
+      "12_10_Cryptojacking ": 0.64,
+      "12_15_IAM User Access": 0.59,
       "1_11_Cloud": 0.81,
+      "1_14_First SSO Access": 0.82,
       "1_7_#default#": 0.63,
       "1_9_Malware": 0.65
     },
     "paper": {
       "dimensions": {
-        "height": 1065,
-        "width": 1860,
-        "x": -560,
+        "height": 1095,
+        "width": 2840,
+        "x": -1100,
         "y": 70
       }
     }

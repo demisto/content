@@ -1,54 +1,22 @@
 import re
-from typing import Any, Callable, Dict, List, Optional, Tuple
-
 import demistomock as demisto  # noqa: F401
-import requests
 import urllib3
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, element
 from CommonServerPython import *  # noqa: F401
+from traceback import format_exc
 
 # disable insecure warnings
 urllib3.disable_warnings()
-INTEGRATION_NAME = 'WebEx'
+
+CIDR = 'CIDR'
+DOMAIN = 'DOMAIN'
+INTEGRATION_NAME = 'Webex'
+BASE_URL = "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network"
+DOMAIN_REGEX = r"([\^]*[\*\.]*[a-z0-9+\-]+\.+.*)*"
 
 
-# From WebExDomain Table get only domain names with wildcards
-def grab_domains(data):
-    domainList: List = []
-    for lines in data:
-        if len(lines) < 2:
-            continue
-        domains = lines[1].split(' ')
-        cleanDomain = " ".join(re.findall(r"([\^]*[\*\.]*[a-z0-9]+\.+.*)*", domains[0]))
-
-        # Strip Whitespace lines to remove blank values
-        cleanDomain = cleanDomain.strip()
-
-        # Dedup List
-        if cleanDomain not in domainList:
-            if len(cleanDomain) > 0:
-                domainList.append(cleanDomain)
-    return domainList
-
-
-def grab_ips(data):
-    ipList: List = []
-    for lines in data:
-        for line in lines:
-            values = line.split(' (CIDR)')
-            cleanCidr = " ".join(re.findall(r"([0-9]+\.+[0-9]+\.+[0-9]+\.+[0-9]+\/[0-9]+)", values[0]))
-
-            # Strip Whitespace lines to remove blank values
-            cleanCidr = cleanCidr.strip()
-            # Dedup List
-            if cleanCidr not in ipList:
-                if len(cleanCidr) > 0:
-                    ipList.append(cleanCidr)
-    return ipList
-
-
-def grab_domain_table(html_section):
-    # Get Clean List of Domains
+def grab_domain_table(html_section: element.Tag) -> List:
+    """ Gets the domain table from the given html section"""
     table = html_section.find('table', attrs={'class': 'li'})
     table_body = table.find('tbody')
     rows = table_body.find_all('tr')
@@ -60,7 +28,32 @@ def grab_domain_table(html_section):
     return data
 
 
-def grab_ip_table(html_section):
+def grab_domains(data: list) -> List:
+    """ From a given list of lists, that each contains a row from the webex table, text and domains,
+        return a list of all the domains only
+    """
+    domainList: List = []
+    # skip the last line of the table, it's a message and not a domain
+    for lines in data[:-1]:
+        domains = lines[1].split(' ')
+        cleanDomain = " ".join(re.findall(DOMAIN_REGEX, domains[0]))
+
+        # Strip Whitespace lines to remove blank values
+        cleanDomain = cleanDomain.strip()
+        if '\t\t\t' in cleanDomain:  # multiple domains in one line
+            multiple_domains_lst = cleanDomain.split('\t\t\t')
+            domainList += multiple_domains_lst
+        elif cleanDomain:
+            domainList.append(cleanDomain)
+    # remove duplicates and convert it back to a list fot the slicing to work
+    finel_domainList = list(set(domainList))
+    return finel_domainList
+
+
+def grab_ip_table(html_section: element.Tag) -> List:
+    """ Gets the IP table as an html, parses it and
+    returns a list of lists each one contains a row from the table
+    """
     rows = html_section.find_all('ul')
     data = []
     for row in rows:
@@ -70,197 +63,133 @@ def grab_ip_table(html_section):
     return data
 
 
-class Client:
+def grab_CIDR_ips(data: list) -> List:
+    """ From list of lists that contain all rows of the IP webex table,
+        return a list with only CIDR ip addresses
     """
-    Client to use in the WebEx Feed integration. Overrides BaseClient.
-    WebEx IP address and Domain web service announcement:
+    CIDR_ip_list: List = []
+    if not data[0]:
+        raise DemistoException('Did not find any IP indicators in the IP table')
+
+    for line in data[0]:
+        values = line.split(' (CIDR)')
+        CIDR_ip_list.append(values[0])
+    # remove duplicates and convert it back to a list fot the slicing to work
+    finel_CIDR_ip_list = list(set(CIDR_ip_list))
+    return finel_CIDR_ip_list
+
+
+def parse_indicators_from_response(response: requests.Response) -> Dict[str, List[str]]:
+    """ Recives an html page from the Webex website that contains a IP table and a DOMAIN table.
+    Parses the page, and returns a dict with two keys: DOMAIN and CIDR(ip ranges),
+    while the value is a list of the related indicators.
     """
+    try:
+        soup = BeautifulSoup(response.text, "html.parser")
 
-    def __init__(self, insecure: bool = False, tags: Optional[list] = None,
-                 tlp_color: Optional[str] = None):
-        """
-        Implements class for WebEx feeds.
-        :param urls_list: List of url, regions and service of each service.
-        :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
-        :param tlp_color: Traffic Light Protocol color.
-        """
-        self._url = "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network"
-        self._verify: bool = insecure
-        self.tags = [] if tags is None else tags
-        self.tlp_color = tlp_color
-        self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+        # Get the IP and Domain Sections from the html
+        ipsSection = soup.find("div", {"id": "id_135011"})
+        domainsSection = soup.find("div", {"id": "id_135010"})
 
-    def build_iterator(self) -> List:
-        """Retrieves all entries from the feed.
+        # Get Domains
+        domainTable = grab_domain_table(domainsSection)
+        all_domains_lst = grab_domains(domainTable)
 
-        Returns:
-            A list of objects, containing the indicators.
-        """
-        result = []
+        # Get IPS
+        ipTable = grab_ip_table(ipsSection)
+        all_IPs_lst = grab_CIDR_ips(ipTable)
+    except Exception as e:
+        raise DemistoException(f'Failed to parse the response from the website. Error: {str(e)}')
+
+    if not all_IPs_lst or not all_domains_lst:
+        raise DemistoException('Did not find the expected indicators in the response from the website')
+    all_info_dict = {CIDR: all_IPs_lst, DOMAIN: all_domains_lst}
+    return all_info_dict
+
+
+def check_indicator_type(indicator: str) -> str:
+    """Checks the indicator type.
+        The indicator type can be classified as one of the following values: CIDR, IPv6CIDR, IP, IPv6 or Domain.
+
+    Args:
+        indicator: indicator value
+
+    Returns:
+        The type of the indicator
+    """
+    is_ip_indicator = FeedIndicatorType.ip_to_indicator_type(indicator)
+    if is_ip_indicator:
+        return is_ip_indicator
+    elif '*' in indicator:
+        return FeedIndicatorType.DomainGlob
+    # domain
+    else:
+        return FeedIndicatorType.Domain
+
+
+class Client(BaseClient):
+    """ A client class that implements connectivity with the website."""
+
+    def all_raw_data(self) -> requests.Response:
+        """ Gets the entire html page from the website."""
         try:
-            response = requests.get(
-                url=self._url,
-                verify=self._verify,
-                proxies=self._proxies,
-            )
-            response.raise_for_status()
-
-            soup = BeautifulSoup(response.text, "html.parser")
-
-            # Get the IP and Domain Sections from WebEx website
-            ipsSection = soup.find("div", {"id": "id_135011"})
-            domainsSection = soup.find("div", {"id": "id_135010"})
-
-            # Get Domains from domain table
-            domainTable = grab_domain_table(domainsSection)
-            retDomains = grab_domains(domainTable)
-
-            # Get IPS from IP Table
-            ipTable = grab_ip_table(ipsSection)
-            retIPs = grab_ips(ipTable)
-
-            jsonStr = '[{"urls": ' + json.dumps(retDomains) + ',' + '"ips": ' + json.dumps(retIPs) + '}]'
-            data = json.loads(jsonStr)
-            indicators = [i for i in data if 'ips' in i or 'urls' in i]  # filter empty entries and add metadata]
-            result.extend(indicators)
-        except requests.exceptions.SSLError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                            f'Check your not secure parameter.\n\n{err}')
-        except requests.ConnectionError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                            f'Check your Server URL parameter.\n\n{err}')
-        except requests.exceptions.HTTPError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n')
-        except ValueError as err:
-            demisto.debug(str(err))
-            raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
-        return result
-
-    @staticmethod
-    def check_indicator_type(indicator):
-        """Checks the indicator type.
-           The indicator type can be classified as one of the following values: CIDR, IPv6CIDR, IP, IPv6 or Domain.
-
-        Args:
-            indicator: indicator value
-
-        Returns:
-            The type of the indicator
-        """
-        is_ip_indicator = FeedIndicatorType.ip_to_indicator_type(indicator)
-        if is_ip_indicator:
-            return is_ip_indicator
-        elif '*' in indicator:
-            return FeedIndicatorType.DomainGlob
-        # domain
-        else:
-            return FeedIndicatorType.Domain
+            return self._http_request(
+                method='GET',
+                url_suffix='',
+                resp_type='response')
+        except DemistoException as e:
+            raise e
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
-    """Builds the iterator to check that the feed is accessible.
+def test_module(client: Client) -> str:     # pragma: no cover
+    """Tests connectivity with the client.
     Args:
         client: Client object.
 
     Returns:
-        Outputs.
+        str: ok if test passed else the exception message.
     """
-    client.build_iterator()
-    return 'ok', {}, {}
+    try:
+        client.all_raw_data()
+    except DemistoException as e:
+        return e.message
+    return 'ok'
 
 
-def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1) -> List[Dict]:
-    """Retrieves indicators from the feed
+def get_indicators_command(client: Client, **args) -> CommandResults:
+    """ Gets indicators from the Webex website and sends them to the war-room."""
+    client = client
+    limit = arg_to_number(args.get('limit', 20))
+    requested_indicator_type = args.get('indicator_type', 'Both')
+    if requested_indicator_type not in ['Both', 'CIDR', 'DOMAIN']:
+        raise DemistoException('The indicator_type argument must be one of the following: Both, CIDR, DOMAIN')
 
-    Args:
-        client: Client object with request
-        indicator_type_lower: indicator type
-        limit: limit the results
+    res = client.all_raw_data()
+    clean_res = parse_indicators_from_response(res)
 
-    Returns:
-        Indicators.
-    """
-    iterator = client.build_iterator()
-    # filter indicator_type specific entries
+    # parse the data from an html page to a list of dicts with ips and domains
+    if requested_indicator_type != 'Both':
+        indicators = clean_res[requested_indicator_type][:limit]
+    else:
+        indicators = clean_res[CIDR][:limit] + clean_res[DOMAIN][:limit]
+    final_indicators_lst = []
+    for value in indicators:
+        type_ = check_indicator_type(value)
+        indicators_and_type = {
+            'value': value,
+            'type': type_
+        }
+        final_indicators_lst.append(indicators_and_type)
 
-    if not indicator_type_lower == 'both':
-        iterator = [i for i in iterator if indicator_type_lower in i]
-    indicators = []
-    if limit > 0:
-        iterator = iterator[:limit]
+    md = tableToMarkdown('Indicators from Webex:', final_indicators_lst,
+                         headers=['value', 'type'], removeNull=True)
 
-    for item in iterator:
-        if indicator_type_lower == 'both':
-            values = item.get('ips', []) + item.get('urls', [])
-        else:
-            values = item.get(indicator_type_lower)
-        if values:
-            for value in values:
-                type_ = Client.check_indicator_type(value)
-                raw_data = {
-                    'value': value,
-                    'type': type_,
-                }
-                for key, val in item.items():
-                    if key not in ['ips', 'urls']:
-                        raw_data.update({key: val})
-
-                indicator_mapping_fields = {}
-
-                """
-                indicator_mapping_fields = {
-                    "port": argToList(item.get('tcpPorts', '')),
-                    "service": item.get('serviceArea', '')
-                }
-
-                if item.get('expressRoute'):
-                    indicator_mapping_fields["office365expressroute"] = item.get('expressRoute')
-                if item.get('category'):
-                    indicator_mapping_fields["office365category"] = item.get('category')
-                if item.get('required'):
-                    indicator_mapping_fields["office365required"] = item.get('required')
-                if item.get('notes'):
-                    indicator_mapping_fields["description"] = item.get('notes')
-                """
-
-                indicator_mapping_fields['tags'] = client.tags
-                if client.tlp_color:
-                    indicator_mapping_fields['trafficlightprotocol'] = client.tlp_color  # type: ignore
-
-                indicators.append({
-                    'value': value,
-                    'type': type_,
-                    'rawJSON': raw_data,
-                    'fields': indicator_mapping_fields
-                })
-
-    return indicators
+    return CommandResults(
+        readable_output=md,
+    )
 
 
-def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
-    """Wrapper for retrieving indicators from the feed to the war-room.
-
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
-    """
-    indicator_type = str(args.get('indicator_type'))
-    indicator_type_lower = indicator_type.lower()
-    limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    indicators = fetch_indicators(client, indicator_type_lower, limit)
-    human_readable = tableToMarkdown('Indicators from WebEx Feed:', indicators,
-                                     headers=['value', 'type'], removeNull=True)
-
-    return human_readable, {}, {'raw_response': indicators}
-
-
-def fetch_indicators_command(client: Client) -> List[Dict]:
+def fetch_indicators_command(client: Client, tags: tuple = None, tlp_color: str = None) -> list:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
 
     Args:
@@ -269,42 +198,50 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
     Returns:
         Indicators.
     """
-    indicators = fetch_indicators(client, 'both')
-    return indicators
+    res = client.all_raw_data()
+    # parse the data from an html page to a list of dicts with ips and domains
+    clean_res = parse_indicators_from_response(res)
+    results = []
+    indicator_mapping_fields = {'tags': tags, 'trafficlightprotocol': tlp_color}
+    for indicator in clean_res[CIDR] + clean_res[DOMAIN]:
+        results.append({
+            'value': indicator,
+            'type': check_indicator_type(indicator),
+            'fields': indicator_mapping_fields
+        })
+    return results
 
 
 def main():
-    """
-    PARSE AND VALIDATE INTEGRATION PARAMS
-    """
     params = demisto.params()
-    use_ssl = not params.get('insecure', False)
-    tags = argToList(params.get('feedTags'))
+    args = demisto.args()
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    tags = params.get('feedTags'),
     tlp_color = params.get('tlp_color')
-
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(use_ssl, tags, tlp_color)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
-            'test-module': test_module,
-            'webex-get-indicators': get_indicators_command
-        }
-        if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+        client = Client(
+            base_url=BASE_URL,
+            verify=verify_certificate,
+            proxy=proxy,
+        )
 
+        if command == 'test-module':
+            return_results(test_module(client=client))
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client)
-            for iter_ in batch(indicators, batch_size=2000):
+            res = fetch_indicators_command(client=client, tags=tags, tlp_color=tlp_color)
+            for iter_ in batch(res, batch_size=2000):
                 demisto.createIndicators(iter_)
-
+        elif command == 'webex-get-indicators':
+            return_results(get_indicators_command(client=client, **args))
         else:
-            raise NotImplementedError(f'Command {command} is not implemented.')
-
-    except Exception as err:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration. [{err}]'
-        return_error(err_msg)
+            raise NotImplementedError(f'command {command} is not implemented.')
+    except DemistoException as e:
+        # For any other integration command exception, return an error
+        demisto.error(format_exc())
+        return_error(f'Failed to execute {command} command. Error: {str(e)}.')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

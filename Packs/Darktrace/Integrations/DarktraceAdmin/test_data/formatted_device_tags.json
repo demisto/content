@@ -1,0 +1,20 @@
+[
+    {
+    "tagId": 9,
+    "tagName": "Admin",
+    "expiry": 0,
+    "tagDescription": ""
+    },
+    {
+    "tagId": 117,
+    "tagDescription": "Testing tag for SDK",
+    "tagName": "TEST",
+    "expiry": 0
+    },
+    {
+    "tagId": 90,
+    "tagName": "Katherine Test",
+    "tagDescription": "",
+    "expiry": 0
+    }
+]

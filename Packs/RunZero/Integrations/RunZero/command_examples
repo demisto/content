@@ -1,0 +1,19 @@
+!runzero-asset-search
+!runzero-asset-search asset_ids=asset_id1,asset_id2 display_attributes=True display_services=True limit=3
+!runzero-asset-search hostnames=RHEL85
+!runzero-asset-search ips=192.168.1.91,192.168.1.1
+!runzero-asset-search search=os:Windows 
+!runzero-service-search
+!runzero-service-search service_addresses=192.168.1.2,192.168.1.91 limit=3 display_attributes=True
+!runzero-service-search search=os:Windows 
+!runzero-service-search service_id=service_id
+!runzero-asset-delete asset_ids=id1,id2
+!runzero-service-delete service_id=id1,id2
+!runzero-comment-add asset_id=asset_id comment="new comment"
+!runzero-tag-add asset_id=asset_id tags=tag1,tag2
+!runzero-tag-delete asset_id=asset_id tags=tag1,tag2
+!runzero-quota-get
+!runzero-wireless-lan-search
+!runzero-wireless-lan-search wireless_id=wireless_id limit=2
+!runzero-wireless-lan-search search=MAC:AA:BB:CC:DD:EE
+!runzero-wireless-lan-delete wireless_id=wireless_id

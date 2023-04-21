@@ -1593,6 +1593,51 @@ Remove a tag from the OpsGenie alert.
 >|---|---|---|---|---|---|---|
 >| Remove Tags | b15c7555-d685-4a96-8798-46320618004e | 3cc69931-167f-411c-a331-768997c29d2e | true | 2021-12-01T13:49:02.53Z | Removed tags | true |
 
+### opsgenie-invite-user
+***
+Invite a user to OpsGenie
+
+#### Base Command
+
+`opsgenie-invite-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username  | E-mail address of the user. | True | 
+| fullName | Name of the user | True | 
+| role | Role of user. It may be one of admin, user or the name of a custom role you've created.| True | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpsGenie.User.Id | String | ID of the User | 
+| OpsGenie.User.name | String | Username of the user | 
+
+
+#### Command Example
+```!opsgenie-invite-user username=test@example.com fullName="Test XSOAR" role=user```
+
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "User": {
+            "id": "f14b51c9-151b-48b2-afda-e2fcc182f230-1613001837514",
+            "name": "test@example.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### OpsGenie
+>|Id|name|
+>|---|---|
+>| 3cc69931-167f-411c-a331-768997c29d2e | test@example.com |
 
 ### opsgenie-get-teams
 ***

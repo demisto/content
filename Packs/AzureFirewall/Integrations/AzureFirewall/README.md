@@ -17,6 +17,8 @@ This integration was integrated and tested with version 2021-03-01 of Azure Fire
     | Client Secret. |  | False |
     | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+    he integration is running on Azure VM. | False |
     | API Version. |  | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |

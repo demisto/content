@@ -15,6 +15,8 @@ This integration was integrated and tested with version v1 of Microsoft Graph.
     | Key or Client Secret | See the Help tab. | False |
     | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
     | Fetch incidents | Whether to fetch incidents. | False |
     | Email address from which to fetch incidents | For example, "example@demisto.com" | False |
     | Name of the folder or sub-folder from which to fetch incidents | Supports folder ID and sub-folders, for example Inbox/Phishing. | False |

@@ -55,6 +55,7 @@ For more details about the authentication used in this integration, see <a href=
   <li><a href="#msgraph-groups-list-members" target="_self">Lists group members: msgraph-groups-list-members</a></li>
   <li><a href="#msgraph-groups-add-member" target="_self">Add a member to a group: msgraph-groups-add-member</a></li>
   <li><a href="#msgraph-groups-remove-member" target="_self">Removes a member from a group: msgraph-groups-remove-member</a></li>
+  <li><a href="#msgraph-groups-generate-login-url" target="_self">Generates the login url used for Authorization code flow.: msgraph-groups-generate-login-url</a></li>
 </ol>
 <h3 id="msgraph-groups-list-groups">1. msgraph-groups-list-groups</h3>
 <hr>
@@ -831,6 +832,11 @@ If the group collection includes DynamicMembership, the group has dynamic member
       <td>Filters members results. For example, startswith(displayName,'user').</td>
       <td>Optional</td>
     </tr>
+    <tr>
+      <td>count</td>
+      <td>Retrieves the total count of matching resources.</td>
+      <td>Optional</td>
+    </tr>
   </tbody>
 </table>
 
@@ -1109,4 +1115,9 @@ There are no context output for this command.
 User {user_id} was removed from the Group {group_id} successfully.
 </p>
 </p>
-<h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2>
+<h2>Additional Information</h2><h2>Troubleshooting</h2>
+
+<h2>Known Limitations</h2>
+<p>
+<a href="https://learn.microsoft.com/en-us/graph/api/resources/groups-overview?view=graph-rest-1.0&tabs=http">As per</a>, Microsoft also supports dynamic distribution groups which cannot be managed or retrieved through Microsoft Graph.
+</p>

@@ -2,20 +2,21 @@ commonfields:
   id: CiscoWSA
   version: -1
 name: CiscoWSA
-display: CiscoWSA
+display: CiscoWSA (Deprecated)
 category: Utilities
-description: Cisco WSA
+deprecated: true
+description: Deprecated. Use CiscoWSAV2 instead.
 configuration:
-- display: ""
+- display: "Server URL"
   name: url
   defaultvalue: http://192.168.1.1
   type: 12
   required: true
-- display: ""
+- display: "API Key"
   name: apikey
   type: 4
   required: true
-- display: ""
+- display: "Port"
   name: port
   type: 0
   required: false
@@ -115,9 +116,9 @@ script:
     - contextPath: wsa.response
       description: whether the result indicates if request is success or failure
     description: Deleting an Access Policy
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   runonce: false
   subtype: python3
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)

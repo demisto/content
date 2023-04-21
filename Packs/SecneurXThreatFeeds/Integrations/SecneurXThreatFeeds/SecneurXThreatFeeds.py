@@ -7,9 +7,10 @@ import requests  # noqa
 import traceback  # noqa
 from typing import Dict, Any  # noqa
 from datetime import datetime, timedelta  # noqa
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 DEMISO_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 

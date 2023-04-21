@@ -990,3 +990,51 @@ def test_security_group_instance_detach_command(requests_mock, mock_client):
 
     assert result.outputs_prefix == 'CheckPointDome9.Instance'
     assert result.outputs_key_field == 'id'
+
+
+@pytest.mark.parametrize(
+    'page_size, page, limit',
+    [
+        (
+            -1, 0, 10
+        ),
+        (
+            5, -1, 5
+        ),
+        (
+            5, 5, -1
+        )
+    ]
+)
+def test_validate_pagination_arguments(page_size, page, limit):
+    """
+    Given:
+     - invalid values of page_size, page and limit
+
+    When:
+     - executing validate_pagination_arguments function
+
+    Then:
+     - Ensure that ValueError is raised
+    """
+
+    from CheckPointDome9 import validate_pagination_arguments
+    with pytest.raises(ValueError):
+        validate_pagination_arguments(page=page, page_size=page_size, limit=limit)
+
+
+def test_attach_comment_to_ip_no_description():
+    """
+    Given:
+     - no ip list and no description
+
+    When:
+     - executing attach_comment_to_ip function
+
+    Then:
+     - Ensure that ValueError is raised
+    """
+    from CheckPointDome9 import attach_comment_to_ip
+
+    with pytest.raises(ValueError):
+        attach_comment_to_ip(ip_list=[], comment_list=[])

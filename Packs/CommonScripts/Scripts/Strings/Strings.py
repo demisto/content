@@ -19,7 +19,7 @@ def strings(args):
     fEntry = demisto.executeCommand('getFilePath', {'id': args['entry']})[0]
     if not isError(fEntry):
         matches = []
-        with open(demisto.get(fEntry, 'Contents.path'), 'r', 1024 * 1024) as f:
+        with open(demisto.get(fEntry, 'Contents.path'), 'r', 1024 * 1024, errors='ignore') as f:
             buff = ''
             c = f.read(1)
             while c != '':

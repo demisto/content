@@ -1,8 +1,9 @@
 {
-    "name": "ArrayToCSV",
-    "description": "Converts a simple Array into a textual comma separated string",
+    "name": "ArrayToCSV (Deprecated)",
+    "description": "Deprecated. Use the CommonScripts pack instead.",
+    "hidden": true,
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Omar Salim Ahmed",
     "url": "",
     "email": "",

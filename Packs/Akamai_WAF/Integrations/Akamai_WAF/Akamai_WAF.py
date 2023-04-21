@@ -1,15 +1,16 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 """ IMPORTS """
 # Std imports
 import re
 import time
 # 3-rd party imports
 from typing import Dict, List, Optional, Tuple, Union
-
 import requests
 import urllib3
+
 # Local imports
 from akamai.edgegrid import EdgeGridAuth
 
@@ -163,6 +164,7 @@ class Client(BaseClient):
         return self._http_request(method='GET',
                                   url_suffix='/cps/v2/enrollments',
                                   headers=headers,
+                                  timeout=(60, 180),
                                   params=params
                                   )
 
@@ -246,6 +248,31 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix=f"{change_path}/input/update/post-verification-warnings-ack",
+            headers=headers,
+            data=payload
+        )
+
+    # Created by C.L.
+
+    def acknowledge_pre_verification_warning(self, change_path: str) -> dict:
+        """
+            Acknowledge the pre verification warning message after initiate an enrollment change
+
+        Args:
+            change_path: The path that includes enrollmentId and changeId: e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
+
+        Returns:
+            Json response as dictionary
+        """
+        headers = {
+            "Content-Type": "application/vnd.akamai.cps.acknowledgement.v1+json",
+            "Accept": "application/vnd.akamai.cps.change-id.v1+json"
+        }
+
+        payload = '{"acknowledgement": "acknowledge"}'
+        return self._http_request(
+            method='POST',
+            url_suffix=f"{change_path}/input/update/pre-verification-warnings-ack",
             headers=headers,
             data=payload
         )
@@ -830,14 +857,14 @@ class Client(BaseClient):
                                    contract_id: str,
                                    group_id: str) -> dict:
         """
-            clone a new property from an existing template property
+            List properties available for the current contract and group.
         Args:
             contract_id:
             group_id:
 
         Returns:
             <Response [200]>
-            The response provides a URL link to the newly created property.
+            The response lists all properties available for the requested contract and group.
         """
 
         params = {
@@ -1443,19 +1470,21 @@ class Client(BaseClient):
     # created by D.S.
     def clone_appsec_config_version(self,
                                     config_id: str,
-                                    create_from_version: str) -> Dict:
+                                    create_from_version: str,
+                                    rule_update: bool = True) -> Dict:
         """
         Create a new version of security configuration from a previous version
         Args:
-            config_id
-            versionId
+            config_id: AppSec configuration ID
+            create_from_version: AppSec configuration version number to create from
+            rule_update: Specifies whether the application rules should be migrated to the latest version.
 
         Returns:
             <Response [204]>
         """
         body = {
             "createFromVersion": int(create_from_version),
-            "ruleUpdate": True
+            "ruleUpdate": rule_update
         }
         return self._http_request(method='Post',
                                   url_suffix=f'appsec/v1/configs/{config_id}/versions',
@@ -1699,6 +1728,156 @@ class Client(BaseClient):
                                   headers=headers,
                                   )
 
+    # Created by D.S. 2022-11-25
+    def get_papi_property_bygroup(self,
+                                  contract_id: str,
+                                  group_id: str,
+                                  property_id: str,) -> dict:
+        """
+            get property by propertyId with a group
+        Args:
+            contract_id: Unique identifier for the contract
+            group_id: Unique identifier for the group
+            property_id: Unique identifier for the property
+
+        Returns:
+            <Response [200]>
+        """
+
+        params = {
+            "contractId": contract_id,
+            "groupId": group_id,
+        }
+
+        headers = {
+            "accept": "application/json",
+            "PAPI-Use-Prefixes": 'true'
+        }
+
+        return self._http_request(method='GET',
+                                  url_suffix=f'papi/v1/properties/{property_id}',
+                                  headers=headers,
+                                  params=params)
+
+    # Created by D.S. 2023-02-27
+    def new_papi_property_version(self,
+                                  contract_id: str,
+                                  property_id: str,
+                                  group_id: str,
+                                  create_from_version: str,
+                                  ) -> dict:
+        """
+            Create a new property version based on any previous version.
+            All data from the createFromVersion populates the new version, including its rules and hostnames.
+        Args:
+            contract_id: Unique identifier for the contract.
+            property_id: Unique identifier for the property.
+            group_id: Unique identifier for the group.
+            create_from_version: The property version on which to base the new version.
+
+        Returns:
+            The response provides a URL link to the newly created property in dictionary
+            {
+                "versionLink": "/papi/v1/properties/prp_123456/versions/4?contractId=ctr_X-nYYYYY&groupId=grp_654321"
+            }
+        """
+        body = {
+            "createFromVersion": create_from_version
+        }
+        headers = {
+            "Accept": 'application/json',
+            "content-type": "application/json",
+        }
+
+        params = {
+            "contractId": contract_id,
+            "groupId": group_id
+        }
+
+        return self._http_request(method='POST',
+                                  url_suffix=f'/papi/v1/properties/{property_id}/versions',
+                                  headers=headers,
+                                  json_data=body,
+                                  params=params,
+                                  )
+
+    def list_papi_property_activations(self,
+                                       contract_id: str,
+                                       property_id: str,
+                                       group_id: str,) -> dict:
+        """
+            This lists all activations for all versions of a property, on both production and staging networks.
+        Args:
+            contract_id: Unique identifier for the contract.
+            property_id: Unique identifier for the property.
+            group_id: Unique identifier for the group.
+
+        Returns:
+            The response provides a dictionary that include a list of activations
+
+        """
+
+        params = {
+            "contractId": contract_id,
+            "groupId": group_id
+        }
+
+        return self._http_request(method='GET',
+                                  url_suffix=f'/papi/v1/properties/{property_id}/activations',
+                                  params=params,
+                                  )
+
+    def list_appsec_configuration_activation_history(self,
+                                                     config_id: int,) -> dict:
+        """
+            Lists the activation history for a configuration.
+            The history is an array in descending order of submitDate.
+            The most recent submitted activation lists first. Products: All.
+        Args:
+            config_id: Unique identifier for the contract.
+
+        Returns:
+            The response provides a dictionary that include a list of activations
+
+        """
+        headers = {"accept": "application/json"}
+
+        return self._http_request(method='GET',
+                                  url_suffix=f'/appsec/v1/configs/{config_id}/activations',
+                                  headers=headers,
+                                  )
+
+    def list_papi_property_by_hostname(self,
+                                       hostname: str,
+                                       network: str = None,
+                                       contract_id: str = None,
+                                       group_id: str = None,) -> dict:
+        """
+            This operation lists active property hostnames for all properties available in an account.
+        Args:
+            hostname: Filter the results by cnameFrom. Supports wildcard matches with *.
+            network: Network of activated hostnames, either STAGING or PRODUCTION.
+            contract_id: Unique identifier for the contract.
+            group_id: Unique identifier for the group.
+
+        Returns:
+            The response provides a dictionary that include a list of properties
+
+        """
+        headers = {"accept": "application/json"}
+        method = "GET"
+        params = {"sort": "hostname:a",
+                  "hostname": hostname,
+                  "network": network,
+                  "contractId": contract_id,
+                  "groupId": group_id
+                  }
+        return self._http_request(method=method,
+                                  url_suffix='papi/v1/hostnames',
+                                  params=params,
+                                  headers=headers,
+                                  )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1790,31 +1969,30 @@ def new_papi_property_command_ec(raw_response: dict) -> Tuple[list, list]:
     return entry_context, human_readable
 
 
-# Created by D.S.
+# Created by D.S. [Modified on 2023/02/27, add a few new fields]
 def list_papi_property_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse papi property
     Args:
         raw_response:
     Returns:
-        List of property_id
+        dictionary of Property
     """
     entry_context = []
     human_readable = []
     if raw_response:
-        property_name = raw_response.get('propertyName')
-        property_id = raw_response.get('propertyId')
-        assetId = raw_response.get('assetId')
         entry_context.append(assign_params(**{
-            "PropertyName": property_name,
-            "PropertyId": property_id,
-            "AssetId": assetId
+            "AccountId": raw_response.get("accountId", ''),
+            "ContractId": raw_response.get("contractId", ''),
+            "GroupId": raw_response.get("groupId", ''),
+            "PropertyId": raw_response.get("propertyId", ''),
+            "PropertyName": raw_response.get("propertyName", ''),
+            "LatestVersion": raw_response.get("latestVersion", ''),
+            "StagingVersion": raw_response.get("stagingVersion", ''),
+            "ProductionVersion": raw_response.get("productionVersion", ''),
+            "AssetId": raw_response.get("assetId", '')
         }))
-        human_readable.append(assign_params(**{
-            "PropertyName": property_name,
-            "PropertyId": property_id,
-            "AssetId": assetId
-        }))
+        human_readable = entry_context
     return entry_context, human_readable
 
 # Created by D.S.
@@ -2413,6 +2591,136 @@ def get_papi_edgehostname_creation_status_command_ec(raw_response: dict) -> Tupl
     return entry_context, human_readable
 
 
+# Created by D.S. 2022-11-25
+def get_papi_property_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        Parse papi property
+    Args:
+        raw_response:
+    Returns:
+        dictionary of Property
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        entry_context.append(assign_params(**{
+            "AccountId": raw_response["accountId"],
+            "ContractId": raw_response["contractId"],
+            "GroupId": raw_response["groupId"],
+            "PropertyId": raw_response["propertyId"],
+            "PropertyName": raw_response["propertyName"],
+            "LatestVersion": raw_response["latestVersion"],
+            "StagingVersion": raw_response["stagingVersion"],
+            "ProductionVersion": raw_response["productionVersion"],
+            "AssetId": raw_response["assetId"]
+        }))
+        human_readable = entry_context
+    return entry_context, human_readable
+
+
+# Created by D.S. 2023-02-27
+def new_papi_property_version_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        Parse papi propertyLink
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of property_id
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        version_link = raw_response.get('versionLink', '')
+        entry_context.append(assign_params(**{
+            "VersionLink": version_link,
+        }))
+        human_readable.append(assign_params(**{
+            "VersionLink": version_link,
+        }))
+
+    return entry_context, human_readable
+
+
+def list_papi_property_activations_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        Parse papi activations
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of property activations
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        activations = raw_response.get('activations', {}).get('items', [])
+        entry_context.append(assign_params(**{
+            "Activations": activations,
+        }))
+        human_readable.append(assign_params(**{
+            "Activations": activations,
+        }))
+
+    return entry_context, human_readable
+
+
+def list_appsec_configuration_activation_history_ec(raw_response: dict,
+                                                    config_id: int) -> Tuple[list, list]:
+    """
+        Parse Secuirty configuration activation history
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of property activations
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        entry_context.append(assign_params(**{
+            "id": config_id,
+            "ActivationHistory": raw_response.get('activationHistory'),
+        }))
+        human_readable.append(assign_params(**{
+            "id": config_id,
+            "Activations": raw_response.get('activationHistory'),
+        }))
+
+    return entry_context, human_readable
+
+
+def list_papi_property_by_hostname_ec(raw_response: dict,
+                                      cname_from: str) -> Tuple[list, list]:
+    """
+        Parse papi properties list
+
+    Args:
+        raw_response:
+        cname_from:
+
+    Returns:
+        List of papi properties
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        properties = raw_response.get('hostnames', {}).get('items', [])
+        entry_context.append(assign_params(**{
+            "CNameFrom": cname_from,
+            "Properties": properties,
+        }))
+        human_readable.append(assign_params(**{
+            "CNameFrom": cname_from,
+            "Properties": properties,
+        }))
+
+    return entry_context, human_readable
+
+
 ''' COMMANDS '''
 # Created by C.L.
 
@@ -2713,6 +3021,21 @@ def acknowledge_warning_command(client: Client, change_path: str) -> Tuple[objec
         return human_readable, {"Akamai.Acknowledge": raw_response}, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+# Created by C.L.
+@logger
+def acknowledge_pre_verification_warning_command(client: Client, change_path: str) -> Tuple[object, dict, Union[List, Dict]]:
+
+    raw_response: Dict = client.acknowledge_pre_verification_warning(change_path)
+
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Acknowledge_warning'
+
+        return human_readable, {"Akamai.Acknowledge": raw_response}, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
 
 # Created by C.L. Oct-06-22
 
@@ -3063,7 +3386,7 @@ def update_network_list_elements_command(client: Client, network_list_id: str, e
     elements = argToList(elements)
     # demisto.results(elements)
 
-    raw_response = client.update_network_list_elements(network_list_id=network_list_id, elements=elements)
+    raw_response = client.update_network_list_elements(network_list_id=network_list_id, elements=elements)  #type: ignore # noqa
 
     if raw_response:
         human_readable = f'**{INTEGRATION_NAME} - network list {network_list_id} updated**'
@@ -3828,7 +4151,7 @@ def clone_security_policy_command(client: Client,
                                                          config_version=config_version)
         lookupKey = 'policyName'
         lookupValue = policy_name
-        returnDict = next((item for item in raw_response['policies'] if item[lookupKey] == lookupValue), None)
+        returnDict = next((item for item in raw_response['policies'] if item[lookupKey].lower() == lookupValue.lower()), None)
         if returnDict is not None:
             title = f'{INTEGRATION_NAME} - clone security policy command - found existing Security Policy'
             entry_context, human_readable_ec = clone_security_policy_command_ec(returnDict)
@@ -3880,7 +4203,6 @@ def clone_security_policy_command(client: Client,
             policy_name=policy_name,
             policy_prefix=policy_prefix
         )
-
         title = f'{INTEGRATION_NAME} - clone security policy'
         entry_context, human_readable_ec = clone_security_policy_command_ec(raw_response)
         context_entry = {
@@ -4074,7 +4396,10 @@ def get_appsec_config_latest_version_command(client: Client,
         lookupKey = 'name'
         lookupValue = sec_config_name
         appsec_config_latest: Dict = next(
-            (item for item in raw_response['configurations'] if item[lookupKey] == lookupValue), {})
+            (item for item in raw_response['configurations'] if item[lookupKey].lower() == lookupValue.lower()), {})
+        if appsec_config_latest == {}:
+            error_msg = f'The Security Configuration "{sec_config_name}" is not found.'
+            raise DemistoException(error_msg)
         latestVersion = appsec_config_latest.get("latestVersion", 0)
         stagingVersion = appsec_config_latest.get("stagingVersion")
         productionVersion = appsec_config_latest.get("productionVersion")
@@ -4150,12 +4475,14 @@ def clone_appsec_config_version_command(client: Client,
                                         config_id: str,
                                         create_from_version: str,
                                         do_not_clone: str,
+                                        rule_update: bool = True,
                                         ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Appsec Configurtion - create a new version by clone the latest version
     Args:
-        config_id
-        create_from_version
+        config_id: AppSec configuration ID
+        create_from_version: AppSec configuration version number to create from
+        rule_update: Specifies whether the application rules should be migrated to the latest version.
         do_not_clone: Do not clone to create a new version, use in the test
 
     Returns:
@@ -4169,6 +4496,7 @@ def clone_appsec_config_version_command(client: Client,
     else:
         raw_response = client.clone_appsec_config_version(config_id=config_id,
                                                           create_from_version=create_from_version,
+                                                          rule_update=rule_update,
                                                           )
 
     title = f'{INTEGRATION_NAME} - Appsec Configurtion - create a new version by clone the latest version'
@@ -4665,6 +4993,267 @@ def get_papi_property_rule_command(client: Client,
         return human_readable, {}, {}
 
 
+# Created by D.S. 2022-11-25
+def get_papi_property_by_name_command(client: Client,
+                                      contract_id: str,
+                                      group_id: str,
+                                      property_name: str,) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Get papi property within a group by property name
+    Args:
+        client: Client object with request
+        contract_id: Unique identifier for the contract
+        property_name: name of the property
+        group_id: Unique identifier for the group
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.list_papi_property_bygroup(contract_id=contract_id,
+                                                           group_id=group_id,
+                                                           )
+    lookupKey = 'propertyName'
+    lookupValue = property_name
+    returnDict = next((item for item in raw_response["properties"]["items"]
+                       if item[lookupKey] == lookupValue), None)
+    if returnDict is not None:
+        raw_response = client.get_papi_property_bygroup(contract_id=contract_id,
+                                                        group_id=group_id,
+                                                        property_id=returnDict['propertyId'],
+                                                        )
+        title = f'{INTEGRATION_NAME} - get papi property by name command'
+        entry_context, human_readable_ec = get_papi_property_bygroup_ec(raw_response['properties']['items'][0])
+        context_entry: Dict = {
+            f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.Found": entry_context
+        }
+        human_readable = tableToMarkdown(
+            name=title,
+            t=human_readable_ec,
+            removeNull=True,
+        )
+        return human_readable, context_entry, raw_response
+    else:
+
+        err_msg = f'{INTEGRATION_NAME} - get papi property command: Property {property_name} is not found'
+        raise DemistoException(err_msg)
+
+
+# Created by D.S. 2022-11-25
+def get_papi_property_by_id_command(client: Client,
+                                    contract_id: str,
+                                    group_id: str,
+                                    property_id: str,) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Get papi property within a group by property name
+    Args:
+        client: Client object with request
+        contract_id: Unique identifier of the contract
+        property_id: Unique identifier of the property
+        group_id: Unique identifier for the group
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.get_papi_property_bygroup(contract_id=contract_id,
+                                                          group_id=group_id,
+                                                          property_id=property_id,
+                                                          )
+    title = f'{INTEGRATION_NAME} - get papi property by id command'
+    entry_context, human_readable_ec = get_papi_property_bygroup_ec(raw_response['properties']['items'][0])
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.Found": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+# Created by D.S. 2023-02-27
+def list_papi_property_by_group_command(client: Client,
+                                        contract_id: str,
+                                        group_id: str,
+                                        context_path: str = 'PapiProperty.ByGroup',
+                                        ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Lists properties available for the current contract and group.
+    Args:
+        client: Client object with request
+        contract_id: Unique identifier for the contract
+        group_id: Unique identifier for the group
+        context_path: Custom output context path
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.list_papi_property_bygroup(contract_id=contract_id,
+                                                           group_id=group_id,
+                                                           )
+    title = f'{INTEGRATION_NAME} - list papi property by group command'
+    entry_context = raw_response.get('properties', {}).get('items', [])
+    human_readable_ec = entry_context
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.{context_path}"
+        f"(val.GroupId && val.GroupId == obj.GroupId)": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def new_papi_property_version_command(client: Client,
+                                      contract_id: str,
+                                      property_id: str,
+                                      group_id: str,
+                                      create_from_version: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Create a new property version based on any previous version.
+        All data from the createFromVersion populates the new version, including its rules and hostnames.
+    Args:
+        contract_id: Unique identifier for the contract.
+        property_id: Unique identifier for the property.
+        group_id: Unique identifier for the group.
+        create_from_version: The property version on which to base the new version.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+        {
+            "versionLink": "/papi/v1/properties/prp_123456/versions/4?contractId=ctr_X-nYYYYY&groupId=grp_654321"
+        }
+    """
+
+    raw_response: Dict = client.new_papi_property_version(contract_id=contract_id,
+                                                          property_id=property_id,
+                                                          group_id=group_id,
+                                                          create_from_version=create_from_version)
+    title = f'{INTEGRATION_NAME} - new papi property version command'
+    entry_context, human_readable_ec = new_papi_property_version_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.NewVersion": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_papi_property_activations_command(client: Client,
+                                           contract_id: str,
+                                           property_id: str,
+                                           group_id: str,) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        This lists all activations for all versions of a property, on both production and staging networks.
+
+    Args:
+        contract_id: Unique identifier for the contract.
+        property_id: Unique identifier for the property.
+        group_id: Unique identifier for the group.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.list_papi_property_activations(contract_id=contract_id,
+                                                               property_id=property_id,
+                                                               group_id=group_id,)
+    title = f'{INTEGRATION_NAME} - list papi property activations command'
+    entry_context, human_readable_ec = list_papi_property_activations_ec(raw_response=raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.Activations"
+        f"(val.PropertyId && val.PropertyId == obj.PropertyId)": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_appsec_configuration_activation_history_command(client: Client,
+                                                         config_id: int,) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Lists the activation history for a configuration.
+        The history is an array in descending order of submitDate.
+        The most recent submitted activation lists first. Products: All.
+
+    Args:
+        config_id: Unique identifier for the contract.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.list_appsec_configuration_activation_history(config_id=config_id)
+    title = f'{INTEGRATION_NAME} - list appsec configuration activation history command'
+    entry_context, human_readable_ec = list_appsec_configuration_activation_history_ec(raw_response=raw_response,
+                                                                                       config_id=config_id)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig"
+        f"(val.Id && val.Id == obj.Id)": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_papi_property_by_hostname_command(client: Client,
+                                           hostname: str,
+                                           network: str = None,
+                                           contract_id: str = None,
+                                           group_id: str = None,) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        This operation lists active property hostnames for all properties available in an account.
+
+    Args:
+        hostname: Filter the results by cnameFrom. Supports wildcard matches with *.
+        network: Network of activated hostnames, either STAGING or PRODUCTION.
+        contract_id: Unique identifier for the contract.
+        group_id: Unique identifier for the group.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.list_papi_property_by_hostname(hostname=hostname,
+                                                               network=network,
+                                                               contract_id=contract_id,
+                                                               group_id=group_id,)
+
+    title = f'{INTEGRATION_NAME} - list papi property by hostname command'
+    entry_context, human_readable_ec = list_papi_property_by_hostname_ec(raw_response=raw_response, cname_from=hostname)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames"
+        f"(val.CNameFrom && val.CNameFrom == obj.CNameFrom)": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -4738,7 +5327,16 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-update-appsec-config-version-notes': update_appsec_config_version_notes_command,
         f'{INTEGRATION_COMMAND_NAME}-new-or-renew-match-target': new_or_renew_match_target_command,
         f'{INTEGRATION_COMMAND_NAME}-patch-papi-property-rule-generic': patch_papi_property_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-rule': get_papi_property_rule_command
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-rule': get_papi_property_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-acknowledge-pre-verification-warning': acknowledge_pre_verification_warning_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-papi-property-by-group': list_papi_property_by_group_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-by-name': get_papi_property_by_name_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-by-id': get_papi_property_by_id_command,
+        f'{INTEGRATION_COMMAND_NAME}-new-papi-property-version': new_papi_property_version_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-papi-property-activations': list_papi_property_activations_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-appsec-configuration-activation-history':
+            list_appsec_configuration_activation_history_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-papi-property-by-hostname': list_papi_property_by_hostname_command,
     }
     try:
         readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())

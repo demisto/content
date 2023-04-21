@@ -1,0 +1,99 @@
+{
+    "id": "incident_symantecedreventprocess",
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "modified": "2023-01-12T14:16:26.626982202+05:30",
+    "name": "SymantecEDR Event Process",
+    "ownerOnly": false,
+    "cliName": "symantecedreventprocess",
+    "type": "grid",
+    "closeForm": true,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Symantec EDR Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "pid",
+            "displayName": "pid",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 108,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "uid",
+            "displayName": "uid",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "cmd_line",
+            "displayName": "cmd_line",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 215,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "signature_level",
+            "displayName": "signature_level",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "integrity_id",
+            "displayName": "integrity_id",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 206,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72
+}
