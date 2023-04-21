@@ -59,7 +59,7 @@ script:
     - contextPath: GoogleMaps.Country
       description: The country or region where the provided location is, according to Google Maps.
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.11.54132
   feed: false
   isfetch: false
   longRunning: false
