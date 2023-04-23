@@ -886,26 +886,26 @@ class ZendeskClient(BaseClient):
 
     @staticmethod
     def _next_fetch_args(fetched_tickets, search_results_ids, next_run_start_time, query, time_filter,
-                         max_fetch, page_number, last_fetch):
+                         max_fetch, page_number, current_fetch):
         next_run = {
             'fetched_tickets': list(fetched_tickets)[-1000:],
             'fetch_time': next_run_start_time.strftime('%Y-%m-%dT%H:%M:00Z'),
-            # informative args
-            'query': query,
-            'time_filter': time_filter
 
         }
         if not len(search_results_ids) < max_fetch:
             next_run |= {
                 'max_fetch': max_fetch,
                 'page_number': page_number + 1,
-                'fetch_time': last_fetch,
+                'fetch_time': current_fetch,
+                'query': query,
+                'time_filter': time_filter
+
             }
 
         return next_run
 
     def fetch_incidents(self, params: dict, lastRun: Optional[str] = None):
-        last_run = json.loads(lastRun or '{}') or demisto.getLastRun()
+        last_run = json.loads(lastRun or 'null') or demisto.getLastRun() or {}
         fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number = self._fetch_args(params, last_run)
         next_run_start_time = datetime.utcnow() - timedelta(minutes=1)
 
