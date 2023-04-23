@@ -15,7 +15,8 @@ class GoogleSecreteManagerModule:
         except Exception as e:
             logging.error(
                 f'Secret json is malformed for: {secret_id} version: {response.name.split("/")[-1]}, got error: {e}')
-
+            return {}
+        
     def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False, attr_validation=tuple()) -> list:
         secrets = []
         parent = f"projects/{project_id}"

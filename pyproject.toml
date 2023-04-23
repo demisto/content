@@ -155,7 +155,7 @@ follow_imports = "silent"
 pretty = true
 allow_redefinition = true
 junit_xml = ".report_mypy.xml"
-exclude = ["test_data", "tests_data", ".venv", ".*_test.py$"]
+exclude = ["test_data", "tests_data", ".venv", ".*_test.py$", "infrastructure_tests"]
 
 [tool.pytest]
 junit_family = "xunit1"

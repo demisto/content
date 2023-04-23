@@ -216,7 +216,7 @@ class CollectionResult:
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
                     raise SkippedTestException(test, skip_place='.pack_ignore')
                 for integration in test_playbook.implementing_integrations:
-                    if reason := conf.skipped_integrations.get(integration):  # type:ignore[union-attr]
+                    if reason := conf.skipped_integrations.get(integration):  # type:ignore[union-attr, assignment]
                         raise SkippedTestException(
                             test_name=test,
                             skip_place='conf.json (integrations)',
@@ -284,6 +284,7 @@ class CollectionResult:
 class TestCollector(ABC):
     def __init__(self, marketplace: MarketplaceVersions, graph: bool = False):
         self.marketplace = marketplace
+        self.id_set: IdSet | Graph
         if graph:
             self.id_set = Graph(marketplace)
         else:
@@ -292,8 +293,8 @@ class TestCollector(ABC):
         self.trigger_sanity_tests = False
 
     @property
-    def sanity_tests(self) -> Optional[CollectionResult]:
-        return CollectionResult.union(tuple(
+    def sanity_tests(self) -> CollectionResult:
+        return CollectionResult.union(tuple(  # type: ignore[return-value]
             CollectionResult(
                 test=test,
                 modeling_rule_to_test=None,
@@ -372,6 +373,7 @@ class TestCollector(ABC):
 
             # collect the pack containing the test playbook
             pack_id = self.id_set.id_to_test_playbook[test_id].pack_id
+            assert pack_id, "Invalid pack id, should not be empty"
             result.append(self._collect_pack(
                 pack_id=pack_id,
                 reason=CollectionReason.PACK_TEST_DEPENDS_ON,
@@ -384,10 +386,12 @@ class TestCollector(ABC):
             # collect integrations used in the test
             for integration in test_object.integrations:
                 if integration_object := self.id_set.id_to_integration.get(integration):
+                    pack_id = integration_object.pack_id
+                    assert pack_id, "Invalid pack id, should not be empty"
                     result.append(self._collect_test_dependency(
                         dependency_name=integration,
                         test_id=test_id,
-                        pack_id=integration_object.pack_id,
+                        pack_id=pack_id,
                         dependency_type='integration',
                     ))
                 else:
@@ -397,10 +401,12 @@ class TestCollector(ABC):
             # collect scripts used in the test
             for script in test_object.scripts:
                 if script_object := self.id_set.id_to_script.get(script):
+                    pack_id = script_object.pack_id
+                    assert pack_id, "Invalid pack id, should not be empty"
                     result.append(self._collect_test_dependency(
                         dependency_name=script,
                         test_id=test_id,
-                        pack_id=script_object.pack_id,
+                        pack_id=pack_id,
                         dependency_type='script',
                     ))
                 else:
@@ -474,8 +480,10 @@ class TestCollector(ABC):
         self.__validate_not_ignored_file(path)
 
     def _validate_content_item_compatibility(self, content_item: ContentItem, is_integration: bool) -> None:
+        object_id = content_item.id_
+        assert object_id, "Invalid object id, should not be empty"
         self.__validate_compatibility(
-            id_=content_item.id_,
+            id_=object_id,
             pack_id=content_item.pack_id,
             marketplaces=content_item.marketplaces,
             path=content_item.path,
@@ -484,14 +492,17 @@ class TestCollector(ABC):
         )
 
     def _validate_id_set_item_compatibility(self, id_set_item: IdSetItem, is_integration: bool) -> None:
-        if not (pack_id := id_set_item.pack_id or find_pack_folder(id_set_item.path).name):
+        if not (pack_id := id_set_item.pack_id or find_pack_folder(id_set_item.path).name):  # type: ignore[arg-type]
             raise RuntimeError(f'could not find pack of {id_set_item.name}')
-
+        object_id = id_set_item.id_
+        path = id_set_item.path
+        assert object_id, "Invalid object id, should not be empty"
+        assert path, "Invalid path, should not be empty"
         self.__validate_compatibility(
-            id_=id_set_item.id_,
+            id_=object_id,
             pack_id=pack_id,
             marketplaces=id_set_item.marketplaces,
-            path=id_set_item.path,
+            path=path,
             version_range=id_set_item.version_range,
             is_integration=is_integration,
         )
@@ -649,7 +660,8 @@ class TestCollector(ABC):
 
         if not reason:
             file_type = find_type(changed_file_path.as_posix())
-            reason = f"{CollectionReason.XSIAM_COMPONENT_CHANGED} {file_type.value}"
+            reason = CollectionReason.XSIAM_COMPONENT_CHANGED
+            reason_description = file_type.value
 
         return CollectionResult(
             test=None,
@@ -994,7 +1006,7 @@ class BranchTestCollector(TestCollector):
                 return self._collect_pack(
                     pack_id=find_pack_folder(path).name,
                     reason=CollectionReason.NON_XSOAR_SUPPORTED,
-                    reason_description=e.support_level,
+                    reason_description=e.support_level or "xsoar",
                 )
 
         if file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
@@ -1213,7 +1225,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
                     logger.info(e)
                     continue
 
-                marketplaces_string = ', '.join(map(str, item.marketplaces))
+                marketplaces_string = ', '.join(map(str, item.marketplaces or ()))
                 result.append(self._collect_pack(
                     pack_id=pack_metadata.pack_id,
                     reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
@@ -1239,8 +1251,10 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
         for modeling_rule in self.id_set.modeling_rules:
             try:
                 path = PATHS.content_path / modeling_rule.file_path_str
+                pack_id = modeling_rule.pack_id
+                assert pack_id, "pack_id should not be empty"
                 result.append(self._collect_pack_for_modeling_rule(
-                    pack_id=modeling_rule.pack_id,
+                    pack_id=pack_id,
                     changed_file_path=path,
                     reason=CollectionReason.MODELING_RULE_NIGHTLY,
                     reason_description=f'{modeling_rule.file_path_str} ({modeling_rule.id_})',
@@ -1253,7 +1267,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
         return CollectionResult.union(result)
 
     @property
-    def sanity_tests(self) -> Optional[CollectionResult]:
+    def sanity_tests(self) -> CollectionResult:
         return CollectionResult.union(tuple(
             CollectionResult(
                 test=test,
@@ -1268,7 +1282,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
                 only_to_install=True
             )
             for test in self.conf['test_marketplacev2']
-        ))
+        ))  # type: ignore[return-value]
 
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
