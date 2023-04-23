@@ -777,7 +777,7 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
             mac_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=1, chars_to_remove='|'),
             os_version=sensor.get('os_environment_display_string'),
             memory=sensor.get('physical_memory_size'),
-            status='Online' if sensor.get('status') else 'Offline',
+            status='Online' if sensor.get('status') == 'Online' else 'Offline',
             is_isolated=is_isolated,
             vendor='Carbon Black Response')
         endpoints.append(endpoint)

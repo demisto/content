@@ -53,7 +53,7 @@ tasks:
       - "3"
     scriptarguments:
       brandname:
-        simple: carbonblack-v2
+        simple: VMware Carbon Black EDR v2
     results:
     - brandInstances
     separatecontext: false
@@ -143,7 +143,7 @@ tasks:
       name: Get the binary file from Carbon Black by its MD5 hash
       description: Retrieve a binary from CarbonBlack based on its hash. Returns a
         .zip file containing the requested file and its metadata.
-      script: '|||cb-binary-download'
+      script: '|||cb-edr-binary-download'
       type: regular
       iscommand: true
       brand: ""

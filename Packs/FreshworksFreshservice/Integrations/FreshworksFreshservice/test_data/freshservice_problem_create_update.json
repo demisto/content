@@ -1,0 +1,26 @@
+{
+    "problem": {
+        "id": 1,
+        "agent_id": null,
+        "description": "<div>Hi guys, <br><br>We have been facing issues when we try to reach Email Server 3. Looks like there is something wrong here.<br><br>Regards<br> Rachel<br> </div>",
+        "description_text": "Hi guys,   We have been facing issues when we try to reach Email Server 3. Looks like there is something wrong here.  Regards  Rachel",
+        "assets": [],
+        "requester_id": 21001523090,
+        "subject": "Unable to reach email server",
+        "group_id": null,
+        "priority": 1,
+        "impact": 1,
+        "status": 1,
+        "due_by": "problem_due_by",
+        "known_error": false,
+        "department_id": null,
+        "category": null,
+        "sub_category": null,
+        "item_category": null,
+        "created_at": "problem_created_at",
+        "updated_at": "problem_updated_at",
+        "associated_change": null,
+        "custom_fields": {},
+        "analysis_fields": {}
+    }
+}

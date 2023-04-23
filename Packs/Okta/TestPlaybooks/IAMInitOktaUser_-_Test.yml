@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -80,8 +80,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 180
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -106,7 +106,7 @@ tasks:
       '#default#':
       - "4"
       "yes":
-      - "3"
+      - "5"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -132,8 +132,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 360
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -159,8 +159,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 740
+          "x": 50,
+          "y": 1710
         }
       }
     note: false
@@ -172,10 +172,263 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: d4d67ffa-1ee0-4ba4-83a2-44a198905cf3
+    taskid: 990d2561-74d4-4606-82ff-b44239a2392f
     type: regular
     task:
-      id: d4d67ffa-1ee0-4ba4-83a2-44a198905cf3
+      id: 990d2561-74d4-4606-82ff-b44239a2392f
+      version: -1
+      name: Raise error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: |-
+          Resetting the Okta user's password failed. Please validate the following:
+          1. The user "user2@demisto.com" exists in the Okta instance used for testing.
+          2. The email sender integration works correctly - needed to send the email with the new password.
+          3. The password generation script worked correctly. The outputs can be seen under the IAM.InitOktaUser context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6c956f50-571e-4dc6-8cf5-3d006614fe09
+    type: title
+    task:
+      id: 6c956f50-571e-4dc6-8cf5-3d006614fe09
+      version: -1
+      name: Delete Context
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6dabfe7c-ab42-4775-8843-a1e71eb3f102
+    type: regular
+    task:
+      id: 6dabfe7c-ab42-4775-8843-a1e71eb3f102
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 454ad561-ba2a-4d92-89f6-38dfec876bad
+    type: title
+    task:
+      id: 454ad561-ba2a-4d92-89f6-38dfec876bad
+      version: -1
+      name: Reset Okta password with zip file
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 2a6cd4fb-0761-44c9-873a-1c008b084df1
+    type: regular
+    task:
+      id: 2a6cd4fb-0761-44c9-873a-1c008b084df1
+      version: -1
+      name: Reset Okta password for user2 with zip file
+      description: |-
+        Generates a password and sets an Okta user account with that password.
+        Enables the account.
+        Sends an  email to the user with the account information.
+        This script is running the `send-mail` command, make sure there is a mail sender integration configured.
+      scriptName: IAMInitOktaUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ZipProtectWithPassword:
+        simple: "123"
+      email_subject:
+        simple: Password reset
+      max_digits:
+        simple: "3"
+      max_lcase:
+        simple: "3"
+      max_symbols:
+        simple: "3"
+      max_ucase:
+        simple: "3"
+      min_digits:
+        simple: "2"
+      min_lcase:
+        simple: "2"
+      min_symbols:
+        simple: "2"
+      min_ucase:
+        simple: "2"
+      to_email:
+        simple: user2@demisto.com
+      username:
+        simple: user2@demisto.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 18f5a172-9703-4558-81a9-2f86f040a5d4
+    type: condition
+    task:
+      id: 18f5a172-9703-4558-81a9-2f86f040a5d4
+      version: -1
+      name: Did the password reset succeed?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IAM.InitOktaUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IAM.InitOktaUser.sentMail
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 4dde9114-d36d-4df7-89c5-e86ad24279dd
+    type: regular
+    task:
+      id: 4dde9114-d36d-4df7-89c5-e86ad24279dd
       version: -1
       name: Raise error
       description: Prints an error entry with a given message
@@ -189,7 +442,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          Resetting the Okta user's password failed. Please validate the following:
+          Resetting the Okta user's password with zip file failed. Please validate the following:
           1. The user "user2@demisto.com" exists in the Okta instance used for testing.
           2. The email sender integration works correctly - needed to send the email with the new password.
           3. The password generation script worked correctly. The outputs can be seen under the IAM.InitOktaUser context key.
@@ -197,8 +450,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": 550
+          "x": 162.5,
+          "y": 1535
         }
       }
     note: false
@@ -211,13 +464,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "2_3_yes": 0.2
+      "2_5_yes": 0.38,
+      "9_3_yes": 0.37
     },
     "paper": {
       "dimensions": {
-        "height": 755,
-        "width": 620,
-        "x": 450,
+        "height": 1725,
+        "width": 492.5,
+        "x": 50,
         "y": 50
       }
     }

@@ -1,0 +1,78 @@
+{
+    "result": [
+        {
+            "type_id": 8015,
+            "severity_id": 1,
+            "device_time": "2023-02-25T05:37:20.569Z",
+            "log_time": "2023-02-25T05:39:53.996Z",
+            "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
+            "device_name": "WIN-TFB8L7BI77H",
+            "device_ip": "172.16.14.42",
+            "device_os_name": "Windows Server 2019 ",
+            "user_name": "SYSTEM",
+            "user_domain": "NT AUTHORITY",
+            "user_sid": "S-1-5-18",
+            "device_domain": "WORKGROUP",
+            "operation": 4,
+            "event_actor": {
+                "pid": 18252,
+                "uid": "4F0782E8-B4A3-F1ED-821C-98261F32744E",
+                "cmd_line": "C:\\Windows\\system32\\CompatTelRunner.exe -m:appraiser.dll -f:DoScheduledTelemetryRun -cv:EBlITDMgvE+P11nb.2",
+                "start_time": "2023-02-25T05:36:45.432Z",
+                "signature_level_id": 60,
+                "integrity_id": 6,
+                "user": {
+                    "name": "SYSTEM",
+                    "sid": "S-1-5-18"
+                },
+                "file": {
+                    "name": "compattelrunner.exe",
+                    "md5": "47dd94d79d9bac54a2c3a1cf502770c6",
+                    "modified": "2023-02-01T07:37:21.320Z",
+                    "path": "c:\\windows\\system32\\compattelrunner.exe",
+                    "normalized_path": "CSIDL_SYSTEM\\compattelrunner.exe",
+                    "signature_company_name": "Microsoft Windows",
+                    "signature_value_ids": [
+                        3,
+                        5
+                    ],
+                    "sha2": "046f009960f70981597cd7b3a1e44cbb4ba5893cc1407734366aa55fbeda5d66",
+                    "original_name": "CompatTelRunner.exe"
+                }
+            },
+            "enriched_data": {
+                "rule_name": "eAccountDiscoveryEnum",
+                "suspicion_score": 50,
+                "category_name": "All ETW Monitored events",
+                "category_id": 600,
+                "rule_description": "Local Group membership of local user groups enumeration using SAM"
+            },
+            "attacks": [
+                {
+                    "technique_uid": "T1087",
+                    "technique_name": "Account Discovery",
+                    "tactic_ids": [
+                        7
+                    ],
+                    "tactic_uids": [
+                        "TA0007"
+                    ]
+                }
+            ],
+            "monitor_data": "{\"CallerProcessId\":\"474c\",\"CallerProcessName\":\"C:\\\\Windows\\\\System32\\\\CompatTelRunner.exe\",\"SubjectDomainName\":\"WORKGROUP\",\"SubjectLogonId\":\"3e7\",\"SubjectUserName\":\"WIN-TFB8L7BI77H$\",\"SubjectUserSid\":\"NT AUTHORITY\\\\SYSTEM\",\"TargetDomainName\":\"WIN-TFB8L7BI77H\",\"TargetSid\":\"WIN-TFB8L7BI77H\\\\Guest\",\"TargetUserName\":\"Guest\"}",
+            "monitor_source": {
+                "type_id": 5,
+                "facility": "Microsoft-Windows-Security-Auditing",
+                "facility_uid": "54849625-5478-4994-A5BA-3E3B0328C30D"
+            },
+            "ref_uid": "15680B94-772D-426D-9FF3-36D4DB9F117A",
+            "ref_event": 4798,
+            "ref_event_name": "Info ",
+            "log_level": "",
+            "uuid": "790fba90-b4ce-11ed-f53c-00000002794c",
+            "log_name": "epmp_events-fdr-2023-02-25"
+        }
+    ],
+    "next": "MTAwLDIwMjMtMDItMjNUMTI6MDE6MzAuNTE5Wg==",
+    "total": 36268
+}
