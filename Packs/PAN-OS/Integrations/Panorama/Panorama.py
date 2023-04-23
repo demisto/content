@@ -1556,22 +1556,22 @@ def panorama_create_address_command(args: dict):
     address_name = args['name']
     description = args.get('description')
 
-    if tags := argToList(args.get('tag', [])):
+    if tags := set(argToList(args.get('tag', []))):
         result = http_request(URL, 'GET', params={'type': 'config', 'action': 'get', 'key': API_KEY, 'xpath': f'{XPATH_OBJECTS}tag'})
         entries = result.get('response', {}).get('result', {}).get('tag', {}).get('entry', [])
-        if isinstance(entries, dict):
+        if isinstance(entries, dict):  # In case there is only one tag.
             entries = [entries]
-        exist_tags = [entry.get('@name') for entry in entries]
-        for tag in tags:
-            if tag not in exist_tags:
-                if argToBoolean(args.get('create_tag', False)):
+        existing_tags = set([entry.get('@name') for entry in entries])
+        if non_existent_tags := tags - existing_tags:
+            if argToBoolean(args.get('create_tag', False)):
+                for tag in non_existent_tags:
                     http_request(URL, 'POST', body={'type': 'config', 'action': 'set', 'key': API_KEY,
                                                     'xpath': f"{XPATH_OBJECTS}tag/entry[@name='{tag}']",
                                                     'element': '<comments>created via API</comments>'})
-                else:
-                    raise DemistoException(
-                        f'Failed to create the address object since the tag `{tag}` does not exist.'
-                    )
+            else:
+                raise DemistoException(
+                    f'Failed to create the address object since the tags `{non_existent_tags}` does not exist.'
+                )
 
     fqdn = args.get('fqdn')
     ip_netmask = args.get('ip_netmask')
