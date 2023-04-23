@@ -115,6 +115,12 @@ else
   # Copy corepacks files from the artifacts folder to the build bucket:
   find $ARTIFACTS_FOLDER -name "corepacks*.json" -exec gsutil cp -z json {} "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH" \;
 
+  if [ -f "$ARTIFACTS_FOLDER/versions-metadata.json" ]; then
+    gsutil cp -z json "$ARTIFACTS_FOLDER/versions-metadata.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
+  else
+    echo "Skipping uploading versions-metadata file."
+  fi
+
   echo "Finished updating content packs successfully."
 fi
 
