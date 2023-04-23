@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Dict, Any, Tuple, List
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 BASE_URL = 'https://lolbas-project.github.io/api'
-DEFAULT_FEED_TAGS = {'LOLBAS', 'MitreID'}
+DEFAULT_FEED_TAGS = {'LOLBAS'}
 ''' CLIENT CLASS '''
 
 
@@ -69,7 +69,7 @@ def create_relationship_list(indicators: List[Dict[str, Any]]) -> List[Dict[str,
     for indicator in indicators:
         entity_a = indicator.get('value')
         for command in indicator.get('fields', {}).get('Commands', []):
-            if mitre_id := command.get('MitreID'):
+            if mitre_id := command.get('mitreid'):
                 relation_obj = EntityRelationship(
                     name=EntityRelationship.Relationships.RELATED_TO,
                     entity_a=entity_a,
@@ -146,7 +146,8 @@ def create_relationships(client: Client, indicators: List[Dict[str, Any]]) -> Li
     return indicators
 
 
-def fetch_indicators(client: Client, limit: int = None) -> List[Dict[str, Any]]:
+def fetch_indicators(client: Client, limit: int = None) -> \
+        List[Dict[str, Any]] | Tuple[List[Dict[str, Any]], str]:
     """
         Fetch indicators from LOLBAS API and create indicators in XSOAR.
     """
@@ -154,11 +155,37 @@ def fetch_indicators(client: Client, limit: int = None) -> List[Dict[str, Any]]:
     indicators = create_indicators(client, response)
     indicators = create_relationships(client, indicators)
     if limit:
-        return indicators[:limit]
-    return indicators
+        return indicators[:limit], response
+    return indicators, response
 
 
 ''' MAIN FUNCTION '''
+
+
+def get_indicators(client, limit):
+    """
+    Get indicators from LOLBAS API, mainly for debug.
+    """
+    hr_list = []
+    output_list = []
+
+    if limit and limit <= 0:
+        raise ValueError('Limit must be a positive number.')
+    indicators, raw_res = fetch_indicators(client, limit)
+    indicators = indicators[:limit] if isinstance(indicators, List)\
+        else [indicators] if indicators else []
+    for record in indicators:
+        if record.get('value', '') == '$$DummyIndicator$$':
+            continue
+        hr = {'Name': record.get('value'), 'Description': record.get('fields', {}).get('description')}
+        hr_list.append(hr)
+        output_list.append({'Type': record.get('type'),
+                            'Commands': record.get('fields', {}).get('Commands'),
+                            'Detections': record.get('fields', {}).get('Detections'),
+                            'Paths': record.get('fields', {}).get('Paths')} | hr)
+    return CommandResults(outputs=output_list, outputs_prefix='LOLBAS.Indicators', raw_response=raw_res,
+                          readable_output=tableToMarkdown("LOLBAS indicators", hr_list, headers=['Name', 'Description']),
+                          outputs_key_field='Name')
 
 
 def main() -> None:  # pragma: no cover
@@ -189,7 +216,7 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             test_module(client)
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators(client)
+            indicators, _ = fetch_indicators(client)
             for iter_ in batch(indicators, batch_size=2000):
                 try:
                     demisto.createIndicators(iter_)
@@ -203,8 +230,8 @@ def main() -> None:  # pragma: no cover
                                           f' {indicator}\n {err}')
                     raise
         elif command == 'lolbas-get-indicators':
-            return_results(CommandResults(outputs=fetch_indicators(client, arg_to_number(demisto.args().get('limit', None))),
-                                          outputs_prefix='LOLBAS.Indicators'))
+            limit = arg_to_number(demisto.args().get('limit', None))
+            return_results(get_indicators(client, limit))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 

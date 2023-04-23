@@ -1,6 +1,8 @@
 import json
 import io
 
+import pytest
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -85,7 +87,7 @@ def test_fetch_indicators(mocker):
     mocker.patch.object(client, 'get_indicators', return_value=mocked_response)
     expected_response = util_load_json('test_data/expected_fetch_indicators.json')
 
-    response = fetch_indicators(client)
+    response, _ = fetch_indicators(client)
     assert response == expected_response
 
 
@@ -100,3 +102,38 @@ def test_create_relationship_list_no_mitre_id():
 
     response = create_relationship_list(mock_indicators)
     assert response == []
+
+
+def test_negative_limit():
+    """
+        Given: A negative limit.
+        When: Calling get_indicators.
+        Then: Ensure ValueError is raised with the right message.
+    """
+    from FeedLOLBAS import get_indicators
+    limit = -1
+    client = mock_client()
+
+    with pytest.raises(ValueError) as ve:
+        get_indicators(client, limit)
+    assert ve.value.args[0] == "Limit must be a positive number."
+
+
+def test_get_indicators(mocker):
+    """
+        Given:
+    """
+    from FeedLOLBAS import get_indicators
+    client = mock_client()
+    limit = 1
+    mocked_response = util_load_json('test_data/response.json')
+    mocker.patch.object(client, 'get_indicators', return_value=mocked_response)
+    expected_outputs = util_load_json('test_data/expected_get_indicators_outputs.json')
+    expected_hr = '### LOLBAS indicators\n|Name|Description|' \
+                  '\n|---|---|\n| AppInstaller.exe | Tool used for installation of AppX/MSIX applications on Windows 10 |\n'
+
+    res = get_indicators(client, limit)
+
+    assert len(res.outputs) == 1
+    assert res.outputs == [expected_outputs]
+    assert res.readable_output == expected_hr

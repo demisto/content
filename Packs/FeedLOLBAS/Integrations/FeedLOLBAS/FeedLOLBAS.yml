@@ -53,6 +53,7 @@ configuration:
   section: Collect
   advanced: true
 - defaultvalue: never
+  additionalinfo:
   display: ''
   name: feedExpirationPolicy
   options:
@@ -127,62 +128,44 @@ script:
     execution: false
     name: lolbas-get-indicators
     outputs:
-    - contextPath: LOLBAS.Indicator
-      description: The indicator.
+    - contextPath: LOLBAS.Indicators.Commands.category
+      description: 'The category of the command.'
       type: String
-    - contextPath: LOLBAS.Type
-      description: The indicator type.
+    - contextPath: LOLBAS.Indicators.Commands.command
+      description: 'The command.'
       type: String
-    - contextPath: LOLBAS.Description
-      description: The indicator description.
+    - contextPath: LOLBAS.Indicators.Commands.description
+      description: 'The description of the command.'
       type: String
-    - contextPath: LOLBAS.Command
-      description: The indicator command.
+    - contextPath: LOLBAS.Indicators.Commands.mitreid
+      description: 'The MITRE ID related to the command.'
       type: String
-    - contextPath: LOLBAS.URL
-      description: The indicator URL.
+    - contextPath: LOLBAS.Indicators.Commands.operatingsystem
+      description: 'The operating system the command ran on.'
       type: String
-    - contextPath: LOLBAS.Related
-      description: The indicator related.
+    - contextPath: LOLBAS.Indicators.Commands.privileges
+      description: 'The privileges required to run the command.'
       type: String
-    - contextPath: LOLBAS.RelatedURL
-      description: The indicator related URL.
+    - contextPath: LOLBAS.Indicators.Commands.usecase
+      description: 'The use case of the command.'
       type: String
-    - contextPath: LOLBAS.RelatedCommand
-      description: The indicator related command.
+    - contextPath: LOLBAS.Indicators.Description
+      description: 'The description of the indicator.'
       type: String
-    - contextPath: LOLBAS.RelatedDescription
-      description: The indicator related description.
+    - contextPath: LOLBAS.Indicators.Detections.content
+      description: 'The content of the detection.'
       type: String
-    - contextPath: LOLBAS.RelatedType
-      description: The indicator related type.
+    - contextPath: LOLBAS.Indicators.Detections.type
+      description: 'The type of the detection.'
       type: String
-    - contextPath: LOLBAS.RelatedTechnique
-      description: The indicator related technique.
+    - contextPath: LOLBAS.Indicators.Name
+      description: 'The name of the indicator.'
       type: String
-    - contextPath: LOLBAS.RelatedTechniqueID
-      description: The indicator related technique ID.
+    - contextPath: LOLBAS.Indicators.Paths.path
+      description: 'The path of the indicator.'
       type: String
-    - contextPath: LOLBAS.RelatedTechniqueDescription
-      description: The indicator related technique description.
-      type: String
-    - contextPath: LOLBAS.RelatedTechniqueURL
-      description: The indicator related technique URL.
-      type: String
-    - contextPath: LOLBAS.RelatedTechniqueTactic
-      description: The indicator related technique tactic.
-      type: String
-    - contextPath: LOLBAS.RelatedTechniqueTacticID
-      description: The indicator related technique tactic ID.
-      type: String
-    - contextPath: LOLBAS.RelatedTechniqueTacticDescription
-      description: The indicator related technique tactic description.
-      type: String
-    - contextPath: LOLBAS.RelatedTechniqueTacticURL
-      description: The indicator related technique tactic URL.
-      type: String
-    - contextPath: LOLBAS.RelatedTechniqueTacticPlatform
-      description: The indicator related technique tactic platform.
+    - contextPath: LOLBAS.Indicators.Type
+      description: 'The type of the indicator.'
       type: String
   feed: true
   isfetch: false

