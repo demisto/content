@@ -1227,7 +1227,7 @@ def main():
 
     command = demisto.command()
     args = demisto.args()
-    demisto.debug(f'Command being called is {command}')
+    demisto.info(f'Command being called is {command}')
     demisto.debug(f'{fetch_time=}')
     try:
         client = Client(server_url, api_version, verify_certificate, service_principal, secret, proxies)
@@ -1255,7 +1255,6 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
             # preserve context dict
-            demisto.debug(f'{remained_incidents=}')
             integration_context['incidents'] = remained_incidents
             demisto.setIntegrationContext(integration_context)
 
