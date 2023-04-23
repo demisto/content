@@ -6,8 +6,8 @@ import pytest
 import glob
 import os
 import subprocess
-import pdfx
 import tempfile
+import PyPDF2
 
 RETURN_ERROR_TARGET = 'ConvertFile.return_error'
 
@@ -142,9 +142,12 @@ def test_hyperlinkes_copy(test_file, hyperlinks_count):
         - Validate that one hyperlink is converted to the new pdf file.
     """
     docx_file_path = f'test_data/{test_file}.docx'
+
     with tempfile.TemporaryDirectory() as outdir:
         converted_file = convert_file(file_path=docx_file_path, out_format='pdf', all_files=False, outdir=outdir)
-        pdf = pdfx.PDFx(converted_file[0])
-        references = pdf.get_references()
+
+        with open(converted_file[0], 'rb') as pdf_file:
+            pdf_reader = PyPDF2.PdfFileReader(pdf_file)
+            references = pdf_reader.getNamedDestinations()
 
     assert len(references) == hyperlinks_count
