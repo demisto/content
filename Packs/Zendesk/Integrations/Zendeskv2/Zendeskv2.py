@@ -908,6 +908,8 @@ class ZendeskClient(BaseClient):
     def fetch_incidents(self, params: dict, lastRun: Optional[str] = None):
         last_run = json.loads(lastRun or 'null') or demisto.getLastRun() or {}
         fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number = self._fetch_args(params, last_run)
+
+        # look back window for tickets
         next_run_start_time = datetime.utcnow() - timedelta(minutes=1)
 
         query_parts = ["type:ticket", f"{time_filter}>{last_fetch}"]
