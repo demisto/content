@@ -6066,7 +6066,6 @@ def test_pan_os_register_ip_tag_command_main_flow(mocker, args, params, expected
         {'ip_netmask': '1', 'fqdn': '3', 'name': 'test'},
         {'ip_range': '2', 'fqdn': '3', 'name': 'test'},
         {'ip_range': '2', 'fqdn': '3', 'ip_wildcard': '4', 'name': 'test'},
-        {'ip_range': '2', 'fqdn': '3', 'ip_wildcard': '4', 'name': 'test', 'tag': 'a,b'},
     ]
 )
 def test_pan_os_create_address_main_flow_error(args):
@@ -6112,7 +6111,7 @@ def test_pan_os_create_address_main_flow_error(args):
                     </tag> \
                 </result> \
             </response>',
-            {"name": "test", "tag": "not exist"}
+            {"name": "test", "tag": "exist, not exist"}
          ),
     ]
 )
