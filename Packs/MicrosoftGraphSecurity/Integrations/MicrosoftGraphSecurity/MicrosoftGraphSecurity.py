@@ -147,8 +147,12 @@ def capitalize_dict_keys_first_letter(dict_obj):
     for key, value in dict_obj.items():
         if key == 'id':
             new_alert['ID'] = value
+        elif key == 'createdDateTime':
+            new_alert['CreatedDate'] = value
         elif isinstance(value, dict):
             new_alert[capitalize_first_letter(key)] = capitalize_dict_keys_first_letter(value)
+        elif isinstance(value, list):
+            new_alert[capitalize_first_letter(key)] = [capitalize_dict_keys_first_letter(list_item) for list_item in value]
         else:
             new_alert[capitalize_first_letter(key)] = value
     return new_alert
@@ -327,7 +331,7 @@ def search_alerts_command(client: MsGraphClient, args):
         table_headers = ['ID', 'Vendor', 'Provider', 'Title', 'Category', 'Severity', 'CreatedDate', 'EventDate', 'Status']
     else:
         outputs = [capitalize_dict_keys_first_letter(alert) for alert in alerts]
-        table_headers = ['ID', 'DetectionSource', 'ServiceSource', 'Title', 'Category', 'Severity', 'CreatedDateTime',
+        table_headers = ['ID', 'DetectionSource', 'ServiceSource', 'Title', 'Category', 'Severity', 'CreatedDate',
                          'LastUpdateDateTime', 'Status', 'IncidentId']
     ec = {
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': outputs
@@ -354,7 +358,7 @@ def get_alert_details_command(client: MsGraphClient, args):
     hr = f'## Microsoft Security Graph Alert Details - {alert_id}\n'
     if API_VER == API_V2:
         outputs = capitalize_dict_keys_first_letter(alert_details)
-        table_headers = ['ID', 'DetectionSource', 'ServiceSource', 'Title', 'Category', 'Severity', 'CreatedDateTime',
+        table_headers = ['ID', 'DetectionSource', 'ServiceSource', 'Title', 'Category', 'Severity', 'CreatedDate',
                          'LastUpdateDateTime', 'Status', 'IncidentId']
         ec = {
             'MsGraph.Alert(val.id && val.id === obj.id)': outputs

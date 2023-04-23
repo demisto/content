@@ -285,7 +285,7 @@ script:
       description: Alert severity
       type: string
     - contextPath: MsGraph.Alert.CreatedDate
-      description: Relevant only for V1. Alert created date
+      description: Alert created date
       type: date
     - contextPath: MsGraph.Alert.EventDate
       description: Relevant only for V1. Alert event time
@@ -314,9 +314,6 @@ script:
     - contextPath: MsGraph.Alert.Classification
       description: Relevant only for V2. Alert classification
       type: Unknown
-    - contextPath: MsGraph.Alert.CreatedDateTime
-      description: Relevant only for V2. Alert creation time
-      type: Date
     - contextPath: MsGraph.Alert.Description
       description: Relevant only for V2. Alert description
       type: String
@@ -330,12 +327,12 @@ script:
       description: Relevant only for V2. Alert determination
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.@odata.Type
-      description: Relevant only for V2. Alert evidence
+      description: Relevant only for V2. Alert evidence type
       type: String
     - contextPath: MsGraph.Alert.Evidence.AzureAdDeviceId
       description: Relevant only for V2. Evidence azure device id
       type: String
-    - contextPath: MsGraph.Alert.Evidence.CreatedDateTime
+    - contextPath: MsGraph.Alert.Evidence.CreatedDate
       description: Relevant only for V2. Evidence creation time
       type: Date
     - contextPath: MsGraph.Alert.Evidence.DefenderAvStatus
@@ -457,7 +454,7 @@ script:
       description: Alert severity
       type: string
     - contextPath: MsGraph.Alert.CreatedDate
-      description: Relevant only for V1. Alert created date
+      description: Alert created date
       type: date
     - contextPath: MsGraph.Alert.EventDate
       description: Relevant only for V1. Alert event time
@@ -492,11 +489,8 @@ script:
     - contextPath: MsGraph.Alert.Comments.CreatedByDisplayName
       description: Relevant only for V2. Alert comment creator name
       type: String
-    - contextPath: MsGraph.Alert.Comments.CreatedDateTime
+    - contextPath: MsGraph.Alert.Comments.CreatedDate
       description: Relevant only for V2. Alert comment creation time
-      type: Date
-    - contextPath: MsGraph.Alert.CreatedDateTime
-      description: Relevant only for V2. Alert creation time
       type: Date
     - contextPath: MsGraph.Alert.Description
       description: Relevant only for V2. Alert description
@@ -513,7 +507,7 @@ script:
     - contextPath: MsGraph.Alert.Evidence.@odata.Type
       description: Relevant only for V2. Alert evidence
       type: String
-    - contextPath: MsGraph.Alert.Evidence.CreatedDateTime
+    - contextPath: MsGraph.Alert.Evidence.CreatedDate
       description: Relevant only for V2. Evidence creation time
       type: Date
     - contextPath: MsGraph.Alert.Evidence.DetectionStatus
@@ -834,7 +828,7 @@ script:
     - contextPath: MsGraph.AlertComment.Comments.CreatedByDisplayName
       description: The comment's creator display name
       type: String
-    - contextPath: MsGraph.AlertComment.Comments.CreatedDateTime
+    - contextPath: MsGraph.AlertComment.Comments.CreatedDate
       description: The comment's creation time
       type: Date
   - deprecated: true

@@ -20,13 +20,13 @@
                     {
                         "Comment": "comment",
                         "CreatedByDisplayName": "Cortex XSOAR MS Graph Dev",
-                        "CreatedDateTime": "2023-04-16T10:28:57.5354679Z"
+                        "CreatedDate": "2023-04-16T10:28:57.5354679Z"
                     }
                 ],
                 "ID": "alert_id"
             }
         },
-        "expected_hr": "### Microsoft Security Graph Create Alert Comment - alert_id\n\n|Comment|CreatedByDisplayName|CreatedDateTime|\n|---|---|---|\n| comment | Cortex XSOAR MS Graph Dev | 2023-04-16T10:28:57.5354679Z |\n" 
+        "expected_hr": "### Microsoft Security Graph Create Alert Comment - alert_id\n\n|Comment|CreatedByDisplayName|CreatedDate|\n|---|---|---|\n| comment | Cortex XSOAR MS Graph Dev | 2023-04-16T10:28:57.5354679Z |\n" 
     },
     "test_case_2": {
         "args": {
@@ -54,17 +54,17 @@
                     {
                         "Comment": "comment_1",
                         "CreatedByDisplayName": "Cortex XSOAR MS Graph Dev",
-                        "CreatedDateTime": "2023-04-16T10:28:57.5354679Z"
+                        "CreatedDate": "2023-04-16T10:28:57.5354679Z"
                     },
                     {
                         "Comment": "comment_2",
                         "CreatedByDisplayName": "Cortex XSOAR MS Graph Dev",
-                        "CreatedDateTime": "2023-04-17T10:28:57.5354679Z"
+                        "CreatedDate": "2023-04-17T10:28:57.5354679Z"
                     }
                 ],
                 "ID": "alert_id"
             }
         },
-        "expected_hr": "### Microsoft Security Graph Create Alert Comment - alert_id\n\n|Comment|CreatedByDisplayName|CreatedDateTime|\n|---|---|---|\n| comment_1 | Cortex XSOAR MS Graph Dev | 2023-04-16T10:28:57.5354679Z |\n| comment_2 | Cortex XSOAR MS Graph Dev | 2023-04-17T10:28:57.5354679Z |\n" 
+        "expected_hr": "### Microsoft Security Graph Create Alert Comment - alert_id\n\n|Comment|CreatedByDisplayName|CreatedDate|\n|---|---|---|\n| comment_1 | Cortex XSOAR MS Graph Dev | 2023-04-16T10:28:57.5354679Z |\n| comment_2 | Cortex XSOAR MS Graph Dev | 2023-04-17T10:28:57.5354679Z |\n" 
     }
 }

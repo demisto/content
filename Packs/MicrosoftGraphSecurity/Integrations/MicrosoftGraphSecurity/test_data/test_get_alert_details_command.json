@@ -81,11 +81,11 @@
                     "expected_ec": {"MsGraph.Alert(val.id && val.id === obj.id)": {"@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/alerts_v2/$entity",
                                                                                    "ActorDisplayName": null, "AlertWebUrl": "https://security.microsoft.com/alerts/alert_id?tid=tid",
                                                                                    "AssignedTo": null, "Category": "SuspiciousActivity", "Classification": null, "Comments": [],
-                                                                                   "CreatedDateTime": "2022-10-16T01:48:05.8655909Z",
+                                                                                   "CreatedDate": "2022-10-16T01:48:05.8655909Z",
                                                                                    "Description": "Some description about the alert.", "DetectionSource": "automatedInvestigation",
                                                                                    "DetectorId": "aaa", "Determination": null, "ID": "alert_id", "IncidentId": "incidentId",
                                                                                    "Severity": "informational", "Status": "resolved", "ServiceSource": "microsoftDefenderForEndpoint",
                                                                                    "Title": "Automated", "LastUpdateDateTime": "2022-10-16T02:08:57.1233333Z"}},
-                    "expected_hr": "## Microsoft Security Graph Alert Details - alert_id\n|ID|DetectionSource|ServiceSource|Title|Category|Severity|CreatedDateTime|LastUpdateDateTime|Status|IncidentId|\n|---|---|---|---|---|---|---|---|---|---|\n| alert_id | automatedInvestigation | microsoftDefenderForEndpoint | Automated | SuspiciousActivity | informational | 2022-10-16T01:48:05.8655909Z | 2022-10-16T02:08:57.1233333Z | resolved | incidentId |\n"
+                    "expected_hr": "## Microsoft Security Graph Alert Details - alert_id\n|ID|DetectionSource|ServiceSource|Title|Category|Severity|CreatedDate|LastUpdateDateTime|Status|IncidentId|\n|---|---|---|---|---|---|---|---|---|---|\n| alert_id | automatedInvestigation | microsoftDefenderForEndpoint | Automated | SuspiciousActivity | informational | 2022-10-16T01:48:05.8655909Z | 2022-10-16T02:08:57.1233333Z | resolved | incidentId |\n"
                 }
 }
