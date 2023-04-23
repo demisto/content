@@ -599,12 +599,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 3070d50a-d74d-4d4f-86db-e82d7413dbfa
+    taskid: 6be1cfeb-4257-4111-82e4-6a65a19ff8d6
     type: regular
     task:
-      id: 3070d50a-d74d-4d4f-86db-e82d7413dbfa
+      id: 6be1cfeb-4257-4111-82e4-6a65a19ff8d6
       version: -1
-      name: Clear context
+      name: Clear CrowdStrike.IOC context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -614,8 +614,8 @@ tasks:
       '#none#':
       - "72"
     scriptarguments:
-      all:
-        simple: "yes"
+      key:
+        simple: CrowdStrike.IOC
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -898,22 +898,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 5e9e5c44-b22a-426e-8fa0-93c518ac939e
+    taskid: b2b3669f-0455-4e76-80c2-76454b930c5f
     type: regular
     task:
-      id: 5e9e5c44-b22a-426e-8fa0-93c518ac939e
+      id: b2b3669f-0455-4e76-80c2-76454b930c5f
       version: -1
-      name: DeleteContext
-      script: DeleteContext
+      name: Delete CrowdStrike.HostGroup Context
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
+      scriptName: DeleteContext
     nexttasks:
       '#none#':
       - "55"
     scriptarguments:
-      all:
-        simple: "yes"
+      key:
+        simple: CrowdStrike.HostGroup
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1428,12 +1428,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 7de0fa5e-53ed-43ee-89b1-b1140a0e14a3
+    taskid: d7ee9730-435e-4b00-8dc4-ed8ea68f4272
     type: regular
     task:
-      id: 7de0fa5e-53ed-43ee-89b1-b1140a0e14a3
+      id: d7ee9730-435e-4b00-8dc4-ed8ea68f4272
       version: -1
-      name: delete context
+      name: delete CrowdStrike.Device context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -1755,12 +1755,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 8c0b14e3-428d-4a6f-8e4b-bc4803a83753
+    taskid: 434c7484-595e-448e-8f29-2c10a872f6fa
     type: regular
     task:
-      id: 8c0b14e3-428d-4a6f-8e4b-bc4803a83753
+      id: 434c7484-595e-448e-8f29-2c10a872f6fa
       version: -1
-      name: delete context
+      name: delete CrowdStrike.HostGroup context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -1950,12 +1950,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 83da8f98-7abc-4ebe-8ab8-fc658ae4e6fc
+    taskid: 32c7842e-4709-435a-8759-c726176b9a4e
     type: regular
     task:
-      id: 83da8f98-7abc-4ebe-8ab8-fc658ae4e6fc
+      id: 32c7842e-4709-435a-8759-c726176b9a4e
       version: -1
-      name: DeleteContext
+      name: Delete CrowdStrike.HostGroup Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -2242,12 +2242,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 0d53313b-5584-4b25-8b4c-28af942419db
+    taskid: 483eafe6-5c5d-465b-8cc4-45b6632ec620
     type: regular
     task:
-      id: 0d53313b-5584-4b25-8b4c-28af942419db
+      id: 483eafe6-5c5d-465b-8cc4-45b6632ec620
       version: -1
-      name: DeleteContext
+      name: Delete CrowdStrike.Incidents Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -2350,12 +2350,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 7e924533-fe20-4a38-8fbc-bc2b398e1393
+    taskid: 3fb6ace3-a7e3-4060-8dd9-d07857b7e4c3
     type: regular
     task:
-      id: 7e924533-fe20-4a38-8fbc-bc2b398e1393
+      id: 3fb6ace3-a7e3-4060-8dd9-d07857b7e4c3
       version: -1
-      name: Clear context
+      name: 'Clear CrowdStrike.Detection context '
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -2364,8 +2364,8 @@ tasks:
       '#none#':
       - "61"
     scriptarguments:
-      all:
-        simple: "yes"
+      key:
+        simple: CrowdStrike.Detection
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2901,12 +2901,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: bfd42967-987f-4163-8d2e-600212b89379
+    taskid: d5be3035-0e7b-4689-82d1-1e3e09c16e9e
     type: regular
     task:
-      id: bfd42967-987f-4163-8d2e-600212b89379
+      id: d5be3035-0e7b-4689-82d1-1e3e09c16e9e
       version: -1
-      name: Clear context
+      name: Clear CrowdStrike.IOC context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -2916,10 +2916,10 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      all:
-        simple: "yes"
       keysToKeep:
         simple: ioc_value
+      key:
+        simple: CrowdStrike.IOC
     separatecontext: false
     continueonerrortype: ""
     view: |-
