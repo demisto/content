@@ -883,8 +883,8 @@ def main():  # pragma: no cover
             client_credentials=params.get("client_credentials", False),
             enc_key=(params.get('credentials') or {}).get('password'),
             managed_identities_client_id=get_azure_managed_identities_client_id(params),
-            certificate_thumbprint=params.get('certificate_thumbprint', {}).get('password'),
-            private_key=params.get('private_key')
+            certificate_thumbprint=params.get('creds_certificate', {}).get('identifier'),
+            private_key=(replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')))
         )
         if command == 'test-module':
             if client.ms_client.managed_identities_client_id:

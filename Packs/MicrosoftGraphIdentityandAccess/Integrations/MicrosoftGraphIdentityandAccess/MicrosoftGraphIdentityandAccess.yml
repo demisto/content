@@ -26,18 +26,11 @@ configuration:
   hiddenusername: true
   section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-  displaypassword: Certificate Thumbprint
-  name: certificate_thumbprint
+  display: Certificate Thumbprint
+  name: creds_certificate
   required: false
   type: 9
-  hiddenusername: true
-  section: Connect
-  advanced: true
-- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  display: Private Key
-  name: private_key
-  required: false
-  type: 14
+  displaypassword: Private Key
   section: Connect
   advanced: true
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
