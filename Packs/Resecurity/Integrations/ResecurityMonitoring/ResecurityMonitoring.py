@@ -14,7 +14,6 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 MODULE_NAME_BREACHES = "breaches"
-MODULE_NAME_DOMAINS = 'domains'
 
 MAPPING: dict = {
     MODULE_NAME_BREACHES: {
@@ -210,7 +209,6 @@ def main() -> None:
         # command cases implementation
         commands = {
             "get-task-monitor-results-data-breaches": get_task_monitor_results_command(MODULE_NAME_BREACHES)
-            # "get-task-monitor-results-domains": get_task_monitor_results_command(MODULE_NAME_DOMAINS),
         }
 
         if demisto.command() == 'test-module':
