@@ -1,0 +1,12 @@
+{
+  "version_map": {
+    "6.11.0": {
+      "core_packs_file": "corepacks-6.11.0.json",
+      "core_packs_file_lock_timestamp": "1/1/2023 10:00"
+    },
+    "8.2.0": {
+      "core_packs_file": "corepacks-8.2.0.json",
+      "core_packs_file_lock_timestamp": ""
+    }
+  }
+}

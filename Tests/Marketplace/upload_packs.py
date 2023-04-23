@@ -446,7 +446,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
     if missing_core_packs or unexpected_core_packs:
         sys.exit(1)
 
-    corepacks_files_names = {GCPConfig.CORE_PACK_FILE_NAME, 'corepacks-X.X.X.json'}
+    corepacks_files_names = {GCPConfig.CORE_PACK_FILE_NAME, GCPConfig.get_core_packs_unlocked_file()}
     for corepacks_file in corepacks_files_names:
         corepacks_json_path = os.path.join(artifacts_dir, corepacks_file)
         core_packs_data = {

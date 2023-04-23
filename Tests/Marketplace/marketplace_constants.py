@@ -104,6 +104,10 @@ class GCPConfig(object):
         CORE_PACKS_XPANSE_LIST = packs_list_xpanse.get('core_packs_list')
         CORE_PACKS_XPANSE_LIST_TO_UPDATE = packs_list_xpanse.get('update_core_packs_list')
 
+    with open(os.path.join(os.path.dirname(__file__), 'versions-metadata.json'), 'r') as server_versions_metadata:
+        versions_metadata = json.load(server_versions_metadata)
+        CORE_PACKS_FILE_VERSIONS = versions_metadata.get('version_map')
+
     @classmethod
     def get_core_packs(cls, marketplace):
         mapping = {
@@ -121,6 +125,12 @@ class GCPConfig(object):
             'xpanse': cls.CORE_PACKS_XPANSE_LIST_TO_UPDATE,
         }
         return mapping.get(marketplace, GCPConfig.CORE_PACKS_LIST_TO_UPDATE)
+
+    @classmethod
+    def get_core_packs_unlocked_file(cls):
+        for version, core_pack_file_value in cls.CORE_PACKS_FILE_VERSIONS.items():
+            if not core_pack_file_value.get('core_packs_file_lock_timestamp', ''):
+                return core_pack_file_value.get('core_packs_file')
 
 
 class PackTags(object):
