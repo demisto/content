@@ -10,7 +10,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.search_and_install_packs import install_packs
 from time import sleep
-from itertools import groupby
+from more_itertools import all_equal
 
 
 def get_all_installed_packs(client: demisto_client):
