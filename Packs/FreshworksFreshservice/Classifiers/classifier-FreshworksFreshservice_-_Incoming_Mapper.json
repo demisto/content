@@ -1,0 +1,625 @@
+{
+    "description": "FreshworksFreshservice - Incoming Mapper",
+    "feed": false,
+    "id": "FreshworksFreshservice - Incoming Mapper",
+    "mapping": {
+        "FreshworksFreshservice Ticket": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Description": {
+                    "simple": "description_text"
+                },
+                "FreshworksFreshservice Assets": {
+                    "simple": "assets"
+                },
+                "FreshworksFreshservice Attachments": {
+                    "simple": "attachments"
+                },
+                "FreshworksFreshservice Category": {
+                    "simple": "category"
+                },
+                "FreshworksFreshservice Custom Fields": {
+                    "simple": "custom_fields"
+                },
+                "FreshworksFreshservice Deleted": {
+                    "simple": "deleted"
+                },
+                "FreshworksFreshservice Department ID": {
+                    "simple": "department_id"
+                },
+                "FreshworksFreshservice Due By": {
+                    "simple": "due_by"
+                },
+                "FreshworksFreshservice Group ID": {
+                    "simple": "group_id"
+                },
+                "FreshworksFreshservice Impact": {
+                    "simple": "impact"
+                },
+                "FreshworksFreshservice Incident Type": {
+                    "simple": "ticket_type"
+                },
+                "FreshworksFreshservice Item Category": {
+                    "simple": "item_category"
+                },
+                "FreshworksFreshservice Priority": {
+                    "simple": "priority"
+                },
+                "FreshworksFreshservice Requester ID": {
+                    "simple": "requester_id"
+                },
+                "FreshworksFreshservice Responder ID": {
+                    "simple": "responder_id"
+                },
+                "FreshworksFreshservice Source": {
+                    "simple": "source"
+                },
+                "FreshworksFreshservice Spam": {
+                    "simple": "spam"
+                },
+                "FreshworksFreshservice Sub Category": {
+                    "simple": "sub_category"
+                },
+                "FreshworksFreshservice Tags": {
+                    "simple": "tags"
+                },
+                "FreshworksFreshservice Ticket Status": {
+                    "simple": "status"
+                },
+                "FreshworksFreshservice Ticket Type": {
+                    "simple": "type"
+                },
+                "FreshworksFreshservice Urgency": {
+                    "simple": "urgency"
+                },
+                "FreshworksFreshservice Workspace ID": {
+                    "simple": "workspace_id"
+                },
+                "FreshworksFreshservice Task": {
+                    "simple": "tasks"
+                },
+                "Source Priority": {
+                    "simple": "priority"
+                },
+                "Source Status": {
+                    "simple": "status"
+                },
+                "Ticket Number": {
+                    "simple": "id"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ticket_type",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "value": {
+                                            "simple": "FreshService - "
+                                        }
+                                    },
+                                    "suffix": {}
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "value": {
+                                            "simple": ": "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "incident_id"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "value": {
+                                            "simple": " - "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "subject"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "occurred": {
+                    "simple": "created_at"
+                }
+            }
+        },
+        "FreshworksFreshservice Change Request": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Description": {
+                    "simple": "description_text"
+                },
+                "FreshworksFreshservice Agent ID": {
+                    "simple": "agent_id"
+                },
+                "FreshworksFreshservice Approval Status": {
+                    "simple": "approval_status"
+                },
+                "FreshworksFreshservice Assets": {
+                    "simple": "assets"
+                },
+                "FreshworksFreshservice Category": {
+                    "simple": "category"
+                },
+                "FreshworksFreshservice Change Status": {
+                    "simple": "status"
+                },
+                "FreshworksFreshservice Change Type": {
+                    "simple": "change_type"
+                },
+                "FreshworksFreshservice Custom Fields": {
+                    "simple": "custom_fields"
+                },
+                "FreshworksFreshservice Department ID": {
+                    "simple": "department_id"
+                },
+                "FreshworksFreshservice Due By": {
+                    "simple": "due_by"
+                },
+                "FreshworksFreshservice Group ID": {
+                    "simple": "group_id"
+                },
+                "FreshworksFreshservice Impact": {
+                    "simple": "impact"
+                },
+                "FreshworksFreshservice Impacted Services": {
+                    "simple": "impacted_services"
+                },
+                "FreshworksFreshservice Incident Type": {
+                    "simple": "ticket_type"
+                },
+                "FreshworksFreshservice Item Category": {
+                    "simple": "item_category"
+                },
+                "FreshworksFreshservice Planned End Date": {
+                    "simple": "planned_end_date"
+                },
+                "FreshworksFreshservice Planned Start Date": {
+                    "simple": "planned_start_date"
+                },
+                "FreshworksFreshservice Priority": {
+                    "simple": "priority"
+                },
+                "FreshworksFreshservice Requester ID": {
+                    "simple": "requester_id"
+                },
+                "FreshworksFreshservice Risk": {
+                    "simple": "risk"
+                },
+                "FreshworksFreshservice Sub Category": {
+                    "simple": "sub_category"
+                },
+                "FreshworksFreshservice Task": {
+                    "simple": "tasks"
+                },
+                "Source Priority": {
+                    "simple": "priority"
+                },
+                "Source Status": {
+                    "simple": "status"
+                },
+                "Ticket Number": {
+                    "simple": "id"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ticket_type",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "value": {
+                                            "simple": "FreshService - "
+                                        }
+                                    },
+                                    "suffix": {}
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "value": {
+                                            "simple": ": "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "incident_id"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "value": {
+                                            "simple": " - "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "subject"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "occurred": {
+                    "simple": "created_at"
+                }
+            }
+        },
+        "FreshworksFreshservice Problem Request": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Description": {
+                    "simple": "description_text"
+                },
+                "FreshworksFreshservice Agent ID": {
+                    "simple": "agent_id"
+                },
+                "FreshworksFreshservice Analysis Fields": {
+                    "simple": "analysis_fields"
+                },
+                "FreshworksFreshservice Assets": {
+                    "simple": "assets"
+                },
+                "FreshworksFreshservice Category": {
+                    "simple": "category"
+                },
+                "FreshworksFreshservice Custom Fields": {
+                    "simple": "custom_fields"
+                },
+                "FreshworksFreshservice Department ID": {
+                    "simple": "department_id"
+                },
+                "FreshworksFreshservice Due By": {
+                    "simple": "due_by"
+                },
+                "FreshworksFreshservice Group ID": {
+                    "simple": "group_id"
+                },
+                "FreshworksFreshservice Impact": {
+                    "simple": "impact"
+                },
+                "FreshworksFreshservice Incident Type": {
+                    "simple": "ticket_type"
+                },
+                "FreshworksFreshservice Item Category": {
+                    "simple": "item_category"
+                },
+                "FreshworksFreshservice Known Error": {
+                    "simple": "known_error"
+                },
+                "FreshworksFreshservice Priority": {
+                    "simple": "priority"
+                },
+                "FreshworksFreshservice Problem Status": {
+                    "simple": "status"
+                },
+                "FreshworksFreshservice Requester ID": {
+                    "simple": "requester_id"
+                },
+                "FreshworksFreshservice Sub Category": {
+                    "simple": "sub_category"
+                },
+                "FreshworksFreshservice Task": {
+                    "simple": "tasks"
+                },
+                "Source Priority": {
+                    "simple": "priority"
+                },
+                "Source Status": {
+                    "simple": "status"
+                },
+                "Ticket Number": {
+                    "simple": "id"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ticket_type",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "value": {
+                                            "simple": "FreshService - "
+                                        }
+                                    },
+                                    "suffix": {}
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "value": {
+                                            "simple": ": "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "incident_id"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "value": {
+                                            "simple": " - "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "subject"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "occurred": {
+                    "simple": "created_at"
+                }
+            }
+        },
+        "FreshworksFreshservice Release Request": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Description": {
+                    "simple": "description_text"
+                },
+                "FreshworksFreshservice Agent ID": {
+                    "simple": "agent_id"
+                },
+                "FreshworksFreshservice Assets": {
+                    "simple": "assets"
+                },
+                "FreshworksFreshservice Category": {
+                    "simple": "category"
+                },
+                "FreshworksFreshservice Custom Fields": {
+                    "simple": "custom_fields"
+                },
+                "FreshworksFreshservice Department ID": {
+                    "simple": "department_id"
+                },
+                "FreshworksFreshservice Due By": {
+                    "simple": "due_by"
+                },
+                "FreshworksFreshservice Group ID": {
+                    "simple": "group_id"
+                },
+                "FreshworksFreshservice Incident Type": {
+                    "simple": "ticket_type"
+                },
+                "FreshworksFreshservice Item Category": {
+                    "simple": "item_category"
+                },
+                "FreshworksFreshservice Planned End Date": {
+                    "simple": "planned_end_date"
+                },
+                "FreshworksFreshservice Planned Start Date": {
+                    "simple": "planned_start_date"
+                },
+                "FreshworksFreshservice Priority": {
+                    "simple": "priority"
+                },
+                "FreshworksFreshservice Release ID": {
+                    "simple": "release_id"
+                },
+                "FreshworksFreshservice Release Status": {
+                    "simple": "status"
+                },
+                "FreshworksFreshservice Release Type": {
+                    "simple": "release_type"
+                },
+                "FreshworksFreshservice Sub Category": {
+                    "simple": "sub_category"
+                },
+                "FreshworksFreshservice Task": {
+                    "simple": "tasks"
+                },
+                "Source Priority": {
+                    "simple": "priority"
+                },
+                "Source Status": {
+                    "simple": "status"
+                },
+                "Ticket Number": {
+                    "simple": "id"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ticket_type",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "value": {
+                                            "simple": "FreshService - "
+                                        }
+                                    },
+                                    "suffix": {}
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "value": {
+                                            "simple": ": "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "incident_id"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "value": {
+                                            "simple": " - "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "subject"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "occurred": {
+                    "simple": "created_at"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "FreshworksFreshservice - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
