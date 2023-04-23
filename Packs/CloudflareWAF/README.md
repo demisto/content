@@ -16,7 +16,7 @@ In addition, this pack includes XSIAM content.
 
 ### Collect Events from Cloudflare WAF (XSIAM)
 
-We are currently support the retrieval of events from Cloudflare WAF by using an HTTP Log Collector, and Cloudflare waf logpush v2.
+We currently support the retrieval of events from Cloudflare WAF by using an HTTP Log Collector, and Cloudflare waf logpush v2.
 
 **On XSIAM:**
 
