@@ -289,7 +289,7 @@ class Build(ABC):
             (bool): whether new (current) marketplace was added to the pack_metadata or not
         """
         spaced_diff = " ".join(diff.split())
-        return (f'+ "{self.marketplace_name}"' in spaced_diff) and not (f'- "{self.marketplace_name}"' in spaced_diff)
+        return (f'+ "{self.marketplace_name}"' in spaced_diff) and f'- "{self.marketplace_name}"' not in spaced_diff
 
     def disable_instances(self):
         for server in self.servers:

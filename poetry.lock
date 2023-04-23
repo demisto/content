@@ -2806,6 +2806,23 @@ python2 = ["typed-ast (>=1.4.0,<2)"]
 reports = ["lxml"]
 
 [[package]]
+name = "mypy-baseline"
+version = "0.5.0"
+description = "Integrate mypy with existing codebase."
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "mypy_baseline-0.5.0-py3-none-any.whl", hash = "sha256:687b24df01f61d7101ddc6debb51424eb87ca306313e8951b6003eb78c3d8828"},
+    {file = "mypy_baseline-0.5.0.tar.gz", hash = "sha256:18a7b1976f61ad66f58e3b86b954817702d5c2a67a46465f30c1f0fdcc4d5d92"},
+]
+
+[package.extras]
+docs = ["myst-parser", "sphinx"]
+lint = ["flake8", "isort", "mypy", "types-requests", "types-toml", "unify"]
+test = ["pytest", "pytest-cov", "requests", "responses"]
+
+[[package]]
 name = "mypy-extensions"
 version = "1.0.0"
 description = "Type system extensions for programs checked with the mypy type checker."
@@ -3344,7 +3361,6 @@ optional = false
 python-versions = "*"
 files = [
     {file = "pdf2image-1.16.3-py3-none-any.whl", hash = "sha256:b6154164af3677211c22cbb38b2bd778b43aca02758e962fe1e231f6d3b0e380"},
-    {file = "pdf2image-1.16.3.tar.gz", hash = "sha256:74208810c2cef4d9e347769b8e62a52303982ddb4f2dfd744c7ab4b940ae287e"},
 ]
 
 [package.dependencies]
@@ -6410,4 +6426,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "186c5e9460467ab61499790906324a25493cce6b01cd0c2bf8039336fb0a44a9"
+content-hash = "0fb6b53edfaa687cfb6a38ff2ef4b7be2ead0aea2b0a62cdcfba407485bbaeba"

@@ -13,6 +13,7 @@ defusedxml = "^0.7.1"
 demisto_sdk = "1.13.0"
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
+mypy-baseline = "^0.5.0"
 
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
@@ -150,6 +151,7 @@ src = ["Packs/Base/Scripts/CommonServerPython", "Tests/demistomock", "Packs/ApiM
 python_version = "3.10"
 check_untyped_defs = true
 ignore_missing_imports = true
+namespace_packages = true
 show_error_codes = true
 follow_imports = "silent"
 pretty = true
