@@ -37,7 +37,7 @@ OAUTH2_AUTH_NOT_APPLICABLE_ERROR = ('This command is not applicable to run with 
                                     ' do not use OAuth2 for authorization.')
 ID_OR_KEY_MISSING_ERROR = 'Please provide either the issue ID or key.'
 EPIC_ID_OR_KEY_MISSING_ERROR = 'Please provide either the epic ID or key.'
-JIRA_RESOLVE_REASON = 'Issue was marked as "Resolved"'
+CLOSE_INCIDENT_REASON = 'Issue was marked as "Resolved", or status was changed to "Done"'
 MIRROR_DIRECTION_DICT = {
     'None': None,
     'Incoming': 'In',
@@ -3589,6 +3589,8 @@ def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: st
     Returns:
         str: The query to use to fetch the appropriate incidents.
     """
+    if issue_field_to_fetch_from in fetch_query:
+        raise DemistoException('The issue field to fetch from cannot be in the fetch query')
     exclude_issue_ids_query = f"AND ID NOT IN ({', '.join(map(str, issue_ids_to_exclude))})" if issue_ids_to_exclude else ''
     if issue_field_to_fetch_from == 'id':
         return f'{fetch_query} AND id >= {last_fetch_id} {exclude_issue_ids_query} ORDER BY id ASC'
@@ -4096,7 +4098,7 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
-                'closeReason': JIRA_RESOLVE_REASON,
+                'closeReason': CLOSE_INCIDENT_REASON,
             },
             'ContentsFormat': EntryFormat.JSON
         }
@@ -4180,8 +4182,10 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], c
                                                     attachment_name=f'{file_name}{ATTACHMENT_MIRRORED_FROM_XSOAR}{file_extension}')
                 elif comment_tag_to_jira in entry_tags:
                     demisto.debug('Add new comment\n')
+                    entry_content = f'{entry.get("contents", "")}\n\n{COMMENT_MIRRORED_FROM_XSOAR}'
+                    comment_body = text_to_adf(entry_content) if isinstance(client, JiraCloudClient) else entry_content
                     payload = {
-                        'body': text_to_adf(text=f'{entry.get("contents", "")}\n\n{COMMENT_MIRRORED_FROM_XSOAR}')
+                        'body': comment_body
                     }
                     client.add_comment(issue_id_or_key=remote_id, json_data=payload)
             demisto.debug('Updated the entries (attachments and/or comments) of the remote system successfully')

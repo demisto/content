@@ -87,7 +87,8 @@ configuration:
 #   defaultvalue: 'false'
 - defaultvalue: 'false'
   additionalinfo: When selected, marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close
-    the corresponding incident. Please make sure the `Resolved` field is configured in order for this to work properly.
+    the corresponding incident. Please make sure the `Resolved` field is configured in order for this to work properly,
+    if not, it will rely on if the status of the issue is changed to `Done`.
   display: Close Mirrored XSOAR Incident
   name: close_incident
   required: false
@@ -547,8 +548,7 @@ script:
       description:  The entry ID to upload.
       isArray: false
       name: upload
-      required: false
-      hidden: true
+      required: true
       secret: false
     - default: false
       description: The attachment name to be displayed in Jira (overrides the original
