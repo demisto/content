@@ -6087,23 +6087,20 @@ def test_pan_os_create_address_main_flow_error(args):
 
 
 @pytest.mark.parametrize(
-    "device_group, vsys, url, xpath, response, args", [
+    "device_group, vsys, response, args, error", [
         (
             "test",
             "",
-            "https://example.com",
-            "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/tag",
             '<response status="success" code="19"> \
                 <result total-count="0" count="0"> \
                 </result> \
             </response>',
-            {"name": "test", "tag": "not exist"}
+            {"name": "test", "tag": "not exist"},
+            "Failed to create the address object since the tag `not exist` does not exist."
          ),
         (
             "",
             "vsys1",
-            "https://example.com",
-            "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/tag",
             '<response status="success" code="19"> \
                 <result total-count="1" count="1"> \
                     <tag admin="admin" dirtyId="3" time="2023/04/23 01:41:22"> \
@@ -6111,11 +6108,12 @@ def test_pan_os_create_address_main_flow_error(args):
                     </tag> \
                 </result> \
             </response>',
-            {"name": "test", "tag": "exist, not exist"}
+            {"name": "test", "tag": "exist, not exist", 'create_tag': 'Yes'},
+            'Please specify exactly one of the following arguments: fqdn, ip_netmask, ip_range, ip_wildcard.'
          ),
     ]
 )
-def test_pan_os_create_address_with_not_exist_tag(mocker, device_group, vsys, url, xpath, response, args):
+def test_pan_os_create_address_with_not_exist_tag(mocker, device_group, vsys, response, args, error):
     """
     Given:
      - Tags that does not exist in the system as command arguments
@@ -6129,16 +6127,16 @@ def test_pan_os_create_address_with_not_exist_tag(mocker, device_group, vsys, ur
     from Panorama import panorama_create_address_command
     mocker.patch('Panorama.DEVICE_GROUP', device_group)
     mocker.patch('Panorama.VSYS', vsys)
-    mocker.patch('Panorama.URL', url)
+    mocker.patch('Panorama.URL', 'https://example.com')
 
     with requests_mock.Mocker() as m:
-        mock_request = m.get(url, text=response, status_code=200)
+        m.get('https://example.com', text=response, status_code=200)
+        m.post('https://example.com', text=response, status_code=200)
 
         with pytest.raises(DemistoException) as e:
             panorama_create_address_command(args)
 
-        assert e.value.message == "Failed to create the address object since the tag `not exist` does not exist."
-        assert mock_request.last_request.qs['xpath'][0] == xpath
+        assert e.value.message == error
 
 
 """ FETCH INCIDENTS """
