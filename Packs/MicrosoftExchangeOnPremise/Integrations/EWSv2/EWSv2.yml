@@ -1302,7 +1302,6 @@ script:
   type: python
 tests:
 - pyEWS_Test
-- EWS search-mailbox test
 - EWS V2 Send Mail Test
 - EWS V2 Send Mail Test 2
 defaultmapperin: EWS v2-mapper

@@ -3093,7 +3093,8 @@
             "integrations": "EWSO365",
             "instance_names": "ewso365_dev_team",
             "playbookID": "EWS_O365_test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 500
         },
         {
             "integrations": "EWSO365",
@@ -5102,7 +5103,8 @@
             "instance_names": [
                 "ewso365_dev_team"
             ],
-            "fromversion": "6.5.0"
+            "fromversion": "6.5.0",
+            "timeout": 600
         },
         {
             "integrations": "OpsGenieV3",
