@@ -216,6 +216,7 @@ tasks:
       id: 4c31fd84-2f09-4efb-845a-b1a74ef33ef5
       version: -1
       name: Check if scan metadata returned
+      description: Check if scan metadata returned
       type: condition
       iscommand: false
       brand: ""
