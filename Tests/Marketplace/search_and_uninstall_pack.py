@@ -146,11 +146,6 @@ def wait_for_uninstallation_to_complete(client: demisto_client):
     Returns: True if all packs were uninstalled successfully
 
     """
-
-    def all_equal(iterable):
-        g = groupby(iterable)
-        return next(g, True) and not next(g, False)
-
     retry = 0
     sleep_duration = 150
     try:
