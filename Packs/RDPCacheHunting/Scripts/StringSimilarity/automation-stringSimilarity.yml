@@ -51,7 +51,7 @@ script: |-
               #diff_result = difflib.get_close_matches(tool, i, n=1)
               #if bool(diff_result) == True:
               if diff_result > similiarity_threshold and len(string) > 3:
-                  item = {"String from list": tool.lower(), "String from text": string.lower(), "similarityRatio": round(diff_result, 2)}
+                  item = {"StringFromList": tool.lower(), "StringFromText": string.lower(), "similarityRatio": round(diff_result, 2)}
                   data.append(item)
       jsonData = json.dumps(data)
       jsonData = json.loads(jsonData)
