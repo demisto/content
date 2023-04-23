@@ -111,11 +111,8 @@ else
   else
     echo "Skipping uploading index.json file."
   fi
-#  if [ -f "$ARTIFACTS_FOLDER/corepacks.json" ]; then
-#    gsutil cp -z json "$ARTIFACTS_FOLDER/corepacks.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
-#  else
-#    echo "Skipping uploading corepacks.json file."
-#  fi
+
+  # Copy corepacks files from the artifacts folder to the build bucket:
   find $ARTIFACTS_FOLDER -name "corepacks*.json" -exec gsutil cp -z json {} "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH" \;
 
   echo "Finished updating content packs successfully."
