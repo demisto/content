@@ -1039,14 +1039,14 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
             logging.error(f"Failed uploading packs with dependencies: {e}")
 
 
-def upload_server_versions_metadata(storage_bucket):
-    blob = storage_bucket.blob(GCPConfig.SERVER_VERSIONS_METADATA_FILE)
-    try:
-        blob.upload_from_filename(GCPConfig.SERVER_VERSIONS_METADATA_FILE)
-        logging.success(f"Finished uploading {GCPConfig.SERVER_VERSIONS_METADATA_FILE} to storage.")
-    except Exception:
-        logging.exception(f"Failed in uploading {GCPConfig.SERVER_VERSIONS_METADATA_FILE}.")
-        sys.exit(1)
+def upload_server_versions_metadata(storage_base_path):
+    # todo: remove logs
+    logging.info(f"storage_base_path: {storage_base_path}")
+    logging.info(f"versions_metadata content: {GCPConfig.VERSIONS_METADATA}")
+
+    versions_metadata_path = os.path.join(storage_base_path, 'versions-metadata.json')
+    json_write(versions_metadata_path, GCPConfig.VERSIONS_METADATA)
+    logging.success(f"Finished copying {GCPConfig.SERVER_VERSIONS_METADATA_FILE} to storage.")
 
 
 def option_handler():
@@ -1335,7 +1335,7 @@ def main():
         pack.status = PackStatus.SUCCESS.name
 
     # upload server versions metadata to bucket
-    upload_server_versions_metadata(storage_bucket)
+    upload_server_versions_metadata(storage_base_path)
 
     # upload core packs json to bucket
     create_corepacks_config(storage_bucket, build_number, index_folder_path,
