@@ -130,6 +130,8 @@ tasks:
             value:
               simple: inputs.DBotScore
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -488,7 +490,9 @@ tasks:
       - "25"
     scriptarguments:
       value:
-        simple: ${DBotScore.Indicator}
+        complex:
+          root: DBotScore
+          accessor: Indicator
     separatecontext: false
     continueonerrortype: ""
     view: |-
