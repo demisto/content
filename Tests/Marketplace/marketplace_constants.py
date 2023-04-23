@@ -87,6 +87,7 @@ class GCPConfig(object):
     INDEX_V2_NAME = "index_v2"
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
     BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/{marketplace}/content/packs'
+    SERVER_VERSIONS_METADATA_FILE = os.path.join(os.path.dirname(__file__), 'versions-metadata.json')
 
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_xsoar_list_file:
         packs_list = json.load(core_packs_xsoar_list_file)
@@ -104,7 +105,7 @@ class GCPConfig(object):
         CORE_PACKS_XPANSE_LIST = packs_list_xpanse.get('core_packs_list')
         CORE_PACKS_XPANSE_LIST_TO_UPDATE = packs_list_xpanse.get('update_core_packs_list')
 
-    with open(os.path.join(os.path.dirname(__file__), 'versions-metadata.json'), 'r') as server_versions_metadata:
+    with open(SERVER_VERSIONS_METADATA_FILE, 'r') as server_versions_metadata:
         versions_metadata = json.load(server_versions_metadata)
         CORE_PACKS_FILE_VERSIONS = versions_metadata.get('version_map')
 
