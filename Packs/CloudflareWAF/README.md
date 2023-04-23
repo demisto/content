@@ -28,7 +28,7 @@ We currently support the retrieval of events from Cloudflare WAF by using an HTT
    - Log Format as `JSON`
    - Vendor as `cloudflare`
    - Product as `waf`
-2. Creating a new HTTP Log Collector will allow you to generate a unique token, please save it since it will be used later.
+2. Creating a new HTTP Log Collector allows you to generate a unique token. Save it since it will be used later.
 3. Click the 3 dots sign next to the newly created instance and copy the API Url, it will also be used later.
 
 **On Cloudflare:**
