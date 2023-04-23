@@ -1,4 +1,4 @@
-This package allows retrieving asset monitoring results from monitoring tasks that can be configured in Context and Risk platforms.
+This package allows retrieving asset monitoring results from monitoring tasks that can be configured in Resecurity® CTI and Resecurity® DRM platforms.
 This integration was integrated and tested with version 1.01 of ResecurityMonitoring
 
 ## Configure Resecurity Monitoring on Cortex XSOAR
