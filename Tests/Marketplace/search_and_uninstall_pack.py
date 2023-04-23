@@ -137,6 +137,22 @@ def reset_base_pack_version(client: demisto_client):
         return False
 
 
+def monitoring_uninstall_packs(current_amount_packs: int, previous_amount_packs: int, counter_times_to_repeats: int):
+    """
+    This function checks if installed packs amount is the same or not and updates accordingly.
+    Args:
+        current_amount_packs: installed packs amount in the current iteration.
+        previous_amount_packs: installed packs amount in the previous iteration.
+        counter_times_to_repeats: count how many times it repeats
+
+    Returns:
+        installed packs amount in the current iteration and the counter
+    """
+    if current_amount_packs == previous_amount_packs:
+        return current_amount_packs, counter_times_to_repeats + 1
+    return current_amount_packs, 0
+
+
 def wait_for_uninstallation_to_complete(client: demisto_client):
     """
     Query if there are still installed packs, as it might take time to complete.
@@ -151,20 +167,25 @@ def wait_for_uninstallation_to_complete(client: demisto_client):
     try:
         installed_packs = get_all_installed_packs(client)
         # Monitoring when uninstall packs don't work
-        installed_packs_count_history = [1, 1, 1, len(installed_packs)]  # appended to on each attempt
+        installed_packs_amount_history, counter_times_to_repeats = len(installed_packs), 0
         # new calculation for num of retries
         retries = math.ceil(len(installed_packs) / 2)
         while len(installed_packs) > 1:
             if retry > retries:
                 raise Exception('Waiting time for packs to be uninstalled has passed, there are still installed '
                                 'packs. Aborting.')
-            if all_equal(installed_packs_count_history[-4:]):
+            if counter_times_to_repeats >= 3:
                 raise Exception(f'Uninstalling packs failed three times. {installed_packs=}')
             logging.info(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
                          f'packs installed. Sleeping for {sleep_duration} seconds.')
             sleep(sleep_duration)
             installed_packs = get_all_installed_packs(client)
-            installed_packs_count_history.append(len(installed_packs))
+
+            # Monitoring when uninstall packs don't work
+            installed_packs_amount_history, counter_times_to_repeats = \
+                monitoring_uninstall_packs(len(installed_packs), installed_packs_amount_history,
+                                           counter_times_to_repeats)
+
             retry += 1
 
     except Exception as e:
