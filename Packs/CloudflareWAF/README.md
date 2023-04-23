@@ -20,7 +20,9 @@ We currently support the retrieval of events from Cloudflare WAF by using an HTT
 
 **On XSIAM:**
 
-1. Navigate to **Settings** -> **Data Sources** -> **Add Data Source** -> **Custom - HTTP based Collector** -> Click on **Connect Another Instance**, set the Name and Compression as you choose and then please set:
+1. Navigate to **Settings** -> **Data Sources** -> **Add Data Source** -> **Custom - HTTP based Collector**.
+2. Click **Connect Another Instance**.
+3. Set the Name and Compression and then set:
    - Name as `Cloudflare`
    - Compression `gzip`
    - Log Format as `JSON`
