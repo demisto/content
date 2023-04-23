@@ -542,6 +542,13 @@ script:
     - description: The tag for the new address.
       isArray: true
       name: tag
+    - auto: PREDEFINED
+      description: Weather to create the tag if not exist.
+      default: No
+      name: create_tag
+      predefined:
+      - Yes
+      - No
     description: Creates an address object.
     deprecated: true
     name: panorama-create-address

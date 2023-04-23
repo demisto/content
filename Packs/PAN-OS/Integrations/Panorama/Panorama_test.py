@@ -6115,7 +6115,7 @@ def test_pan_os_create_address_main_flow_error(args):
          ),
     ]
 )
-def test_pan_os_create_address_with_not_exist_tag(device_group, vsys, url, xpath, response, args):
+def test_pan_os_create_address_with_not_exist_tag(mocker, device_group, vsys, url, xpath, response, args):
     """
     Given:
      - Tags that does not exist in the system as command arguments
@@ -6126,16 +6126,16 @@ def test_pan_os_create_address_with_not_exist_tag(device_group, vsys, url, xpath
     Then:
      - Make sure an exception is raised saying only tags that already exist in system can be the command input.
     """
-    import Panorama
-    Panorama.DEVICE_GROUP = device_group
-    Panorama.VSYS = vsys
-    Panorama.URL = url
+    from Panorama import panorama_create_address_command
+    mocker.patch('Panorama.DEVICE_GROUP', device_group)
+    mocker.patch('Panorama.VSYS', vsys)
+    mocker.patch('Panorama.URL', url)
 
     with requests_mock.Mocker() as m:
         mock_request = m.get(url, text=response, status_code=200)
 
         with pytest.raises(DemistoException) as e:
-            Panorama.panorama_create_address_command(args)
+            panorama_create_address_command(args)
 
         assert e.value.message == "Failed to create the address object since the tag `not exist` does not exist."
         assert mock_request.last_request.qs['xpath'][0] == xpath
