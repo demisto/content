@@ -56,6 +56,7 @@ configuration:
   section: Collect
   advanced: true
 - display: Ticket Field to Fetch by
+  name: time_filter
   defaultvalue: created-at
   type: 15
   required: true
