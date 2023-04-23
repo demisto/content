@@ -9,20 +9,10 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
     fromServerVersion: ""
-    itemVersion: ""
-    packID: ceba5b99-f162-4c36-8c64-34808d6c7a8d
-    packName: RDPCacheHunting
-    propagationLabels:
-    - all
-    toServerVersion: ""
 dockerimage: demisto/python3:3.10.5.31797
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: BMC-Tool
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: |-
@@ -538,3 +528,6 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

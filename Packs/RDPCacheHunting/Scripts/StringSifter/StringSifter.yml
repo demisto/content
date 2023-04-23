@@ -9,32 +9,21 @@ args:
   name: string_text
 - description: The file to process.
   name: entryID
-comment: This script runs stringsifter ML tool for malware anlisys and ranking of
-  words.
+comment: This script runs stringsifter ML tool for malware anlisys and ranking of words.
 commonfields:
   id: StringSifter
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
     fromServerVersion: ""
-    itemVersion: ""
-    packID: ceba5b99-f162-4c36-8c64-34808d6c7a8d
-    packName: RDPCacheHunting
-    propagationLabels:
-    - all
-    toServerVersion: ""
 dockerimage: devdemisto/stringsifter:1.0.0.32390
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: StringSifter
 outputs:
 - contextPath: Stringsifter.FileName
   description: The name of the file Stringsifter operated on.
 - contextPath: Stringsifter.Results
   description: The results from Stringsifter
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: |
@@ -148,3 +137,6 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
