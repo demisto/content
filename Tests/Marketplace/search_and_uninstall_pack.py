@@ -139,7 +139,7 @@ def reset_base_pack_version(client: demisto_client):
 
 def monitoring_uninstall_packs(current_amount_packs: int, previous_amount_packs: int, counter_times_to_repeats: int):
     """
-    This function checks if installed packs amount is the same or not and updates accordingly.
+    Checks if installed packs amount is the same or not and updates accordingly.
     Args:
         current_amount_packs: installed packs amount in the current iteration.
         previous_amount_packs: installed packs amount in the previous iteration.
