@@ -1,7 +1,7 @@
 id: Detonate File - JoeSecurity V2
 version: -1
 name: Detonate File - JoeSecurity V2
-description: The Detonate File playbook is using Joe Sandbox Process is designed to streamline and enhance the security assessment of files. This automated system accepts a user-submitted file, sends it for in-depth analysis using Joe Sandbox technology, and returns comprehensive results as attachments to the user. The process is designed to be swift, efficient, and secure, providing users with valuable insights into potential threats and vulnerabilities within their files.
+description: The Detonate File using Joe Sandbox Process is designed to streamline and enhance the security assessment of files. This automated system accepts a user-submitted file, sends it for in-depth analysis using Joe Sandbox technology, and returns comprehensive results as attachments to the user. The process is designed to be swift, efficient, and secure, providing users with valuable insights into potential threats and vulnerabilities within their files.
 tags:
 - Malware
 - Sandbox
@@ -40,10 +40,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 7799d8c8-7b72-408a-8290-3d44645de2fc
+    taskid: 67a2b195-eff4-4586-8b58-19df81b12b6b
     type: regular
     task:
-      id: 7799d8c8-7b72-408a-8290-3d44645de2fc
+      id: 67a2b195-eff4-4586-8b58-19df81b12b6b
       version: -1
       name: JoeSecurity Upload File
       description: Submit a sample for sandbox analysis.
@@ -65,6 +65,9 @@ tasks:
       systems:
         complex:
           root: inputs.Systems
+      timeout:
+        complex:
+          root: inputs.Timeout
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -375,14 +378,14 @@ inputs:
   playbookInputQuery:
 - key: Timeout
   value:
-    simple: "15"
+    simple: "1500"
   required: false
   description: The duration after which to stop pooling and to resume the playbook (in minutes)
   playbookInputQuery:
 - key: Systems
   value: {}
   required: false
-  description: 'Operating system to run the analysis on (comma-separated). Supported values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+  description: 'Operating system to run the analysis on (comma-separated). Supported values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat (if no input is provided, the default is w10x64_office)'
   playbookInputQuery:
 - key: Comments
   value: {}
@@ -488,6 +491,14 @@ outputs:
 - contextPath: DBotScore.Malicious
   description: DBotScore Malicious object
   type: unknown
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+- contextPath: File.Name
+  description: The full file name.
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
