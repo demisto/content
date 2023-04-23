@@ -196,7 +196,7 @@ def main():
             d_args[arg_name] = preprocess_incidents_fields_list(split_argument_list)
         query = build_incidents_query(d_args.get('query'),
                                       d_args.get('incidentTypes'),
-                                      d_args.get('timeField'),
+                                      d_args['timeField'],
                                       d_args.get('fromDate'),
                                       d_args.get('toDate'),
                                       d_args.get('NonEmptyFields'))
