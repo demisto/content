@@ -159,7 +159,8 @@ script:
       isArray: false
       name: last_update_to
       required: false
-    - description: The page number of the results to retrieve.
+    - defaultValue: '1'
+      description: The page number of the results to retrieve (1-based).
       isArray: false
       name: page
       required: false
