@@ -225,7 +225,7 @@ def main():
 
             except KeyError:
 
-                demisto.debug(f"{demisto_indicator_type} isn't an SCO checking other IOC types")
+                demisto.debug(f"{demisto_indicator_type} isn't a SCO, checking other IOC types")
 
                 try:
                     indicator_type = demisto_indicator_type.lower()
