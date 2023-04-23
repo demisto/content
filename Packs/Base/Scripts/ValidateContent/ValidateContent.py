@@ -1,5 +1,6 @@
 import io
 import json
+import sys
 import traceback
 import types
 import zipfile
@@ -178,8 +179,8 @@ def run_validate(file_path: str, json_output_file: str) -> None:
     with open(f'{tests_dir}/id_set.json', 'w') as f:
         json.dump({}, f)
     v_manager = ValidateManager(
-        is_backward_check=False, prev_ver=None, use_git=False, only_committed_files=False,
-        print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=file_path,
+        is_backward_check=False, prev_ver="origin/master", use_git=False, only_committed_files=False,
+        print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=str(file_path),
         validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=False,
         silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
         staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False)
@@ -188,15 +189,16 @@ def run_validate(file_path: str, json_output_file: str) -> None:
 
 def run_lint(file_path: str, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
-    logging_setup(verbose=3, quiet=False, log_path=lint_log_dir)
+    logging_setup(3)
     lint_manager = LintManager(
-        input=file_path, git=False, all_packs=False, quiet=False, verbose=1,
-        prev_ver='', json_file_path=json_output_file
+        input=str(file_path), git=False, all_packs=False,
+        prev_ver='origin/master', json_file_path=json_output_file
     )
-    lint_manager.run_dev_packages(
+    lint_manager.run(
         parallel=1, no_flake8=False, no_xsoar_linter=False, no_bandit=False, no_mypy=False,
         no_pylint=True, no_coverage=True, coverage_report='', no_vulture=False, no_test=True, no_pwsh_analyze=True,
         no_pwsh_test=True, keep_container=False, test_xml='', failure_report=lint_log_dir, docker_timeout=60,
+        docker_image_flag=None, docker_image_target= None
     )
 
 
