@@ -26,3 +26,4 @@ dockerimage: demisto/python3:3.10.10.51930
 fromversion: 5.5.0
 tests:
 - FormatURL-Test
+- URL extraction test
