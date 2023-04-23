@@ -21,7 +21,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Cortex XDR_-_IR",
+            "integrations": "Cortex XDR - IR",
             "playbookID": "Test_Playbook-Cortex_XDR_Malware_-_Incident Enrichment"
         },
         {
