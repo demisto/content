@@ -164,8 +164,7 @@ def wait_for_uninstallation_to_complete(client: demisto_client):
                          f'packs installed. Sleeping for {sleep_duration} seconds.')
             sleep(sleep_duration)
             installed_packs = get_all_installed_packs(client)
-            monitoring_amount_installed_packs.pop(0)
-            monitoring_amount_installed_packs.append(len(installed_packs))
+            installed_packs_count_history.append(len(installed_packs))
             retry += 1
 
     except Exception as e:
