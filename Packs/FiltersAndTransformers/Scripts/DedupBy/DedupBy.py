@@ -42,20 +42,42 @@ class Key(object):
         self.__value = value if path is None else demisto_get(value, path)
 
     def __eq__(self, other: Any) -> bool:
+        def __equals(obj1: Any, obj2: Any) -> bool:
+            if type(obj1) != type(obj2):  # noqa: E721
+                return False
+            elif isinstance(obj1, dict):
+                for k1, v1 in obj1.items():
+                    if k1 not in obj2:
+                        return False
+                    if not __equals(v1, obj2[k1]):
+                        return False
+                return not (set(obj1.keys()) ^ set(obj2.keys()))
+            elif isinstance(obj1, list):
+                if len(obj1) != len(obj2):
+                    return False
+                return all(__equals(e1, e2) for e1, e2 in zip(obj1, obj2))
+            else:
+                return obj1 == obj2
+
         if not isinstance(other, Key):
             return False
-        elif type(self.__value) != type(other.__value):  # noqa: E721
-            return False
-        elif isinstance(self.__value, (bool, int, float, str)) or self.__value is None:
-            return self.__value == other.__value
-        else:
-            return json.dumps(self.__value) == json.dumps(other.__value)
+        return __equals(self.__value, other.__value)
 
     def __hash__(self) -> int:
-        if isinstance(self.__value, (bool, int, float, str)) or self.__value is None:
-            return hash((type(self.__value), self.__value))
-        else:
-            return hash((type(self.__value), json.dumps(self.__value)))
+        def __get_hash(value: Any) -> int:
+            if isinstance(value, (bool, int, float, str)) or value is None:
+                return hash((type(value), value))
+            elif isinstance(value, dict):
+                out = []
+                for k in sorted(value.keys()):
+                    out.append((k, __get_hash(value[k])))
+                return hash((type(value), tuple(out)))
+            elif isinstance(value, list):
+                return hash((type(value), tuple([__get_hash(v) for v in value])))
+            else:
+                return hash((type(value), value))
+
+        return __get_hash(self.__value)
 
 
 def main():
