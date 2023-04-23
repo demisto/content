@@ -51,10 +51,6 @@
       "productVersion": {
         "type": "string",
         "is_array": false
-      },
-      "cefdeviceversion": {
-        "type": "string",
-        "is_array": false
       }
     }
-  }
+}
