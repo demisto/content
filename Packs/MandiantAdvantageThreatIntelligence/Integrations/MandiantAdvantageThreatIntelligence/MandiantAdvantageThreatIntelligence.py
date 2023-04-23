@@ -1112,7 +1112,7 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> Tuple[List, D
 
     metadata = argToBoolean(args.get("indicatorMetadata", client.metadata))
     enrichment = argToBoolean(args.get("indicatorRelationships", client.enrichment))
-    types = argToList(args.get("type",client.types))
+    types = argToList(args.get("type", client.types))
 
     first_fetch = client.first_fetch
 
@@ -1147,11 +1147,13 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> Tuple[List, D
 
     return (result, last_run_dict)
 
+
 def debug_fetch_indicators(client: MandiantClient, args: Dict = None):
     indicators, _ = fetch_indicators(client, args)
     return [CommandResults(outputs=indicator,
-                          outputs_prefix="MANDIANTTI.Feed",
-                          ignore_auto_extract=True) for indicator in indicators]
+                           outputs_prefix="MANDIANTTI.Feed",
+                           ignore_auto_extract=True) for indicator in indicators]
+
 
 def batch_fetch_indicators(client: MandiantClient):
     """
@@ -1203,7 +1205,8 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
         indicator_type = indicators[0]["rawJSON"]["type"].lower()
 
         markdown = tableToMarkdown(f'Mandiant Advantage Threat Intelligence information for {table["Value"]}\n'
-                                   f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/{indicator_type}/{table["Value"]})',
+                                   f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/'
+                                   f'{indicator_type}/{table["Value"]})',
                                    table)
 
         return CommandResults(
@@ -1313,17 +1316,20 @@ def fetch_reputation(client: MandiantClient, args: Dict = None):
         table = {
             'Value': indicators[0]['value'],
             'MScore': indicators[0]['score'],
-            'Last Seen': indicators[0]["rawJSON"]["last_seen"]
+            'Last Seen': indicators[0]["rawJSON"].get("last_seen", '')
         }
         indicator_type = indicators[0]["rawJSON"]["type"].lower()
 
         markdown = tableToMarkdown(f'Mandiant Advantage Threat Intelligence information for {indicators[0]["value"]}\n'
-                                   f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/{indicator_type}/{indicators[0]["value"]})',
+                                   f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/'
+                                   f'{indicator_type}/{indicators[0]["value"]})',
                                    table)
 
-        return CommandResults(readable_output=markdown,
-            outputs=indicators, outputs_prefix=f"MANDIANTTI.{input_type.upper()}", ignore_auto_extract=True
-        )
+        return CommandResults(
+            readable_output=markdown,
+            outputs=indicators,
+            outputs_prefix=f"MANDIANTTI.{input_type.upper()}",
+            ignore_auto_extract=True)
     else:
         return f"No indicators found matching value {indicator_value}"
 

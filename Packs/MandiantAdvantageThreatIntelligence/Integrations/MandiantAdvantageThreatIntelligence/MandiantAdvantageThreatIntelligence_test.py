@@ -602,7 +602,7 @@ def util_load_json(path):
 
 
 @pytest.fixture()
-def client(requests_mock) -> ThreatIntelligence.MandiantClient:
+def client(requests_mock) -> MandiantAdvantageThreatIntelligence.MandiantClient:
     requests_mock.post(
         f"{SERVER_URL}/token",
         json={
@@ -612,7 +612,7 @@ def client(requests_mock) -> ThreatIntelligence.MandiantClient:
         },
     )
 
-    return ThreatIntelligence.MandiantClient(
+    return MandiantAdvantageThreatIntelligence.MandiantClient(
         base_url=SERVER_URL,
         api_key="test",
         secret_key="test",
@@ -630,7 +630,7 @@ def client(requests_mock) -> ThreatIntelligence.MandiantClient:
 
 
 def test_reputation_file(
-    client: ThreatIntelligence.MandiantClient, requests_mock, mocker
+    client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker
 ):
     requests_mock.post(
         f"{SERVER_URL}/v4/indicator", json={"indicators": [MOCK_MD5_INDICATOR_RESPONSE]}
@@ -643,7 +643,7 @@ def test_reputation_file(
 
     mocker.patch.object(demisto, "command", return_value="file")
 
-    results = ThreatIntelligence.fetch_reputation(
+    results = MandiantAdvantageThreatIntelligence.fetch_reputation(
         client, args={"file": "0cc22fd05a3e771b09b584db0a16aaaa"}
     )
 
@@ -668,7 +668,7 @@ def test_reputation_file(
 
 
 def test_reputation_domain(
-    client: ThreatIntelligence.MandiantClient, requests_mock, mocker
+    client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker
 ):
     requests_mock.post(
         f"{SERVER_URL}/v4/indicator",
@@ -682,7 +682,7 @@ def test_reputation_domain(
 
     mocker.patch.object(demisto, "command", return_value="domain")
 
-    results = ThreatIntelligence.fetch_reputation(
+    results = MandiantAdvantageThreatIntelligence.fetch_reputation(
         client, args={"domain": "some.url.com"}
     )
 
@@ -700,7 +700,7 @@ def test_reputation_domain(
 
 
 def test_reputation_ip(
-    client: ThreatIntelligence.MandiantClient, requests_mock, mocker
+    client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker
 ):
     requests_mock.post(
         f"{SERVER_URL}/v4/indicator", json={"indicators": [MOCK_IP_INDICATOR_RESPONSE]}
@@ -713,7 +713,7 @@ def test_reputation_ip(
 
     mocker.patch.object(demisto, "command", return_value="ip")
 
-    results = ThreatIntelligence.fetch_reputation(client, args={"ip": "154.91.84.82"})
+    results = MandiantAdvantageThreatIntelligence.fetch_reputation(client, args={"ip": "154.91.84.82"})
 
     results_dict = results.to_context()["Contents"][0]
 
@@ -728,7 +728,7 @@ def test_reputation_ip(
 
 
 def test_reputation_url(
-    client: ThreatIntelligence.MandiantClient, requests_mock, mocker
+    client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker
 ):
     requests_mock.post(
         f"{SERVER_URL}/v4/indicator", json={"indicators": [MOCK_URL_INDICATOR_RESPONSE]}
@@ -741,7 +741,7 @@ def test_reputation_url(
 
     mocker.patch.object(demisto, "command", return_value="url")
 
-    results = ThreatIntelligence.fetch_reputation(
+    results = MandiantAdvantageThreatIntelligence.fetch_reputation(
         client, args={"url": "https://someurl.com"}
     )
 
@@ -758,7 +758,7 @@ def test_reputation_url(
 
 
 def test_reputation_cve(
-    client: ThreatIntelligence.MandiantClient, requests_mock, mocker
+    client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker
 ):
     requests_mock.get(
         f"{SERVER_URL}/v4/vulnerability/{MOCK_CVE_RESPONSE['cve_id']}",
@@ -767,7 +767,7 @@ def test_reputation_cve(
 
     mocker.patch.object(demisto, "command", return_value="cve")
 
-    results = ThreatIntelligence.fetch_reputation(
+    results = MandiantAdvantageThreatIntelligence.fetch_reputation(
         client, args={"cve": "CVE-1234-12345"}
     )
 
@@ -785,7 +785,7 @@ def test_reputation_cve(
     assert len(results_dict["fields"]["cvss2"]) > 0
 
 
-def test_get_actor(client: ThreatIntelligence.MandiantClient, requests_mock, mocker):
+def test_get_actor(client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker):
 
     requests_mock.get(
         f"{SERVER_URL}/v4/actor/{MOCK_THREATACTOR_RESPONSE['name']}",
@@ -814,7 +814,7 @@ def test_get_actor(client: ThreatIntelligence.MandiantClient, requests_mock, moc
 
     mocker.patch.object(demisto, "command", return_value="get-actor")
 
-    results = ThreatIntelligence.fetch_threat_actor(
+    results = MandiantAdvantageThreatIntelligence.fetch_threat_actor(
         client, args={"actor_name": "FAKE_ACT0R"}
     )
 
@@ -851,7 +851,7 @@ def test_get_actor(client: ThreatIntelligence.MandiantClient, requests_mock, moc
     assert results_dict["relationships"][4]["entityBFamily"] == "Indicator"
 
 
-def test_get_malware(client: ThreatIntelligence.MandiantClient, requests_mock, mocker):
+def test_get_malware(client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker):
     requests_mock.get(
         f"{SERVER_URL}/v4/malware/{MOCK_MALWARE_RESPONSE['name']}",
         json=MOCK_MALWARE_RESPONSE,
@@ -879,7 +879,7 @@ def test_get_malware(client: ThreatIntelligence.MandiantClient, requests_mock, m
 
     mocker.patch.object(demisto, "command", return_value="get-malware")
 
-    results = ThreatIntelligence.fetch_malware_family(
+    results = MandiantAdvantageThreatIntelligence.fetch_malware_family(
         client, args={"malware_name": "MALWARE_NAME"}
     )
 
@@ -917,7 +917,7 @@ def test_get_malware(client: ThreatIntelligence.MandiantClient, requests_mock, m
 
 
 def test_fetch_indicators(
-    client: ThreatIntelligence.MandiantClient, requests_mock, mocker
+    client: MandiantAdvantageThreatIntelligence.MandiantClient, requests_mock, mocker
 ):
     requests_mock.get(
         f"{SERVER_URL}/v4/malware", json={"malware": [MOCK_MALWARE_RESPONSE]}
@@ -929,6 +929,10 @@ def test_fetch_indicators(
 
     requests_mock.get(
         f"{SERVER_URL}/v4/indicator", json={"indicators": [MOCK_MD5_INDICATOR_RESPONSE]}
+    )
+
+    requests_mock.get(
+        f"{SERVER_URL}/v4/indicator/{MOCK_MD5_INDICATOR_RESPONSE['id']}", json=MOCK_MD5_INDICATOR_RESPONSE
     )
 
     requests_mock.get(
@@ -990,7 +994,7 @@ def test_fetch_indicators(
         demisto, "command", return_value="threat-intelligence-get-indicators"
     )
 
-    results = ThreatIntelligence.fetch_indicators(client, args={"limit": 1})
+    results = MandiantAdvantageThreatIntelligence.fetch_indicators(client, args={"limit": 1})[0]
 
     malware = results[0]
     actor = results[1]
