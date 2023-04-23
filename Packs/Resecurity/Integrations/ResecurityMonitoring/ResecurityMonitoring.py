@@ -33,13 +33,15 @@ STATUS_LIST_TO_RETRY = [429, 500]
 
 STATUS_CODE_MSGS = {
     401: "Bad Credentials",
-    403: "Something is wrong with your account, please, contact Resecurity.",
+    403: "Forbidden. Something is wrong with your account, please, contact to Resecurity.",
     404: "Not found. There is no such data on server.",
     500: "There are some troubles on server with your request."
 }
 
 DEFAULT_RESULTS_SIZE_LIMIT = 1000
 DEFAULT_PAGE_SIZE = 50
+DEFAULT_MODE = 2  # last results
+
 PAGINATION_HEADER_NAME = 'X-Pagination-Page-Count'
 
 ''' CLIENT CLASS '''
@@ -59,11 +61,11 @@ class Client(BaseClient):
             url_suffix='/monitor/check-connection',
         )
 
-    def get_task_monitor_results(self, monitor_task_id, module_name: str, page, page_size) -> requests.Response:
+    def get_task_monitor_results(self, monitor_task_id, module_name: str, page, page_size, mode) -> requests.Response:
         """
         Get monitor task results by module '/monitor/task-results-by-module' API endpoint
         """
-        return self._http_request(
+        response = self._http_request(
             method="GET",
             url_suffix='/monitor/task-results-by-module',
             resp_type='response',
@@ -71,10 +73,22 @@ class Client(BaseClient):
                 'id': monitor_task_id,
                 'module_name': module_name,
                 'page': page,
-                'per-page': page_size
+                'per-page': page_size,
+                'mode': mode
             },
             timeout=TIMEOUT, retries=RETRIES, status_list_to_retry=STATUS_LIST_TO_RETRY
         )
+
+        # check response status
+        if response.status_code != 200:
+            if response.status_code in STATUS_CODE_MSGS:
+                raise DemistoException(STATUS_CODE_MSGS[response.status_code])
+            else:
+                raise DemistoException(
+                    "Status code {0} for API request".format(response.status_code)
+                )
+
+        return response
 
 
 ''' HELPER FUNCTIONS '''
@@ -127,10 +141,12 @@ def get_task_monitor_results_command(module_name: str):
         limit = int(args.get("limit", DEFAULT_RESULTS_SIZE_LIMIT))
         page = arg_to_number(args.get("page"))
         page_size = int(args.get("page_size", DEFAULT_PAGE_SIZE))
+        mode = int(args.get("mode", DEFAULT_MODE))
 
         if page is not None:
             # request data from specific page
-            response = client.get_task_monitor_results(monitor_task_id, module_name, page, page_size)
+            response = client.get_task_monitor_results(monitor_task_id, module_name, page, page_size, mode)
+
             result = response.json()
         else:
             # request data from many pages
@@ -143,12 +159,20 @@ def get_task_monitor_results_command(module_name: str):
 
             result = []
             while result_count < limit:
-                response = client.get_task_monitor_results(monitor_task_id, module_name, page, page_size)
-                result += response.json()
+                response = client.get_task_monitor_results(monitor_task_id, module_name, page, page_size, mode)
 
+                total_pages = response.headers.get(PAGINATION_HEADER_NAME)
+                if not total_pages:
+                    demisto.debug(total_pages)
+                    raise DemistoException(
+                        "Something is wrong, header {0} is empty for API request".format(PAGINATION_HEADER_NAME)
+                    )
+                total_pages = int(total_pages)
+
+                result += response.json()
                 result_count = len(result)
                 page += 1
-                total_pages = int(response.headers[PAGINATION_HEADER_NAME])
+
                 if page > total_pages:
                     break
 

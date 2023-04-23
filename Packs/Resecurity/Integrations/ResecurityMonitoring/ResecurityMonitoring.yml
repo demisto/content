@@ -52,6 +52,12 @@ script:
       name: limit
       required: false
       secret: false
+    - default: false
+      description: "Possible values: 1 - get only new results, 2 - get last results (Default value), 3 - get all results"
+      isArray: false
+      name: mode
+      required: false
+      secret: false  
     deprecated: false
     description: 'Retrieve monitoring results from a specific monitor task'
     execution: false

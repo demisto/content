@@ -38,6 +38,7 @@ Retrieve monitoring results from a specific monitor task
 | page | Page number. The results will be returned only for specified page if param value is not empty. | Optional | 
 | page_size | Page size. | Optional | 
 | limit | Limit of the records in command result. | Optional | 
+| mode | Possible values: 1 - get only new results, 2 - get last results (Default value), 3 - get all results. | Optional | 
 
 #### Context Output
 
@@ -55,12 +56,12 @@ Retrieve monitoring results from a specific monitor task
 | Resecurity.DataBreach.source_name | String | Data breach source name | 
 
 #### Command example
-```!get-task-monitor-results-data-breaches monitor_task_id="8898" limit=2```
+```!get-task-monitor-results-data-breaches monitor_task_id=1 limit=2 mode=2```
 #### Context Example
 ```json
 {
-    "ResecurityMonitoring": {
-        "Breaches": [
+    "Resecurity": {
+        "DataBreach": [
             {
                 "date": "2016-11-04 21:55:00",
                 "detection_date": "2023-03-18 13:14:04",
@@ -96,7 +97,7 @@ Retrieve monitoring results from a specific monitor task
 
 #### Human Readable Output
 
->### Breaches results from task with ID 8898
+>### Breaches results from task with ID 1
 >|date|detection_date|email|id|info|ip|password|password_hash|query|salt|source_name|username|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2016-11-04 21:55:00 | 2023-03-18 13:14:04 | email@domain.test | 11192938 |  | 95.112.168.138 |  | 71356c329abee63757ecb3f60b5f90be34ab47caa85d41344cea3f9c92f38eea0313bf60650fe2149e4a2e169d492d9b59a71e97d7331d74caa8b054b448cf04 | domain.test |  | source1 | JMBStarYT |
@@ -104,12 +105,12 @@ Retrieve monitoring results from a specific monitor task
 
 
 #### Command example
-```!get-task-monitor-results-data-breaches monitor_task_id="1" page_size=2 page=10```
+```!get-task-monitor-results-data-breaches monitor_task_id=1 page_size=2 page=10 mode=2```
 #### Context Example
 ```json
 {
-    "ResecurityMonitoring": {
-        "Breaches": [
+    "Resecurity": {
+        "DataBreach": [
             {
                 "date": "2016-12-07 15:53:00",
                 "detection_date": "2023-03-18 13:14:04",
@@ -145,7 +146,7 @@ Retrieve monitoring results from a specific monitor task
 
 #### Human Readable Output
 
->### Breaches results from task with ID 8898
+>### Breaches results from task with ID 1
 >|date|detection_date|email|id|info|ip|password|password_hash|query|salt|source_name|username|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2016-12-07 15:53:00 | 2023-03-18 13:14:04 | test@test.test | 361424177 |  |  | aaaaaa |  | test.test |  | source3 |  |
