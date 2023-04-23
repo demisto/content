@@ -102,7 +102,13 @@ def guess_indicator_type(type_: str, val: str) -> str:
 
 def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: Optional[str], value: str) -> str:
     """
-    Create uuid for sco objects.
+    Create uuid for SCO objects.
+    Args:
+        xsoar_indicator: dict - The XSOAR representation of the indicator.
+        stix_type: Optional[str] - The indicator type according to STIX.
+        value: str - The value of the indicator.
+    Returns:
+        The uuid that represents the indicator according to STIX.
     """
     if stixid := xsoar_indicator.get('CustomFields', {}).get('stixid'):
         return stixid
@@ -132,7 +138,13 @@ def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: Optional[str], value:
 
 def create_sdo_stix_uuid(xsoar_indicator: dict, stix_type: Optional[str], value: str) -> str:
     """
-    Create uuid for sdo objects.
+    Create uuid for SDO objects.
+    Args:
+        xsoar_indicator: dict - The XSOAR representation of the indicator.
+        stix_type: Optional[str] - The indicator type according to STIX.
+        value: str - The value of the indicator.
+    Returns:
+        The uuid that represents the indicator according to STIX.
     """
     if stixid := xsoar_indicator.get('CustomFields', {}).get('stixid'):
         return stixid
@@ -163,22 +175,22 @@ def main():
         except:     # noqa: E722
             return_error('indicators argument is invalid json object')
 
-    demisto.debug(f'StixCreator {demisto.args()=}\n{user_args=}\n{all_args=}')
     indicators = []
 
     for indicator_fields in all_args:
         kwargs: dict[str, Any] = {"allow_custom": True}
 
-        demisto_indicator_type = all_args[indicator_fields].get('indicator_type', 'Unknown')
+        indicator_dict = all_args[indicator_fields]
+        demisto_indicator_type = indicator_dict.get('indicator_type', 'Unknown')
 
         if doubleBackslash:
-            value = all_args[indicator_fields].get('value', '').replace('\\', r'\\')
+            value = indicator_dict.get('value', '').replace('\\', r'\\')
         else:
-            value = all_args[indicator_fields].get('value', '')
+            value = indicator_dict.get('value', '')
 
         if demisto_indicator_type in XSOAR_TYPES_TO_STIX_SCO and is_sco:
             stix_type = XSOAR_TYPES_TO_STIX_SCO.get(demisto_indicator_type)
-            stix_id = create_sco_stix_uuid(all_args[indicator_fields], stix_type, value)
+            stix_id = create_sco_stix_uuid(indicator_dict, stix_type, value)
             indicator = {
                 "type": stix_type,
                 "spec_version": "2.1",
@@ -187,7 +199,7 @@ def main():
             }
             indicators.append(indicator)
         else:
-            demisto_score = all_args[indicator_fields].get('score', '').lower()
+            demisto_score = indicator_dict.get('score', '').lower()
 
             if demisto_score in ["bad", "malicious"]:
                 kwargs["score"] = "High"
@@ -202,13 +214,13 @@ def main():
                 kwargs["score"] = "Not Specified"
 
             stix_type = XSOAR_TYPES_TO_STIX_SDO.get(demisto_indicator_type, 'indicator')
-            stix_id = create_sdo_stix_uuid(all_args[indicator_fields], stix_type, value)
+            stix_id = create_sdo_stix_uuid(indicator_dict, stix_type, value)
             kwargs["id"] = stix_id
 
-            kwargs["created"] = dateparser.parse(all_args[indicator_fields].get('timestamp', ''))
-            kwargs["modified"] = dateparser.parse(all_args[indicator_fields].get('lastSeen', f'{kwargs["created"]}'))
+            kwargs["created"] = dateparser.parse(indicator_dict.get('timestamp', ''))
+            kwargs["modified"] = dateparser.parse(indicator_dict.get('lastSeen', f'{kwargs["created"]}'))
             kwargs["labels"] = [demisto_indicator_type.lower()]
-            kwargs["description"] = all_args[indicator_fields].get('description', '')
+            kwargs["description"] = indicator_dict.get('description', '')
 
             kwargs = {k: v for k, v in kwargs.items() if v}  # Removing keys with empty strings
 
@@ -235,7 +247,7 @@ def main():
 
                     elif indicator_type == "attack pattern":
                         try:
-                            mitreid = all_args[indicator_fields].get('mitreid', '')
+                            mitreid = indicator_dict.get('mitreid', '')
                             if mitreid:
                                 kwargs["external_references"] = [ExternalReference(source_name="mitre", external_id=mitreid)]
 
@@ -244,7 +256,7 @@ def main():
 
                     elif indicator_type == 'malware':
 
-                        kwargs['is_family'] = argToBoolean(all_args[indicator_fields].get('ismalwarefamily', 'False').lower())
+                        kwargs['is_family'] = argToBoolean(indicator_dict.get('ismalwarefamily', 'False').lower())
 
                     indicator = SDOs[indicator_type](
                         name=value,

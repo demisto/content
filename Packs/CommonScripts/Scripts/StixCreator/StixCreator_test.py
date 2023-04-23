@@ -162,11 +162,16 @@ test_test_create_sco_stix_uuid_params = [(xsoar_indicator_1, stix_type_1, value_
 def test_create_sco_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_id):
     """
     Given:
-        - An indicator from XSOAR, it's stix type and the value of the indicator.
+    - Case 1: A XSOAR indicator of type 'Account', with a stix type of 'user-account' and a value of 'test@test.com'.
+    - Case 2: A XSOAR indicator of type 'File', with a stix type of 'file' and a value of
+        '701393b3b8e6ae6e70effcda7598a8cf92d0adb1aaeb5aa91c73004519644801'.
+    - Case 3: A XSOAR indicator of type 'IP', with a stix type of 'ipv4-addr' and a value of '8.8.8.8'.
     When:
-        - Creating a SCO inducator and calling create_sco_stix_uuid
+        - Creating a SCO indicator and calling create_sco_stix_uuid.
     Then:
-     - Return the indicator id.
+     - Case 1: Assert the ID looks like 'user-account--783b9e67-d7b0-58f3-b566-58ac7881a3bc'.
+     - Case 2: Assert the ID looks like 'file--3e26aab3-dfc3-57c5-8fe2-45cfde8fe7c8'.
+     - Case 3: Assert the ID looks like 'ipv4-addr--2f689bf9-0ff2-545f-aa61-e495eb8cecc7'.
     """
     stix_id = create_sco_stix_uuid(xsoar_indicator, stix_type, value)
     assert expected_stix_id == stix_id
@@ -207,12 +212,13 @@ test_test_create_sdo_stix_uuid_params = [(sdo_xsoar_indicator_1, sdo_stix_type_1
 def test_create_sdo_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_id):
     """
     Given:
-        - An indicator from XSOAR, it's stix type and the value of the indicator.
+        - Case 1: A XSOAR indicator of type 'Attack Pattern', with a stix type of 'attack-pattern' and a value of 'T111'.
+        - Case 2: A XSOAR indicator of type 'Malware', with a stix type of 'malware' and a value of 'bad malware'.
     When:
-        - Creating a SDO inducator and calling create_sdo_stix_uuid
+        - Creating a SDO indicator and calling create_sco_stix_uuid.
     Then:
-     - Return the indicator id.
+     - Case 1: Assert the ID looks like 'attack-pattern--116d410f-50f9-5f0d-b677-2a9b95812a3e'.
+     - Case 2: Assert the ID looks like 'malware--bddcf01f-9fd0-5107-a013-4b174285babc'.
     """
-
     stix_id = create_sdo_stix_uuid(xsoar_indicator, stix_type, value)
     assert expected_stix_id == stix_id
