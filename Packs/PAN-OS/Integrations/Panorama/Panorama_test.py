@@ -6066,6 +6066,7 @@ def test_pan_os_register_ip_tag_command_main_flow(mocker, args, params, expected
         {'ip_netmask': '1', 'fqdn': '3', 'name': 'test'},
         {'ip_range': '2', 'fqdn': '3', 'name': 'test'},
         {'ip_range': '2', 'fqdn': '3', 'ip_wildcard': '4', 'name': 'test'},
+        {'ip_range': '2', 'fqdn': '3', 'ip_wildcard': '4', 'name': 'test', 'tag': 'a,b'},
     ]
 )
 def test_pan_os_create_address_main_flow_error(args):
@@ -6084,6 +6085,61 @@ def test_pan_os_create_address_main_flow_error(args):
 
     with pytest.raises(DemistoException):
         panorama_create_address_command(args)
+
+
+@pytest.mark.parametrize(
+    "device_group, vsys, url, xpath, response, args", [
+        (
+            "test",
+            "",
+            "https://example.com",
+            "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='test']/tag",
+            '<response status="success" code="19"> \
+                <result total-count="0" count="0"> \
+                </result> \
+            </response>',
+            {"name": "test", "tag": "not exist"}
+         ),
+        (
+            "",
+            "vsys1",
+            "https://example.com",
+            "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/tag",
+            '<response status="success" code="19"> \
+                <result total-count="1" count="1"> \
+                    <tag admin="admin" dirtyId="3" time="2023/04/23 01:41:22"> \
+                        <entry name="exist" admin="admin" dirtyId="3" time="2023/04/23 01:18:03"/> \
+                    </tag> \
+                </result> \
+            </response>',
+            {"name": "test", "tag": "not exist"}
+         ),
+    ]
+)
+def test_pan_os_create_address_with_not_exist_tag(device_group, vsys, url, xpath, response, args):
+    """
+    Given:
+     - Tags that does not exist in the system as command arguments
+
+    When:
+     - Running the panorama_create_address_command function
+
+    Then:
+     - Make sure an exception is raised saying only tags that already exist in system can be the command input.
+    """
+    import Panorama
+    Panorama.DEVICE_GROUP = device_group
+    Panorama.VSYS = vsys
+    Panorama.URL = url
+
+    with requests_mock.Mocker() as m:
+        mock_request = m.get(url, text=response, status_code=200)
+
+        with pytest.raises(DemistoException) as e:
+            Panorama.panorama_create_address_command(args)
+
+        assert e.value.message == "Failed to create the address object since the tag `not exist` does not exist."
+        assert mock_request.last_request.qs['xpath'][0] == xpath
 
 
 """ FETCH INCIDENTS """

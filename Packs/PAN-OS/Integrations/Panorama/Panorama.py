@@ -1555,7 +1555,22 @@ def panorama_create_address_command(args: dict):
     """
     address_name = args['name']
     description = args.get('description')
-    tags = argToList(args['tag']) if 'tag' in args else None
+    if tags := argToList(args.get('tag', [])):
+        xpath = "/config/devices/entry[@name='localhost.localdomain']"
+        if DEVICE_GROUP:
+            xpath += f"/device-group/entry[@name='{DEVICE_GROUP}']/tag"
+        if VSYS:
+            xpath += "/vsys/entry[@name='vsys1']/tag"
+        result = http_request(URL, 'GET', params={'type': 'config', 'action': 'get', 'key': API_KEY, 'xpath': xpath})
+        entries = result.get('response', {}).get('result', {}).get('tag', {}).get('entry', [])
+        if isinstance(entries, dict):
+            entries = [entries]
+        exist_tags = [entry.get('@name') for entry in entries]
+        for tag in tags:
+            if tag not in exist_tags:
+                raise DemistoException(
+                    f'Failed to create the address object since the tag `{tag}` does not exist.'
+                )
 
     fqdn = args.get('fqdn')
     ip_netmask = args.get('ip_netmask')
