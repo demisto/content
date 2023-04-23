@@ -59,7 +59,7 @@ configuration:
   name: time_filter
   defaultvalue: created-at
   type: 15
-  required: true
+  required: false
   options:
   - created-at
   - updated-at
