@@ -76,7 +76,7 @@ def get_status_names_by_source_brand(incident_id: Dict[str, Any], source_brand: 
 
 
 def main():
-    demisto.debug('ScriptJiraListStatus is being called')
+    demisto.debug('script-JiraListStatus is being called')
     output = {}
     try:
         incident = demisto.incidents()[0]

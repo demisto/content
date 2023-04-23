@@ -544,13 +544,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The entry ID to upload.
-      isArray: false
-      name: entry_id
-      required: true
-      secret: false
-    - default: false
-      description: Please use entry_id.
+      description:  The entry ID to upload.
       isArray: false
       name: upload
       required: false

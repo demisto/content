@@ -2351,7 +2351,6 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
         args['project_id'] = get_project_id_from_name(client=client, project_name=args['project_name'])
     issue_fields = create_issue_fields(client=client, issue_args=args,
                                        issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
-    demisto.log(f'{issue_fields}')
     res = client.create_issue(json_data=issue_fields)
     outputs = {'Id': res.get('id', ''), 'Key': res.get('key', '')}
     markdown_dict = outputs | {'Ticket Link': res.get('self', ''),
@@ -2699,7 +2698,7 @@ def upload_file_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    entry_id = args.get('entry_id', '')
+    entry_id = args.get('upload', '')
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
@@ -4194,6 +4193,10 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], c
 
 
 def map_v2_args_to_v3(args: Dict[str, Any]) -> Dict[str, Any]:
+    """As part of keeping Jira V3 backwards compatible, this function is in charge of mapping
+    the command arguments of Jira V2 to the command arguments of Jira V3, since the command arguments
+    of Jira V2 were inconsistent.
+    """
     v2_args_to_v3: Dict[str, str] = {
         'startAt': 'start_at',
         'maxResults': 'max_results',
@@ -4209,7 +4212,6 @@ def map_v2_args_to_v3(args: Dict[str, Any]) -> Dict[str, Any]:
         'parentIssueKey': 'parent_issue_key',
         'parentIssueId': 'parent_issue_id',
         'attachmentName': 'attachment_name',
-        'upload': 'entry_id',
         'globalId': 'global_id',
         'applicationType': 'application_type',
         'applicationName': 'application_name',
@@ -4232,7 +4234,6 @@ def map_v2_args_to_v3(args: Dict[str, Any]) -> Dict[str, Any]:
     return v3_args
 
 
-@patch.object(JiraOnPremClient, '__abstractmethods__', set())
 def main() -> None:
     params: Dict[str, Any] = demisto.params()
     # args: Dict[str, Any] = demisto.args()

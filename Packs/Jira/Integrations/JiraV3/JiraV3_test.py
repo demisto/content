@@ -1,6 +1,7 @@
 import io
 import json
 import pytest
+import demistomock as demisto
 from unittest.mock import patch
 from JiraV3 import JiraBaseClient
 
@@ -8,6 +9,12 @@ from JiraV3 import JiraBaseClient
 def util_load_json(path: str):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def util_load_bytes_file(path: str):
+    with io.open(path, mode='rb') as f:
+        return f.read()
+        # return json.loads(f.read())
 
 
 @patch.object(JiraBaseClient, '__abstractmethods__', set())
@@ -21,7 +28,6 @@ def jira_base_client_mock() -> JiraBaseClient:
 
 
 # Helper functions unit tests
-
 ADF_TEXT_CASES = [
     ('Hello there', {
         'type': 'doc',
@@ -150,8 +156,8 @@ FIELDS_MAPPER_CASES = [
 
 @pytest.mark.parametrize('issue_args, issue_fields_mapper, expected_issue_fields_mapper', FIELDS_MAPPER_CASES)
 def test_create_issue_fields(issue_args, issue_fields_mapper, expected_issue_fields_mapper):
-    from JiraV3 import get_issue_fields_for_create
-    issue_fields = get_issue_fields_for_create(issue_args=issue_args, issue_fields_mapper=issue_fields_mapper)
+    from JiraV3 import create_issue_fields
+    issue_fields = create_issue_fields(issue_args=issue_args, issue_fields_mapper=issue_fields_mapper)
     assert issue_fields == expected_issue_fields_mapper
 
 
@@ -281,3 +287,54 @@ def test_jira_sprint_issue_move(mocker):
     mocker.patch.object(client, 'issues_to_sprint', return_value=requests.Response())
     expected_command_result = CommandResults(readable_output='Issues were moved to the Sprint successfully')
     assert expected_command_result.to_context() == issues_to_sprint_command(client=client, args={}).to_context()
+
+
+def test_create_file_info_from_attachment(mocker):
+    """
+    Given:
+        - An attachment id
+    When
+        - Calling the get create_file_info_from_attachment function to create a file of type EntryType.ENTRY_INFO_FILE
+    Then
+        - Validate that the created file is of the correct type, and has the correct content.
+    """
+    import os
+    from CommonServerPython import EntryType
+    from JiraV3 import create_file_info_from_attachment
+    client = jira_base_client_mock()
+    raw_response_attachment_metadata = util_load_json('test_data/get_issue_test/raw_response_attachment_metadata.json')
+    dummy_attachment_content = util_load_bytes_file('test_data/get_issue_test/dummy_attachment_content.txt')
+    mocker.patch.object(client, 'get_attachment_metadata', return_value=raw_response_attachment_metadata)
+    mocker.patch.object(client, 'get_attachment_content', return_value=dummy_attachment_content)
+    file_name = 'dummy_file_name.pdf'
+    file_info_res = create_file_info_from_attachment(client=client, attachment_id='dummy_attachment_id',
+                                                     file_name=file_name)
+    assert file_info_res.get('Type') == EntryType.ENTRY_INFO_FILE
+    assert file_info_res.get('File', '') == file_name
+    assert os.path.exists(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}")
+    os.remove(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}")
+
+
+def test_jira_get_issue(mocker):
+    """
+    Given:
+        - An issue key or id, and the arguments: expand_links=true, fields=watches,rank
+    When
+        - Calling the get issue command
+    Then
+        - Validate that the context data and human readable are correct.
+    """
+    from JiraV3 import get_issue_command
+    client = jira_base_client_mock()
+    args = {'issue_key': 'dummy_key', 'get_attachments': 'true', 'expand_links': 'true',
+            'fields': 'watches,rank'}
+    raw_response = util_load_json('test_data/get_issue_test/raw_response.json')
+    raw_response_extended_issues = util_load_json('test_data/get_issue_test/raw_response_extended_issues.json')
+    expected_command_results_context = util_load_json('test_data/get_issue_test/parsed_result.json')
+    mocker.patch.object(client, 'get_issue', return_value=raw_response)
+    mocker.patch('JiraV3.get_expanded_issues', return_value=raw_response_extended_issues)
+    mocker.patch('JiraV3.download_issue_attachments_to_war_room', return_value=None)
+    command_results = get_issue_command(client, args)
+    for expected_command_result_context, command_result in zip(expected_command_results_context, command_results):
+        assert expected_command_result_context['EntryContext'] == command_result.to_context()['EntryContext']
+        assert expected_command_result_context['HumanReadable'] == command_result.to_context()['HumanReadable']
