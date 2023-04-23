@@ -1,8 +1,6 @@
 import demistomock as demisto
 import MakePair
 import json
-import unittest
-from typing import List, Union, Any, Optional
 
 
 def equals_object(obj1, obj2) -> bool:

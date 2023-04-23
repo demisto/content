@@ -86,4 +86,3 @@ def main():
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
-

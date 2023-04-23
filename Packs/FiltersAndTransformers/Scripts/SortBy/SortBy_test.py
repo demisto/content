@@ -48,7 +48,6 @@ def test_shuffleable(mocker):
 
 
 def test_special_descending_symbol_is_not_for_keys(mocker):
-    
     sorted_value_in_descending = [
         {
             'key': 3

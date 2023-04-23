@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
-from typing import Any, List
+from typing import Any, List, Union
 
 
 def demisto_get(obj: Any, path: Any) -> Any:
@@ -44,7 +44,7 @@ class Key(object):
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Key):
             return False
-        elif type(self.__value) != type(other.__value):
+        elif type(self.__value) != type(other.__value):  # noqa: E721
             return False
         elif isinstance(self.__value, (bool, int, float, str)) or self.__value is None:
             return self.__value == other.__value
@@ -65,12 +65,12 @@ def main():
             temp = {}
             if paths := argToList(args.get('keys')):
                 for v in value:
-                    k = tuple([Key(v, path) for path in paths])
+                    k: Union[tuple, Key] = tuple([Key(v, path) for path in paths])
                     if k not in temp:
                         temp[k] = v
             else:
                 for v in value:
-                    k = Key(v)
+                    k = Key(v)  # noqa: F812
                     if k not in temp:
                         temp[k] = v
             value = list(temp.values())
@@ -83,4 +83,3 @@ def main():
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
-
