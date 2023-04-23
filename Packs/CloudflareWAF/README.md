@@ -41,4 +41,4 @@ In order to configure the logpush on cloudflare side, please read [this document
 3. **Important:**
    Make sure to specify under **logpull_options** in the Logpush API configuration the next string `EdgeEndTimestamp&timestamps=rfc3339`.
    This is in order to send this time field as a timestamp string, which will be used as the time of the event.
-   In addition, make sure to set the time zone of the logs to UTC (UTC+0).
+   In addition, make sure to set the timezone of the logs to UTC (UTC+0).
