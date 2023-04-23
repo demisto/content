@@ -13,4 +13,4 @@ alter
     tmp_timestamp = arraystring(arraycreate(tmp_time_format, tmp_adjust_tmp_milli_zone), "")
 | alter
     _time = parse_timestamp("%Y-%m-%d %H:%M:%E*S%z", tmp_timestamp)
-| fields tmp_date_part, tmp_time_part, tmp_mili_part, tmp_zone_part, tmp_time_format, tmp_milli_zone, tmp_adjust_tmp_milli_zone, tmp_timestamp;
+| fields -tmp_date_part, tmp_time_part, tmp_mili_part, tmp_zone_part, tmp_time_format, tmp_milli_zone, tmp_adjust_tmp_milli_zone, tmp_timestamp;
