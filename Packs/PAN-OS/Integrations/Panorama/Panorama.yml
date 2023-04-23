@@ -564,8 +564,8 @@ script:
     - contextPath: Panorama.Addresses.DeviceGroup
       description: The device group for the address (Panorama instances).
       type: String
-    - contextPath: Panorama.Addresses.Tag
-      description: The address tag.
+    - contextPath: Panorama.Addresses.Tags
+      description: The address tags.
       type: String
   - arguments:
     - description: The name of the address to delete.
@@ -3940,8 +3940,8 @@ script:
     - contextPath: Panorama.Addresses.DeviceGroup
       description: The device group for the address (Panorama instances).
       type: String
-    - contextPath: Panorama.Addresses.Tag
-      description: The address tag.
+    - contextPath: Panorama.Addresses.Tags
+      description: The address tags.
       type: String
   - arguments:
     - description: The name of the address to edit.
