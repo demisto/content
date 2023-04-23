@@ -2631,10 +2631,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 03cfa983-0cfc-4132-8c2f-a73a4c3a7c78
+    taskid: e568752c-25a6-424f-8e23-e7c5a84823b8
     type: regular
     task:
-      id: 03cfa983-0cfc-4132-8c2f-a73a4c3a7c78
+      id: e568752c-25a6-424f-8e23-e7c5a84823b8
       version: -1
       name: cs-falcon-spotlight-search-vulnerability
       description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with CrowdStrike Spotlight license.
@@ -2646,14 +2646,12 @@ tasks:
       '#none#':
       - "69"
     scriptarguments:
-      cve_id:
-        simple: CVE-2023-0700, CVE-2022-31901
       display_host_info:
         simple: "True"
-      filter:
-        simple: status:'open'
       limit:
         simple: "2"
+      status:
+        simple: '"open, closed, reopen, expired"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
