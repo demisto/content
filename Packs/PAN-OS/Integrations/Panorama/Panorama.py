@@ -13173,8 +13173,12 @@ def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[s
             new_largest_id.update(temp_largest_id_per_device)
     return new_largest_id
 
+
+def remove_duplicates_entries(entries_dict,id_dict):
+    pass
+
 def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
-                            max_fetch: int, fetch_start_datetime_dict: Dict[str, datetime], last_id_dict: Dict[str,str]) -> Dict[str, List[Dict[str,Any]]]:
+                            max_fetch: int, fetch_start_datetime_dict: Dict[str, datetime]) -> Dict[str, List[Dict[str,Any]]]:
     """get raw entires of incidents according to provided queries, log types and max_fetch parameters.
 
     Args:
@@ -13358,10 +13362,12 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
     fetch_start_datetime_dict = get_fetch_start_datetime_dict(last_fetch_dict, first_fetch, queries_dict)
     demisto.debug(f'updated last fetch per log type: {fetch_start_datetime_dict=}.')
 
-    incident_entries_dict = fetch_incidents_request(queries_dict, max_fetch, fetch_start_datetime_dict, last_id_dict)
+    incident_entries_dict = fetch_incidents_request(queries_dict, max_fetch, fetch_start_datetime_dict)
     demisto.debug('raw incident entries fetching has completed.')
-
-    parsed_incident_entries_dict = get_parsed_incident_entries(incident_entries_dict, last_fetch_dict, last_id_dict)
+    # remove duplicated incidents from incident_entries_dict
+    unique_incident_entries_dict = remove_duplicates_entries(incident_entries_dict,last_id_dict)
+    
+    parsed_incident_entries_dict = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict, last_id_dict)
 
     # flatten incident_entries_dict to a single list of dictionaries representing context entries
     parsed_incident_entries_list = [incident for incident_list in parsed_incident_entries_dict.values()
