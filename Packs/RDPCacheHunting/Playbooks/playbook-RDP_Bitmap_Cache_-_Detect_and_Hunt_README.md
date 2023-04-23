@@ -6,31 +6,34 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Threat Hunting - Generic
 * Retrieve File from Endpoint - Generic V3
 * Set RDP Bitmap Cache Overall Score
-* Threat Hunting - Generic
 * Set list of indicator types
 
 ### Integrations
 
-This playbook does not use any integrations.
+* Rasterize
 
 ### Scripts
 
+* ConvertFile
 * SetGridField
+* Set
+* BMC-Tool
 * StringSifter
 * PreProcessImage
-* BMC-Tool
-* Set
 * stringSimilarity
 
 ### Commands
 
-* setIncident
 * image-ocr-extract-text
-* splunk-search
-* xdr-file-retrieve
 * extractIndicators
+* splunk-search
+* rasterize-image
+* xdr-file-retrieve
+* rasterize-pdf
+* setIncident
 
 ## Playbook Inputs
 
