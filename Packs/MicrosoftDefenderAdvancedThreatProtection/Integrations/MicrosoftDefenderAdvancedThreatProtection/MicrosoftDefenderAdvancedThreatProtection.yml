@@ -5078,10 +5078,6 @@ script:
       isArray: false
       name: ran_once_flag
       required: false
-    - default: true
-      description: ''
-      isArray: true
-      name: endpoint
       required: true
       secret: false
     deprecated: false
