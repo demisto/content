@@ -87,7 +87,7 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 | MsGraph.Alert.Title | string | Alert title | 
 | MsGraph.Alert.Category | string | Alert category | 
 | MsGraph.Alert.Severity | string | Alert severity | 
-| MsGraph.Alert.CreatedDate | date | Relevant only for V1. Alert created date | 
+| MsGraph.Alert.CreatedDate | date | Alert created date | 
 | MsGraph.Alert.EventDate | date | Relevant only for V1. Alert event time | 
 | MsGraph.Alert.Status | string | Alert status | 
 | MsGraph.Alert.Vendor | string | Relevant only for V1. Alert vendor | 
@@ -97,14 +97,13 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 | MsGraph.Alert.AlertWebUrl | String | Relevant only for V2. Alert web url | 
 | MsGraph.Alert.AssignedTo | Unknown | Relevant only for V2. Alert assignee | 
 | MsGraph.Alert.Classification | Unknown | Relevant only for V2. Alert classification | 
-| MsGraph.Alert.CreatedDateTime | Date | Relevant only for V2. Alert creation time | 
 | MsGraph.Alert.Description | String | Relevant only for V2. Alert description | 
 | MsGraph.Alert.DetectionSource | String | Relevant only for V2. Alert detection source | 
 | MsGraph.Alert.DetectorId | String | Relevant only for V2. Alert detector id | 
 | MsGraph.Alert.Determination | Unknown | Relevant only for V2. Alert determination | 
 | MsGraph.Alert.Evidence.@odata.Type | String | Relevant only for V2. Alert evidence | 
 | MsGraph.Alert.Evidence.AzureAdDeviceId | String | Relevant only for V2. Evidence azure device id | 
-| MsGraph.Alert.Evidence.CreatedDateTime | Date | Relevant only for V2. Evidence creation time | 
+| MsGraph.Alert.Evidence.CreatedDate | Date | Relevant only for V2. Evidence creation time | 
 | MsGraph.Alert.Evidence.DefenderAvStatus | String | Relevant only for V2. Evidence defender AV status | 
 | MsGraph.Alert.Evidence.DeviceDnsName | String | Relevant only for V2. Evidence device DNS name | 
 | MsGraph.Alert.Evidence.FirstSeenDateTime | Date | Relevant only for V2. Evidence first seen time | 
@@ -147,7 +146,7 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 ## Using V2 of the API:
 
 ### Microsoft Security Graph Alerts
-|ID|IncidentId|Status|Severity|DetectionSource|ServiceSource|Title|Category|CreatedDateTime|LastUpdateDateTime|
+|ID|IncidentId|Status|Severity|DetectionSource|ServiceSource|Title|Category|CreatedDate|LastUpdateDateTime|
 |---|---|---|---|---|---|---|---|---|---|
 | id | <incident_id> | new | medium | customTi | microsoftDefenderForEndpoint | test alert | None | 2022-10-03T03:39:21.7562976Z | 2023-04-17T11:01:31.7566667Z |
 
@@ -187,14 +186,14 @@ Get details for a specific alert.
 | MsGraph.Alert.Classification | Unknown | Relevant only for V2. Alert classification | 
 | MsGraph.Alert.Comments.Comment | String | Relevant only for V2. Alert comment | 
 | MsGraph.Alert.Comments.CreatedByDisplayName | String | Relevant only for V2. Alert comment creator name | 
-| MsGraph.Alert.Comments.CreatedDateTime | Date | Relevant only for V2. Alert comment creation time | 
-| MsGraph.Alert.CreatedDateTime | Date | Relevant only for V2. Alert creation time | 
+| MsGraph.Alert.Comments.CreatedDate | Date | Relevant only for V2. Alert comment creation time | 
+| MsGraph.Alert.CreatedDate | Date | Relevant only for V2. Alert creation time | 
 | MsGraph.Alert.Description | String | Relevant only for V2. Alert description | 
 | MsGraph.Alert.DetectionSource | String | Relevant only for V2. Alert detection source | 
 | MsGraph.Alert.DetectorId | String | Relevant only for V2. Alert detector id | 
 | MsGraph.Alert.Determination | Unknown | Relevant only for V2. Alert determination | 
 | MsGraph.Alert.Evidence.@odata.Type | String | Relevant only for V2. Alert evidence | 
-| MsGraph.Alert.Evidence.CreatedDateTime | Date | Relevant only for V2. Evidence creation time | 
+| MsGraph.Alert.Evidence.CreatedDate | Date | Relevant only for V2. Evidence creation time | 
 | MsGraph.Alert.Evidence.DetectionStatus | Unknown | Relevant only for V2. Evidence detection status | 
 | MsGraph.Alert.Evidence.ImageFile.FileName | String | Relevant only for V2. Evidence image file name | 
 | MsGraph.Alert.Evidence.ImageFile.FilePath | String | Relevant only for V2. Evidence image file path | 
@@ -290,7 +289,7 @@ Get details for a specific alert.
 
 ### Microsoft Security Graph Alerts
 ## Microsoft Security Graph Alert Details - <alert_id>
-|ID|IncidentId|Status|Severity|DetectionSource|ServiceSource|Title|Category|CreatedDateTime|LastUpdateDateTime|
+|ID|IncidentId|Status|Severity|DetectionSource|ServiceSource|Title|Category|CreatedDate|LastUpdateDateTime|
 |---|---|---|---|---|---|---|---|---|---|
 | <alert_id> | <incident_id> | new | medium | customTi | microsoftDefenderForEndpoint | test alert | None | 2022-10-03T03:39:21.7562976Z | 2023-04-17T11:01:31.7566667Z |
 
@@ -353,13 +352,13 @@ Relevant only for V2, create a comment for an existing alert.
 | MsGraph.AlertComment.ID | String | The alert id that the comment was added to. | 
 | MsGraph.AlertComment.Comments.Comment | String | The comment itself | 
 | MsGraph.AlertComment.Comments.CreatedByDisplayName | String | The comment's creator display name | 
-| MsGraph.AlertComment.Comments.CreatedDateTime | Date | The comment's creation time | 
+| MsGraph.AlertComment.Comments.CreatedDate | Date | The comment's creation time | 
 
 #### Human Readable Output
 
 ### Microsoft Security Graph Create Alert Comment - <alert_id>
 
-|comment|createdByDisplayName|createdDateTime|
+|comment|createdByDisplayName|createdDate|
 |---|---|---|
 | comment | Cortex XSOAR MS Graph Dev | 2023-04-17T10:57:18.5231438Z |
 | comment | Cortex XSOAR MS Graph Dev | 2023-04-17T11:01:31.7427859Z |
