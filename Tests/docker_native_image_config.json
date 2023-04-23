@@ -60,7 +60,7 @@
             "chromium",
             "tesseract"
          ],
-         "docker_ref": "demisto/py3-native:8.2.0.49895"
+         "docker_ref": "demisto/py3-native:8.2.0.54663"
       },
       "native:dev":{
          "supported_docker_images":[
@@ -155,16 +155,6 @@
          "id":"FetchIndicatorsFromFile",
          "reason":"issue: CIAC-5243 - ElementTree object (xml) in python3.9 has getiterator attribute while in python 3.10 this attribute does not exist - causing unit tests failures.",
          "ignored_native_images":[
-            "native:8.1",
-            "native:8.2",
-            "native:dev",
-            "native:candidate"
-         ]
-      },
-      {
-         "id":"Traps",
-         "reason":"Integration is Deprecated.",
-         "ignored_native_images": [
             "native:8.1",
             "native:8.2",
             "native:dev",
