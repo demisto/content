@@ -13124,30 +13124,54 @@ def add_time_filter_to_query_parameter(query: str, last_fetch: datetime) -> str:
     return query + time_generated
 
 
-def add_unique_id_filter_to_query_parameter(query: str, last_id: str) -> str:
-    """append unique id filter parameter to original query parameter.
-    'seqno' is a 64-bit log entry identifier incremented sequentially; each log type has unique number space.
-    by adding this filter which gives us only entries that have larger id, we insure not have duplicates in our request.
+# def add_unique_id_filter_to_query_parameter(query: str, last_id: str) -> str:
+#     """append unique id filter parameter to original query parameter.
+#     'seqno' is a 64-bit log entry identifier incremented sequentially; each log type has unique number space.
+#     by adding this filter which gives us only entries that have larger id, we insure not have duplicates in our request.
 
-    Args:
-        query (str): a string representing a query
-        last_id (str): largest unique log entry id from last fetch (for a specific log type)
+#     Args:
+#         query (str): a string representing a query
+#         last_id (str): largest unique log entry id from last fetch (for a specific log type)
 
-    Returns:
-        str: a string representing a query with added time filter parameter
+#     Returns:
+#         str: a string representing a query with added time filter parameter
+#     """
+#     if last_id:
+#         last_id_int = arg_to_number(last_id)
+#         if isinstance(last_id_int, int):
+#             # last_id is can be filtered only by '>=' so we need to add 1 to it.
+#             last_id_int += 1
+#             unique_id_filter = f" and (seqno geq '{last_id_int}')"
+#             return query + unique_id_filter
+#         else:
+#             return query
+#     else:
+#         return query
+
+
+def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[str, str]:
     """
-    if last_id:
-        last_id_int = arg_to_number(last_id)
-        if isinstance(last_id_int, int):
-            # last_id is can be filtered only by '>=' so we need to add 1 to it.
-            last_id_int += 1
-            unique_id_filter = f" and (seqno geq '{last_id_int}')"
-            return query + unique_id_filter
-        else:
-            return query
-    else:
-        return query
+    This function finds the largest sequence id per device in the incident entries list.
+    Args:
+        incident_entries (List[Dict[str, Any]]): list of dictionaries representing raw incident entries
+    Returns:
+        new_largest_id: a dictionary of the largest sequence id per device
+    """
 
+    new_largest_id: Dict[str, str] = {}
+    for entry in incident_entries:
+        device_name: str = entry.get('device_name', '')
+        id: str = entry.get('seqno', '')
+        temp_largest_id_per_device: Dict[str, str] = {device_name: id}
+        if device_name in new_largest_id.keys():
+            if id > new_largest_id[device_name]:
+                # update the id if it is larger
+                if id > new_largest_id[device_name]:
+                    new_largest_id[device_name] = id
+        else:
+            # add the device and id to the list
+            new_largest_id.update(temp_largest_id_per_device)
+    return new_largest_id
 
 def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
                             max_fetch: int, fetch_start_datetime_dict: Dict[str, datetime], last_id_dict: Dict[str,str]) -> Dict[str, List[Dict[str,Any]]]:
@@ -13167,8 +13191,8 @@ def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
             fetch_start_time = fetch_start_datetime_dict.get(log_type)
             if fetch_start_time:
                 query = add_time_filter_to_query_parameter(query, fetch_start_time)
-            if id := last_id_dict.get(log_type):
-                query = add_unique_id_filter_to_query_parameter(query, id)
+            #if id := last_id_dict.get(log_type):
+            #    query = add_unique_id_filter_to_query_parameter(query, id)
             entries[log_type] = get_query_entries(log_type, query, max_fetch)
     return entries
 
@@ -13191,8 +13215,8 @@ def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[str 
     new_fetch_datetime = dateparser.parse(last_fetch_string, settings={'TIMEZONE': 'UTC'})
 
     # calculate largest unique id for each log type query
-    new_largest_id = max({entry.get('seqno', '') for entry in incident_entries})
-
+    #new_largest_id = max({entry.get('seqno', '') for entry in incident_entries})
+    new_largest_id = find_largest_id_per_device(incident_entries)
     # convert incident entries to incident context and filter any empty incidents if exists
     parsed_incidents: List[Dict[str, Any]] = [incident_entry_to_incident_context(incident_entry) for incident_entry in incident_entries]
     filtered_parsed_incidents = list(filter(lambda incident: incident, parsed_incidents))
