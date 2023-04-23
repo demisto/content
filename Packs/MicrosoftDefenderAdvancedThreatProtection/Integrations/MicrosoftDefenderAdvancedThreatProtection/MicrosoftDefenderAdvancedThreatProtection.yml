@@ -5078,7 +5078,6 @@ script:
       isArray: false
       name: ran_once_flag
       required: false
-      secret: false
     deprecated: false
     description: Gets machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required - IP, hostname, or ID. Otherwise, an error appears.
     execution: false
