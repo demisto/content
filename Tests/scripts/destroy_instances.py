@@ -3,11 +3,15 @@ import logging
 import os
 import shutil
 import sys
+import requests
 
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions  # pylint: disable=E0611,E0401
 
 from Tests.scripts.utils.log_util import install_logging
 import demisto_client
+
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 def main():
