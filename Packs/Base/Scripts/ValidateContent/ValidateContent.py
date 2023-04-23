@@ -347,6 +347,12 @@ def get_content_modules(content_tmp_dir: str, verify_ssl: bool = True) -> None:
                           'Tests/Marketplace/approved_tags.json',
             'content_path': 'Tests/Marketplace',
         },
+        {
+            'file': 'approved_categories.json',
+            'github_url': 'https://raw.githubusercontent.com/demisto/content/master/'
+                          'Tests/Marketplace/approved_categories.json',
+            'content_path': 'Tests/Marketplace',
+        },
 
     ]
     for module in modules:
