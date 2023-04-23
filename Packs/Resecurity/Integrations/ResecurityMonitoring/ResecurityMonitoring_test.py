@@ -2,7 +2,7 @@ import json
 import io
 import urllib.parse
 
-from ResecurityMonitoring import PAGINATION_HEADER_NAME, MODULE_NAME_BREACHES, DEFAULT_PAGE_SIZE
+from ResecurityMonitoring import PAGINATION_HEADER_NAME, MODULE_NAME_BREACHES, DEFAULT_PAGE_SIZE, DEFAULT_MODE
 
 
 def util_load_json(path):
@@ -16,7 +16,12 @@ def test_get_task_monitor_results_command(requests_mock):
     page = 1
     task_id = 1
 
-    params = {'id': task_id, 'module_name': MODULE_NAME_BREACHES, 'page': page, 'per-page': DEFAULT_PAGE_SIZE}
+    params = {'id': task_id,
+              'module_name': MODULE_NAME_BREACHES,
+              'page': page,
+              'per-page': DEFAULT_PAGE_SIZE,
+              'mode': DEFAULT_MODE
+              }
     url = 'https://test.com/api/monitor/task-results-by-module?' + urllib.parse.urlencode(params)
 
     mock_response = util_load_json('test_data/get_task_monitor_results.json')
