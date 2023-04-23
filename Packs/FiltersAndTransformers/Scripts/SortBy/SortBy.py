@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
+from collections import OrderedDict
 from typing import Any, List, Tuple
 
 
@@ -54,12 +55,19 @@ class Key:
             return 4
 
     def __get_key(self) -> Any:
-        if self.__value is None:
-            return 0
-        elif isinstance(self.__value, (bool, int, float, str)):
-            return self.__value
-        else:
-            return json.dumps(self.__value)
+        def __get(value: Any) -> Any:
+            if value is None:
+                return 0
+            elif isinstance(value, (bool, int, float, str)):
+                return value
+            elif isinstance(value, dict):
+                return json.dumps(OrderedDict((k, __get(value[k])) for k in sorted(value.keys())))
+            elif isinstance(value, list):
+                return json.dumps(([__get(v) for v in value]))
+            else:
+                return json.dumps(value)
+
+        return __get(self.__value)
 
     def get(self) -> Tuple[int, Any]:
         return self.__get_type_order(), self.__get_key()
