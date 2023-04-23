@@ -21,8 +21,8 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment"
+            "integrations": "Cortex XDR_-_IR",
+            "playbookID": "Test_Playbook-Cortex_XDR_Malware_-_Incident Enrichment"
         },
         {
             "integrations": "Twitter v2",
