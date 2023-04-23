@@ -164,8 +164,7 @@ def wait_for_uninstallation_to_complete(client: demisto_client):
                 raise Exception('Waiting time for packs to be uninstalled has passed, there are still installed '
                                 'packs. Aborting.')
             if all_equal(monitoring_amount_installed_packs):
-                raise Exception(f'Uninstalling packs has already failed three times.'
-                                f'Here are the packs: {installed_packs=}')
+                raise Exception(f'Uninstalling packs failed three times. {installed_packs=}')
             logging.info(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
                          f'packs installed. Sleeping for {sleep_duration} seconds.')
             sleep(sleep_duration)
