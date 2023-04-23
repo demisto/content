@@ -151,7 +151,7 @@ def wait_for_uninstallation_to_complete(client: demisto_client):
     try:
         installed_packs = get_all_installed_packs(client)
         # Monitoring when uninstall packs don't work
-        monitoring_amount_installed_packs = [1, 1, 1, len(installed_packs)]
+        installed_packs_count_history = [1, 1, 1, len(installed_packs)]  # appended to on each attempt
         # new calculation for num of retries
         retries = math.ceil(len(installed_packs) / 2)
         while len(installed_packs) > 1:
