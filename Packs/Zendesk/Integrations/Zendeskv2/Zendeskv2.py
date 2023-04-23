@@ -58,6 +58,7 @@ MIRROR_TAGS = params.get('mirror_tags') or []
 CLOSE_INCIDENT = argToBoolean(params.get('close_incident', False))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 CACHE = None
+ZENDESK_FETCH_TIME_FORMAT = '%Y-%m-%dT%H:%M:00Z'
 
 
 class CacheManager:
@@ -880,7 +881,7 @@ class ZendeskClient(BaseClient):
             first_fetch_datetime = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
             if not first_fetch_datetime:
                 raise DemistoException(f'invalid first fetch time specified ({first_fetch})')
-            last_fetch = first_fetch_datetime.strftime('%Y-%m-%dT%H:%M:00Z')
+            last_fetch = first_fetch_datetime.strftime(ZENDESK_FETCH_TIME_FORMAT)
 
         return fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number
 
@@ -889,10 +890,10 @@ class ZendeskClient(BaseClient):
                          max_fetch, page_number, current_fetch):
         next_run = {
             'fetched_tickets': list(fetched_tickets)[-1000:],
-            'fetch_time': next_run_start_time.strftime('%Y-%m-%dT%H:%M:00Z'),
+            'fetch_time': next_run_start_time.strftime(ZENDESK_FETCH_TIME_FORMAT),
 
         }
-        if not len(search_results_ids) < max_fetch:
+        if len(search_results_ids) >= max_fetch:
             next_run |= {
                 'max_fetch': max_fetch,
                 'page_number': page_number + 1,
