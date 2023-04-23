@@ -13175,7 +13175,30 @@ def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[s
 
 
 def remove_duplicates_entries(entries_dict,id_dict):
-    pass
+    """
+    this function removes entries that have already been fetched in the previous fetch cycle.
+    Args:
+        entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries
+        id_dict (Dict[str, str]): a dictionary of devices and there largest id so far
+    Returns:
+        entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries without duplicates
+    """
+    for log_type in entries_dict:
+        for log in entries_dict[log_type]:
+            device_name = log.get("device_name", '')
+            latest_id_par_device = id_dict.get(log_type,{}).get(device_name, 0) # get the latest id for that device, if that device is not in the dict, set the id to 0 to
+            if log.get("seqno") and arg_to_number(log["seqno"]) <= arg_to_number(latest_id_par_device):
+                    entries_dict[log_type].remove(log)
+    return entries_dict
+
+def update_max_fetch(original_max_fetch, last_max_fetch, last_fetch_dict, last_run):
+    for log_type in last_fetch_dict:
+        if last_run.last_fetch_dict[log_type] == last_fetch_dict[log_type]:
+            new_max_fetch = last_max_fetch + original_max_fetch
+        else:
+            new_max_fetch = original_max_fetch
+    return new_max_fetch
+    
 
 def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
                             max_fetch: int, fetch_start_datetime_dict: Dict[str, datetime]) -> Dict[str, List[Dict[str,Any]]]:
@@ -13242,7 +13265,7 @@ def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[s
     incident_context = {}
     if occurred_datetime:
         incident_context = {
-            'name': incident_entry.get('seqno'),
+            'name': f"{incident_entry.get('device_name')} {incident_entry.get('seqno')}",
             'occurred': occurred_datetime.strftime(DATE_FORMAT),
             'rawJSON': json.dumps(incident_entry),
             'type': incident_entry.get('type')
@@ -13362,10 +13385,12 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
     fetch_start_datetime_dict = get_fetch_start_datetime_dict(last_fetch_dict, first_fetch, queries_dict)
     demisto.debug(f'updated last fetch per log type: {fetch_start_datetime_dict=}.')
 
+
     incident_entries_dict = fetch_incidents_request(queries_dict, max_fetch, fetch_start_datetime_dict)
     demisto.debug('raw incident entries fetching has completed.')
+    
     # remove duplicated incidents from incident_entries_dict
-    unique_incident_entries_dict = remove_duplicates_entries(incident_entries_dict,last_id_dict)
+    unique_incident_entries_dict = remove_duplicates_entries(entries_dict=incident_entries_dict, id_dict =last_id_dict)
     
     parsed_incident_entries_dict = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict, last_id_dict)
 
@@ -13414,12 +13439,12 @@ def main(): # pragma: no cover
         elif command == 'fetch-incidents':
             last_run = demisto.getLastRun()
             first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
-            max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
+            max_fetch = arg_to_number(last_run.get('max_fetch')) or arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
             queries_dict = log_types_queries_to_dict(params)
 
             last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch)
-
-            demisto.setLastRun({'last_fetch_dict': last_fetch_dict, 'last_id_dict': last_id_dict})
+            #max_fetch = update_max_fetch(max_fetch, last_fetch_dict)
+            demisto.setLastRun({'last_fetch_dict': last_fetch_dict, 'last_id_dict': last_id_dict, 'max_fetch': max_fetch})
             demisto.incidents(incident_entries_list)
 
         elif command == 'panorama' or command == 'pan-os':
