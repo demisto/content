@@ -520,7 +520,7 @@ def split_notes(raw_notes, note_type, time_info):
             if retrieved_last_note:  # add to last note only in case the note was not filtered by the time filter
                 notes[-1]['value'] += '\n\n Mirrored from Cortex XSOAR'
             continue
-        note_info, note_value = note.split('\n')
+        note_info, note_value = note.split('\n', 1)
         created_on, created_by = note_info.split(' - ')
         created_by = created_by.split(' (')[0]
         if not created_on or not created_by:
@@ -743,14 +743,19 @@ class Client(BaseClient):
                 raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
 
             if 'error' in json_res:
-                message = json_res.get('error', {}).get('message')
-                details = json_res.get('error', {}).get('detail')
-                if message == 'No Record found':
-                    return {'result': []}  # Return an empty results array
+                error = json_res.get('error', {})
                 if res.status_code == 401:
                     demisto.debug(f'Got status code 401 - {json_res}. Retrying ...')
                 else:
-                    raise Exception(f'ServiceNow Error: {message}, details: {details}')
+                    if isinstance(error, dict):
+                        message = json_res.get('error', {}).get('message')
+                        details = json_res.get('error', {}).get('detail')
+                        if message == 'No Record found':
+                            return {'result': []}  # Return an empty results array
+                        else:
+                            raise Exception(f'ServiceNow Error: {message}, details: {details}')
+                    else:
+                        raise Exception(f'ServiceNow Error: {error}')
 
             if res.status_code < 200 or res.status_code >= 300:
                 if res.status_code != 401 or num_of_tries == (max_retries - 1):

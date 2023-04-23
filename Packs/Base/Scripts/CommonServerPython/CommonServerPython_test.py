@@ -1776,20 +1776,21 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
-    def test_outputs_without_outputs_prefix(self):
+    @pytest.mark.parametrize('outputs, prefix', [([], None), ([], ''), ({}, '.')])
+    def test_outputs_without_outputs_prefix(self, outputs, prefix):
         """
         Given
-        - outputs as a list without output_prefix
+        - outputs as a list without output_prefix, or with a period output prefix.
 
         When
-        - Returins results
+        - Returns results.
 
         Then
         - Validate a ValueError is raised.
         """
         from CommonServerPython import CommandResults
         with pytest.raises(ValueError, match='outputs_prefix'):
-            CommandResults(outputs=[])
+            CommandResults(outputs=outputs, outputs_prefix=prefix)
 
     def test_with_tags(self):
         from CommonServerPython import CommandResults
@@ -8415,6 +8416,7 @@ class TestSendEventsToXSIAMTest:
     from test_data.send_events_to_xsiam_data import events_dict, log_error
     test_data = events_dict
     test_log_data = log_error
+    orig_xsiam_file_size = 2 ** 20  # 1Mib
 
     @staticmethod
     def get_license_custom_field_mock(arg):
@@ -8423,10 +8425,15 @@ class TestSendEventsToXSIAMTest:
         elif 'url' in arg:
             return "url"
 
+    @pytest.fixture
+    def teardown_for_send_events_to_xsiam_positive(self):
+        yield
+        CommonServerPython.XSIAM_EVENT_CHUNK_SIZE = self.orig_xsiam_file_size
+
     @pytest.mark.parametrize('events_use_case', [
-        'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events'
+        'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events', 'big_event'
     ])
-    def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
+    def test_send_events_to_xsiam_positive(self, mocker, events_use_case, teardown_for_send_events_to_xsiam_positive):
         """
         Test for the fetch events function
         Given:
@@ -8435,6 +8442,8 @@ class TestSendEventsToXSIAMTest:
             Case c: a string representing events (separated by a new line).
             Case d: a string representing events (separated by a new line).
             Case e: an empty list of events.
+            Case f: a "big" event. a big event is bigger than XSIAM EVENT SIZE declared.
+            ( currently the Ideal event size is 1 Mib)
 
         When:
             Case a: Calling the send_events_to_xsiam function with no explicit data format specified.
@@ -8442,6 +8451,7 @@ class TestSendEventsToXSIAMTest:
             Case c: Calling the send_events_to_xsiam function with no explicit data format specified.
             Case d: Calling the send_events_to_xsiam function with a cef data format specification.
             Case e: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case f: Calling the send_events_to_xsiam function with no explicit data format specified.
 
         Then ensure that:
             Case a:
@@ -8463,6 +8473,10 @@ class TestSendEventsToXSIAMTest:
             Case e:
                 - No request to XSIAM API was made.
                 - The number of events reported to the module health - 0.
+            Case f:
+                - The events data was compressed correctly. Expecting to see that last chunk sent.
+                - The data format remained as json.
+                - The number of events reported to the module health - 2. For the last chunk.
         """
         if not IS_PY3:
             return
@@ -8479,9 +8493,10 @@ class TestSendEventsToXSIAMTest:
         _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
 
         events = self.test_data[events_use_case]['events']
-        number_of_events = self.test_data[events_use_case]['number_of_events']
+        number_of_events = self.test_data[events_use_case]['number_of_events']  # pushed in each chunk.
+        CommonServerPython.XSIAM_EVENT_CHUNK_SIZE = self.test_data[events_use_case].get('XSIAM_FILE_SIZE',
+                                                                                        self.orig_xsiam_file_size)
         data_format = self.test_data[events_use_case].get('format')
-
         send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
 
         if number_of_events:

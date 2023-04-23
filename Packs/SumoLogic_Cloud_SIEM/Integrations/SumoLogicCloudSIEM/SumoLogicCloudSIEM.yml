@@ -14,7 +14,7 @@ configuration:
 - display: Sumo Logic Instance Endpoint
   name: instance_endpoint
   type: 0
-  required: false 
+  required: false
   additionalinfo: https://<yoursubdomain>.<deployment>.sumologic.com
 - display: Fetch incidents
   name: isFetch
@@ -42,7 +42,7 @@ configuration:
   defaultvalue: "20"
   type: 0
   required: false
-  additionalinfo: Fetch limit must not be greater than 20
+  additionalinfo: Fetch limit must not be greater than 200
 - display: Override default fetch query
   name: fetch_query
   type: 0
@@ -53,6 +53,40 @@ configuration:
   defaultvalue: 1 day
   type: 0
   required: false
+- display: Pull associated Sumo Logic Signals as Incidents
+  additionalinfo: Pull Sumo Logic signals associated with detected Sumo Logic Insights as XSOAR incidents
+  defaultvalue: "false"
+  name: pull_signals
+  required: false
+  type: 8
+- display: Incident Mirroring Direction
+  additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Sumo Logic SIEM to Cortex XSOAR), Outgoing (from Cortex XSOAR to Sumo Logic SIEM), or Incoming and Outgoing (from/to Cortex XSOAR and Sumo Logic SIEM).'
+  defaultvalue: None
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+  section: Collect
+- display: Close Mirrored XSOAR Incident
+  additionalinfo: When selected, closing the Sumo Logic SIEM Insight is mirrored in Cortex XSOAR.
+  defaultvalue: 'false'
+  name: close_incident
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
+- display: Close Mirrored Sumo Logic Insight
+  additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Sumo Logic SIEM.
+  defaultvalue: 'false'
+  name: close_insight
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
 - display: Override Record Summary Fields
   name: record_summary_fields
   defaultvalue: "action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches"
@@ -182,8 +216,32 @@ script:
     - contextPath: SumoLogicSec.InsightComments.InsightId
       description: The ID of the Insight.
       type: String
-    description: Get comments for a specific Insight ID (Users can post and update
-      comments on the Sumo Logic Cloud SIEM portal for any Insight ID).
+    description: Get comments for a specific Insight ID (Users can post and update comments on the Sumo Logic Cloud SIEM portal for any Insight ID).
+  - name: sumologic-sec-insight-add-comment
+    arguments:
+    - name: insight_id
+      required: true
+      description: The insight ID for which to retrieve comments.
+    - name: comment
+      required: true
+      description: The comment to be added to the Insight ID
+    outputs:
+    - contextPath: SumoLogicSec.InsightComments.Id
+      description: ID of comment.
+      type: String
+    - contextPath: SumoLogicSec.InsightComments.Body
+      description: Comment contents.
+      type: String
+    - contextPath: SumoLogicSec.InsightComments.Author
+      description: User that created the comment.
+      type: String
+    - contextPath: SumoLogicSec.InsightComments.Timestamp
+      description: Comment created timestamp.
+      type: Date
+    - contextPath: SumoLogicSec.InsightComments.InsightId
+      description: The ID of the Insight.
+      type: String
+    description: Add a comment for a specific Insight ID (Users can post and update comments on the Sumo Logic Cloud SIEM portal for any Insight ID).
   - name: sumologic-sec-signal-get-details
     arguments:
     - name: signal_id
@@ -224,9 +282,7 @@ script:
     - contextPath: SumoLogicSec.Signal.Timestamp
       description: Signal timestamp.
       type: Date
-    description: Get Signal details for a specific Signal ID. Signal details command
-      references signals in Sumo Logic Cloud SIEM which are created when records exhibit
-      suspicious properties and mate with patterns or other detection logic.
+    description: Get Signal details for a specific Signal ID. Signal details command references signals in Sumo Logic Cloud SIEM which are created when records exhibit suspicious properties and mate with patterns or other detection logic.
   - name: sumologic-sec-entity-get-details
     arguments:
     - name: entity-id
@@ -259,8 +315,7 @@ script:
       description: Entity Operating System (observed or from inventory).
       type: String
     - contextPath: SumoLogicSec.Entity.InventoryData
-      description: Whether or not this Entity was ingested from inventory e.g. Active
-        Directory.
+      description: Whether or not this Entity was ingested from inventory e.g. Active Directory.
       type: Boolean
     description: Get entity details for a specific entity ID.
   - name: sumologic-sec-insight-search
@@ -274,15 +329,13 @@ script:
       - Last week
       - Last 48 hours
       - Last 24 hours
-      description: When the insight was created. Defaults to 'All time' if no time
-        arguments are specified.
+      description: When the insight was created. Defaults to 'All time' if no time arguments are specified.
     - name: status
       description: 'Comma separated list of values from the options: new,inprogress,closed'
     - name: asignee
       description: User assigned to Insights
     - name: offset
-      description: The number of items to skip before starting to collect the result
-        set.
+      description: The number of items to skip before starting to collect the result set.
       defaultValue: "0"
     - name: limit
       description: The maximum number of items to return.
@@ -390,8 +443,7 @@ script:
       - Last week
       - Last 48 hours
       - Last 24 hours
-      description: When the Signal was created. Defaults to 'All time' if no time
-        arguments are specified.
+      description: When the Signal was created. Defaults to 'All time' if no time arguments are specified.
       defaultValue: All time
     - name: contentType
       auto: PREDEFINED
@@ -400,11 +452,9 @@ script:
       - DEFAULT
       - THREATINTEL
       - RULE
-      description: 'Content type associated with the signals. Options: ANOMALY, DEFAULT,
-        THREATINTEL, RULE.'
+      description: 'Content type associated with the signals. Options: ANOMALY, DEFAULT, THREATINTEL, RULE.'
     - name: offset
-      description: The number of items to skip before starting to collect the result
-        set.
+      description: The number of items to skip before starting to collect the result set.
       defaultValue: "0"
     - name: limit
       description: The maximum number of items to return.
@@ -472,8 +522,7 @@ script:
     - name: tag
       description: Tag contains value.
     - name: offset
-      description: The number of items to skip before starting to collect the result.
-        set
+      description: The number of items to skip before starting to collect the result. set
       defaultValue: "0"
     - name: limit
       description: The maximum number of items to return.
@@ -504,8 +553,7 @@ script:
       description: Entity Operating System (observed or from inventory).
       type: String
     - contextPath: SumoLogicSec.EntityList.InventoryData
-      description: Whether or not this Entity was ingested from inventory e.g. Active
-        Directory.
+      description: Whether or not this Entity was ingested from inventory e.g. Active Directory.
       type: Boolean
     - contextPath: SumoLogicSec.EntityList.Hostname
       description: Entity hostname.
@@ -538,8 +586,7 @@ script:
       - False Positive
       - No Action
       - Duplicate
-      description: 'Resolution for closing Insight. Valid values are: "Resolved",
-        "False Positive", "No Action", "Duplicate".'
+      description: 'Resolution for closing Insight. Valid values are: "Resolved", "False Positive", "No Action", "Duplicate".'
       defaultValue: Resolved
     outputs:
     - contextPath: SumoLogicSec.Insight.Assignee
@@ -630,8 +677,7 @@ script:
   - name: sumologic-sec-match-list-get
     arguments:
     - name: offset
-      description: The number of items to skip before starting to collect the result.
-        set.
+      description: The number of items to skip before starting to collect the result. set.
       defaultValue: "0"
     - name: limit
       default: true
@@ -709,16 +755,14 @@ script:
       required: true
       description: The value to search for.
     - name: offset
-      description: The number of items to skip before starting to collect the result
-        set.
+      description: The number of items to skip before starting to collect the result set.
       defaultValue: "0"
     - name: limit
       description: The numbers of items to return.
       defaultValue: "10"
     - name: sourceIds
       required: true
-      description: A comma-separated list of threat intelligence source IDs to search,
-        e.g. 1,2,3.
+      description: A comma-separated list of threat intelligence source IDs to search, e.g. 1,2,3.
     outputs:
     - contextPath: SumoLogicSec.ThreatIntelIndicators.Active
       description: Whether or not the Threat Intel Indicator is Active.
@@ -748,8 +792,7 @@ script:
   - name: sumologic-sec-threat-intel-get-sources
     arguments:
     - name: offset
-      description: The number of items to skip before starting to collect the result
-        set.
+      description: The number of items to skip before starting to collect the result set.
       defaultValue: "0"
     - name: limit
       description: The numbers of items to return.
@@ -816,8 +859,10 @@ script:
       description: Server response (True or False).
       type: Boolean
     description: Add a Threat Intel Indicator to an Threat Intel Source.
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.11.54132
   isfetch: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
   subtype: python3
 fromversion: 5.0.0

@@ -533,7 +533,7 @@ script:
     description: >
       Show all the meetings of a given user.
       Note: only scheduled and unexpired meetings will appear.
-  dockerimage: demisto/pyjwt3:1.0.0.49643
+  dockerimage: demisto/pyjwt3:1.0.0.51336
   runonce: false
   script: "-"
   subtype: python3

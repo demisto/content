@@ -990,13 +990,15 @@ def main():  # pragma: no cover
     workflow_status = params.get('workflow_status', '')
     product_name = argToList(params.get('product_name', ''))
     resolve_findings = params.get('resolve_finding')
+    sts_endpoint_url = params.get('sts_endpoint_url') or None
+    endpoint_url = params.get('endpoint_url') or None
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
                         aws_secret_access_key)
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
-                               retries)
+                               retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
         client = aws_client.aws_session(
             service='securityhub',
             region=args.get('region'),
