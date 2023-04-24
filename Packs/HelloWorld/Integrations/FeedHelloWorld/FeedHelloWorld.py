@@ -302,6 +302,8 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
         if (relations := item.get('relations')) and create_relationships:
             relationships = []
             for relation in relations:
+                if not relation:
+                    continue
                 entity_relation = EntityRelationship(
                     name=relation.get('relationType'),
                     entity_a=value_,
