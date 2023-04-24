@@ -167,7 +167,7 @@ def wait_for_uninstallation_to_complete(client: demisto_client):
             if len(installed_packs) == installed_packs_amount_history:
             # did not uninstall any pack 
                 counter_times_to_repeats += 1
-            else:
+            else:  # uninstalled at least one pack
                 installed_packs_amount_history = len(installed_packs)
                 counter_times_to_repeats = 0
 
