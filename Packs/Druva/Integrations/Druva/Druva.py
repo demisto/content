@@ -384,7 +384,94 @@ def Druva_Decommission(clientObj, resource_id):
     else:
         raise RuntimeError('Internal Error')
 
+def Execute_command(command,clientObj):
+    if command == 'druva-list-quarantine-ranges':
+        return_results(Druva_ListQuarantineRanges_Command(clientObj))
 
+    if command == 'druva-find-device':
+        search_string = demisto.args().get('search_string')
+        return_results(Druva_FindDevice_Command(clientObj, search_string))
+
+    if command == 'druva-find-user':
+        user_string = demisto.args().get('user_string')
+        return_results(Druva_FindUser_Command(clientObj, user_string))
+
+    if command == 'druva-find-userDevice':
+        userID = demisto.args().get('userID')
+        return_results(Druva_FindUserDevice_Command(clientObj, userID))
+
+    if command == 'druva-find-sharePointSites':
+        Site = demisto.args().get('search_string')
+        return_results(Druva_FindSharePointSites_Command(clientObj, Site))
+
+    if command == 'druva-find-sharedDrives':
+        Site = demisto.args().get('search_string')
+        return_results(Druva_FindSharedDrives_Command(clientObj, Site))
+
+    if command == 'druva-quarantine-resource':
+        org_id = demisto.args().get('org_id')
+        resource_id = demisto.args().get('resource_id')
+        resource_type = demisto.args().get('resource_type')
+        from_date = demisto.args().get('from_date')
+        to_date = demisto.args().get('to_date')
+        return_results(
+            Druva_QuarantineResource_Command(clientObj, org_id, resource_id, resource_type, from_date, to_date))
+        return_results(Druva_ListQuarantineRanges_Command(clientObj))
+
+    if command == 'druva-delete-quarantine-range':
+        resource_id = demisto.args().get('resource_id')
+        range_id = demisto.args().get('range_id')
+        return_results(Druva_DeleteQuarantineRange_Command(clientObj, resource_id, range_id))
+
+    if command == 'druva-view-quarantine-range':
+        resource_id = demisto.args().get('resource_id')
+        range_id = demisto.args().get('range_id')
+        return_results(Druva_ViewQurantineRange_Command(clientObj, resource_id, range_id))
+
+    if command == 'druva-update-quarantine-range':
+        resource_id = demisto.args().get('resource_id')
+        range_id = demisto.args().get('range_id')
+        resource_type = demisto.args().get('resource_type')
+        from_date = demisto.args().get('from_date')
+        to_date = demisto.args().get('to_date')
+        return_results(Druva_UpdateQuarantineRange_Command(clientObj,
+                                                            resource_id, resource_type, range_id, from_date,
+                                                            to_date))
+        return_results(Druva_ListQuarantineRanges_Command(clientObj))
+
+    if command == 'druva-list-quarantine-snapshots':
+        resource_id = demisto.args().get('resource_id')
+        range_id = demisto.args().get('range_id')
+        return_results(Druva_ListQuarantine_Snapshots_Command(clientObj, resource_id, range_id))
+
+    if command == 'druva-delete-quarantined-snapshot':
+        resource_id = demisto.args().get('resource_id')
+        range_id = demisto.args().get('range_id')
+        snapshot_id = demisto.args().get('snapshot_id')
+        return_results(Druva_DeleteQuarantined_Snapshots_Command(clientObj, resource_id, range_id, snapshot_id))
+
+    if command == 'druva-endpoint-search-file-hash':
+        sha1_checksum = demisto.args().get('sha1_checksum')
+        return_results(Druva_SearchbyFileHash_Command(clientObj, sha1_checksum))
+
+    if command == 'druva-endpoint-decommission':
+        resource_id = demisto.args().get('resource_id')
+        return_results(Druva_Decommission(clientObj, resource_id))
+
+    if command == 'druva-endpoint-initiate-restore':
+        source_resourceid = demisto.args().get('source_resourceid')
+        target_resourceid = demisto.args().get('target_resourceid')
+        restore_location = demisto.args().get('restore_location')
+        return_results(Druva_Restore_Endpoint(clientObj, source_resourceid, target_resourceid, restore_location))
+
+    if command == 'druva-endpoint-check-restore-status':
+        restore_id = demisto.args().get('restore_id')
+        return_results(Druva_Restore_Status(clientObj, restore_id))
+
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration Test button.
+        return_outputs(test_module(clientObj))
+    
 def main():
     command = demisto.command()
     params = demisto.params()
@@ -404,94 +491,7 @@ def main():
             proxy=proxy)
 
         clientObj.updateHeaders(base64String)
-
-        if command == 'druva-list-quarantine-ranges':
-            return_results(Druva_ListQuarantineRanges_Command(clientObj))
-
-        if command == 'druva-find-device':
-            search_string = demisto.args().get('search_string')
-            return_results(Druva_FindDevice_Command(clientObj, search_string))
-
-        if command == 'druva-find-user':
-            user_string = demisto.args().get('user_string')
-            return_results(Druva_FindUser_Command(clientObj, user_string))
-
-        if command == 'druva-find-userDevice':
-            userID = demisto.args().get('userID')
-            return_results(Druva_FindUserDevice_Command(clientObj, userID))
-
-        if command == 'druva-find-sharePointSites':
-            Site = demisto.args().get('search_string')
-            return_results(Druva_FindSharePointSites_Command(clientObj, Site))
-
-        if command == 'druva-find-sharedDrives':
-            Site = demisto.args().get('search_string')
-            return_results(Druva_FindSharedDrives_Command(clientObj, Site))
-
-        if command == 'druva-quarantine-resource':
-            org_id = demisto.args().get('org_id')
-            resource_id = demisto.args().get('resource_id')
-            resource_type = demisto.args().get('resource_type')
-            from_date = demisto.args().get('from_date')
-            to_date = demisto.args().get('to_date')
-            return_results(
-                Druva_QuarantineResource_Command(clientObj, org_id, resource_id, resource_type, from_date, to_date))
-            return_results(Druva_ListQuarantineRanges_Command(clientObj))
-
-        if command == 'druva-delete-quarantine-range':
-            resource_id = demisto.args().get('resource_id')
-            range_id = demisto.args().get('range_id')
-            return_results(Druva_DeleteQuarantineRange_Command(clientObj, resource_id, range_id))
-
-        if command == 'druva-view-quarantine-range':
-            resource_id = demisto.args().get('resource_id')
-            range_id = demisto.args().get('range_id')
-            return_results(Druva_ViewQurantineRange_Command(clientObj, resource_id, range_id))
-
-        if command == 'druva-update-quarantine-range':
-            resource_id = demisto.args().get('resource_id')
-            range_id = demisto.args().get('range_id')
-            resource_type = demisto.args().get('resource_type')
-            from_date = demisto.args().get('from_date')
-            to_date = demisto.args().get('to_date')
-            return_results(Druva_UpdateQuarantineRange_Command(clientObj,
-                                                               resource_id, resource_type, range_id, from_date,
-                                                               to_date))
-            return_results(Druva_ListQuarantineRanges_Command(clientObj))
-
-        if command == 'druva-list-quarantine-snapshots':
-            resource_id = demisto.args().get('resource_id')
-            range_id = demisto.args().get('range_id')
-            return_results(Druva_ListQuarantine_Snapshots_Command(clientObj, resource_id, range_id))
-
-        if command == 'druva-delete-quarantined-snapshot':
-            resource_id = demisto.args().get('resource_id')
-            range_id = demisto.args().get('range_id')
-            snapshot_id = demisto.args().get('snapshot_id')
-            return_results(Druva_DeleteQuarantined_Snapshots_Command(clientObj, resource_id, range_id, snapshot_id))
-
-        if command == 'druva-endpoint-search-file-hash':
-            sha1_checksum = demisto.args().get('sha1_checksum')
-            return_results(Druva_SearchbyFileHash_Command(clientObj, sha1_checksum))
-
-        if command == 'druva-endpoint-decommission':
-            resource_id = demisto.args().get('resource_id')
-            return_results(Druva_Decommission(clientObj, resource_id))
-
-        if command == 'druva-endpoint-initiate-restore':
-            source_resourceid = demisto.args().get('source_resourceid')
-            target_resourceid = demisto.args().get('target_resourceid')
-            restore_location = demisto.args().get('restore_location')
-            return_results(Druva_Restore_Endpoint(clientObj, source_resourceid, target_resourceid, restore_location))
-
-        if command == 'druva-endpoint-check-restore-status':
-            restore_id = demisto.args().get('restore_id')
-            return_results(Druva_Restore_Status(clientObj, restore_id))
-
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            return_outputs(test_module(clientObj))
-
+        Execute_command(command,clientObj)
     except Exception as e:
         return_error('Failed to execute:' + command + 'Error:' + str(e))
 
