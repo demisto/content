@@ -1,9 +1,7 @@
-import sys
-print(sys.path)
 # type: ignore[attr-defined]
 import copy
 import shutil
-import pytest   
+import pytest
 import json
 import os
 import random
