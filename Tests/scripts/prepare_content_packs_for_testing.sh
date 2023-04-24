@@ -118,7 +118,7 @@ else
   if [ -f "$ARTIFACTS_FOLDER/versions-metadata.json" ]; then
     gsutil cp -z json "$ARTIFACTS_FOLDER/versions-metadata.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
   else
-    echo "Skipping uploading versions-metadata file."
+    echo "Skipping uploading versions-metadata.json file."
   fi
 
   echo "Finished updating content packs successfully."

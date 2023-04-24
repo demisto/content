@@ -184,6 +184,41 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
         logging.success(f"Finished uploading {versioned_corepacks_file} to storage.")
 
 
+def upload_versions_metadata(production_bucket, build_bucket, storage_base_path,
+                             build_bucket_base_path):
+    # todo: remove logs
+    logging.info('In upload_versions_metadata')
+    logging.info(f'production bucket: {production_bucket}')
+    logging.info(f'build bucket: {build_bucket}')
+    logging.info(f'storage base path: {storage_base_path}')
+    logging.info(f'build base path: {build_bucket_base_path}')
+
+    build_file_path = os.path.join(build_bucket_base_path, GCPConfig.VERSIONS_METADATA_FILE)
+    build_blob = build_bucket.blob(build_file_path)
+    build_blob.reload()
+    logging.info(f'build blob: {build_blob}')
+
+    if not build_blob.exists():
+        logging.critical(f"{GCPConfig.VERSIONS_METADATA_FILE} is missing in {build_bucket.name} bucket, exiting...")
+        sys.exit(1)
+
+    logging.info(f"Trying to copy versions-metadata with shutil.copy")
+    shutil.copy(build_file_path, storage_base_path)
+
+    logging.info(f"Trying to copy versions-metadata with bucket blob upload")
+    prod_versions_metadata_storage_path = os.path.join(storage_base_path, 'versions-metadata-blob.json')
+    copied_versions_metadata = build_bucket.copy_blob(
+        blob=build_blob, destination_bucket=production_bucket, new_name=prod_versions_metadata_storage_path
+    )
+    if copied_versions_metadata.exists():
+        logging.success(f"Finished uploading versions-metadata to storage.")
+    else:
+        logging.error("Failed copying index.zip from build index - blob does not exist.")
+        sys.exit(1)
+
+    logging.success(f"Finished uploading {GCPConfig.VERSIONS_METADATA} to storage.")
+
+
 def download_and_extract_index(build_bucket: Bucket, extract_destination_path: str, build_bucket_base_path: str):
     """Downloads and extracts production and build indexes zip from cloud storage.
 
@@ -462,6 +497,9 @@ def main():
     # upload core packs json to bucket
     upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket,
                              production_base_path, build_bucket_base_path)
+
+    # copy versions-metadata from build bucket to prod bucket
+    upload_versions_metadata(production_bucket, build_bucket, production_base_path, build_bucket_base_path)
 
     # finished iteration over content packs
     copy_index(build_index_folder_path, build_index_blob, build_index_generation, production_bucket,

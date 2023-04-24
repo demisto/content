@@ -1046,7 +1046,7 @@ def upload_server_versions_metadata(artifacts_path):
 
     versions_metadata_path = os.path.join(artifacts_path, 'versions-metadata.json')
     json_write(versions_metadata_path, GCPConfig.VERSIONS_METADATA)
-    logging.success(f"Finished copying {GCPConfig.SERVER_VERSIONS_METADATA_FILE} to artifacts.")
+    logging.success(f"Finished copying {GCPConfig.VERSIONS_METADATA_FILE} to artifacts.")
 
 
 def option_handler():
