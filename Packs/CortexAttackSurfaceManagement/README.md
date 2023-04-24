@@ -24,6 +24,7 @@ For setting up the Active Response module for Xpanse, [a guide on how to configu
 Aditionally, [a list of integrations used for the Active Response playbook can be found here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XPANSE/Cortex-Xpanse-Expander-User-Guide/Automated-Remediation-Capabilities-Matrix?section=UUID-0a5dcbc2-d5ab-fa4e-5efc-599daac8b39b_table-idm4546555537995233526554598204). These are needed for different enrichment and remediation possibilities.
 
 ### Demo Video
+
 [![Active Response in Cortex Xpanse](https://i.ytimg.com/vi/aIP1CCn9ST8/hq720.jpg)](https://www.youtube.com/watch?v=rryAQ23uuqw "Active Response in Cortex Xpanse")
 
 ### Automated Remediation Requirements
@@ -51,11 +52,13 @@ Automated remediation is only possible when the right conditions are met.  These
   - Splunk
   - ServiceNow CMDB
   - Tenable.io Assets
+  - Qualys
 - Indicators of a non-production host:
   - "dev" or related words found in environment-related tags associated with the asset (case insensitive)
   - Has an active "DevelopmentEnvironment" classification from processing of public data
 
 \* The `Unclaimed S3 Bucket` attack surface rule ID only requires `AWS-S3` integration to be enabled.
+
 ## What is included in this pack?
 
 The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This playbook contains a set of sub-playbooks and automation scripts, which support many different remediation paths that can be taken depending on the types of configured integrations, the type of alert, and input provided by the analyst. After the final stage, the alert is resolved.
@@ -68,6 +71,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
   - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
   - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
+  - [Cortex ASM - Qualys Enrichment](#cortex-asm---qualys-enrichment)
   - [Cortex ASM - Rapid7 Enrichment](#cortex-asm---rapid7-enrichment)
   - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
   - [Cortex ASM - Remediation Path Rules](#cortex-asm---remediation-path-rules)
@@ -82,6 +86,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [SnmpDetection](#snmpdetection)
 
 ### Playbooks 
+
 #### Cortex ASM - ASM Alert
 
 Playbook that enriches asset information for ASM alerts and provides means of remediation.
@@ -123,6 +128,12 @@ Playbook that is used as a container folder for all enrichments of ASM alerts.
 Playbook that given the IP address enriches GCP information relevant to ASM alerts.
 
 ![Cortex ASM - GCP Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_GCP_Enrichment.png)
+
+#### Cortex ASM - Qualys Enrichment
+
+Playbook that given the IP address enriches Qualys information relevant to ASM alerts.
+
+![Cortex ASM - Qualys Enrichment](https://raw.githubusercontent.com/demisto/content/4a11ae583d49014d5326a74dfde7a998c4ebca70/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Qualys_Enrichment.png)
 
 #### Cortex ASM - Rapid7 Enrichment
 

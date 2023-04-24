@@ -1285,7 +1285,7 @@ script:
     description: Replies to an email using EWS.
     execution: false
     name: reply-mail
-  dockerimage: demisto/py-ews:1.0.0.49071
+  dockerimage: demisto/py-ews:1.0.0.49868
   feed: false
   isfetch: true
   longRunning: false
