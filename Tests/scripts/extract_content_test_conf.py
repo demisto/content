@@ -22,7 +22,7 @@ def extract(
     for pack in (content_test_conf_path / "content" / "Packs").iterdir():
         if pack.name not in content_packs:
             missing_content_packs.append(pack.name)
-            logger.warning(f"Pack {pack.name} exists in in content-test-conf but not in content")
+            logger.warning(f"Pack {pack.name} exists in content-test-conf but not in content")
             continue
         logger.info(f"Copying {pack.name} from content-test-conf")
         shutil.copytree(pack, content_path / "Packs" / pack.name, dirs_exist_ok=True)
