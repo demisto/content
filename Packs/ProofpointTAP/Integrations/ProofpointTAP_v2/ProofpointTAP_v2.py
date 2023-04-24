@@ -554,6 +554,7 @@ def fetch_incidents(
     # check if there're incidents saved in context
     if integration_context:
         remained_incidents = integration_context.get("incidents")
+        demisto.debug(f'remained_incidents: {len(remained_incidents)}')
         # return incidents if exists in context.
         if remained_incidents:
             return last_run, remained_incidents[:limit], remained_incidents[limit:]
@@ -566,11 +567,13 @@ def fetch_incidents(
     for i in range(len(fetch_times) - 1):
         start_query_time = fetch_times[i]
         end_query_time = fetch_times[i + 1]
+        demisto.debug(f'{start_query_time=}  {end_query_time=}')
         raw_events = client.get_events(interval=start_query_time + "/" + end_query_time,
                                        event_type_filter=event_type_filter,
                                        threat_status=threat_status, threat_type=threat_type)
 
         message_delivered = raw_events.get("messagesDelivered", [])
+        demisto.debug(f'Fetched {len(message_delivered)} messagesDelivered events')
         for raw_event in message_delivered:
             raw_event["type"] = "messages delivered"
             event_guid = raw_event.get("GUID", "")
@@ -583,9 +586,11 @@ def fetch_incidents(
                 "rawJSON": raw_json,
                 "occurred": raw_event["messageTime"]
             }
+            demisto.debug(f'Event Time: {incident.get("occurred")}')
             incidents.append(incident)
 
         message_blocked = raw_events.get("messagesBlocked", [])
+        demisto.debug(f'Fetched {len(message_blocked)} messagesBlocked events')
         for raw_event in message_blocked:
             raw_event["type"] = "messages blocked"
             event_guid = raw_event.get("GUID", "")
@@ -598,9 +603,11 @@ def fetch_incidents(
                 "rawJSON": raw_json,
                 "occured": raw_event["messageTime"],
             }
+            demisto.debug(f'Event Time: {incident.get("occurred")}')
             incidents.append(incident)
 
         clicks_permitted = raw_events.get("clicksPermitted", [])
+        demisto.debug(f'Fetched {len(clicks_permitted)} clicks_permitted events')
         for raw_event in clicks_permitted:
             raw_event["type"] = "clicks permitted"
             event_guid = raw_event.get("GUID", "")
@@ -614,9 +621,11 @@ def fetch_incidents(
                 "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
                     "threatTime"]
             }
+            demisto.debug(f'Event Time: {incident.get("occurred")}')
             incidents.append(incident)
 
         clicks_blocked = raw_events.get("clicksBlocked", [])
+        demisto.debug(f'Fetched {len(clicks_blocked)} clicks_blocked events')
         for raw_event in clicks_blocked:
             raw_event["type"] = "clicks blocked"
             event_guid = raw_event.get("GUID", "")
@@ -630,11 +639,13 @@ def fetch_incidents(
                 "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
                     "threatTime"]
             }
+            demisto.debug(f'Event Time: {incident.get("occurred")}')
             incidents.append(incident)
 
     # Cut the milliseconds from last fetch if exists
     end_query_time = end_query_time[:-5] + 'Z' if end_query_time[-5] == '.' else end_query_time
     next_run = {"last_fetch": end_query_time}
+    demisto.debug(f'{last_run}=')
     return next_run, incidents[:limit], incidents[limit:]
 
 
@@ -1216,8 +1227,8 @@ def main():
 
     command = demisto.command()
     args = demisto.args()
-    LOG(f'Command being called is {command}')
-
+    demisto.info(f'Command being called is {command}')
+    demisto.debug(f'{fetch_time=}')
     try:
         client = Client(server_url, api_version, verify_certificate, service_principal, secret, proxies)
         commands = {
