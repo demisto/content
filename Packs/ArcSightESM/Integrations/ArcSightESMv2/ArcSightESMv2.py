@@ -111,6 +111,9 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
             return [decode_arcsight_output(d_, depth + 1) for d_ in d]
         if isinstance(d, dict):
             for key, value in d.copy().items():
+                if isinstance(value, list):
+                    for value_ in value:
+                        decode_arcsight_output(value_, depth + 1)
                 if isinstance(value, dict):
                     decode_arcsight_output(value, depth + 1)
                 elif value in NONE_VALUES:
@@ -131,6 +134,8 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
                     # the platform rounds number larger than 10000000000000000
                     # so we cast them to string to keep as is
                     d[key] = str(value)
+                elif isinstance(value, bytes):
+                    d[key] = value.decode()
     return d
 
 
