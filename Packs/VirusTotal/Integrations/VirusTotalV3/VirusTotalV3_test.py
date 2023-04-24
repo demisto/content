@@ -381,7 +381,7 @@ def test_private_file_command(mocker, requests_mock):
     from VirusTotalV3 import private_file_command, Client
     import CommonServerPython
     # Setup Mocks
-    sha256 = '609d7e352dbbb005acb29c943ef634e265a099b659a4eb92df232f8926fc66cd'
+    sha256 = 'Example_sha256_with_64_characters_000000000000000000000000000000'
     mocker.patch.object(demisto, 'args',
                         return_value={'file': sha256})
     mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
