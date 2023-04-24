@@ -1,10 +1,14 @@
 Original community integration author: <b>Adam Burt</b>
-Modified by <b>Josh Levine</b> to make the content pack officially supported by Palo Alto Networks
+Modified by <b>Josh Levine</b> for the following:
+- Added additional comments to parameters for the integration and associated commands
+- Updated README.MD documentation for pack and integration
+- Developed unit tests for XSOAR-supported content pack validation
+- Updated content pack to uplift it to officially support status
 
 # Netmiko
-Multi-vendor library to simplify SSH connections to network devices using the Netmiko Python library.
+Multi-vendor library to execute commands over SSH connections for network devices using the Netmiko Python library.
 
-This integration uses the Netmiko library to call Paramiko commands. This can help in situations where there is no integration for a particular vendor technology, but a CLI is accessible that can be interacted with over the network.
+This can help in situations where there is no integration for a particular vendor technology, but a CLI is accessible that can be interacted with over the network.
 
 ## Platforms:
 The following platforms are supported as the "platform" command
@@ -20,6 +24,7 @@ The following platforms are supported as the "platform" command
 - allied_telesis_awplus
 - apresia_aeos
 - apresia_aeos_telnet
+- arista_eos
 - arista_eos
 - arista_eos_telnet
 - arris_cer
@@ -46,11 +51,15 @@ The following platforms are supported as the "platform" command
 - centec_os_telnet
 - checkpoint_gaia
 - ciena_saos
+- ciena_saos
 - ciena_saos_telnet
+- cisco_asa
 - cisco_asa
 - cisco_ftd
 - cisco_ios
+- cisco_ios
 - cisco_ios_telnet
+- cisco_nxos
 - cisco_nxos
 - cisco_s300
 - cisco_s300_telnet
@@ -58,6 +67,8 @@ The following platforms are supported as the "platform" command
 - cisco_viptela
 - cisco_wlc
 - cisco_xe
+- cisco_xe
+- cisco_xr
 - cisco_xr
 - cisco_xr_telnet
 - cloudgenix_ion
@@ -66,6 +77,7 @@ The following platforms are supported as the "platform" command
 - dell_dnos9
 - dell_force10
 - dell_isilon
+- dell_os10
 - dell_os10
 - dell_os6
 - dell_os9
@@ -81,6 +93,7 @@ The following platforms are supported as the "platform" command
 - ericsson_ipos
 - extreme
 - extreme_ers
+- extreme_exos
 - extreme_exos
 - extreme_exos_telnet
 - extreme_netiron
@@ -116,10 +129,12 @@ The following platforms are supported as the "platform" command
 - ipinfusion_ocnos_telnet
 - juniper
 - juniper_junos
+- juniper_junos
 - juniper_junos_telnet
 - juniper_screenos
 - keymile
 - keymile_nos
+- linux
 - linux
 - mellanox
 - mellanox_mlnxos
@@ -131,6 +146,7 @@ The following platforms are supported as the "platform" command
 - netgear_prosafe
 - netscaler
 - nokia_srl
+- nokia_sros
 - nokia_sros
 - nokia_sros_telnet
 - oneaccess_oneos
@@ -152,6 +168,7 @@ The following platforms are supported as the "platform" command
 - sophos_sfos
 - supermicro_smis
 - supermicro_smis_telnet
+- Supported Secure Copy device_type values
 - tplink_jetstream
 - tplink_jetstream_telnet
 - ubiquiti_edge
