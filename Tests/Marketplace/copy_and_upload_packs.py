@@ -1,4 +1,3 @@
-import json
 import os
 import sys
 import argparse
@@ -9,7 +8,7 @@ from google.cloud.storage import Blob, Bucket
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
-    load_json, store_successful_and_failed_packs_in_ci_artifacts, \
+    store_successful_and_failed_packs_in_ci_artifacts, \
     get_upload_data
 from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PACKS_FULL_PATH, IGNORED_FILES
