@@ -1311,6 +1311,13 @@ script:
     description: Close alert.
     execution: false
     name: threat-command-alert-close
+    outputs:
+    - contextPath: ThreatCommand.Alert.id
+      description: Alert ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.is_closed
+      description: Wether the alert is closed.
+      type: String
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
       isArray: false
@@ -1329,6 +1336,13 @@ script:
     description: "Change the alert's severity. Changing the severity level of alerts can help to prioritize alert management."
     execution: false
     name: threat-command-alert-severity-update
+    outputs:
+    - contextPath: ThreatCommand.Alert.id
+      description: Alert ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.severity
+      description: "Alert severity."
+      type: String
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
       isArray: false
@@ -1416,6 +1430,13 @@ script:
     description: "Assign an alert to other ETP Suite users. When an alert is assigned, the assignee will receive a notification. Mainly used to assign alerts."
     execution: false
     name: threat-command-alert-assign
+    outputs:
+    - contextPath: ThreatCommand.Alert.id
+      description: Alert ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.assignees
+      description: Assignees list.
+      type: String
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
       isArray: false
@@ -1425,6 +1446,13 @@ script:
     description: Unassign an alert from all users.
     execution: false
     name: threat-command-alert-unassign
+    outputs:
+    - contextPath: ThreatCommand.Alert.id
+      description: Alert ID.
+      type: String
+    - contextPath: ThreatCommand.Alert.assignees
+      description: Assignees list.
+      type: String
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
       isArray: false
