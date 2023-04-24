@@ -65,9 +65,9 @@ server {
         # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
         proxy_cache_bypass $arg_nocache;
         proxy_read_timeout $timeout;
-        proxy_connect_timeout 1800;
-        proxy_send_timeout 1800;
-        send_timeout 1800;
+        proxy_connect_timeout 3600;
+        proxy_send_timeout 3600;
+        send_timeout 3600;
     }
 }
 
