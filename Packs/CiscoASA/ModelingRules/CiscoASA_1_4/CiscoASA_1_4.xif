@@ -540,3 +540,63 @@ filter _raw_log ~= "from\s\d+\.\d+\.\d+\.\d+\son\sinterface\s[\w\-\_]+"
     xdm.network.icmp.code = to_number(icmp_code),
     xdm.target.user.username = dst_username,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
+
+// authentication events: 611101,611102,611103
+alter
+    event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*\d\-(\d+)\:"),0))
+| filter event_id in (611101,611102,611103)
+| alter severity = arrayindex(regextract(_raw_log, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
+    message = arrayindex(regextract(_raw_log, "\%ASA\-[session]*\-*\d\-\d+[\:|\s\-]+\s(.*)"),0),
+    observer_ip = arrayindex(regextract(_raw_log ,"\d{2}\:\d{2}\:\d{2}Z*\s(\d+\.\d+\.\d+\.\d+)\s"),0),
+    action = arrayindex(regextract(_raw_log ,"\%ASA\-[session]*\-*\d\-\d+\:([A-Za-z\s\-]+)"),0),
+    src_ip = arrayindex(regextract(_raw_log ,"IP\saddress\:\s(\d+\.\d+\.\d+\.\d+)"),0),
+    dst_username = arrayindex(regextract(_raw_log ,"Uname\:\s([\w\-\_\@\.]+)"),0)
+| alter xdm.event.original_event_type = to_string(event_id),
+    xdm.event.description = message,
+    xdm.alert.severity = severity,
+    xdm.observer.name = observer_ip,
+    xdm.event.outcome_reason = action,
+    xdm.source.ipv4 = src_ip,
+    xdm.target.user.username = dst_username,
+    xdm.event.is_completed = if(action contains "Teardown",true, false);
+
+// 313008, 313001
+filter _raw_log ~= "\d+\:\sDenied [\w\-]*ICMP" and _raw_log not contains "laddr"
+| alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*\d\-(\d+)\:"),0)),
+    severity = arrayindex(regextract(_raw_log, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
+    message = arrayindex(regextract(_raw_log, "\%ASA\-[session]*\-*\d\-\d+[\:|\s\-]+\s(.*)"),0),
+    observer_ip = arrayindex(regextract(_raw_log ,"\d{2}\:\d{2}\:\d{2}Z*\s(\d+\.\d+\.\d+\.\d+)\s"),0),
+    action = arrayindex(regextract(_raw_log ,"\%ASA\-[session]*\-*\d\-\d+\:\s([\w\s\-]+)\s"),0),
+    icmp_type = arrayindex(regextract(_raw_log ,"ICMP\stype\=(\d+)"),0),
+    icmp_code = arrayindex(regextract(_raw_log ,"ICMP\stype\=\d+\,\scode\=(\d+)"),0),
+    src_ipv6 = arrayindex(regextract(_raw_log ,"from\s([\da-zA-Z\:]+)\son\sinterface"),0),
+    src_ipv4 = arrayindex(regextract(_raw_log ,"from\s(\d+\.\d+\.\d+\.\d+)\son\sinterface"),0),
+    source_interface = arrayindex(regextract(_raw_log ,"from\s[\da-zA-Z\:]+\son\sinterface\s([\w\-]+)"),0)
+| alter xdm.event.original_event_type = to_string(event_id),
+    xdm.event.description = message,
+    xdm.alert.severity = severity,
+    xdm.observer.name = observer_ip,
+    xdm.event.outcome_reason = action,
+    xdm.network.icmp.type = to_number(icmp_type),
+    xdm.network.icmp.code = to_number(icmp_code),
+    xdm.source.ipv6 = src_ipv6,
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.zone = source_interface,
+    xdm.event.is_completed = if(action contains "Teardown",true, false);
+
+filter _raw_log ~= "\d+\:\sTeardown\slocal-host"
+| alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*\d\-(\d+)\:"),0)),
+    severity = arrayindex(regextract(_raw_log, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
+    message = arrayindex(regextract(_raw_log, "\%ASA\-[session]*\-*\d\-\d+[\:|\s\-]+\s(.*)"),0),
+    observer_ip = arrayindex(regextract(_raw_log ,"\d{2}\:\d{2}\:\d{2}Z*\s(\d+\.\d+\.\d+\.\d+)\s"),0),
+    action = arrayindex(regextract(_raw_log ,"\%ASA\-[session]*\-*\d\-\d+\:\s([\w\s\-]+)\s"),0),
+    dst_interface = arrayindex(regextract(_raw_log ,"\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\s"),0),
+    dst_ip = arrayindex(regextract(_raw_log ,"\s[\w\-\_]+\:(\d+\.\d+\.\d+\.\d+)\s"),0)
+| alter xdm.event.original_event_type = to_string(event_id),
+    xdm.event.description = message,
+    xdm.alert.severity = severity,
+    xdm.observer.name = observer_ip,
+    xdm.event.outcome_reason = action,
+    xdm.target.ipv4 = dst_ip,
+    xdm.target.zone = dst_interface,
+    xdm.event.is_completed = if(action contains "Teardown",true, false);
