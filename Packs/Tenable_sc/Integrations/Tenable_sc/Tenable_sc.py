@@ -7,43 +7,13 @@ import functools
 import json
 from datetime import datetime
 from requests import cookies
-
+from typing import Dict, Any
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 ''' GLOBAL VARIABLES'''
-USERNAME = demisto.params()['credentials']['identifier']
-PASSWORD = demisto.params()['credentials']['password']
-VERIFY_SSL = not demisto.params().get('unsecure', False)
-
-MAX_REQUEST_RETRIES = 3
-
-FETCH_TIME_DEFAULT = '3 days'
-FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
-FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
-
-SESSION = Session()
-TOKEN = demisto.getIntegrationContext().get('token')
-COOKIE = demisto.getIntegrationContext().get('cookie')
-
-
-def get_server_url():
-    url = demisto.params()['server']
-    url = re.sub('/[\/]+$/', '', url)
-    url = re.sub('\/$', '', url)
-    return url
-
-
-BASE_URL = get_server_url()
-SERVER_URL = BASE_URL + '/rest'
-
 ACTION_TYPE_TO_VALUE = {
     'notification': 'users.username',
     'email': 'users.username',
@@ -53,95 +23,435 @@ ACTION_TYPE_TO_VALUE = {
     'ticket': 'assignee.username'
 }
 
+
+class Client:
+    def __init__(self, verify_ssl: bool = True, proxy: bool = False, user_name: str = "",
+                 password: str = "", access_key: str = "", secret_key: str = "", url: str = "",):
+        self.verify_ssl = verify_ssl
+        self.max_retries = 3
+        self.session = Session()
+        self.url = get_server_url(url) + '/rest'
+        self.access_key = access_key
+        self.secret_key = secret_key
+        self.user_name = user_name
+        self.password = password
+
+        self.headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+        if not proxy:
+            del os.environ['HTTP_PROXY']
+            del os.environ['HTTPS_PROXY']
+            del os.environ['http_proxy']
+            del os.environ['https_proxy']
+        integration_context = demisto.getIntegrationContext()
+        self.token = integration_context.get('token')
+        self.cookie = integration_context.get('cookie')
+
+    def send_request(self, path, method='get', body=None, params=None, headers=None, try_number=1):
+        body = body if body is not None else {}
+        params = params if params is not None else {}
+        headers = headers if headers is not None else self.headers
+
+        headers['X-SecurityCenter'] = self.token
+        url = '{}/{}'.format(self.url, path)
+
+        session_cookie = cookies.create_cookie('TNS_SESSIONID', self.cookie)
+        self.session.cookies.set_cookie(session_cookie)  # type: ignore
+
+        res = self.session.request(method, url, data=json.dumps(body), params=params, headers=headers, verify=self.verify_ssl)
+
+        if res.status_code == 403 and try_number <= self.max_retries:
+            self.login()
+            headers['X-SecurityCenter'] = self.token  # The Token is being updated in the login
+            return self.send_request(path, method, body, params, headers, try_number + 1)
+
+        elif res.status_code < 200 or res.status_code >= 300:
+            try:
+                error = res.json()
+            except Exception:
+                # type: ignore
+                return_error(
+                    f'Error: Got status code {str(res.status_code)} with {url=} \
+                    with body {res.content} with headers {str(res.headers)}')   # type: ignore
+
+            return_error(f"Error: Got an error from TenableSC, code: {error['error_code']}, \
+                        details: {error['error_msg']}")  # type: ignore
+        return res.json()
+
+    def login(self):
+        login_body = {
+            'username': self.user_name,
+            'password': self.password
+        }
+        login_response = self.send_login_request(login_body)
+
+        if 'response' not in login_response:
+            return_error('Error: Could not retrieve login token')
+
+        token = login_response['response'].get('token')
+        # There might be a case where the API does not return a token because there are too many sessions with the same user
+        # In that case we need to add 'releaseSession = true'
+        if not token:
+            login_body['releaseSession'] = 'true'
+            login_response = self.send_login_request(login_body)
+            if 'response' not in login_response or 'token' not in login_response['response']:
+                return_error('Error: Could not retrieve login token')
+            token = login_response['response']['token']
+
+        self.token = str(token)
+        demisto.setIntegrationContext({'token': token})
+
+    def send_login_request(self, login_body):
+        path = 'token'
+        url = '{}/{}'.format(self.url, path)
+
+        headers = self.headers
+        res = self.session.request('post', url, headers=headers, data=json.dumps(login_body), verify=self.verify_ssl)
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error(f'Error: Got status code {str(res.status_code)} with {url=} \
+                        with body {res.content} with headers {str(res.headers)}')  # type: ignore
+
+        cookie = res.cookies.get('TNS_SESSIONID', self.cookie)
+        demisto.setIntegrationContext({'cookie': cookie})
+
+        return res.json()
+
+    def logout(self):
+        self.send_request(path='token', method='delete')
+
+    def create_scan(self, name, repo_id, policy_id, plugin_id, description, zone_id, schedule, asset_ids,
+                    ips, scan_virtual_hosts, report_ids, credentials, timeout_action, max_scan_time,
+                    dhcp_track, rollover_type, dependent):
+        path = 'scan'
+
+        scan_type = 'policy' if policy_id else 'plugin'
+
+        body = {
+            'name': name,
+            'type': scan_type,
+            'repository': {
+                'id': repo_id
+            }
+        }
+
+        if policy_id:
+            body['policy'] = {
+                'id': policy_id
+            }
+
+        if plugin_id:
+            body['pluginID'] = plugin_id
+
+        if description:
+            body['description'] = description
+
+        if zone_id:
+            body['zone'] = {
+                'id': zone_id
+            }
+
+        if dhcp_track:
+            body['dhcpTracking'] = dhcp_track
+
+        if schedule:
+            body['schedule'] = {
+                'type': schedule
+            }
+
+            if dependent:
+                body['schedule']['dependentID'] = dependent
+
+        if report_ids:
+            body['reports'] = [{'id': r_id, 'reportSource': 'individual'} for r_id in argToList(report_ids)]
+
+        if asset_ids:
+            if str(asset_ids).startswith('All'):
+                manageable = True if asset_ids == 'AllManageable' else False
+                res = self.get_assets(None)
+                assets = get_elements(res['response'], manageable)
+                asset_ids = list(map(lambda a: a['id'], assets))
+            body['assets'] = [{'id': a_id} for a_id in argToList(asset_ids)]
+
+        if credentials:
+            body['credentials'] = [{'id': c_id} for c_id in argToList(credentials)]
+
+        if timeout_action:
+            body['timeoutAction'] = timeout_action
+
+        if scan_virtual_hosts:
+            body['scanningVirtualHosts'] = scan_virtual_hosts
+
+        if rollover_type:
+            body['rolloverType'] = rollover_type
+
+        if ips:
+            body['ipList'] = ips
+
+        if max_scan_time:
+            body['maxScanTime'] = max_scan_time * 3600
+
+        return self.send_request(path, method='post', body=body)
+
+    def get_scan_results(self, scan_results_id):
+        path = 'scanResult/' + scan_results_id
+
+        return self.send_request(path)
+
+    def launch_scan(self, scan_id, scan_target):
+        path = 'scan/' + scan_id + '/launch'
+        body = None
+        if scan_target:
+            body = {
+                'diagnosticTarget': scan_target['address'],
+                'diagnosticPassword': scan_target['password']
+            }
+
+        return self.send_request(path, 'post', body=body)
+
+    def get_query(self, query_id):
+        path = 'query/' + query_id
+
+        return self.send_request(path)
+
+    def get_all_scan_results(self):
+        params = {
+            'fields': 'name,description,details,status,scannedIPs,startTime,scanDuration,importStart,'
+            'finishTime,completedChecks,owner,ownerGroup,repository'
+        }
+        return self.send_request(path='scanResult', params=params)
+
+    def get_alerts(self, fields=None, alert_id=None):
+        path = 'alert'
+        params = {}  # type: Dict[str, Any]
+
+        if alert_id:
+            path += '/' + alert_id
+
+        if fields:
+            params = {
+                'fields': fields
+            }
+
+        return self.send_request(path, params=params)
+
+    def get_system_licensing(self):
+        return self.send_request(path='status')
+
+    def get_scans(self, fields):
+        params = None
+
+        if fields:
+            params = {
+                'fields': fields
+            }
+
+        return self.send_request(path='scan', params=params)
+
+    def get_policies(self, fields):
+        params = None
+
+        if fields:
+            params = {
+                'fields': fields
+            }
+
+        return self.send_request(path='policy', params=params)
+
+    def get_repositories(self):
+        return self.send_request(path='repository')
+
+    def get_assets(self, fields):
+        params = None
+
+        if fields:
+            params = {
+                'fields': fields
+            }
+
+        return self.send_request(path='asset', params=params)
+
+    def get_credentials(self, fields):
+        params = None
+
+        if fields:
+            params = {
+                'fields': fields
+            }
+
+        return self.send_request(path='credential', params=params)
+
+    def get_asset(self, asset_id):
+        params = {
+            'fields': 'id,name,description,status,createdTime,modifiedTime,viewableIPs,ownerGroup,tags,owner'
+        }
+
+        return self.send_request(path=f'asset/{asset_id}', params=params)
+
+    def create_asset(self, name, description, owner_id, tags, ips):
+        body = {
+            'name': name,
+            'definedIPs': ips,
+            'type': 'static'
+        }
+
+        if description:
+            body['description'] = description
+
+        if owner_id:
+            body['ownerID'] = owner_id
+
+        if tags:
+            body['tags'] = tags
+
+        return self.send_request(path='asset', method='post', body=body)
+
+    def delete_asset(self, asset_id):
+        return self.send_request(path=f'asset/{asset_id}', method='delete')
+
+    def get_report_definitions(self, fields):
+        params = None
+
+        if fields:
+            params = {
+                'fields': fields
+            }
+
+        return self.send_request(path='reportDefinition', params=params)
+
+    def get_zones(self):
+        return self.send_request(path='zone')
+
+    def get_scan_report(self, scan_results_id):
+        path = 'scanResult/' + scan_results_id
+
+        params = {
+            'fields': 'name,description,details,status,scannedIPs,progress,startTime,scanDuration,importStart,'
+                      'finishTime,completedChecks,owner,ownerGroup,repository,policy'
+        }
+
+        return self.send_request(path, params=params)
+
+    def create_query(self, scan_id, tool, query_filters=None):
+        path = 'query'
+
+        body = {
+            'name': 'scan ' + scan_id + ' query',
+            'type': 'vuln',
+            'tool': tool,
+            'scanID': scan_id
+        }
+
+        if query_filters:
+            body['filters'] = query_filters
+
+        return self.send_request(path, method='post', body=body)
+
+    def delete_query(self, query_id):
+        if not query_id:
+            return_error('query id returned None')
+        path = 'query/' + str(query_id)
+        self.send_request(path, method='delete')
+
+    def get_analysis(self, query, scan_results_id):
+        path = 'analysis'
+
+        # This function can receive 'query' argument either as a dict (as in get_vulnerability_command),
+        # or as an ID of an existing query (as in get_vulnerabilities).
+        # Here we form the query field in the request body as a dict, as required.
+        if not isinstance(query, dict):
+            query = {'id': query}
+
+        body = {
+            'type': 'vuln',
+            'query': query,
+            'sourceType': 'individual',
+            'scanID': scan_results_id,
+            'view': 'all'
+        }
+
+        return self.send_request(path, method='post', body=body)
+
+    def list_plugins(self, name, plugin_type, cve):
+        params = {
+            'fields': 'id,type,name,description,family'
+        }
+
+        if cve:
+            params['filterField'] = 'xrefs:CVE'
+            params['op'] = 'eq'
+            params['value'] = cve
+
+        if plugin_type:
+            params['type'] = plugin_type
+
+        return self.send_request(path='plugin', params=params)
+
+    def get_system_diagnostics(self):
+        return self.send_request(path='system/diagnostics')
+
+    def get_system(self):
+        return self.send_request(path='system')
+
+    def change_scan_status(self, scan_results_id, status):
+        path = 'scanResult/' + scan_results_id + '/' + status
+
+        return self.send_request(path, method='post')
+
+    def get_vulnerability(self, vuln_id):
+        path = 'plugin/' + vuln_id
+
+        params = {
+            'fields': 'name,description,family,type,cpe,riskFactor,solution,synopsis,exploitEase,exploitAvailable,'
+                      'cvssVector,baseScore,pluginPubDate,pluginModDate,vulnPubDate,temporalScore,xrefs,checkType'
+        }
+
+        return self.send_request(path, params=params)
+
+    def delete_scan(self, scan_id):
+        return self.send_request(path=f'scan/{scan_id}', method='delete')
+
+    def get_device(self, uuid, ip, dns_name, repo):
+        path = 'repository/' + repo + '/' if repo else ''
+        path += 'deviceInfo'
+        params = {
+            'fields': 'ip,uuid,macAddress,netbiosName,dnsName,os,osCPE,lastScan,repository,total,severityLow,'
+                      'severityMedium,severityHigh,severityCritical'
+        }
+        if uuid:
+            params['uuid'] = uuid
+        else:
+            params['ip'] = ip
+            if dns_name:
+                params['dnsName'] = dns_name
+
+        return self.send_request(path, params=params)
+
+    def get_users(self, fields, user_id):
+        path = 'user'
+
+        if user_id:
+            path += '/' + user_id
+
+        params = None
+
+        if fields:
+            params = {
+                'fields': fields
+            }
+
+        return self.send_request(path, params=params)
+
+
 ''' HELPER FUNCTIONS '''
 
 
-def send_request(path, method='get', body=None, params=None, headers=None, try_number=1):
-    body = body if body is not None else {}
-    params = params if params is not None else {}
-    headers = headers if headers is not None else get_headers()
-
-    headers['X-SecurityCenter'] = TOKEN
-    url = '{}/{}'.format(SERVER_URL, path)
-
-    session_cookie = cookies.create_cookie('TNS_SESSIONID', COOKIE)
-    SESSION.cookies.set_cookie(session_cookie)  # type: ignore
-
-    res = SESSION.request(method, url, data=json.dumps(body), params=params, headers=headers, verify=VERIFY_SSL)
-
-    if res.status_code == 403 and try_number <= MAX_REQUEST_RETRIES:
-        login()
-        headers['X-SecurityCenter'] = TOKEN  # The Token is being updated in the login
-        return send_request(path, method, body, params, headers, try_number + 1)
-
-    elif res.status_code < 200 or res.status_code >= 300:
-        try:
-            error = res.json()
-        except Exception:
-            # type: ignore
-            return_error(
-                f'Error: Got status code {str(res.status_code)} with {url=} \
-                 with body {res.content} with headers {str(res.headers)}')   # type: ignore
-
-        return_error(f"Error: Got an error from TenableSC, code: {error['error_code']}, \
-                     details: {error['error_msg']}")  # type: ignore
-    return res.json()
-
-
-def get_headers():
-    headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-    }
-
-    return headers
-
-
-def send_login_request(login_body):
-    path = 'token'
-    url = '{}/{}'.format(SERVER_URL, path)
-
-    headers = get_headers()
-    res = SESSION.request('post', url, headers=headers, data=json.dumps(login_body), verify=VERIFY_SSL)
-
-    if res.status_code < 200 or res.status_code >= 300:
-        return_error(f'Error: Got status code {str(res.status_code)} with {url=} \
-                     with body {res.content} with headers {str(res.headers)}')  # type: ignore
-
-    global COOKIE
-    COOKIE = res.cookies.get('TNS_SESSIONID', COOKIE)
-    demisto.setIntegrationContext({'cookie': COOKIE})
-
-    return res.json()
-
-
-def login():
-    login_body = {
-        'username': USERNAME,
-        'password': PASSWORD
-    }
-    login_response = send_login_request(login_body)
-
-    if 'response' not in login_response:
-        return_error('Error: Could not retrieve login token')
-
-    token = login_response['response'].get('token')
-    # There might be a case where the API does not return a token because there are too many sessions with the same user
-    # In that case we need to add 'releaseSession = true'
-    if not token:
-        login_body['releaseSession'] = 'true'
-        login_response = send_login_request(login_body)
-        if 'response' not in login_response or 'token' not in login_response['response']:
-            return_error('Error: Could not retrieve login token')
-        token = login_response['response']['token']
-
-    global TOKEN
-    TOKEN = str(token)
-    demisto.setIntegrationContext({'token': TOKEN})
-
-
-def logout():
-    send_request(path='token', method='delete')
+def get_server_url(url):
+    url = re.sub('/[\/]+$/', '', url)
+    url = re.sub('\/$', '', url)
+    return url
 
 
 def return_message(msg):
@@ -152,9 +462,9 @@ def return_message(msg):
 ''' FUNCTIONS '''
 
 
-def list_scans_command():
-    res = get_scans('id,name,description,policy,ownerGroup,owner')
-    manageable = demisto.args().get('manageable', 'false').lower()
+def list_scans_command(client: Client, args: Dict[str, Any]):
+    res = client.get_scans('id,name,description,policy,ownerGroup,owner')
+    manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
         return_message('No scans found')
@@ -187,22 +497,10 @@ def list_scans_command():
     })
 
 
-def get_scans(fields):
-    path = 'scan'
-    params = None
+def list_policies_command(client: Client, args: Dict[str, Any]):
+    res = client.get_policies('id,name,description,tags,modifiedTime,owner,ownerGroup,policyTemplate')
 
-    if fields:
-        params = {
-            'fields': fields
-        }
-
-    return send_request(path, params=params)
-
-
-def list_policies_command():
-    res = get_policies('id,name,description,tags,modifiedTime,owner,ownerGroup,policyTemplate')
-
-    manageable = demisto.args().get('manageable', 'false').lower()
+    manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
         return_message('No policies found')
@@ -237,20 +535,8 @@ def list_policies_command():
     })
 
 
-def get_policies(fields):
-    path = 'policy'
-    params = None
-
-    if fields:
-        params = {
-            'fields': fields
-        }
-
-    return send_request(path, params=params)
-
-
-def list_repositories_command():
-    res = get_repositories()
+def list_repositories_command(client: Client, args: Dict[str, Any]):
+    res = client.get_repositories()
 
     if not res or 'response' not in res or not res['response']:
         return_message('No repositories found')
@@ -280,16 +566,10 @@ def list_repositories_command():
     })
 
 
-def get_repositories():
-    path = 'repository'
+def list_credentials_command(client: Client, args: Dict[str, Any]):
+    res = client.get_credentials('id,name,description,type,ownerGroup,owner,tags,modifiedTime')
 
-    return send_request(path)
-
-
-def list_credentials_command():
-    res = get_credentials('id,name,description,type,ownerGroup,owner,tags,modifiedTime')
-
-    manageable = demisto.args().get('manageable', 'false').lower()
+    manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
         return_message('No credentials found')
@@ -324,22 +604,10 @@ def list_credentials_command():
     })
 
 
-def get_credentials(fields):
-    path = 'credential'
-    params = None
+def list_assets_command(client: Client, args: Dict[str, Any]):
+    res = client.get_assets('id,name,description,ipCount,type,tags,modifiedTime,groups,owner')
 
-    if fields:
-        params = {
-            'fields': fields
-        }
-
-    return send_request(path, params=params)
-
-
-def list_assets_command():
-    res = get_assets('id,name,description,ipCount,type,tags,modifiedTime,groups,owner')
-
-    manageable = demisto.args().get('manageable', 'false').lower()
+    manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
         return_message('No assets found')
@@ -374,22 +642,10 @@ def list_assets_command():
     })
 
 
-def get_assets(fields):
-    path = 'asset'
-    params = None
+def get_asset_command(client: Client, args: Dict[str, Any]):
+    asset_id = args.get('asset_id')
 
-    if fields:
-        params = {
-            'fields': fields
-        }
-
-    return send_request(path, params=params)
-
-
-def get_asset_command():
-    asset_id = demisto.args()['asset_id']
-
-    res = get_asset(asset_id)
+    res = client.get_asset(asset_id)
 
     if not res or 'response' not in res:
         return_message('Asset not found')
@@ -429,24 +685,14 @@ def get_asset_command():
     })
 
 
-def get_asset(asset_id):
-    path = 'asset/' + asset_id
+def create_asset_command(client: Client, args: Dict[str, Any]):
+    name = args.get('name')
+    description = args.get('description')
+    owner_id = args.get('owner_id')
+    tags = args.get('tags')
+    ips = args.get('ip_list')
 
-    params = {
-        'fields': 'id,name,description,status,createdTime,modifiedTime,viewableIPs,ownerGroup,tags,owner'
-    }
-
-    return send_request(path, params=params)
-
-
-def create_asset_command():
-    name = demisto.args()['name']
-    description = demisto.args().get('description')
-    owner_id = demisto.args().get('owner_id')
-    tags = demisto.args().get('tags')
-    ips = demisto.args().get('ip_list')
-
-    res = create_asset(name, description, owner_id, tags, ips)
+    res = client.create_asset(name, description, owner_id, tags, ips)
 
     if not res or 'response' not in res:
         return_error('Error: Could not retrieve the asset')
@@ -479,31 +725,10 @@ def create_asset_command():
     })
 
 
-def create_asset(name, description, owner_id, tags, ips):
-    path = 'asset'
+def delete_asset_command(client: Client, args: Dict[str, Any]):
+    asset_id = args.get('asset_id')
 
-    body = {
-        'name': name,
-        'definedIPs': ips,
-        'type': 'static'
-    }
-
-    if description:
-        body['description'] = description
-
-    if owner_id:
-        body['ownerID'] = owner_id
-
-    if tags:
-        body['tags'] = tags
-
-    return send_request(path, method='post', body=body)
-
-
-def delete_asset_command():
-    asset_id = demisto.args()['asset_id']
-
-    res = delete_asset(asset_id)
+    res = client.delete_asset(asset_id)
 
     if not res:
         return_error('Error: Could not delete the asset')
@@ -517,16 +742,10 @@ def delete_asset_command():
     })
 
 
-def delete_asset(asset_id):
-    path = 'asset/' + asset_id
+def list_report_definitions_command(client: Client, args: Dict[str, Any]):
+    res = client.get_report_definitions('id,name,description,modifiedTime,type,ownerGroup,owner')
 
-    return send_request(path, method='delete')
-
-
-def list_report_definitions_command():
-    res = get_report_definitions('id,name,description,modifiedTime,type,ownerGroup,owner')
-
-    manageable = demisto.args().get('manageable', 'false').lower()
+    manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
         return_message('No report definitions found')
@@ -566,20 +785,8 @@ def list_report_definitions_command():
     })
 
 
-def get_report_definitions(fields):
-    path = 'reportDefinition'
-    params = None
-
-    if fields:
-        params = {
-            'fields': fields
-        }
-
-    return send_request(path, params=params)
-
-
-def list_zones_command():
-    res = get_zones()
+def list_zones_command(client: Client, args: Dict[str, Any]):
+    res = client.get_zones()
 
     if not res or 'response' not in res:
         return_message('No zones found')
@@ -616,12 +823,6 @@ def list_zones_command():
     })
 
 
-def get_zones():
-    path = 'zone'
-
-    return send_request(path)
-
-
 def get_elements(elements, manageable):
     if manageable == 'false':
         return elements.get('usable')
@@ -629,24 +830,24 @@ def get_elements(elements, manageable):
     return elements.get('manageable')
 
 
-def create_scan_command():
-    name = demisto.args()['name']
-    repo_id = demisto.args()['repository_id']
-    policy_id = demisto.args()['policy_id']
-    plugin_id = demisto.args().get('plugin_id')
-    description = demisto.args().get('description')
-    zone_id = demisto.args().get('zone_id')
-    schedule = demisto.args().get('schedule')
-    asset_ids = demisto.args().get('asset_ids')
-    ips = demisto.args().get('ip_list')
-    scan_virtual_hosts = demisto.args().get('scan_virtual_hosts')
-    report_ids = demisto.args().get('report_ids')
-    credentials = demisto.args().get('credentials')
-    timeout_action = demisto.args().get('timeout_action')
-    max_scan_time = demisto.args().get('max_scan_time')
-    dhcp_track = demisto.args().get('dhcp_tracking')
-    rollover_type = demisto.args().get('rollover_type')
-    dependent = demisto.args().get('dependent_id')
+def create_scan_command(client: Client, args: Dict[str, Any]):
+    name = args.get('name')
+    repo_id = args.get('repository_id')
+    policy_id = args.get('policy_id')
+    plugin_id = args.get('plugin_id')
+    description = args.get('description')
+    zone_id = args.get('zone_id')
+    schedule = args.get('schedule')
+    asset_ids = args.get('asset_ids')
+    ips = args.get('ip_list')
+    scan_virtual_hosts = args.get('scan_virtual_hosts')
+    report_ids = args.get('report_ids')
+    credentials = args.get('credentials')
+    timeout_action = args.get('timeout_action')
+    max_scan_time = args.get('max_scan_time')
+    dhcp_track = args.get('dhcp_tracking')
+    rollover_type = args.get('rollover_type')
+    dependent = args.get('dependent_id')
 
     if not asset_ids and not ips:
         return_error('Error: Assets and/or IPs must be provided')
@@ -654,9 +855,9 @@ def create_scan_command():
     if schedule == 'dependent' and not dependent:
         return_error('Error: Dependent schedule must include a dependent scan ID')
 
-    res = create_scan(name, repo_id, policy_id, plugin_id, description, zone_id, schedule, asset_ids,
-                      ips, scan_virtual_hosts, report_ids, credentials, timeout_action, max_scan_time,
-                      dhcp_track, rollover_type, dependent)
+    res = client.create_scan(name, repo_id, policy_id, plugin_id, description, zone_id, schedule, asset_ids,
+                             ips, scan_virtual_hosts, report_ids, credentials, timeout_action, max_scan_time,
+                             dhcp_track, rollover_type, dependent)
 
     if not res or 'response' not in res:
         return_error('Error: Could not retrieve the scan')
@@ -695,89 +896,15 @@ def create_scan_command():
     })
 
 
-def create_scan(name, repo_id, policy_id, plugin_id, description, zone_id, schedule, asset_ids,
-                ips, scan_virtual_hosts, report_ids, credentials, timeout_action, max_scan_time,
-                dhcp_track, rollover_type, dependent):
-    path = 'scan'
-
-    scan_type = 'policy' if policy_id else 'plugin'
-
-    body = {
-        'name': name,
-        'type': scan_type,
-        'repository': {
-            'id': repo_id
-        }
-    }
-
-    if policy_id:
-        body['policy'] = {
-            'id': policy_id
-        }
-
-    if plugin_id:
-        body['pluginID'] = plugin_id
-
-    if description:
-        body['description'] = description
-
-    if zone_id:
-        body['zone'] = {
-            'id': zone_id
-        }
-
-    if dhcp_track:
-        body['dhcpTracking'] = dhcp_track
-
-    if schedule:
-        body['schedule'] = {
-            'type': schedule
-        }
-
-        if dependent:
-            body['schedule']['dependentID'] = dependent
-
-    if report_ids:
-        body['reports'] = [{'id': r_id, 'reportSource': 'individual'} for r_id in argToList(report_ids)]
-
-    if asset_ids:
-        if str(asset_ids).startswith('All'):
-            manageable = True if asset_ids == 'AllManageable' else False
-            res = get_assets(None)
-            assets = get_elements(res['response'], manageable)
-            asset_ids = list(map(lambda a: a['id'], assets))
-        body['assets'] = [{'id': a_id} for a_id in argToList(asset_ids)]
-
-    if credentials:
-        body['credentials'] = [{'id': c_id} for c_id in argToList(credentials)]
-
-    if timeout_action:
-        body['timeoutAction'] = timeout_action
-
-    if scan_virtual_hosts:
-        body['scanningVirtualHosts'] = scan_virtual_hosts
-
-    if rollover_type:
-        body['rolloverType'] = rollover_type
-
-    if ips:
-        body['ipList'] = ips
-
-    if max_scan_time:
-        body['maxScanTime'] = max_scan_time * 3600
-
-    return send_request(path, method='post', body=body)
-
-
-def launch_scan_command():
-    scan_id = demisto.args()['scan_id']
-    target_address = demisto.args().get('diagnostic_target')
-    target_password = demisto.args().get('diagnostic_password')
+def launch_scan_command(client: Client, args: Dict[str, Any]):
+    scan_id = args.get('scan_id')
+    target_address = args.get('diagnostic_target')
+    target_password = args.get('diagnostic_password')
 
     if (target_address and not target_password) or (target_password and not target_address):
         return_error('Error: If a target is provided, both IP/Hostname and the password must be provided')
 
-    res = launch_scan(scan_id, {'address': target_address, 'password': target_password})
+    res = client.launch_scan(scan_id, {'address': target_address, 'password': target_password})
 
     if not res or 'response' not in res or not res['response'] or 'scanResult' not in res['response']:
         return_error('Error: Could not retrieve the scan')
@@ -812,24 +939,12 @@ def launch_scan_command():
     })
 
 
-def launch_scan(scan_id, scan_target):
-    path = 'scan/' + scan_id + '/launch'
-    body = None
-    if scan_target:
-        body = {
-            'diagnosticTarget': scan_target['address'],
-            'diagnosticPassword': scan_target['password']
-        }
-
-    return send_request(path, 'post', body=body)
-
-
-def get_scan_status_command():
-    scan_results_ids = argToList(demisto.args()['scan_results_id'])
+def get_scan_status_command(client: Client, args: Dict[str, Any]):
+    scan_results_ids = argToList(args.get('scan_results_id'))
 
     scans_results = []
     for scan_results_id in scan_results_ids:
-        res = get_scan_results(scan_results_id)
+        res = client.get_scan_results(scan_results_id)
         if not res or 'response' not in res or not res['response']:
             return_message('Scan results not found')
 
@@ -856,17 +971,11 @@ def get_scan_status_command():
     })
 
 
-def get_scan_results(scan_results_id):
-    path = 'scanResult/' + scan_results_id
+def get_scan_report_command(client: Client, args: Dict[str, Any]):
+    scan_results_id = args.get('scan_results_id')
+    vulnerabilities_to_get = argToList(args.get('vulnerability_severity', []))
 
-    return send_request(path)
-
-
-def get_scan_report_command():
-    scan_results_id = demisto.args()['scan_results_id']
-    vulnerabilities_to_get = argToList(demisto.args().get('vulnerability_severity', []))
-
-    res = get_scan_report(scan_results_id)
+    res = client.get_scan_report(scan_results_id)
 
     if not res or 'response' not in res or not res['response']:
         return_message('Scan results not found')
@@ -898,7 +1007,7 @@ def get_scan_report_command():
                          mapped_results, headers, removeNull=True)
 
     if len(vulnerabilities_to_get) > 0:
-        vulns = get_vulnearbilites(scan_results_id)
+        vulns = get_vulnerabilities(client, scan_results_id)
 
         if isinstance(vulns, list):
             vulnerabilities = list(filter(lambda v: v['Severity'] in vulnerabilities_to_get, vulns))
@@ -918,23 +1027,12 @@ def get_scan_report_command():
     })
 
 
-def get_scan_report(scan_results_id):
-    path = 'scanResult/' + scan_results_id
+def list_plugins_command(client: Client, args: Dict[str, Any]):
+    name = args.get('name'),
+    cve = args.get('cve'),
+    plugin_type = args.get('type')
 
-    params = {
-        'fields': 'name,description,details,status,scannedIPs,progress,startTime,scanDuration,importStart,'
-                  'finishTime,completedChecks,owner,ownerGroup,repository,policy'
-    }
-
-    return send_request(path, params=params)
-
-
-def list_plugins_command():
-    name = demisto.args().get('name'),
-    cve = demisto.args().get('cve'),
-    plugin_type = demisto.args().get('type')
-
-    res = list_plugins(name, plugin_type, cve)
+    res = client.list_plugins(name, plugin_type, cve)
 
     if not res or 'response' not in res:
         return_message('No plugins found')
@@ -962,33 +1060,15 @@ def list_plugins_command():
     })
 
 
-def list_plugins(name, plugin_type, cve):
-    path = 'plugin'
-
-    params = {
-        'fields': 'id,type,name,description,family'
-    }
-
-    if cve:
-        params['filterField'] = 'xrefs:CVE'
-        params['op'] = 'eq'
-        params['value'] = cve
-
-    if plugin_type:
-        params['type'] = plugin_type
-
-    return send_request(path, params=params)
-
-
-def get_vulnearbilites(scan_results_id):
-    query = create_query(scan_results_id, 'vulnipdetail')
+def get_vulnerabilities(client: Client, scan_results_id):
+    query = client.create_query(scan_results_id, 'vulnipdetail')
 
     if not query or 'response' not in query:
         return 'Could not get vulnerabilites query'
 
-    analysis = get_analysis(query['response']['id'], scan_results_id)
+    analysis = client.get_analysis(query['response']['id'], scan_results_id)
 
-    delete_query(query.get('response', {}).get('id'))
+    client.delete_query(query.get('response', {}).get('id'))
 
     if not analysis or 'response' not in analysis:
         return 'Could not get vulnerabilites analysis'
@@ -1025,54 +1105,11 @@ def get_vulnearbilites(scan_results_id):
     return mapped_vulns
 
 
-def create_query(scan_id, tool, query_filters=None):
-    path = 'query'
-
-    body = {
-        'name': 'scan ' + scan_id + ' query',
-        'type': 'vuln',
-        'tool': tool,
-        'scanID': scan_id
-    }
-
-    if query_filters:
-        body['filters'] = query_filters
-
-    return send_request(path, method='post', body=body)
-
-
-def delete_query(query_id):
-    if not query_id:
-        return_error('query id returned None')
-    path = 'query/' + str(query_id)
-    send_request(path, method='delete')
-
-
-def get_analysis(query, scan_results_id):
-    path = 'analysis'
-
-    # This function can receive 'query' argument either as a dict (as in get_vulnerability_command),
-    # or as an ID of an existing query (as in get_vulnearbilites).
-    # Here we form the query field in the request body as a dict, as required.
-    if not isinstance(query, dict):
-        query = {'id': query}
-
-    body = {
-        'type': 'vuln',
-        'query': query,
-        'sourceType': 'individual',
-        'scanID': scan_results_id,
-        'view': 'all'
-    }
-
-    return send_request(path, method='post', body=body)
-
-
-def get_vulnerability_command():
-    vuln_id = demisto.args()['vulnerability_id']
-    scan_results_id = demisto.args()['scan_results_id']
-    page = int(demisto.args().get('page'))
-    limit = int(demisto.args().get('limit'))
+def get_vulnerability_command(client: Client, args: Dict[str, Any]):
+    vuln_id = args.get('vulnerability_id')
+    scan_results_id = args.get('scan_results_id')
+    page = int(args.get('page', '0'))
+    limit = int(args.get('limit', '50'))
     if limit > 200:
         limit = 200
 
@@ -1091,7 +1128,7 @@ def get_vulnerability_command():
         'endOffset': page + limit  # Upper bound for the results list (must be specified)
     }
 
-    analysis = get_analysis(query, scan_results_id)
+    analysis = client.get_analysis(query, scan_results_id)
 
     if not analysis or 'response' not in analysis:
         return_error('Error: Could not get vulnerability analysis')
@@ -1101,7 +1138,7 @@ def get_vulnerability_command():
     if not results or len(results) == 0:
         return_error('Error: Vulnerability not found in the scan results')
 
-    vuln_response = get_vulnerability(vuln_id)
+    vuln_response = client.get_vulnerability(vuln_id)
 
     if not vuln_response or 'response' not in vuln_response:
         return_message('Vulnerability not found')
@@ -1194,17 +1231,6 @@ def get_vulnerability_command():
     })
 
 
-def get_vulnerability(vuln_id):
-    path = 'plugin/' + vuln_id
-
-    params = {
-        'fields': 'name,description,family,type,cpe,riskFactor,solution,synopsis,exploitEase,exploitAvailable,'
-                  'cvssVector,baseScore,pluginPubDate,pluginModDate,vulnPubDate,temporalScore,xrefs,checkType'
-    }
-
-    return send_request(path, params=params)
-
-
 def get_vulnerability_hosts_from_analysis(results):
     return [{
         'IP': host['ip'],
@@ -1214,67 +1240,10 @@ def get_vulnerability_hosts_from_analysis(results):
     } for host in results]
 
 
-def stop_scan_command():
-    scan_results_id = demisto.args()['scanResultsID']
+def delete_scan_command(client: Client, args: Dict[str, Any]):
+    scan_id = args.get('scan_id')
 
-    res = change_scan_status(scan_results_id, 'stop')
-
-    if not res:
-        return_error('Error: Could not stop the scan')
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Scan succsefully stopped'
-    })
-
-
-def pause_scan_command():
-    scan_results_id = demisto.args()['scanResultsID']
-
-    res = change_scan_status(scan_results_id, 'pause')
-
-    if not res:
-        return_error('Error: Could not pause the scan')
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Successfully paused the scan'
-    })
-
-
-def resume_scan_command():
-    scan_results_id = demisto.args()['scanResultsID']
-
-    res = change_scan_status(scan_results_id, 'resume')
-
-    if not res:
-        return_error('Error: Could not resume the scan')
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Scan successfully resumed'
-    })
-
-
-def change_scan_status(scan_results_id, status):
-    path = 'scanResult/' + scan_results_id + '/' + status
-
-    return send_request(path, method='post')
-
-
-def delete_scan_command():
-    scan_id = demisto.args()['scan_id']
-
-    res = delete_scan(scan_id)
+    res = client.delete_scan(scan_id)
 
     if not res:
         return_error('Error: Could not delete the scan')
@@ -1288,19 +1257,13 @@ def delete_scan_command():
     })
 
 
-def delete_scan(scan_id):
-    path = 'scan/' + scan_id
+def get_device_command(client: Client, args: Dict[str, Any]):
+    uuid = args.get('uuid')
+    ip = args.get('ip')
+    dns_name = args.get('dns_name')
+    repo = args.get('repository_id')
 
-    return send_request(path, method='delete')
-
-
-def get_device_command():
-    uuid = demisto.args().get('uuid')
-    ip = demisto.args().get('ip')
-    dns_name = demisto.args().get('dns_name')
-    repo = demisto.args().get('repository_id')
-
-    res = get_device(uuid, ip, dns_name, repo)
+    res = client.get_device(uuid, ip, dns_name, repo)
 
     if not res or 'response' not in res:
         return_message('Device not found')
@@ -1363,29 +1326,12 @@ def get_device_command():
     })
 
 
-def get_device(uuid, ip, dns_name, repo):
-    path = 'repository/' + repo + '/' if repo else ''
-    path += 'deviceInfo'
-    params = {
-        'fields': 'ip,uuid,macAddress,netbiosName,dnsName,os,osCPE,lastScan,repository,total,severityLow,'
-                  'severityMedium,severityHigh,severityCritical'
-    }
-    if uuid:
-        params['uuid'] = uuid
-    else:
-        params['ip'] = ip
-        if dns_name:
-            params['dnsName'] = dns_name
+def list_users_command(client: Client, args: Dict[str, Any]):
+    user_id = args.get('id')
+    username = args.get('username')
+    email = args.get('email')
 
-    return send_request(path, params=params)
-
-
-def list_users_command():
-    user_id = demisto.args().get('id')
-    username = demisto.args().get('username')
-    email = demisto.args().get('email')
-
-    res = get_users('id,username,firstname,lastname,title,email,createdTime,modifiedTime,lastLogin,role', user_id)
+    res = client.get_users('id,username,firstname,lastname,title,email,createdTime,modifiedTime,lastLogin,role', user_id)
 
     if not res or 'response' not in res:
         return_message('No users found')
@@ -1442,24 +1388,8 @@ def list_users_command():
     })
 
 
-def get_users(fields, user_id):
-    path = 'user'
-
-    if user_id:
-        path += '/' + user_id
-
-    params = None
-
-    if fields:
-        params = {
-            'fields': fields
-        }
-
-    return send_request(path, params=params)
-
-
-def get_system_licensing_command():
-    res = get_system_licensing()
+def get_system_licensing_command(client: Client, args: Dict[str, Any]):
+    res = client.get_system_licensing()
 
     if not res or 'response' not in res:
         return_error('Error: Could not retrieve system licensing')
@@ -1491,19 +1421,13 @@ def get_system_licensing_command():
     })
 
 
-def get_system_licensing():
-    path = 'status'
-
-    return send_request(path)
-
-
-def get_system_information_command():
-    sys_res = get_system()
+def get_system_information_command(client: Client, args: Dict[str, Any]):
+    sys_res = client.get_system()
 
     if not sys_res or 'response' not in sys_res:
         return_error('Error: Could not retrieve system information')
 
-    diag_res = get_system_diagnostics()
+    diag_res = client.get_system_diagnostics()
 
     if not diag_res or 'response' not in diag_res:
         return_error('Error: Could not retrieve system information')
@@ -1549,22 +1473,10 @@ def get_system_information_command():
     })
 
 
-def get_system_diagnostics():
-    path = 'system/diagnostics'
-
-    return send_request(path)
-
-
-def get_system():
-    path = 'system'
-
-    return send_request(path)
-
-
-def list_alerts_command():
-    res = get_alerts(fields='id,name,description,didTriggerLastEvaluation,lastTriggered,'
+def list_alerts_command(client: Client, args: Dict[str, Any]):
+    res = client.get_alerts(fields='id,name,description,didTriggerLastEvaluation,lastTriggered,'
                             'action,lastEvaluated,ownerGroup,owner')
-    manageable = demisto.args().get('manageable', 'false').lower()
+    manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
         return_message('No alerts found')
@@ -1598,15 +1510,15 @@ def list_alerts_command():
     })
 
 
-def get_alert_command():
-    alert_id = demisto.args()['alert_id']
-    res = get_alerts(alert_id=alert_id)
+def get_alert_command(client: Client, args: Dict[str, Any]):
+    alert_id = args.get('alert_id')
+    res = client.get_alerts(alert_id=alert_id)
 
     if not res or 'response' not in res or not res['response']:
         return_message('Alert not found')
 
     alert = res['response']
-    query_res = get_query(alert['query'].get('id'))
+    query_res = client.get_query(alert['query'].get('id'))
     query = query_res.get('response')
 
     alert_headers = ['ID', 'Name', 'Description', 'LastTriggered', 'State', 'Behavior', 'Actions']
@@ -1664,41 +1576,20 @@ def get_alert_command():
     })
 
 
-def get_alerts(fields=None, alert_id=None):
-    path = 'alert'
-    params = {}  # type: Dict[str, Any]
-
-    if alert_id:
-        path += '/' + alert_id
-
-    if fields:
-        params = {
-            'fields': fields
-        }
-
-    return send_request(path, params=params)
-
-
-def get_query(query_id):
-    path = 'query/' + query_id
-
-    return send_request(path)
-
-
-def fetch_incidents():
+def fetch_incidents(client: Client, first_fetch: str = '3 days'):
     incidents = []
     last_run = demisto.getLastRun()
     if not last_run:
         last_run = {}
     if 'time' not in last_run:
         # get timestamp in seconds
-        timestamp, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+        timestamp, _ = parse_date_range(first_fetch, to_timestamp=True)
         timestamp /= 1000
     else:
         timestamp = last_run['time']
 
     max_timestamp = timestamp
-    res = get_alerts(
+    res = client.get_alerts(
         fields='id,name,description,lastTriggered,triggerName,triggerOperator,'
                'triggerValue,action,query,owner,ownerGroup,schedule,canManage')
 
@@ -1719,20 +1610,11 @@ def fetch_incidents():
     demisto.setLastRun({'time': max_timestamp})
 
 
-def get_all_scan_results():
-    path = 'scanResult'
-    params = {
-        'fields': 'name,description,details,status,scannedIPs,startTime,scanDuration,importStart,'
-                  'finishTime,completedChecks,owner,ownerGroup,repository'
-    }
-    return send_request(path, params=params)
-
-
-def get_all_scan_results_command():
-    res = get_all_scan_results()
-    get_manageable_results = demisto.args().get('manageable', 'false').lower()  # 'true' or 'false'
-    page = int(demisto.args().get('page'))
-    limit = int(demisto.args().get('limit'))
+def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
+    res = client.get_all_scan_results()
+    get_manageable_results = args.get('manageable', 'false').lower()  # 'true' or 'false'
+    page = int(args.get('page', '0'))
+    limit = int(args.get('limit', '50'))
     if limit > 200:
         limit = 200
 
@@ -1790,70 +1672,75 @@ def scan_duration_to_demisto_format(duration, default_returned_value=''):
     return default_returned_value
 
 
-''' LOGIC '''
+def main():
+    params = demisto.params()
+    command = demisto.command()
+    args = demisto.args()
+    verify_ssl = not params.get('unsecure', False)
+    proxy = params.get('proxy', False)
+    user_name = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
+    access_key = params.get('creds_keys', {}).get('identifier')
+    secret_key = params.get('creds_keys', {}).get('password')
+    url = params.get('server')
 
-LOG('Executing command ' + demisto.command())
+    client = Client(
+        verify_ssl=verify_ssl,
+        proxy=proxy,
+        user_name=user_name,
+        password=password,
+        access_key=access_key,
+        secret_key=secret_key,
+        url=url
+    )
+
+    demisto.info(f'Executing command {command}')
+
+    command_dict = {
+        'tenable-sc-list-scans': list_scans_command,
+        'tenable-sc-list-policies': list_policies_command,
+        'tenable-sc-list-repositories': list_repositories_command,
+        'tenable-sc-list-credentials': list_credentials_command,
+        'tenable-sc-list-zones': list_zones_command,
+        'tenable-sc-list-report-definitions': list_report_definitions_command,
+        'tenable-sc-list-assets': list_assets_command,
+        'tenable-sc-list-plugins': list_plugins_command,
+        'tenable-sc-get-asset': get_asset_command,
+        'tenable-sc-create-asset': create_asset_command,
+        'tenable-sc-delete-asset': delete_asset_command,
+        'tenable-sc-create-scan': create_scan_command,
+        'tenable-sc-launch-scan': launch_scan_command,
+        'tenable-sc-get-scan-status': get_scan_status_command,
+        'tenable-sc-get-scan-report': get_scan_report_command,
+        'tenable-sc-get-vulnerability': get_vulnerability_command,
+        'tenable-sc-delete-scan': delete_scan_command,
+        'tenable-sc-get-device': get_device_command,
+        'tenable-sc-list-users': list_users_command,
+        'tenable-sc-list-alerts': list_alerts_command,
+        'tenable-sc-get-alert': get_alert_command,
+        'tenable-sc-get-system-information': get_system_information_command,
+        'tenable-sc-get-system-licensing': get_system_licensing_command,
+        'tenable-sc-get-all-scan-results': get_all_scan_results_command
+    }
+
+    try:
+        if not client.token or not client.cookie:
+            client.login()
+
+        if command == 'test-module':
+            demisto.results('ok')
+        elif command == 'fetch-incidents':
+            first_fetch = params.get('fetch_time').strip()
+            fetch_incidents(client, first_fetch)
+        else:
+            command_dict[command](client, args)
+    except Exception as e:
+        return_error(
+            f'Failed to execute {command} command. Error: {str(e)}'
+        )
+    finally:
+        client.logout()
 
 
-try:
-    if not TOKEN or not COOKIE:
-        login()
-
-    if demisto.command() == 'test-module':
-        demisto.results('ok')
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    elif demisto.command() == 'tenable-sc-list-scans':
-        list_scans_command()
-    elif demisto.command() == 'tenable-sc-list-policies':
-        list_policies_command()
-    elif demisto.command() == 'tenable-sc-list-repositories':
-        list_repositories_command()
-    elif demisto.command() == 'tenable-sc-list-credentials':
-        list_credentials_command()
-    elif demisto.command() == 'tenable-sc-list-zones':
-        list_zones_command()
-    elif demisto.command() == 'tenable-sc-list-report-definitions':
-        list_report_definitions_command()
-    elif demisto.command() == 'tenable-sc-list-assets':
-        list_assets_command()
-    elif demisto.command() == 'tenable-sc-list-plugins':
-        list_plugins_command()
-    elif demisto.command() == 'tenable-sc-get-asset':
-        get_asset_command()
-    elif demisto.command() == 'tenable-sc-create-asset':
-        create_asset_command()
-    elif demisto.command() == 'tenable-sc-delete-asset':
-        delete_asset_command()
-    elif demisto.command() == 'tenable-sc-create-scan':
-        create_scan_command()
-    elif demisto.command() == 'tenable-sc-launch-scan':
-        launch_scan_command()
-    elif demisto.command() == 'tenable-sc-get-scan-status':
-        get_scan_status_command()
-    elif demisto.command() == 'tenable-sc-get-scan-report':
-        get_scan_report_command()
-    elif demisto.command() == 'tenable-sc-get-vulnerability':
-        get_vulnerability_command()
-    elif demisto.command() == 'tenable-sc-delete-scan':
-        delete_scan_command()
-    elif demisto.command() == 'tenable-sc-get-device':
-        get_device_command()
-    elif demisto.command() == 'tenable-sc-list-users':
-        list_users_command()
-    elif demisto.command() == 'tenable-sc-list-alerts':
-        list_alerts_command()
-    elif demisto.command() == 'tenable-sc-get-alert':
-        get_alert_command()
-    elif demisto.command() == 'tenable-sc-get-system-information':
-        get_system_information_command()
-    elif demisto.command() == 'tenable-sc-get-system-licensing':
-        get_system_licensing_command()
-    elif demisto.command() == 'tenable-sc-get-all-scan-results':
-        get_all_scan_results_command()
-except Exception as e:
-    LOG(e)
-    LOG.print_log(False)
-    return_error(str(e))
-finally:
-    logout()
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

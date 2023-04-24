@@ -11,6 +11,12 @@ configuration:
   required: true
   type: 0
   section: Connect
+- display: access key
+  name: creds_keys
+  required: false
+  type: 9
+  displaypassword: secret key
+  section: Connect
 - display: Username
   name: credentials
   required: true
