@@ -143,6 +143,19 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
+demisto-sdk-nightly:test-upload-flow:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule
+  variables:
+    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
+  needs: []
+  stage: unittests-and-validations
+  script:
+    - !reference [test-upload-flow, script]
+
 demisto-sdk-nightly:run-commands-against-instance:
   tags:
     - gce # can't run docker in docker on gke
