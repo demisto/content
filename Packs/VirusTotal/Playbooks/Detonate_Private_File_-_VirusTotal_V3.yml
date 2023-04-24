@@ -115,7 +115,9 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: File.EntryID
+              complex:
+                root: inputs.File
+                accessor: EntryID
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -150,7 +152,7 @@ tasks:
       - "4"
     scriptarguments:
       key:
-        simple: ${File}
+        simple: File
       value:
         simple: ${inputs.File}
     separatecontext: false
@@ -345,7 +347,7 @@ view: |-
 inputs:
 - key: File
   value:
-    simple: ${File}
+    simple: ${File.EntryID}
   required: false
   description: Private file to be uploaded to VirusTotal.
   playbookInputQuery: null
