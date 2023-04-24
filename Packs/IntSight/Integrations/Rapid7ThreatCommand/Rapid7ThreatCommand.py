@@ -3062,9 +3062,14 @@ def assign_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
     client.assign_alert(
         alert_id=alert_id, user_id=user_id, is_mssp=argToBoolean(args.get("is_mssp"))
     )
-
-    return CommandResults(
-        readable_output=ReadableOutputs.ALERT_ASSIGN.value.format(alert_id, user_id)
+    outputs = {'id': alert_id, 'assignees': [user_id]}
+    return command_result_generate(
+        readable_message=ReadableOutputs.ALERT_ASSIGN.value.format(alert_id, user_id),
+        outputs=outputs,
+        headers=["id", "assignees"],
+        prefix="Alert",
+        key_field="id",
+        raw_response=outputs,
     )
 
 
@@ -3082,8 +3087,15 @@ def unassign_alert_command(client: Client, args: dict[str, Any]) -> CommandResul
     alert_id = args["alert_id"]
 
     client.unassign_alert(alert_id=alert_id)
-    return CommandResults(
-        readable_output=ReadableOutputs.ALERT_UNASSIGN.value.format(alert_id)
+
+    outputs = {'id': alert_id, 'assignees': None}
+    return command_result_generate(
+        readable_message=ReadableOutputs.ALERT_UNASSIGN.value.format(alert_id),
+        outputs=outputs,
+        headers=["id", "assignees"],
+        prefix="Alert",
+        key_field="id",
+        raw_response=outputs,
     )
 
 
