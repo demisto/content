@@ -27,7 +27,7 @@ def extract(
             logger.warning(f"Pack {pack.name} exists in in content-test-conf but not in content")
             continue
         logger.info(f"Copying {pack.name} from content-test-conf")
-        shutil.copytree(pack, content_path / "Packs" / pack.name)
+        shutil.copytree(pack, content_path / "Packs" / pack.name, dirs_exist_ok=True)
     if slack_token and missing_content_packs:
         slack_sdk.WebClient(token=slack_token).chat_postMessage(
             channel=slack_channel,
