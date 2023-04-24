@@ -808,7 +808,7 @@ def main() -> None:
             raise NotImplementedError(f"{command} is not an existing reco command")
     except Exception as e:
         demisto.error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
-        raise e
+        return_error(str(e))
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
