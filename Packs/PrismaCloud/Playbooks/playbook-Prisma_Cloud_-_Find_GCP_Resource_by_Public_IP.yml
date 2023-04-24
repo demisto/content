@@ -1,4 +1,5 @@
 description: |
+  Deprecated. Use Prisma Cloud - Find GCP Resource by Public IP v2 instead.
   Find GCP resources by Public IP using Prisma Cloud inventory.
   Supported services: GCE, Load Balancing, GKE.
 id: Prisma Cloud - Find GCP Resource by Public IP
@@ -111,12 +112,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search GCE instances in Prisma Cloud
       id: fc1bee60-2efe-45c8-8142-fac341a44269
       iscommand: true
       name: Search in GCE
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: fc1bee60-2efe-45c8-8142-fac341a44269
@@ -136,8 +137,8 @@ tasks:
             iscontext: true
             value:
               complex:
-                accessor: Asset
-                root: Redlock
+                accessor: Config
+                root: PrismaCloud
           operator: isNotEmpty
       label: "yes"
     id: "11"
@@ -180,8 +181,8 @@ tasks:
     scriptarguments:
       assets:
         complex:
-          accessor: Asset
-          root: Redlock
+          accessor: Config
+          root: PrismaCloud
       fields: {}
     separatecontext: false
     skipunavailable: false
@@ -274,7 +275,7 @@ tasks:
                     operator: isEqualString
                     right:
                       value:
-                        simple: RedLock
+                        simple: PrismaCloud v2
                 - - left:
                       iscontext: true
                       value:
@@ -397,12 +398,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search GCE instances in Prisma Cloud
       id: 1ef4f6a9-1e5b-410d-8d44-0fa35f15118f
       iscommand: true
       name: Search in Google Cloud Load Balancing
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 1ef4f6a9-1e5b-410d-8d44-0fa35f15118f
@@ -458,12 +459,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search GCE instances in Prisma Cloud
       id: 2c5ee418-ee55-4f6c-84b5-a21227fa2110
       iscommand: true
       name: Search in GKE
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 2c5ee418-ee55-4f6c-84b5-a21227fa2110
@@ -495,4 +496,5 @@ view: |-
   }
 fromversion: 6.0.0
 tests:
-- No tests
+- No tests (deprecated)
+deprecated: true

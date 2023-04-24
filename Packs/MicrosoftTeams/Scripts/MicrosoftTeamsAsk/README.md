@@ -27,6 +27,7 @@ This script uses the following commands and scripts.
 | team_member | Team member to which to send the question. |
 | task_id | Task ID of the playbook task to close with the reply. If not provided, no playbook task will be closed. |
 | channel | Channel to which to send the question. |
+| team | The team in which to mirror the Cortex XSOAR investigation. If not specified, the default team configured in the integration parameters will be used. |
 
 ## Outputs
 ---

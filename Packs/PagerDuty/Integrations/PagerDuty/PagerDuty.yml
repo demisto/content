@@ -1,4 +1,4 @@
-category: Messaging
+category: Messaging and Conferencing
 commonfields:
   id: PagerDuty v2
   version: -1
@@ -621,7 +621,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.48392
 tests:
 - PagerDuty Test
 fromversion: 5.0.0

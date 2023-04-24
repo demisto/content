@@ -23,6 +23,13 @@ args:
   description: The Okta username of the user.
 - name: displayname
   description: The display name of the employee.
+- auto: PREDEFINED
+  name: temporary_password
+  description: When true, you'll need to change the password in the next login.
+  defaultValue: 'false'
+  predefined:
+    - 'true'
+    - 'false'
 - name: to_email
   required: true
   description: The email address that the password will be sent to.
@@ -52,6 +59,11 @@ args:
 - name: max_symbols
   description: Maximum number of symbols to include in password. Used with the GeneratePassword script (leave empty if using another script).
   defaultValue: "10"
+- name: ZipProtectWithPassword
+  description: The password to protect the zip file that contains the generated password. if not provided, the generated password will be send in the body of the email.
+  defaultValue: ""
+- name: email_body
+  description: The body of the email that will be sent to the user.
 outputs:
 - contextPath: IAM.InitOktaUser.success
   description: True if the Okta user was successfully activated, false otherwise.
@@ -68,7 +80,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.9.42008
+dockerimage: demisto/py3-tools:1.0.0.50499
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:

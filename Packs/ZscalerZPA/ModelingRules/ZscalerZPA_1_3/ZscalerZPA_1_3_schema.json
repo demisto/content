@@ -147,6 +147,14 @@
         "SessionType": {
             "type": "string",
             "is_array": false
+          },
+        "leefProductVersion": {
+            "type": "string",
+            "is_array": false
+          },
+        "Idp": {
+            "type": "string",
+            "is_array": false
           }
     }
   }

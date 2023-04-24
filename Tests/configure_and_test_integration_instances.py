@@ -39,6 +39,8 @@ from Tests.test_content import get_server_numeric_version
 from Tests.test_integration import __get_integration_config, test_integration_instance, disable_all_integrations
 from Tests.tools import run_with_proxy_configured
 from Tests.update_content_data import update_content
+from Tests.private_build.upload_packs_private import extract_packs_artifacts
+from tempfile import mkdtemp
 
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
@@ -1782,20 +1784,22 @@ def filter_new_to_marketplace_packs(build: Build, modified_pack_names: Set[str])
     return first_added_to_marketplace
 
 
-def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tuple[Set[str], Set[str]]:
+def get_packs_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
     """
-    Return a set of packs to install only in the post-update, and set not to install in pre-update.
+    Return a set of packs to install only in the pre-update, and set to install in post-update.
     Args:
-        modified_packs_names (Set[str]): The set of packs to install.
         build (Build): The build object.
     Returns:
         (Set[str]): The set of the pack names that should not be installed.
         (Set[str]): The set of the pack names that should be installed only in post update. (non-hidden packs or packs
                                                 that new to current marketplace)
     """
+    modified_packs_names = get_non_added_packs_ids(build)
+
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
-    packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
-                                                                      build.content_path, build.server_numeric_version)
+
+    packs_with_higher_min_version = get_packs_with_higher_min_version(set(build.pack_ids_to_install) - non_hidden_packs,
+                                                                      build.server_numeric_version)
     # packs to install used in post update
     build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
 
@@ -1805,27 +1809,32 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
 
     packs_not_to_install_in_pre_update = set().union(*[packs_with_higher_min_version,
                                                        non_hidden_packs, first_added_to_marketplace])
-    return packs_not_to_install_in_pre_update, non_hidden_packs
+    packs_to_install_in_pre_update = modified_packs_names - packs_not_to_install_in_pre_update
+    return packs_to_install_in_pre_update, non_hidden_packs
 
 
-def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, server_numeric_version: str) -> Set[str]:
+def get_packs_with_higher_min_version(packs_names: Set[str],
+                                      server_numeric_version: str) -> Set[str]:
     """
     Return a set of packs that have higher min version than the server version.
 
     Args:
         packs_names (Set[str]): A set of packs to install.
-        content_path (str): The content root path.
         server_numeric_version (str): The server version.
 
     Returns:
         (Set[str]): The set of the packs names that supposed to be not installed because
                     their min version is greater than the server version.
     """
+    extract_content_packs_path = mkdtemp()
+    packs_artifacts_path = f'{os.getenv("ARTIFACTS_FOLDER")}/content_packs.zip'
+    extract_packs_artifacts(packs_artifacts_path, extract_content_packs_path)
+
     packs_with_higher_version = set()
     for pack_name in packs_names:
-
-        pack_metadata = get_json_file(f"{content_path}/Packs/{pack_name}/pack_metadata.json")
-        server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION, Metadata.SERVER_DEFAULT_MIN_VERSION)
+        pack_metadata = get_json_file(f"{extract_content_packs_path}/{pack_name}/metadata.json")
+        server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION,
+                                               pack_metadata.get('server_min_version', Metadata.SERVER_DEFAULT_MIN_VERSION))
 
         if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
             packs_with_higher_version.add(pack_name)
@@ -1873,16 +1882,15 @@ def main():
     if build.is_nightly:
         build.install_nightly_pack()
     else:
-        modified_packs_names = get_non_added_packs_ids(build)
-        packs_not_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_not_to_install(
-            modified_packs_names, build)
-        packs_to_install = modified_packs_names - packs_not_to_install_in_pre_update
-        build.install_packs(pack_ids=packs_to_install)
+        packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)
+        logging.info("Installing packs in pre-update step")
+        build.install_packs(pack_ids=packs_to_install_in_pre_update)
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(
             packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
+        logging.info("Installing packs in post-update step")
         installed_content_packs_successfully = build.update_content_on_servers()
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)
