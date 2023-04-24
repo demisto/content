@@ -1,7 +1,7 @@
 {
     "name": "WALLIX Bastion",
     "description": "Integrations for WALLIX Bastion appliances",
-    "support": "xsoar",
+    "support": "partner",
     "currentVersion": "1.0.0",
     "author": "WALLIX",
     "url": "https://www.wallix.com/privileged-access-management/",

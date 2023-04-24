@@ -1,19 +1,68 @@
 import demistomock as demisto
 from CommonServerPython import *
+import time
+from requests import Response
+
+
+class AuthError(Exception):
+    pass
 
 
 class Client(BaseClient):
-    def __init__(self, server_url, verify, proxy, headers, auth):
-        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
-        
+    def __init__(self, auth_key, auth_user, server_url, verify, proxy):
+        self._auth_key = auth_key
+        self._auth_user = auth_user
+
+        super().__init__(
+            base_url=server_url, verify=verify, proxy=proxy, headers={}, auth=None
+        )
+
+    def _raise_client_exc(self, res: Response):
+        if res.status_code == 401:
+            raise AuthError()
+        self.client_error_handler(res)
+
     def _http_request(self, *args, **kwargs):
-        resp = super()._http_request(*args, return_empty_response=True, **kwargs)
+        headers: dict = kwargs["headers"]
+
+        first_auth = True
+        token = get_session_token()
+        if token:
+            headers["Cookies"] = token
+            first_auth = False
+        else:
+            headers["X-Auth-Key"] = self._auth_key
+            headers["X-Auth-User"] = self._auth_user
+
+        client_err_handler = (
+            None if first_auth else self._raise_client_exc
+        )  # no AuthError if first_auth is True
+
         try:
-            if resp.status_code == 204:
-                return {}
-        except:
-            pass
-        return resp
+            resp: Response = super()._http_request(
+                *args, **kwargs, resp_type="response", error_handler=client_err_handler
+            )
+        except AuthError:  # AuthError is only raised when first_auth is False
+            update_session_token(None)
+
+            first_auth = True
+            headers["X-Auth-Key"] = self._auth_key
+            headers["X-Auth-User"] = self._auth_user
+
+            # retry
+            resp: Response = super()._http_request(
+                *args, **kwargs, resp_type="response"
+            )
+
+        if first_auth:
+            token = resp.headers.get("Set-Cookie")
+
+        update_session_token(token)
+
+        if resp.status_code == 204:
+            return {}
+
+        return resp.json()
 
     def add_account_in_global_domain_request(self, domain_id, domain_account_post_account_login, domain_account_post_account_name, domain_account_post_auto_change_password, domain_account_post_auto_change_ssh_key, domain_account_post_can_edit_certificate_validity, domain_account_post_certificate_validity, domain_account_post_checkout_policy, domain_account_post_description, domain_account_post_resources):
         data = assign_params(account_login=domain_account_post_account_login, account_name=domain_account_post_account_name, auto_change_password=domain_account_post_auto_change_password, auto_change_ssh_key=domain_account_post_auto_change_ssh_key, can_edit_certificate_validity=domain_account_post_can_edit_certificate_validity, certificate_validity=domain_account_post_certificate_validity, checkout_policy=domain_account_post_checkout_policy, description=domain_account_post_description, resources=domain_account_post_resources)
@@ -2561,52 +2610,73 @@ def start_scan_job_manually_command(client: Client, args: Dict[str, Any]) -> Com
     return command_results
 
 
-def test_module(client: Client) -> None:
-    # Test functions here
-    return_results('ok')
-
-
 def validate_api_version(v: str):
-    v = v.removeprefix('v')
+    v = v.removeprefix("v")
 
     vs = v.split(".")
     if len(vs) != 2:
-        raise Exception('invalid version format')
+        raise Exception("invalid version format")
     try:
         int(vs[0])
         int(vs[1])
     except ValueError:
-        raise Exception('invalid version format') from None
-    
+        raise Exception("invalid version format") from None
+
     return v
 
-def main() -> None:
 
+def get_session_token():
+    integration_context: dict = get_integration_context()
+    token = integration_context.get("session_token")
+    last_request_at = integration_context.get("last_request_at")
+    time_now = int(time.time())
+    if token and last_request_at:
+        if time_now - last_request_at < 100:
+            return token
+    return None
+
+
+def update_session_token(token: str | None):
+    if token is None:
+        set_integration_context({})
+
+    time_now = int(time.time())
+
+    integration_context = {
+        "session_token": token,
+        "last_request_at": time_now,
+    }
+    set_integration_context(integration_context)
+
+
+def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
-    url = params.get('url')
-    verify_certificate: bool = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-    
+    url = params.get("url")
+    verify_certificate: bool = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+
     base_path = "/api"
 
-    apiv: str = params.get('api_version', "")
-
-    headers = {}
-    headers['X-Auth-Key'] = params['auth_key']
-    headers['X-Auth-User'] = params['auth_user']
+    apiv: str = params.get("api_version", "")
 
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
 
     try:
         requests.packages.urllib3.disable_warnings()
-        
+
         if apiv:
             apiv = validate_api_version(apiv)
-            base_path += '/v' + apiv
+            base_path += "/v" + apiv
 
-        client: Client = Client(urljoin(url, base_path), verify_certificate, proxy, headers=headers, auth=None)
+        client: Client = Client(
+            params["auth_key"],
+            params["auth_user"],
+            urljoin(url, base_path),
+            verify_certificate,
+            proxy,
+        )
         
         commands = {
     		'wab-add-account-in-global-domain': add_account_in_global_domain_command,
