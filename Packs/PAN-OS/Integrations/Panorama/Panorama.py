@@ -13221,11 +13221,13 @@ def update_max_fetch_dict(configured_max_fetch, max_fetch_dict, last_fetch_dict,
         previus_fetch_timestamp=last_run.get("last_fetch_dict",{}).get(log_type)
         # the latest timestamp of the corrent fetchis the same as the previus one fetch timestamp,
         # that means we did not get all logs for that timstamp
+        demisto.debug(
+            f"previus_fetch_timestamp: {previus_fetch_timestamp}, last_fetch_dict[log_type]: {last_fetch_dict[log_type]}")
         if previus_fetch_timestamp and previus_fetch_timestamp == last_fetch_dict[log_type]:
-            new_max_fetch = max_fetch_dict + configured_max_fetch
+            max_fetch_dict[log_type]+= configured_max_fetch
         else:
-            new_max_fetch = configured_max_fetch
-        max_fetch_dict.update({log_type:new_max_fetch})
+            max_fetch_dict[log_type]= configured_max_fetch
+    demisto.debug(f"max_fetch_dict: {max_fetch_dict}")
     return max_fetch_dict
     
 
@@ -13472,7 +13474,7 @@ def main(): # pragma: no cover
             configured_max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
             #max_fetch = arg_to_number(last_run.get('max_fetch')) or arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
             queries_dict = log_types_queries_to_dict(params)
-            max_fetch_dict = last_run.get('max_fetch') or create_max_fetch_dict(queries_dict=queries_dict ,configured_max_fetch=configured_max_fetch)
+            max_fetch_dict = last_run.get('max_fetch_dict') or create_max_fetch_dict(queries_dict=queries_dict ,configured_max_fetch=configured_max_fetch)
 
             last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch_dict)
             next_max_fetch_dict = update_max_fetch_dict(configured_max_fetch=configured_max_fetch,
