@@ -421,15 +421,14 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
                 metadata = json.load(metadata_file)
 
             pack_current_version = metadata.get('currentVersion', Pack.PACK_INITIAL_VERSION)
-            core_pack_relative_path = os.path.join(storage_base_path, pack.name,
-                                                   pack_current_version, f"{pack.name}.zip")
-            core_pack_public_url = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name, core_pack_relative_path)
+            core_pack_relative_path = os.path.join(pack.name, pack_current_version, f"{pack.name}.zip")
+            core_pack_storage_path = os.path.join(storage_base_path, core_pack_relative_path)
 
-            if not storage_bucket.blob(core_pack_relative_path).exists():
-                logging.critical(f"{pack.name} pack does not exist under {core_pack_relative_path} path")
+            if not storage_bucket.blob(core_pack_storage_path).exists():
+                logging.critical(f"{pack.name} pack does not exist under {core_pack_storage_path} path")
                 sys.exit(1)
 
-            core_packs_public_urls.append(core_pack_public_url)
+            core_packs_public_urls.append(core_pack_relative_path)
             bucket_core_packs.add(pack.name)
 
     missing_core_packs = set(required_core_packs).difference(bucket_core_packs)
@@ -1047,7 +1046,7 @@ def upload_server_versions_metadata(artifacts_dir: str):
         artifacts_dir (str): The CI artifacts directory to upload the versions-metadata.json file to.
     """
     versions_metadata_path = os.path.join(artifacts_dir, GCPConfig.VERSIONS_METADATA_FILE)
-    json_write(versions_metadata_path, GCPConfig.VERSIONS_METADATA_DATA)
+    json_write(versions_metadata_path, GCPConfig.VERSIONS_METADATA_CONTENTS)
     logging.success(f"Finished copying {GCPConfig.VERSIONS_METADATA_FILE} to artifacts.")
 
 
