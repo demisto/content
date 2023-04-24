@@ -44,7 +44,9 @@ from datadog_api_client.v2.model.incident_update_request import IncidentUpdateRe
 from datadog_api_client.v2.model.incident_update_attributes import (
     IncidentUpdateAttributes,
 )
-
+from datadog_api_client.v2.model.incident_search_sort_order import (
+    IncidentSearchSortOrder,
+)
 from dateparser import parse
 from urllib3 import disable_warnings
 from datadog_api_client.exceptions import ForbiddenException, UnauthorizedException
@@ -66,6 +68,7 @@ HOUR_SECONDS = 3600
 NO_RESULTS_FROM_API_MSG = "API didn't return any results for given search parameters."
 ERROR_MSG = "Something went wrong!\n"
 DATE_ERROR_MSG = "Unable to parse date. Please check help section for right format."
+AUTHENTICATION_ERROR_MSG = "Authentication Error: Invalid API/APP Key. Make sure API/APP Key, Server URL is correctly set."
 
 
 # """ HELPER FUNCTIONS """
@@ -1070,9 +1073,108 @@ def delete_incident_command(
     with ApiClient(configuration) as api_client:
         api_instance = IncidentsApi(api_client)
         api_instance.delete_incident(
-            incident_id=args.get("incident_id"),
+
+def get_incident_command(
+    configuration: Configuration, args: Dict[str, Any]
+) -> Union[CommandResults, DemistoException]:
+    """
+       List or get details of incidents from Datadog.
+
+       Args:
+           configuration (Configuration): The configuration object for Datadog.
+           args (Dict[str, Any]): The dictionary containing the arguments passed to the command.
+
+       Returns:
+           CommandResults: The object containing the command results, including the readable output, outputs prefix,
+               outputs key field, and outputs data.
+    """
+    incident_id = args.get("incident_id")
+    with ApiClient(configuration) as api_client:
+        api_instance = IncidentsApi(api_client)
+        if incident_id:
+            configuration.unstable_operations["get_incident"] = True
+            response = api_instance.get_incident(
+                incident_id=incident_id,
+            )
+            results = response.to_dict()
+            data = results.get("data", {})
+            if data:
+                data = convert_datetime_to_str(data)
+                incident_lookup = incident_for_lookup(data)
+                readable_output = lookup_to_markdown(
+                    [incident_lookup], "Incident Details"
+                )
+            else:
+                readable_output = "No incident to present.\n"
+        else:
+            sort = args.get("sort")
+            sort_data = {"asc": "created", "desc": "-created"}
+            page = arg_to_number(args.get("page"), arg_name="page")
+            page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
+            limit = arg_to_number(args.get("limit"), arg_name="limit")
+            limit, offset = pagination(limit, page, page_size)
+            query = incident_serach_query(args)
+            configuration.unstable_operations["search_incidents"] = True
+            response = api_instance.search_incidents(
+                query=query if query else "state:(active OR stable OR resolved)",
+                sort=IncidentSearchSortOrder(sort_data.get(args.get(sort)))
+                if args.get(sort)
+                else IncidentSearchSortOrder("created"),
+                page_size=limit,
+                page_offset=offset,
+            )
+            results = response.to_dict()
+            data = results.get("data", {}).get("attributes", {}).get("incidents", [])
+            data = [convert_datetime_to_str(incident.get("data")) for incident in data]
+            lookup_data = [incident_for_lookup(obj) for obj in data]
+            readable_output = lookup_to_markdown(lookup_data, "Incidents List")
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Incident",
+        outputs_key_field="id",
+        outputs=data,
+    )
+
+
+def incident_serach_query(args) -> str:
+    """
+       Constructs a search query string for incident data based on the given
+       query parameters. Returns the query string as a string.
+
+       Args:
+           args (dict): A dictionary of query parameters and their values.
+
+       Returns:
+           str: A search query string constructed based on the given parameters,
+           or a default query string if no parameters are given.
+
+       Raises:
+           TypeError: If the input argument is not a dictionary.
+    """
+    query = ""
+    if args.get("state"):
+        query += f"state:{args.get('state')}"
+    if args.get("severity"):
+        query += (
+            f" AND severity:{args.get('severity')}"
+            if len(query)
+            else f"severity:{args.get('severity')}"
         )
-        return CommandResults(readable_output="Incident deleted successfully!")
+    if args.get("customer_impacted"):
+        query += (
+            f" AND customer_impacted:{args.get('customer_impacted').lower()}"
+            if len(query)
+            else f"customer_impacted:{args.get('customer_impacted').lower()}"
+        )
+    if args.get("detection_method"):
+        query += (
+            f" AND detection_method:{args.get('detection_method')}"
+            if len(query)
+            else f"detection_method:{args.get('detection_method')}"
+        )
+    if not query:
+        query = "state:(active OR stable OR resolved)"
+    return query
 
 
 def query_timeseries_points_command(configuration: Configuration, args: Dict[str, Any]):
@@ -1101,6 +1203,26 @@ def query_timeseries_points_command(configuration: Configuration, args: Dict[str
                 file_type=EntryType.ENTRY_INFO_FILE,
             ),
         ]
+
+
+def add_utc_offset(dt_str):
+    """
+    Converts an ISO-formatted datetime string to a datetime object in UTC time,
+    removes any timezone offset, and returns the resulting string in ISO format
+    with a UTC offset of '+00:00'.
+
+    Args:
+        dt_str (str): An ISO-formatted datetime string, with or without a timezone offset.
+
+    Returns:
+        str: An ISO-formatted datetime string with a UTC offset of '+00:00',
+        representing the input datetime string in UTC time.
+
+    """
+
+    dt = datetime.fromisoformat(dt_str)
+    dt_with_offset = dt.replace(tzinfo=None)
+    return dt_with_offset.isoformat()
 
 
 """ MAIN FUNCTION """
@@ -1133,6 +1255,7 @@ def main() -> None:
             "datadog-incident-create": create_incident_command,
             "datadog-incident-update": update_incident_command,
             "datadog-incident-delete": delete_incident_command,
+            "datadog-incident-list": get_incident_command,
             "datadog-time-series-point-query": query_timeseries_points_command,
         }
         if command == "test-module":
@@ -1142,9 +1265,7 @@ def main() -> None:
         else:
             raise NotImplementedError
     except (ForbiddenException, UnauthorizedException):
-        return_error(
-            "Authentication Error: Invalid API/APP Key. Make sure API/APP Key, Server URL is correctly set."
-        )
+        return_error(AUTHENTICATION_ERROR_MSG)
     except Exception as e:
         return_error(f"Failed to execute {command} command. Error: {str(e)}")
 
