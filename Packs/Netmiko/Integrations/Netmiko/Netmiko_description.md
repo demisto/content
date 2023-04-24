@@ -1,4 +1,4 @@
-Original community integration author: <b>Adam Burt</b>
+Original community integration author: <b>Adam Burt</b><br />
 Modified by <b>Josh Levine</b> for the following:
 - Added additional comments to parameters for the integration and associated commands
 - Updated README.MD documentation for pack and integration
