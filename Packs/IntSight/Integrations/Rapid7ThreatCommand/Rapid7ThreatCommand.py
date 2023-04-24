@@ -3003,9 +3003,14 @@ def close_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
         is_hidden=argToBoolean(args["is_hidden"]),
         rate=arg_to_number(args.get("rate")),
     )
-
-    return CommandResults(
-        readable_output=ReadableOutputs.ALERT_CLOSE.value.format(alert_id)
+    outputs = {'id': alert_id, 'is_closed': True}
+    return command_result_generate(
+        readable_message=ReadableOutputs.ALERT_CLOSE.value.format(alert_id),
+        outputs=outputs,
+        headers=["id", "is_closed"],
+        prefix="Alert",
+        key_field="id",
+        raw_response=outputs,
     )
 
 
