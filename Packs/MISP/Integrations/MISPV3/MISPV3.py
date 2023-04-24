@@ -549,7 +549,7 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         that existing event.
     """
     value = demisto_args.get('value')
-    isArray = argToBoolean(demisto_args.get('isArray',False))
+    isArray = argToBoolean(demisto_args.get('isArray', False))
     attributes_args = {
         'id': demisto_args.get('event_id'),  # misp event id
         'type': demisto_args.get('type', 'other'),
