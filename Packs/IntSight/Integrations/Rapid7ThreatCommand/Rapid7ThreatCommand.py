@@ -3343,7 +3343,9 @@ def list_alert_image_command(
     complete_alert = client.get_alert(alert_id=alert_id)
     img_ids = dict_safe_get(complete_alert, ["Details", "Images"], [])
     images = [
-        fileResult(filename=f"{img}.png", data=client.get_alert_image(img).content)
+        fileResult(filename=f"{img}.png",
+                   data=client.get_alert_image(img).content,
+                   file_type=EntryType.ENTRY_INFO_FILE)
         for img in img_ids
     ]
     return (
