@@ -2014,6 +2014,7 @@ class Pack(object):
         """
         task_status = False
         content_items_result: dict = {}
+        playbooks_version_map: dict = {}
 
         try:
 
@@ -2085,13 +2086,31 @@ class Pack(object):
                             self._contains_filter = True
 
                     elif current_directory == PackFolders.PLAYBOOKS.value:
+                        replace_old_playbook: bool = False
                         self.add_pack_type_tags(content_item, 'Playbook')
-                        folder_collected_items.append({
+                        playbook_version = playbooks_version_map.setdefault(
+                            content_item.get('id', ''),
+                            {'fromversion': content_item.get('fromversion', ''),
+                             'toversion': content_item.get('toversion', '99.99.99')
+                            })
+                        if playbook_version.get('toversion') == '99.99.99':
+                            continue
+                        if playbook_version.get('toversion') < content_item.get('fromversion'):
+                            replace_old_playbook = True
+                            playbooks_version_map[content_item.get('id')] = {
+                                "fromversion": content_item.get('fromversion', ''),
+                                "toversion": content_item.get('toversion', '99.99.99'),
+                            }
+                        new_dict = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                        }
+                        if replace_old_playbook:
+                            folder_collected_items = [new_dict if d["id"] == new_dict["id"] else d for d in folder_collected_items]
+                        else:
+                            folder_collected_items.append(new_dict)
 
                     elif current_directory == PackFolders.INTEGRATIONS.value:
                         integration_commands = content_item.get('script', {}).get('commands', [])
