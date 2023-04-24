@@ -2618,11 +2618,16 @@ def add_asset_command(client: Client, args: dict[str, Any]) -> CommandResults:
     asset_value = args["asset_value"]
 
     client.add_asset(asset_type=asset_type, asset_value=asset_value)
-
-    return CommandResults(
-        readable_output=ReadableOutputs.CREATE_ASSET.value.format(
+    outputs = {'type': asset_type, 'value': asset_value}
+    return command_result_generate(
+        readable_message=ReadableOutputs.CREATE_ASSET.value.format(
             asset_value, asset_type
-        )
+        ),
+        outputs=outputs,
+        headers=['type', 'value'],
+        prefix="Asset",
+        key_field="value",
+        raw_response=outputs,
     )
 
 

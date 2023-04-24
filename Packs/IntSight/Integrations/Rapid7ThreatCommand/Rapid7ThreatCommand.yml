@@ -1774,6 +1774,13 @@ script:
     deprecated: false
     description: "Add assets by type and value. Assets include any company resource that could lead to a potential security threat."
     execution: false
+    outputs:
+    - contextPath: ThreatCommand.Asset.type
+      description: The type of the asset.
+      type: String
+    - contextPath: ThreatCommand.Asset.value
+      description: The value of the asset type.
+      type: String
     name: threat-command-asset-add
   - arguments:
     - defaultValue: '50'
