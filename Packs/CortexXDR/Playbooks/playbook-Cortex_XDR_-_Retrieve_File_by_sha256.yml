@@ -244,10 +244,10 @@ tasks:
     continueonerrortype: ""
   '11':
     id: '11'
-    taskid: cc350b86-5fb8-48c8-8a92-b92815ba50de
+    taskid: 62047755-1867-4fd2-88e7-e56a193cad2c
     type: regular
     task:
-      id: cc350b86-5fb8-48c8-8a92-b92815ba50de
+      id: 62047755-1867-4fd2-88e7-e56a193cad2c
       version: -1
       name: 'Print Error - No path was found '
       description: Prints an error entry with a given message
@@ -276,6 +276,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerror: true
     continueonerrortype: ""
   '12':
     id: '12'

@@ -20,9 +20,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
+* isError
 * PrintErrorEntry
 * UnzipFile
-* isError
 
 ### Commands
 
