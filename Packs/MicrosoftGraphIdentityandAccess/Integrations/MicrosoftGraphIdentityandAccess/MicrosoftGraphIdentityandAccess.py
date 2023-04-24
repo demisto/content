@@ -25,7 +25,8 @@ class Client:  # pragma: no cover
             integration_context['current_refresh_token'] = refresh_token
             set_integration_context(integration_context)
         elif not enc_key and not (certificate_thumbprint and private_key):
-            raise DemistoException('Either enc_key or (Certificate Thumbprint and Private Key) must be provided. For further information see '
+            raise DemistoException('Either enc_key or (Certificate Thumbprint and Private Key) must be provided. For further '
+                                   'information see '
                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
         args = {
             "azure_ad_endpoint": azure_ad_endpoint,

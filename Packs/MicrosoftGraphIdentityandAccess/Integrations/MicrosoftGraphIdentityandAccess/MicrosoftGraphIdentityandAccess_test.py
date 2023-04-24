@@ -129,8 +129,8 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
 
 
-@pytest.mark.parametrize('expected_error', [("Key or Certificate Thumbprint and Private Key must be provided. For further "
-                                             "information see https://xsoar.pan.dev/docs/reference/articles/"
+@pytest.mark.parametrize('expected_error', [("Either enc_key or (Certificate Thumbprint and Private Key) must be provided. For "
+                                             "further information see https://xsoar.pan.dev/docs/reference/articles/"
                                              "microsoft-integrations---authentication")])
 def test_missing_creds_error_thrown(expected_error):
     """
