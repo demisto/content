@@ -2610,6 +2610,23 @@ def start_scan_job_manually_command(client: Client, args: Dict[str, Any]) -> Com
     return command_results
 
 
+def test_module(client: Client) -> str:
+    """
+    Tests API connectivity and authentication
+    Returning 'ok' indicates that connection to the Bastion appliance is successful.
+    Raises exceptions if something goes wrong.
+    """
+
+    try:
+        client._http_request("get", "", headers={})
+        demisto.results("ok")
+    except DemistoException as e:
+        if e.res:
+            r: Response = res
+            raise Exception(f"{r.status_code}: {e.res.text}")
+
+        raise e
+
 def validate_api_version(v: str):
     v = v.removeprefix("v")
 
