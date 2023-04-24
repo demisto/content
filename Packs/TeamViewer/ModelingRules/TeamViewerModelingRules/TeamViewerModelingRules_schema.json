@@ -1,5 +1,5 @@
 {
-    "teamviewer_teamviewer_raw": {
+    "teamviewer_tensor_raw": {
         "EventType": {
             "type": "string",
             "is_array": false

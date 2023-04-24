@@ -1,4 +1,4 @@
-[MODEL: dataset="teamviewer_teamviewer_raw"]
+[MODEL: dataset="teamviewer_tensor_raw"]
 alter
     xdm.event.type = EventType,
     xdm.event.description = EventName,
@@ -11,7 +11,7 @@ alter
     PropertyName = arraymap(Entities, json_extract_scalar("@element", "$.PropertyName")),
     PropertyCategory = arraymap(Entities, json_extract_scalar("@element", "$.PropertyCategory"))
 | alter
-    xdm.target.resource_before.value = if(OldValue = "", NULL, arraystring(OldValue, ", ")),
-    xdm.target.resource.value = if(NewValue = "", NULL, arraystring( NewValue, ", ")),
-    xdm.target.resource.type = if(PropertyName = "", NULL, arraystring(PropertyName, ", ")),
-    xdm.event.operation_sub_type = if(PropertyCategory = "", NULL, arraystring(PropertyCategory, ", "));
+    xdm.target.resource_before.value = if(OldValue = "", NULL, arraystring(OldValue, ",")),
+    xdm.target.resource.value = if(NewValue = "", NULL, arraystring( NewValue, ",")),
+    xdm.target.resource.type = if(PropertyName = "", NULL, arraystring(PropertyName, ",")),
+    xdm.event.operation_sub_type = if(PropertyCategory = "", NULL, arraystring(PropertyCategory, ","));
