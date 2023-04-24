@@ -277,8 +277,8 @@ def test_fetch_incidents_should_succeed(requests_mock, reco_client: RecoClient) 
         max_fetch=1,
     )
     assert (
-        len(fetched_incidents)
-        == random_incidents.getTableResponse.total_number_of_results
+            len(fetched_incidents)
+            == random_incidents.getTableResponse.total_number_of_results
     )
     assert fetched_incidents[0].get("name") == INCIDENT_DESCRIPTION
     assert fetched_incidents[0].get("dbotMirrorId") == INCIDET_ID_UUID
@@ -301,8 +301,8 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
         max_fetch=1,
     )
     assert (
-        len(fetched_incidents)
-        == random_incidents.getTableResponse.total_number_of_results
+            len(fetched_incidents)
+            == random_incidents.getTableResponse.total_number_of_results
     )
     last_run, incidents = fetch_incidents(
         reco_client=reco_client,
@@ -315,7 +315,7 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_fetch_incidents_without_assets_info(
-    requests_mock, reco_client: RecoClient
+        requests_mock, reco_client: RecoClient
 ) -> None:
     random_incidents = get_random_table_response()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=random_incidents)
@@ -326,8 +326,8 @@ def test_fetch_incidents_without_assets_info(
         reco_client=reco_client, last_run={}, source="GOOGLE_DRIVE", max_fetch=1
     )
     assert (
-        len(fetched_incidents)
-        == random_incidents.getTableResponse.total_number_of_results
+            len(fetched_incidents)
+            == random_incidents.getTableResponse.total_number_of_results
     )
     assert fetched_incidents[0].get("name") == INCIDENT_DESCRIPTION
     assert fetched_incidents[0].get("dbotMirrorId") == INCIDET_ID_UUID
@@ -336,7 +336,7 @@ def test_fetch_incidents_without_assets_info(
 
 
 def test_fetch_assets_with_empty_response(
-    requests_mock, reco_client: RecoClient
+        requests_mock, reco_client: RecoClient
 ) -> None:
     incident_id = uuid.uuid1()
     requests_mock.get(
@@ -433,7 +433,7 @@ def test_update_reco_incident_timeline(requests_mock, reco_client: RecoClient) -
 
 
 def test_update_reco_incident_timeline_error(
-    capfd, requests_mock, reco_client: RecoClient
+        capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     incident_id = uuid.uuid1()
     requests_mock.put(
@@ -460,7 +460,7 @@ def test_resolve_visibility_event(requests_mock, reco_client: RecoClient) -> Non
 
 
 def test_resolve_visibility_event_error(
-    capfd, requests_mock, reco_client: RecoClient
+        capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     entry_id = uuid.uuid1()
     requests_mock.put(
@@ -486,7 +486,7 @@ def test_get_risky_users(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_get_risky_users_bad_response(
-    capfd, requests_mock, reco_client: RecoClient
+        capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
@@ -522,7 +522,7 @@ def test_get_assets_user_has_access_to(requests_mock, reco_client: RecoClient) -
 
 
 def test_get_assets_user_bad_response(
-    capfd, requests_mock, reco_client: RecoClient
+        capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     requests_mock.post(
         f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json={}, status_code=200
