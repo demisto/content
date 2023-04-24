@@ -2108,8 +2108,8 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         }
                         if replace_old_playbook:
-                            folder_collected_items = [new_dict 
-                                                      if d["id"] == new_dict["id"] 
+                            folder_collected_items = [new_dict
+                                                      if d["id"] == new_dict["id"]
                                                       else
                                                       d for d in folder_collected_items]
                         else:
