@@ -36,9 +36,9 @@ Retrieve monitoring results from a specific monitor task
 | --- | --- | --- |
 | monitor_task_id | Monitor Task ID. | Required | 
 | page | Page number. The results will be returned only for specified page if param value is not empty. | Optional | 
-| page_size | Page size. | Optional | 
-| limit | Limit of the records in command result. | Optional | 
-| mode | Possible values: 1 - get only new results, 2 - get last results (Default value), 3 - get all results. | Optional | 
+| page_size | Page size. Possible range of values: 1 - 50. Default value is 20. | Optional | 
+| limit | Limit of the records in dataset. Default value is 1000. | Optional | 
+| mode | Affects which results will be included in dataset. Possible values: 1 - only new results, 2 - last results (default value), 3 - all results. | Optional | 
 
 #### Context Output
 
