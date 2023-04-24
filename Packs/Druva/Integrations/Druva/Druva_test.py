@@ -78,7 +78,7 @@ def test_Druva_FindDevice_Command(requests_mock):
         'resourceName': 'test',
         'resourceParent': 'testUser',
         'resourceStatus': 'enabled',
-        'resourceType': 'endpoint'
+        'resourceType': 'VMware'
     }]}
     requests_mock.get('https://apis.druva.com/realize/ransomwarerecovery/v1/search/backupset?hostname=test',
                       json=mock_response)
@@ -97,14 +97,14 @@ def test_Druva_FindDevice_Command(requests_mock):
         'resourceName': 'test',
         'resourceParent': 'testUser',
         'resourceStatus': 'enabled',
-        'resourceType': 'endpoint'
+        'resourceType': 'VMware'
     }, {
         'orgID': '-1',
         'resourceID': '12345',
         'resourceName': 'test',
         'resourceParent': 'testUser',
         'resourceStatus': 'enabled',
-        'resourceType': 'endpoint'
+        'resourceType': 'VMware'
     }]
 
 def test_Druva_FindDevice_Command_Invalid_input(requests_mock):
