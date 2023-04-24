@@ -7,12 +7,12 @@ configuration:
   name: url
   required: true
   type: 0
-- display: ""
-  displaypassword: API Key
-  hiddenusername: true
+- displaypassword: API Key
   name: credentials
-  required: false
   type: 9
+  required: false
+  hiddenusername: true
+  display: ""
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -46,7 +46,7 @@ configuration:
   required: true
   type: 15
 - additionalinfo: This field limits the number of attributes that will be written to the context for every reputation command. Raising the number of attributes may result in high memory and disk usage.
-  defaultvalue: "20"
+  defaultvalue: '20'
   display: Maximum attributes to be returned
   name: attributes_limit
   required: false
@@ -78,19 +78,19 @@ script:
       name: event_id
     - description: The event UUID to be returned by the search. For example, 59523300-4be8-4fa6-8867-0037ac110002.
       name: uuid
-    - defaultValue: "1"
-      description: If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201->300.
+    - description: If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201->300.
+      defaultValue: '1'
       name: page
-    - defaultValue: "50"
-      description: Limit the number of events returned.
+    - description: Limit the number of events returned.
       name: limit
+      defaultValue: '50'
     - auto: PREDEFINED
       description: Whether to return the event related feeds. Possible values are "true" and "false". Note, Only if this argument set to "true" the response will include attributes' feed hits values.
       name: include_feed_correlations
       predefined:
-      - "true"
-      - "false"
-    - description: Search for events that include match the searchstring in the events info field.
+      - 'true'
+      - 'false'
+    - description: 'Search for events that include match the searchstring in the events info field.'
       name: eventinfo
     description: Search for events in MISP. This search command will return only information about the matched events. To get information about attributes, use the misp-search-attributes command.
     name: misp-search-events
@@ -943,12 +943,12 @@ script:
       description: 'Attribute category to be created as part of the new event. For example: "Other", "Person", "Attribution", "Payload type".'
       name: category
     - auto: PREDEFINED
-      defaultValue: "true"
+      defaultValue: 'true'
       description: 'Whether to create the event''s attribute with the Intrusion Detection System flag. Possible values: "true" and "false".'
       name: to_ids
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       defaultValue: Your_organization_only
       description: 'Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", "Sharing_group" and "Inherit_event".'
@@ -970,12 +970,12 @@ script:
       name: info
       required: true
     - auto: PREDEFINED
-      defaultValue: "false"
+      defaultValue: 'false'
       description: 'Whether to publish the event. Possible values: "false" and "true".'
       name: published
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
     - auto: PREDEFINED
       defaultValue: High
       description: 'MISP Threat level ID. Possible values: "High", "Medium", "Low", and "Unknown".'
@@ -1113,12 +1113,12 @@ script:
       description: 'Attribute category. For example: "Other", "Person", "Attribution", "Payload type".'
       name: category
     - auto: PREDEFINED
-      defaultValue: "true"
+      defaultValue: 'true'
       description: 'Whether to create the attribute with the Intrusion Detection System flag. Possible values: "true" and "false".'
       name: to_ids
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       defaultValue: Inherit_event
       description: 'Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "Sharing_group", "All_communities", and "Inherit_event".'
@@ -1334,8 +1334,8 @@ script:
       description: Whether to add the tag as a local tag.
       name: is_local
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     description: Adds a tag to the given UUID event .
     name: misp-add-tag-to-event
     outputs:
@@ -1452,15 +1452,15 @@ script:
       description: Whether to add the tag as a local tag.
       name: is_local
       predefined:
-      - "true"
-      - "false"
-    - auto: PREDEFINED
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+    - name: disable_output
       description: If true, the attribute information will not be displayed in the response, reducing the runtime.
-      name: disable_output
+      defaultValue: "false"
       predefined:
       - "false"
       - "true"
+      auto: PREDEFINED
     description: Adds a tag to the given UUID attribute.
     name: misp-add-tag-to-attribute
     outputs:
@@ -1642,7 +1642,7 @@ script:
       - Botvrij.eu
       required: true
     - default: true
-      defaultValue: "2"
+      defaultValue: '2'
       description: Maximum number of files to add.
       name: limit
     description: Adds an OSINT feed. Only feeds in the misp format are allowed. For example have manifest.json.
@@ -2225,16 +2225,16 @@ script:
       description: 'Whether to return only the attributes set with the "to_ids" flag. The default is to return all attributes without with and with out to_ids flag. Possible values: "true" and "false".'
       name: to_ids
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - description: Search attributes of events published within the last "x" amount of time. Valid time values are days, hours, and minutes. For example, "5d", "12h", "30m". This filter uses the published timestamp of the event.
       name: last
     - auto: PREDEFINED
       description: 'Whether to return the decay score at the attribute level. Possible values: "true" and "false".'
       name: include_decay_score
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - description: Search by the creator organization by supplying the organization identifier.
       name: org
     - description: 'A comma-separated list of tags to include in the results. To exclude a tag, prefix the tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To chain logical operators use ";". For example, "AND:tag1,tag2;OR:tag3".'
@@ -2251,33 +2251,33 @@ script:
       description: 'Whether to include the the sightings of the matching attributes. Default is false. Possible values: "true" and "false".'
       name: include_sightings
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       description: 'Whether to include the full correlations of the matching attributes. Possible values: "true" and "false". Default is false.'
       name: include_correlations
       predefined:
-      - "true"
-      - "false"
-    - defaultValue: "1"
-      description: If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201->300. Default is 1.
+      - 'true'
+      - 'false'
+    - description: If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201->300. Default is 1.
+      defaultValue: '1'
       name: page
-    - defaultValue: "50"
-      description: Limit the number of attributes returned. Default is 50.
+    - description: Limit the number of attributes returned. Default is 50.
       name: limit
+      defaultValue: '50'
     - auto: PREDEFINED
       description: 'Whether to return only the values that are not on the warninglists. Possible values: "true" and "false".'
       name: enforceWarninglist
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
-      defaultValue: "false"
       description: 'Whether to return only the attribute''s values that match the search query. In case you want to get the full attributes data, set this argument to false. Possible values: "true" and "false".'
+      defaultValue: 'false'
       name: compact
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     description: Search for attributes in MISP.
     name: misp-search-attributes
     outputs:
@@ -2458,8 +2458,8 @@ script:
       description: Whether to send an email. The default is to not send a mail.
       name: alert
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     description: Publish an event.
     name: misp-publish-event
   - arguments:
@@ -2487,9 +2487,11 @@ script:
     - contextPath: MISP.Warninglist.Lists
       description: Name of warninglists where the value was found.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.54606
+  dockerimage: demisto/pymisp2:1.0.0.55279
   runonce: false
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: MISP V3
+tests:
+- MISP V3 Test
+fromversion: 5.5.0
