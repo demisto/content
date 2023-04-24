@@ -32,7 +32,7 @@ def main():
     parser = argparse.ArgumentParser(description='Compare content and content-test-conf')
     parser.add_argument('--content-path', required=True, help='Path to content repo')
     parser.add_argument('--content-test-conf-path', required=True, help='Path to content-test-conf repo')
-    parser.add_argument('-s', '--slack_token', help='The token for slack')
+    parser.add_argument('-s', '--slack-token', help='The token for slack')
     args = parser.parse_args()
 
     extract(Path(args.content_path), Path(args.content_test_conf_path), args.slack_token)
