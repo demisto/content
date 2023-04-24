@@ -2610,7 +2610,7 @@ def start_scan_job_manually_command(client: Client, args: Dict[str, Any]) -> Com
     return command_results
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client):
     """
     Tests API connectivity and authentication
     Returning 'ok' indicates that connection to the Bastion appliance is successful.
