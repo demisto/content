@@ -1,4 +1,5 @@
 [MODEL: dataset=netskope_netskope_raw]
+// TestData
 // Page Logs
 filter source_log_event = "page"
 | alter
