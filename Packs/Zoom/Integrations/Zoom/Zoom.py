@@ -58,7 +58,7 @@ time is missing this argument: recurrence_type."""
 
 
 class Client(Zoom_Client):
-    #     """ A client class that implements logic to authenticate with Zoom application. """
+    """ A client class that implements logic to authenticate with Zoom application. """
 
     def zoom_create_user(self, user_type_num: int, email: str, first_name: str, last_name: str):
         return self.error_handled_http_request(

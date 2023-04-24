@@ -29,7 +29,7 @@ EVENT_TYPE = {"operationlogs": "operation_log", "activities": "activity_log"}
 
 
 class Client(Zoom_Client):
-    #     """ A client class that implements logic to authenticate with Zoom application. """
+    """ A client class that implements logic to authenticate with Zoom application. """
 
     def search_events(self, log_type: str, first_fetch_time: datetime, last_time: str = '', limit: int = None) -> \
             tuple[str, list[dict[str, Any]]]:
