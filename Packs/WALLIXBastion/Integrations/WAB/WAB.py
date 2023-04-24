@@ -2622,8 +2622,7 @@ def test_module(client: Client):
         demisto.results("ok")
     except DemistoException as e:
         if e.res:
-            r: Response = res
-            raise Exception(f"{r.status_code}: {e.res.text}")
+            raise Exception(f"{e.res.status_code}: {e.res.text}")
 
         raise e
 
