@@ -26,8 +26,8 @@ def extract(
             continue
         logger.info(f"Copying {pack.name} from content-test-conf")
         shutil.copytree(pack, content_path / "Packs" / pack.name, dirs_exist_ok=True)
-    if artifacts_folder := Path(os.getenv("ARTIFACTS_FOLDER")):
-        with open(artifacts_folder / "missing_content_packs_test_conf.txt", "w") as f:
+    if artifacts_folder := os.getenv("ARTIFACTS_FOLDER"):
+        with open(Path(artifacts_folder) / "missing_content_packs_test_conf.txt", "w") as f:
             f.write("\n".join(missing_content_packs))
 
 
