@@ -421,6 +421,12 @@ Function ExecuteServiceScript()
 		param($SiteCode, $CollectionID, $CollectionName, $DeviceName, $ScriptText, $ScriptName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
+
+		# Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
+        }
+
 		Set-Location "$( $SiteCode ):"
 		# Checking if script exists in the configuration ConfigurationManager
 		$CMPSSuppressFastNotUsedCheck = $true
@@ -488,6 +494,12 @@ Function GetLastLogOnUser()
 		param($deviceName, $siteCode)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
+
+		# Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
+        }
+
 		Set-Location "$( $SiteCode ):"
 		Get-CMDevice -Name $deviceName -Resource |Select-Object IPAddresses, Name, LastLogonTimestamp, LastLogonUserName
 	}
@@ -530,6 +542,12 @@ Function GetCollectionList()
 		param($parameters, $siteCode)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
+
+		# Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
+        }
+
 		Set-Location "$( $SiteCode ):"
 		switch ($parameters.usedParameterName)
 		{
@@ -566,6 +584,12 @@ Function GetDeviceList()
 		param($parameters, $siteCode)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
+
+		# Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
+        }
+
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
 		if ($parameters.collection_id)
@@ -614,6 +638,12 @@ Function GetScriptList()
 		param($author, $scriptName, $SiteCode)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
+
+		# Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
+        }
+
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
 		if ($author -And $scriptName)
@@ -658,6 +688,12 @@ Function CreateScript()
 		param($SiteCode, $usedParameterName, $scriptPath, $scriptText, $scriptName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
+
+		# Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
+        }
+
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
 		switch ("$usedParameterName")
@@ -695,6 +731,12 @@ Function InvokeScript()
 		param($SiteCode, $scriptGuid, $CollectionID, $CollectionName, $DeviceName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
+
+		# Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
+        }
+
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
 		if ($CollectionID)
@@ -728,6 +770,12 @@ Function ApproveScript()
 		param($SiteCode, $scriptGuid, $comment)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
+
+		# Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
+        }
+
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
 		Approve-CMScript -ScriptGuid $scriptGuid -Comment $comment
@@ -808,6 +856,12 @@ Function CreateDeviceCollection()
 		param($SiteCode, $comment, $CollectionName, $limitingCollectionName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
+
+		# Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
+        }
+
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
 		New-CMCollection -Name $CollectionName -CollectionType "Device" -Comment $comment -LimitingCollectionName $limitingCollectionName
@@ -836,6 +890,12 @@ Function AddMembersToDeviceCollection()
 		param($SiteCode, $CollectionID, $CollectionName, $resourceIDs)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
+
+		# Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
+        }
+
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
 		if ($CollectionID)
@@ -872,6 +932,12 @@ Function IncludeDeviceCollection()
 		param($parameters, $siteCode)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
+
+		# Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
+        }
+
 		Set-Location "$( $SiteCode ):"
 		switch ($parameters.usedParameterName)
 		{
@@ -914,6 +980,12 @@ Function ExcludeDeviceCollection()
 		param($parameters, $siteCode)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
+
+		# Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
+        }
+
 		Set-Location "$( $SiteCode ):"
 		switch ($parameters.usedParameterName)
 		{
@@ -952,6 +1024,12 @@ Function AddMembersToCollectionByQuery()
 		param($siteCode, $CollectionID, $CollectionName, $queryExpression, $ruleName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
+
+		# Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
+        }
+
 		Set-Location "$( $SiteCode ):"
 		if ($CollectionID)
 		{
@@ -1343,6 +1421,12 @@ Function TestModule()
 		param($SiteCode)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
+
+		# Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
+        }
+
 		Set-Location "$( $SiteCode ):"
 		if ($null -eq (Get-Module -Name ConfigurationManager).Version)
 		{
