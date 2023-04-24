@@ -543,7 +543,7 @@ script:
       isArray: true
       name: tag
     - auto: PREDEFINED
-      description: Weather to create the tag if not exist.
+      description: Whether to create the tag if it does not exist.
       default: No
       name: create_tag
       predefined:
