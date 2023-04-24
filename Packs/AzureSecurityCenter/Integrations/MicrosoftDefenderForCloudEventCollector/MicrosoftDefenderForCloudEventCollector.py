@@ -62,10 +62,9 @@ class MsClient:
             response = self.ms_client.http_request(method="GET", full_url=nextLink)
             curr_events = response.get("value", [])
             curr_filtered_events = filter_out_previosly_digested_events(curr_events, last_run)
-            if check_events_were_filtered_out(curr_events, curr_filtered_events):
-                events.extend(curr_filtered_events)
-                break
             events.extend(curr_filtered_events)
+            if check_events_were_filtered_out(curr_events, curr_filtered_events):
+                break
 
         return events
 

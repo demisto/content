@@ -9,24 +9,27 @@ configuration:
   required: false
   type: 0
   section: Connect
-- displaypassword: ID
+- displaypassword: Client ID
   name: client_id
   required: true
   hiddenusername: true
   type: 9
   section: Connect
-- displaypassword: Token
+  additionalinfo: Microsoft Defender for Cloud client ID
+- displaypassword: Tenant ID
   name: tenant_id
   required: true
   hiddenusername: true
   type: 9
   section: Connect
-- displaypassword: Key
+  additionalinfo: Microsoft Defender for Cloud Tenant ID
+- displaypassword: Client Secret
   name: enc_key
   required: true
   hiddenusername: true
   type: 9
   section: Connect
+  additionalinfo: Microsoft Defender for Cloud Client Secret
 - displaypassword: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
@@ -52,6 +55,7 @@ configuration:
   defaultvalue: 3 days
   required: false
   section: Collect
+  additionalinfo: First time to start fetching alerts from.
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
