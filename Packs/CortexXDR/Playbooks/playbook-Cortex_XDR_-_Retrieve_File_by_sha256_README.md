@@ -1,31 +1,43 @@
 This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-This playbook is a sub-playbook for the Cortex XDR malware investigation flow. In this playbook, we are retrieving multiple files from the investigated device (using the Device ID incident field), based on their SHA256.
+This playbook is a sub-playbook for the Cortex XDR malware investigation flow. In this playbook, we retrieve multiple files from the investigated device (using the Device ID incident field), based on their SHA256 hash.
+To run the playbook always remember to make it shared with the global context and set the Sha256 input to run in a loop ( in case there are multiple SHA256s that needs to be retrieved).
+
+How does this playbook works:
+The playbook sets all SHA256 paths from the alert to be retreived from the endpoint. Once the playbook checked the relevent paths (Actor,Action and Cusallity paths) it will run all the mathced pats agains all the endpoints ids that are
+associated with the incident.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-Cortex XDR - Get File Path from alerts by hash
+
+* Cortex XDR - Get File Path from alerts by hash
 
 ### Integrations
-CortexXDRIR
+
+* CortexXDRIR
 
 ### Scripts
+
+* PrintErrorEntry
 * UnzipFile
 * isError
-* Print
 
 ### Commands
-xdr-file-retrieve
+
+* xdr-file-retrieve
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Sha256 | SHA256 for the file to be retrieved. |  | Optional |
+| Sha256 | SHA256 for the file to be retrieved. | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855, cd6e0d42f2f24b1202d1d9ce7976ceb5dc2258c20989074b557b0a5eaf6185a0, 37dda78756d7ab9e446f04816451c8946ab2fd6672cdfdfd731c38020b44f3e4 | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -42,5 +54,7 @@ xdr-file-retrieve
 | File.Type | The file type, as determined by libmagic \(same as displayed in the file entries\). | String |
 
 ## Playbook Image
+
 ---
+
 ![Cortex XDR - Retrieve File by sha256](../doc_files/Cortex_XDR_-_Retrieve_File_by_sha256.png)
