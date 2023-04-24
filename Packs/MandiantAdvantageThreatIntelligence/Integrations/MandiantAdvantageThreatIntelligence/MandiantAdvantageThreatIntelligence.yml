@@ -454,7 +454,7 @@ script:
     deprecated: false
     description: Get Mandiant Indicators.
     execution: false
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.55362
   feed: true
   isfetch: false
   longRunning: false
