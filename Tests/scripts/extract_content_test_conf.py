@@ -5,11 +5,10 @@ import os
 from pathlib import Path
 import logging as logger
 import shutil
-import slack_sdk
 
 from Tests.scripts.utils.log_util import install_logging
 
-install_logging('collect_tests.log', logger=logger)
+install_logging('extract_test_conf.log', logger=logger)
 
 CONTENT_CHANNEL = 'dmst-build-test'
 
