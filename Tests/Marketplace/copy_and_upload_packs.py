@@ -144,16 +144,16 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
 
     """
     corepacks_files = {GCPConfig.CORE_PACK_FILE_NAME, GCPConfig.get_core_packs_unlocked_file()}
-    for versioned_corepacks_file in corepacks_files:
-        # download the corepacks.json stored in the build bucket to temp dir
-        build_corepacks_file_path = os.path.join(build_bucket_base_path, versioned_corepacks_file)
+    for corepacks_file in corepacks_files:
+        # download the corepacks file stored in the build bucket to temp dir
+        build_corepacks_file_path = os.path.join(build_bucket_base_path, corepacks_file)
         build_corepacks_blob = build_bucket.blob(build_corepacks_file_path)
 
         if not build_corepacks_blob.exists():
-            logging.critical(f"{versioned_corepacks_file} is missing in {build_bucket.name} bucket, exiting...")
+            logging.critical(f"{corepacks_file} is missing in {build_bucket.name} bucket, exiting...")
             sys.exit(1)
 
-        temp_corepacks_file_path = os.path.join(extract_destination_path, versioned_corepacks_file)
+        temp_corepacks_file_path = os.path.join(extract_destination_path, corepacks_file)
         build_corepacks_blob.download_to_filename(temp_corepacks_file_path)
         corepacks_file = load_json(temp_corepacks_file_path)
 
@@ -164,7 +164,7 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
                                            LATEST_ZIP_REGEX.findall(corepack_path)[0]) for corepack_path in corepacks_list]
         except IndexError:
             corepacks_list_str = '\n'.join(corepacks_list)
-            logging.exception(f"GCS paths in build bucket {versioned_corepacks_file} file are not of format: "
+            logging.exception(f"GCS paths in build bucket {corepacks_file} file are not of format: "
                               f"{GCPConfig.GCS_PUBLIC_URL}/<BUCKET_NAME>/.../content/packs/...\n"
                               f"List of build bucket corepacks paths:\n{corepacks_list_str}")
             sys.exit(1)
@@ -177,46 +177,40 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
         }
 
         # upload core pack json file to gcs
-        prod_corepacks_file_path = os.path.join(storage_base_path, versioned_corepacks_file)
+        prod_corepacks_file_path = os.path.join(storage_base_path, corepacks_file)
         prod_corepacks_blob = production_bucket.blob(prod_corepacks_file_path)
         prod_corepacks_blob.upload_from_string(json.dumps(core_packs_data, indent=4))
 
-        logging.success(f"Finished uploading {versioned_corepacks_file} to storage.")
+        logging.success(f"Finished uploading {corepacks_file} to storage.")
 
 
-def upload_versions_metadata(production_bucket, build_bucket, storage_base_path,
-                             build_bucket_base_path):
-    # todo: remove logs
-    logging.info('In upload_versions_metadata')
-    logging.info(f'production bucket: {production_bucket}')
-    logging.info(f'build bucket: {build_bucket}')
-    logging.info(f'storage base path: {storage_base_path}')
-    logging.info(f'build base path: {build_bucket_base_path}')
+def upload_versions_metadata(production_bucket: Bucket, build_bucket: Bucket, storage_base_path: str,
+                             build_bucket_base_path: str):
+    """Uploads the versions-metadata.json file to the target bucket. This files contains information related to
+    different server versions, such as a mapping between server versions and the matching corepacks files.
 
+     Args:
+        production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
+        build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is downloaded from.
+        storage_base_path (str): the path to upload the corepacks.json to.
+        build_bucket_base_path (str): the path in the build bucket of the corepacks.json.
+    """
     build_file_path = os.path.join(build_bucket_base_path, GCPConfig.VERSIONS_METADATA_FILE)
     build_blob = build_bucket.blob(build_file_path)
-    build_blob.reload()
-    logging.info(f'build blob: {build_blob}')
 
     if not build_blob.exists():
         logging.critical(f"{GCPConfig.VERSIONS_METADATA_FILE} is missing in {build_bucket.name} bucket, exiting...")
         sys.exit(1)
 
-    # logging.info("Trying to copy versions-metadata with shutil.copy")
-    # shutil.copy(build_file_path, storage_base_path)
-
-    logging.info("Trying to copy versions-metadata with bucket blob upload")
-    prod_versions_metadata_storage_path = os.path.join(storage_base_path, 'versions-metadata-blob.json')
+    prod_versions_metadata_storage_path = os.path.join(storage_base_path, GCPConfig.VERSIONS_METADATA_FILE)
     copied_versions_metadata = build_bucket.copy_blob(
         blob=build_blob, destination_bucket=production_bucket, new_name=prod_versions_metadata_storage_path
     )
     if copied_versions_metadata.exists():
-        logging.success("Finished uploading versions-metadata to storage.")
+        logging.success(f"Finished uploading {GCPConfig.VERSIONS_METADATA_FILE} to storage.")
     else:
-        logging.error("Failed copying index.zip from build index - blob does not exist.")
+        logging.error(f"Failed copying {GCPConfig.VERSIONS_METADATA_FILE} from build bucket - blob does not exist.")
         sys.exit(1)
-
-    logging.success(f"Finished uploading {GCPConfig.VERSIONS_METADATA} to storage.")
 
 
 def download_and_extract_index(build_bucket: Bucket, extract_destination_path: str, build_bucket_base_path: str):

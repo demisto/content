@@ -106,8 +106,8 @@ class GCPConfig(object):
         CORE_PACKS_XPANSE_LIST_TO_UPDATE = packs_list_xpanse.get('update_core_packs_list')
 
     with open(os.path.join(os.path.dirname(__file__), VERSIONS_METADATA_FILE), 'r') as server_versions_metadata:
-        VERSIONS_METADATA = json.load(server_versions_metadata)
-        CORE_PACKS_FILE_VERSIONS = VERSIONS_METADATA.get('version_map')
+        VERSIONS_METADATA_DATA = json.load(server_versions_metadata)
+        CORE_PACKS_FILE_VERSIONS = VERSIONS_METADATA_DATA.get('version_map')
 
     @classmethod
     def get_core_packs(cls, marketplace):

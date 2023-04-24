@@ -1039,13 +1039,15 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
             logging.error(f"Failed uploading packs with dependencies: {e}")
 
 
-def upload_server_versions_metadata(artifacts_path):
-    # todo: remove logs
-    logging.info(f"storage_base_path: {artifacts_path}")
-    logging.info(f"versions_metadata content: {GCPConfig.VERSIONS_METADATA}")
+def upload_server_versions_metadata(artifacts_dir: str):
+    """
+    Upload the versions-metadata.json to the build artifacts folder.
 
-    versions_metadata_path = os.path.join(artifacts_path, 'versions-metadata.json')
-    json_write(versions_metadata_path, GCPConfig.VERSIONS_METADATA)
+    Args:
+        artifacts_dir (str): The CI artifacts directory to upload the versions-metadata.json file to.
+    """
+    versions_metadata_path = os.path.join(artifacts_dir, GCPConfig.VERSIONS_METADATA_FILE)
+    json_write(versions_metadata_path, GCPConfig.VERSIONS_METADATA_DATA)
     logging.success(f"Finished copying {GCPConfig.VERSIONS_METADATA_FILE} to artifacts.")
 
 
