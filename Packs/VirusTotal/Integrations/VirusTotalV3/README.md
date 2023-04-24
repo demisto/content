@@ -2225,7 +2225,7 @@ See files through the eyes of VirusTotal without uploading them to the main thre
 
 #### Command Example
 
-```!vt-privatescanning-file file=f912398cb3542ab704fe917af4a60d4feee21ac577535b10453170f10c6fd6de```
+```!vt-privatescanning-file file=example-file-hash```
 
 #### Context Example
 
@@ -2235,8 +2235,8 @@ See files through the eyes of VirusTotal without uploading them to the main thre
         "File": {
             "attributes": {
                 "type_description": "ELF",
-                "tlsh": "T11AF3EF31C28E5718F90294B6C7B051C2BAABBFC6733429E74C195DE38BE578962701DE",
-                "vhash": "01504f6f5d1d1bz53z1hz1fz",
+                "tlsh": "Example tlsh",
+                "vhash": "Example vhash",
                 "exiftool": {
                     "MIMEType": "application/octet-stream",
                     "CPUByteOrder": "Little endian",
@@ -2347,7 +2347,7 @@ See files through the eyes of VirusTotal without uploading them to the main thre
                         ]
                     }
                 },
-                "sha256": "609d7e352dbbb005acb29c943ef634e265a099b659a4eb92df232f8926fc66cd",
+                "sha256": "Example_sha256",
                 "tags": [
                     "elf",
                     "upx"
@@ -2367,19 +2367,19 @@ See files through the eyes of VirusTotal without uploading them to the main thre
                     },
                 ],
                 "last_analysis_date": 1681386314,
-                "ssdeep": "3072:btQoAIRBiqAoZz6ix08+yQLaldH6AkR3ivgipBI0SKSzz:5yIRBixoZOiuyOQdHeR3ivgip9S/f",
+                "ssdeep": "Example ssdeep",
                 "packers": {
                     "Gandelf": "upx"
                 },
-                "md5": "801bf852231cfc953bafe5236cbe4dcf",
-                "sha1": "cff8615f1aaccc5f3eb59200bdc32c4744cc785e",
+                "md5": "Example_md5",
+                "sha1": "Example_sha1",
                 "magic": "ELF 32-bit LSB executable, Intel 80386, version 1 (GNU/Linux), statically linked, stripped",
                 "meaningful_name": "private"
             },
             "type": "private_file",
-            "id": "609d7e352dbbb005acb29c943ef634e265a099b659a4eb92df232f8926fc66cd",
+            "id": "Example_sha256",
             "links": {
-                "self": "https://www.virustotal.com/api/v3/private/files/609d7e352dbbb005acb29c943ef634e265a099b659a4eb92df232f8926fc66cd"
+                "self": "https://www.virustotal.com/api/v3/private/files/Example_sha256"
             }
         }
     }
@@ -2388,11 +2388,11 @@ See files through the eyes of VirusTotal without uploading them to the main thre
 
 #### Human Readable Output
 
->### Results of file hash 609d7e352dbbb005acb29c943ef634e265a099b659a4eb92df232f8926fc66cd
+>### Results of file hash Example_sha256
 >
 >|Sha1|Sha256|Md5|Meaningful Name|Threat Severity Level|Popular Threat Category|Threat Verdict|
 >|---|---|---|---|---|---|---|
->| cff8615f1aaccc5f3eb59200bdc32c4744cc785e | 609d7e352dbbb005acb29c943ef634e265a099b659a4eb92df232f8926fc66cd | 801bf852231cfc953bafe5236cbe4dcf | private | HIGH | trojan | MALICIOUS |
+>| Example_sha1 | Example_sha256 | Example_md5 | private | HIGH | trojan | MALICIOUS |
 
 
 ### vt-privatescanning-file-scan
@@ -2430,7 +2430,7 @@ Submits a file for private scanning. Use the vt-privatescanning-analysis-get com
 
 #### Command Example
 
-```!vt-privatescanning-file-scan entryID=1147@a39389a2-8a31-4036-8246-fa2fcbec2eef```
+```!vt-privatescanning-file-scan entryID=example-entry-id```
 
 #### Context Example
 
@@ -2439,16 +2439,16 @@ Submits a file for private scanning. Use the vt-privatescanning-analysis-get com
     "VirusTotal": {
         "Submission": {
             "type": "private_analysis",
-            "id": "NTJjNTM1MThmMzhiNWRiNGE1ZWQ5ZDhiZjQyNWY2NzM6MDVmMjBhMWM3MjI1ZTg1YzFkMzcwZmEzNTZhYmMyMmM6MTY4MTM5MjQ1Mw==",
-            "EntryID": "1147@a39389a2-8a31-4036-8246-fa2fcbec2eef",
+            "id": "example-analysis-id",
+            "EntryID": "example-entry-id",
             "Extension": "txt",
             "Info": "ASCII text, with no line terminators",
-            "MD5": "05f20a1c7225e85c1d370fa356abc22c",
+            "MD5": "Example_md5",
             "Name": "Testing.txt",
-            "SHA1": "74cbf74ffacaafe18f158f3b09b5fe1e0baf9cbd",
-            "SHA256": "0b1d5588e18e926799d6311b4a3ba40f6060a94754e6df69c973d51828aacad6",
-            "SHA512": "61333141e31d00af3a14434a25693505f5ae7c5967251aeab85bad16e0767233b95607875b57ee715571defb38e6d8766865c8c665875b28ba800008309d56e4",
-            "SSDeep": "3:/PGVlCvGXj6n1jghhh8zwL0Rnwc:nGVf4jIhiwL0Rp",
+            "SHA1": "Example_sha1",
+            "SHA256": "Example_sha256",
+            "SHA512": "Example_sha512",
+            "SSDeep": "Example ssdeep",
             "Size": "71 bytes",
             "Type": "text/plain; charset=utf-8"
         }
@@ -2462,7 +2462,7 @@ Submits a file for private scanning. Use the vt-privatescanning-analysis-get com
 >
 >|id|EntryID|MD5|SHA1|SHA256|
 >|---|---|---|---|---|---|---|
->| NTJjNTM1MThmMzhiNWRiNGE1ZWQ5ZDhiZjQyNWY2NzM6MDVmMjBhMWM3MjI1ZTg1YzFkMzcwZmEzNTZhYmMyMmM6MTY4MTM5MjQ1Mw== | 1147@a39389a2-8a31-4036-8246-fa2fcbec2eef | 05f20a1c7225e85c1d370fa356abc22c | 74cbf74ffacaafe18f158f3b09b5fe1e0baf9cbd | 0b1d5588e18e926799d6311b4a3ba40f6060a94754e6df69c973d51828aacad6 |
+>| example-analysis-id | example-entry-id | Example_md5 | Example_sha1 | Example_sha256 |
 
 
 ### vt-privatescanning-analysis-get
@@ -2499,7 +2499,7 @@ Get analysis of a private file submitted to VirusTotal.
 
 #### Command Example
 
-```!vt-privatescanning-analysis-get id=NTJjNTM1MThmMzhiNWRiNGE1ZWQ5ZDhiZjQyNWY2NzM6MDVmMjBhMWM3MjI1ZTg1YzFkMzcwZmEzNTZhYmMyMmM6MTY4MTM5MjQ1Mw==```
+```!vt-privatescanning-analysis-get id=example-analysis-id```
 
 #### Context Example
 
@@ -2507,12 +2507,12 @@ Get analysis of a private file submitted to VirusTotal.
 {
     "VirusTotal": {
         "Analysis": {
-            "id": "NTJjNTM1MThmMzhiNWRiNGE1ZWQ5ZDhiZjQyNWY2NzM6MDVmMjBhMWM3MjI1ZTg1YzFkMzcwZmEzNTZhYmMyMmM6MTY4MTM5MjQ1Mw==",
+            "id": "example-analysis-id",
             "meta": {
                 "file_info": {
-                    "sha256": "0c74de36eb72677655bd6127da7adfbd0b21ce866f3c63cc563ac6fca8f18f77",
-                    "sha1": "25ea66789387e55602a8874887a75dd4fa80484c",
-                    "md5": "35f46e8b9321467ff1c2f3db1c389bd8",
+                    "sha256": "Example_sha256",
+                    "sha1": "Example_sha1",
+                    "md5": "Example_md5",
                     "size": 48
                 }
             },
@@ -2525,7 +2525,7 @@ Get analysis of a private file submitted to VirusTotal.
                     "threat_verdict": "VERDICT_MALICIOUS",
                 },
                 "type": "private_analysis",
-                "id": "NTJjNTM1MThmMzhiNWRiNGE1ZWQ5ZDhiZjQyNWY2NzM6MDVmMjBhMWM3MjI1ZTg1YzFkMzcwZmEzNTZhYmMyMmM6MTY4MTM5MjQ1Mw=="
+                "id": "example-analysis-id"
             }
         }
     }
@@ -2538,4 +2538,4 @@ Get analysis of a private file submitted to VirusTotal.
 >
 >|Id|Threat Severity Level|Popular Threat Category|Threat Verdict|Status|
 >|---|---|---|---|---|---|---|
->| NTJjNTM1MThmMzhiNWRiNGE1ZWQ5ZDhiZjQyNWY2NzM6MDVmMjBhMWM3MjI1ZTg1YzFkMzcwZmEzNTZhYmMyMmM6MTY4MTM5MjQ1Mw== | HIGH | trojan | MALICIOUS | completed |
+>| example-analysis-id | HIGH | trojan | MALICIOUS | completed |

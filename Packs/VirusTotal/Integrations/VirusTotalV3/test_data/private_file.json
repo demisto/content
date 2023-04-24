@@ -2,8 +2,8 @@
     "data": {
         "attributes": {
             "type_description": "ELF",
-            "tlsh": "T11AF3EF31C28E5718F90294B6C7B051C2BAABBFC6733429E74C195DE38BE578962701DE",
-            "vhash": "01504f6f5d1d1bz53z1hz1fz",
+            "tlsh": "Example tlsh",
+            "vhash": "Example vhash",
             "exiftool": {
                 "MIMEType": "application/octet-stream",
                 "CPUByteOrder": "Little endian",
@@ -114,7 +114,7 @@
                     ]
                 }
             },
-            "sha256": "609d7e352dbbb005acb29c943ef634e265a099b659a4eb92df232f8926fc66cd",
+            "sha256": "Example_sha256_with_64_characters_000000000000000000000000000000",
             "tags": [
                 "elf",
                 "upx"
@@ -134,19 +134,19 @@
                 }
             ],
             "last_analysis_date": 1681386314,
-            "ssdeep": "3072:btQoAIRBiqAoZz6ix08+yQLaldH6AkR3ivgipBI0SKSzz:5yIRBixoZOiuyOQdHeR3ivgip9S/f",
+            "ssdeep": "Example ssdeep",
             "packers": {
                 "Gandelf": "upx"
             },
-            "md5": "801bf852231cfc953bafe5236cbe4dcf",
-            "sha1": "cff8615f1aaccc5f3eb59200bdc32c4744cc785e",
+            "md5": "Example_md5_00000000000000000000",
+            "sha1": "Example_sha1_000000000000000000000000000",
             "magic": "ELF 32-bit LSB executable, Intel 80386, version 1 (GNU/Linux), statically linked, stripped",
             "meaningful_name": "private"
         },
         "type": "private_file",
-        "id": "609d7e352dbbb005acb29c943ef634e265a099b659a4eb92df232f8926fc66cd",
+        "id": "Example_sha256_with_64_characters_000000000000000000000000000000",
         "links": {
-            "self": "https://www.virustotal.com/api/v3/private/files/609d7e352dbbb005acb29c943ef634e265a099b659a4eb92df232f8926fc66cd"
+            "self": "https://www.virustotal.com/api/v3/private/files/Example_sha256_with_64_characters_000000000000000000000000000000"
         }
     }
 }
