@@ -12,12 +12,13 @@
     ],
     "created": "2023-03-20T13:16:53Z",
     "useCases": [
-        "Compliance"
     ],
     "keywords": [
-        "compliance"
     ],
   "marketplaces": [
     "marketplacev2"
+    ],
+    "modules": [
+        "compliance"
     ]
 }
