@@ -3033,9 +3033,14 @@ def update_alert_severity_command(
     severity = args["severity"]
 
     client.update_alert_severity(alert_id=alert_id, severity=severity)
-
-    return CommandResults(
-        readable_output=ReadableOutputs.ALERT_SEVERITY.value.format(alert_id, severity)
+    outputs = {'id': alert_id, 'severity': severity}
+    return command_result_generate(
+        readable_message=ReadableOutputs.ALERT_SEVERITY.value.format(alert_id, severity),
+        outputs=outputs,
+        headers=["id", "severity"],
+        prefix="Alert",
+        key_field="id",
+        raw_response=outputs,
     )
 
 
