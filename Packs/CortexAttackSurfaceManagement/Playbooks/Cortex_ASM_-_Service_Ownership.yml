@@ -265,7 +265,7 @@ tasks:
       gridfield:
         simple: asmserviceownerunrankedraw
       keys:
-        simple: Name,Email,Source,Timestamp
+        simple: name,email,source,timestamp
       val1:
         complex:
           accessor: asmserviceowner
