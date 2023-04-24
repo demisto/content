@@ -153,6 +153,27 @@ Get sensitive assets by name (optional to search by regex)
 There is no context output for this command.
 
 
+### reco-get-sensitive-assets-by-id
+
+***
+Get sensitive assets by id
+
+#### Base Command
+
+`reco-get-sensitive-assets-by-id`
+
+#### Input
+
+| **Argument Name** | **Description**    | **Required** |
+|-------------------|--------------------|--------------|
+| asset_id          | Asset ID to search | Required     |
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
 ### reco-add-leaving-org-user-label
 
 ***

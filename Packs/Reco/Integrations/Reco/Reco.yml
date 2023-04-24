@@ -178,6 +178,17 @@ script:
     description: Get all sensitive assets from Reco by name
     execution: false
     name: reco-get-sensitive-assets-by-name
+  - arguments:
+    - default: false
+      description: Asset id to search for
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get all sensitive assets from Reco by id
+    execution: false
+    name: reco-get-sensitive-assets-by-id
 tests:
 - No tests
 fromversion: 6.5.0
