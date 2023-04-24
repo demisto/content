@@ -2,9 +2,13 @@
 
 import argparse
 from pathlib import Path
-import logging
+import logging as logger
 import shutil
 import slack_sdk
+
+from Tests.scripts.utils.log_util import install_logging
+
+install_logging('collect_tests.log', logger=logger)
 
 
 def extract(content_path: Path, content_test_conf_path: Path, slack_token: str | None = None):
@@ -13,8 +17,9 @@ def extract(content_path: Path, content_test_conf_path: Path, slack_token: str |
     for pack in (content_test_conf_path / "content" / "Packs").iterdir():
         if pack.name not in content_packs:
             missing_content_packs.append(pack.name)
-            logging.warning(f"Pack {pack.name} is in content-test-conf but not in content")
+            logger.warning(f"Pack {pack.name} is in content-test-conf but not in content")
             continue
+        logger.info(f"Copying {pack.name} from content-test-conf")
         shutil.copytree(pack, content_path / "Packs" / pack.name)
     if slack_token and missing_content_packs:
         slack_sdk.WebClient(token=slack_token).chat_postMessage(
