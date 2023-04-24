@@ -112,7 +112,7 @@ tasks:
       id: 0cc4278a-6b22-4ea9-834f-3ed21c346499
       version: -1
       name: Is there a DBotScore in inputs?
-      description: Checks if there is a "DBotScore" in the playbook inputs.
+      description: Checks if there is a "DBotScore" in the playbook input.
       type: condition
       iscommand: false
       brand: ""
