@@ -202,16 +202,16 @@ def upload_versions_metadata(production_bucket, build_bucket, storage_base_path,
         logging.critical(f"{GCPConfig.VERSIONS_METADATA_FILE} is missing in {build_bucket.name} bucket, exiting...")
         sys.exit(1)
 
-    logging.info(f"Trying to copy versions-metadata with shutil.copy")
+    logging.info("Trying to copy versions-metadata with shutil.copy")
     shutil.copy(build_file_path, storage_base_path)
 
-    logging.info(f"Trying to copy versions-metadata with bucket blob upload")
+    logging.info("Trying to copy versions-metadata with bucket blob upload")
     prod_versions_metadata_storage_path = os.path.join(storage_base_path, 'versions-metadata-blob.json')
     copied_versions_metadata = build_bucket.copy_blob(
         blob=build_blob, destination_bucket=production_bucket, new_name=prod_versions_metadata_storage_path
     )
     if copied_versions_metadata.exists():
-        logging.success(f"Finished uploading versions-metadata to storage.")
+        logging.success("Finished uploading versions-metadata to storage.")
     else:
         logging.error("Failed copying index.zip from build index - blob does not exist.")
         sys.exit(1)
