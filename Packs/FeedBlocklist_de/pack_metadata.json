@@ -8,11 +8,12 @@
     "email": "",
     "created": "2020-03-09T16:04:45Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence",
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
         "Free Feed",
         "Plug & Fetch"
     ],
-    "tags": [],
     "useCases": [],
     "keywords": [
         "BlockList DE",
