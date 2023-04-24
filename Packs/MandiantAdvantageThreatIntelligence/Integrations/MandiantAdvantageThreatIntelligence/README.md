@@ -1,5 +1,5 @@
 Enrich Indicators of Compromise, and fetch information about Actors, Malware Families, and Campaigns from Mandiant Advantage.
-This integration was integrated and tested with version xx of Mandiant Advantage Threat Intelligence
+This integration was integrated and tested with version 4 of the Mandiant Advantage Threat Intelligence API
 
 ## Configure Mandiant Advantage Threat Intelligence on Cortex XSOAR
 
