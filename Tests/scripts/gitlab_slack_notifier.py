@@ -169,6 +169,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     # report failing jobs
     content_fields = []
     coverage_slack_msg = None
+    missing_packs_content_test_msg = None
     failed_jobs_names = {job.name for job in pipeline_failed_jobs}
     if failed_jobs_names:
         content_fields.append({
@@ -199,6 +200,14 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XPANSE, title="XPANSE")
         coverage_slack_msg = construct_coverage_slack_msg()
+        if missing_content_packs := get_artifact_data(
+            ARTIFACTS_FOLDER_XSOAR, 'missing_content_packs_test_conf.txt'
+        ):
+            missing_packs_content_test_msg = {
+                "title": "Notice",
+                "value": f"The following packs exist in content-test-conf but not in content:"
+                         f"{missing_content_packs.splitlines()}",
+            }
 
     slack_msg = [{
         'fallback': title,
@@ -208,6 +217,8 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
         'fields': content_fields
     }]
     slack_msg.append(coverage_slack_msg) if coverage_slack_msg else None
+    slack_msg.append(missing_packs_content_test_msg) if missing_packs_content_test_msg else None
+
     return slack_msg
 
 
