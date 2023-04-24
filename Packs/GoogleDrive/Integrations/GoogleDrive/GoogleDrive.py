@@ -940,6 +940,7 @@ def prepare_file_read_request(client: 'GSuiteClient', args: Dict[str, str]) -> D
         pageSize=args.get('page_size'),
         pageToken=args.get('page_token'),
         supportsAllDrives=args.get('supports_all_drives'),
+        includeItemsFromAllDrives=args.get('include_items_from_all_drives')
     )
 
     # user_id can be overridden in the args
