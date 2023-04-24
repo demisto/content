@@ -61,13 +61,17 @@ class Key:
             elif isinstance(value, (bool, int, float, str)):
                 return value
             elif isinstance(value, dict):
-                return json.dumps(OrderedDict((k, __get(value[k])) for k in sorted(value.keys())))
+                return OrderedDict((k, __get(value[k])) for k in sorted(value.keys()))
             elif isinstance(value, list):
-                return json.dumps(([__get(v) for v in value]))
+                return [__get(v) for v in value]
             else:
-                return json.dumps(value)
+                return value
 
-        return __get(self.__value)
+        v = __get(self.__value)
+        if v is None or isinstance(v, (bool, int, float, str)):
+            return v
+        else:
+            return json.dumps(v)
 
     def get(self) -> Tuple[int, Any]:
         return self.__get_type_order(), self.__get_key()

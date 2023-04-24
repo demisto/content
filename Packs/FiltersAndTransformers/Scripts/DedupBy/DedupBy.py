@@ -63,20 +63,18 @@ class Key(object):
         return __equals(self.__value, other.__value)
 
     def __hash__(self) -> int:
-        def __get_hash(value: Any) -> int:
-            if isinstance(value, (bool, int, float, str)) or value is None:
-                return hash((type(value), value))
+        def __get_hash_base(value: Any) -> Any:
+            if value is None or isinstance(value, (bool, int, float, str)):
+                return value
             elif isinstance(value, dict):
-                out = []
-                for k in sorted(value.keys()):
-                    out.append((k, __get_hash(value[k])))
-                return hash((type(value), tuple(out)))
+                return tuple([(k, __get_hash_base(value[k])) for k in sorted(value.keys())])
             elif isinstance(value, list):
-                return hash((type(value), tuple([__get_hash(v) for v in value])))
+                return tuple([__get_hash_base(v) for v in value])
             else:
-                return hash((type(value), value))
+                return value
 
-        return __get_hash(self.__value)
+        v = __get_hash_base(self.__value)
+        return hash((type(v), v))
 
 
 def main():
