@@ -29,7 +29,7 @@
             "resourceName": "test",
             "resourceParent": "testUser",
             "resourceStatus": "enabled",
-            "resourceType": "endpoint"
+            "resourceType": "VMware"
         }]},
         "request-type":"get"
     },
