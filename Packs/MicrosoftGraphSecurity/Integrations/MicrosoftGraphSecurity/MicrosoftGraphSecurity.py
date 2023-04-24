@@ -135,27 +135,30 @@ def get_timestamp(time_description):
     return datetime.strftime(datetime.now() - timedelta(time_delta), '%Y-%m-%d')
 
 
-def capitalize_dict_keys_first_letter(dict_obj):
+def capitalize_dict_keys_first_letter(response):
     """
     Recursively creates a data dictionary where all key starts with capital letters.
     Args:
-        dict_obj (Dict): The dictionary to update.
+        response (Dict / str): The dictionary to update.
     Returns:
         Dict: The updated dictionary.
     """
-    new_alert: dict = {}
-    for key, value in dict_obj.items():
-        if key == 'id':
-            new_alert['ID'] = value
-        elif key == 'createdDateTime':
-            new_alert['CreatedDate'] = value
-        elif isinstance(value, dict):
-            new_alert[capitalize_first_letter(key)] = capitalize_dict_keys_first_letter(value)
-        elif isinstance(value, list):
-            new_alert[capitalize_first_letter(key)] = [capitalize_dict_keys_first_letter(list_item) for list_item in value]
-        else:
-            new_alert[capitalize_first_letter(key)] = value
-    return new_alert
+    if isinstance(response, str):
+        return response
+    parsed_dict: dict = {}
+    if isinstance(response, dict):
+        for key, value in response.items():
+            if key == 'id':
+                parsed_dict['ID'] = value
+            elif key == 'createdDateTime':
+                parsed_dict['CreatedDate'] = value
+            elif isinstance(value, dict):
+                parsed_dict[capitalize_first_letter(key)] = capitalize_dict_keys_first_letter(value)
+            elif isinstance(value, list):
+                parsed_dict[capitalize_first_letter(key)] = [capitalize_dict_keys_first_letter(list_item) for list_item in value]
+            else:
+                parsed_dict[capitalize_first_letter(key)] = value
+    return parsed_dict
 
 
 def capitalize_first_letter(string):
