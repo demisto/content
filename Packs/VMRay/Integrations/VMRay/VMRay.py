@@ -1,6 +1,9 @@
 import random
 import time
 import urllib3
+
+from typing import Optional, Union
+
 import requests
 from CommonServerPython import *
 
@@ -16,11 +19,10 @@ SERVER = (
 RETRY_ON_RATE_LIMIT = demisto.params().get("retry_on_rate_limit", True)
 SERVER += '/rest/'
 USE_SSL = not demisto.params().get('insecure', False)
-HEADERS = {'Authorization': 'api_key ' + API_KEY}
+HEADERS = {'Authorization': f'api_key {API_KEY}', 'User-Agent': 'Cortex XSOAR/1.1.8'}
 ERROR_FORMAT = 'Error in API call to VMRay [{}] - {}'
 RELIABILITY = demisto.params().get('integrationReliability', DBotScoreReliability.C) or DBotScoreReliability.C
 
-# disable insecure warnings
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -75,18 +77,28 @@ def is_json(response):
     return True
 
 
-def check_id(id_to_check):
+def check_id(id_to_check: Union[int, str]) -> bool:
     """Checks if parameter id_to_check is a number
 
     Args:
-        id_to_check (int or str or unicode):
+        id_to_check (int or str):
 
     Returns:
         bool: True if is a number, else returns error
     """
     if isinstance(id_to_check, int) or isinstance(id_to_check, str) and id_to_check.isdigit():
         return True
-    return_error(ERROR_FORMAT.format(404, 'No such element'))
+    raise ValueError(f"Invalid ID `{id_to_check}` provided.")
+
+
+def get_billing_type(analysis_id: int) -> Optional[str]:
+    """Try to read the billing type from the analysis."""
+
+    response = http_request("GET", f"analysis/{analysis_id}")
+    if (analysis_data := response.get("data")) is not None:
+        return analysis_data.get("analysis_billing_type")
+
+    return None
 
 
 def build_errors_string(errors):
@@ -347,19 +359,19 @@ def build_upload_params():
         if isinstance(max_jobs, str) and max_jobs.isdigit() or isinstance(max_jobs, int):
             params['max_jobs'] = int(max_jobs)
         else:
-            return_error('max_jobs arguments isn\'t a number')
+            raise ValueError('max_jobs arguments isn\'t a number')
     if tags:
         params['tags'] = tags
     return params
 
 
 def test_module():
-    """Simple get request to see if connected
-    """
+    """Simple get request to see if connected"""
     response = http_request('GET', 'analysis?_limit=1')
-    demisto.results('ok') if response.get('result') == 'ok' else return_error(
-        'Can\'t authenticate: {}'.format(response)
-    )
+    if response.get('result'):
+        demisto.results('ok')
+    else:
+        raise ValueError(f'Can\'t authenticate: {response}')
 
 
 def submit(params, files=None):
@@ -367,7 +379,7 @@ def submit(params, files=None):
 
     Args:
         params: (dict)
-        files: (tuple, dict)
+        files: (dict)
 
     Returns:
         dict: response
@@ -703,8 +715,10 @@ def get_sample_by_hash_command():
     hash_type = hash_type_lookup.get(len(hash))
     if hash_type is None:
         error_string = " or ".join("{} ({})".format(len_, type_) for len_, type_ in hash_type_lookup.items())
-        return_error('Invalid hash provided, must be of length {}. Provided hash had length {}.'
-                     .format(error_string, len(hash)))
+        raise ValueError(
+            f'Invalid hash provided, must be of length {error_string}. '
+            f'Provided hash had a length of {len(hash)}.'
+        )
 
     # query API
     raw_response = get_sample_by_hash(hash_type, hash)
@@ -894,7 +908,7 @@ def post_tags():
     submission_id = demisto.args().get('submission_id')
     tag = demisto.args().get('tag')
     if not submission_id and not analysis_id:
-        return_error('No submission ID or analysis ID has been provided')
+        raise ValueError('No submission ID or analysis ID has been provided')
     if analysis_id:
         analysis_status = post_tags_to_analysis(analysis_id, tag)
         if analysis_status.get('result') == 'ok':
@@ -930,7 +944,7 @@ def delete_tags():
     submission_id = demisto.args().get('submission_id')
     tag = demisto.args().get('tag')
     if not submission_id and not analysis_id:
-        return_error('No submission ID or analysis ID has been provided')
+        raise ValueError('No submission ID or analysis ID has been provided')
     if submission_id:
         submission_status = delete_tags_from_submission(submission_id, tag)
         if submission_status.get('result') == 'ok':
@@ -1309,6 +1323,15 @@ def get_summary(analysis_id):
 def get_summary_command():
     analysis_id = demisto.args().get('analysis_id')
     check_id(analysis_id)
+
+    billing_type = get_billing_type(analysis_id)
+    if billing_type == "detector":
+        raise ValueError(
+            "The current billing plan has no permissions to generate or download reports. "
+            "If you want more information about the sample, use "
+            "`vmray-get-threat-indicators` or `vmray-get-iocs` instead."
+        )
+
     summary_data = get_summary(analysis_id)
 
     file_entry = fileResult(
@@ -1354,7 +1377,7 @@ def main():
         elif command == 'vmray-get-summary':
             get_summary_command()
     except Exception as exc:
-        return_error(str(exc))
+        return_error(f"Failed to execute `{demisto.command()}` command. Error: {str(exc)}")
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
