@@ -3,7 +3,7 @@ Modified by <b>Josh Levine</b> for the following:
 - Added additional comments to parameters for the integration and associated commands
 - Updated README.MD documentation for pack and integration
 - Developed unit tests for XSOAR-supported content pack validation
-- Updated content pack to uplift it to officially support status
+- Updated content pack to uplift it to Palo Alto Networks officially supported status
 
 # Netmiko
 Multi-vendor library to execute commands over SSH connections for network devices using the Netmiko Python library.
