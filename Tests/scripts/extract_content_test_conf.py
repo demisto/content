@@ -18,7 +18,7 @@ def extract(content_path: Path, content_test_conf_path: Path, slack_token: str):
     if missing_content_packs:
         slack_sdk.WebClient(token=slack_token).chat_postMessage(
             channel="dmst-build",
-            text=f"The following packs were merged to content-test-conf, but does not to content: {missing_content_packs}"
+            text=f"The following packs were merged to content-test-conf, but not to content: {missing_content_packs}"
         )
 
 def main():
