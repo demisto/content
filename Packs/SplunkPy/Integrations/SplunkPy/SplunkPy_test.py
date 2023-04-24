@@ -1655,3 +1655,33 @@ def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs)
     mocker.patch.object(mapper, '_get_record', side_effect=mocked_get_record)
     res = mapper.get_splunk_user_by_xsoar_command(xsoar_names)
     assert res.outputs == expected_outputs
+
+
+@pytest.mark.parametrize(argnames='username, expected_username, basic_auth', argvalues=[
+    ('test_user', 'test_user', False),
+    ('test@_basic', 'test', True)])
+def test_basic_authentication_param(mocker, username, expected_username, basic_auth):
+    """
+    Given: - the username contain '@_basic' suffix
+    When:  - connecting to Splunk server
+    Then:  - validate the connection args was sent as expected
+
+    """
+    mocked_params = {
+        'host': 'test_host',
+        'port': '8089',
+        'proxy': 'false',
+        'authentication': {
+            'identifier': username,
+            'password': 'test_password'
+        }
+    }
+    mocker.patch.object(client, 'connect')
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='not_impl_command')
+
+    with pytest.raises(NotImplementedError):
+        splunk.main()
+
+    assert client.connect.call_args[1]['username'] == expected_username
+    assert ('basic' in client.connect.call_args[1]) == basic_auth

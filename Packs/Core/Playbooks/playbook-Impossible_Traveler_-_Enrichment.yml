@@ -653,7 +653,7 @@ tasks:
       id: ace7b867-75f1-48b0-8a9b-464fdb91d6d2
       version: -1
       name: Get IP address verdict
-      description: Checks the specified IP address against the AbuseIP database.
+      description: Retrieve the IP address verdict using the enabled integrations.
       script: '|||ip'
       type: regular
       iscommand: true
@@ -666,6 +666,7 @@ tasks:
         complex:
           root: inputs.sourceip
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -676,7 +677,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -771,6 +772,39 @@ inputs:
 outputs:
 - contextPath: ActiveDirectory.Users.manager
   description: The manager of the user.
+- contextPath: IP
+  description: The IP enrichment results.
+  type: unknown
+- contextPath: IP.Geo
+  description: The IP geo information.
+  type: unknown
+- contextPath: IP.Malicious
+  description: The IP verdict.
+  type: unknown
+- contextPath: AbuseIPDB.IP
+  description: The IP information retrieved from AbuseIPDB.
+  type: unknown
+- contextPath: AbuseIPDB.IP.Geo
+  description: The IP geo information.
+  type: unknown
+- contextPath: DBotScore
+  description: The DBotScore
+  type: unknown
+- contextPath: AbuseIPDB.IP.Malicious
+  description: The IP verdict.
+  type: unknown
+- contextPath: Account
+  description: The account object.
+  type: unknown
+- contextPath: ActiveDirectory.Users
+  description: The AD users.
+  type: unknown
+- contextPath: MSGraphUser
+  description: The user information retrieved from MSGraphUser
+  type: unknown
+- contextPath: MSGraphUserManager.Manager
+  description: The user's manager information retrieved from MSGraphUser.
+  type: unknown
 tests:
 - No tests (auto formatted)
 marketplaces: ["marketplacev2"]

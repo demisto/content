@@ -45,7 +45,7 @@ The highest privileged builtin role is the Instance Admin.
 For builtin role with less permission but maximum command running abilities, use the `Privileged Responder`.  
 
 #### URL
-1. In your Cortex XDR platform, go to **Settings**.
+1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **Integrations** > **API Keys**.
 2. Click the **Copy URL** button in the top right corner.
 
 ## Playbooks
@@ -409,6 +409,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_vendor_name | String | File signature vendor name. | 
 | Account.Username | String | The username in the relevant system. | 
 | Endpoint.Hostname | String | The hostname that is mapped to this endpoint. | 
+| Endpoint.ID | String | The agent ID of the endpoint. | 
 | File.Path | String | The path where the file is located. | 
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 

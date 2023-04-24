@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 import base64
+import binascii
 import os
 import json
 import urllib3
@@ -1166,14 +1167,20 @@ class MsGraphClient:
         Returns:
             dict:                   Attachment Data
         """
-        no_folder = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/' \
-                    f'?$expand=microsoft.graph.itemattachment/item'
-        with_folder = (f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/'  # type: ignore
-                       f'messages/{message_id}/attachments/{attachment_id}/'
-                       f'?$expand=microsoft.graph.itemattachment/item')
+        if attachment_id:
+            no_folder = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/' \
+                        f'?$expand=microsoft.graph.itemattachment/item'
+            with_folder = (f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/'  # type: ignore
+                           f'messages/{message_id}/attachments/{attachment_id}/'
+                           f'?$expand=microsoft.graph.itemattachment/item')
+        else:
+            no_folder = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments'
+            with_folder = (f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/'  # type: ignore
+                           f'messages/{message_id}/attachments')
         suffix = with_folder if folder_id else no_folder
-
+        demisto.debug(f'Getting attachment with suffix: {suffix}')
         response = self.ms_client.http_request('GET', suffix)
+        response = [response] if response and attachment_id else response.get('value', [])
         return response
 
     def get_email_as_eml(self, user_id: str, message_id: str) -> str:
@@ -1446,6 +1453,71 @@ def list_attachments_command(client: MsGraphClient, args):
             raw_response=raw_response
         )
     return command_results
+
+
+def file_result_creator(raw_response: dict) -> dict:
+    """
+
+    Args:
+        raw_response (dict):
+
+    Returns:
+        dict:
+
+    """
+    name = raw_response.get('name')
+    data = raw_response.get('contentBytes')
+    try:
+        data = base64.b64decode(data)  # type: ignore
+        return fileResult(name, data)
+    except binascii.Error:
+        raise DemistoException('Attachment could not be decoded')
+
+
+def item_result_creator(raw_response, user_id) -> CommandResults:
+    item = raw_response.get('item', {})
+    item_type = item.get('@odata.type', '')
+    if 'message' in item_type:
+        message_id = raw_response.get('id')
+        item['id'] = message_id
+        mail_context = build_mail_object(item, user_id=user_id, get_body=True)
+        human_readable = tableToMarkdown(
+            f'Attachment ID {message_id} \n **message details:**',
+            mail_context,
+            headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
+        )
+        return CommandResults(outputs_prefix='MSGraphMail',
+                              outputs_key_field='ID',
+                              outputs=mail_context,
+                              readable_output=human_readable,
+                              raw_response=raw_response)
+    else:
+        human_readable = f'Integration does not support attachments from type {item_type}'
+        return CommandResults(readable_output=human_readable, raw_response=raw_response)
+
+
+def create_attachment(raw_response, user_id) -> Union[CommandResults, dict]:
+    attachment_type = raw_response.get('@odata.type', '')
+    # Documentation about the different attachment types
+    # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
+    if 'itemAttachment' in attachment_type:
+        return item_result_creator(raw_response, user_id)
+    elif 'fileAttachment' in attachment_type:
+        return file_result_creator(raw_response)
+    else:
+        demisto.debug(f"Unsupported attachment type: {attachment_type}. Attachment was not added to incident")
+        return {}
+
+
+def get_attachment_command(client: MsGraphClient, args):
+    message_id = args.get('message_id')
+    folder_id = args.get('folder_id')
+    attachment_id = args.get('attachment_id')
+    raw_response = client.get_attachment(message_id, attachment_id=attachment_id, folder_id=folder_id)
+    attachments = []
+    for attachment in raw_response:
+        attachments.append(create_attachment(attachment, user_id=client.get_mailbox_to_fetch()))
+    return attachments
 
 
 def list_mails_command(client: MsGraphClient, args):
@@ -1739,6 +1811,8 @@ def main():     # pragma: no cover
             return_results(list_mails_command(client, args))
         elif command == 'msgraph-mail-list-attachments':
             return_results(list_attachments_command(client, args))
+        elif command == 'msgraph-mail-get-attachment':
+            return_results(get_attachment_command(client, args))
         elif command == 'msgraph-mail-get-email-as-eml':
             return_results(get_email_as_eml_command(client, args))
         elif command == 'msgraph-update-email-status':

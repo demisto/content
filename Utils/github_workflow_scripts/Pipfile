@@ -12,6 +12,7 @@ requests = "*"
 blessings = "*"
 dateparser = "*"
 slack_sdk = "*"
+GitPython = "*"
 
 [requires]
 python_version = "3.9"

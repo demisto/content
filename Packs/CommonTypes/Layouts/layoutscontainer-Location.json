@@ -40,6 +40,37 @@
                 "description": "",
                 "fields": [
                     {
+                        "fieldId": "indicator_communitynotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_stixid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_trafficlightprotocol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - core",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
                         "fieldId": "indicator_name",
                         "isVisible": true
                     },
@@ -54,18 +85,10 @@
                     {
                         "fieldId": "indicator_countrycode",
                         "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_tags",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_trafficlightprotocol",
-                        "isVisible": true
                     }
                 ],
                 "isVisible": true,
-                "name": "Custom fields",
+                "name": "Custom fields - unique",
                 "query": null,
                 "queryType": "",
                 "readOnly": false,
@@ -559,5 +582,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "description": ""
+    "description": "Location indicator layout"
 }
