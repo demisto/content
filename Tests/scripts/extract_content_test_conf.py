@@ -17,7 +17,7 @@ def extract(content_path: Path, content_test_conf_path: Path, slack_token: str |
     for pack in (content_test_conf_path / "content" / "Packs").iterdir():
         if pack.name not in content_packs:
             missing_content_packs.append(pack.name)
-            logger.warning(f"Pack {pack.name} is in content-test-conf but not in content")
+            logger.warning(f"Pack {pack.name} exists in in content-test-conf but not in content")
             continue
         logger.info(f"Copying {pack.name} from content-test-conf")
         shutil.copytree(pack, content_path / "Packs" / pack.name)
