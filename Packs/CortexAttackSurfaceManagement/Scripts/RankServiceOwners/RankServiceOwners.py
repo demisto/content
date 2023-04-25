@@ -93,19 +93,12 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
     sorted_owners = sorted(owners, key=lambda owner: owner['Canonicalization'])
     for key, group in groupby(sorted_owners, key=lambda owner: owner['Canonicalization']):
         duplicates = list(group)
-        if key == duplicates[0].get('Email', ''):
-            # grouped by email
-            email = key
-            # take longest name if there's at least one; else empty string
-            names = sorted(
-                [owner.get('Name', '') for owner in duplicates if owner.get('Name', '')],
-                key=lambda x: len(x), reverse=True
-            )
-            name = names[0] if names else ''
-        else:
-            # grouped by name
-            email = ''
-            name = key
+        email = duplicates[0].get('Email', '')
+        names = sorted(
+            [owner.get('Name', '') for owner in duplicates if owner.get('Name', '')],
+            key=lambda x: len(x), reverse=True
+        )
+        name = names[0] if names else ''
         # aggregate Source by union
         source = ' | '.join(sorted(
             set(owner.get('Source', '') for owner in duplicates if owner.get('Source', ''))
