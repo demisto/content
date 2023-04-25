@@ -367,8 +367,8 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      playbookId: Cortex ASM - ServiceNow CMDB Enrichment
       description: ''
+      playbookId: Cortex ASM - ServiceNow CMDB Enrichment
     nexttasks:
       '#none#':
       - "62"
@@ -899,8 +899,8 @@ tasks:
       description: Given the IP address this playbook enriches GCP information relevant to ASM alerts.
       id: e6d5c7c5-5611-4653-83c5-59fa0bbf6280
       iscommand: false
-      name: Cortex ASM - GCP Enrichment_latest
-      playbookId: Cortex ASM - GCP Enrichment_latest
+      name: Cortex ASM - GCP Enrichment
+      playbookId: Cortex ASM - GCP Enrichment
       type: playbook
       version: -1
     taskid: e6d5c7c5-5611-4653-83c5-59fa0bbf6280
