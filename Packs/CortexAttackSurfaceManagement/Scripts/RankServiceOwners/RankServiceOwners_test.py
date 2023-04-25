@@ -315,7 +315,7 @@ def test_score(deduplicated, expected_out):
         ],
         [
             {
-                'Name': 'a', 'Email': '', 'Source': 'source1', 'Timestamp': '1',
+                'Name': 'a', 'Email': None, 'Source': 'source1', 'Timestamp': '1',
                 'Ranking Score': 1, 'Justification': 'source1'
             },
         ]
@@ -406,7 +406,7 @@ def test_score(deduplicated, expected_out):
         ]
     ),
 ])
-def test_main(mocker, owners, expected_out):
+def test_main(mocker, owners, expected_out, capfd):
     # Construct payload
     arg_payload = {}
     arg_payload["owners"] = owners
@@ -416,7 +416,8 @@ def test_main(mocker, owners, expected_out):
 
     # Execute main using a mock that we can inspect for `executeCommand`
     demisto_execution_mock = mocker.patch.object(demisto, 'executeCommand')
-    main()
+    with capfd.disabled():  # avoids test failures on demisto.error statements
+        main()
 
     # Verify the output value was set
     expected_calls_to_mock_object = [unittest.mock.call('setAlert', {'asmserviceowner': expected_out})]
