@@ -93,8 +93,9 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
     for key, group in groupby(sorted_owners, key=lambda owner: owner['Canonicalization']):
         duplicates = list(group)
         email = duplicates[0].get('Email', '')
+        # the if condition in the list comprehension below defends against owners whose Name value is None (not sortable)
         names = sorted(
-            [owner.get('Name', '') for owner in duplicates if owner.get('Name', '')],
+            [owner.get('Name', '') for owner in duplicates if owner.get('Name')],
             key=lambda x: len(x), reverse=True
         )
         name = names[0] if names else ''
