@@ -277,8 +277,8 @@ def test_fetch_incidents_should_succeed(requests_mock, reco_client: RecoClient) 
         max_fetch=1,
     )
     assert (
-            len(fetched_incidents)
-            == random_incidents.getTableResponse.total_number_of_results
+        len(fetched_incidents)
+        == random_incidents.getTableResponse.total_number_of_results
     )
     assert fetched_incidents[0].get("name") == INCIDENT_DESCRIPTION
     assert fetched_incidents[0].get("dbotMirrorId") == INCIDET_ID_UUID
@@ -301,8 +301,8 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
         max_fetch=1,
     )
     assert (
-            len(fetched_incidents)
-            == random_incidents.getTableResponse.total_number_of_results
+        len(fetched_incidents)
+        == random_incidents.getTableResponse.total_number_of_results
     )
     last_run, incidents = fetch_incidents(
         reco_client=reco_client,
@@ -326,8 +326,8 @@ def test_fetch_incidents_without_assets_info(
         reco_client=reco_client, last_run={}, source="GOOGLE_DRIVE", max_fetch=1
     )
     assert (
-            len(fetched_incidents)
-            == random_incidents.getTableResponse.total_number_of_results
+        len(fetched_incidents)
+        == random_incidents.getTableResponse.total_number_of_results
     )
     assert fetched_incidents[0].get("name") == INCIDENT_DESCRIPTION
     assert fetched_incidents[0].get("dbotMirrorId") == INCIDET_ID_UUID
