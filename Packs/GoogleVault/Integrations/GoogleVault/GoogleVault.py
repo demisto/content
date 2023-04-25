@@ -1374,17 +1374,17 @@ def get_drive_results_command():
         bucket_name = demisto.getArg('bucketName')
         output = download_and_sanitize_export_results(view_ID, bucket_name, max_results)
 
-        if not (output[0].get('Author') or output[0].get('Collaborators') or output[0].get('Title')):
+        if not (output[0].get('#Author') or output[0].get('Collaborators') or output[0].get('#Title')):
             return_error(
                 'Error displaying results: Corpus of the invoked command and the supplied ViewID does not match')
 
         markedown_output = [{
-            'Title': document.get('Title'),
-            'Author': document.get('Author'),
+            'Title': document.get('#Title'),
+            'Author': document.get('#Author'),
             'Collaborators': document.get('Collaborators'),
             'Others': document.get('Others'),
-            'DateCreated': document.get('DateCreated'),
-            'DateModified': document.get('DateModified'),
+            'DateCreated': document.get('#DateCreated'),
+            'DateModified': document.get('#DateModified'),
             'DocType': document.get('DocType'),
             'MD5': document.get('MD5'),
         } for document in output]
