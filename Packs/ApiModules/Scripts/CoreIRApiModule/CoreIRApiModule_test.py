@@ -10,7 +10,7 @@ import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
-    isolate_endpoint_command
+    isolate_endpoint_command, get_list_risky_users_command, get_list_risky_hosts_command, get_list_user_groups_command
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
@@ -3164,3 +3164,96 @@ def test_core_commands_raise_exception(mocker, command_to_run, args, error, rais
     else:
         assert (command_to_run(client, args).readable_output == "The operation executed is not supported on the given "
                                                                 "machine.")
+
+
+@pytest.mark.parametrize(
+    "args, excepted_calls",
+    [
+        ({"user_id": "test"}, {"get_risk_by_user": 1, "get_list_risky_users": 0}),
+        ({}, {"get_risk_by_user": 0, "get_list_risky_users": 1}),
+
+    ]
+)
+def test_get_list_risky_users_command(mocker, args, excepted_calls):
+    client = CoreClient("test", {})
+    get_risk_by_user = mocker.patch.object(CoreClient, "get_risk_score_user_or_host", return_value={})
+    get_list_risky_users = mocker.patch.object(CoreClient, "get_list_risky_users", return_value={})
+
+    get_list_risky_users_command(client=client, args=args)
+
+    assert get_list_risky_users.call_count == excepted_calls["get_list_risky_users"]
+    assert get_risk_by_user.call_count == excepted_calls["get_risk_by_user"]
+
+
+def test_get_list_risky_users_command_raise_exception(mocker):
+    client = CoreClient(
+        base_url="test",
+        headers={},
+    )
+
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    mocker.patch.object(
+        client,
+        "get_risk_score_user_or_host",
+        side_effect=DemistoException(message="id 'test' was not found", res=MockException(500)),
+    )
+    with pytest.raises(Exception, match="Error: id test was not found, full error message: id 'test' was not found"):
+        get_list_risky_users_command(client, {"user_id": "test"})
+
+
+@pytest.mark.parametrize(
+    "args, excepted_calls",
+    [
+        ({"host_id": "test"}, {"get_risk_by_host": 1, "get_list_risky_hosts": 0}),
+        ({}, {"get_risk_by_host": 0, "get_list_risky_hosts": 1}),
+
+    ]
+)
+def test_get_list_risky_hosts_command(mocker, args, excepted_calls):
+    client = CoreClient("test", {})
+    get_risk_by_host = mocker.patch.object(CoreClient, "get_risk_score_user_or_host", return_value={})
+    get_list_risky_hosts = mocker.patch.object(CoreClient, "get_list_risky_hosts", return_value={})
+
+    get_list_risky_hosts_command(client=client, args=args)
+
+    assert get_list_risky_hosts.call_count == excepted_calls["get_list_risky_hosts"]
+    assert get_risk_by_host.call_count == excepted_calls["get_risk_by_host"]
+
+
+def test_get_list_risky_hosts_command_raise_exception(mocker):
+    client = CoreClient(
+        base_url="test",
+        headers={},
+    )
+
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    mocker.patch.object(
+        client,
+        "get_risk_score_user_or_host",
+        side_effect=DemistoException(message="id 'test' was not found", res=MockException(500)),
+    )
+    with pytest.raises(Exception, match="Error: id test was not found, full error message: id 'test' was not found"):
+        get_list_risky_hosts_command(client, {"host_id": "test"})
+
+
+@pytest.mark.parametrize(
+    "args, excepted_calls",
+    [
+        ({"group_names": "test"}, {"get_list_user_groups": 1}),
+        ({}, {"get_list_user_groups": 1}),
+
+    ]
+)
+def test_get_list_user_groups_command(mocker, args, excepted_calls):
+    client = CoreClient("test", {})
+    get_list_user_groups = mocker.patch.object(CoreClient, "get_list_user_groups", return_value={})
+    
+    get_list_user_groups_command(client=client, args=args)
+
+    assert get_list_user_groups.call_count == excepted_calls["get_list_user_groups"]

@@ -1596,6 +1596,18 @@ def main():  # pragma: no cover
         elif command == 'xdr-get-tenant-info':
             return_results(get_tenant_info_command(client))
 
+        elif command == 'xdr-list-users':
+            return_results(get_list_users_command(client, args))
+
+        elif command == 'xdr-list-risky-users':
+            return_results(get_list_risky_users_command(client, args))
+
+        elif command == 'xdr-list-risky-hosts':
+            return_results(get_list_risky_hosts_command(client, args))
+
+        elif command == 'xdr-list-user-groups':
+            return_results(get_list_user_groups_command(client, args))
+
     except Exception as err:
         return_error(str(err))
 

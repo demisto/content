@@ -449,6 +449,18 @@ def main():  # pragma: no cover
         elif command == 'core-remove-endpoint-tag':
             return_results(remove_tag_from_endpoints_command(client, args))
 
+        elif command == 'core-list-users':
+            return_results(get_list_users_command(client, args))
+
+        elif command == 'core-list-risky-users':
+            return_results(get_list_risky_users_command(client, args))
+
+        elif command == 'core-list-risky-hosts':
+            return_results(get_list_risky_hosts_command(client, args))
+
+        elif command == 'core-list-user-groups':
+            return_results(get_list_user_groups_command(client, args))
+
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
 

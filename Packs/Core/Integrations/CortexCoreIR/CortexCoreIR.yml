@@ -2643,7 +2643,6 @@ script:
     - contextPath: Core.exclusion.ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS
       description: ''
       type: Number
-
   - arguments:
     - default: false
       description: A comma-separated list of alert IDs.
@@ -3621,6 +3620,67 @@ script:
     description: Remove a tag from one or more endpoints.
     execution: false
     name: core-remove-endpoint-tag
+  - name: core-list-users
+    description: Retrieve a list of the current users in your environment.
+    arguments: []
+    outputs: 
+    - contextPath: Core.User.user_email
+      description: Email address of the user 
+      type: string 
+    - contextPath: Core.User.user_first_name
+      description: First name of the user
+      type: string 
+    - contextPath: Core.User.user_last_name 
+      description: Last name of the user.
+      type: string
+    - contextPath: Core.User.role_name  
+      description: Role name associated with the user.
+      type: string
+    - contextPath: Core.User.last_logged_in
+      description: Timestamp of when the user last logged in. 
+      type: integer
+    - contextPath: Core.User.user_type
+      description: Type of user.
+      type: string  
+    - contextPath: Core.User.groups
+      description: Name of user groups associated with the user, if applicable. 
+      type: array
+    - contextPath: Core.User.scope
+  - arguments:
+    - description: |
+        Unique ID of a specific user.
+        User ID should be in the following format: netBIOS/samAccount
+      name: user_id
+    - description: Limit the number of users that will appear in the list. By default, the limit is 50 users.(use limit when you don't asking for specific user)
+      name: limit
+      defaultValue: 50
+    name: core-list-risky-users
+    description: Retrieve the risk score of a specific user or list of users with the highest risk score in your environment along with the reason affecting each score.
+    outputs:
+    - contextPath: Core.RiskyUser.type
+      description: Form of identification element.
+      type: String
+    - contextPath: Core.RiskyUser.id
+      description: Identification value of the type field.
+      type: String
+    - contextPath: Core.RiskyUser.score
+      description: The score assigned to the user.
+      type: Integer
+    - contextPath: Core.RiskyUser.reasons.date created
+      description: Date the incident created.
+      type: String
+    - contextPath: Core.RiskyUser.reasons.description
+      description: Description of the incident.
+      type: String
+    - contextPath: Core.RiskyUser.reasons.severity
+      description: The severity of the incident
+      type: String
+    - contextPath: Core.RiskyUser.reasons.status
+      description: Incident status
+      type: String
+    - contextPath: Core.RiskyUser.reasons.points
+      description: Points the incident get
+      type: integer
   feed: false
   isfetch: false
   longRunning: false

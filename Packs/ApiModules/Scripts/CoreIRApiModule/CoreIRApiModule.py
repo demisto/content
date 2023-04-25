@@ -1232,6 +1232,39 @@ class CoreClient(BaseClient):
             timeout=self.timeout
         )
 
+    def get_list_users(self) -> dict:
+        return self._http_request(
+            method='POST',
+            url_suffix='/rbac/get_users/',
+            json_data={"request_data": {}},
+        )
+
+    def get_risk_score_user_or_host(self, user_or_host_id: str) -> dict:
+        return self._http_request(
+            method='POST',
+            url_suffix='/get_risk_score/',
+            json_data={"request_data": {"id": user_or_host_id}},
+        )
+
+    def get_list_risky_users(self) -> dict:
+        return self._http_request(
+            method='POST',
+            url_suffix='/get_risky_users/',
+        )
+
+    def get_list_risky_hosts(self) -> dict:
+        return self._http_request(
+            method='POST',
+            url_suffix='/get_risky_hosts/',
+        )
+
+    def get_list_user_groups(self, groups_name: list) -> dict:
+        return self._http_request(
+            method='POST',
+            url_suffix='/rbac/get_user_group/',
+            json_data={"request_data": {"group_names": groups_name}},
+        )
+
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: Optional[str], arg_type: str, option_mapper: dict = None):
@@ -3551,4 +3584,139 @@ def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
 
     return CommandResults(
         readable_output=f'Successfully removed tag {tag} from endpoint(s) {endpoint_ids}', raw_response=raw_response
+    )
+
+
+def parse_list_users(user: dict) -> dict:
+    return {
+        'User email': user.get('user_email'),
+        'First Name': user.get('user_first_name'),
+        'Last Name': user.get('user_last_name'),
+        'Role': user.get('role_name'),
+        'Type': user.get('user_type'),
+        'Groups': user.get('groups'),
+    }
+
+
+def get_list_users_command(client: CoreClient, args: dict) -> CommandResults:
+    try:
+        list_users: list = client.get_list_users().get('reply', [])
+    except Exception as e:
+        raise ValueError(f'API connection failed {e}')
+
+    table_for_markdown = [parse_list_users(user) for user in list_users]
+    readable_output = tableToMarkdown(name='Users', t=table_for_markdown)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.User',
+        outputs_key_field='user_email',
+        outputs=list_users,
+    )
+
+
+def parse_risky_users_or_hosts(user_or_host: dict, table_title: str) -> dict:
+    return {
+        table_title: user_or_host.get('id'),
+        'Score': user_or_host.get('score'),
+        'Description': user_or_host.get('reasons', [])[0].get('description') if user_or_host.get('reasons', []) else None,
+    }
+
+
+def find_the_cause_error(err: str, id_or_group: str ) -> str:
+    pattern = fr"{id_or_group} '?(.+)'"
+    
+    if match := re.search(pattern, err):
+        return f'Error: {id_or_group} {match.group(1)} was not found'
+    return "Error: "
+
+
+def get_list_risky_users_command(client: CoreClient, args: dict) -> CommandResults:
+    table_title = 'User ID'
+
+    if user_id := args.get('user_id'):
+        try:
+            outputs = client.get_risk_score_user_or_host(user_id).get('reply', {})
+        except DemistoException as e:
+            if e.res is not None and e.res.status_code == 500 and 'was not found' in str(e):
+                error_msg = find_the_cause_error(str(e), "id")
+                raise ValueError(f'{error_msg}, full error message: {e}')
+            raise
+        table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]
+
+    else:
+        list_limit = int(args.get('limit', 50))
+        outputs = client.get_list_risky_users().get('reply', [])[:list_limit]
+
+        
+        table_for_markdown = [parse_risky_users_or_hosts(user, table_title) for user in outputs]
+
+    readable_output = tableToMarkdown(name='Risky Users', t=table_for_markdown)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.RiskyUser',
+        outputs_key_field='id',
+        outputs=outputs,
+    )
+
+
+def get_list_risky_hosts_command(client: CoreClient, args: dict) -> CommandResults:
+    table_title = 'Host ID'
+
+    if host_id := args.get('host_id'):
+        try:
+            outputs = client.get_risk_score_user_or_host(host_id).get('reply', {})
+        except DemistoException as e:
+            if e.res is not None and e.res.status_code == 500 and 'was not found' in str(e):
+                error_msg = find_the_cause_error(str(e), "id")
+                raise ValueError(f'{error_msg}, full error message: {e}')
+            raise
+        table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]
+    else:
+        list_limit = int(args.get('limit', 50))
+
+        outputs = client.get_list_risky_hosts().get('reply', [])[:list_limit]
+        table_for_markdown = [parse_risky_users_or_hosts(host, table_title) for host in outputs]
+
+    readable_output = tableToMarkdown(name='Risky Hosts', t=table_for_markdown)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.RiskyHost',
+        outputs_key_field='id',
+        outputs=outputs,
+    )
+
+
+def parse_user_groups(group: dict) -> list:
+    return [
+        {
+            'User email': user,
+            'Group Name': group.get('group_name'),
+            'Group Description': group.get('description'),
+        }
+        for user in group.get("user_email", {})
+    ]
+
+
+def get_list_user_groups_command(client: CoreClient, args: dict) -> CommandResults:
+    group_names = argToList(args.get('group_names'))
+    try:
+        outputs = client.get_list_user_groups(group_names)
+    except DemistoException as e:
+        if e.res is not None and e.res.status_code == 500 and 'was not found' in str(e):
+            error_msg = find_the_cause_error(str(e), "Group")
+            raise ValueError(f'{error_msg}, Note: If you sent more than one group name, they may not exist either, full error message: {e}') 
+        raise
+    table_for_markdown: list = []
+    for group in outputs:
+        table_for_markdown.extend(parse_user_groups(group))
+    readable_output = tableToMarkdown(name='Groups', t=table_for_markdown)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.UserGroup',
+        outputs_key_field='group_name',
+        outputs=outputs,
     )
