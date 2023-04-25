@@ -64,18 +64,17 @@ def _canonicalize(owner: Dict[str, Any]) -> Dict[str, Any]:
 
 def canonicalize(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
     """
-    Calls _canonicalize on each owner.
-
-    Defensive handling of potentially missing or NoneType inputs
+    Calls _canonicalize on each well-formatted owner; drops and logs malformated inputs
     """
     canonicalized = []
-    if owners:
+    try:
         for owner in owners:
-            if owner:
-                for key in ('Name', 'Source', 'Email', 'Timestamp'):
-                    if key not in owner or owner[key] is None:
-                        owner[key] = ''
+            try:
                 canonicalized.append(_canonicalize(owner))
+            except Exception as e:
+                demisto.error(f"Unable to canonicalize {owner}: {e}")
+    except Exception as e:
+        demisto.error(f"`owners` must be iterable: {e}")
     return canonicalized
 
 
