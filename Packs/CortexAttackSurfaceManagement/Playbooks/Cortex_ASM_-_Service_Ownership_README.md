@@ -1,4 +1,4 @@
-Identifies and recommends the most likely owners of the service, additionally citing explanations and confidence scores for each.
+Identifies and recommends the most likely owners of the service, additionally citing an explanation and ranking score for each.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

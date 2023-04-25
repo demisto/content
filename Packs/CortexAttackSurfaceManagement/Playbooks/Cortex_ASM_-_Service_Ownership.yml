@@ -1,4 +1,4 @@
-description: Identifies and recommends the most likely owners of the service, additionally citing explanations and confidence scores for each.
+description: Identifies and recommends the most likely owners of the service, additionally citing an explanation and ranking score for each.
 id: Cortex ASM - Service Ownership
 inputs: []
 name: Cortex ASM - Service Ownership
