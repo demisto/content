@@ -6,7 +6,7 @@ import zipfile
 
 import pytest
 
-import demistomock as demisto  sdasd
+import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
