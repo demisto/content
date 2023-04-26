@@ -246,3 +246,24 @@ def test_get_error_details():
     """
     from Zoom_IAM import get_error_details
     assert get_error_details({"code": "mock", "message": "mockerror"}) == "mock: mockerror"
+
+
+@pytest.mark.parametrize('returned, expected', [(None, 'NoneType'),
+                                                ({'users': None}, 'IAMUserAppData')])
+def test_get_user(mocker, returned, expected):
+    """
+    Given:
+        - An app client object
+        - A user-profile argument that contains an email of a user
+    When:
+        - Calling function get_user
+            1. results is None
+            2. results is a dict with 'users' key is None
+    Then:
+        - Ensure the user profile is returned as expected
+    """
+    client = mock_client_ouath(mocker)
+    args = {'user-profile': {'email': 'blabla'}}
+    mocker.patch.object(client, 'error_handled_http_request', return_value=returned)
+    res = client.get_user(client, args)
+    assert expected == type(res).__name__
