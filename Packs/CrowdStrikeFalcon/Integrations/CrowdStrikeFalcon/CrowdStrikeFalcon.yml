@@ -154,9 +154,12 @@ name: CrowdstrikeFalcon
 script:
   commands:
   - arguments:
-    - name: verbose
-      description: Shows extended information about found hosts
-      defaultValue: "false"
+    - name: extended_data
+      predefined:
+      - Yes
+      - No
+      description: Whether or not to get additional data about the device.
+      auto: PREDEFINED
     - description: The query to filter the device.
       name: filter
     - description: A comma-separated list of device IDs to limit the results.

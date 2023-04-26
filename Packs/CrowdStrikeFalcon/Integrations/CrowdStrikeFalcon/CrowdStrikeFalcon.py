@@ -2735,8 +2735,7 @@ def search_device_command():
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
-    verbose = (demisto.args()['verbose'].lower() == 'true')
-
+    extended_data = argToBoolean(demisto.args().get('extended_data', False))
     command_results = []
     for single_device in devices:
         # demisto.debug(f"single device info: {single_device}")
@@ -2751,8 +2750,7 @@ def search_device_command():
             is_isolated=get_isolation_status(single_device.get('status')),
             mac_address=single_device.get('mac_address'),
             vendor=INTEGRATION_NAME)
-        
-        if not verbose:
+        if not extended_data:
             entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
             headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
         else:
@@ -2760,10 +2758,6 @@ def search_device_command():
             single_device.update({'group_names': list(enrich_groups(device_groups).values())})
             entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_VERBOSE_KEY_MAP)
             headers = list(SEARCH_DEVICE_VERBOSE_KEY_MAP.values())
-
-        entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
-        headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
-
         command_results.append(CommandResults(
             outputs_prefix='CrowdStrike.Device',
             outputs_key_field='ID',
@@ -2772,7 +2766,6 @@ def search_device_command():
             raw_response=raw_res,
             indicator=endpoint,
         ))
-
     return command_results
 
 
@@ -2789,25 +2782,28 @@ def search_device_by_ip(raw_res, ip_address):
         raw_res = None
     return raw_res
 
+
 def enrich_groups(all_group_ids) -> Dict[str, Any]:
     """
         Receives a list of group_ids
         Returns a dict {group_id: group_name}
     """
-
     result = dict()
-    for group_id in all_group_ids:
-        params = { 'ids': group_id }
-        #response = requests.get(self.groups_api, headers=headers, params=params)
+    groups_list = list()
+    for group in range(0, len(all_group_ids), 500):
+        groups_list.append(all_group_ids[group:group+500])
+    for ids in groups_list:
+        params = {'ids': ids}
         response_json = http_request('GET', '/devices/entities/host-groups/v1', params, status_code=404)
-        #response_json = response.json()
         try:
-            group_name = response_json['resources'][0]['name']
+            for resource in response_json['resources']:
+                item = {resource['id']: resource['name']}
+                result.update(item)
         except KeyError as e:
-            logging.error(f"Group ID {group_id} not found")
+            demisto.debug(f"Some groups were not found")
             group_name = "GROUP_NOT_FOUND"
-        result.update({ group_id: group_name })
     return result
+
 
 def get_status(device_id):
     raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': device_id})
