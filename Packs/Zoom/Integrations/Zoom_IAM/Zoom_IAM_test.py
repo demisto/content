@@ -233,3 +233,16 @@ def test_test_moudle__reciving_errors_3(mocker):
 
     from Zoom_IAM import test_module
     assert test_module(client=client) == 'Problem reaching Zoom API, check your credentials. Error message: mockerror'
+
+
+def test_get_error_details():
+    """
+    Given:
+        - An error response from the API
+    When:
+        - Calling function get_error_details
+    Then:
+        - Ensure the error details are returned as expected
+    """
+    from Zoom_IAM import get_error_details
+    assert get_error_details({"code": "mock", "message": "mockerror"}) == "mock: mockerror"
