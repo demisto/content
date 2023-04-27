@@ -791,7 +791,7 @@ def test_zoom_fetch_recording__download_success(mocker):
            asking for a specific recording
        Then:
            Validate that the successfull messege is added to the commandResults
-           and the writing function was called
+           and the writing function was called.
     """
     from Zoom import zoom_fetch_recording_command
     import shutil
