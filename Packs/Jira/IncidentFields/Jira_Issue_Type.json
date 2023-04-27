@@ -29,7 +29,7 @@
     "runScriptAfterUpdate": false,
     "fieldCalcScript": "",
     "neverSetAsRequired": false,
-    "isReadOnly": false,
+    "isReadOnly": true,
     "selectValues": null,
     "autoCompleteTags": null,
     "validationRegex": "",

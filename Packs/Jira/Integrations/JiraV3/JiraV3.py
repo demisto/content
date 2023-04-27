@@ -1,4 +1,3 @@
-from unittest.mock import patch
 import urllib3
 from abc import ABCMeta
 import demistomock as demisto  # noqa: F401
@@ -47,18 +46,6 @@ MIRROR_DIRECTION_DICT = {
 # This will be appended to the attachment's name when mirroring an attachment from XSOAR to Jira
 ATTACHMENT_MIRRORED_FROM_XSOAR = '_mirrored_from_xsoar'
 COMMENT_MIRRORED_FROM_XSOAR = 'Mirrored from Cortex XSOAR'
-# Scopes
-SCOPES = [
-    'write:jira-work',
-    'read:jira-work',
-    'read:jql:jira',
-    'read:issue-details:jira',
-    'read:epic:jira-software',
-    'write:sprint:jira-software',
-    'read:sprint:jira-software',
-    'read:board-scope:jira-software',
-    'write:board-scope:jira-software',
-]
 
 
 # Exception Classes
@@ -1872,10 +1859,12 @@ def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
         elif issue_arg in ['description', 'environment']:
             parsed_value = text_to_adf(value) if isinstance(client, JiraCloudClient) else value
         dotted_string = issue_fields_mapper.get(issue_arg, '')
-        if not dotted_string and issue_arg.startswith('customfield'):  # TODO Check where we need this during mirroring
+        if not dotted_string and issue_arg.startswith('customfield'):
+            # This is used to deal with the case when the user creates a custom incident field, using
+            # the custom fields of Jira.
             dotted_string = f'fields.{issue_arg}'
         issue_fields |= create_fields_dict_from_dotted_string(
-            issue_fields=issue_fields, dotted_string=issue_fields_mapper.get(issue_arg, ''), value=parsed_value or value)
+            issue_fields=issue_fields, dotted_string=dotted_string, value=parsed_value or value)
     return issue_fields
 
 
@@ -2384,7 +2373,7 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     status = args.get('status', '')
     transition = args.get('transition', '')
     if status and transition:
-        raise DemistoException("Please provide only status or transition, but not both.")
+        raise DemistoException('Please provide only status or transition, but not both.')
     elif status:
         demisto.log(f'Updating the status to: {status}')
         apply_issue_status(client=client, issue_id_or_key=issue_id_or_key, status_name=status)
@@ -2403,17 +2392,18 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     if issue_fields:
         demisto.debug(f'Updating the issue with the issue fields: {issue_fields}')
         client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=issue_fields)
-    demisto.log(f'Issue {issue_id_or_key} was updated successfully')
-    res = client.get_issue(issue_id_or_key=issue_id_or_key)
-    markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=res)
-    return CommandResults(
-        outputs_prefix='Ticket',
-        outputs=outputs,
-        outputs_key_field='Id',
-        readable_output=tableToMarkdown(name=f'Issue {outputs.get("Key", "")}', t=markdown_dict,
-                                        headerTransform=pascalToSpace),
-        raw_response=res
-    )
+        demisto.log(f'Issue {issue_id_or_key} was updated successfully')
+        res = client.get_issue(issue_id_or_key=issue_id_or_key)
+        markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=res)
+        return CommandResults(
+            outputs_prefix='Ticket',
+            outputs=outputs,
+            outputs_key_field='Id',
+            readable_output=tableToMarkdown(name=f'Issue {outputs.get("Key", "")}', t=markdown_dict,
+                                            headerTransform=pascalToSpace),
+            raw_response=res
+        )
+    return CommandResults(readable_output="No issue fields were given to update the issue.")
 
 
 def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
@@ -3591,16 +3581,23 @@ def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: st
     """
     if issue_field_to_fetch_from in fetch_query:
         raise DemistoException('The issue field to fetch from cannot be in the fetch query')
+    error_message = 'Could not create the proper fetch query'
     exclude_issue_ids_query = f"AND ID NOT IN ({', '.join(map(str, issue_ids_to_exclude))})" if issue_ids_to_exclude else ''
     if issue_field_to_fetch_from == 'id':
-        return f'{fetch_query} AND id >= {last_fetch_id} {exclude_issue_ids_query} ORDER BY id ASC'
-    if issue_field_to_fetch_from == 'created date':
-        return (f'{fetch_query} AND created >= "{last_fetch_created_time or first_fetch_interval}" {exclude_issue_ids_query}'
-                ' ORDER BY created ASC')
+        if 'id' not in fetch_query:
+            return f'{fetch_query} AND id >= {last_fetch_id} {exclude_issue_ids_query} ORDER BY id ASC'
+        error_message = f'{error_message}\nThe issue field to fetch from cannot be in the fetch query'
+    elif issue_field_to_fetch_from == 'created date':
+        if 'created' not in fetch_query:
+            return (f'{fetch_query} AND created >= "{last_fetch_created_time or first_fetch_interval}" {exclude_issue_ids_query}'
+                    ' ORDER BY created ASC')
+        error_message = f'{error_message}\nThe issue field to fetch from cannot be in the fetch query'
     elif issue_field_to_fetch_from == 'updated date':
-        return (f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}" {exclude_issue_ids_query}'
-                ' ORDER BY updated ASC')
-    raise DemistoException('Could not create the proper fetch query')
+        if 'updated' not in fetch_query:
+            return (f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}" {exclude_issue_ids_query}'
+                    ' ORDER BY updated ASC')
+        error_message = f'{error_message}\nThe issue field to fetch from cannot be in the fetch query'
+    raise DemistoException(error_message)
 
 
 def get_comments_entries_for_fetched_incident(
@@ -4391,5 +4388,3 @@ def main() -> None:
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
-
-# project=COMPANYSA AND key in (COMPANYSA-35)

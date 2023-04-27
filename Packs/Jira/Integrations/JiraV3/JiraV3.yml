@@ -2169,6 +2169,11 @@ script:
       is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
     execution: false
     name: get-modified-remote-data
+  - deprecated: false
+    description: Updates the remote incident with local incident changes. This method
+      is only used for debugging purposes and will not update the current incident.
+    execution: false
+    name: update-remote-system
   dockerimage: demisto/btfl-soup:1.0.1.47958
   feed: false
   isfetch: true

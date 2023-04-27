@@ -4,6 +4,7 @@ import pytest
 import demistomock as demisto
 from unittest.mock import patch
 from JiraV3 import JiraBaseClient
+from CommonServerPython import *
 
 
 def util_load_json(path: str):
@@ -289,52 +290,192 @@ def test_jira_sprint_issue_move(mocker):
     assert expected_command_result.to_context() == issues_to_sprint_command(client=client, args={}).to_context()
 
 
-def test_create_file_info_from_attachment(mocker):
-    """
-    Given:
-        - An attachment id
-    When
-        - Calling the get create_file_info_from_attachment function to create a file of type EntryType.ENTRY_INFO_FILE
-    Then
-        - Validate that the created file is of the correct type, and has the correct content.
-    """
-    import os
-    from CommonServerPython import EntryType
-    from JiraV3 import create_file_info_from_attachment
-    client = jira_base_client_mock()
-    raw_response_attachment_metadata = util_load_json('test_data/get_issue_test/raw_response_attachment_metadata.json')
-    dummy_attachment_content = util_load_bytes_file('test_data/get_issue_test/dummy_attachment_content.txt')
-    mocker.patch.object(client, 'get_attachment_metadata', return_value=raw_response_attachment_metadata)
-    mocker.patch.object(client, 'get_attachment_content', return_value=dummy_attachment_content)
-    file_name = 'dummy_file_name.pdf'
-    file_info_res = create_file_info_from_attachment(client=client, attachment_id='dummy_attachment_id',
-                                                     file_name=file_name)
-    assert file_info_res.get('Type') == EntryType.ENTRY_INFO_FILE
-    assert file_info_res.get('File', '') == file_name
-    assert os.path.exists(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}")
-    os.remove(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}")
+class TestJiraGetIssueCommand:
+    def test_create_file_info_from_attachment(self, mocker):
+        """
+        Given:
+            - An attachment id
+        When
+            - Calling the get create_file_info_from_attachment function to create a file of type EntryType.ENTRY_INFO_FILE
+        Then
+            - Validate that the file has been created, is of the correct type, and has the correct file name.
+        """
+        import os
+        from CommonServerPython import EntryType
+        from JiraV3 import create_file_info_from_attachment
+        client = jira_base_client_mock()
+        raw_response_attachment_metadata = util_load_json('test_data/get_issue_test/raw_response_attachment_metadata.json')
+        dummy_attachment_content = util_load_bytes_file('test_data/get_issue_test/dummy_attachment_content.txt')
+        mocker.patch.object(client, 'get_attachment_metadata', return_value=raw_response_attachment_metadata)
+        mocker.patch.object(client, 'get_attachment_content', return_value=dummy_attachment_content)
+        file_name = 'dummy_file_name.pdf'
+        file_info_res = create_file_info_from_attachment(client=client, attachment_id='dummy_attachment_id',
+                                                         file_name=file_name)
+        assert file_info_res.get('Type') == EntryType.ENTRY_INFO_FILE
+        assert file_info_res.get('File', '') == file_name
+        assert os.path.exists(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}")
+        os.remove(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}")
+
+    @pytest.mark.parametrize('get_attachments', [
+        (True), (False)
+    ])
+    def test_download_issue_attachments_to_war_room(self, mocker, get_attachments):
+        """
+        Given:
+            - A boolean on whether to download the attachments from Jira to the war room or not.
+        When
+            - Calling the function that is in charge of downloading the attachments to the war room.
+        Then
+            - Validate that a fileResult object was created
+        """
+        from JiraV3 import download_issue_attachments_to_war_room
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.create_file_info_from_attachment', return_value={'Contents': '', 'ContentsFormat': 'dummy_format',
+                                                                              'Type': 'dummy_type', 'File': 'dummy_filename',
+                                                                              'FileID': 'dummy_id'})
+        demisto_results_mocker = mocker.patch.object(demisto, 'results')
+        raw_issue_response = util_load_json('test_data/get_issue_test/raw_response.json')
+        download_issue_attachments_to_war_room(client, issue=raw_issue_response, get_attachments=get_attachments)
+        if get_attachments:
+            demisto_results_mocker.assert_called_once()
+        else:
+            demisto_results_mocker.assert_not_called()
+
+    def test_jira_get_issue(self, mocker):
+        """
+        Given:
+            - An issue key or id, and the arguments: expand_links=true, fields=watches,rank
+        When
+            - Calling the get issue command
+        Then
+            - Validate that the context data and human readable are correct.
+        """
+        from JiraV3 import get_issue_command
+        client = jira_base_client_mock()
+        args = {'issue_key': 'dummy_key', 'get_attachments': 'true', 'expand_links': 'true',
+                'fields': 'watches,rank'}
+        raw_response = util_load_json('test_data/get_issue_test/raw_response.json')
+        raw_response_extended_issues = util_load_json('test_data/get_issue_test/raw_response_extended_issues.json')
+        expected_command_results_context = util_load_json('test_data/get_issue_test/parsed_result.json')
+        mocker.patch.object(client, 'get_issue', return_value=raw_response)
+        mocker.patch('JiraV3.get_expanded_issues', return_value=raw_response_extended_issues)
+        mocker.patch('JiraV3.download_issue_attachments_to_war_room', return_value=None)
+        command_results = get_issue_command(client, args)
+        for expected_command_result_context, command_result in zip(expected_command_results_context, command_results):
+            assert expected_command_result_context['EntryContext'] == command_result.to_context()['EntryContext']
+            assert expected_command_result_context['HumanReadable'] == command_result.to_context()['HumanReadable']
 
 
-def test_jira_get_issue(mocker):
-    """
-    Given:
-        - An issue key or id, and the arguments: expand_links=true, fields=watches,rank
-    When
-        - Calling the get issue command
-    Then
-        - Validate that the context data and human readable are correct.
-    """
-    from JiraV3 import get_issue_command
-    client = jira_base_client_mock()
-    args = {'issue_key': 'dummy_key', 'get_attachments': 'true', 'expand_links': 'true',
-            'fields': 'watches,rank'}
-    raw_response = util_load_json('test_data/get_issue_test/raw_response.json')
-    raw_response_extended_issues = util_load_json('test_data/get_issue_test/raw_response_extended_issues.json')
-    expected_command_results_context = util_load_json('test_data/get_issue_test/parsed_result.json')
-    mocker.patch.object(client, 'get_issue', return_value=raw_response)
-    mocker.patch('JiraV3.get_expanded_issues', return_value=raw_response_extended_issues)
-    mocker.patch('JiraV3.download_issue_attachments_to_war_room', return_value=None)
-    command_results = get_issue_command(client, args)
-    for expected_command_result_context, command_result in zip(expected_command_results_context, command_results):
-        assert expected_command_result_context['EntryContext'] == command_result.to_context()['EntryContext']
-        assert expected_command_result_context['HumanReadable'] == command_result.to_context()['HumanReadable']
+class TestJiraGetCommentsCommand:
+    def test_jira_get_comments(self, mocker):
+        """
+        Given:
+            - An issue key or id.
+        When
+            - Calling the get comments command.
+        Then
+            - Validate that the context data and human readable are correct.
+        """
+        from JiraV3 import get_comments_command
+        client = jira_base_client_mock()
+        raw_response = util_load_json('test_data/get_comments_test/raw_response.json')
+        expected_command_results_context = util_load_json('test_data/get_comments_test/parsed_result.json')
+        mocker.patch.object(client, 'get_comments', return_value=raw_response)
+        command_result = get_comments_command(client=client, args={'issue_key': 'dummy_issue_key'})
+        assert expected_command_results_context['EntryContext'] == command_result.to_context()['EntryContext']
+        assert expected_command_results_context['HumanReadable'] == command_result.to_context()['HumanReadable']
+
+    def test_extract_comment_entry_from_raw_response(self):
+        """
+        Given:
+            - A comment that has been returned from the Jira API.
+        When
+            - Extracting the comment entry from the raw response.
+        Then
+            - Validate that the comment entry includes the correct values.
+        """
+        from JiraV3 import extract_comment_entry_from_raw_response
+        comment_raw_response = {
+            "id": "18322",
+            "author": {
+                "displayName": "Tomer Malache",
+            },
+            "body": {
+                "version": 1,
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Hello there"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "renderedBody": "<p>Hello there</p>",
+            "updateAuthor": {
+                "displayName": "Tomer Malache",
+            },
+            "created": "2023-03-23T07:45:29.056+0200",
+            "updated": "2023-03-23T07:45:29.056+0200",
+        }
+        expected_comment_entry = {'Id': '18322', 'Comment': 'Hello there', 'User': 'Tomer Malache',
+                                  'Created': '2023-03-23T07:45:29.056+0200', 'Updated': '2023-03-23T07:45:29.056+0200',
+                                  'UpdateUser': 'Tomer Malache'}
+        comment_entry = extract_comment_entry_from_raw_response(comment_response=comment_raw_response)
+        assert comment_entry == expected_comment_entry
+
+
+class TestJiraEditIssueCommand:
+    def test_edit_issue_with_transition_and_status_error(self):
+        """
+        Given:
+            - A Jira client, and arguments that hold the status and transition supplied by the user.
+        When
+            - Calling the edit issue command.
+        Then
+            - Validate that an error is returned since the user cannot supply both a status and transition.
+        """
+        from JiraV3 import edit_issue_command
+        client = jira_base_client_mock()
+        with pytest.raises(DemistoException) as e:
+            edit_issue_command(client=client, args={'issue_id': '1',
+                                                    'status': 'dummy_status', 'transition': 'dummy_transition'})
+        assert 'Please provide only status or transition, but not both' in str(e)
+
+    def test_edit_issue_command(self, mocker):
+        """
+        Given:
+            - A Jira client, and arguments to edit a Jira issue (without status and transition arguments).
+        When
+            - Calling the edit issue command.
+        Then
+            - Validate that the edit_issue method was called, then get_issue was called to retrieve the newly
+            updated issue, and that the updated issue's data was returned to context data.
+        """
+        from JiraV3 import (edit_issue_command, create_issue_md_and_outputs_dict)
+        client = jira_base_client_mock()
+        args = {'issue_key': 'dummy_key', 'due_date': '2024-05-07'}
+        mocker.patch.object(client, 'edit_issue', return_value=requests.Response())
+        dummy_issue_data = {'id': '1234',
+                            'key': 'dummy_key',
+                            'fields': {'duedate': '2024-05-07'}}
+        mocker.patch.object(client, 'get_issue', return_value=dummy_issue_data)
+        _, outputs = create_issue_md_and_outputs_dict(issue_data=dummy_issue_data)
+        command_result = edit_issue_command(client=client, args=args)
+        assert command_result.to_context().get('EntryContext') == {'Ticket(val.Id && val.Id == obj.Id)': outputs}
+
+    def test_apply_issue_status(self, mocker):
+        ...
+
+    def test_apply_issue_transition(self, mocker):
+        ...
+
+    def test_create_issue_fields(self, mocker):
+        ...
+
+    def test_create_issue_fields_for_update(self, mocker):
+        ...
