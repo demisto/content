@@ -3688,7 +3688,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
     if packs_results:
         if stage == BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING:
             json_write(packs_results_file_path, packs_results)
-        
+
         elif stage == BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE:
             # write to another file
             packs_results_file_name, suffix = packs_results_file_path.split(".")
