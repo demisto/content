@@ -7,7 +7,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Incident priority.
+  description: <-Incident-> priority.
   isArray: false
   name: priority
   predefined:
@@ -58,6 +58,8 @@ type: python
 dependson:
   must:
   - Cherwell|||cherwell-create-business-object
+skipPrepare:
+- script-name-incident-to-alert
 dockerimage: demisto/python3:3.9.8.24399
 subtype: python3
 tests:
