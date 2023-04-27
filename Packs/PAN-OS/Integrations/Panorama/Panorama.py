@@ -13207,18 +13207,17 @@ def create_max_fetch_dict(queries_dict, configured_max_fetch):
     return max_fetch_dict
 
 
-def update_max_fetch_dict(configured_max_fetch, max_fetch_dict, last_fetch_dict, last_run):
+def update_max_fetch_dict(configured_max_fetch, max_fetch_dict, last_fetch_dict):
     """ This function updates the max fetch value for each log type according to the last fetch timestamp.
     Args:
         configured_max_fetch (int): the max fetch value for the first fetch cycle
         max_fetch_dict (Dict[str, int]): a dictionary of log type and its max fetch value
         last_fetch_dict (Dict[str, datetime]): a dictionary of log type and its last fetch timestamp
-        last_run (Dict[str, datetime]): the last run dict
     Returns:
         max_fetch_dict (Dict[str, int]): a dictionary of log type and its updated max fetch value
     """
     for log_type in last_fetch_dict:
-        previus_fetch_timestamp=last_run.get("last_fetch_dict",{}).get(log_type)
+        previus_fetch_timestamp=demisto.getLastRun().get("last_fetch_dict",{}).get(log_type)
         # the latest timestamp of the corrent fetchis the same as the previus one fetch timestamp,
         # that means we did not get all logs for that timstamp
         demisto.debug(
@@ -13479,8 +13478,8 @@ def main(): # pragma: no cover
             last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch_dict)
             next_max_fetch_dict = update_max_fetch_dict(configured_max_fetch=configured_max_fetch,
                                                    max_fetch_dict=max_fetch_dict,
-                                                   last_fetch_dict = last_fetch_dict,
-                                                   last_run= last_run)
+                                                   last_fetch_dict = last_fetch_dict)
+                                                   
             demisto.setLastRun({'last_fetch_dict': last_fetch_dict, 'last_id_dict': last_id_dict, 'max_fetch_dict': next_max_fetch_dict})
             demisto.incidents(incident_entries_list)
 
