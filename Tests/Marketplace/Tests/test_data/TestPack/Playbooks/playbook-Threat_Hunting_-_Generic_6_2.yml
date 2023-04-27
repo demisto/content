@@ -3,9 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Threat Hunting - Generic
-description: "This playbook enables threat hunting for IOCs in your enterprise. It\
-  \ currently supports the following integrations: - Splunk\n- Qradar\n- Pan-os \n\
-  - Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+description: "Not good."
 starttaskid: "0"
 tasks:
   "0":

@@ -775,11 +775,10 @@ class TestHelperFunctions:
         assert res
         assert len(pack._content_items.get('modelingrule')) == 1
         assert len(pack._content_items.get('playbook')) == 1
-        expected_description = "This playbook enables threat hunting for IOCs in your\
- enterprise. It currently supports the following integrations: \n- Splunk\n\
-- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n\
-- Microsoft 365 Defender"
+        expected_description = "Expected description"
         assert pack._content_items.get('playbook')[0].get('description') == expected_description
+        assert pack._content_items.get('playbook')[0].get('fromversion') == '6.5.0'
+        assert pack._content_items.get('playbook')[0].get('toversion') == ''
 
 
 class TestVersionSorting:
