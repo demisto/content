@@ -1132,13 +1132,12 @@ script:
       - Inherit_event
     - description: Comment for the attribute.
       name: comment
-    - description: 'Attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs).'
+    - description: 'A comma-separated list of attribute values. For example: "1.2.3.4,1.1.1.1" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs).'
+      isArray: true
       name: value
       required: true
     - description: Sharing group ID. Mandatory when Sharing_group distribution is set.
       name: sharing_group_id
-    - description: If 'value' is entered separated by commas, mark True. This way you can add multiple values. For example "1.1.1.1.1,2.2.2.2.2"
-      name: isArray
     description: Adds an attribute to an existing MISP event.
     name: misp-add-attribute
     outputs:
@@ -2487,7 +2486,7 @@ script:
     - contextPath: MISP.Warninglist.Lists
       description: Name of warninglists where the value was found.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.55279
+  dockerimage: demisto/pymisp2:1.0.0.55703
   runonce: false
   script: ''
   subtype: python3

@@ -549,14 +549,13 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         that existing event.
     """
     value = demisto_args.get('value')
-    isArray = argToBoolean(demisto_args.get('isArray', False))
     attributes_args = {
         'id': demisto_args.get('event_id'),  # misp event id
         'type': demisto_args.get('type', 'other'),
         'category': demisto_args.get('category', 'External analysis'),
         'to_ids': argToBoolean(demisto_args.get('to_ids', True)),
         'comment': demisto_args.get('comment'),
-        'value': argToList(value) if isArray else value
+        'value': argToList(value)
     }
     event_id = event_id if event_id else arg_to_number(demisto_args.get('event_id'), "event_id")
     attributes_args.update({'id': event_id}) if event_id else None
