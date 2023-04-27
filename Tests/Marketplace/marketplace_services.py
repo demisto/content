@@ -2086,7 +2086,6 @@ class Pack(object):
                             self._contains_filter = True
 
                     elif current_directory == PackFolders.PLAYBOOKS.value:
-                        replace_old_playbook: bool = False
                         self.add_pack_type_tags(content_item, 'Playbook')
                         playbook_version = playbooks_version_map.setdefault(
                             content_item.get('id', ''),
@@ -2095,8 +2094,7 @@ class Pack(object):
                              })
                         if playbook_version.get('toversion') == '99.99.99':
                             continue
-                        if playbook_version.get('toversion') < content_item.get('fromversion'):
-                            replace_old_playbook = True
+                        if (replace_old_playbook := playbook_version.get('toversion') < content_item.get('fromversion')):
                             playbooks_version_map[content_item.get('id')] = {
                                 "fromversion": content_item.get('fromversion', ''),
                                 "toversion": content_item.get('toversion', '99.99.99'),
