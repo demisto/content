@@ -9559,7 +9559,7 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.54501
+  dockerimage: demisto/pan-os-python:1.0.0.55953
   feed: false
   isfetch: true
   longRunning: false
