@@ -544,11 +544,11 @@ script:
       name: tag
     - auto: PREDEFINED
       description: Whether to create the tag if it does not exist.
-      default: false
+      default: 'false'
       name: create_tag
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     description: Creates an address object.
     deprecated: true
     name: panorama-create-address
