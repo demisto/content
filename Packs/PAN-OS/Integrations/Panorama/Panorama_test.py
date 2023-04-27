@@ -6096,7 +6096,7 @@ def test_pan_os_create_address_main_flow_error(args):
                 </result> \
             </response>',
             {"name": "test", "tag": "not exist"},
-            "Failed to create the address object since the tag `not exist` does not exist."
+            "Failed to create the address object since the tags `{'not exist'}` does not exist."
          ),
         (
             "",
