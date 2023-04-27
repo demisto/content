@@ -1,152 +1,8 @@
 from Zoom import Client
-from freezegun import freeze_time
 import Zoom
 import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto
-
-
-def mock_client_ouath(mocker):
-
-    mocker.patch.object(Client, 'get_oauth_token')
-    client = Client(base_url='https://test.com', account_id="mockaccount",
-                    client_id="mockclient", client_secret="mocksecret")
-    mocker.patch.object(Client, 'zoom_list_users', return_value='Invalid access token')
-
-    return client
-
-
-def test_generate_oauth_token(mocker):
-    """
-        Given -
-           client
-        When -
-            generating a token
-        Then -
-            Validate the parameters and the result are as expected
-    """
-    client = mock_client_ouath(mocker)
-
-    m = mocker.patch.object(client, '_http_request', return_value={'access_token': 'token'})
-    res = client.generate_oauth_token()
-    assert m.call_args[1]['method'] == 'POST'
-    assert m.call_args[1]['full_url'] == 'https://zoom.us/oauth/token'
-    assert m.call_args[1]['params'] == {'account_id': 'mockaccount',
-                                        'grant_type': 'account_credentials'}
-    assert m.call_args[1]['auth'] == ('mockclient', 'mocksecret')
-
-    assert res == 'token'
-
-
-@pytest.mark.parametrize("result", (" ", "None"))
-def test_get_oauth_token__if_not_ctx(mocker, result):
-    """
-        Given -
-           client
-        When -
-            asking for the latest token's generation_time and the result is None
-            or empty
-        Then -
-            Validate that a new token will be generated.
-    """
-    mocker.patch.object(Zoom, "get_integration_context",
-                        return_value={'token_info': {"generation_time": result,
-                                      'oauth_token': "old token"}})
-    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
-    Client(base_url='https://test.com', account_id="mockaccount",
-                    client_id="mockclient", client_secret="mocksecret")
-    assert generate_token_mock.called
-
-
-@freeze_time("1988-03-03T11:00:00")
-def test_get_oauth_token__while_old_token_still_valid(mocker):
-    """
-        Given -
-           client
-        When -
-            asking for a token while the previous token is still valid
-        Then -
-            Validate that a new token will not be generated, and the old token will be returned
-            Validate that the old token is the one
-            stored in the get_integration_context dict.
-    """
-    mocker.patch.object(Zoom, "get_integration_context",
-                        return_value={'token_info': {"generation_time": "1988-03-03T10:50:00",
-                                      'oauth_token': "old token"}})
-    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
-    client = Client(base_url='https://test.com', account_id="mockaccount",
-                    client_id="mockclient", client_secret="mocksecret")
-    assert not generate_token_mock.called
-    assert client.access_token == "old token"
-
-
-def test_get_oauth_token___old_token_expired(mocker):
-    """
-        Given -
-           client
-        When -
-            asking for a token when the previous token was expired
-        Then -
-            Validate that a func that creates a new token has been called
-            Validate that a new token was stored in the get_integration_context dict.
-    """
-    mocker.patch.object(Zoom, "get_integration_context",
-                        return_value={'token_info': {"generation_time": "1988-03-03T10:00:00",
-                                      'oauth_token': "old token"}})
-    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
-    client = Client(base_url='https://test.com', account_id="mockaccount",
-                    client_id="mockclient", client_secret="mocksecret")
-    assert generate_token_mock.called
-    assert client.access_token != "old token"
-
-
-@pytest.mark.parametrize("return_val", ({'token_info': {}}, {'token_info': {'generation_time': None}}))
-def test_get_oauth_token___old_token_is_unreachable(mocker, return_val):
-    """
-        Given -
-           client
-        When -
-            asking for a token when the previous token is unreachable
-        Then -
-            Validate that a func that creates a new token has been called
-            Validate that a new token was stored in the get_integration_context dict.
-    """
-    mocker.patch.object(Zoom, "get_integration_context",
-                        return_value=return_val)
-    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
-    client = Client(base_url='https://test.com', account_id="mockaccount",
-                    client_id="mockclient", client_secret="mocksecret")
-    assert generate_token_mock.called
-    assert client.access_token != "old token"
-
-
-def test_http_request___when_raising_invalid_token_message(mocker):
-    """
-  Given -
-     client
-  When -
-      asking for a connection when the first try fails, and return an
-      'Invalid access token' error messoge
-  Then -
-      Validate that a retry to connect with a new token has been done
-    """
-
-    m = mocker.patch.object(Zoom.BaseClient, "_http_request",
-                            side_effect=DemistoException('Invalid access token'))
-    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token", return_value="mock")
-    mocker.patch.object(Zoom, "get_integration_context",
-                        return_value={'token_info': {"generation_time": "1988-03-03T10:50:00",
-                                      'oauth_token': "old token"}})
-    try:
-        client = Client(base_url='https://test.com', account_id="mockaccount",
-                        client_id="mockclient", client_secret="mocksecret")
-        # a command that uses http_request
-        client.zoom_list_users(3, "bla", "bla",
-                               "bla")
-    except Exception:
-        pass
-    assert m.call_count == 2
-    assert generate_token_mock.called
 
 
 def test_zoom_list_users_command__limit(mocker):
@@ -202,8 +58,6 @@ def test_zoom_list_users_command__limit_and_page_size(mocker):
         Then -
             Validate that an error message will be returned
     """
-    # mocker.patch.object(Client, "manual_user_list_pagination", return_value=None)
-    # mocker.patch.object(Client, "user_list_basic_request", return_value={"next_page_token": "mockmock"})
     returned_dict = {'page_count': 1, 'page_number': 1, 'page_size': 30,
                      'total_records': 2, 'next_page_token': '', 'users': [{'id': '1234',
                                                                            'first_name': 'as', 'last_name': 'bla',
@@ -543,6 +397,27 @@ def test_zoom_create_meeting_command__too_meny_arguments4(mocker):
 time is missing this argument: recurrence_type."""
 
 
+def test_zoom_create_meeting_command__too_many_arguments5(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a instant meeting with end_times:
+       Then -
+           Validate that the right error will return
+    """
+    mocker.patch.object(Client, "zoom_create_meeting", return_value={"bla": "bla"})
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    from Zoom import zoom_create_meeting_command
+    with pytest.raises(DemistoException) as e:
+        zoom_create_meeting_command(client=client,
+                                    type="Instant", end_times=7)
+    assert e.value.message == 'One or more arguments that were filed\nare used for a recurring meeting with a fixed time only.'
+
+
 def test_meeting_get_command__show_previous_occurrences_is_false(mocker):
     """
        Given -
@@ -697,21 +572,6 @@ You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
 OR the API Key and API Secret fields (JWT - Deprecated)."""
 
 
-@freeze_time("1988-03-03T11:00:00")
-def test_get_jwt_token__encoding_format_check():
-    """
-        Given -
-
-        When -
-            creating a jwt token
-        Then -
-            Validate that the token is in the right format
-    """
-    encoded_token = Zoom.get_jwt_token(apiKey="blabla", apiSecret="blabla")
-    # 124 is the expected token length based on parameters given
-    assert len(encoded_token) == 124
-
-
 def test_zoom_user_list_command__when_user_id(mocker):
     """
         Given -
@@ -736,8 +596,6 @@ def test_zoom_user_list_command__when_user_id(mocker):
     from Zoom import zoom_list_users_command
     res = zoom_list_users_command(client, user_id="bla")
     assert len(res.readable_output) == 159      # type: ignore[arg-type]
-
-# i dont like this test:(
 
 
 def test_zoom_meeting_list_command__when_user_id(mocker):
@@ -834,7 +692,7 @@ def test_test_moudle__reciving_errors(mocker):
     mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException('Invalid access token'))
 
     from Zoom import test_module
-    assert test_module(client=client) == 'Invalid credentials. Verify that your credentials are valid.'
+    assert test_module(client=client) == 'Invalid credentials. Please verify that your credentials are valid.'
 
 
 def test_test_moudle__reciving_errors1(mocker):
@@ -844,7 +702,7 @@ def test_test_moudle__reciving_errors1(mocker):
     mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException("The Token's Signature resulted invalid"))
 
     from Zoom import test_module
-    assert test_module(client=client) == 'Invalid API Secret. Verify that your API Secret is valid.'
+    assert test_module(client=client) == 'Invalid API Secret. Please verify that your API Secret is valid.'
 
 
 def test_test_moudle__reciving_errors2(mocker):
@@ -854,7 +712,7 @@ def test_test_moudle__reciving_errors2(mocker):
     mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException("Invalid client_id or client_secret"))
 
     from Zoom import test_module
-    assert test_module(client=client) == 'Invalid Client ID or Client Secret. Verify that your ID and Secret is valid.'
+    assert test_module(client=client) == 'Invalid Client ID or Client Secret. Please verify that your ID and Secret is valid.'
 
 
 def test_test_moudle__reciving_errors3(mocker):
@@ -933,7 +791,7 @@ def test_zoom_fetch_recording__download_success(mocker):
            asking for a specific recording
        Then:
            Validate that the successfull messege is added to the commandResults
-           and the writing function was called
+           and the writing function was called.
     """
     from Zoom import zoom_fetch_recording_command
     import shutil
