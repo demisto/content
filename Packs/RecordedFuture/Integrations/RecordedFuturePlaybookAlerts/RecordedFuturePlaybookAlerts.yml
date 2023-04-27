@@ -48,6 +48,7 @@ configuration:
   - All Available
   - Domain Abuse
   - Vulnerability
+  - Code Repo Leakage
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "50"
@@ -537,6 +538,7 @@ script:
       - all_available
       - domain_abuse
       - vulnerability
+      - code_repo_leakage
     - name: limit
       required: false
       description: Limits the number of alerts to fetch.

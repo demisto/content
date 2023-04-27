@@ -82,10 +82,10 @@ class Client(BaseClient):
 
     def list_search(self) -> Dict[str, Any]:
         parsed_args = demisto.args()
-        if list_names := parsed_args.get('list_name'):
-            parsed_args['list_name'] = list_names.split(",")
-        if types := parsed_args.get('entity_types'):
-            parsed_args["entity_types"] = types.split(",")
+        if list_names := parsed_args.get('list_names'):
+            parsed_args['list_names'] = list_names.split(",")
+        if types := parsed_args.get('contains'):
+            parsed_args["contains"] = types.split(",")
         """Get details of a playbook alert"""
         return self._call(
             url_suffix='/v2/lists/search', demisto_args=parsed_args
@@ -105,7 +105,7 @@ class Client(BaseClient):
     
         if freetext_names := parsed_args.get('freetext_names'):
             parsed_args["freetext_names"] = freetext_names.split(",")
-    
+        
         if not ((entity_ids and not freetext_names) or (not entity_ids and freetext_names)): # XOR entity_ids and freetext_names
             raise ValueError("Command expected 1 of parmeters: entity_ids or freetext_names, to be specified."
                              f" Got {len([x for x in [entity_ids, freetext_names] if x])} specified.")
