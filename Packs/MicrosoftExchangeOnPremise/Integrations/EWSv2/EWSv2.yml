@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: EWS v2
+  id: EWS_v2_2019_version
   version: -1
 configuration:
 - display: Email address
@@ -122,8 +122,8 @@ configuration:
   section: Connect
   advanced: true
 description: Exchange Web Services and Office 365 (mail)
-display: EWS v2
-name: EWS v2
+display: EWS_v2_2019_version
+name:  EWS_v2_2019_version
 script:
   commands:
   - arguments:
@@ -1285,7 +1285,7 @@ script:
     description: Replies to an email using EWS.
     execution: false
     name: reply-mail
-  dockerimage: demisto/py-ews:1.0.0.49868
+  dockerimage: demisto/py3ews:1.0.0.55239
   feed: false
   isfetch: true
   longRunning: false

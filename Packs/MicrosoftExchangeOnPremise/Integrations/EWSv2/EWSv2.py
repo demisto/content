@@ -7,7 +7,7 @@ from multiprocessing import Process
 import dateparser  # type: ignore
 import exchangelib
 from CommonServerPython import *
-from io import StringIO #python3 change
+from io import StringIO  #python3 change
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Body, Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
@@ -21,13 +21,14 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorNameResolutionNoResults, RateLimitError,
                                 ResponseMessageError, TransportError)
 from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
-from exchangelib.services import EWSAccountService, EWSService #exchangelib change - from exchangelib.services.common import EWSAccountService 
+from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter, Protocol
+from exchangelib.services import EWSService
+from exchangelib.services.common import EWSAccountService
 from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
                                  EXCHANGE_2010_SP2, EXCHANGE_2013,
-                                 EXCHANGE_2016)
-from future import utils as future_utils
+                                 EXCHANGE_2016, EXCHANGE_2019)
+# from future import utils as future_utils # removed for new docker, revert
 from requests.exceptions import ConnectionError
 
 #python3 change
@@ -35,8 +36,8 @@ from requests.exceptions import ConnectionError
 # reload(sys)
 # sys.setdefaultencoding('utf8')  # pylint: disable=E1101
 
-# # Ignore warnings print to stdout
-# warnings.filterwarnings("ignore")
+# Ignore warnings print to stdout
+warnings.filterwarnings("ignore")
 
 # Docker BC
 MNS = None
@@ -52,7 +53,8 @@ VERSIONS = {
     '2010': EXCHANGE_2010,
     '2010_SP2': EXCHANGE_2010_SP2,
     '2013': EXCHANGE_2013,
-    '2016': EXCHANGE_2016
+    '2016': EXCHANGE_2016,
+    '2019': EXCHANGE_2019
 }
 
 ATTACHMENT_ID = "attachmentId"
@@ -586,6 +588,15 @@ def filter_dict_null(d):      # pragma: no cover
     return d
 
 
+def is_empty_object(obj):
+    size = 0
+    if isinstance(obj, map):
+        size = obj.__sizeof__
+    else:
+        size = len(obj)
+    return size == 0
+
+
 def get_attachment_name(attachment_name):      # pragma: no cover
     if attachment_name is None or attachment_name == "":
         return 'demisto_untitled_attachment'
@@ -593,7 +604,7 @@ def get_attachment_name(attachment_name):      # pragma: no cover
 
 
 def get_entry_for_object(title, context_key, obj, headers=None):      # pragma: no cover
-    if len(obj) == 0:
+    if is_empty_object(obj):
         return "There is no output results"
     obj = filter_dict_null(obj)
     if isinstance(obj, list):
@@ -785,7 +796,10 @@ class GetSearchableMailboxes(EWSService):
         if self.protocol.version.build < EXCHANGE_2013:
             raise NotImplementedError('%s is only supported for Exchange 2013 servers and later' % self.SERVICE_NAME)
         elements = self._get_elements(payload=self.get_payload())
-        return map(lambda x: self.parse_element(x), elements)
+        res = []
+        for e in elements:
+            res.append(self.parse_element(e))
+        return res
 
     def get_payload(self):
         element = create_element(
@@ -997,9 +1011,10 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
                 if len(result) >= MAX_FETCH:
                     break
         except ValueError as exc:
-            future_utils.raise_from(ValueError(
-                'Got an error when pulling incidents. You might be using the wrong exchange version.'
-            ), exc)
+            # future_utils.raise_from(ValueError(
+            #     'Got an error when pulling incidents. You might be using the wrong exchange version.'
+            # ), exc)
+            raise exc
     demisto.debug('EWS V2 - Got total of {} from ews query. '.format(len(result)))
     return result
 
@@ -2284,7 +2299,7 @@ def get_protocol():      # pragma: no cover
     if AUTO_DISCOVERY:
         protocol = get_account_autodiscover(ACCOUNT_EMAIL).protocol
     else:
-        protocol = config.protocol  # type: ignore
+        protocol = Protocol(config=config)  # type: ignore
     return protocol
 
 
