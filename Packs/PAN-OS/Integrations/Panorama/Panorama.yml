@@ -544,7 +544,7 @@ script:
       name: tag
     - auto: PREDEFINED
       description: Whether to create the tag if it does not exist.
-      default: 'false'
+      defaultValue: 'false'
       name: create_tag
       predefined:
       - 'true'
