@@ -2789,18 +2789,13 @@ def enrich_groups(all_group_ids) -> Dict[str, Any]:
         Returns a dict {group_id: group_name}
     """
     result = dict()
-    groups_list = list()
-    for group in range(0, len(all_group_ids), 500):
-        groups_list.append(all_group_ids[group:group + 500])
-    for ids in groups_list:
-        params = {'ids': ids}
-        response_json = http_request('GET', '/devices/entities/host-groups/v1', params, status_code=404)
+    params = {'ids': all_group_ids}
+    response_json = http_request('GET', '/devices/entities/host-groups/v1', params, status_code=404)
+    for resource in response_json['resources']:
         try:
-            for resource in response_json['resources']:
-                item = {resource['id']: resource['name']}
-                result.update(item)
+            result[resource['id']] = resource['name']
         except KeyError:
-            demisto.debug("Some groups were not found")
+            demisto.debug(f"Could not retrieve group name for {resource=}")
     return result
 
 
