@@ -164,11 +164,7 @@ script:
     description: Fetches indicators from the feed.
     execution: false
     name: aws-get-indicators
-<<<<<<< HEAD
   dockerimage: demisto/py3-tools:1.0.0.52351
-=======
-  dockerimage: demisto/py3-tools:1.0.0.54695
->>>>>>> 5961194269c363b696017eec56f923f6215ae56e
   feed: true
   isfetch: false
   longRunning: false
