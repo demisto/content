@@ -33,9 +33,9 @@ filter _raw_log  ~= "from\s\d+\.\d+\.\d+\.\d+\/\d+\s*to\s*\d+\.\d+\.\d+\.\d+\/\d
     xdm.event.description = message,
     xdm.alert.severity = severity,
     xdm.source.ipv4 = source_ip,
-    xdm.source.port = to_number(source_port),
+    xdm.source.port = to_integersource_port),
     xdm.target.ipv4 = dst_ip,
-    xdm.target.port = to_number(dst_port),
+    xdm.target.port = to_integerdst_port),
     xdm.target.zone = dst_interface,
     xdm.target.user.username = dst_username,
     xdm.event.outcome_reason = action,
@@ -92,9 +92,9 @@ filter _raw_log ~= "\w+\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\sto\s[a-zA-Z0-9
 | alter duration_part_0 = arrayindex(duration_split,0),
     duration_part_1 = arrayindex(duration_split,1),
     duration_part_2 = arrayindex(duration_split,2)
-| alter duration_part_0_millis = if(duration_part_0 contains "h", multiply( to_number(arrayindex(regextract(duration_part_0 ,"\d+"),0)),3600000),duration_part_0 contains "m", multiply( to_number(arrayindex(regextract(duration_part_0 ,"\d+"),0)),60000) ,duration_part_0 contains "s", multiply( to_number(arrayindex(regextract(duration_part_0 ,"\d+"),0)),1000),duration_part_0 ~= "\d+" and duration_part_0 != "0", multiply(to_number(duration_part_0),3600000) ,0),
-    duration_part_1_millis = if(duration_part_1 contains "h", multiply( to_number(arrayindex(regextract(duration_part_1 ,"\d+"),0)),3600000),duration_part_1 contains "m", multiply( to_number(arrayindex(regextract(duration_part_1 ,"\d+"),0)),60000) ,duration_part_1 contains "s", multiply( to_number(arrayindex(regextract(duration_part_1 ,"\d+"),0)),1000) ,duration_part_1 ~= "\d+" and duration_part_1 != "0", multiply(to_number(duration_part_1),60000),0),
-    duration_part_2_millis = if(duration_part_2 contains "h", multiply( to_number(arrayindex(regextract(duration_part_2 ,"\d+"),0)),3600000),duration_part_2 contains "m", multiply( to_number(arrayindex(regextract(duration_part_2 ,"\d+"),0)),60000) ,duration_part_2 contains "s", multiply( to_number(arrayindex(regextract(duration_part_2 ,"\d+"),0)),1000) ,duration_part_2 ~= "\d+" and duration_part_2 != "0", multiply(to_number(duration_part_2),1000),0)
+| alter duration_part_0_millis = if(duration_part_0 contains "h", multiply( to_integerarrayindex(regextract(duration_part_0 ,"\d+"),0)),3600000),duration_part_0 contains "m", multiply( to_integerarrayindex(regextract(duration_part_0 ,"\d+"),0)),60000) ,duration_part_0 contains "s", multiply( to_integerarrayindex(regextract(duration_part_0 ,"\d+"),0)),1000),duration_part_0 ~= "\d+" and duration_part_0 != "0", multiply(to_integerduration_part_0),3600000) ,0),
+    duration_part_1_millis = if(duration_part_1 contains "h", multiply( to_integerarrayindex(regextract(duration_part_1 ,"\d+"),0)),3600000),duration_part_1 contains "m", multiply( to_integerarrayindex(regextract(duration_part_1 ,"\d+"),0)),60000) ,duration_part_1 contains "s", multiply( to_integerarrayindex(regextract(duration_part_1 ,"\d+"),0)),1000) ,duration_part_1 ~= "\d+" and duration_part_1 != "0", multiply(to_integerduration_part_1),60000),0),
+    duration_part_2_millis = if(duration_part_2 contains "h", multiply( to_integerarrayindex(regextract(duration_part_2 ,"\d+"),0)),3600000),duration_part_2 contains "m", multiply( to_integerarrayindex(regextract(duration_part_2 ,"\d+"),0)),60000) ,duration_part_2 contains "s", multiply( to_integerarrayindex(regextract(duration_part_2 ,"\d+"),0)),1000) ,duration_part_2 ~= "\d+" and duration_part_2 != "0", multiply(to_integerduration_part_2),1000),0)
 | alter duration = add(add(duration_part_0_millis , duration_part_1_millis ),duration_part_2_millis)
 | alter bytes = coalesce(bytes1 , bytes2 ),
     icmp_code = coalesce(icmp_code1, icmp_code2),
@@ -106,18 +106,18 @@ filter _raw_log ~= "\w+\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\sto\s[a-zA-Z0-9
     xdm.event.description = message,
     xdm.alert.severity = severity,
     xdm.source.ipv4 = src_ip,
-    xdm.source.port = to_number(source_port),
+    xdm.source.port = to_integersource_port),
     xdm.source.zone = source_interface,
-    xdm.source.sent_bytes = to_number(bytes),
+    xdm.source.sent_bytes = to_integerbytes),
     xdm.target.ipv4 = dest_ip,
-    xdm.target.port = to_number(dest_port),
+    xdm.target.port = to_integerdest_port),
     xdm.target.zone = dest_interface,
     xdm.source.user.username = source_username,
     xdm.target.user.username = dst_username,
-    xdm.network.icmp.code = to_number(icmp_code),
-    xdm.network.icmp.type = to_number(icmp_type),
+    xdm.network.icmp.code = to_integericmp_code),
+    xdm.network.icmp.type = to_integericmp_type),
     xdm.event.outcome_reason = action,
-    xdm.event.duration = to_number(duration),
+    xdm.event.duration = to_integerduration),
     xdm.observer.name = observer_ip,
     xdm.network.session_id= connection_id,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
@@ -144,9 +144,9 @@ filter _raw_log  ~= "from\s\d+\.\d+\.\d+\.\d+\/\d+\sto\s\w+\:\d+\.\d+\.\d+\.\d+\
     xdm.event.description = message,
     xdm.alert.severity = severity,
     xdm.source.ipv4 = src_ip,
-    xdm.source.port = to_number(src_port),
+    xdm.source.port = to_integersrc_port),
     xdm.target.ipv4 = dst_ip,
-    xdm.target.port = to_number(dst_port),
+    xdm.target.port = to_integerdst_port),
     xdm.target.zone = dst_interface,
     xdm.event.outcome_reason = action,
     xdm.observer.name = observer_ip,
@@ -183,10 +183,10 @@ filter _raw_log ~= "[\w|\-\_]+\/\d+\.\d+\.\d+\.\d+\(\d+\)\s\-\>\s[\w|\-\_]+\/\d+
     xdm.event.description = message,
     xdm.alert.severity = severity,
     xdm.source.ipv4 = src_ip,
-    xdm.source.port = to_number(src_port ),
+    xdm.source.port = to_integersrc_port ),
     xdm.source.zone = src_interface,
     xdm.target.ipv4 = dst_ip,
-    xdm.target.port = to_number(dst_port),
+    xdm.target.port = to_integerdst_port),
     xdm.target.zone = dst_interface,
     xdm.source.user.username = src_username,
     xdm.target.user.username = dst_username,
@@ -212,7 +212,7 @@ filter _raw_log  ~= "src\s\=\s*\d+\.\d+\.\d+\.\d+\s*,\s*dest\s*\=\s*\d+\.\d+\.\d
     xdm.event.description = message,
     xdm.alert.severity = severity,
     xdm.source.ipv4 = src_ip,
-    xdm.source.sent_bytes = to_number(bytes ),
+    xdm.source.sent_bytes = to_integerbytes ),
     xdm.target.ipv4 = dst_ip,
     xdm.event.outcome_reason = action,
     xdm.observer.name = observer_ip,
@@ -289,10 +289,10 @@ filter _raw_log ~= "from\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/\d+\sto\s\d+\.\d+\.\d+\
     xdm.event.description = message,
     xdm.alert.severity = severity,
     xdm.source.ipv4 = src_ip,
-    xdm.source.port = to_number(src_port),
+    xdm.source.port = to_integersrc_port),
     xdm.source.zone = src_interface,
     xdm.target.ipv4 = dst_ip,
-    xdm.target.port = to_number(dst_port),
+    xdm.target.port = to_integerdst_port),
     xdm.event.outcome_reason = action,
     xdm.observer.name = observer_ip,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
@@ -321,7 +321,7 @@ filter _raw_log ~= "from\s\d+\.\d+\.\d+\.\d+\sto\s\d+\.\d+\.\d+\.\d+"
     xdm.target.zone = dst_interface,
     xdm.event.outcome_reason = action,
     xdm.observer.name = observer_ip,
-    xdm.source.sent_bytes=to_number(bytes),
+    xdm.source.sent_bytes=to_integerbytes),
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
 //IP \=<dst_ip>
@@ -348,9 +348,9 @@ filter _raw_log ~= "IP\s*\=\s*\d+\.\d+\.\d+\.\d+"
 | alter duration_part_0 = arrayindex(duration_split,0),
     duration_part_1 = arrayindex(duration_split,1),
     duration_part_2 = arrayindex(duration_split,2)
-| alter duration_part_0_millis = if(duration_part_0 contains "h", multiply( to_number(arrayindex(regextract(duration_part_0 ,"\d+"),0)),3600000),duration_part_0 contains "m", multiply( to_number(arrayindex(regextract(duration_part_0 ,"\d+"),0)),60000) ,duration_part_0 contains "s", multiply( to_number(arrayindex(regextract(duration_part_0 ,"\d+"),0)),1000),duration_part_0 ~= "\d+" and duration_part_0 != "0", multiply(to_number(duration_part_0),3600000) ,0),
-    duration_part_1_millis = if(duration_part_1 contains "h", multiply( to_number(arrayindex(regextract(duration_part_1 ,"\d+"),0)),3600000),duration_part_1 contains "m", multiply( to_number(arrayindex(regextract(duration_part_1 ,"\d+"),0)),60000) ,duration_part_1 contains "s", multiply( to_number(arrayindex(regextract(duration_part_1 ,"\d+"),0)),1000) ,duration_part_1 ~= "\d+" and duration_part_1 != "0", multiply(to_number(duration_part_1),60000),0),
-    duration_part_2_millis = if(duration_part_2 contains "h", multiply( to_number(arrayindex(regextract(duration_part_2 ,"\d+"),0)),3600000),duration_part_2 contains "m", multiply( to_number(arrayindex(regextract(duration_part_2 ,"\d+"),0)),60000) ,duration_part_2 contains "s", multiply( to_number(arrayindex(regextract(duration_part_2 ,"\d+"),0)),1000) ,duration_part_2 ~= "\d+" and duration_part_2 != "0", multiply(to_number(duration_part_2),1000),0)
+| alter duration_part_0_millis = if(duration_part_0 contains "h", multiply( to_integerarrayindex(regextract(duration_part_0 ,"\d+"),0)),3600000),duration_part_0 contains "m", multiply( to_integerarrayindex(regextract(duration_part_0 ,"\d+"),0)),60000) ,duration_part_0 contains "s", multiply( to_integerarrayindex(regextract(duration_part_0 ,"\d+"),0)),1000),duration_part_0 ~= "\d+" and duration_part_0 != "0", multiply(to_integerduration_part_0),3600000) ,0),
+    duration_part_1_millis = if(duration_part_1 contains "h", multiply( to_integerarrayindex(regextract(duration_part_1 ,"\d+"),0)),3600000),duration_part_1 contains "m", multiply( to_integerarrayindex(regextract(duration_part_1 ,"\d+"),0)),60000) ,duration_part_1 contains "s", multiply( to_integerarrayindex(regextract(duration_part_1 ,"\d+"),0)),1000) ,duration_part_1 ~= "\d+" and duration_part_1 != "0", multiply(to_integerduration_part_1),60000),0),
+    duration_part_2_millis = if(duration_part_2 contains "h", multiply( to_integerarrayindex(regextract(duration_part_2 ,"\d+"),0)),3600000),duration_part_2 contains "m", multiply( to_integerarrayindex(regextract(duration_part_2 ,"\d+"),0)),60000) ,duration_part_2 contains "s", multiply( to_integerarrayindex(regextract(duration_part_2 ,"\d+"),0)),1000) ,duration_part_2 ~= "\d+" and duration_part_2 != "0", multiply(to_integerduration_part_2),1000),0)
 | alter duration = add(add(duration_part_0_millis , duration_part_1_millis ),duration_part_2_millis)
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
@@ -360,7 +360,7 @@ filter _raw_log ~= "IP\s*\=\s*\d+\.\d+\.\d+\.\d+"
     xdm.observer.name = observer_ip,
     xdm.event.is_completed = if(action contains "Teardown",true, false),
     xdm.target.user.username = dst_user,
-    xdm.source.sent_bytes = to_number(sent_bytes),
+    xdm.source.sent_bytes = to_integersent_bytes),
     xdm.network.session_id = session_id,
     xdm.event.duration = to_integer(duration);
 
@@ -381,7 +381,7 @@ filter _raw_log ~= "dest_addr\=\d+\.\d+\.\d+\.\d+\,\ssrc_addr\=\d+\.\d+\.\d+\.\d
     xdm.event.description = message,
     xdm.alert.severity = severity,
     xdm.source.ipv4 = src_ip,
-    xdm.source.sent_bytes = to_number(sent_bytes ),
+    xdm.source.sent_bytes = to_integersent_bytes ),
     xdm.target.ipv4 = dst_ip,
     xdm.event.outcome_reason = action,
     xdm.observer.name = observer_ip,
@@ -432,7 +432,7 @@ filter _raw_log ~= "from\sladdr\s\d+\.\d+\.\d+\.\d+\son\sinterface\s[\w\-\_]+\st
     xdm.target.zone = dst_interface,
     xdm.event.outcome_reason = action,
     xdm.observer.name = observer_ip,
-    xdm.network.icmp.type = to_number(icmp_type),
+    xdm.network.icmp.type = to_integericmp_type),
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
 
@@ -513,8 +513,8 @@ filter _raw_log ~= "for\sfaddr\s\d+\.\d+\.\d+\.\d+\/\d+\sgaddr\s\d+\.\d+\.\d+\.\
     xdm.observer.name = observer_ip,
     xdm.target.ipv4 = dst_ip,
     xdm.event.outcome_reason = action,
-    xdm.network.icmp.type = to_number(icmp_type),
-    xdm.network.icmp.code = to_number(icmp_code),
+    xdm.network.icmp.type = to_integericmp_type),
+    xdm.network.icmp.code = to_integericmp_code),
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
 //from <src_ip> on interface <src_interface>
@@ -536,8 +536,8 @@ filter _raw_log ~= "from\s\d+\.\d+\.\d+\.\d+\son\sinterface\s[\w\-\_]+"
     xdm.source.ipv4 = src_ip,
     xdm.source.zone = src_interface ,
     xdm.event.outcome_reason = action,
-    xdm.network.icmp.type = to_number(icmp_type),
-    xdm.network.icmp.code = to_number(icmp_code),
+    xdm.network.icmp.type = to_integericmp_type),
+    xdm.network.icmp.code = to_integericmp_code),
     xdm.target.user.username = dst_username,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
@@ -577,8 +577,8 @@ filter _raw_log ~= "\d+\:\sDenied [\w\-]*ICMP" and _raw_log not contains "laddr"
     xdm.alert.severity = severity,
     xdm.observer.name = observer_ip,
     xdm.event.outcome_reason = action,
-    xdm.network.icmp.type = to_number(icmp_type),
-    xdm.network.icmp.code = to_number(icmp_code),
+    xdm.network.icmp.type = to_integericmp_type),
+    xdm.network.icmp.code = to_integericmp_code),
     xdm.source.ipv6 = src_ipv6,
     xdm.source.ipv4 = src_ipv4,
     xdm.source.zone = source_interface,
