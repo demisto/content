@@ -79,7 +79,7 @@ def handle_incident(inc, fields_to_populate, include_context):
     custom_fields = inc.get('CustomFields', {}) or {}
     inc.update(custom_fields)
     if fields_to_populate and len(fields_to_populate) > 0:
-        inc = {k: v for k, v in inc.items() if k in fields_to_populate}
+        inc = {k: v for k, v in inc.items() if k.lower() in fields_to_populate}
     if include_context:
         inc['context'] = get_context(inc['id'])
     return inc
@@ -192,7 +192,7 @@ def main():
         d_args = dict(demisto.args())
         for arg_name in ['NonEmptyFields', 'populateFields']:
             split_argument_list = get_comma_sep_list(d_args.get(arg_name, ''))
-            split_argument_list = [x for x in split_argument_list if len(x) > 0]
+            split_argument_list = [x.lower() for x in split_argument_list if len(x) > 0]
             d_args[arg_name] = preprocess_incidents_fields_list(split_argument_list)
         query = build_incidents_query(d_args.get('query'),
                                       d_args.get('incidentTypes'),
