@@ -2,6 +2,15 @@
 Use this integration to collect events automatically from TeamViewer.
 You can also use the ***teamviewer-get-events*** command to manually collect events.
 
+TeamViewer event collector collects the following event types:
+* AuditEvents 
+* CompanyAdministration
+* GroupManagement
+* UserProfile
+* Session
+* CustomModules
+* Policy
+
 ### Script Token
 To use the TeamViewer collector, you would need to create a script token.
 Notice that A Tensor license is required.

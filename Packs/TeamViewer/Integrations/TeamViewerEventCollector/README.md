@@ -3,15 +3,6 @@ This integration was integrated and tested with version 15.40 of TeamViewer.
 User access token scope: Event logging - Allow requesting all event logs.
 A Tensor license is required.
 
-TeamViewer event collector collects the following event types:
-* AuditEvents 
-* CompanyAdministration
-* GroupManagement
-* UserProfile
-* Session
-* CustomModules
-* Policy
-
 ## Configure TeamViewer Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
