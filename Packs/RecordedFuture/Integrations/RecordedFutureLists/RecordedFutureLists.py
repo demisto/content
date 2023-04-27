@@ -85,9 +85,7 @@ class Client(BaseClient):
         if types := parsed_args.get('contains'):
             parsed_args["contains"] = types.split(",")
         """Get details of a playbook alert"""
-        return self._call(
-            url_suffix='/v2/lists/search', demisto_args=parsed_args
-        )
+        return self._call(url_suffix='/v2/lists/search', demisto_args=parsed_args)
 
     ####################################################
     ################ Entity operations #################
@@ -115,6 +113,7 @@ class Client(BaseClient):
         return self._call(
             url_suffix=f'/v2/lists/{list_id}/entities/add', demisto_args=parsed_args
         )
+
 
 # === === === === === === === === === === === === === === ===
 # === === === === === === ACTIONS === === === === === === ===
