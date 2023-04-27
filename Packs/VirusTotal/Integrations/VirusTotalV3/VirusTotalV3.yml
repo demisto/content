@@ -1645,7 +1645,7 @@ script:
       type: String
 
   runonce: false
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.55362
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test
