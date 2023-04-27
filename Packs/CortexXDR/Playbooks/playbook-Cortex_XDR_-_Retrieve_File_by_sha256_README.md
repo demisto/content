@@ -7,9 +7,7 @@ Initially, the sub-playbook 'Cortex XDR - Get File Path from alerts by hash' exa
 As soon as the SHA256 hashes, file paths, and endpoint IDs are obtained, the playbook attempts to retrieve the files from all the investigated devices.
 Once the file retrieval automation has been completed successfully, the playbook will unzip the files and load them into the War Room.
 
-Please note:
-1. The sub-playbook context must be shared globally.
-2. Ensure that the SHA256 input is set to run in a loop when there are multiple files to retrieve.
+  Note: When retrieving multiple files, ensure that the SHA256 input is set to run in a loop.
 
 ## Dependencies
 
