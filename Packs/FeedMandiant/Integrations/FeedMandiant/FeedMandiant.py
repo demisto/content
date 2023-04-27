@@ -198,15 +198,10 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
     if indicator_type != 'Indicators': \
             # new to old
         demisto.debug(f'indicator_type not indicators just: {indicator_type}')
-        new_indicators_list.sort(key=lambda x: arg_to_datetime(x.get('last_updated'), settings=DATETIME_SETTINGS),
-                                 reverse=True)  # type:ignore
+        new_indicators_list.sort(key=lambda x: arg_to_datetime(x.get('last_updated')), reverse=True)  # type:ignore
         new_indicators_list = list(
-            filter(
-                lambda x: arg_to_datetime(x["last_updated"],
-                                          settings=DATETIME_SETTINGS).timestamp() > start_date.timestamp(),
-                new_indicators_list,
-            )
-        )
+            filter(lambda x: arg_to_datetime(x['last_updated']).timestamp() > start_date.timestamp(),  # type: ignore
+                   new_indicators_list))
 
     return new_indicators_list
 
