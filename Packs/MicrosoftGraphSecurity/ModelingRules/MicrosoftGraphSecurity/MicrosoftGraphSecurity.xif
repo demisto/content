@@ -1,38 +1,17 @@
 [MODEL: dataset=msft_graph_security_alerts_raw]
 filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alerts_v2"
-| alter
-    json_arr1 = evidence -> [0]{},
-    json_arr2 = evidence -> [1]{},
-    json_arr3 = evidence -> [2]{},
-    json_arr4 = evidence -> [3]{},
-    json_arr5 = evidence -> [4]{},
-    json_arr6 = evidence -> [5]{},
-    json_arr7 = evidence -> [6]{},
-    json_arr8 = evidence -> [7]{},
-    json_arr9 = evidence -> [8]{},
-    json_arr10 = evidence -> [9]{}
-| alter
-    alertEvidence_json = if(json_arr1 ~= "alertEvidence", json_arr1, json_arr2 ~= "alertEvidence", json_arr2, json_arr3 ~= "alertEvidence", json_arr3, json_arr4 ~= "alertEvidence", json_arr4, json_arr5 ~= "alertEvidence", json_arr5, json_arr6 ~= "alertEvidence", json_arr6, json_arr7 ~= "alertEvidence", json_arr7, json_arr8 ~= "alertEvidence", json_arr8, json_arr9 ~= "alertEvidence", json_arr9, json_arr10 ~= "alertEvidence", json_arr10, null),
-//
-analyzedMessageEvidence_json = if(json_arr1 ~= "analyzedMessageEvidence", json_arr1, json_arr2 ~= "analyzedMessageEvidence", json_arr2, json_arr3 ~= "analyzedMessageEvidence", json_arr3, json_arr4 ~= "analyzedMessageEvidence", json_arr4, json_arr5 ~= "analyzedMessageEvidence", json_arr5, json_arr6 ~= "analyzedMessageEvidence", json_arr6, json_arr7 ~= "analyzedMessageEvidence", json_arr7, json_arr8 ~= "analyzedMessageEvidence", json_arr8, json_arr9 ~= "analyzedMessageEvidence", json_arr9, json_arr10 ~= "analyzedMessageEvidence", json_arr10, null),
-//
-cloudApplicationEvidence_json = if(json_arr1 ~= "cloudApplicationEvidence", json_arr1, json_arr2 ~= "cloudApplicationEvidence", json_arr2, json_arr3 ~= "cloudApplicationEvidence", json_arr3, json_arr4 ~= "cloudApplicationEvidence", json_arr4, json_arr5 ~= "cloudApplicationEvidence", json_arr5, json_arr6 ~= "cloudApplicationEvidence", json_arr6, json_arr7 ~= "cloudApplicationEvidence", json_arr7, json_arr8 ~= "cloudApplicationEvidence", json_arr8, json_arr9 ~= "cloudApplicationEvidence", json_arr9, json_arr10 ~= "cloudApplicationEvidence", json_arr10, null),
-//
-deviceEvidence_json = if(json_arr1 ~= "deviceEvidence", json_arr1, json_arr2 ~= "deviceEvidence", json_arr2, json_arr3 ~= "deviceEvidence", json_arr3, json_arr4 ~= "deviceEvidence", json_arr4, json_arr5 ~= "deviceEvidence", json_arr5, json_arr6 ~= "deviceEvidence", json_arr6, json_arr7 ~= "deviceEvidence", json_arr7, json_arr8 ~= "deviceEvidence", json_arr8, json_arr9 ~= "deviceEvidence", json_arr9, json_arr10 ~= "deviceEvidence", json_arr10, null),
-//
-fileEvidence_json = if(json_arr1 ~= "fileEvidence", json_arr1, json_arr2 ~= "fileEvidence", json_arr2, json_arr3 ~= "fileEvidence", json_arr3, json_arr4 ~= "fileEvidence", json_arr4, json_arr5 ~= "fileEvidence", json_arr5, json_arr6 ~= "fileEvidence", json_arr6, json_arr7 ~= "fileEvidence", json_arr7, json_arr8 ~= "fileEvidence", json_arr8, json_arr9 ~= "fileEvidence", json_arr9, json_arr10 ~= "fileEvidence", json_arr10, null),
-//
-ipEvidence_json = if(json_arr1 ~= "ipEvidence", json_arr1, json_arr2 ~= "ipEvidence", json_arr2, json_arr3 ~= "ipEvidence", json_arr3, json_arr4 ~= "ipEvidence", json_arr4, json_arr5 ~= "ipEvidence", json_arr5, json_arr6 ~= "ipEvidence", json_arr6, json_arr7 ~= "ipEvidence", json_arr7, json_arr8 ~= "ipEvidence", json_arr8, json_arr9 ~= "ipEvidence", json_arr9, json_arr10 ~= "ipEvidence", json_arr10, null),
-//
-mailboxEvidence_json = if(json_arr1 ~= "mailboxEvidence", json_arr1, json_arr2 ~= "mailboxEvidence", json_arr2, json_arr3 ~= "mailboxEvidence", json_arr3, json_arr4 ~= "mailboxEvidence", json_arr4, json_arr5 ~= "mailboxEvidence", json_arr5, json_arr6 ~= "mailboxEvidence", json_arr6, json_arr7 ~= "mailboxEvidence", json_arr7, json_arr8 ~= "mailboxEvidence", json_arr8, json_arr9 ~= "mailboxEvidence", json_arr9, json_arr10 ~= "mailboxEvidence", json_arr10, null),
-//
-processEvidence_json = if(json_arr1 ~= "processEvidence", json_arr1, json_arr2 ~= "processEvidence", json_arr2, json_arr3 ~= "processEvidence", json_arr3, json_arr4 ~= "processEvidence", json_arr4, json_arr5 ~= "processEvidence", json_arr5, json_arr6 ~= "processEvidence", json_arr6, json_arr7 ~= "processEvidence", json_arr7, json_arr8 ~= "processEvidence", json_arr8, json_arr9 ~= "processEvidence", json_arr9, json_arr10 ~= "processEvidence", json_arr10, null),
-//
-registryKeyEvidence_json = if(json_arr1 ~= "registryKeyEvidence", json_arr1, json_arr2 ~= "registryKeyEvidence", json_arr2, json_arr3 ~= "registryKeyEvidence", json_arr3, json_arr4 ~= "registryKeyEvidence", json_arr4, json_arr5 ~= "registryKeyEvidence", json_arr5, json_arr6 ~= "registryKeyEvidence", json_arr6, json_arr7 ~= "registryKeyEvidence", json_arr7, json_arr8 ~= "registryKeyEvidence", json_arr8, json_arr9 ~= "registryKeyEvidence", json_arr9, json_arr10 ~= "registryKeyEvidence", json_arr10, null),
-//
-registryValueEvidence_json = if(json_arr1 ~= "registryValueEvidence", json_arr1, json_arr2 ~= "registryValueEvidence", json_arr2, json_arr3 ~= "registryValueEvidence", json_arr3, json_arr4 ~= "registryValueEvidence", json_arr4, json_arr5 ~= "registryValueEvidence", json_arr5, json_arr6 ~= "registryValueEvidence", json_arr6, json_arr7 ~= "registryValueEvidence", json_arr7, json_arr8 ~= "registryValueEvidence", json_arr8, json_arr9 ~= "registryValueEvidence", json_arr9, json_arr10 ~= "registryValueEvidence", json_arr10, null),
-//
-urlEvidence_json = if(json_arr1 ~= "urlEvidence", json_arr1, json_arr2 ~= "urlEvidence", json_arr2, json_arr3 ~= "urlEvidence", json_arr3, json_arr4 ~= "urlEvidence", json_arr4, json_arr5 ~= "urlEvidence", json_arr5, json_arr6 ~= "urlEvidence", json_arr6, json_arr7 ~= "urlEvidence", json_arr7, json_arr8 ~= "urlEvidence", json_arr8, json_arr9 ~= "urlEvidence", json_arr9, json_arr10 ~= "urlEvidence", json_arr10, null)
+| alter 
+    alertEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "alertEvidence", "@element", null))),
+    analyzedMessageEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "analyzedMessageEvidence", "@element", null))),
+    cloudApplicationEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "cloudApplicationEvidence", "@element", null))),
+    deviceEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "deviceEvidence", "@element", null))),
+    fileEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "fileEvidence", "@element", null))),
+    ipEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "ipEvidence", "@element", null))),
+    mailboxEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "mailboxEvidence", "@element", null))),
+    processEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "processEvidence", "@element", null))),
+    registryKeyEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "registryKeyEvidence", "@element", null))),
+    registryValueEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "registryValueEvidence", "@element", null))),
+    urlEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "urlEvidence", "@element", null)))
 | alter
 // alertEvidence Fields
     alertEvidence_tags = json_extract_scalar(alertEvidence_json, "$.tags"),
