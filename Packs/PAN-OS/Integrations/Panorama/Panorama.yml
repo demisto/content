@@ -564,8 +564,8 @@ script:
     - contextPath: Panorama.Addresses.DeviceGroup
       description: The device group for the address (Panorama instances).
       type: String
-    - contextPath: Panorama.Addresses.Tag
-      description: The address tag.
+    - contextPath: Panorama.Addresses.Tags
+      description: The address tags.
       type: String
   - arguments:
     - description: The name of the address to delete.
@@ -610,8 +610,8 @@ script:
     - contextPath: Panorama.AddressGroups.DeviceGroup
       description: The device group for the address group (Panorama instances).
       type: String
-    - contextPath: Panorama.AddressGroups.Tag
-      description: The address group tag.
+    - contextPath: Panorama.AddressGroups.Tags
+      description: The address group tags.
       type: String
   - arguments:
     - description: The address group name.
@@ -689,7 +689,7 @@ script:
     - contextPath: Panorama.AddressGroups.DeviceGroup
       description: The device group for the address group (Panorama instances).
       type: String
-    - contextPath: Panorama.AddressGroups.Tag
+    - contextPath: Panorama.AddressGroups.Tags
       description: The address group tags.
       type: String
   - arguments:
@@ -3940,8 +3940,8 @@ script:
     - contextPath: Panorama.Addresses.DeviceGroup
       description: The device group for the address (Panorama instances).
       type: String
-    - contextPath: Panorama.Addresses.Tag
-      description: The address tag.
+    - contextPath: Panorama.Addresses.Tags
+      description: The address tags.
       type: String
   - arguments:
     - description: The name of the address to edit.
@@ -4009,8 +4009,8 @@ script:
     - contextPath: Panorama.AddressGroups.DeviceGroup
       description: The device group for the address group (Panorama instances).
       type: String
-    - contextPath: Panorama.AddressGroups.Tag
-      description: The address group tag.
+    - contextPath: Panorama.AddressGroups.Tags
+      description: The address group tags.
       type: String
   - arguments:
     - description: The address group name.
@@ -4086,7 +4086,7 @@ script:
     - contextPath: Panorama.AddressGroups.DeviceGroup
       description: The device group for the address group (Panorama instances).
       type: String
-    - contextPath: Panorama.AddressGroups.Tag
+    - contextPath: Panorama.AddressGroups.Tags
       description: The address group tags.
       type: String
   - arguments:
@@ -9552,7 +9552,7 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.52342
+  dockerimage: demisto/pan-os-python:1.0.0.54501
   feed: false
   isfetch: true
   longRunning: false

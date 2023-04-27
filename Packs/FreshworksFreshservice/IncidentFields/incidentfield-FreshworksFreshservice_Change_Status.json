@@ -1,0 +1,39 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "FreshworksFreshservice Change Request"
+    ],
+    "caseInsensitive": false,
+    "cliName": "freshworksfreshservicechangestatus",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_freshworksfreshservicechangestatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "FreshworksFreshservice Change Status",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "",
+        "Open",
+        "Planning",
+        "Approval",
+        "Pending Release",
+        "Pending Review",
+        "Closed"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
