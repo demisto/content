@@ -5,6 +5,10 @@ args:
   name: attachments
 - description: Files
   name: files
+- name: create_incidents_untagged
+  required: false
+  description: Skip incident creation for email that we can't find existing incident for them.
+  defaultValue: false
 comment: |-
   Preprocessing script for email communication layout.
   This script checks if the incoming email contains an Incident ID to link the mail to an existing incident, and tags the email as "email-thread".
