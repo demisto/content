@@ -560,3 +560,46 @@ class TestActions:
         mock_process_result_actions.assert_called_once_with(response=mock_response)
 
         assert result == mock_process_result_actions_return_value
+
+    def test_test_module(self, mocker):
+        import RecordedFutureLists
+        import demistomock as demisto
+        import platform
+
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(
+            demisto, "demistoVersion", return_value={"version": "mock_version"}
+        )
+        mocker.patch.object(
+            demisto, "params", return_value={"token": {"password": "mocktoken"}}
+        )
+        mocker.patch.object(platform, "platform", return_value="mock_platform")
+        mocker.patch.object(RecordedFutureLists.Client, "whoami")
+        mocked_return_res = mocker.patch.object(RecordedFutureLists, "return_results")
+        RecordedFutureLists.main()
+        mocked_return_res.assert_called_with('ok')
+
+    def test_test_module_with_boom(self, mocker):
+        import RecordedFutureLists
+        import demistomock as demisto
+        import platform
+
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(
+            demisto, "demistoVersion", return_value={"version": "mock_version"}
+        )
+        mocker.patch.object(
+            demisto, "params", return_value={"token": {"password": "mocktoken"}}
+        )
+        mocker.patch.object(platform, "platform", return_value="mock_platform")
+        mock_whoami = mocker.patch.object(RecordedFutureLists.Client, "whoami")
+        mock_whoami.side_effect = Exception("Side effect triggered")
+        mocked_return_err = mocker.patch.object(RecordedFutureLists, "return_error")
+        RecordedFutureLists.main()
+        mocked_return_err.assert_called_with(
+            message=(
+                f'Failed to execute {demisto.command()} command: Failed due to - '
+                'Unknown error. Please verify that the API URL and Token are correctly configured. '
+                'RAW Error: Side effect triggered'
+            )
+        )
