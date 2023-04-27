@@ -190,7 +190,7 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
         earliest_fetch = arg_to_datetime('90 days ago', settings=DATETIME_SETTINGS)
         demisto.debug(f'earliest_fetch: {earliest_fetch}')
         start_date = max(earliest_fetch, start_date)  # type:ignore
-        demisto.debug(f'Compare succeed!!!!')
+        demisto.debug('Compare succeed!!!!')
         params = {'start_epoch': int(start_date.timestamp()), 'limit': limit}  # type:ignore
 
     new_indicators_list = client.get_indicators(indicator_type, params=params)
@@ -198,10 +198,15 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
     if indicator_type != 'Indicators': \
             # new to old
         demisto.debug(f'indicator_type not indicators just: {indicator_type}')
-        new_indicators_list.sort(key=lambda x: arg_to_datetime(x.get('last_updated'), settings=DATETIME_SETTINGS), reverse=True)  # type:ignore
+        new_indicators_list.sort(key=lambda x: arg_to_datetime(x.get('last_updated'), settings=DATETIME_SETTINGS),
+                                 reverse=True)  # type:ignore
         new_indicators_list = list(
-            filter(lambda x: arg_to_datetime(x['last_updated'], settings=DATETIME_SETTINGS).timestamp() > start_date.timestamp(),  # type: ignore
-                   new_indicators_list))
+            filter(
+                lambda x: arg_to_datetime(x["last_updated"],
+                                          settings=DATETIME_SETTINGS).timestamp() > start_date.timestamp(),
+                new_indicators_list,
+            )
+        )
 
     return new_indicators_list
 
