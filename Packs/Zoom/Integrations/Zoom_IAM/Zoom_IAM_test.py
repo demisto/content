@@ -267,3 +267,19 @@ def test_get_user(mocker, returned, expected):
     mocker.patch.object(client, 'error_handled_http_request', return_value=returned)
     res = client.get_user(client, args)
     assert expected == type(res).__name__
+
+
+def test_test_moudle(mocker):
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function test_module
+    Then:
+        - Ensure the test module is returned as expected
+    """
+    client = mock_client_ouath(mocker)
+    mocker.patch.object(Client, "get_user")
+    from Zoom_IAM import test_module
+    res = test_module(client)
+    assert res == "ok"
