@@ -3357,6 +3357,27 @@ def test_panorama_apply_dns_command(mocker, args, expected_request_params, reque
     assert command_result.readable_output == expected_demisto_result
 
 
+def test_panorama_apply_dns_command2(mocker):
+    """
+    Given:
+        - command args with a singel firewall
+    When:
+        - Running panorama-apply-dns
+    Then:
+        - Assert the request parameters are as expected
+    """
+    import Panorama
+    from Panorama import apply_dns_signature_policy_command
+
+    Panorama.API_KEY = 'fakeAPIKEY!'
+    Panorama.DEVICE_GROUP = 'fakeDeviceGroup'
+    request_mock = mocker.patch.object(Panorama, 'http_request', return_value={})
+    apply_dns_signature_policy_command({'anti_spyware_profile_name': 'fake_profile_name'})
+
+    request_params = request_mock.call_args.kwargs['params']  # The body part of the request
+    assert request_params.get('xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']"
+
+
 class TestHygieneFunctions:
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.Vsys.refreshall", return_value=[])
