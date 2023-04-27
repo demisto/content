@@ -10,9 +10,6 @@ from Tests.scripts.utils.log_util import install_logging
 
 install_logging('extract_test_conf.log', logger=logger)
 
-CONTENT_CHANNEL = 'dmst-build-test'
-
-
 def extract(
     content_path: Path,
     content_test_conf_path: Path,
