@@ -417,6 +417,7 @@ def test_zoom_create_meeting_command__too_many_arguments5(mocker):
                                     type="Instant", end_times=7)
     assert e.value.message == 'One or more arguments that were filed\nare used for a recurring meeting with a fixed time only.'
 
+
 def test_meeting_get_command__show_previous_occurrences_is_false(mocker):
     """
        Given -
