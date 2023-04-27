@@ -2006,23 +2006,22 @@ class Pack(object):
 
         return task_status and self.is_changelog_exists()
 
-
     def is_replace_item_in_folder_collected_list(self, content_item: dict, content_items_to_version_map: dict):
         content_item_fromversion = content_item.get('fromversion', '') or content_item.get('fromVersion', '') or ''
         content_item_toversion = content_item.get('toversion', '99.99.99') or content_item.get('toVersion', '99.99.99') or ''
         content_item_id = content_item.get('id', '')
         content_item_latest_version = content_items_to_version_map.setdefault(
-                            content_item_id,
-                            {'fromversion': content_item_fromversion,
-                             'toversion': content_item_toversion
-                             })
+            content_item_id,
+            {'fromversion': content_item_fromversion,
+             'toversion': content_item_toversion
+             })
         if (replace_old_playbook := content_item_latest_version.get('toversion') < content_item_fromversion):
             content_items_to_version_map[content_item_id] = {
                 "fromversion": content_item_fromversion,
                 "toversion": content_item_toversion,
             }
         return replace_old_playbook
-    
+
     def get_latest_versions(self, content_items_id_to_version_map: dict, content_item: dict):
         latest_fromversion = content_items_id_to_version_map.get(content_item.get('id', '')).get('fromversion', '')
         latest_toversion = content_items_id_to_version_map.get(content_item.get('id', '')).get('toversion', '')
@@ -2093,10 +2092,11 @@ class Pack(object):
                                                                           self._pack_name)
 
                     content_item_tags = content_item.get('tags', [])
-                    
-                    replace_content_item = self.is_replace_item_in_folder_collected_list(content_item, content_items_id_to_version_map)
+
+                    replace_content_item = self.is_replace_item_in_folder_collected_list(
+                        content_item, content_items_id_to_version_map)
                     latest_fromversion, latest_toversion = self.get_latest_versions(content_items_id_to_version_map, content_item)
-                    
+
                     if current_directory == PackFolders.SCRIPTS.value:
                         layout_metadata = {
                             'id': content_item.get('commonfields', {}).get('id', ''),
@@ -2107,7 +2107,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                         if not self._contains_transformer and 'transformer' in content_item_tags:
                             self._contains_transformer = True
@@ -2116,7 +2115,7 @@ class Pack(object):
                             self._contains_filter = True
 
                     elif current_directory == PackFolders.PLAYBOOKS.value:
-                        self.add_pack_type_tags(content_item, 'Playbook')                    
+                        self.add_pack_type_tags(content_item, 'Playbook')
                         layout_metadata = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
@@ -2124,17 +2123,7 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ['xsoar', 'marketplacev2']),
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
-                        }                        
-                        if replace_content_item:
-                            folder_collected_items = [layout_metadata
-                                                      if d["id"] == layout_metadata["id"]
-                                                      else
-                                                      d for d in folder_collected_items]
-                        if latest_toversion == '99.99.99':
-                            continue
-                        else:
-                            folder_collected_items.append(layout_metadata)
-
+                        }
                     elif current_directory == PackFolders.INTEGRATIONS.value:
                         integration_commands = content_item.get('script', {}).get('commands', [])
                         self.add_pack_type_tags(content_item, 'Integration')
@@ -2150,7 +2139,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.INCIDENT_FIELDS.value:
                         layout_metadata = {
@@ -2162,7 +2150,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.INCIDENT_TYPES.value:
                         layout_metadata = {
@@ -2177,7 +2164,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.DASHBOARDS.value:
                         layout_metadata = {
@@ -2187,7 +2173,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.INDICATOR_FIELDS.value:
                         layout_metadata = {
@@ -2199,7 +2184,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.REPORTS.value:
                         layout_metadata = {
@@ -2210,7 +2194,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.INDICATOR_TYPES.value:
                         layout_metadata = {
@@ -2222,7 +2205,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.LAYOUTS.value:
                         layout_metadata = {
@@ -2235,7 +2217,6 @@ class Pack(object):
                         layout_description = content_item.get('description')
                         if layout_description is not None:
                             layout_metadata['description'] = layout_description
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.CLASSIFIERS.value:
                         layout_metadata = {
@@ -2246,7 +2227,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.WIDGETS.value:
                         layout_metadata = {
@@ -2258,7 +2238,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.LISTS.value:
                         layout_metadata = {
@@ -2268,7 +2247,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.GENERIC_DEFINITIONS.value:
                         layout_metadata = {
@@ -2279,7 +2257,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif parent_directory == PackFolders.GENERIC_FIELDS.value:
                         layout_metadata = {
@@ -2291,7 +2268,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.GENERIC_MODULES.value:
                         layout_metadata = {
@@ -2302,7 +2278,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif parent_directory == PackFolders.GENERIC_TYPES.value:
                         layout_metadata = {
@@ -2313,7 +2288,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.PREPROCESS_RULES.value:
                         layout_metadata = {
@@ -2324,7 +2298,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.JOBS.value:
                         layout_metadata = {
@@ -2336,7 +2309,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.PARSING_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'ParsingRule')
@@ -2347,7 +2319,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'ModelingRule')
@@ -2360,7 +2331,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.CORRELATION_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'CorrelationRule')
@@ -2372,7 +2342,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.XSIAM_DASHBOARDS.value and pack_file_name.startswith("external-"):
                         preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_DASHBOARDS.value)
@@ -2387,7 +2356,6 @@ class Pack(object):
 
                         if preview:
                             layout_metadata.update({"preview": preview})
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.XSIAM_REPORTS.value and pack_file_name.startswith("external-"):
                         preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_REPORTS.value)
@@ -2402,7 +2370,6 @@ class Pack(object):
 
                         if preview:
                             layout_metadata.update({"preview": preview})
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.WIZARDS.value:
                         layout_metadata = {
@@ -2414,7 +2381,6 @@ class Pack(object):
                             'toVersion': content_item.get('toVersion', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.XDRC_TEMPLATES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'XDRCTemplate')
@@ -2428,7 +2394,6 @@ class Pack(object):
                             'fromversion': latest_fromversion,
                             'toversion': latest_toversion,
                         }
-                        folder_collected_items.append(layout_metadata)
 
                     elif current_directory == PackFolders.LAYOUT_RULES.value and pack_file_name.startswith(
                             "external-"):
@@ -2444,10 +2409,18 @@ class Pack(object):
                         layout_rule_description = content_item.get('description')
                         if layout_rule_description is not None:
                             layout_metadata['description'] = layout_rule_description
-                        folder_collected_items.append(layout_metadata)
-
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
+                        continue
+                    if replace_content_item:
+                        folder_collected_items = [layout_metadata
+                                                  if d["id"] == layout_metadata["id"]
+                                                  else
+                                                  d for d in folder_collected_items]
+                    if latest_toversion == '':
+                        continue
+                    else:
+                        folder_collected_items.append(layout_metadata)
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = CONTENT_ITEM_NAME_MAPPING[current_directory]
