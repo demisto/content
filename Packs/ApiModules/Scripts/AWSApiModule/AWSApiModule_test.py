@@ -212,6 +212,8 @@ def test_extract_session_from_secret(secret_key, session_token, expected):
                 'aws_role_arn': None,
                 'aws_role_session_name': None,
                 'aws_access_key_id': 'test_access_key',
+                'aws_role_session_duration': None
+
             },
             {
                 'role_arn': 'role_arn_arg',
@@ -228,6 +230,7 @@ def test_extract_session_from_secret(secret_key, session_token, expected):
                 'aws_role_arn': 'role_arn_param',
                 'aws_role_session_name': 'role_session_name_param',
                 'aws_access_key_id': 'test_access_key',
+                'aws_role_session_duration': None
             },
             {},
             {
@@ -241,6 +244,7 @@ def test_extract_session_from_secret(secret_key, session_token, expected):
                 'aws_role_arn': 'role_arn_param',
                 'aws_role_session_name': 'role_session_name_param',
                 'aws_access_key_id': 'test_access_key',
+                'aws_role_session_duration': None
             },
             {
                 'role_arn': 'role_arn_arg',
@@ -251,6 +255,23 @@ def test_extract_session_from_secret(secret_key, session_token, expected):
                 'RoleSessionName': 'role_session_name_arg'
             }
         ),
+        (
+            {
+                'aws_default_region': 'us-east-1',
+                'aws_role_arn': 'role_arn_param',
+                'aws_role_session_name': 'role_session_name_param',
+                'aws_access_key_id': 'test_access_key',
+                'aws_role_session_duration': ''
+            },
+            {
+                'role_arn': 'role_arn_arg',
+                'role_session_name': 'role_session_name_arg'
+            },
+            {
+                'RoleArn': 'role_arn_arg',
+                'RoleSessionName': 'role_session_name_arg'
+            }
+        )
     ]
 )
 def test_aws_session(mocker, params, args, expected_assume_roles_args):
@@ -259,6 +280,8 @@ def test_aws_session(mocker, params, args, expected_assume_roles_args):
     - Case A: role arn and role session name provided only from demisto.args()
     - Case B: role arn and role session name provided only from demisto.params()
     - Case C: role arn and role session name provided from both demisto.params() and demisto.args()
+    - Case D: role arn, role session name and aws role session duration which is empty
+              provided from both demisto.params() and demisto.args()
 
     When
     - Calling the aws_session method
@@ -267,10 +290,11 @@ def test_aws_session(mocker, params, args, expected_assume_roles_args):
     - Case A: make sure the role arn and role session name are taken from command arguments
     - Case B: make sure the role arn and role session name are taken from integration parameters
     - Case C: make sure the role arn and role session name are taken from command arguments
+    - Case D: make sure the role arn and role session name are taken from command arguments and no exception is raised
+              when sending empty aws role session
     """
     params.update(
         {
-            'aws_role_session_duration': None,
             'aws_role_policy': None,
             'aws_secret_access_key': 'test_secret_key',
             'verify_certificate': False,

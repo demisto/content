@@ -1,4 +1,5 @@
 import ipaddress
+import tldextract
 import urllib.parse
 from CommonServerPython import *
 from typing import Match
@@ -503,6 +504,8 @@ class URLCheck(object):
             URLError if the domain is invalid
         """
 
+        no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=(), cache_dir=None)
+
         if host.endswith("."):
             host = host.rstrip(".")
 
@@ -510,6 +513,9 @@ class URLCheck(object):
             raise URLError(f"Invalid domain {host}")
 
         elif len(host.split(".")[-1]) < 2:
+            raise URLError(f"Invalid tld for {host}")
+
+        elif not no_fetch_extract(host).suffix:
             raise URLError(f"Invalid tld for {host}")
 
         else:
@@ -620,6 +626,7 @@ class URLFormatter(object):
 
         url = self.correct_and_refang_url(self.original_url)
         url = self.strip_wrappers(url)
+        url = self.correct_and_refang_url(url)
 
         try:
             self.output = URLCheck(url).output
@@ -707,7 +714,9 @@ class URLFormatter(object):
         schemas = re.compile("(meow|hxxp)", re.IGNORECASE)
         url = url.replace("[.]", ".")
         url = url.replace("[:]", ":")
-        url = re.sub(schemas, "http", url)
+        lower_url = url.lower()
+        if lower_url.startswith("hxxp") or lower_url.startswith('meow'):
+            url = re.sub(schemas, "http", url, count=1)
 
         def fix_scheme(match: Match) -> str:
             return re.sub(":(\\\\|/)*", "://", match.group(0))
