@@ -6097,7 +6097,7 @@ def test_pan_os_create_address_main_flow_error(args):
             </response>',
             {"name": "test", "tag": "not exist"},
             "Failed to create the address object since the tags `{'not exist'}` does not exist."
-         ),
+        ),
         (
             "",
             "vsys1",
@@ -6110,7 +6110,7 @@ def test_pan_os_create_address_main_flow_error(args):
             </response>',
             {"name": "test", "tag": "exist, not exist", 'create_tag': 'Yes'},
             'Please specify exactly one of the following arguments: fqdn, ip_netmask, ip_range, ip_wildcard.'
-         ),
+        ),
     ]
 )
 def test_pan_os_create_address_with_not_exist_tag(mocker, device_group, vsys, response, args, error):
