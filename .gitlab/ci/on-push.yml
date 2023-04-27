@@ -526,6 +526,7 @@ xsoar_ng_server_ga:
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
       when: always
   variables:
     INSTANCE_ROLE: "XSIAM"
