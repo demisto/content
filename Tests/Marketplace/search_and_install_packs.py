@@ -687,6 +687,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     installation_request_body: list = []  # the packs to install, in the request format
     batch_packs_install_request_body: list = []    # list of lists of packs to install if install packs one by one.
     # Each list contain one pack and its dependencies.
+    packs_to_install_together: list = []
+    installed_packs: list = []
 
     lock = Lock()
 
@@ -712,6 +714,12 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         batch_packs_install_request_body = [installation_request_body]
 
     for packs_to_install_body in batch_packs_install_request_body:
-        install_packs(client, host, packs_to_install_body)
+        for peck in packs_to_install_body:
+            if peck not in installed_packs:
+                installed_packs.append(peck)
+                packs_to_install_together.append(peck)
+        if len(packs_to_install_together) > 9:
+            install_packs(client, host, packs_to_install_together)
+            packs_to_install_together = []
 
     return packs_to_install, SUCCESS_FLAG
