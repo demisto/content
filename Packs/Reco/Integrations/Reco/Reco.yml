@@ -178,6 +178,42 @@ script:
     description: Get all sensitive assets from Reco by name
     execution: false
     name: reco-get-sensitive-assets-by-name
+  - arguments:
+    - default: false
+      description: Asset id to search for
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get all sensitive assets from Reco by id
+    execution: false
+    name: reco-get-sensitive-assets-by-id
+    outputs:
+      - contextPath: Reco.SensitiveAssets.file_name
+        description: The name of the asset
+        type: String
+      - contextPath: Reco.SensitiveAssets.file_owner
+        description: The owner of the asset
+        type: String
+      - contextPath: Reco.SensitiveAssets.file_url
+        description: Json string of the asset's url and the name
+        type: Unknown
+      - contextPath: Reco.SensitiveAssets.currently_permitted_users
+        description: List of currently permitted users
+        type: String
+      - contextPath: Reco.SensitiveAssets.visibility
+        description: Visibility of the asset
+        type: String
+      - contextPath: Reco.SensitiveAssets.location
+        description: The path of the asset
+        type: String
+      - contextPath: Reco.SensitiveAssets.source
+        description: SaaS tool source of the asset
+        type: String
+      - contextPath: Reco.SensitiveAssets.sensitivity_level
+        description: The sensitivity level of the asset
+        type: Number
 tests:
 - No tests
 fromversion: 6.5.0
