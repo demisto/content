@@ -200,13 +200,26 @@ There is no context output for this command.
 ##### Human Readable Output
 'EDL will be updated the next time you access it'
 
-### Troubleshooting
-Memory issue can happen in CSV / JSON format over 150,000 if all fields are selected.
 
-#### In terms of times
-* 10,000 indicators can take 10 - 20 seconds.
-* 100,000 indicators can take 1 - 3 minutes.
+### Troubleshooting
+* Indicators that are passed through the integration undergo formatting and deduplication process, which may lead to an apparent loss of indicators.  
+For instance, enabling the `Strip ports from URLs` option may cause two URLs that are similar but use different ports to be merged into a single indicator after formatting, resulting in the removal of one of them as a duplicate.
+* In case all fields are selected, there is a potential memory issue when dealing with CSV or JSON format files that exceed 150,000 entries.
+
+#### Custom HTTP Headers
+The response from EDL's endpoint includes some custom headers, starting with `X-EDL` that can be used for debugging.  
+The headers are:  
+- `X-EDL-Created` - The date and time the response was created.
+- `X-EDL-Query-Time-Secs` - The time it took to execute the query and format the response.
+- `X-EDL-Size` - The number of indicators returned in the response.
+
+
+#### Execution Time
+* 10,000 indicators can take 10-20 seconds.
+* 100,000 indicators can take up to 1-3 minutes.
 * 1,000,000 indicators can take over half an hour.
+
 In 5 minutes (the default timeout of the integration) the integration can export between 200,000 to 400,000 indicators,
-depending on the load of the server, the existing indicators in the server, and the query used.
+depending on the load of the server, the existing indicators in the server, and the query used.  
+
 The *NGINX Read Timeout* can be set to increase the timeout.

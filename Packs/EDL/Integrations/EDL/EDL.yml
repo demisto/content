@@ -260,8 +260,6 @@ configuration:
   name: use_legacy_query
   required: false
   type: 8
-
-
   section: Collect
   advanced: true
 description: Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.

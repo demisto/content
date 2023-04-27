@@ -285,7 +285,7 @@ def create_new_edl(request_args: RequestArguments) -> str:
             # Because there may be illegal indicators or they may turn into cider, the limit is increased
             indicator_searcher.limit = int(limit * INCREASE_LIMIT)
         new_iocs_file = get_indicators_to_format(indicator_searcher, request_args)
-        # we collect first all indicators because we ned all ips to collapse_ips
+        # we collect first all indicators because we need all ips to collapse_ips
         new_iocs_file = create_text_out_format(new_iocs_file, request_args)
         new_iocs_file.seek(0)
         iocs_set = set()
