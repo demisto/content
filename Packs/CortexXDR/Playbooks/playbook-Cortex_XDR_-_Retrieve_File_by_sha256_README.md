@@ -1,10 +1,15 @@
 This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-This playbook is a sub-playbook for the Cortex XDR malware investigation flow. In this playbook, we retrieve multiple files from the investigated device (using the Device ID incident field), based on their SHA256 hash.
-To run the playbook always remember to make it shared with the global context and set the Sha256 input to run in a loop ( in case there are multiple SHA256s that needs to be retrieved).
+The playbook facilitates the process of retrieving files from the investigated devices, unzipping the retrieved files, and loading them into the War Room.
 
-How does this playbook works:
-The playbook sets all SHA256 paths from the alert to be retreived from the endpoint. Once the playbook checked the relevent paths (Actor,Action and Cusallity paths) it will run all the mathced pats agains all the endpoints ids that are
-associated with the incident.
+This playbook consists of the following steps:
+
+Initially, the sub-playbook 'Cortex XDR - Get File Path from alerts by hash' examines the SHA256 file hashes and retrieves the file paths associated with each hash.
+As soon as the SHA256 hashes, file paths, and endpoint IDs are obtained, the playbook attempts to retrieve the files from all the investigated devices.
+Once the file retrieval automation has been completed successfully, the playbook will unzip the files and load them into the War Room.
+
+Please note:
+1. The sub-playbook context must be shared globally.
+2. Ensure that the SHA256 input is set to run in a loop when there are multiple files to retrieve.
 
 ## Dependencies
 
@@ -20,9 +25,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* isError
-* UnzipFile
 * PrintErrorEntry
+* UnzipFile
+* isError
 
 ### Commands
 
