@@ -81,7 +81,7 @@ script:
     description: Returns events extracted from SaaS traffic and or logs.
     execution: false
     name: netskope-get-events
-  dockerimage: demisto/python3:3.10.10.50695
+  dockerimage: demisto/python3:3.10.10.52956
   feed: false
   isfetch: false
   longRunning: false

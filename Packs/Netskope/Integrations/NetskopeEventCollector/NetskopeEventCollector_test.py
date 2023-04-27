@@ -13,6 +13,9 @@ MOCK_ENTRY = util_load_json('test_data/mock_events.json')
 EVENTS_RAW_V2 = util_load_json('test_data/events_raw_v2.json')
 EVENTS_RAW_V2_MULTI = util_load_json('test_data/events_raw_v2_2_results.json')
 BASE_URL = 'https://netskope.example.com/'
+FIRST_LAST_RUN = {'alert': 1680182467, 'alert-ids': [], 'application': 1680182467, 'application-ids': [],
+                  'audit': 1680182467, 'audit-ids': [], 'network': 1680182467, 'network-ids': [],
+                  'page': 1680182467, 'page-ids': []}
 
 
 def test_get_sorted_events_by_type():
@@ -80,8 +83,7 @@ def test_test_module_v2(mocker):
     from NetskopeEventCollector import test_module
     client = Client(BASE_URL, 'dummy_token', 'v2', False, False)
     mocker.patch.object(client, 'get_events_request_v2', return_value=EVENTS_RAW_V2)
-
-    results = test_module(client, api_version='v2', last_run={})
+    results = test_module(client, api_version='v2', last_run=FIRST_LAST_RUN)
     assert results == 'ok'
 
 
@@ -100,7 +102,7 @@ def test_v2_get_events_command(mocker):
     args = {
         'limit': 2
     }
-    response, _ = v2_get_events_command(client, args, {})
+    response, _ = v2_get_events_command(client, args, FIRST_LAST_RUN)
     assert response.raw_response == MOCK_ENTRY
     assert len(response.outputs) == 9
     assert 'Events List' in response.readable_output
@@ -118,7 +120,7 @@ def test_get_events_v2(mocker):
     from NetskopeEventCollector import get_events_v2, ALL_SUPPORTED_EVENT_TYPES
     client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
     mocker.patch.object(client, 'get_events_request_v2', return_value=EVENTS_RAW_V2)
-    response = get_events_v2(client, {}, 1)
+    response = get_events_v2(client, FIRST_LAST_RUN, 1)
     assert len(response) == len(ALL_SUPPORTED_EVENT_TYPES)
     assert 'results' not in response
 
@@ -139,7 +141,7 @@ def test_get_events_v2__multi_page__end_at_limit(mocker):
     client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
     mocker.patch.object(client, 'get_events_request_v2', side_effect=[EVENTS_RAW_V2 for _ in range(10)])
     NEC.MAX_EVENTS_PAGE_SIZE = 1
-    response = NEC.get_events_v2(client, {}, 2)
+    response = NEC.get_events_v2(client, FIRST_LAST_RUN, 2)
     assert len(response) == (2 * len(NEC.ALL_SUPPORTED_EVENT_TYPES))
 
 
@@ -160,6 +162,6 @@ def test_get_events_v2__multi_page__end_before_limit(mocker):
     side_effect = [EVENTS_RAW_V2_MULTI for _ in range(9)] + [EVENTS_RAW_V2]
     mocker.patch.object(client, 'get_events_request_v2', side_effect=side_effect)
     NEC.MAX_EVENTS_PAGE_SIZE = 2
-    response = NEC.get_events_v2(client, {}, 4)
+    response = NEC.get_events_v2(client, FIRST_LAST_RUN, 4)
     assert len(response) == (4 * len(NEC.ALL_SUPPORTED_EVENT_TYPES) - 1)
     assert 'results' not in response

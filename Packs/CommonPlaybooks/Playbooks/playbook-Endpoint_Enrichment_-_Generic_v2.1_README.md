@@ -19,10 +19,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
+* McAfee ePO v2
+* carbonblack-v2
 * epo
 * Active Directory Query v2
-* carbonblack-v2
-* McAfee ePO v2
 
 ### Scripts
 
@@ -31,12 +31,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * endpoint
-* extrahop-device-search
-* ad-get-computer
-* cb-sensor-info
-* cs-device-search
-* epo-find-system
 * cs-device-details
+* cb-sensor-info
+* extrahop-device-search
+* cs-device-search
+* ad-get-computer
+* epo-find-system
 
 ## Playbook Inputs
 
@@ -94,6 +94,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Endpoint.IsIsolated | The endpoint isolation status. | unknown |
 | Endpoint.MACAddress | The endpoint MAC address. | unknown |
 | Endpoint.Vendor | The integration name of the endpoint vendor. | unknown |
+| ActiveDirectory.Computers | The information about the hostname that was enriched using Active Directory. | unknown |
+| ActiveDirectory.Computers.dn | The computer distinguished name. | unknown |
+| ActiveDirectory.Computers.memberOf | Groups for which the computer is listed. | unknown |
+| ActiveDirectory.Computers.name | The computer name. | unknown |
+| Endpoint.Groups | Groups for which the computer is listed as a member. | unknown |
+| ActiveDirectory.ComputersPageCookie | An opaque string received in a paged search, used for requesting subsequent entries. | unknown |
 
 ## Playbook Image
 
