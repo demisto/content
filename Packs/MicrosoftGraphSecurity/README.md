@@ -14,4 +14,3 @@ Use the Microsoft Graph integration to fetch and manage alerts from various Micr
 - Unlock security context to drive investigation
 - Automate security workflows and reporting
 - Get deep insights to train security solutions
-- Microsoft Graph API 
