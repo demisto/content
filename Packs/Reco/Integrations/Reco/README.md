@@ -176,12 +176,12 @@ Get sensitive assets by id
 |-------------|----------|----------------|
 | Reco.SensitiveAssets.file_name | string   |  The name of the asset |
 | Reco.SensitiveAssets.file_owner | string   | The owner of the asset |
-| Reco.SensitiveAssets.file_url | JSON     |  Json string of the asset's url and the name |
+| Reco.SensitiveAssets.file_url | Unknown     |  Json string of the asset's url and the name |
 | Reco.SensitiveAssets.currently_permitted_users | String   | List of currently permitted users |
 | Reco.SensitiveAssets.visibility | string   |  Visibility of the asset |
 | Reco.SensitiveAssets.location | string   |  The path of the asset |
 | Reco.SensitiveAssets.source | string   |  SaaS tool source of the asset |
-| Reco.SensitiveAssets.sensitivity_level | Integer  | The sensitivity level of the asset |
+| Reco.SensitiveAssets.sensitivity_level | Number  | The sensitivity level of the asset |
 
 
 
