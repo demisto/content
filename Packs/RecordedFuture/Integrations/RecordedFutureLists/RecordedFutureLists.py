@@ -80,10 +80,10 @@ class Client(BaseClient):
 
     def list_search(self) -> Dict[str, Any]:
         parsed_args = demisto.args()
-        if list_names := parsed_args.get('list_name'):
-            parsed_args['list_name'] = list_names.split(",")
-        if types := parsed_args.get('entity_types'):
-            parsed_args["entity_types"] = types.split(",")
+        if list_names := parsed_args.get('list_names'):
+            parsed_args['list_names'] = list_names.split(",")
+        if types := parsed_args.get('contains'):
+            parsed_args["contains"] = types.split(",")
         """Get details of a playbook alert"""
         return self._call(
             url_suffix='/v2/lists/search', demisto_args=parsed_args
