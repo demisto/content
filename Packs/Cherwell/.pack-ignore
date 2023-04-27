@@ -7,6 +7,15 @@ ignore=RM106
 [file:CherwellGetIncident.yml]
 ignore=BA124
 
+[file:CherwellGetAlert.yml]
+ignore=BA124
+
+[file:CherwellGetAlert.yml]
+ignore=RM109
+
+[file:CherwellGetAlert.yml]
+ignore=CJ105
+
 [file:CherwellIncidentUnlinkTask.yml]
 ignore=BA124
 
@@ -21,4 +30,10 @@ ignore=BA124
 
 [file:CherwellIncidentOwnTask.yml]
 ignore=BA124
+
+[file:CherwellGetAlert.yml]
+ignore=DO106
+
+[file:pack_metadata.json]
+ignore=DO106
 
