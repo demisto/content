@@ -107,7 +107,7 @@ class Client(Zoom_Client):
             json_data=json_data)
 
     def zoom_meeting_get(self, meeting_id: str, occurrence_id: str | None = None,
-                         show_previous_occurrences: bool | str = False):  # pragma: no cover
+                         show_previous_occurrences: bool | str = False):
         return self.error_handled_http_request(
             method='GET',
             url_suffix=f"/meetings/{meeting_id}",

@@ -93,7 +93,7 @@ class Client(Zoom_Client):
         user_data = {'action': 'deactivate'}
         return self.update_user(user_id, user_data)
 
-    def enable_user(self, user_id: str) -> IAMUserAppData:   # pragma: no cover
+    def enable_user(self, user_id: str) -> IAMUserAppData:
         """ Enables a user in the application using REST API.
 
         :type user_id: ``str``

@@ -397,6 +397,26 @@ def test_zoom_create_meeting_command__too_meny_arguments4(mocker):
 time is missing this argument: recurrence_type."""
 
 
+def test_zoom_create_meeting_command__too_many_arguments5(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a instant meeting with end_times:
+       Then -
+           Validate that the right error will return
+    """
+    mocker.patch.object(Client, "zoom_create_meeting", return_value={"bla": "bla"})
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    from Zoom import zoom_create_meeting_command
+    with pytest.raises(DemistoException) as e:
+        zoom_create_meeting_command(client=client,
+                                    type="Instant", end_times=7)
+    assert e.value.message == 'One or more arguments that were filed\nare used for a recurring meeting with a fixed time only.'
+
 def test_meeting_get_command__show_previous_occurrences_is_false(mocker):
     """
        Given -
