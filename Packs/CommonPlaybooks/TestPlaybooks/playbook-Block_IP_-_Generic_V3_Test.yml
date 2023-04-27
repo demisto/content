@@ -1,6 +1,5 @@
 id: Block IP - Generic V3_Test
-version: 3
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Block IP - Generic V3_Test
 description: |-
   Test Playbook for the "Block IP - generic V3" playbook.
@@ -19,11 +18,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -38,6 +37,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 00adeea4-d538-4061-84a0-6872a0df35ab
@@ -46,18 +46,7 @@ tasks:
       id: 00adeea4-d538-4061-84a0-6872a0df35ab
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations
-        that are enabled. The direction of the traffic that will be blocked is determined
-        by the XSOAR user (and set by default to outgoing)\nNote the following:\n-
-        \ some of those integrations require specific parameters to run, which are
-        based on the playbook inputs. Also, certain integrations use FW rules or appended
-        network objects.\n- Note that the appended network objects should be specified
-        in blocking rules inside the system later on. \n\n\nSupported integrations
-        for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n*
-        Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n*
-        Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n*
-        Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n*
-        Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
@@ -85,7 +74,6 @@ tasks:
       UserVerification:
         simple: "False"
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -105,6 +93,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 33a27c98-d708-443f-81a7-f7540fb01b4f
@@ -127,7 +116,6 @@ tasks:
       query:
         simple: tags:testpb
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -142,6 +130,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: 2fbd18e8-26bd-4257-89ea-957c5d49bfd2
@@ -170,7 +159,6 @@ tasks:
           right:
             value:
               simple: 1.1.1.1
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -185,6 +173,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: a2cbb88b-37a8-4161-81b2-7d368c7ebe24
@@ -196,8 +185,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -212,6 +201,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: 87d3c3ff-cd72-46d5-831d-856531c0329a
@@ -232,7 +222,6 @@ tasks:
       message:
         simple: 'IP was not matched '
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -247,6 +236,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: 5d75d4b3-13ee-458a-8b1b-f3c92501e21b
@@ -298,6 +288,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -365,18 +356,7 @@ tasks:
       id: f87334f5-359f-42a2-88d3-76349845994a
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations
-        that are enabled. The direction of the traffic that will be blocked is determined
-        by the XSOAR user (and set by default to outgoing)\nNote the following:\n-
-        \ some of those integrations require specific parameters to run, which are
-        based on the playbook inputs. Also, certain integrations use FW rules or appended
-        network objects.\n- Note that the appended network objects should be specified
-        in blocking rules inside the system later on. \n\n\nSupported integrations
-        for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n*
-        Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n*
-        Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n*
-        Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n*
-        Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
@@ -435,6 +415,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -468,3 +449,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.0.0
