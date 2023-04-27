@@ -3,6 +3,7 @@ from freezegun import freeze_time
 import json
 import os
 import zipfile
+from collections.abc import Callable
 
 import pytest
 
@@ -10,7 +11,8 @@ import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
-    isolate_endpoint_command, get_list_risky_users_command, get_list_risky_hosts_command, get_list_user_groups_command
+    isolate_endpoint_command, get_list_risky_users_command, get_list_risky_hosts_command, get_list_user_groups_command, \
+    parse_user_groups, get_list_users_command
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
@@ -3167,93 +3169,206 @@ def test_core_commands_raise_exception(mocker, command_to_run, args, error, rais
 
 
 @pytest.mark.parametrize(
-    "args, excepted_calls",
+    "func_command, func_http, args, excepted_calls",
     [
-        ({"user_id": "test"}, {"get_risk_by_user": 1, "get_list_risky_users": 0}),
-        ({}, {"get_risk_by_user": 0, "get_list_risky_users": 1}),
+        (get_list_risky_users_command, "get_list_risky_users", {"user_id": "test"}, {"get_risk_score_user_or_host": 1, "get_list_risky_users": 0}),
+        (get_list_risky_users_command, "get_list_risky_users", {}, {"get_risk_score_user_or_host": 0, "get_list_risky_users": 1}),
+
+        (get_list_risky_hosts_command, "get_list_risky_hosts", {"host_id": "test"}, {"get_risk_score_user_or_host": 1, "get_list_risky_hosts": 0}),
+        (get_list_risky_hosts_command, "get_list_risky_hosts", {}, {"get_risk_score_user_or_host": 0, "get_list_risky_hosts": 1}),
 
     ]
 )
-def test_get_list_risky_users_command(mocker, args, excepted_calls):
+def test_get_list_risky_users_and_hosts_command(mocker, func_command: Callable, func_http: str, args: dict , excepted_calls: dict):
+    """
+    Tests the `get_list_risky_users_command` and `get_list_risky_hosts_command` functions.
+    Each test case checks if the function call results in the expected function calls to the
+    client API, and asserts that the expected API function is called with the expected arguments.
+
+    Args:
+        mocker: The pytest-mock object.
+        func_command (function): The function being tested (either `get_list_risky_users_command` or `get_list_risky_hosts_command`).
+        func_http (str): The name of the CoreClient method being called in the function being tested (either "get_list_risky_users" or "get_list_risky_hosts").
+        args (dict): The arguments to pass to the function being tested.
+        expected_calls (dict): A dictionary that specifies the expected number of calls to `get_risk_score_user_or_host` and `func_http`.
+
+    Returns:
+        None
+
+    Raises:
+        AssertionError: If the number of calls to `get_risk_score_user_or_host` or `func_http` does not match the expected values.
+    """
     client = CoreClient("test", {})
-    get_risk_by_user = mocker.patch.object(CoreClient, "get_risk_score_user_or_host", return_value={})
-    get_list_risky_users = mocker.patch.object(CoreClient, "get_list_risky_users", return_value={})
-
-    get_list_risky_users_command(client=client, args=args)
-
-    assert get_list_risky_users.call_count == excepted_calls["get_list_risky_users"]
-    assert get_risk_by_user.call_count == excepted_calls["get_risk_by_user"]
-
-
-def test_get_list_risky_users_command_raise_exception(mocker):
-    client = CoreClient(
-        base_url="test",
-        headers={},
-    )
-
-    class MockException:
-        def __init__(self, status_code) -> None:
-            self.status_code = status_code
-
-    mocker.patch.object(
-        client,
-        "get_risk_score_user_or_host",
-        side_effect=DemistoException(message="id 'test' was not found", res=MockException(500)),
-    )
-    with pytest.raises(Exception, match="Error: id test was not found, full error message: id 'test' was not found"):
-        get_list_risky_users_command(client, {"user_id": "test"})
-
-
-@pytest.mark.parametrize(
-    "args, excepted_calls",
-    [
-        ({"host_id": "test"}, {"get_risk_by_host": 1, "get_list_risky_hosts": 0}),
-        ({}, {"get_risk_by_host": 0, "get_list_risky_hosts": 1}),
-
-    ]
-)
-def test_get_list_risky_hosts_command(mocker, args, excepted_calls):
-    client = CoreClient("test", {})
-    get_risk_by_host = mocker.patch.object(CoreClient, "get_risk_score_user_or_host", return_value={})
-    get_list_risky_hosts = mocker.patch.object(CoreClient, "get_list_risky_hosts", return_value={})
-
-    get_list_risky_hosts_command(client=client, args=args)
-
-    assert get_list_risky_hosts.call_count == excepted_calls["get_list_risky_hosts"]
-    assert get_risk_by_host.call_count == excepted_calls["get_risk_by_host"]
-
-
-def test_get_list_risky_hosts_command_raise_exception(mocker):
-    client = CoreClient(
-        base_url="test",
-        headers={},
-    )
-
-    class MockException:
-        def __init__(self, status_code) -> None:
-            self.status_code = status_code
-
-    mocker.patch.object(
-        client,
-        "get_risk_score_user_or_host",
-        side_effect=DemistoException(message="id 'test' was not found", res=MockException(500)),
-    )
-    with pytest.raises(Exception, match="Error: id test was not found, full error message: id 'test' was not found"):
-        get_list_risky_hosts_command(client, {"host_id": "test"})
-
-
-@pytest.mark.parametrize(
-    "args, excepted_calls",
-    [
-        ({"group_names": "test"}, {"get_list_user_groups": 1}),
-        ({}, {"get_list_user_groups": 1}),
-
-    ]
-)
-def test_get_list_user_groups_command(mocker, args, excepted_calls):
-    client = CoreClient("test", {})
-    get_list_user_groups = mocker.patch.object(CoreClient, "get_list_user_groups", return_value={})
     
-    get_list_user_groups_command(client=client, args=args)
+    get_risk_by_user_or_host = mocker.patch.object(CoreClient, "get_risk_score_user_or_host", return_value={})
+    get_list_risky_users = mocker.patch.object(CoreClient, func_http, return_value={})
 
-    assert get_list_user_groups.call_count == excepted_calls["get_list_user_groups"]
+    func_command(client=client, args=args)
+
+    assert get_risk_by_user_or_host.call_count == excepted_calls["get_risk_score_user_or_host"]
+    assert get_list_risky_users.call_count == excepted_calls[func_http]
+
+
+@pytest.mark.parametrize(
+    "command_func, id",
+    [
+        (get_list_risky_users_command, "user_id"),
+        (get_list_risky_hosts_command, "host_id")
+    ]
+)
+def test_get_list_risky_users_hosts_command_raise_exception(mocker, command_func: Callable, id: str):
+    """
+        Tests that the 'get_list_risky_users_command' and 'get_list_risky_hosts_command'
+        functions raise an exception when the
+        given user or host ID is not found in the system.
+
+        Args:
+            mocker: The pytest-mock object.
+            command_func: The function to be tested, either 'get_list_risky_users_command'
+                          or 'get_list_risky_hosts_command'.
+            id: A string representing the ID of the user or host to be tested.
+
+        Raises:
+            Exception: If the user or host ID is not found in the system.
+
+        Returns:
+            None
+    """
+    client = CoreClient(
+        base_url="test",
+        headers={},
+    )
+
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    mocker.patch.object(
+        client,
+        "get_risk_score_user_or_host",
+        side_effect=DemistoException(message="id 'test' was not found", res=MockException(500)),
+    )
+    with pytest.raises(Exception, match="Error: id test was not found, full error message: id 'test' was not found"):
+        command_func(client, {id: "test"})
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ({"group_names": "test"}),
+        ({}),
+
+    ]
+)
+def test_get_list_user_groups_command(mocker, args: dict):
+    """
+    Test function to validate the behavior of the `get_list_user_groups_command` function.
+
+    Args:
+        mocker: Pytest mocker object.
+        args (dict): A dictionary containing optional `group_names` argument.
+
+    Returns:
+        None
+
+    Raises:
+        AssertionError: If the expected output doesn't match the actual output.
+    """
+    client = CoreClient("test", {})
+    test_data = load_test_data('./test_data/get_list_user_groups.json')
+    mocker.patch.object(CoreClient, "get_list_user_groups", return_value=test_data)
+
+    results = get_list_user_groups_command(client=client, args=args)
+    assert  "dummy1@gmail.com" in results.readable_output
+
+
+@pytest.mark.parametrize(
+    'data',
+    [
+        ({
+            "group_name": "Group2",
+            "description": None,
+            "pretty_name": "dummy1",
+            "insert_time": 1111111111111,
+            "update_time": 2222222222222,
+            "user_email": [
+                "dummy1@gmail.com",
+                "dummy2@gmail.com",
+                "dummy3@gmail.com",
+                "dummy4@gmail.com",
+                "dummy5@gmail.com"
+            ],
+            "source": "Custom"
+        })
+    ]
+)
+def test_parse_user_groups(data: dict):
+    """
+    Test the 'parse_user_groups' function that parses user group information.
+    
+    Args:
+        data (dict): A dictionary containing a sample user group data.
+        
+    Returns:
+        None
+    
+    Raises:
+        AssertionError: If the parsing of user groups data fails.
+    """
+    results = parse_user_groups(data)
+
+    assert "dummy1@gmail.com" in results[0].get('User email')
+    assert len(results) == 5
+
+
+def test_get_list_user_groups_command_raise_exception(mocker):
+    """
+    Tests that the 'get_list_user_groups_command' function raises an exception when the 'get_list_user_groups' method of
+    the 'CoreClient' class raises a 'DemistoException'.
+
+    Args:
+        mocker: The pytest mocker object.
+
+    Raises:
+        Exception: If the 'get_list_user_groups_command' function does not raise an exception when expected.
+
+    Returns:
+        None.
+    """
+    client = CoreClient(
+        base_url="test",
+        headers={},
+    )
+
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    mocker.patch.object(
+        client,
+        "get_list_user_groups",
+        side_effect=DemistoException(message="Group 'test' was not found", res=MockException(500)),
+    )
+    with pytest.raises(Exception, match="Error: Group test was not found, Note: If you sent more than one group name, they may not exist either, full error message: Group 'test' was not found"):
+        get_list_user_groups_command(client, {"group_names": "test"})
+
+
+def test_get_list_users_command(mocker):
+    """
+    Tests the `get_list_users_command` function.
+
+    Args:
+        mocker: The pytest mocker object.
+
+    Returns:
+        None.
+
+    Raises:
+        AssertionError: If the test fails.
+    """
+    client = CoreClient("test", {})
+    test_data = load_test_data('./test_data/get_list_users.json')
+    mocker.patch.object(CoreClient, "get_list_users", return_value=test_data)
+
+    results = get_list_users_command(client=client, args={})
+    assert "dummy@dummy.com" in results.readable_output
