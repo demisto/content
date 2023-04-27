@@ -2023,8 +2023,13 @@ class Pack(object):
         return replace_old_playbook
 
     def get_latest_versions(self, content_items_id_to_version_map: dict, content_item: dict):
-        latest_fromversion = content_items_id_to_version_map.get(content_item.get('id', '')).get('fromversion', '')
-        latest_toversion = content_items_id_to_version_map.get(content_item.get('id', '')).get('toversion', '')
+        if (curr_content_item := content_items_id_to_version_map.get(
+            content_item.get('id', ''))):
+            latest_fromversion = curr_content_item.get('fromversion', '')
+            latest_toversion = curr_content_item.get('toversion', '')
+        else:
+            latest_fromversion = ''
+            latest_toversion = ''
         latest_toversion = latest_toversion if latest_toversion != '99.99.99' else ''
         return latest_fromversion, latest_toversion
 
@@ -2050,7 +2055,7 @@ class Pack(object):
                 elif current_directory in [PackFolders.GENERIC_TYPES.value, PackFolders.GENERIC_FIELDS.value]:
                     continue
 
-                folder_collected_items = []
+                folder_collected_items: list = []
                 for pack_file_name in pack_files_names:
                     if not pack_file_name.endswith(('.json', '.yml')):
                         continue
