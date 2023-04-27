@@ -1,0 +1,21 @@
+{
+    "name": "CybelAngel",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "mike1796",
+    "url": "",
+    "email": "",
+    "created": "2023-04-27T07:43:13Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "mike1796"
+    ]
+}

@@ -1,0 +1,170 @@
+category: Utilities
+commonfields:
+  id: CybelAngel
+  version: -1
+configuration:
+- additionalinfo: https://platform.cybelangel.com/api
+  defaultvalue: https://platform.cybelangel.com/api
+  display: API URL from the CybelAngel platform
+  name: url
+  required: true
+  type: 0
+- additionalinfo: Client ID provided by the Cybelangel platform
+  display: Client ID
+  displaypassword: Client ID
+  hiddenusername: true
+  name: client_id
+  required: true
+  type: 0
+- additionalinfo: Client ID provided by the Cybelangel platform
+  display: Secret client
+  displaypassword: Secret client
+  hiddenusername: true
+  name: secret_client
+  required: true
+  type: 4
+- additionalinfo: Reports are going to be pulled from this date. Date format yyyy-mm-ddTHH:MM:SS
+  display: First fetch date
+  name: first_fetch
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- additionalinfo: Tenant ID provided by the Cybelangel platform
+  display: Tenant ID
+  name: tenant_id
+  required: false
+  type: 0
+description: CybelAngel integration
+display: CybelAngel
+name: CybelAngel
+script:
+  commands:
+  - arguments:
+    - description: 'Reports are being pulled from this date. Date format yyyy-mm-ddTHH:MM:SS '
+      name: start_date
+      required: true
+      type: textArea
+    - description: Reports are being pulled until this date, if no specified current time will be taken as the end_date. Date formatyyyy-mm-ddTHH:MM:SS
+      name: end_date
+    - auto: PREDEFINED
+      description: Report list will be filtered out using the status provided
+      isArray: true
+      name: status
+      predefined:
+      - open
+      - in_progress
+      - resolved
+      - discarded
+    description: Get all the reports from a certain time, if end_time  is not specified it will return data until current time
+    name: cybelangel-get-reports
+    outputs:
+    - contextPath: CybelAngel.Reports
+      description: CybelAngel reports created between dates provided
+  - arguments:
+    - description: Report ID found on the CybelAngel platform  (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+      name: report_id
+      required: true
+      type: textArea
+    description: Returns a CybelAngel report using the ID provided
+    name: cybelangel-get-single-report
+    outputs:
+    - contextPath: CybelAngel.Report.id
+      description: Report ID
+      type: string
+    - contextPath: CybelAngel.Report.report_content
+      description: Markdown styled report content
+      type: string
+    - contextPath: CybelAngel.Report.url
+      description: CybelAngel report url
+      type: string
+    - contextPath: CybelAngel.Report.category
+      description: Report category
+      type: string
+    - contextPath: CybelAngel.Report.created_at
+      description: Creation date of report
+      type: date
+    - contextPath: CybelAngel.Report.incident_type
+      description: Incident type of report
+  - arguments:
+    - description: Report ID (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+      name: report_id
+      required: true
+    - description: Attachment ID (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+      name: attachment_id
+      required: true
+    description: Returns a single attachment from report
+    name: cybelangel-get-single-attachment
+    outputs:
+    - contextPath: CybelAngel.Report.attachment
+      description: Attachment from report
+  - arguments:
+    - description: Report ID  (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+      name: report_id
+      required: true
+    description: Returns a list of all attachments from a CybelAngel report
+    name: cybelangel-get-attachments-from-report
+    outputs:
+    - contextPath: CybelAngel.Report.attachments
+      description: Returns a list of all attachments from a report
+      type: string
+  - arguments:
+    - description: Report ID  (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+      name: report_id
+      required: true
+      type: textArea
+    - auto: PREDEFINED
+      description: This will be the new status of the report
+      name: status
+      predefined:
+      - resolved
+      - open
+      required: true
+      type: textArea
+    description: 'Updates the status of a CybelAngel report. '
+    name: cybelangel-update-report-status
+    outputs:
+    - contextPath: CybelAngel.Report.status
+      description: Updated status
+  - arguments:
+    - description: Report ID  (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+      name: report_id
+      required: true
+    description: Gets all the comments from a CybelAngel report
+    name: cybelangel-get-comments
+    outputs:
+    - contextPath: CybelAngel.Reports.comments
+      description: Comments from a repor t
+  - arguments:
+    - description: Report ID  (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+      name: report_id
+      required: true
+    - description: Comment content that will be added
+      name: comment
+      required: true
+    description: Created a comment on a CybelAngel report
+    name: cybelangel-create-comment
+    outputs:
+    - contextPath: CybelAngel.Reports.comment
+      description: Comment entity from new comment
+  dockerimage: demisto/python3:3.10.11.55362
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
