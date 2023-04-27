@@ -21,8 +21,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Scripts
 
 * isError
-* PrintErrorEntry
 * UnzipFile
+* PrintErrorEntry
 
 ### Commands
 
@@ -34,7 +34,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Sha256 | SHA256 for the file to be retrieved. | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855, cd6e0d42f2f24b1202d1d9ce7976ceb5dc2258c20989074b557b0a5eaf6185a0, 37dda78756d7ab9e446f04816451c8946ab2fd6672cdfdfd731c38020b44f3e4 | Optional |
+| Sha256 | SHA256 for the file to be retrieved. |  | Optional |
 
 ## Playbook Outputs
 
