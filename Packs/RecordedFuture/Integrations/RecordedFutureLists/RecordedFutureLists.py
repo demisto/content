@@ -75,7 +75,6 @@ class Client(BaseClient):
 
         return response
 
-    
     ####################################################
     ################## List operations #################
     ####################################################
@@ -87,9 +86,7 @@ class Client(BaseClient):
         if types := parsed_args.get('contains'):
             parsed_args["contains"] = types.split(",")
         """Get details of a playbook alert"""
-        return self._call(
-            url_suffix='/v2/lists/search', demisto_args=parsed_args
-        )
+        return self._call(url_suffix='/v2/lists/search', demisto_args=parsed_args)
 
     ####################################################
     ################ Entity operations #################
@@ -102,17 +99,22 @@ class Client(BaseClient):
 
         if entity_ids := parsed_args.get('entity_ids'):
             parsed_args["entity_ids"] = entity_ids.split(",")
-    
+
         if freetext_names := parsed_args.get('freetext_names'):
             parsed_args["freetext_names"] = freetext_names.split(",")
-        
-        if not ((entity_ids and not freetext_names) or (not entity_ids and freetext_names)): # XOR entity_ids and freetext_names
-            raise ValueError("Command expected 1 of parmeters: entity_ids or freetext_names, to be specified."
-                             f" Got {len([x for x in [entity_ids, freetext_names] if x])} specified.")
+
+        if not (
+            (entity_ids and not freetext_names) or (not entity_ids and freetext_names)
+        ):  # XOR entity_ids and freetext_names
+            raise ValueError(
+                "Command expected 1 of parmeters: entity_ids or freetext_names, to be specified."
+                f" Got {len([x for x in [entity_ids, freetext_names] if x])} specified."
+            )
 
         return self._call(
             url_suffix=f'/v2/lists/{list_id}/entities/add', demisto_args=parsed_args
         )
+
 
 # === === === === === === === === === === === === === === ===
 # === === === === === === ACTIONS === === === === === === ===
@@ -219,7 +221,7 @@ def main() -> None:
 
         elif command == 'recordedfuture-lists-search':
             return_results(actions.list_search_command())
-        
+
         #######################################################
         ################## Entity commands ####################
         #######################################################

@@ -239,7 +239,6 @@ class TestRFClient:
 
         assert response == mock_call_response
 
-
     def test_entity_add_freetext(self, mocker):
         import os
         import demistomock as demisto
@@ -254,11 +253,11 @@ class TestRFClient:
         mock_command_args = {
             'list_id': mocked_list_id,
             'entity_types': mocked_entity_type,
-            'entity_ids' : mocked_entity_ids,
-            'freetext_names' : mocked_freetext_names}
+            'entity_ids': mocked_entity_ids,
+            'freetext_names': mocked_freetext_names,
+        }
         # Mock demisto command and args.
         mock_command_name = 'command_name'
-        
 
         mocker.patch.object(demisto, 'command', return_value=mock_command_name)
         mocker.patch.object(demisto, 'args', return_value=mock_command_args)
@@ -271,12 +270,13 @@ class TestRFClient:
         )
 
         response = client.entity_add()
-        mock_command_args.pop("list_id")
         mock_call.assert_called_once_with(
-            demisto_args=mock_command_args, url_suffix=f'/v2/lists/{mocked_list_id}/add'
+            demisto_args=mock_command_args,
+            url_suffix=f'/v2/lists/{mocked_list_id}/entities/add',
         )
 
         assert response == mock_call_response
+
     def test_entity_add_ids(self, mocker):
         import os
         import demistomock as demisto
@@ -290,12 +290,12 @@ class TestRFClient:
         mocked_freetext_names = ""
         mock_command_args = {
             'list_id': mocked_list_id,
-            'entity_types': mocked_entity_type,
-            'entity_ids' : mocked_entity_ids,
-            'freetext_names' : mocked_freetext_names}
+            'entity_type': mocked_entity_type,
+            'entity_ids': mocked_entity_ids,
+            'freetext_names': mocked_freetext_names,
+        }
         # Mock demisto command and args.
         mock_command_name = 'command_name'
-        
 
         mocker.patch.object(demisto, 'command', return_value=mock_command_name)
         mocker.patch.object(demisto, 'args', return_value=mock_command_args)
@@ -308,9 +308,9 @@ class TestRFClient:
         )
 
         response = client.entity_add()
-        mock_command_args.pop("list_id")
         mock_call.assert_called_once_with(
-            demisto_args=mock_command_args, url_suffix=f'/v2/lists/{mocked_list_id}/add'
+            demisto_args=mock_command_args,
+            url_suffix=f'/v2/lists/{mocked_list_id}/entities/add',
         )
 
         assert response == mock_call_response
@@ -328,12 +328,12 @@ class TestRFClient:
         mocked_freetext_names = "mockedmalwarename"
         mock_command_args = {
             'list_id': mocked_list_id,
-            'entity_types': mocked_entity_type,
-            'entity_ids' : mocked_entity_ids,
-            'freetext_names' : mocked_freetext_names}
+            'entity_type': mocked_entity_type,
+            'entity_ids': mocked_entity_ids,
+            'freetext_names': mocked_freetext_names,
+        }
         # Mock demisto command and args.
         mock_command_name = 'command_name'
-        
 
         mocker.patch.object(demisto, 'command', return_value=mock_command_name)
         mocker.patch.object(demisto, 'args', return_value=mock_command_args)
@@ -341,13 +341,13 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {'response': {'data': 'mock response'}}
-        mock_call = mocker.patch.object(
-            client, '_call', return_value=mock_call_response
-        )
-
-        client.entity_add()
-        mock_command_args.pop("list_id")
-        mock_call.assert_raises(ValueError)
+        mocker.patch.object(client, '_call', return_value=mock_call_response)
+        raised = False
+        try:
+            client.entity_add()
+        except ValueError:
+            raised = True
+        assert raised
 
     def test_entity_add_invalid_none(self, mocker):
         import os
@@ -363,11 +363,11 @@ class TestRFClient:
         mock_command_args = {
             'list_id': mocked_list_id,
             'entity_types': mocked_entity_type,
-            'entity_ids' : mocked_entity_ids,
-            'freetext_names' : mocked_freetext_names}
+            'entity_ids': mocked_entity_ids,
+            'freetext_names': mocked_freetext_names,
+        }
         # Mock demisto command and args.
         mock_command_name = 'command_name'
-        
 
         mocker.patch.object(demisto, 'command', return_value=mock_command_name)
         mocker.patch.object(demisto, 'args', return_value=mock_command_args)
@@ -375,13 +375,15 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {'response': {'data': 'mock response'}}
-        mock_call = mocker.patch.object(
-            client, '_call', return_value=mock_call_response
-        )
+        mocker.patch.object(client, '_call', return_value=mock_call_response)
 
-        client.entity_add()
-        mock_command_args.pop("list_id")
-        mock_call.assert_raises(ValueError)
+        raised = False
+        try:
+            client.entity_add()
+        except ValueError:
+            raised = True
+        assert raised
+
 
 class TestActions:
     def test_init(self, mocker):
@@ -509,14 +511,12 @@ class TestActions:
         mock_response = 'mock_response'
 
         mock_client_lists_list_search = mocker.patch.object(
-            client, 'list_search_command', return_value=mock_response
+            client, 'list_search', return_value=mock_response
         )
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = (
-            'mocked_process_return_value'
-        )
+        mock_process_result_actions_return_value = 'mocked_process_return_value'
         mock_process_result_actions = mocker.patch.object(
             actions,
             '_process_result_actions',
@@ -528,9 +528,9 @@ class TestActions:
         mock_client_lists_list_search.assert_called_once_with()
 
         mock_process_result_actions.assert_called_once_with(response=mock_response)
-        
+
         assert result == mock_process_result_actions_return_value
-    
+
     def test_entity_add_command_with_result_action(self, mocker):
         from RecordedFutureLists import Actions
 
@@ -538,8 +538,8 @@ class TestActions:
 
         mock_response = 'mock_response'
 
-        mock_client_entity_add_command = mocker.patch.object(
-            client, 'entity_add_command', return_value=mock_response
+        mock_client_entity_add = mocker.patch.object(
+            client, 'entity_add', return_value=mock_response
         )
 
         actions = Actions(client)
@@ -555,7 +555,7 @@ class TestActions:
 
         result = actions.entity_add_command()
 
-        mock_client_entity_add_command.assert_called_once_with()
+        mock_client_entity_add.assert_called_once_with()
 
         mock_process_result_actions.assert_called_once_with(response=mock_response)
 
