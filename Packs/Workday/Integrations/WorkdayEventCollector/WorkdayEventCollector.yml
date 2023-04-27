@@ -1,0 +1,89 @@
+category: Analytics & SIEM
+commonfields:
+  id: Workday Event Collector
+  version: -1
+configuration:
+  - name: base_url
+    display: Server URL (e.g. https://example.net)
+    required: true
+    defaultvalue: null
+    type: 0
+    additionalinfo: null
+  - name: credentials
+    display: Client ID
+    required: true
+    defaultvalue: null
+    type: 9
+    additionalinfo: ""
+    displaypassword: Client Secret
+    hiddenusername: false
+  - name: tenant_name
+    display: Tenant name
+    required: true
+    defaultvalue: null
+    type: 4
+    additionalinfo: null
+  - name: token
+    display: undefined
+    required: true
+    defaultvalue: null
+    type: 9
+    additionalinfo: The workday token to use for the connection.
+    displaypassword: Refresh Token
+    hiddenusername: true
+  - name: insecure
+    display: Trust any certificate (not secure)
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: proxy
+    display: Use system proxy settings
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+description: Use Workday Event Collector integration to get activity loggings from Workday.
+display: Workday Event Collector
+name: Workday Event Collector
+script:
+  commands:
+    - name: get_activity_logging_command
+      description: Returns activity loggings extracted from Workday.
+      deprecated: false
+      arguments:
+        - name: limit
+          description: The maximum number of loggings to return.
+          required: false
+          isArray: false
+          defaultValue: "1000"
+          predefined:
+            - ""
+        - name: from_date
+          description: 'The date and time of the earliest log entry. The default timezone
+            is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z".
+            Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
+          required: true
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: to_date
+          description: 'The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example:
+            "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
+          required: true
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+      outputs: []
+  isfetch: false
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.7.35188
+  feed: false
+fromversion: 6.8.0
+tests:
+  - No tests (auto formatted)
