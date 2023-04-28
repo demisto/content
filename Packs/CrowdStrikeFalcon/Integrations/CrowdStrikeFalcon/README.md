@@ -34,6 +34,7 @@ In order to use the CrowdStrike Falcon integration, your API client must be prov
 - Alerts - Read and Write
 - Hosts - Read
 - IOC Manager - Read and Write
+- On-Demand Scans (ODS) - Read and Write
 
 ### Incident Mirroring
  

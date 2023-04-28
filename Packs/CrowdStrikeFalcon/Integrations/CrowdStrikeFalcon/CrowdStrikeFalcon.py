@@ -4096,7 +4096,7 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
 
 def get_cve_command(args: dict) -> list[CommandResults]:
     """
-        Get a list of vulnerability by spotlight
+        Get a list of vulnerabilities by spotlight
         : args: filter which include params or filter param.
         : return: a list of cve indicators according to the user.
     """
@@ -4129,6 +4129,123 @@ def get_cve_command(args: dict) -> list[CommandResults]:
                                                    relationships=relationships_list,
                                                    indicator=cve_indicator))
     return command_results_list
+
+
+# TODO find out where to put this
+CPU_UTIL_INT_TO_HR = {
+    1: 'Lowest',
+    2: 'Low',
+    3: 'Medium',
+    4: 'High',
+    5: 'Highest',
+}
+
+
+CPU_UTIL_HR_TO_INT = dict(
+    zip(CPU_UTIL_INT_TO_HR.values(), CPU_UTIL_INT_TO_HR.keys())) # TODO check
+
+
+def ODS_query_scans_request(**query_params) -> dict:
+    remove_nulls_from_dictionary(query_params)
+    # Temporary solution:
+    return http_request('GET', f'/ods/queries/scans/v1?{"&".join(f"{k}={v}" for k,v in query_params.items())}')
+    # return http_request('GET', '/ods/queries/scans/v1', params=query_params)
+    
+
+def ODS_get_scans_by_id_request(ids: list[str]) -> dict:
+    if not ids:
+        raise DemistoException('No IDs to check.') # TODO  check if better response needed
+    url_params = '&'.join(f'ids={query_id}' for query_id in ids)
+    return http_request('GET', f'/ods/entities/scans/v1?{url_params}')
+
+
+def ODS_get_scan_resources_to_human_readable(resources: list[dict]) -> str:
+    # TODO ask if to use default headers for UI
+    
+    human_readable = tableToMarkdown(
+        'CrowdStrike Falcon ODS Scans',
+        [
+            {
+                'ID': scan_info.get('id'),
+                'Status': scan_info.get('status'),
+                'Severity': '--',  # TODO ask if needed
+                'Hosts with detections': sum(1 for host in scan_info.get('metadata', [{}]) if host.get('filecount', {}).get('malicious')),  # TODO omly in UI response
+                'Hosts targeted': len(scan_info.get('metadata', [])),
+                'Incomplete hosts': sum(1 for host in scan_info.get('metadata', [{}]) if host.get('status') != 'completed'),
+                'Description': scan_info.get('description'),
+                'File paths': scan_info.get('scan_inclusions'),
+                'Maximum CPU utilization': CPU_UTIL_INT_TO_HR.get(scan_info.get('cpu_priority')),
+                'Hosts/Host groups': scan_info.get('hosts') or scan_info.get('host_groups'),
+                'Start time': scan_info.get('scan_started_on'),
+                'End time': scan_info.get('scan_completed_on'),
+                'Run by': scan_info.get('created_by')
+            }
+            for scan_info in resources
+        ],
+        headers=['ID', 'Status', 'Severity', 'Hosts with detections',
+                 'Hosts targeted', 'Incomplete hosts', 'Description',
+                 'File paths', 'Maximum CPU utilization',
+                 'Hosts/Host groups', 'End time', 'Start time', 'Run by']
+    )
+    
+    return human_readable
+
+
+def build_cs_falcon_filter(filter_args: dict[str, str], custom_filter: str = None) -> str:
+    """Creates an FQL syntax filter from a dictionary and a custom built filter
+
+    :filter_args: args to translate to FQL format.
+    :custom_filter: custom filter from user (will take priority if conflicts with dictionary), defaults to None
+    
+    :return: FQL syntax filter.
+    """
+    remove_nulls_from_dictionary(filter_args)
+    result = (
+        (custom_filter.replace('+', '%2B') if custom_filter else '')
+        + ('%2B' if custom_filter and filter_args else '')
+        + ('%2B'.join(f'{key}:{argToList(value)}' for key, value in filter_args.items()))
+    )
+    return result
+
+
+def get_ODS_ids(args: dict) -> list[str]:
+    
+    filter_from_args = {
+        'initiated_from': args.get('initiated_from'),
+        'status': args.get('status'),
+        'severity': args.get('severity'),
+        'scan_started_on': args.get('scan_started_on'),
+        'scan_completed_on': args.get('scan_completed_on'),
+    }
+    
+    query_filter = build_cs_falcon_filter(filter_from_args, args.get('filter'))
+    
+    raw_response = ODS_query_scans_request(
+        filter=query_filter,
+        offset=args.get('offset'),
+        limit=args.get('limit'),
+    )
+    
+    return raw_response.get('resources')    
+
+
+def cs_falcon_ODS_query_scans_command(args: dict) -> CommandResults:
+    # call the query api if no ids given
+    ids = argToList(args.get('ids')) or get_ODS_ids(args)
+
+    response = ODS_get_scans_by_id_request(ids)
+    resources = response.get('resources', [])
+    human_readable = ODS_get_scan_resources_to_human_readable(resources)
+
+    command_results = CommandResults(
+        raw_response=response,
+        outputs_prefix='CrowdStrike.ODSScan',
+        outputs_key_field='id',
+        outputs=resources,
+        readable_output=human_readable,
+    )
+
+    return command_results
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -4300,6 +4417,20 @@ def main():
             return_results(cs_falcon_spotlight_list_host_by_vulnerability_command(args))
         elif command == 'cve':
             return_results(get_cve_command(args))
+        elif command == 'cs-falcon-ods-query-scan':
+            return_results(cs_falcon_ODS_query_scans_command(args))
+        # elif command == 'cs-falcon-ods-query-scheduled-scan':
+        #     return_results(cs_falcon_ODS_query_scheduled_scan_command(args))
+        # elif command == 'cs-falcon-ods-query-scan-host':
+        #     return_results((args))
+        # elif command == 'cs-falcon-ods-query-malicious-files':
+        #     return_results((args))
+        # elif command == 'cs-falcon-ods-create-scan':
+        #     return_results((args))
+        # elif command == 'cs-falcon-ods-delete-scheduled-scan':
+        #     return_results((args))
+        # elif command == 'cs-falcon-ods-cancel-scan':
+        #     return_results((args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')

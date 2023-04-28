@@ -4367,3 +4367,232 @@ def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker):
 
     outputs = cs_falcon_spotlight_list_host_by_vulnerability_command(args)
     assert outputs.readable_output == expected_hr
+
+
+@pytest.mark.parametrize(
+    'input_params, call_params',
+    (
+        ({'key1': 'val1', 'key2': None}, {'key1': 'val1'}),
+        ({'key1': 'val1', 'key2': 'val2'},) * 2
+    )
+)
+def test_ODS_query_scans_request(mocker, input_params, call_params):
+    """
+    Test ODS_query_scans_request.
+
+    Given
+        - A request for a list of ODS endpoint scans by id.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scan" command without specifying ids.
+
+    Then
+        - Call /ods/queries/scans/v1 with a filter, limit and offset if given and return the ids in response.
+    """
+
+    from CrowdStrikeFalcon import ODS_query_scans_request
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+    ODS_query_scans_request(**input_params)
+    http_request.assert_called_with('GET', '/ods/queries/scans/v1', params=call_params)
+
+
+@pytest.mark.parametrize(
+    'ids_list, ids_string, is_error',
+    (
+        (['<id1>', '<id2>', '<id3>'], 'ids=<id1>&ids=<id2>&ids=<id3>', False),
+        ([], '', True)
+    )
+)
+def test_ODS_get_scans_by_id_request(mocker, ids_list, ids_string, is_error):
+    """
+    Test ODS_get_scans_by_id_request.
+
+    Given
+        - A request for info on ODS endpoint scans.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scan" command and we obtain a non-empty list of ids.
+
+    Then
+        - Call /ods/entities/scans/v1 with the ids and return the response.
+    """
+
+    from CrowdStrikeFalcon import ODS_get_scans_by_id_request
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+    if is_error:
+        with pytest.raises(DemistoException):
+            ODS_get_scans_by_id_request(ids_list)
+    else:
+        ODS_get_scans_by_id_request(ids_list)
+        http_request.assert_called_with('GET', f'/ods/entities/scans/v1?{ids_string}')
+
+
+def test_ODS_get_scan_resources_to_human_readable(mocker):
+    """
+    Test get_scan_resources_to_human_readable.
+
+    Given
+        - A dictionary response from /ods/entities/scans.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scan" command
+
+    Then
+        - Return a markdown resembling the cs-falcon UI.
+    """
+    from CrowdStrikeFalcon import ODS_get_scan_resources_to_human_readable
+
+    resources = [
+        {
+            "id": "91000dbf0a4e4f5eb2a02528c00fa902",
+            "cid": "20879a8064904ecfbb62c118a6a19411",
+            "profile_id": "0e313756da21480c8eb5cf37da77a97a",
+            "description": "desc3456346",
+            "scan_inclusions": [
+                "*"
+            ],
+            "initiated_from": "cloud_scheduled",
+            "quarantine": True,
+            "cpu_priority": 2,
+            "preemption_priority": 15,
+            "metadata": [
+                {
+                    "host_id": "046761c46ec84f40b27b6f79ce7cd32c",
+                    "host_scan_id": "38588c1b29aa9946a3de95e997ad7948",
+                    "scan_host_metadata_id": "6aec6c04ab2e4c99b4e843637d3e37d0",
+                    "filecount": {
+                        "scanned": 0,
+                        "malicious": 0,
+                        "quarantined": 0,
+                        "skipped": 0,
+                        "traversed": 518464
+                    },
+                    "status": "completed",
+                    "started_on": "2023-03-15T15:57:37.59543591Z",
+                    "completed_on": "2023-03-15T16:02:20.845829991Z",
+                    "last_updated": "2023-03-15T16:02:20.845909034Z"
+                },
+                {
+                    "host_id": "15dbb9d8f06b45fe9f61eb46e829d986",
+                    "scan_host_metadata_id": "2e99e4fc7a4f4b1e9254e0af210a6994",
+                    "filecount": {},
+                    "status": "failed",
+                    "last_updated": "2023-04-05T02:23:10.316500752Z"
+                }
+            ],
+            "filecount": {},
+            "status": "failed",
+            "host_groups": [
+                "7471ba0636b34cbb8c65fae7979a6a9b"
+            ],
+            "endpoint_notification": True,
+            "pause_duration": 2,
+            "max_duration": 2,
+            "max_file_size": 60,
+            "sensor_ml_level_detection": 2,
+            "sensor_ml_level_prevention": 2,
+            "cloud_ml_level_detection": 2,
+            "cloud_ml_level_prevention": 2,
+            "policy_setting": [
+                26439818674573,
+                26439818674574,
+            ],
+            "scan_started_on": "2023-03-15T15:57:37.59543591Z",
+            "scan_completed_on": "2023-04-18T14:56:38.527255649Z",
+            "created_on": "2023-03-15T15:57:37.59543591Z",
+            "created_by": "f7acf1bd5d3d4b40afe77546cbbaefde",
+            "last_updated": "2023-04-05T02:23:10.316500752Z"
+        }
+    ]
+    mapped_resources = [{
+        'ID': "91000dbf0a4e4f5eb2a02528c00fa902",
+        'Status': "failed",
+        'Severity': '--',
+        'Hosts with detections': 0,
+        'Hosts targeted': 2,
+        'Incomplete hosts': 1,
+        'Description': "desc3456346",
+        'File paths': ["*"],
+        'Maximum CPU utilization': "Low",
+        'Hosts/Host groups': [
+            "7471ba0636b34cbb8c65fae7979a6a9b"
+        ],
+        'Start time': "2023-03-15T15:57:37.59543591Z",
+        'End time': "2023-04-18T14:56:38.527255649Z",
+        'Run by': "f7acf1bd5d3d4b40afe77546cbbaefde"
+    }]
+    headers = ['ID', 'Status', 'Severity', 'Hosts with detections',
+                 'Hosts targeted', 'Incomplete hosts', 'Description',
+                 'File paths', 'Maximum CPU utilization',
+                 'Hosts/Host groups', 'End time', 'Start time', 'Run by']
+    
+    tableToMarkdown = mocker.patch('CrowdStrikeFalcon.tableToMarkdown')
+    ODS_get_scan_resources_to_human_readable(resources)
+    tableToMarkdown.assert_called_with(
+        'CrowdStrike Falcon ODS Scans',
+        mapped_resources,
+        headers=headers
+    )
+
+
+filter_args = {'key1': 'val1,val2', 'key2': 'val3', 'key3': None}
+custom_filter = 'key1:"val1"+key2:["val3","val4"]'
+
+@pytest.mark.parametrize(
+    'filter_args, custom_filter, output_filter',
+    (
+        (filter_args, custom_filter, 'key1:"val1"%2Bkey2:["val3","val4"]%2Bkey1:[\'val1\', \'val2\']%2Bkey2:[\'val3\']'),
+        (filter_args, None, 'key1:[\'val1\', \'val2\']%2Bkey2:[\'val3\']'),
+        ({}, custom_filter, 'key1:"val1"%2Bkey2:["val3","val4"]')
+    )
+)
+def test_build_cs_falcon_filter(filter_args, custom_filter, output_filter):
+    """
+    Test build_cs_falcon_filter.
+
+    Given
+        - A dictionary filter and a custom filter.
+
+    When
+        - Before an cs-falcon query.
+
+    Then
+        - Return a merged FQL filter as a single string.
+    """
+    from CrowdStrikeFalcon import build_cs_falcon_filter
+
+    result = build_cs_falcon_filter(filter_args, custom_filter)
+    
+    assert output_filter == result
+
+
+def test_get_ODS_ids(mocker):
+    """
+    Test cs_falcon_ODS_query_scans_command,
+
+    Given
+     - A request for info on ODS endpoint scans.
+    When
+     - The user runs the "cs-falcon-ods-query-scan" command without specifying ids.
+    Then
+     - Return ids from API using the filters.
+    """
+   # (TEMPRORAY) nothing to check
+
+
+def test_cs_falcon_ODS_query_scans_command(mocker):
+    """
+    Test cs_falcon_ODS_query_scans_command,
+
+    Given
+     - A request for info on ODS endpoint scans.
+    When
+     - The user runs the "cs-falcon-ods-query-scan" command
+    Then
+     - Return a CrowdStrike Falcon ODS context output
+     - Return an Endpoint context output
+    """
+
+    # (TEMPRORAY) nothing to check

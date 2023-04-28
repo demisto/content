@@ -2906,6 +2906,44 @@ script:
       required: true
     description: Updates CrowdStrike Incident with the comment.
     name: cs-falcon-update-incident-comment
+
+  - arguments:
+    - description: A valid CS-Falcon-FQL filter.
+      name: filter
+      required: false
+    - description: A comma-separated list of scan IDs. If set will override all other arguments.
+      isArray: true
+      name: ids
+      required: false
+    - description: A comma-separated list of scan initiation sources to filter by.
+      isArray: true
+      name: initiated_from
+      required: false
+    - description: A comma-separated list of scan statuses to filter by.
+      isArray: true
+      name: status
+      required: false
+    - description: A comma-separated list of scan severities to filter by.
+      isArray: true
+      name: severity
+      required: false
+    - description: A UTC-format time of scan start to filter by.
+      name: scan_started_on
+      required: false
+    - description: A UTC-format time of scan start to filter by.
+      name: scan_completed_on
+      required: false
+    - description: Starting index of overall result set from which to return ids.
+      isArray: true
+      name: offset
+      required: false
+    - description: Maximum number of resources to return.
+      isArray: true
+      name: limit
+      required: false
+    description: Retrieve ODS scan details.
+    name: cs-falcon-ods-query-scan
+
   dockerimage: demisto/python3:3.10.11.54132
   isfetch: true
   ismappable: true
