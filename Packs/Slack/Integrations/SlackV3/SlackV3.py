@@ -10,6 +10,8 @@ from CommonServerPython import *  # noqa: F401
 
 
 
+
+
 import asyncio
 import concurrent
 import logging.handlers
@@ -2641,10 +2643,21 @@ def conversation_history():
         limit = 100
 
 
-    body = {
-        'channel': channel_id,
-        'limit': limit
-    }
+    conversation_id = demisto.args().get('conversation_id')
+    if conversation_id == None:
+        body = {
+            'channel': channel_id,
+            'limit': limit
+        }
+    else:
+        body = {
+            'channel': channel_id,
+            'oldest': conversation_id,
+            'inclusive': "true",
+            'limit': 1
+        }
+
+
 
     raw_response = send_slack_request_sync(CLIENT, 'conversations.history', http_verb="GET", body=body)
     messages = raw_response['messages']
@@ -2659,12 +2672,38 @@ def conversation_history():
                 }
                 user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
                 user_details = user_details_response['user']
+                if 'thread_ts' in message:
+                    context = {
+                        'Type': message['type'],
+                        'Text': message['text'],
+                        'UserId': message['user'],
+                        'Name': user_details['name'],
+                        'FullName': user_details['real_name'],
+                        'TimeStamp': message['ts'],
+                        'HasReplies': 'Yes',
+                        'ThreadTimeStamp': message['thread_ts']
+                    }
+                else:
+                    context = {
+                        'Type': message['type'],
+                        'Text': message['text'],
+                        'UserId': message['user'],
+                        'Name': user_details['name'],
+                        'FullName': user_details['real_name'],
+                        'TimeStamp': message['ts'],
+                        'HasReplies': 'No',
+                        'ThreadTimeStamp': 'N/A'
+                    }
+            elif 'subtype' in message and 'thread_ts' in message:
                 context = {
                     'Type': message['type'],
                     'Text': message['text'],
-                    'UserId': message['user'],
-                    'Name': user_details['name'],
-                    'FullName': user_details['real_name']
+                    'UserId': message['username'],
+                    'Name': message['username'],
+                    'FullName': message['username'],
+                    'TimeStamp': message['ts'],
+                    'HasReplies': 'Yes',
+                    'ThreadTimeStamp': message['thread_ts']
                 }
             else:
                 context = {
@@ -2672,7 +2711,10 @@ def conversation_history():
                     'Text': message['text'],
                     'UserId': message['username'],
                     'Name': message['username'],
-                    'FullName': message['username']
+                    'FullName': message['username'],
+                    'TimeStamp': message['ts'],
+                    'HasReplies': 'No',
+                    'ThreadTimeStamp': "N/A"
                 }
             readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
 
@@ -2687,12 +2729,40 @@ def conversation_history():
                 }
                 user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
                 user_details = user_details_response['user']
-                entry ={
+                if 'thread_ts' in message:
+                    entry = {
+                        'Type': message['type'],
+                        'Text': message['text'],
+                        'UserId': message['user'],
+                        'Name': user_details['name'],
+                        'FullName': user_details['real_name'],
+                        'TimeStamp': message['ts'],
+                        'HasReplies': 'Yes',
+                        'ThreadTimeStamp': message['thread_ts']
+                    }
+                    context.append(entry)
+                else:
+                    entry = {
+                        'Type': message['type'],
+                        'Text': message['text'],
+                        'UserId': message['user'],
+                        'Name': user_details['name'],
+                        'FullName': user_details['real_name'],
+                        'TimeStamp': message['ts'],
+                        'HasReplies': 'No',
+                        'ThreadTimeStamp': 'N/A'
+                    }
+                    context.append(entry)
+            elif 'subtype' in message and 'thread_ts' in message:
+                entry = {
                     'Type': message['type'],
                     'Text': message['text'],
-                    'UserId': message['user'],
-                    'Name': user_details['name'],
-                    'FullName': user_details['real_name']
+                    'UserId': message['username'],
+                    'Name': message['username'],
+                    'FullName': message['username'],
+                    'TimeStamp': message['ts'],
+                    'HasReplies': 'Yes',
+                    'ThreadTimeStamp': message['thread_ts']
                 }
                 context.append(entry)
             else:
@@ -2701,7 +2771,10 @@ def conversation_history():
                     'Text': message['text'],
                     'UserId': message['username'],
                     'Name': message['username'],
-                    'FullName': message['username']
+                    'FullName': message['username'],
+                    'TimeStamp': message['ts'],
+                    'HasReplies': 'No',
+                    'ThreadTimeStamp': "N/A"
                 }
                 context.append(entry)
         readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
@@ -2930,6 +3003,7 @@ def main() -> None:
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
+
 
 
 
