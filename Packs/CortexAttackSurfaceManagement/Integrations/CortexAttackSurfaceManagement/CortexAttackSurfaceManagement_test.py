@@ -349,7 +349,7 @@ def test_get_remediation_confirmation_scan_status_successful_codes(client, scan_
     response = get_remediation_confirmation_scan_status_command(client=client, args=args)
 
     assert response.outputs == expected_results
-    assert response.outputs_prefix == "ASM.RemediationScan.status"
+    assert response.outputs_prefix == "ASM.RemediationScan"
     assert response.outputs_key_field == ""
 
 
