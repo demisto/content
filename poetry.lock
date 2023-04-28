@@ -1125,8 +1125,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "1c8194eeba3f87ab9385bb254db54e2ee01e0ebb"
-resolved_reference = "1c8194eeba3f87ab9385bb254db54e2ee01e0ebb"
+reference = "68dddbdafa2a2a3771e7442a3780b82abd19f034"
+resolved_reference = "68dddbdafa2a2a3771e7442a3780b82abd19f034"
 
 [[package]]
 name = "deprecated"
@@ -6479,4 +6479,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "7ba2271d19af1d87fd41a4443593459531268187d3d0c2705bd96c8271c0b50c"
+content-hash = "4a438593e8a356d9839d4ee7b7808e8c5404dc84df495cad3b68b09e9e9567b0"
