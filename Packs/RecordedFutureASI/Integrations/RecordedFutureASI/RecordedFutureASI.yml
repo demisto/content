@@ -27,14 +27,14 @@ configuration:
   defaultvalue: Recorded Future ASI Alert
 - display: Minimum severity of alerts to fetch
   name: min_severity
-  defaultvalue: 'Moderate'
+  defaultvalue: 'Informational'
   required: false
   type: 15
   options:
   - Informational
   - Moderate
   - Critical
-- defaultvalue: 'By Host'
+- defaultvalue: 'By Issue'
   display: How to group new issues
   name: issue_grouping
   required: false
