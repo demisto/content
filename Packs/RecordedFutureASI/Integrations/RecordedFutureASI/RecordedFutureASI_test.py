@@ -178,18 +178,18 @@ def test_incident_by_host_by_issue(requests_mock, client):
     last_run, incidents = fetch_incidents(client, {'last_fetch': 1234}, True, True)
     assert len(incidents) == 4
     assert incidents[0]['severity'] == IncidentSeverity.CRITICAL
-    assert 'registration.example.com' in incidents[0]['name']
+    assert incidents[0]['name'].endswith('[registration.example.com]')
     assert json.loads(incidents[0]['rawJSON'])['rules'][0]['name'] in incidents[0]['name']
     # NOTE :: Make sure classification titles are used
     assert json.loads(incidents[0]['rawJSON'])['rules'][0]['classification'] == 'Critical'
     assert incidents[1]['severity'] == IncidentSeverity.MEDIUM
-    assert 'ip.example.com' in incidents[1]['name']
+    assert incidents[1]['name'].endswith('[ip.example.com]')
     assert json.loads(incidents[1]['rawJSON'])['rules'][0]['name'] in incidents[1]['name']
     assert incidents[2]['severity'] == IncidentSeverity.MEDIUM
-    assert 'stage.example.com' in incidents[2]['name']
+    assert incidents[2]['name'].endswith('[stage.example.com]')
     assert json.loads(incidents[2]['rawJSON'])['rules'][0]['name'] in incidents[2]['name']
     assert incidents[3]['severity'] == IncidentSeverity.LOW
-    assert 'stage.example.com' in incidents[3]['name']
+    assert incidents[3]['name'].endswith('[stage.example.com]')
     assert json.loads(incidents[3]['rawJSON'])['rules'][0]['name'] in incidents[3]['name']
 
 
