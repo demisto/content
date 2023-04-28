@@ -2,7 +2,7 @@
     "id": "incident_recordedfutureattacksurfaceintelligencetriggeredrules",
     "version": -1,
     "modified": "2023-03-28T18:24:43.658523087+02:00",
-    "name": "Triggered Rules",
+    "name": "Recorded Future Attack Surface Intelligence Triggered Rules",
     "ownerOnly": false,
     "description": "Triggered rules for an Incident created by Recorded Future Attack Surface Intelligence",
     "cliName": "recordedfutureattacksurfaceintelligencetriggeredrules",

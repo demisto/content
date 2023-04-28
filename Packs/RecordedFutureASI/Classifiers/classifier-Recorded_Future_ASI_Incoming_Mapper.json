@@ -6,7 +6,7 @@
         "Recorded Future ASI Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Affected Hosts": {
+                "Recorded Future Attack Surface Intelligence Affected Hosts": {
                     "complex": {
                         "filters": [],
                         "root": "affected_hosts",
@@ -20,13 +20,13 @@
                 "Alert Name": {
                     "simple": "name"
                 },
-                "Attack Surface Rule": {
+                "Recorded Future Attack Surface Intelligence Attack Surface Rule": {
                     "simple": "triggered_rule"
                 },
                 "Source Hostname": {
                     "simple": "host"
                 },
-                "Triggered Rules": {
+                "Recorded Future Attack Surface Intelligence Triggered Rules": {
                     "complex": {
                         "filters": [],
                         "root": "rules",
