@@ -1,16 +1,16 @@
 !datadog-event-list limit=2
-!datadog-event-create title="Event Title" text="Event Text"
+!datadog-event-create title="EventTitle" text="EventText"
 !datadog-tag-list limit=10
-!datadog-host-tag-get host_name="host_name"
-!datadog-host-tag-create host_name="host_name" tags="env:prod"
-!datadog-host-tag-update host_name="host_name"
-!datadog-host-tag-delete host_name="host_name"
-!datadog-active-metric-list from="2 days ago"
+!datadog-host-tag-get host_name="TestHost2"
+!datadog-host-tag-create host_name="TestHost2" tags="env:prod"
+!datadog-host-tag-update host_name="TestHost2"
+!datadog-host-tag-delete host_name="TestHost2"
+!datadog-active-metric-list from="-2days"
 !datadog-metric-search query="datadog.agent.python.version"
 !datadog-metric-metadata-get metric_name="system.io.block_in"
 !datadog-metric-metadata-update metric_name="system.io.block_in"
 !datadog-incident-create customer_impacted=False title="incident-test1"
-!datadog-incident-delete incident_id="d14b9cfd-a637-5651-9cb9-e38197c01d38"
-!datadog-incident-update incident_id="d14b9cfd-a637-5651-9cb9-e38197c01d38"
+!datadog-incident-update incident_id=1cc7af96-aad6-5085-aa3b-2d121b923642
+!datadog-incident-delete incident_id=1cc7af96-aad6-5085-aa3b-2d121b923642
 !datadog-incident-list limit=2
-!datadog-time-series-point-query from="2 days ago" query="system.cpu.idle" to=now
+!datadog-time-series-point-query from="-2days" query="system.cpu.idle" to=now
