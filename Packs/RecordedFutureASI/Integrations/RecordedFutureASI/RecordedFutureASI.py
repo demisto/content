@@ -253,12 +253,14 @@ class ByIssueIncident(IncidentBuilder):
         return {
             'severity': SEVERITY_MAPPINGS[parsed_rule['classification']],
             'name': parsed_rule['name'],
-            'triggered_rule': parsed_rule['name'],
+            'rawJSON': json.dumps({
+                'triggered_rule': parsed_rule['name'],
+                'rules': self._use_severity_titles([parsed_rule]),
+                'affected_hosts': examples,
+                '_incident_type': 'by_issue'
+            }),
             'details': parsed_rule['details'] + count_copy,
-            'occurred': timestamp_to_datestring(self.incident_created_time_ms),
-            'rules': self._use_severity_titles([parsed_rule]),
-            'affected_hosts': examples,
-            '_incident_type': 'by_issue'
+            'occurred': timestamp_to_datestring(self.incident_created_time_ms)
         }
 
     @staticmethod
@@ -292,11 +294,13 @@ class ByHostIncident(ByHostIncidentBuilder):
             'host': self.host,
             'details': details,
             'occurred': timestamp_to_datestring(self.incident_created_time_ms),
-            '_incident_type': 'by_host',
-            'affected_hosts': [{'id': self.host, 'metadata': ''}],
-            'rules': self._use_severity_titles(list(sorted(parsed_rules,
-                                                           key=lambda r: SEVERITY_MAPPINGS[r['classification']],
-                                                           reverse=True))),
+            'rawJSON': json.dumps({
+                '_incident_type': 'by_host',
+                'affected_hosts': [{'id': self.host, 'metadata': ''}],
+                'rules': self._use_severity_titles(list(sorted(parsed_rules,
+                                                               key=lambda r: SEVERITY_MAPPINGS[r['classification']],
+                                                               reverse=True)))
+            }),
             'severity': severity
         }
 
@@ -368,13 +372,15 @@ class ByHostByIssueIncident(ByHostIncidentBuilder):
         return {
             'severity': SEVERITY_MAPPINGS[parsed_rule['classification']],
             'name': f'{parsed_rule["name"]} [{self.host}]',
-            'host': self.host,
-            'triggered_rule': parsed_rule['name'],
+            'rawJSON': json.dumps({
+                'host': self.host,
+                'triggered_rule': parsed_rule['name'],
+                'rules': self._use_severity_titles([parsed_rule]),
+                'affected_hosts': [{'id': self.host, 'metadata': parsed_rule['metadata']}],
+                '_incident_type': 'by_host_by_issue'
+            }),
             'details': parsed_rule['details'],
-            'rules': self._use_severity_titles([parsed_rule]),
-            'affected_hosts': [{'id': self.host, 'metadata': parsed_rule['metadata']}],
-            'occurred': timestamp_to_datestring(self.incident_created_time_ms),
-            '_incident_type': 'by_host_by_issue'
+            'occurred': timestamp_to_datestring(self.incident_created_time_ms)
         }
 
 

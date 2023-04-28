@@ -1,5 +1,5 @@
 {
-    "description": "",
+    "description": "Maps incoming Recorded Future ASI Risk Alerts",
     "feed": false,
     "id": "Recorded Future ASI - Incoming Mapper",
     "mapping": {

@@ -127,13 +127,13 @@ def test_incident_by_host(requests_mock, client):
     assert len(incidents) == 3
     assert incidents[0]['severity'] == IncidentSeverity.CRITICAL
     assert incidents[0]['name'] == "Attack Surface Risk Increase: registration.example.com (0 --> 95)"
-    assert len(incidents[0]['rules']) == 1
+    assert len(json.loads(incidents[0]['rawJSON'])['rules']) == 1
     assert incidents[1]['severity'] == IncidentSeverity.MEDIUM
     assert incidents[1]['name'] == "Attack Surface Risk Increase: ip.example.com (0 --> 65)"
-    assert len(incidents[1]['rules']) == 1
+    assert len(json.loads(incidents[1]['rawJSON'])['rules']) == 1
     assert incidents[2]['severity'] == IncidentSeverity.MEDIUM
     assert incidents[2]['name'] == "Attack Surface Risk Increase: stage.example.com (20 --> 26)"
-    assert len(incidents[2]['rules']) == 2
+    assert len(json.loads(incidents[2]['rawJSON'])['rules']) == 2
 
 
 def test_incident_by_host_partial_filter(requests_mock, client):
@@ -147,11 +147,11 @@ def test_incident_by_host_partial_filter(requests_mock, client):
     last_run, incidents = fetch_incidents(client, {'last_fetch': 1234}, True, False)
     assert len(incidents) == 3
     assert incidents[0]['severity'] == IncidentSeverity.CRITICAL
-    assert len(incidents[0]['rules']) == 1
+    assert len(json.loads(incidents[0]['rawJSON'])['rules']) == 1
     assert incidents[1]['severity'] == IncidentSeverity.MEDIUM
-    assert len(incidents[1]['rules']) == 1
+    assert len(json.loads(incidents[1]['rawJSON'])['rules']) == 1
     assert incidents[2]['severity'] == IncidentSeverity.MEDIUM
-    assert len(incidents[2]['rules']) == 1
+    assert len(json.loads(incidents[2]['rawJSON'])['rules']) == 1
 
 
 def test_incident_by_host_full_filter(requests_mock, client):
@@ -165,7 +165,7 @@ def test_incident_by_host_full_filter(requests_mock, client):
     last_run, incidents = fetch_incidents(client, {'last_fetch': 1234}, True, False)
     assert len(incidents) == 1
     assert incidents[0]['severity'] == IncidentSeverity.CRITICAL
-    assert len(incidents[0]['rules']) == 1
+    assert len(json.loads(incidents[0]['rawJSON'])['rules']) == 1
 
 
 def test_incident_by_host_by_issue(requests_mock, client):
@@ -179,18 +179,18 @@ def test_incident_by_host_by_issue(requests_mock, client):
     assert len(incidents) == 4
     assert incidents[0]['severity'] == IncidentSeverity.CRITICAL
     assert 'registration.example.com' in incidents[0]['name']
-    assert incidents[0]['rules'][0]['name'] in incidents[0]['name']
+    assert json.loads(incidents[0]['rawJSON'])['rules'][0]['name'] in incidents[0]['name']
     # NOTE :: Make sure classification titles are used
-    assert incidents[0]['rules'][0]['classification'] == 'Critical'
+    assert json.loads(incidents[0]['rawJSON'])['rules'][0]['classification'] == 'Critical'
     assert incidents[1]['severity'] == IncidentSeverity.MEDIUM
     assert 'ip.example.com' in incidents[1]['name']
-    assert incidents[1]['rules'][0]['name'] in incidents[1]['name']
+    assert json.loads(incidents[1]['rawJSON'])['rules'][0]['name'] in incidents[1]['name']
     assert incidents[2]['severity'] == IncidentSeverity.MEDIUM
     assert 'stage.example.com' in incidents[2]['name']
-    assert incidents[2]['rules'][0]['name'] in incidents[2]['name']
+    assert json.loads(incidents[2]['rawJSON'])['rules'][0]['name'] in incidents[2]['name']
     assert incidents[3]['severity'] == IncidentSeverity.LOW
     assert 'stage.example.com' in incidents[3]['name']
-    assert incidents[3]['rules'][0]['name'] in incidents[3]['name']
+    assert json.loads(incidents[3]['rawJSON'])['rules'][0]['name'] in incidents[3]['name']
 
 
 def test_incident_by_host_by_issue_filter(requests_mock, client):
