@@ -46,9 +46,10 @@ filter _raw_log contains "vpxd"
 | alter 
     user_name1 = arrayindex(regextract(_raw_log, "User\s\'*([^\@]+)\@"),0),
     user_name2 = arrayindex(regextract(_raw_log, "Username=\'([^\']+)\'"),0),
+    user_name3 = arraystring(regextract(_raw_log, "<\d+>\d+\s\d+\-\d+\-\d+T\d+:\d+:\d+\.\d+[+|-]\d+:\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s\[([^\s]+)\]\s[^\s]+\s[^\s]+\s\[[^\]]+\]"), ""),
     event_type = coalesce(event_type1, event_type2, check_event_type3)
 | alter 
-    user_name = coalesce(user_name1, user_name2)
+    user_name = coalesce(user_name1, user_name2, user_name3)
 | alter
     xdm.event.type = event_type,
     xdm.event.description = coalesce(message, extract_event_description),
