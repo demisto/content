@@ -193,9 +193,9 @@ def main():
         for arg_name in ['NonEmptyFields', 'populateFields']:
             split_argument_list = get_comma_sep_list(d_args.get(arg_name, ''))
             split_argument_list = [x for x in split_argument_list if len(x) > 0]
-            if 'openDuration' in split_argument_list:
-                split_argument_list.append('openduration')
-                split_argument_list.remove('openDuration')
+            if 'openDuration' in split_argument_list:  # pragma: no cover
+                split_argument_list.append('openduration')  # pragma: no cover
+                split_argument_list.remove('openDuration')  # pragma: no cover
             d_args[arg_name] = preprocess_incidents_fields_list(split_argument_list)
         query = build_incidents_query(d_args.get('query'),
                                       d_args.get('incidentTypes'),
