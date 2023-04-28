@@ -412,6 +412,14 @@ script:
     - name: conversation_id
     description: Fetches a conversation's history of messages     and events
     name: slack-get-conversation-history
+  - arguments:
+    - name: channel_id
+      required: true
+    - name: thread_id
+      required: true
+    - name: limit
+    description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
+    name: slack-get-conversation-replies
   dockerimage: demisto/slackv3:1.0.0.48936
   longRunning: true
   runonce: false

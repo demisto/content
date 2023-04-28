@@ -2790,6 +2790,73 @@ def conversation_history():
     })
 
 
+def conversation_replies():
+    """
+    Retrieves replies to specific messages, regardless of whether it's
+    from a public or private channel, direct message, or otherwise.
+    """
+
+    channel_id = demisto.args()['channel_id']
+    thread_id = demisto.args()['thread_id']
+    limit = demisto.args().get('limit')
+    if limit == None:
+        limit = 100
+
+
+    body = {
+        'channel': channel_id,
+        'ts': thread_id,
+        'limit': limit
+        }
+
+
+    raw_response = send_slack_request_sync(CLIENT, 'conversations.replies', http_verb="GET", body=body)
+    messages = raw_response['messages']
+
+
+    context = []
+    for message in messages:
+        user_id = message['user']
+        body = {
+            'user': user_id
+        }
+        user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
+        user_details = user_details_response['user']
+        if 'parent_user_id' not in message:
+            entry = {
+                'Type': message['type'],
+                'Text': message['text'],
+                'UserId': message['user'],
+                'Name': user_details['name'],
+                'FullName': user_details['real_name'],
+                'IsParent': 'Yes'
+            }
+            context.append(entry)
+        else:
+            entry = {
+                'Type': message['type'],
+                'Text': message['text'],
+                'UserId': message['user'],
+                'Name': user_details['name'],
+                'FullName': user_details['real_name'],
+                'IsParent': 'No'
+            }
+            context.append(entry)
+
+
+    readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
+
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': messages,
+        'EntryContext': {'Slack.Messages': context},
+        'ContentsFormat': formats['json'],
+        'HumanReadable': readable_output,
+        'ReadableContentsFormat': formats['markdown']
+    })
+
+
 def long_running_main():
     """
     Starts the long running thread.
@@ -2976,7 +3043,8 @@ def main() -> None:
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
         'slack-pin-message': pin_message,
-        'slack-get-conversation-history': conversation_history
+        'slack-get-conversation-history': conversation_history,
+        'slack-get-conversation-replies': conversation_replies
     }
 
     command_name: str = demisto.command()
