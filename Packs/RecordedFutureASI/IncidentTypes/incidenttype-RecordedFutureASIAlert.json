@@ -24,7 +24,7 @@
   "extractSettings": {
     "mode": "Specific",
     "fieldCliNameToExtractSettings": {
-      "affectedhosts": {
+      "recordedfutureattacksurfaceintelligenceaffectedhosts": {
         "extractAsIsIndicatorTypeId": "",
         "isExtractingAllIndicatorTypes": false,
         "extractIndicatorTypesIDs": [
@@ -61,7 +61,7 @@
           "ipRep"
         ]
       },
-      "triggeredrules": {
+      "recordedfutureattacksurfaceintelligencetriggeredrules": {
         "extractAsIsIndicatorTypeId": "",
         "isExtractingAllIndicatorTypes": false,
         "extractIndicatorTypesIDs": [

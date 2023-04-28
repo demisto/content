@@ -67,7 +67,7 @@
               },
               {
                 "endCol": 2,
-                "fieldId": "attacksurfacerule",
+                "fieldId": "recordedfutureattacksurfaceintelligenceattacksurfacerule",
                 "filters": [
                   [
                     {
@@ -75,7 +75,7 @@
                       "left": {
                         "isContext": true,
                         "value": {
-                          "simple": "attacksurfacerule"
+                          "simple": "recordedfutureattacksurfaceintelligenceattacksurfacerule"
                         }
                       },
                       "operator": "isNotEqualString",
@@ -328,7 +328,7 @@
             "items": [
               {
                 "endCol": 2,
-                "fieldId": "affectedhosts",
+                "fieldId": "recordedfutureattacksurfaceintelligenceaffectedhosts",
                 "height": 106,
                 "id": "0bb0ece0-ccd8-11ed-aace-2516474dbef2",
                 "index": 1,
@@ -354,7 +354,7 @@
               {
                 "dropEffect": "move",
                 "endCol": 4,
-                "fieldId": "triggeredrules",
+                "fieldId": "recordedfutureattacksurfaceintelligencetriggeredrules",
                 "height": 106,
                 "id": "6dda50a0-cd82-11ed-a2c8-8d73dd7df1d5",
                 "index": 0,
