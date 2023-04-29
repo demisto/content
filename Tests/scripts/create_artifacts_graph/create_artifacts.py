@@ -14,6 +14,8 @@ import json
 logging_setup(3)
 install_logging("create_artifacts.log", logger=logger)
 
+CONTENT_PATH = Path(get_content_path())
+
 
 def create_zips(content_dto: ContentDTO, output: Path, marketplace: str, zip: bool):
     content_dto.dump(output, marketplace, zip)
@@ -42,7 +44,7 @@ def create_dependencies(content_dto: ContentDTO, is_bucket_upload: bool, output:
                     "is_test": dependency.is_test,
                 }
         pack_dependencies[pack.object_id] = {
-            "path": str(pack.path.relative_to(get_content_path())),
+            "path": str(CONTENT_PATH / pack.path),
             "fullPath": str(pack.path),
             "dependencies": first_level_dependencies,
             "displayedImages": list(first_level_dependencies.keys()),
