@@ -2008,7 +2008,8 @@ class Pack(object):
 
     def is_replace_item_in_folder_collected_list(self, content_item: dict, content_items_to_version_map: dict):
         content_item_fromversion = content_item.get('fromversion', '') or content_item.get('fromVersion', '') or ''
-        content_item_toversion = content_item.get('toversion', '99.99.99') or content_item.get('toVersion', '99.99.99') or ''
+        content_item_toversion = content_item.get(
+            'toversion', MAX_TOVERSION) or content_item.get('toVersion', MAX_TOVERSION) or ''
         content_item_id = content_item.get('id', '')
         content_item_latest_version = content_items_to_version_map.setdefault(
             content_item_id,
@@ -2024,13 +2025,13 @@ class Pack(object):
 
     def get_latest_versions(self, content_items_id_to_version_map: dict, content_item: dict):
         if (curr_content_item := content_items_id_to_version_map.get(
-            content_item.get('id', ''))):
+                content_item.get('id', ''))):
             latest_fromversion = curr_content_item.get('fromversion', '')
             latest_toversion = curr_content_item.get('toversion', '')
         else:
             latest_fromversion = ''
             latest_toversion = ''
-        latest_toversion = latest_toversion if latest_toversion != '99.99.99' else ''
+        latest_toversion = latest_toversion if latest_toversion != MAX_TOVERSION else ''
         return latest_fromversion, latest_toversion
 
     def collect_content_items(self):
