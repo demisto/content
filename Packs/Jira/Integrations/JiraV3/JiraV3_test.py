@@ -3,7 +3,7 @@ import json
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
-from JiraV3 import JiraBaseClient
+from JiraV3 import (JiraBaseClient, JiraCloudClient, JiraOnPremClient)
 from CommonServerPython import *
 
 
@@ -26,6 +26,18 @@ def jira_base_client_mock() -> JiraBaseClient:
     however, if this set is empty, the Python interpreter will happily instantiate our class without any problems.
     """
     return JiraBaseClient(base_url='dummy_url', proxy=False, verify=False, callback_url='dummy_callback')
+
+
+def jira_cloud_client_mock() -> JiraCloudClient:
+    return JiraCloudClient(proxy=False, verify=False, client_id='dummy_client_id',
+                           client_secret='dummy_secret', callback_url='dummy_url', cloud_id='dummy_cloud_id',
+                           server_url='dummy_server_url')
+
+
+def jira_onprem_client_mock() -> JiraOnPremClient:
+    return JiraOnPremClient(proxy=False, verify=False, client_id='dummy_client_id',
+                            client_secret='dummy_secret', callback_url='dummy_url',
+                            server_url='dummy_server_url')
 
 
 # Helper functions unit tests
@@ -116,15 +128,15 @@ def test_get_issue_fields_mapping(mocker, issue_fields, issue_fields_mapping):
 CREATE_ISSUE_QUERY_CASES = [
     (
         'some_jql_string', None, None,
-        {'jql': 'some_jql_string', 'startAt': 0, 'maxResults': 50, 'expand': 'renderedFields,transitions,names'},
+        {'jql': 'some_jql_string', 'startAt': 0, 'maxResults': 50},
     ),
     (
         'some_jql_string', 12, None,
-        {'jql': 'some_jql_string', 'startAt': 12, 'maxResults': 50, 'expand': 'renderedFields,transitions,names'},
+        {'jql': 'some_jql_string', 'startAt': 12, 'maxResults': 50},
     ),
     (
         'some_jql_string', 1, 80,
-        {'jql': 'some_jql_string', 'startAt': 1, 'maxResults': 80, 'expand': 'renderedFields,transitions,names'},
+        {'jql': 'some_jql_string', 'startAt': 1, 'maxResults': 80},
     )
 ]
 
@@ -134,91 +146,6 @@ def test_create_query_params(jql, start_at, max_results, expected_query_params):
     from JiraV3 import create_query_params
     query_params = create_query_params(jql_query=jql, start_at=start_at, max_results=max_results)
     assert query_params == expected_query_params
-
-
-FIELDS_MAPPER_CASES = [
-    (
-        {'summary': ['dummy_summary_1', 'dummy_summary_2'], 'first_nested_key': 'first', 'second_nested_key': 'second',
-         'third_nested_key': {'value': 'third'}},
-        {'summary': 'fields.summary', 'first_nested_key': 'parent_key.first_child_key.first_value',
-         'second_nested_key': 'parent_key.second_child_key.second_value',
-         'third_nested_key': 'parent_key.second_child_key.third_value'},
-
-        {'fields': {'summary': ['dummy_summary_1', 'dummy_summary_2']},
-         'parent_key': {'first_child_key': {'first_value': 'first'},
-                        'second_child_key': {'second_value': 'second',
-                                             'third_value': {'value': 'third'}
-                                             }
-                        }
-         }
-    )
-]
-
-
-@pytest.mark.parametrize('issue_args, issue_fields_mapper, expected_issue_fields_mapper', FIELDS_MAPPER_CASES)
-def test_create_issue_fields(issue_args, issue_fields_mapper, expected_issue_fields_mapper):
-    from JiraV3 import create_issue_fields
-    issue_fields = create_issue_fields(issue_args=issue_args, issue_fields_mapper=issue_fields_mapper)
-    assert issue_fields == expected_issue_fields_mapper
-
-
-UPDATE_MAPPER_CASES = [
-    (
-        {'summary': ['dummy_summary_1', 'dummy_summary_2'], 'first_nested_key': 'first', 'second_nested_key': 'second',
-         'third_nested_key': {'value': 'third'}, 'fourth_nested_key': {'value': 'fourth'}},
-        {'summary': ('fields.summary', ''), 'first_nested_key': ('parent_key.first_child_key.first_value', ''),
-         'second_nested_key': ('parent_key.second_child_key.second_value', ''),
-         'third_nested_key': ('parent_key.second_child_key.third_value', 'name'),
-         'fourth_nested_key': ('parent_key.second_child_key.third_value', 'id')},
-        'rewrite',
-        {'fields': {'summary': [{'set': ['dummy_summary_1', 'dummy_summary_2']}]},
-         'parent_key': {'first_child_key': {'first_value': [{'set': 'first'}]},
-                        'second_child_key': {'second_value': [{'set': 'second'}],
-                                             'third_value': [{'set': {'id': {'value': 'fourth'}}},
-                                                             {'set': {'name': {'value': 'third'}}}]
-                                             }
-                        }
-         }
-    )
-]
-
-
-@pytest.mark.parametrize('issue_args, issue_update_mapper, action, expected_issue_update_mapper', UPDATE_MAPPER_CASES)
-def test_create_issue_update(issue_args, issue_update_mapper, action, expected_issue_update_mapper):
-    from JiraV3 import get_issue_fields_for_update
-    issue_update_mapper = get_issue_fields_for_update(
-        issue_args=issue_args, issue_update_mapper=issue_update_mapper, action=action)
-    assert expected_issue_update_mapper == issue_update_mapper
-
-
-TO_MD_AND_OUTPUTS_CASES = [
-    (
-        {'id': 'dummy_id', 'key': 'dummy_key',
-         'fields': {'summary': 'dummy_summary', 'status': {'name': 'dummy_status_name'}, 'project': {'name': 'dummy_project'}},
-         'properties': {'name': 'admin'}
-         },
-        {'Id': ('id', ''), 'Key': ('key', ''), 'Summary': ('fields.summary', ''), 'Status': ('fields.status.name', ''),
-         'Properties': ('properties.name', ''), 'PropertiesId': ('properties.id', None)},
-        {'ProjectName': ('fields.project.name', '')},
-        {'Labels': ('fields.labels', [])},
-        (
-            {'Id': 'dummy_id', 'Key': 'dummy_key', 'Summary': 'dummy_summary', 'Status': 'dummy_status_name',
-             'Properties': 'admin', 'PropertiesId': None, 'ProjectName': 'dummy_project'},
-            {'Id': 'dummy_id', 'Key': 'dummy_key', 'Summary': 'dummy_summary', 'Status': 'dummy_status_name',
-                'Properties': 'admin', 'PropertiesId': None, 'Labels': []}
-        )
-    )
-]
-
-
-@pytest.mark.parametrize('data, shared_fields, hr_fields, outputs_fields, expected_md_outputs_dicts', TO_MD_AND_OUTPUTS_CASES)
-def test_response_to_md_and_outputs(data, shared_fields, hr_fields, outputs_fields, expected_md_outputs_dicts):
-    from JiraV3 import response_to_md_and_outputs
-    markdown_dict, outputs = response_to_md_and_outputs(data=data, shared_fields=shared_fields,
-                                                        hr_fields=hr_fields, outputs_fields=outputs_fields)
-    expected_markdown_dict, expected_outputs = expected_md_outputs_dicts
-    assert expected_markdown_dict == markdown_dict
-    assert expected_outputs == outputs
 
 
 PAGINATION_ARGS_CASES = [
@@ -238,57 +165,46 @@ def test_prepare_pagination_args(pagination_args, expected_parsed_pagination_arg
 
 # Commands unit tests
 
-BOARD_EPICS_LIST_CASES = [
-    ('test_data/raw_responses/board_epics/board_epic_list.json', 'test_data/parsed_responses/board_epics/board_epic_list.json'),
-    ('test_data/raw_responses/board_epics/board_epic_list_empty.json',
-     'test_data/parsed_responses/board_epics/board_epic_list_empty.json')
-]
+# BOARD_EPICS_LIST_CASES = [
+#     ('test_data/raw_responses/board_epics/board_epic_list.json', 'test_data/parsed_responses/board_epics/board_epic_list.json'),
+#     ('test_data/raw_responses/board_epics/board_epic_list_empty.json',
+#      'test_data/parsed_responses/board_epics/board_epic_list_empty.json')
+# ]
 
 
-@pytest.mark.parametrize('raw_response_file, expected_parsed_response_file', BOARD_EPICS_LIST_CASES)
-def test_jira_board_epic_list(mocker, raw_response_file, expected_parsed_response_file):
-    """Check that the jira-board-epic-list parses the raw results correctly
-    """
-    from JiraV3 import board_epic_list_command
-    raw_response = util_load_json(raw_response_file)
-    expected_parsed_response = util_load_json(expected_parsed_response_file)
-    client = jira_base_client_mock()
-    mocker.patch.object(client, 'get_epics_from_board', return_value=raw_response)
-    parsed_response = board_epic_list_command(client=client, args={'board_id': '14'})
-    assert parsed_response.to_context() == expected_parsed_response
+# @pytest.mark.parametrize('raw_response_file, expected_parsed_response_file', BOARD_EPICS_LIST_CASES)
+# def test_jira_board_epic_list(mocker, raw_response_file, expected_parsed_response_file):
+#     """Check that the jira-board-epic-list parses the raw results correctly
+#     """
+#     from JiraV3 import board_epic_list_command
+#     raw_response = util_load_json(raw_response_file)
+#     expected_parsed_response = util_load_json(expected_parsed_response_file)
+#     client = jira_base_client_mock()
+#     mocker.patch.object(client, 'get_epics_from_board', return_value=raw_response)
+#     parsed_response = board_epic_list_command(client=client, args={'board_id': '14'})
+#     assert parsed_response.to_context() == expected_parsed_response
 
 
-SPRINT_ISSUES_LIST_CASES = [
-    ('test_data/raw_responses/sprint_issues/sprint_issues_list.json',
-     'test_data/parsed_responses/sprint_issues/sprint_issues_list.json'),
-    ('test_data/raw_responses/sprint_issues/sprint_issues_list_empty.json',
-     'test_data/parsed_responses/sprint_issues/sprint_issues_list_empty.json')
-]
+# SPRINT_ISSUES_LIST_CASES = [
+#     ('test_data/raw_responses/sprint_issues/sprint_issues_list.json',
+#      'test_data/parsed_responses/sprint_issues/sprint_issues_list.json'),
+#     ('test_data/raw_responses/sprint_issues/sprint_issues_list_empty.json',
+#      'test_data/parsed_responses/sprint_issues/sprint_issues_list_empty.json')
+# ]
 
 
-@pytest.mark.parametrize('raw_response_file, expected_parsed_response_file', SPRINT_ISSUES_LIST_CASES)
-def test_jira_sprint_issue_list(mocker, raw_response_file, expected_parsed_response_file):
-    """Check that the jira-sprint-issue-list parses the raw results correctly
-    """
-    from JiraV3 import sprint_issues_list_command
-    raw_response = util_load_json(raw_response_file)
-    expected_parsed_response = util_load_json(expected_parsed_response_file)
-    client = jira_base_client_mock()
-    mocker.patch.object(client, 'get_issues_from_sprint', return_value=raw_response)
-    mocker.patch.object(client, 'get_sprint_issues_from_board', return_value=raw_response)
-    parsed_response = sprint_issues_list_command(client=client, args={'sprint_id': '4'})
-    assert parsed_response.to_context() == expected_parsed_response
-
-
-def test_jira_sprint_issue_move(mocker):
-    """Check that the jira-sprint-issue-move returns the correct CommandResults when no error is thrown
-    """
-    from JiraV3 import issues_to_sprint_command, requests, CommandResults
-    client = jira_base_client_mock()
-    mocker.patch.object(client, 'issues_to_sprint', return_value=requests.Response())
-    expected_command_result = CommandResults(readable_output='Issues were moved to the Sprint successfully')
-    assert expected_command_result.to_context() == issues_to_sprint_command(client=client, args={}).to_context()
-
+# @pytest.mark.parametrize('raw_response_file, expected_parsed_response_file', SPRINT_ISSUES_LIST_CASES)
+# def test_jira_sprint_issue_list(mocker, raw_response_file, expected_parsed_response_file):
+#     """Check that the jira-sprint-issue-list parses the raw results correctly
+#     """
+#     from JiraV3 import sprint_issues_list_command
+#     raw_response = util_load_json(raw_response_file)
+#     expected_parsed_response = util_load_json(expected_parsed_response_file)
+#     client = jira_base_client_mock()
+#     mocker.patch.object(client, 'get_issues_from_sprint', return_value=raw_response)
+#     mocker.patch.object(client, 'get_sprint_issues_from_board', return_value=raw_response)
+#     parsed_response = sprint_issues_list_command(client=client, args={'sprint_id': '4'})
+#     assert parsed_response.to_context() == expected_parsed_response
 
 class TestJiraGetIssueCommand:
     def test_create_file_info_from_attachment(self, mocker):
@@ -468,14 +384,632 @@ class TestJiraEditIssueCommand:
         command_result = edit_issue_command(client=client, args=args)
         assert command_result.to_context().get('EntryContext') == {'Ticket(val.Id && val.Id == obj.Id)': outputs}
 
-    def test_apply_issue_status(self, mocker):
-        ...
+    @pytest.mark.parametrize('args', [
+        ({'issue_key': 'dummy_key', 'status': 'Selected for development'}),
+        ({'issue_key': 'dummy_key', 'transition': 'In Development'})
+    ])
+    def test_apply_issue_status_and_transition(self, mocker, args):
+        """
+        Given:
+            - A Jira client, and the status, or transition argument to change the status of the issue.
+        When
+            - Calling the edit issue command.
+        Then
+            - Validate that get_transitions, and transition_issue method was called, which is in charge of changing the status
+            of the issue.
+        """
+        from JiraV3 import edit_issue_command
+        client = jira_base_client_mock()
+        transitions_raw_response = util_load_json('test_data/get_transitions_test/raw_response.json')
+        get_transitions_mocker = mocker.patch.object(client, 'get_transitions', return_value=transitions_raw_response)
+        apply_transition_mocker = mocker.patch.object(client, 'transition_issue', return_value=requests.Response())
+        mocker.patch.object(client, 'get_issue', return_value={})
+        mocker.patch.object(client, 'edit_issue', return_value=requests.Response())
+        edit_issue_command(client=client, args=args)
+        get_transitions_mocker.assert_called_once()
+        apply_transition_mocker.assert_called_once()
 
-    def test_apply_issue_transition(self, mocker):
-        ...
+    def test_create_issue_fields_with_action_rewrite(self, mocker):
+        """
+        Given:
+            - A Jira client, and issue fields to edit the Jira issue, with the rewrite action.
+        When
+            - Calling the edit issue command.
+        Then
+            - Validate that the edit_issue method (which is in charge of calling the endpoint with the relevant data
+            to edit the issue) was called with the correct json data.
+        """
+        from JiraV3 import edit_issue_command
+        client = jira_base_client_mock()
+        args = {'issue_key': 'dummy_key', 'description': 'dummy description', 'project_key': 'dummy_project_key',
+                'project_id': 'dummy_project_id',
+                'labels': 'label1,label2', 'components': 'comp1,comp2',
+                'customfield_1': 'dummy custom field'}
+        expected_issue_fields = {'fields': {'description': 'dummy description', 'project':
+                                            {'key': 'dummy_project_key', 'id':
+                                             'dummy_project_id'}, 'labels': ['label1', 'label2'],
+                                            'components': [{'name': 'comp1'}, {'name': 'comp2'}],
+                                            'customfield_1': 'dummy custom field'}}
+        mocker.patch.object(client, 'get_issue', return_value={})
+        edit_issue_mocker = mocker.patch.object(client, 'edit_issue', return_value=requests.Response())
+        edit_issue_command(client=client, args=args)
+        assert expected_issue_fields == edit_issue_mocker.call_args[1].get('json_data')
 
-    def test_create_issue_fields(self, mocker):
-        ...
+    def test_create_issue_fields_for_update_with_action_append(self, mocker):
+        """
+        Given:
+            - A Jira client, and issue fields to edit the Jira issue, with the append action.
+        When
+            - Calling the edit issue command.
+        Then
+            - Validate that the edit_issue method (which is in charge of calling the endpoint with the relevant data
+            to edit the issue) was called with the correct json data.
+        """
+        from JiraV3 import edit_issue_command
+        client = jira_base_client_mock()
+        args = {'issue_key': 'dummy_key', 'description': 'dummy description', 'project_key': 'dummy_project_key',
+                'project_id': 'dummy_project_id',
+                'labels': 'label1,label2', 'components': 'comp1,comp2',
+                'customfield_1': 'dummy custom field', 'action': 'append'}
+        expected_issue_fields = {'update': {'labels': [{'add': 'label1'}, {'add': 'label2'}], 'components': [
+            {'add': {'name': 'comp1'}}, {'add': {'name': 'comp2'}}]}}
+        mocker.patch.object(client, 'get_issue', return_value={})
+        edit_issue_mocker = mocker.patch.object(client, 'edit_issue', return_value=requests.Response())
+        edit_issue_command(client=client, args=args)
+        assert expected_issue_fields == edit_issue_mocker.call_args[1].get('json_data')
 
-    def test_create_issue_fields_for_update(self, mocker):
-        ...
+
+class TestJiraCreateIssueCommand:
+    def test_create_issue_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the create issue command.
+        Then
+            - Validate that the issue id and key of the newly created issue is returned.
+        """
+        from JiraV3 import create_issue_command
+        client = jira_base_client_mock()
+        raw_response = {'id': "1234", 'key': 'dummy_key',
+                        'self': 'dummy_link'}
+        expected_outputs = {'Id': '1234', 'Key': 'dummy_key'}
+        mocker.patch.object(client, 'create_issue', return_value=raw_response)
+        command_result = create_issue_command(client=client, args={})
+        assert command_result.to_context().get('EntryContext') == {'Ticket(val.Id && val.Id == obj.Id)': expected_outputs}
+
+
+class TestJiraDeleteIssueCommand:
+    def test_delete_issue_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the delete issue command.
+        Then
+            - Validate that the correct readable output is outputted to the user.
+        """
+        from JiraV3 import delete_issue_command
+        client = jira_base_client_mock()
+        mocker.patch.object(client, 'delete_issue', return_value=requests.Response())
+        command_result = delete_issue_command(client=client, args={'issue_key': 'dummy_key'})
+        assert 'Issue deleted successfully' in command_result.to_context().get('HumanReadable')
+
+
+class TestJiraGetTransitionsCommand:
+    def test_get_transitions_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the get_transitions_command
+        Then
+            - Validate that the correct CommandResult object is returned to the user.
+        """
+        from JiraV3 import get_transitions_command
+        client = jira_base_client_mock()
+        raw_response = util_load_json('test_data/get_transitions_test/raw_response.json')
+        expected_command_results_context = util_load_json('test_data/get_transitions_test/parsed_result.json')
+        mocker.patch.object(client, 'get_transitions', return_value=raw_response)
+        command_result = get_transitions_command(client=client, args={'issue_key': 'dummy_key'})
+        assert expected_command_results_context['EntryContext'] == command_result.to_context()['EntryContext']
+        assert expected_command_results_context['HumanReadable'] == command_result.to_context()['HumanReadable']
+
+
+class TestJiraAddCommentCommand:
+    def test_add_comment_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the add_comment_command
+        Then
+            - Validate that the correct CommandResult object is returned to the user.
+        """
+        from JiraV3 import add_comment_command
+        client = jira_base_client_mock()
+        args = {'visibility': 'Administrators', 'issue_key': 'dummy_key', 'comment': 'dummy_comment'}
+        raw_response = util_load_json('test_data/create_comment_test/raw_response.json')
+        expected_command_results_context = util_load_json('test_data/create_comment_test/parsed_result.json')
+        mocker.patch.object(client, 'add_comment', return_value=raw_response)
+        command_result = add_comment_command(client=client, args=args)
+        assert expected_command_results_context['EntryContext'] == command_result.to_context()['EntryContext']
+        assert expected_command_results_context['HumanReadable'] == command_result.to_context()['HumanReadable']
+
+
+class TestJiraGetIDOffsetCommand:
+    def test_get_id_offset_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the get_id_offset_command, in order to retrieve the first issue id in the Jira instance.
+        Then
+            - Validate that the correct CommandResult object is returned to the user, and that the correct JQL
+            was sent to in order to retrieve the ID.
+        """
+        from JiraV3 import get_id_offset_command
+        client = jira_base_client_mock()
+        raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
+        run_query_mocker = mocker.patch.object(client, 'run_query', return_value=raw_response)
+        command_result = get_id_offset_command(client=client, args={})
+        assert 'ORDER BY created ASC' == run_query_mocker.call_args[1].get('query_params', {}).get('jql')
+        assert {'Ticket': {'idOffSet': '10161'}} == command_result.to_context()['EntryContext']
+
+
+class TestJiraEditCommentCommand:
+    def test_get_id_offset_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the edit_comment_command.
+        Then
+            - Validate that the get_comments method is called to retrieve the comments of the issue, that includes the
+            newly edited comment, and that the correct outputs is returned to the context data.
+        """
+        from JiraV3 import edit_comment_command
+        client = jira_base_client_mock()
+        comments_raw_response = util_load_json('test_data/get_comments_test/raw_response.json')
+        expected_command_results_context = util_load_json('test_data/get_comments_test/parsed_result.json')
+        mocker.patch.object(client, 'edit_comment', return_value=requests.Response())
+        get_comments_mocker = mocker.patch.object(client, 'get_comments', return_value=comments_raw_response)
+        command_result = edit_comment_command(client=client, args={'issue_key': 'dummy_issue_key'})
+        get_comments_mocker.assert_called_once()
+        assert expected_command_results_context['EntryContext'] == command_result.to_context()['EntryContext']
+
+
+class TestJiraListIssueFieldsCommand:
+    @pytest.mark.parametrize('pagination_args', [
+        ({'start_at': 0, 'max_results': 2}), ({'start_at': 1, 'max_results': 3})
+    ])
+    def test_get_id_offset_command(self, mocker, pagination_args):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-issue-list-fields command.
+        Then
+            - Validate that correct pagination has been applied, since the API endpoint does not support pagination,
+            and we do it manually.
+        """
+        from JiraV3 import list_fields_command
+        client = jira_base_client_mock()
+        issue_fields_raw_response = util_load_json('test_data/get_issue_fields_test/raw_response.json')
+        expected_context = util_load_json('test_data/get_issue_fields_test/parsed_result.json')
+        start_at = pagination_args.get('start_at', 0)
+        max_results = pagination_args.get('max_results', 50)
+        mocker.patch.object(client, 'get_issue_fields', return_value=issue_fields_raw_response)
+        mocker.patch('JiraV3.prepare_pagination_args', return_value=pagination_args)
+        command_result = list_fields_command(client=client, args={'issue_key': 'dummy_issue_key'})
+        # [start_at: start_at + max_results] is the way do the pagination manually, therefore we check it.
+        expected_outputs = expected_context['EntryContext']['Jira.IssueField(val.id && val.id == obj.id)'][start_at: start_at
+                                                                                                           + max_results]
+        assert expected_outputs == command_result.to_context()['EntryContext']['Jira.IssueField(val.id && val.id == obj.id)']
+
+
+class TestJiraIssueToBacklogCommand:
+    @pytest.mark.parametrize('args', [
+        ({'rank_before_issue': 'key1', 'issues': 'issue1,issue2'}), ({'rank_after_issue': 'key1', 'issues': 'issue1,issue2'})
+    ])
+    def test_using_rank_without_board_id_error(self, args):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-issue-to-backlog command, with the rank_before_issue, or rank_after_issue arguments, without
+            the board_id argument.
+        Then
+            - Validate that an error is thrown.
+        """
+        from JiraV3 import issues_to_backlog_command
+        client = jira_base_client_mock()
+        with pytest.raises(DemistoException) as e:
+            issues_to_backlog_command(client=client, args=args)
+        assert 'Please supply the board_id argument' in str(e)
+
+    def test_issues_to_backlog_is_called_when_using_board_id(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-issue-to-backlog command, with the board_id argument.
+        Then
+            - Validate that the correct API call is being called (issues_to_backlog, which is available only for Jira Cloud).
+        """
+        from JiraV3 import issues_to_backlog_command
+        client = jira_cloud_client_mock()
+        issues_to_backlog_mocker = mocker.patch.object(client, 'issues_to_backlog', return_value=requests.Response())
+        issues_to_backlog_command(client=client, args={'board_id': 'dummy_board_id'})
+        issues_to_backlog_mocker.assert_called_once()
+
+    def test_using_board_id_with_onprem_error(self):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-issue-to-backlog command, with the board_id argument, on an OnPrem instance.
+        Then
+            - Validate that an error is thrown, since only Jira Cloud supports the board_id argument.
+        """
+        from JiraV3 import issues_to_backlog_command
+        client = jira_onprem_client_mock()
+        with pytest.raises(DemistoException) as e:
+            issues_to_backlog_command(client=client, args={'board_id': 'dummy_board_id'})
+        assert 'The argument board_id is not supported for a Jira OnPrem instance' in str(e)
+
+    def test_issues_to_backlog_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-issue-to-backlog command.
+        Then
+            - Validate that the correct API call is being called.
+        """
+        from JiraV3 import issues_to_backlog_command
+        client = jira_base_client_mock()
+        issues_from_sprint_to_backlog_mocker = mocker.patch.object(
+            client, 'issues_from_sprint_to_backlog', return_value=requests.Response())
+        command_results = issues_to_backlog_command(client=client, args={})
+        issues_from_sprint_to_backlog_mocker.assert_called_once()
+        assert command_results.to_context()['HumanReadable'] == 'Issues were moved to Backlog successfully'
+
+
+class TestJiraIssuesToBoardCommand:
+    def test_issues_to_board_with_onprem_error(self):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-issue-to-board command, with an OnPrem instance.
+        Then
+            - Validate that an error is thrown, since this command is only supported by Jira Cloud.
+        """
+        from JiraV3 import issues_to_board_command
+        client = jira_onprem_client_mock()
+        with pytest.raises(DemistoException) as e:
+            issues_to_board_command(client=client, args={})
+        assert 'This command is not supported by a Jira OnPrem instance' in str(e)
+
+    def test_issues_to_board_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-issue-to-board command, with a Cloud instance.
+        Then
+            - Validate that the correct CommandResults is returned to the user.
+        """
+        from JiraV3 import issues_to_board_command
+        client = jira_cloud_client_mock()
+        mocker.patch.object(client, 'issues_to_board', return_value=requests.Response())
+        command_results = issues_to_board_command(client=client, args={})
+        assert command_results.to_context()['HumanReadable'] == 'Issues were moved to Board successfully'
+
+
+class TestJiraBoardListCommand:
+    def test_get_board_using_board_id_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-board-list command, with the board_id argument.
+        Then
+            - Validate that the correct API call is called to retrieve the specific data corresponding to the board id.
+        """
+        from JiraV3 import board_list_command
+        client = jira_base_client_mock()
+        board_raw_response = util_load_json('test_data/get_board_test/raw_response.json')
+        expected_command_results = util_load_json('test_data/get_board_test/parsed_result.json')
+        get_board_mocker = mocker.patch.object(client, 'get_board', return_value=board_raw_response)
+        get_boards_mocker = mocker.patch.object(client, 'get_boards', return_value={})
+        command_results = board_list_command(client=client, args={'board_id': 'dummy_board_id'})
+        get_board_mocker.assert_called_once()
+        get_boards_mocker.assert_not_called()
+        assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
+
+    def test_get_boards_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-board-list command, without the board_id argument.
+        Then
+            - Validate that the correct API call is called to retrieve the specific data.
+        """
+        from JiraV3 import board_list_command
+        client = jira_base_client_mock()
+        board_raw_response = util_load_json('test_data/get_boards_test/raw_response.json')
+        expected_command_results = util_load_json('test_data/get_boards_test/parsed_result.json')
+        get_board_mocker = mocker.patch.object(client, 'get_board', return_value={})
+        get_boards_mocker = mocker.patch.object(client, 'get_boards', return_value=board_raw_response)
+        command_results = board_list_command(client=client, args={})
+        get_board_mocker.assert_not_called()
+        get_boards_mocker.assert_called_once()
+        assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
+
+
+class TestJiraIssuesFromBacklogOfBoardCommand:
+    def test_get_issues_from_backlog_of_board_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-board-backlog-list command.
+        Then
+            - Validate that the correct context data is returned to the user.
+        """
+        from JiraV3 import board_backlog_list_command
+        client = jira_base_client_mock()
+        backlog_issues_raw_response = util_load_json('test_data/get_issues_from_backlog_test/raw_response.json')
+        expected_command_results = util_load_json('test_data/get_issues_from_backlog_test/parsed_result.json')
+        mocker.patch.object(client, 'get_issues_from_backlog', return_value=backlog_issues_raw_response)
+        command_results = board_backlog_list_command(client=client, args={'board_id': '14'})
+        assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
+
+
+class TestJiraIssuesFromBoardCommand:
+    def test_get_issues_from_board_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-board-issue-list command.
+        Then
+            - Validate that the correct context data is returned to the user.
+        """
+        from JiraV3 import board_issues_list_command
+        client = jira_base_client_mock()
+        board_issues_raw_response = util_load_json('test_data/get_issues_from_board_test/raw_response.json')
+        expected_command_results = util_load_json('test_data/get_issues_from_board_test/parsed_result.json')
+        mocker.patch.object(client, 'get_issues_from_board', return_value=board_issues_raw_response)
+        command_results = board_issues_list_command(client=client, args={'board_id': '14'})
+        assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
+
+
+class TestJiraBoarSprintsCommand:
+    def test_get_issues_from_board_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-board-sprint-list command.
+        Then
+            - Validate that the correct context data is returned to the user.
+        """
+        from JiraV3 import board_sprint_list_command
+        client = jira_base_client_mock()
+        board_sprints_raw_response = util_load_json('test_data/get_board_sprints_test/raw_response.json')
+        expected_command_results = util_load_json('test_data/get_board_sprints_test/parsed_result.json')
+        mocker.patch.object(client, 'get_sprints_from_board', return_value=board_sprints_raw_response)
+        command_results = board_sprint_list_command(client=client, args={'board_id': '12'})
+        assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
+
+
+class TestJiraIssueLinkTypesCommand:
+    def test_get_issue_link_types_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-issue-link-type-get command.
+        Then
+            - Validate that the correct context data is returned to the user.
+        """
+        from JiraV3 import get_issue_link_types_command
+        client = jira_base_client_mock()
+        link_types_raw_response = util_load_json('test_data/get_issue_link_types_test/raw_response.json')
+        expected_command_results = util_load_json('test_data/get_issue_link_types_test/parsed_result.json')
+        mocker.patch.object(client, 'get_issue_link_types', return_value=link_types_raw_response)
+        command_results = get_issue_link_types_command(client=client, args={})
+        assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
+
+
+class TestJiraIssueToIssueCommand:
+    def test_issue_to_issue_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-issue-to-issue-link command.
+        Then
+            - Validate that the correct message is returned to the user.
+        """
+        from JiraV3 import link_issue_to_issue_command
+        client = jira_base_client_mock()
+        mocker.patch.object(client, 'create_issue_link', return_value=requests.Response())
+        command_results = link_issue_to_issue_command(client=client, args={})
+        assert 'Issue link created successfully' == command_results.to_context()['HumanReadable']
+
+
+class TestJiraSprintIssueMoveCommand:
+    def test_jira_sprint_issue_move(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-sprint-issue-move command.
+        Then
+            - Validate that the correct message is returned to the user.
+        """
+        from JiraV3 import issues_to_sprint_command
+        client = jira_base_client_mock()
+        mocker.patch.object(client, 'issues_to_sprint', return_value=requests.Response())
+        command_results = issues_to_sprint_command(client=client, args={})
+        assert 'Issues were moved to the Sprint successfully' == command_results.to_context()['HumanReadable']
+
+
+class TestJiraEpicIssuesCommand:
+    def test_get_epic_issues_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-epic-issue-list command.
+        Then
+            - Validate that the correct context data is returned to the user.
+        """
+        from JiraV3 import epic_issues_list_command
+        client = jira_base_client_mock()
+        epic_issues_raw_response = util_load_json('test_data/get_epic_issues_test/raw_response.json')
+        expected_command_results = util_load_json('test_data/get_epic_issues_test/parsed_result.json')
+        mocker.patch.object(client, 'get_epic_issues', return_value=epic_issues_raw_response)
+        command_results = epic_issues_list_command(client=client, args={'epic_key': 'TSTPRD-1'})
+        assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
+
+    def test_get_epic_issues_without_extracting_epic_id_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-epic-issue-list command, and not being able
+            to extract the board_id from the response.
+        Then
+            - Validate that the context data is identified only using the epic id, without the board id.
+        """
+        from JiraV3 import epic_issues_list_command
+        client = jira_base_client_mock()
+        epic_issues_raw_response = util_load_json('test_data/get_epic_issues_test/raw_response.json')
+        mocker.patch.object(client, 'get_epic_issues', return_value=epic_issues_raw_response)
+        for issue in epic_issues_raw_response.get('issues', []):
+            (issue.get('fields', {}).get('sprint', {}) or {})['originBoardId'] = ''
+        command_results = epic_issues_list_command(client=client, args={'epic_key': 'COMPANYSA-1'})
+        entry_context = command_results.to_context()['EntryContext']
+        assert 'Jira.EpicIssues(val.epicId && val.epicId == obj.epicId)' in entry_context
+        assert ('Jira.EpicIssues(val.epicId && val.epicId == obj.epicId && val.boardId && val.'
+                'boardId == obj.boardId)') not in entry_context
+
+
+class TestJiraBoardEpicsCommand:
+    def test_get_board_epics_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-board-epic-list command.
+        Then
+            - Validate that the correct context data is returned to the user.
+        """
+        from JiraV3 import board_epic_list_command
+        client = jira_base_client_mock()
+        board_epics_raw_response = util_load_json('test_data/get_board_epics_test/raw_response.json')
+        expected_command_results = util_load_json('test_data/get_board_epics_test/parsed_result.json')
+        mocker.patch.object(client, 'get_epics_from_board', return_value=board_epics_raw_response)
+        command_results = board_epic_list_command(client=client, args={'board_id': '14'})
+        assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
+
+
+class TestJiraSprintIssuesCommand:
+    def test_get_sprint_issues_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-sprint-issue-list command, without the board_id argument.
+        Then
+            - Validate that the correct API call was called to retrieve the sprint issues, which is the API
+            call that does not require a board_id, only a sprint_id argument, and that correct context data
+            is returned to the user.
+        """
+        from JiraV3 import sprint_issues_list_command
+        client = jira_base_client_mock()
+        sprint_issues_raw_response = util_load_json('test_data/get_sprint_issues_test/raw_response.json')
+        expected_command_results = util_load_json('test_data/get_sprint_issues_test/parsed_result.json')
+        issues_from_sprint_mocker = mocker.patch.object(client, 'get_issues_from_sprint', return_value=sprint_issues_raw_response)
+        sprint_issues_from_board_mocker = mocker.patch.object(client,
+                                                              'get_sprint_issues_from_board',
+                                                              return_value=sprint_issues_raw_response)
+        command_results = sprint_issues_list_command(client=client, args={'sprint_id': '4'})
+        issues_from_sprint_mocker.assert_called_once()
+        sprint_issues_from_board_mocker.assert_not_called()
+        assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
+
+    def test_get_sprint_issues_from_board_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the jira-sprint-issue-list command, with the board_id argument.
+        Then
+            - Validate that the correct API call was called to retrieve the sprint issues, which is the API
+            call that does require a board_id, in addition to a sprint_id argument, and that correct context data
+            is returned to the user.
+        """
+        from JiraV3 import sprint_issues_list_command
+        client = jira_base_client_mock()
+        sprint_issues_raw_response = util_load_json('test_data/get_sprint_issues_test/raw_response.json')
+        expected_command_results = util_load_json('test_data/get_sprint_issues_test/parsed_result.json')
+        issues_from_sprint_mocker = mocker.patch.object(client, 'get_issues_from_sprint', return_value=sprint_issues_raw_response)
+        sprint_issues_from_board_mocker = mocker.patch.object(client,
+                                                              'get_sprint_issues_from_board',
+                                                              return_value=sprint_issues_raw_response)
+        command_results = sprint_issues_list_command(client=client, args={'board_id': '12', 'sprint_id': '4'})
+        issues_from_sprint_mocker.assert_not_called()
+        sprint_issues_from_board_mocker.assert_called_once()
+        assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
+
+    def test_get_sprint_issues_without_extracting_board_id(self, mocker):
+        """
+        Given:
+            - A Jira client.
+        When
+            - Calling the jira-sprint-issue-list command, without the board_id argument, and not being able
+            to extract the board_id from the response.
+        Then
+            - Validate that the context data is identified only using the sprint id, without the board id.
+        """
+        from JiraV3 import sprint_issues_list_command
+        client = jira_base_client_mock()
+        sprint_issues_raw_response: Dict[str, Any] = util_load_json('test_data/get_sprint_issues_test/raw_response.json')
+        issues_from_sprint_mocker = mocker.patch.object(client, 'get_issues_from_sprint', return_value=sprint_issues_raw_response)
+        sprint_issues_from_board_mocker = mocker.patch.object(client,
+                                                              'get_sprint_issues_from_board',
+                                                              return_value=sprint_issues_raw_response)
+        for issue in sprint_issues_raw_response.get('issues', []):
+            (issue.get('fields', {}).get('sprint', {}) or {})['originBoardId'] = ''
+        command_results = sprint_issues_list_command(client=client, args={'sprint_id': '4'})
+        issues_from_sprint_mocker.assert_called_once()
+        sprint_issues_from_board_mocker.assert_not_called()
+        entry_context = command_results.to_context()['EntryContext']
+        assert 'Jira.SprintIssues(val.sprintId && val.sprintId == obj.sprintId)' in entry_context
+        assert ('Jira.SprintIssues(val.boardId && val.boardId == obj.boardId && val.sprintId && val.'
+                'sprintId == obj.sprintId)') not in entry_context
+
+
+class TestJiraDeleteCommentCommand:
+    """
+    Given:
+        - A Jira client.
+    When
+        - Calling the jira-issue-delete-comment.
+    Then
+        - Validate that the correct message is returned to the user.
+    """
+
+    def test_delete_comment_command(self, mocker):
+        from JiraV3 import delete_comment_command
+        client = jira_base_client_mock()
+        mocker.patch.object(client, 'delete_comment', return_value=requests.Response())
+        command_results = delete_comment_command(client=client, args={'issue_key': 'dummy_issue_key'})
+        assert 'Comment deleted successfully' in command_results.to_context()['HumanReadable']

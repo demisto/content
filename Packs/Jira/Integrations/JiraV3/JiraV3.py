@@ -4361,11 +4361,6 @@ def main() -> None:
                 attachment_tag_from_jira=attachment_tag_from_jira
             ),
             )
-        # elif demisto.command() == 'get-mapping-fields':
-        #     return_results(get_mapping_fields_command())
-
-        # elif demisto.command() == 'update-remote-system':
-        #     return_results(update_remote_system_command(demisto.args()))
 
         elif demisto.command() == 'get-remote-data':
             return_results(get_remote_data_command(client=client, args=args, comment_tag_from_jira=comment_tag_from_jira,
