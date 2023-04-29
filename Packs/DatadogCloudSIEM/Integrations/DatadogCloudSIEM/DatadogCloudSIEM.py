@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 import json
 from math import floor
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, Tuple
 from CommonServerPython import *  # noqa: F401 # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa: F401
 from datadog_api_client import ApiClient, Configuration
@@ -51,6 +51,8 @@ from datadog_api_client.v2.model.incident_search_sort_order import (
 from dateparser import parse
 from urllib3 import disable_warnings
 from datadog_api_client.exceptions import ForbiddenException, UnauthorizedException
+from datadog_api_client.v1.model.event_list_response import EventListResponse
+from datadog_api_client.v1.model.event_response import EventResponse
 
 # Disable insecure warnings
 disable_warnings()
@@ -240,12 +242,13 @@ def incident_for_lookup(incident: Dict) -> Dict:
     }
 
 
-def pagination(limit: Optional[int], page: Optional[int], page_size: Optional[int]):
+def pagination(limit: Optional[int], page: Optional[int], page_size: Optional[int]) -> Tuple[int, int]:
     """
     Define pagination.
     Args:
         page: The page number.
         page_size: The number of requested results per page.
+        limit: The number of requested results limit per page.
     Returns:
         limit (int): Records per page.
         offset (int): The number of records to be skipped.
@@ -325,7 +328,7 @@ def convert_datetime_to_str(data: Dict) -> Dict:
     return data
 
 
-def tags_context_and_readable_output(tags: Dict):
+def tags_context_and_readable_output(tags):
     """
     Returns Context output and lookup data for Tags.
 
@@ -334,7 +337,7 @@ def tags_context_and_readable_output(tags: Dict):
     """
     return {"Tag": tags.get("tags"), "Hostname": tags.get("host")}, lookup_to_markdown(
         [{"Host Name": tags.get("host"), "Tag": tags.get("tags")}], "Host Tags Details"
-    ).replace("<br>", "")
+    )
 
 
 """ COMMAND FUNCTIONS """
@@ -359,10 +362,10 @@ def module_test(configuration: Configuration) -> str:
             return "Authentication Error: Invalid API Key. Make sure API Key, Server URL is correctly set."
         # Testing application key
         try:
-            api_instance = EventsApi(api_client)
+            events_api = EventsApi(api_client)
             start_time = parse("1 min ago", settings={"TIMEZONE": "UTC"})
             end_time = parse(DEFAULT_TO_DATE, settings={"TIMEZONE": "UTC"})
-            api_instance.list_events(
+            events_api.list_events(
                 start=int(start_time.timestamp() if start_time else 0),
                 end=int(end_time.timestamp() if end_time else 0),
             )
@@ -455,10 +458,10 @@ def get_events_command(
         api_instance = EventsApi(api_client)
 
         if args.get("event_id"):
-            response = api_instance.get_event(
-                event_id=arg_to_number(args.get("event_id"), arg_name="event_id"),
+            event_response: EventResponse = api_instance.get_event(
+                event_id=int(args["event_id"]),
             )
-            data = response.get("event", {})
+            data = event_response.get("event", {})
             if data:
                 data = data.to_dict()
                 event_results = [event_for_lookup(data)]
@@ -492,11 +495,11 @@ def get_events_command(
                 else None,
                 "page": datadog_page,
             }
-            response = api_instance.list_events(
+            event_list_response: EventListResponse = api_instance.list_events(
                 **{key: value for key, value in body_dict.items() if value is not None}
             )
-            results: List[Event] = response.get("events", [])
-            resp: List[Event] = get_paginated_results(results, offset, limit)
+            results = event_list_response.get("events", [])
+            resp = get_paginated_results(results, offset, limit)
             data = [event.to_dict() for event in resp]
             if data:
                 events_list = [event_for_lookup(event) for event in data]
@@ -589,9 +592,9 @@ def get_host_tags_command(
     with ApiClient(configuration) as api_client:
         tags_api = TagsApi(api_client)
         response = (
-            tags_api.get_host_tags(host_name=host_name)
+            tags_api.get_host_tags(host_name=str(host_name))
             if not source
-            else tags_api.get_host_tags(host_name=host_name, source=source)
+            else tags_api.get_host_tags(host_name=str(host_name), source=source)
         )
         tags = response.get("tags", [])
     if tags:
@@ -633,11 +636,11 @@ def add_tags_to_host_command(
     host_name = args.get("host_name")
     tags = argToList(args.get("tags"), ",")
 
-    body = HostTags(host=host_name, tags=tags)
+    body = HostTags(host=str(host_name), tags=tags)
 
     with ApiClient(configuration) as api_client:
         tags_api = TagsApi(api_client)
-        response = tags_api.create_host_tags(host_name=host_name, body=body)
+        response = tags_api.create_host_tags(host_name=str(host_name), body=body)
         output_context, readable_output = tags_context_and_readable_output(response)
     return CommandResults(
         readable_output=readable_output,
@@ -667,11 +670,11 @@ def update_host_tags_command(
     host_name = args.get("host_name")
     tags = argToList(args.get("tags"), ",")
 
-    body = HostTags(host=host_name, tags=tags)
+    body = HostTags(host=str(host_name), tags=tags)
 
     with ApiClient(configuration) as api_client:
         tags_api = TagsApi(api_client)
-        response = tags_api.update_host_tags(host_name=host_name, body=body)
+        response = tags_api.update_host_tags(host_name=str(host_name), body=body)
         output_context, readable_output = tags_context_and_readable_output(response)
     return CommandResults(
         readable_output=readable_output,
@@ -699,7 +702,7 @@ def delete_host_tags_command(
     host_name = args.get("host_name")
     with ApiClient(configuration) as api_client:
         tags_api = TagsApi(api_client)
-        tags_api.delete_host_tags(host_name=host_name)
+        tags_api.delete_host_tags(host_name=str(host_name))
         readable_output = "### Host tags deleted successfully!\n"
     return CommandResults(readable_output=readable_output)
 
@@ -746,7 +749,7 @@ def active_metrics_list_command(
     with ApiClient(configuration) as api_client:
         api_instance = MetricsApi(api_client)
         response = api_instance.list_active_metrics(
-            **{key: value for key, value in search_params.items() if value}
+            **{key: value for key, value in search_params.items() if value} # type: ignore
         )
         if response:
             results = response.to_dict()
@@ -797,7 +800,7 @@ def metrics_search_command(
     with ApiClient(configuration) as api_client:
         api_instance = MetricsApi(api_client)
         response = api_instance.list_metrics(
-            q=query,
+            q=str(query),
         )
         if response and response.results:
             results = response.to_dict()
@@ -879,7 +882,7 @@ def update_metric_metadata_command(
         response = api_instance.update_metric_metadata(
             metric_name=metric_name,
             body=MetricMetadata(
-                **{key: value for key, value in params.items() if value}
+                **{key: value for key, value in params.items() if value} # type: ignore
             ),
         )
         return metric_command_results(response, metric_name)
@@ -914,7 +917,7 @@ def create_incident_command(
         data=IncidentCreateData(
             type=IncidentType.INCIDENTS,
             attributes=IncidentCreateAttributes(
-                title=title,
+                title=str(title),
                 customer_impacted=customer_impacted,
                 fields=dict(
                     state=IncidentFieldAttributesSingleValue(
@@ -939,7 +942,7 @@ def create_incident_command(
                     ),
                 ),
                 notification_handles=[
-                    IncidentNotificationHandle(display_name=display_name, handle=handle)
+                    IncidentNotificationHandle(display_name=display_name, handle=handle) # type: ignore
                 ],
                 initial_cells=[
                     IncidentTimelineCellCreateAttributes(
@@ -1058,7 +1061,7 @@ def update_incident_command(
     }
     body = IncidentUpdateRequest(
         data=IncidentUpdateData(
-            id=incident_id,
+            id=str(incident_id),
             type=IncidentType.INCIDENTS,
             attributes=IncidentUpdateAttributes(
                 **{
@@ -1076,7 +1079,7 @@ def update_incident_command(
     configuration.unstable_operations["update_incident"] = True
     with ApiClient(configuration) as api_client:
         api_instance = IncidentsApi(api_client)
-        response = api_instance.update_incident(incident_id=incident_id, body=body)
+        response = api_instance.update_incident(incident_id=str(incident_id), body=body)
         results = response.to_dict()
         formatted_data = convert_datetime_to_str(results.get("data"))
         if results.get("included"):
@@ -1110,7 +1113,7 @@ def delete_incident_command(
     with ApiClient(configuration) as api_client:
         api_instance = IncidentsApi(api_client)
         api_instance.delete_incident(
-            incident_id=args.get("incident_id"),
+            incident_id=str(args.get("incident_id")),
         )
         return CommandResults(readable_output="### Incident deleted successfully!\n")
 
@@ -1123,10 +1126,10 @@ def get_incident_command(
         api_instance = IncidentsApi(api_client)
         if incident_id:
             configuration.unstable_operations["get_incident"] = True
-            response = api_instance.get_incident(
+            incident_response = api_instance.get_incident(
                 incident_id=incident_id,
             )
-            results = response.to_dict()
+            results = incident_response.to_dict()
             data = results.get("data", {})
             if data:
                 data = convert_datetime_to_str(data)
@@ -1145,13 +1148,13 @@ def get_incident_command(
             limit, offset = pagination(limit, page, page_size)
             query = incident_serach_query(args)
             configuration.unstable_operations["search_incidents"] = True
-            response = api_instance.search_incidents(
+            incident_list_response = api_instance.search_incidents(
                 query=query if query else "state:(active OR stable OR resolved)",
                 sort=IncidentSearchSortOrder(sort_data[sort]),
                 page_size=limit,
                 page_offset=offset,
             )
-            results = response.to_dict()
+            results = incident_list_response.to_dict()
             data = results.get("data", {}).get("attributes", {}).get("incidents", [])
             data = [convert_datetime_to_str(incident.get("data")) for incident in data]
             lookup_data = [incident_for_lookup(obj) for obj in data]
@@ -1200,8 +1203,8 @@ def query_timeseries_points_command(configuration: Configuration, args: Dict[str
     with ApiClient(configuration) as api_client:
         api_instance = MetricsApi(api_client)
         response = api_instance.query_metrics(
-            _from=int(from_time.timestamp()) if from_time else None,
-            to=int(to_time.timestamp()) if to_time else None,
+            _from=int(from_time.timestamp()) if from_time else 0,
+            to=int(to_time.timestamp()) if to_time else 0,
             query=query + "{*}",
         )
 
