@@ -4027,7 +4027,7 @@ def get_alert_csv_command(
         return CommandResults(
             readable_output=ReadableOutputs.ALERT_NO_CSV.value.format(alert_id)
         )
-    csv_file = fileResult(filename=f"{alert_id}.csv", data=csv_response.content)
+    csv_file = fileResult(filename=f"{alert_id}.csv", data=csv_response.content, file_type=EntryType.ENTRY_INFO_FILE)
     return [
         CommandResults(
             readable_output=ReadableOutputs.ALERT_CSV.value.format(alert_id)
