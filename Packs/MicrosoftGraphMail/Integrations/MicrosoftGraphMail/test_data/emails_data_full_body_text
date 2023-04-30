@@ -7,7 +7,7 @@
             "createdDateTime": "2019-11-12T15:00:30Z",
             "lastModifiedDateTime": "2019-11-12T15:00:30Z",
             "changeKey": "dummy_change_key_1",
-            "categories": [],
+            "categories": ["Green category"],
             "receivedDateTime": "2019-11-12T15:00:30Z",
             "sentDateTime": "22019-11-12T15:00:30Z",
             "hasAttachments": false,

@@ -15,6 +15,10 @@
             "value": "2019-11-12T15:00:30Z"
         },
         {
+            "type": "Email/Categories",
+            "value": "['Green category']"
+        },
+        {
             "type": "Email/ReceivedTime",
             "value": "2019-11-12T15:00:30Z"
         },

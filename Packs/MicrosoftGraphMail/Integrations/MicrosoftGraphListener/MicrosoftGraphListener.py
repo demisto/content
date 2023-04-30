@@ -42,7 +42,8 @@ EMAIL_DATA_MAPPING = {
     'conversationId': 'ConversationID',
     'isRead': 'IsRead',
     'isDraft': 'IsDraft',
-    'internetMessageId': 'MessageID'
+    'internetMessageId': 'MessageID',
+    'categories': 'Categories',
 }
 
 ''' HELPER FUNCTIONS '''
