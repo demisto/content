@@ -132,6 +132,7 @@
             "recipient@dev.onmicrosoft.com"
         ],
         "Cc": [],
+        "Categories": ["Green category"],
         "Bcc": []
     }
 }
