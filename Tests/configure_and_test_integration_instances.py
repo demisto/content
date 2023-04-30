@@ -1651,7 +1651,9 @@ def get_non_added_packs_ids(build: Build):
     :param build: the build object
     :return: all non added packs i.e. unchanged packs (dependencies) and modified packs
     """
-    compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
+    compare_against = (
+        'master~1' if build.branch_name == 'master' else 'origin/master'
+    )
     added_files = run_command(f'git diff --name-only --diff-filter=A '
                               f'{compare_against}..refs/heads/{build.branch_name} -- Packs/*/pack_metadata.json')
     if os.getenv('CONTRIB_BRANCH'):
