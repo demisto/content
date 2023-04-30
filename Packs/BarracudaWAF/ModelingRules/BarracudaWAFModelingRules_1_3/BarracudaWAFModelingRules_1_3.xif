@@ -85,7 +85,7 @@ filter _raw_log ~= "\s(SYS)\s"
 | alter
     xdm.event.type = "System Log",
     xdm.observer.name = arraystring(regextract(_raw_log, "(\S+)\sSYS\s"), ""),
-    xdm.alert.severity = arraystring(regextract(_raw_log, "SYS\s(\S+)"), ""),
+    xdm.alert.severity = arraystring(regextract(_raw_log, "SYS\s\S+\s(\S+)"), ""),
     xdm.alert.original_alert_id = arraystring(regextract(_raw_log, "SYS\s\S+\s\S+\s(\S+)"), ""),
     xdm.alert.description = arraystring(regextract(_raw_log, "SYS\s\S+\s\S+\s\S+\s(.*)$"), "");
 
