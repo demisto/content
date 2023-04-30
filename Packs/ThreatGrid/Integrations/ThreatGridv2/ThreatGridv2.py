@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """
 Cisco ThreatGird integration
 """
@@ -16,8 +18,7 @@ from typing import (
     Union,
     Set,
 )
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+
 
 DEFAULT_INTERVAL = 90
 DEFAULT_TIMEOUT = 600
@@ -1045,12 +1046,15 @@ def reputation_command(
             state="succ",
             sort_by="analyzed_at",
         )
+
         if response["data"]["current_item_count"] == 0:
             score = 0
-            sample_details = {}
+            sample_details = {generic_command_name: command_arg}
             sample_id = ""
+
         else:
             sample_details = response["data"]["items"][0]["item"]
+            sample_details[generic_command_name] = command_arg
             sample_analysis_date = dict_safe_get(
                 sample_details,
                 ["analysis", "metadata", "sandcastle_env", "analysis_end"],
@@ -1061,7 +1065,7 @@ def reputation_command(
 
             if not is_day_diff_valid(sample_analysis_date):
                 score = 0
-                sample_details = {}
+                sample_details = {generic_command_name: command_arg}
                 sample_id = ""
 
         dbot_score = get_dbotscore(score, generic_command_name, command_arg,
@@ -1075,6 +1079,7 @@ def reputation_command(
             "dbot_score": dbot_score,
             "sample_details": sample_details,
         }
+
         command_results.append(reputation_helper_command(**kwargs))
 
     return command_results
@@ -1228,10 +1233,20 @@ def parse_file_indicator(
         "sha1": sha1,
         "sha256": sha256,
     }
-    readable_output = tableToMarkdown(
-        name=f"ThreatGrid File Reputation for {md5} \n",
-        t=outputs,
-    )
+
+    file_hash = sample_details.get('file')
+    if md5 or sha1 or sha256:
+        readable_output = tableToMarkdown(
+            name=f"ThreatGrid File Reputation for {file_hash} \n",
+            t=outputs,
+        )
+    else:
+        readable_output = tableToMarkdown(
+            name=f"ThreatGrid File Not Found for {file_hash} \n",
+            t={
+                "file": file_hash
+            }
+        )
 
     return CommandResults(
         readable_output=readable_output,
