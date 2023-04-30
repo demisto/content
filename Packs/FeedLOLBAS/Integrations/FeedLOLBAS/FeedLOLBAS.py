@@ -17,12 +17,6 @@ DEFAULT_FEED_TAGS = {'LOLBAS'}
 
 class Client(BaseClient):
     """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
     """
 
     def __init__(self, verify: bool, proxy: bool,
@@ -197,7 +191,7 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    create_relationships = argToBoolean(params.get('create_relationships', True))
+    create_relationships = params.get('create_relationships', True)
     # Append default tags.
     feed_tags = list(set(argToList(params.get('feedTags', []))) | DEFAULT_FEED_TAGS)
     tlp_color = params.get('tlp_color', '')
