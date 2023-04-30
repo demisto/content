@@ -3370,7 +3370,7 @@ def test_panorama_apply_dns_command2(mocker):
     apply_dns_signature_policy_command({'anti_spyware_profile_name': 'fake_profile_name'})
 
     request_params = request_mock.call_args.kwargs['params']  # The body part of the request
-    assert request_params.get('xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']"
+    assert request_params.get('xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']" # noqa
 
 
 class TestHygieneFunctions:
