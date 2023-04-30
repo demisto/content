@@ -468,7 +468,7 @@ script:
     execution: false
     name: threat-command-source-document-ioc-create
   - arguments:
-    - description: "IOC value. Required when last_updated_from is not selected. Not supported for email addresses. While using this argument, all the other arguments are not relevant. "
+    - description: "IOC value. Required when last_updated_from is not selected. Not supported for email addresses. While using this argument, all the other filtering arguments are not relevant. "
       isArray: false
       name: ioc_value
       required: false
