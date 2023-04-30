@@ -3573,7 +3573,7 @@ def list_account_user_command(client: Client, args: dict[str, Any]) -> CommandRe
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,
 )
-def search_ioc_handler_command(args: dict[str, Any], client: Client) -> PollResult:
+def search_ioc_handler_command(args: dict[str, Any], client: Client, execution_metrics: ExecutionMetrics) -> PollResult:
     """
     List IOCs handler.
     Args:
@@ -3585,7 +3585,7 @@ def search_ioc_handler_command(args: dict[str, Any], client: Client) -> PollResu
     # validate_list_alert(args=args)
     if argToBoolean(args["enrichment"]):
         # Enrich IOC - Blocked.
-        return enrich_ioc_handler(client=client, args=args)
+        return enrich_ioc_handler(client=client, args=args, execution_metrics=execution_metrics)
 
     if ioc_value := args.get("ioc_value"):
         # Get IOC by value
@@ -3602,7 +3602,7 @@ def search_ioc_handler_command(args: dict[str, Any], client: Client) -> PollResu
     )
 
 
-def enrich_ioc_handler(client: Client, args: dict[str, Any]) -> PollResult:
+def enrich_ioc_handler(client: Client, args: dict[str, Any], execution_metrics: ExecutionMetrics) -> PollResult:
     """
     Enrich IOC with details.
 
@@ -3614,7 +3614,6 @@ def enrich_ioc_handler(client: Client, args: dict[str, Any]) -> PollResult:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     ioc_value = args["ioc_value"]
-    execution_metrics = ExecutionMetrics()
     response = client.enrich_ioc(ioc_value=ioc_value)
     command_results = []
     status = response["Status"]
@@ -4042,7 +4041,7 @@ def get_alert_csv_command(
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,
 )
-def file_command(args: dict[str, Any], client: Client) -> PollResult:
+def file_command(args: dict[str, Any], client: Client, execution_metrics: ExecutionMetrics) -> PollResult:
     """
     Enrich file IOC (Generic reputation command).
 
@@ -4054,7 +4053,7 @@ def file_command(args: dict[str, Any], client: Client) -> PollResult:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
     return reputation_handler(
-        args, client, file_reputation_handler, IOCType.FILE.value.lower()
+        args, client, file_reputation_handler, IOCType.FILE.value.lower(), execution_metrics
     )
 
 
@@ -4064,7 +4063,7 @@ def file_command(args: dict[str, Any], client: Client) -> PollResult:
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,
 )
-def ip_command(args: dict[str, Any], client: Client) -> PollResult:
+def ip_command(args: dict[str, Any], client: Client, execution_metrics: ExecutionMetrics) -> PollResult:
     """
     Enrich ip IOC (Generic reputation command).
 
@@ -4076,7 +4075,7 @@ def ip_command(args: dict[str, Any], client: Client) -> PollResult:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
     return reputation_handler(
-        args, client, ip_reputation_handler, IOCType.IP.value.lower()
+        args, client, ip_reputation_handler, IOCType.IP.value.lower(), execution_metrics
     )
 
 
@@ -4086,7 +4085,7 @@ def ip_command(args: dict[str, Any], client: Client) -> PollResult:
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,
 )
-def url_command(args: dict[str, Any], client: Client) -> PollResult:
+def url_command(args: dict[str, Any], client: Client, execution_metrics: ExecutionMetrics) -> PollResult:
     """
     Enrich URL IOC (Generic reputation command).
 
@@ -4099,7 +4098,7 @@ def url_command(args: dict[str, Any], client: Client) -> PollResult:
     """
 
     return reputation_handler(
-        args, client, url_reputation_handler, IOCType.URL.value.lower()
+        args, client, url_reputation_handler, IOCType.URL.value.lower(), execution_metrics
     )
 
 
@@ -4109,7 +4108,7 @@ def url_command(args: dict[str, Any], client: Client) -> PollResult:
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,
 )
-def domain_command(args: dict[str, Any], client: Client) -> PollResult:
+def domain_command(args: dict[str, Any], client: Client, execution_metrics: ExecutionMetrics) -> PollResult:
     """
     Enrich domain IOC (Generic reputation command).
 
@@ -4121,12 +4120,12 @@ def domain_command(args: dict[str, Any], client: Client) -> PollResult:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
     return reputation_handler(
-        args, client, domain_reputation_handler, IOCType.DOMAIN.value.lower()
+        args, client, domain_reputation_handler, IOCType.DOMAIN.value.lower(), execution_metrics
     )
 
 
 def reputation_handler(
-    args: dict[str, Any], client: Client, handler_command: Callable, key: str
+    args: dict[str, Any], client: Client, handler_command: Callable, key: str, execution_metrics: ExecutionMetrics
 ) -> PollResult:
     """
     Handle with all reputation commands.
@@ -4140,7 +4139,6 @@ def reputation_handler(
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
-    execution_metrics = ExecutionMetrics()
     execution_metrics.general_error += 1
     ioc_values: List[str] = argToList(args[key])
     current_file = ioc_values[0]
@@ -5223,6 +5221,7 @@ def main() -> None:
     reliability = params.get("integrationReliability", DBotScoreReliability.C)
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
+    execution_metrics = ExecutionMetrics()
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
@@ -5308,7 +5307,7 @@ def main() -> None:
         if command == "test-module":
             return_results(test_module(client))
         elif command in polling_commands:
-            return_results(polling_commands[command](args, client))
+            return_results(polling_commands[command](args, client, execution_metrics))
         elif command in commands:
             return_results(commands[command](client, args))
         elif command == "fetch-incidents":
