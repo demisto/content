@@ -2023,13 +2023,13 @@ class Pack(object):
             content_item_id,
             {'fromversion': content_item_fromversion,
              'toversion': content_item_toversion,
-             'added': False,
+             'added_to_metadata_list': False,
              })
         if (replace_old_playbook := content_item_latest_version.get('toversion') < content_item_fromversion):
             content_items_to_version_map[content_item_id] = {
                 'fromversion': content_item_fromversion,
                 'toversion': content_item_toversion,
-                'added': True,
+                'added_to_metadata_list': True,
             }
         return replace_old_playbook
 
@@ -2437,9 +2437,11 @@ class Pack(object):
                                                   if d["id"] == metadata_output["id"]
                                                   else d
                                                   for d in folder_collected_items]
-                    elif not content_items_id_to_version_map.get(content_item.get('id', {})).get('added'):
+                    elif not content_items_id_to_version_map.get(
+                        content_item.get('id', {})).get('added_to_metadata_list'):
                         folder_collected_items.append(metadata_output)
-                        content_items_id_to_version_map.get(content_item.get('id', {}))['added'] = 'True'
+                        content_items_id_to_version_map.get(content_item.get('id',{}))\
+                            ['added_to_metadata_list'] = True
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = CONTENT_ITEM_NAME_MAPPING[current_directory]
