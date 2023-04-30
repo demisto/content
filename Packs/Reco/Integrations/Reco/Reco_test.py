@@ -15,7 +15,7 @@ from Reco import (
     get_max_fetch,
     get_risky_users_from_reco,
     add_risky_user_label,
-    get_assets_user_has_access, get_sensitive_assets_by_name,
+    get_assets_user_has_access, get_sensitive_assets_by_name, get_sensitive_assets_by_id,
 )
 
 from test_data.structs import (
@@ -315,7 +315,7 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_fetch_incidents_without_assets_info(
-    requests_mock, reco_client: RecoClient
+        requests_mock, reco_client: RecoClient
 ) -> None:
     random_incidents = get_random_table_response()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=random_incidents)
@@ -336,7 +336,7 @@ def test_fetch_incidents_without_assets_info(
 
 
 def test_fetch_assets_with_empty_response(
-    requests_mock, reco_client: RecoClient
+        requests_mock, reco_client: RecoClient
 ) -> None:
     incident_id = uuid.uuid1()
     requests_mock.get(
@@ -433,7 +433,7 @@ def test_update_reco_incident_timeline(requests_mock, reco_client: RecoClient) -
 
 
 def test_update_reco_incident_timeline_error(
-    capfd, requests_mock, reco_client: RecoClient
+        capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     incident_id = uuid.uuid1()
     requests_mock.put(
@@ -460,7 +460,7 @@ def test_resolve_visibility_event(requests_mock, reco_client: RecoClient) -> Non
 
 
 def test_resolve_visibility_event_error(
-    capfd, requests_mock, reco_client: RecoClient
+        capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     entry_id = uuid.uuid1()
     requests_mock.put(
@@ -486,7 +486,7 @@ def test_get_risky_users(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_get_risky_users_bad_response(
-    capfd, requests_mock, reco_client: RecoClient
+        capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
@@ -522,7 +522,7 @@ def test_get_assets_user_has_access_to(requests_mock, reco_client: RecoClient) -
 
 
 def test_get_assets_user_bad_response(
-    capfd, requests_mock, reco_client: RecoClient
+        capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     requests_mock.post(
         f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json={}, status_code=200
@@ -541,6 +541,18 @@ def test_get_sensitive_assets_by_name(requests_mock, reco_client: RecoClient) ->
     )
     actual_result = get_sensitive_assets_by_name(
         reco_client=reco_client, asset_name="test", regex_search=True
+    )
+    assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
+    assert actual_result.outputs[0].get("source") is not None
+
+
+def test_get_sensitive_assets_by_id(requests_mock, reco_client: RecoClient) -> None:
+    raw_result = get_random_assets_user_has_access_to_response()
+    requests_mock.post(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    )
+    actual_result = get_sensitive_assets_by_id(
+        reco_client=reco_client, asset_id="asset-id"
     )
     assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
     assert actual_result.outputs[0].get("source") is not None
