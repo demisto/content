@@ -665,7 +665,13 @@ def format_timestamp(timestamp: str) -> str:
     Returns:
         str: Datetime formatted string.
     """
-    return datetime.strptime(timestamp, TIMESTAMP_FORMAT).strftime(DATETIME_FORMAT)
+
+    try:
+        datetime_res = arg_to_datetime(timestamp)
+    except ValueError:
+        timestamp = timestamp.replace('GMT ', 'GMT')
+        datetime_res = arg_to_datetime(timestamp)
+    return datetime_res.strftime(DATETIME_FORMAT)
 
 
 def format_quarantine_timestamp(timestamp: str) -> str:
