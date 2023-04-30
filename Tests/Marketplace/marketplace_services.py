@@ -2007,23 +2007,37 @@ class Pack(object):
         return task_status and self.is_changelog_exists()
 
     def is_replace_item_in_folder_collected_list(self, content_item: dict, content_items_to_version_map: dict):
-        content_item_fromversion = content_item.get('fromversion', '') or content_item.get('fromVersion', '') or ''
+        """ Checks the fromversion and toversion in the content_item with
+            the fromversion toversion in content_items_to_version_map
+            If the content_item has a more up to date toversion and fromversion will
+            replace it in the map and metadata list
+        Returns:
+             A boolean whether the version in the list posted to metadata should be
+             replaced with the current version from the content item.
+        """
+        content_item_fromversion = content_item.get('fromversion') or content_item.get('fromVersion') or ''
         content_item_toversion = content_item.get(
-            'toversion', MAX_TOVERSION) or content_item.get('toVersion', MAX_TOVERSION) or ''
+            'toversion') or content_item.get('toVersion') or MAX_TOVERSION
         content_item_id = content_item.get('id', '')
         content_item_latest_version = content_items_to_version_map.setdefault(
             content_item_id,
             {'fromversion': content_item_fromversion,
-             'toversion': content_item_toversion
+             'toversion': content_item_toversion,
+             'added': False,
              })
         if (replace_old_playbook := content_item_latest_version.get('toversion') < content_item_fromversion):
             content_items_to_version_map[content_item_id] = {
-                "fromversion": content_item_fromversion,
-                "toversion": content_item_toversion,
+                'fromversion': content_item_fromversion,
+                'toversion': content_item_toversion,
+                'added': True,
             }
         return replace_old_playbook
 
     def get_latest_versions(self, content_items_id_to_version_map: dict, content_item: dict):
+        """ Get the latest fromversion and toversion of a content item.
+        Returns:
+             A tuple containing the latest fromversion and toversion.
+        """
         if (curr_content_item := content_items_id_to_version_map.get(
                 content_item.get('id', ''))):
             latest_fromversion = curr_content_item.get('fromversion', '')
@@ -2104,7 +2118,7 @@ class Pack(object):
                     latest_fromversion, latest_toversion = self.get_latest_versions(content_items_id_to_version_map, content_item)
 
                     if current_directory == PackFolders.SCRIPTS.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('commonfields', {}).get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('comment', ''),
@@ -2122,7 +2136,7 @@ class Pack(object):
 
                     elif current_directory == PackFolders.PLAYBOOKS.value:
                         self.add_pack_type_tags(content_item, 'Playbook')
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
@@ -2133,7 +2147,7 @@ class Pack(object):
                     elif current_directory == PackFolders.INTEGRATIONS.value:
                         integration_commands = content_item.get('script', {}).get('commands', [])
                         self.add_pack_type_tags(content_item, 'Integration')
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('commonfields', {}).get('id', ''),
                             'name': content_item.get('display', ''),
                             'description': content_item.get('description', ''),
@@ -2147,7 +2161,7 @@ class Pack(object):
                         }
 
                     elif current_directory == PackFolders.INCIDENT_FIELDS.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'type': content_item.get('type', ''),
@@ -2158,7 +2172,7 @@ class Pack(object):
                         }
 
                     elif current_directory == PackFolders.INCIDENT_TYPES.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'playbook': content_item.get('playbookId', ''),
@@ -2172,7 +2186,7 @@ class Pack(object):
                         }
 
                     elif current_directory == PackFolders.DASHBOARDS.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
@@ -2181,7 +2195,7 @@ class Pack(object):
                         }
 
                     elif current_directory == PackFolders.INDICATOR_FIELDS.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'type': content_item.get('type', ''),
@@ -2192,7 +2206,7 @@ class Pack(object):
                         }
 
                     elif current_directory == PackFolders.REPORTS.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
@@ -2202,7 +2216,7 @@ class Pack(object):
                         }
 
                     elif current_directory == PackFolders.INDICATOR_TYPES.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'details': content_item.get('details', ''),
                             'reputationScriptName': content_item.get('reputationScriptName', ''),
@@ -2213,7 +2227,7 @@ class Pack(object):
                         }
 
                     elif current_directory == PackFolders.LAYOUTS.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
@@ -2222,10 +2236,10 @@ class Pack(object):
                         }
                         layout_description = content_item.get('description')
                         if layout_description is not None:
-                            layout_metadata['description'] = layout_description
+                            metadata_output['description'] = layout_description
 
                     elif current_directory == PackFolders.CLASSIFIERS.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name') or content_item.get('id', ''),
                             'description': content_item.get('description', ''),
@@ -2235,7 +2249,7 @@ class Pack(object):
                         }
 
                     elif current_directory == PackFolders.WIDGETS.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'dataType': content_item.get('dataType', ''),
@@ -2246,7 +2260,7 @@ class Pack(object):
                         }
 
                     elif current_directory == PackFolders.LISTS.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
@@ -2255,7 +2269,7 @@ class Pack(object):
                         }
 
                     elif current_directory == PackFolders.GENERIC_DEFINITIONS.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
@@ -2265,7 +2279,7 @@ class Pack(object):
                         }
 
                     elif parent_directory == PackFolders.GENERIC_FIELDS.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
@@ -2276,7 +2290,7 @@ class Pack(object):
                         }
 
                     elif current_directory == PackFolders.GENERIC_MODULES.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
@@ -2286,7 +2300,7 @@ class Pack(object):
                         }
 
                     elif parent_directory == PackFolders.GENERIC_TYPES.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
@@ -2296,7 +2310,7 @@ class Pack(object):
                         }
 
                     elif current_directory == PackFolders.PREPROCESS_RULES.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
@@ -2306,7 +2320,7 @@ class Pack(object):
                         }
 
                     elif current_directory == PackFolders.JOBS.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             # note that `name` may technically be blank, but shouldn't pass validations
                             'name': content_item.get('name', ''),
@@ -2318,7 +2332,7 @@ class Pack(object):
 
                     elif current_directory == PackFolders.PARSING_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'ParsingRule')
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
@@ -2329,7 +2343,7 @@ class Pack(object):
                     elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'ModelingRule')
                         schema: Dict[str, Any] = json.loads(content_item.get('schema') or '{}')
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
@@ -2340,7 +2354,7 @@ class Pack(object):
 
                     elif current_directory == PackFolders.CORRELATION_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'CorrelationRule')
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('global_rule_id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
@@ -2351,7 +2365,7 @@ class Pack(object):
 
                     elif current_directory == PackFolders.XSIAM_DASHBOARDS.value and pack_file_name.startswith("external-"):
                         preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_DASHBOARDS.value)
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('dashboards_data', [{}])[0].get('name', ''),
                             'description': content_item.get('dashboards_data', [{}])[0].get('description', ''),
@@ -2361,11 +2375,11 @@ class Pack(object):
                         }
 
                         if preview:
-                            layout_metadata.update({"preview": preview})
+                            metadata_output.update({"preview": preview})
 
                     elif current_directory == PackFolders.XSIAM_REPORTS.value and pack_file_name.startswith("external-"):
                         preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_REPORTS.value)
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('templates_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('templates_data', [{}])[0].get('report_name', ''),
                             'description': content_item.get('templates_data', [{}])[0].get('report_description', ''),
@@ -2375,10 +2389,10 @@ class Pack(object):
                         }
 
                         if preview:
-                            layout_metadata.update({"preview": preview})
+                            metadata_output.update({"preview": preview})
 
                     elif current_directory == PackFolders.WIZARDS.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
@@ -2390,7 +2404,7 @@ class Pack(object):
 
                     elif current_directory == PackFolders.XDRC_TEMPLATES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'XDRCTemplate')
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('content_global_id', ''),
                             'content_global_id': content_item.get('content_global_id', ''),
                             'name': content_item.get('name', ''),
@@ -2404,7 +2418,7 @@ class Pack(object):
                     elif current_directory == PackFolders.LAYOUT_RULES.value and pack_file_name.startswith(
                             "external-"):
                         self.add_pack_type_tags(content_item, 'LayoutRule')
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('rule_id', ''),
                             'name': content_item.get('rule_name', ''),
                             'layout_id': content_item.get('layout_id', ''),
@@ -2414,19 +2428,18 @@ class Pack(object):
                         }
                         layout_rule_description = content_item.get('description')
                         if layout_rule_description is not None:
-                            layout_metadata['description'] = layout_rule_description
+                            metadata_output['description'] = layout_rule_description
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
                         continue
                     if replace_content_item:
-                        folder_collected_items = [layout_metadata
-                                                  if d["id"] == layout_metadata["id"]
-                                                  else
-                                                  d for d in folder_collected_items]
-                    if latest_toversion == '':
-                        continue
-                    else:
-                        folder_collected_items.append(layout_metadata)
+                        folder_collected_items = [metadata_output
+                                                  if d["id"] == metadata_output["id"]
+                                                  else d
+                                                  for d in folder_collected_items]
+                    elif not content_items_id_to_version_map.get(content_item.get('id', {})).get('added'):
+                        folder_collected_items.append(metadata_output)
+                        content_items_id_to_version_map.get(content_item.get('id', {}))['added'] = 'True'
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = CONTENT_ITEM_NAME_MAPPING[current_directory]
