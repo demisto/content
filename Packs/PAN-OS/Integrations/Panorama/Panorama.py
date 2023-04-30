@@ -13162,7 +13162,7 @@ def remove_duplicates_entries(entries_dict,id_dict):
         for log in entries_dict[log_type]:
             device_name = log.get("device_name", '')
             latest_id_par_device = id_dict.get(log_type,{}).get(device_name, 0) # get the latest id for that device, if that device is not in the dict, set the id to 0
-            if log.get("seqno") and arg_to_number(log["seqno"]) <= arg_to_number(latest_id_par_device):
+            if log.get("seqno") and arg_to_number(log["seqno"]) <= arg_to_number(latest_id_par_device):     # type: ignore
                     entries_dict[log_type].remove(log)
     return entries_dict
 
