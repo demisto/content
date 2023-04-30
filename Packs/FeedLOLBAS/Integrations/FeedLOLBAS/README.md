@@ -4,7 +4,7 @@ code. The goal is to blend in with normal activity and avoid detection. Examples
 commands to move laterally through a network, or using scripting languages that are commonly installed on a system to
 execute malicious code. LOLBAS project is documenting binaries, scripts, and libraries that can be used for Living Off
 The Land techniques.
-This integration was integrated and tested with version xx of LOLBAS Feed
+This integration was integrated and tested with version v1 of LOLBAS.
 
 ## Configure LOLBAS Feed on Cortex XSOAR
 
