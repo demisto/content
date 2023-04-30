@@ -7522,7 +7522,7 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
     if is_error(res):
         error_message = get_error(res)
         if fail_on_error:
-            return_error('Failed to execute {}. Error details:\n{}'.format(command, error_message))
+            raise DemistoException('Failed to execute {}. Error details:\n{}'.format(command, error_message))
         else:
             return False, error_message
 
