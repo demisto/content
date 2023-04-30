@@ -6,6 +6,10 @@
     },
     "8.2.0": {
       "core_packs_file": "corepacks-8.2.0.json",
+      "core_packs_file_lock_timestamp": "30/4/2023 14:00"
+    },
+    "8.3.0": {
+      "core_packs_file": "corepacks-8.3.0.json",
       "core_packs_file_lock_timestamp": ""
     }
   }
