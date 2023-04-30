@@ -328,7 +328,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "11"
     scriptarguments:
       all:
         simple: "yes"
@@ -339,62 +339,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: f87334f5-359f-42a2-88d3-76349845994a
-    type: playbook
-    task:
-      id: f87334f5-359f-42a2-88d3-76349845994a
-      version: -1
-      name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
-      playbookName: Block IP - Generic v3
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      AutoCommit:
-        simple: "No"
-      CustomBlockRule:
-        simple: "false"
-      IP:
-        simple: 1.1.1.1
-      InputEnrichment:
-        simple: "False"
-      ResolveIP:
-        simple: "False"
-      RuleDirection:
-        simple: outbound
-      RuleName:
-        simple: XSOAR - Block IP playbook - ${incident.id}
-      Tag:
-        simple: testpb
-      UserVerification:
-        simple: "False"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 530
         }
       }
     note: false
@@ -426,6 +370,56 @@ tasks:
         "position": {
           "x": 50,
           "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: bdc9fcc2-dc04-43b9-89c7-9fc1bc1dc36f
+    type: playbook
+    task:
+      id: bdc9fcc2-dc04-43b9-89c7-9fc1bc1dc36f
+      version: -1
+      name: Block IP - Generic v3
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 500
         }
       }
     note: false
