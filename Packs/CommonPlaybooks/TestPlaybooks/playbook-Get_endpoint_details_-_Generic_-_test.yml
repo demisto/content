@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4ab5ca52-b289-4638-87fe-b2b8e7f7da37
+    taskid: a32aea9c-d832-40c1-8937-501163b08d86
     type: start
     task:
-      id: 4ab5ca52-b289-4638-87fe-b2b8e7f7da37
+      id: a32aea9c-d832-40c1-8937-501163b08d86
       version: -1
       name: ""
       iscommand: false
@@ -16,13 +16,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "3"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 460,
+          "y": -190
         }
       }
     note: false
@@ -30,12 +30,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 854aa913-b70f-4008-84df-2534ea6a1c93
+    taskid: fb4e4355-5411-4374-8c5d-ac4d8296bea8
     type: playbook
     task:
-      id: 854aa913-b70f-4008-84df-2534ea6a1c93
+      id: fb4e4355-5411-4374-8c5d-ac4d8296bea8
       version: -1
       name: Get endpoint details - Generic
       playbookName: Get endpoint details - Generic
@@ -47,10 +50,8 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      Endpoint_hostname: {}
       Endpoint_id:
         simple: ${inputs.Endpoint_id}
-      Endpoint_ip: {}
     separatecontext: true
     loop:
       iscommand: false
@@ -60,8 +61,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 240
+          "x": 460,
+          "y": 600
         }
       }
     note: false
@@ -69,12 +70,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 8459a68e-4971-4aed-883c-21943a87b709
+    taskid: 7c58076e-056d-45bb-8906-da5baf4aa8e4
     type: title
     task:
-      id: 8459a68e-4971-4aed-883c-21943a87b709
+      id: 7c58076e-056d-45bb-8906-da5baf4aa8e4
       version: -1
       name: Done
       type: title
@@ -85,8 +89,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 460
+          "x": 460,
+          "y": 780
         }
       }
     note: false
@@ -94,15 +98,157 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: badb84d1-3898-4038-80ce-4558fb89ad5a
+    type: title
+    task:
+      id: badb84d1-3898-4038-80ce-4558fb89ad5a
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 65613ccd-eedc-40df-8027-e53879474422
+    type: title
+    task:
+      id: 65613ccd-eedc-40df-8027-e53879474422
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 04f9ccb3-061d-41c4-8715-eeb17b470571
+    type: regular
+    task:
+      id: 04f9ccb3-061d-41c4-8715-eeb17b470571
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 0114967b-96b1-49f8-8cfa-100948720f30
+    type: playbook
+    task:
+      id: 0114967b-96b1-49f8-8cfa-100948720f30
+      version: -1
+      name: Get endpoint details - Generic
+      description: "This playbook uses the generic command !endpoint to retrieve details on a specific endpoint.\nThis command currently supports the following integrations:\n- Palo Alto Networks Cortex XDR - Investigation and Response.\n- CrowdStrike Falcon. "
+      playbookName: Get endpoint details - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 475,
+        "height": 1035,
         "width": 380,
-        "x": 450,
-        "y": 50
+        "x": 460,
+        "y": -190
       }
     }
   }
@@ -115,4 +261,4 @@ inputs:
   playbookInputQuery:
 outputs: []
 fromversion: 5.5.0
-description: ''
+description: This test playbook tests if the Get Endpoint Details playbooks runs as expected with both empty and provided inputs
