@@ -4141,8 +4141,7 @@ CPU_UTIL_INT_TO_HR = {
 }
 
 
-CPU_UTIL_HR_TO_INT = dict(
-    zip(CPU_UTIL_INT_TO_HR.values(), CPU_UTIL_INT_TO_HR.keys())) # TODO check
+CPU_UTIL_HR_TO_INT = {value: key for key, value in CPU_UTIL_INT_TO_HR.items()}
 
 
 def ODS_query_scans_request(**query_params) -> dict:
@@ -4191,11 +4190,11 @@ def ODS_get_scan_resources_to_human_readable(resources: list[dict]) -> str:
     return human_readable
 
 
-def build_cs_falcon_filter(filter_args: dict[str, str], custom_filter: str = None) -> str:
+def build_cs_falcon_filter(custom_filter: str = None, **filter_args) -> str:
     """Creates an FQL syntax filter from a dictionary and a custom built filter
 
-    :filter_args: args to translate to FQL format.
     :custom_filter: custom filter from user (will take priority if conflicts with dictionary), defaults to None
+    :filter_args: args to translate to FQL format.
     
     :return: FQL syntax filter.
     """
@@ -4209,21 +4208,20 @@ def build_cs_falcon_filter(filter_args: dict[str, str], custom_filter: str = Non
 
 
 def get_ODS_ids(args: dict) -> list[str]:
-    
-    filter_from_args = {
-        'initiated_from': args.get('initiated_from'),
-        'status': args.get('status'),
-        'severity': args.get('severity'),
-        'scan_started_on': args.get('scan_started_on'),
-        'scan_completed_on': args.get('scan_completed_on'),
-    }
-    
-    query_filter = build_cs_falcon_filter(filter_from_args, args.get('filter'))
+
+    query_filter = build_cs_falcon_filter(
+        custom_filter = args.get('filter'),
+        initiated_from = args.get('initiated_from'),
+        status = args.get('status'),
+        severity = args.get('severity'), # TODO
+        scan_started_on = args.get('scan_started_on'),
+        scan_completed_on = args.get('scan_completed_on'),
+    )
     
     raw_response = ODS_query_scans_request(
-        filter=query_filter,
-        offset=args.get('offset'),
-        limit=args.get('limit'),
+        filter = query_filter,
+        offset = args.get('offset'),
+        limit = args.get('limit'),
     )
     
     return raw_response.get('resources')    
@@ -4232,6 +4230,8 @@ def get_ODS_ids(args: dict) -> list[str]:
 def cs_falcon_ODS_query_scans_command(args: dict) -> CommandResults:
     # call the query api if no ids given
     ids = argToList(args.get('ids')) or get_ODS_ids(args)
+    if not ids:
+        return CommandResults(readable_output='No IDs to get results from.')
 
     response = ODS_get_scans_by_id_request(ids)
     resources = response.get('resources', [])

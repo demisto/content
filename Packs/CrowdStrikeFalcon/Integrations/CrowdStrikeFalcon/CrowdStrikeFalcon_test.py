@@ -4566,33 +4566,3 @@ def test_build_cs_falcon_filter(filter_args, custom_filter, output_filter):
     result = build_cs_falcon_filter(filter_args, custom_filter)
     
     assert output_filter == result
-
-
-def test_get_ODS_ids(mocker):
-    """
-    Test cs_falcon_ODS_query_scans_command,
-
-    Given
-     - A request for info on ODS endpoint scans.
-    When
-     - The user runs the "cs-falcon-ods-query-scan" command without specifying ids.
-    Then
-     - Return ids from API using the filters.
-    """
-   # (TEMPRORAY) nothing to check
-
-
-def test_cs_falcon_ODS_query_scans_command(mocker):
-    """
-    Test cs_falcon_ODS_query_scans_command,
-
-    Given
-     - A request for info on ODS endpoint scans.
-    When
-     - The user runs the "cs-falcon-ods-query-scan" command
-    Then
-     - Return a CrowdStrike Falcon ODS context output
-     - Return an Endpoint context output
-    """
-
-    # (TEMPRORAY) nothing to check
