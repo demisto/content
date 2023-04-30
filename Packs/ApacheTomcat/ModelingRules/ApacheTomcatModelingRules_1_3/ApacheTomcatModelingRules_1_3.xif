@@ -8,7 +8,7 @@ filter _raw_log contains "GET" or _raw_log contains "HEAD" or _raw_log contains 
     User_agent = arrayindex(regextract(_raw_log,"\"\s\"([^\"]+)"),0),
     bytes_size = arrayindex(regextract(_raw_log,"\d\s(\d+)"),0),
     method = arrayindex(regextract(_raw_log,"\"([A-Z]+)\s\S+\sHTTP"), 0)
-    // extract source_ip test
+    // extract source_ip
     | alter
             sourceipv4 = arrayindex(regextract(_raw_log, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s)\-"),0),
             sourceipv6 = arrayindex(regextract(_raw_log,"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"),0)
