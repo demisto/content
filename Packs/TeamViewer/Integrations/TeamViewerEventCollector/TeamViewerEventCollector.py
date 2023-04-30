@@ -50,18 +50,20 @@ def search_events(client: Client, limit: int,
     results: List[Dict] = []
     token_next_page = None
     next_page = True
-    params: Dict[str, Any] = {}
-    while next_page and len(results) < limit:
-        response = client.get_events(params=params, body=body)
+    while next_page:
+        response = client.get_events(body=body)
         demisto.debug(f'http response:\n {response}')
         results += response.get('AuditEvents', [])
         next_page = response.get('ContinuationToken')
         if token_next_page := response.get('ContinuationToken'):
-            params['ContinuationToken'] = token_next_page
+            if not body:
+                body = {}
+            body['ContinuationToken'] = token_next_page
         else:
             next_page = False
             demisto.debug('finished fetching http response')
-    events: List[Dict[str, Any]] = results[:limit]
+    # events: List[Dict[str, Any]] = results[:limit]
+    events: List[Dict[str, Any]] = sorted(results, key=lambda x: x['Timestamp'])
     hr = tableToMarkdown(name='Events', t=events) if events else 'No events found.'
     return events, CommandResults(readable_output=hr)
 
@@ -113,12 +115,13 @@ def fetch_events_command(
     last_fetch = first_fetch_time if last_fetch is None else datetime.strptime(last_fetch, DATE_FORMAT)
     demisto.debug(f'last fetch :\n {last_fetch}')
     body = {
-        'StartDate': (last_fetch + timedelta(milliseconds=1)).strftime(DATE_FORMAT),
+        'StartDate': (last_fetch + timedelta(seconds=1)).strftime(DATE_FORMAT),
         'EndDate': datetime.utcnow().strftime(DATE_FORMAT)
     }
-    demisto.debug(f'starting fetch events with time params:\n {body}')
-    events, _ = search_events(client=client, limit=max_fetch, body=body)
-    next_run = {'last_fetch': max(events, key=lambda x: x['Timestamp'])['Timestamp']}
+    demisto.debug(f'TeamViewer starting fetch events with time params:\n {body}')
+    events, _ = search_events(client=client, limit=max_fetch, body=body) # removing limit ?
+    next_run = {'last_fetch': events[-1].get('Timestamp')} if events else last_run
+    demisto.debug(f"TeamViewer Returning {len(events)} events in total")
     return next_run, events
 
 
@@ -172,14 +175,13 @@ def main() -> None:
                 should_push_events = argToBoolean(args.get('should_push_events'))
                 events, results = search_events(
                     client=client,
-                    limit=arg_to_number(args.get('limit')) or DEFAULT_LIMIT,
+                    limit=arg_to_number(args.get('limit')) or DEFAULT_LIMIT, #removing limit
                     body={
                         'StartDate': first_fetch_time.strftime(DATE_FORMAT),
                         'EndDate': datetime.utcnow().strftime(DATE_FORMAT)
                     }  # type: ignore
                 )
                 if should_push_events:
-                    next_run = {'last_fetch': max(events, key=lambda x: x['Timestamp'])['Timestamp']}
                     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 return_results(results)
 
@@ -193,14 +195,19 @@ def main() -> None:
                     last_run=last_run,
                     first_fetch_time=first_fetch_time,
                 )
-                demisto.debug(f'last run: {last_run} \n next run: {next_run}')
-                # saves next_run for the time fetch-events is invoked
+                demisto.debug(f'TeamViewer last run: {last_run} \n next run: {next_run}')
 
-            if should_push_events:
-                demisto.debug(f'Number of events: {len(events)}')
-                events = add_time_key_to_events(events)
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                demisto.setLastRun(next_run)
+                if should_push_events:
+                    demisto.debug(f'Number of events: {len(events)}')
+                    events = add_time_key_to_events(events)
+                    send_events_to_xsiam(
+                        events,
+                        vendor=VENDOR,
+                        product=PRODUCT
+                    )
+                    if next_run:
+                        # saves next_run for the time fetch-events is invoked
+                        demisto.setLastRun(next_run)
         # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
