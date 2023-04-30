@@ -24,6 +24,7 @@ class Email(object):
         self.mail_bytes = message_bytes
         try:
             email_object = parse_from_bytes(message_bytes)
+            email_object = parse_from_string(message_bytes.decode('ISO-8859-1'))
         except UnicodeDecodeError as e:
             demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
                          '\nWill replace backslash and try to parse again')
@@ -409,7 +410,7 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
     return messages_query_list
 
 
-def test_module(client: IMAPClient) -> str:
+def t_module(client: IMAPClient) -> str:
     yesterday = parse('1 day UTC')
     client.search(['SINCE', yesterday])
     return 'ok'
@@ -503,7 +504,7 @@ def main():
             client.login(username, password)
             client.select_folder(folder)
             if demisto.command() == 'test-module':
-                result = test_module(client)
+                result = t_module(client)
                 demisto.results(result)
             elif demisto.command() == 'mail-listener-list-emails':
                 return_results(list_emails(client=client,
