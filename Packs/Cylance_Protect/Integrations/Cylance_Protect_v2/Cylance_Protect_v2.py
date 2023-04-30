@@ -88,8 +88,8 @@ def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=Fals
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + access_token
         }
-
     url = '{}/{}'.format(SERVER_URL, uri)
+    demisto.debug(f'API called with the following params: {method, url, headers, json.dumps(body), params, USE_SSL}')
     res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=USE_SSL)
     if res.status_code < 200 or res.status_code >= 300:
         if res.status_code == 409 and str(res.content).find('already an entry for this threat') != -1:
@@ -106,6 +106,8 @@ def get_authentication_token(scope=None):
     Generates a JWT authorization token with an optional scope and queries the API for an access token
     Returns the received API access token
     """
+    demisto.debug(f'get_authentication_token called with the following params: {scope}')
+
     # Generate token ID
     token_id = str(uuid.uuid4())
 
@@ -765,6 +767,8 @@ def get_threats():
 
 
 def get_threats_request(page=None, page_size=None):  # pragma: no cover
+    demisto.debug(f'get_threats_request called with the following params: {page, page_size}')
+
     access_token = get_authentication_token(scope=SCOPE_THREAT_LIST)
 
     params = {}
@@ -1472,6 +1476,8 @@ def fetch_incidents():
     else:
         last_run = datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S')  # Converts string to datetime object
     current_run = last_run
+    demisto.debug(f'fetch_incidents called with the following params: {now, current_run}')
+
     threats = get_threats_request().get('page_items', [])
 
     incidents = []
