@@ -4139,7 +4139,6 @@ def reputation_handler(
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
-    execution_metrics.general_error += 1
     ioc_values: List[str] = argToList(args[key])
     current_file = ioc_values[0]
     response = client.enrich_ioc(ioc_value=current_file)
