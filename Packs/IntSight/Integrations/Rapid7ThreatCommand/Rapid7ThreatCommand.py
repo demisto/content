@@ -3579,6 +3579,8 @@ def search_ioc_handler_command(args: dict[str, Any], client: Client, execution_m
     Args:
         client (Client): Threat Command API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
+        execution_metrics (ExecutionMetrics): Execution metrics.
+
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
@@ -3609,6 +3611,7 @@ def enrich_ioc_handler(client: Client, args: dict[str, Any], execution_metrics: 
     Args:
         client (Client): Threat Command API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
+        execution_metrics (ExecutionMetrics): Execution metrics.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -4048,6 +4051,7 @@ def file_command(args: dict[str, Any], client: Client, execution_metrics: Execut
     Args:
         client (Client): Threat Command API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
+        execution_metrics (ExecutionMetrics): Execution metrics.
 
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
@@ -4070,6 +4074,7 @@ def ip_command(args: dict[str, Any], client: Client, execution_metrics: Executio
     Args:
         client (Client): Threat Command API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
+        execution_metrics (ExecutionMetrics): Execution metrics.
 
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
@@ -4092,6 +4097,7 @@ def url_command(args: dict[str, Any], client: Client, execution_metrics: Executi
     Args:
         client (Client): Threat Command API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
+        execution_metrics (ExecutionMetrics): Execution metrics.
 
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
@@ -4115,6 +4121,7 @@ def domain_command(args: dict[str, Any], client: Client, execution_metrics: Exec
     Args:
         client (Client): Threat Command API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
+        execution_metrics (ExecutionMetrics): Execution metrics.
 
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
@@ -4135,6 +4142,7 @@ def reputation_handler(
         args (Dict[str, Any]): Command arguments from XSOAR.
         handler_command (Callable): Handler command for each command.
         key (str): Key for the IOC.
+        execution_metrics (ExecutionMetrics): Execution metrics.
 
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
