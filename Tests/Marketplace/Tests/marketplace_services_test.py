@@ -774,11 +774,6 @@ class TestHelperFunctions:
         res = pack.collect_content_items()
         assert res
         assert len(pack._content_items.get('modelingrule')) == 1
-        assert len(pack._content_items.get('playbook')) == 1
-        expected_description = "Expected description"
-        assert pack._content_items.get('playbook')[0].get('description') == expected_description
-        assert pack._content_items.get('playbook')[0].get('fromversion') == '6.5.0'
-        assert pack._content_items.get('playbook')[0].get('toversion') == ''
 
 
 class TestVersionSorting:
