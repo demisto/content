@@ -1,9 +1,19 @@
 {
-    "description": "Tool Indicator Layout",
+    "id": "STIX Tool",
+    "version": -1,
+    "name": "Tool Indicator",
+    "system": false,
+    "group": "indicator",
     "edit": {
         "sections": [
             {
+                "name": "Basic Information",
+                "type": "basicInformationSection",
+                "isVisible": true,
+                "readOnly": false,
                 "description": "",
+                "query": null,
+                "queryType": "",
                 "fields": [
                     {
                         "fieldId": "indicator_value",
@@ -29,16 +39,16 @@
                         "fieldId": "indicator_investigationids",
                         "isVisible": true
                     }
-                ],
-                "isVisible": true,
-                "name": "Basic Information",
-                "query": null,
-                "queryType": "",
-                "readOnly": false,
-                "type": "basicInformationSection"
+                ]
             },
             {
+                "name": "Custom fields - core",
+                "type": "",
+                "isVisible": true,
+                "readOnly": false,
                 "description": "",
+                "query": null,
+                "queryType": "",
                 "fields": [
                     {
                         "fieldId": "indicator_communitynotes",
@@ -60,16 +70,16 @@
                         "fieldId": "indicator_trafficlightprotocol",
                         "isVisible": true
                     }
-                ],
-                "isVisible": true,
-                "name": "Custom fields - core",
-                "query": null,
-                "queryType": "",
-                "readOnly": false,
-                "type": ""
+                ]
             },
             {
+                "name": "Custom fields - unique",
+                "type": "",
+                "isVisible": true,
+                "readOnly": false,
                 "description": "",
+                "query": null,
+                "queryType": "",
                 "fields": [
                     {
                         "fieldId": "indicator_aliases",
@@ -87,18 +97,10 @@
                         "fieldId": "indicator_killchainphases",
                         "isVisible": true
                     }
-                ],
-                "isVisible": true,
-                "name": "Custom fields - unique",
-                "query": null,
-                "queryType": "",
-                "readOnly": false,
-                "type": ""
+                ]
             }
         ]
     },
-    "group": "indicator",
-    "id": "Tool Indicator",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -247,7 +249,6 @@
                                 "startCol": 1
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -255,13 +256,13 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "h": 3,
                         "i": "rsdogskmtv-50d46d83-a8ad-4cd8-8072-0ff9e32847e9-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-93f6e7e0-b311-11eb-941c-e725acf1fbbc",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -270,13 +271,13 @@
                         "type": "relatedIncidents",
                         "w": 3,
                         "x": 0,
-                        "y": 8
+                        "y": 8,
+                        "maxH": null
                     },
                     {
                         "h": 3,
                         "i": "rsdogskmtv-50d46d83-a8ad-4cd8-8072-0ff9e32847e9-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-b413e230-b311-11eb-941c-e725acf1fbbc",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -285,13 +286,13 @@
                         "type": "relationshipsTable",
                         "w": 2,
                         "x": 0,
-                        "y": 5
+                        "y": 5,
+                        "maxH": null
                     },
                     {
                         "h": 2,
                         "i": "rsdogskmtv-50d46d83-a8ad-4cd8-8072-0ff9e32847e9-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-bf817380-b311-11eb-941c-e725acf1fbbc",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -300,13 +301,13 @@
                         "type": "indicatorTimeline",
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "h": 3,
                         "i": "rsdogskmtv-50d46d83-a8ad-4cd8-8072-0ff9e32847e9-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-c6078690-b311-11eb-941c-e725acf1fbbc",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -315,7 +316,8 @@
                         "type": "comments",
                         "w": 1,
                         "x": 2,
-                        "y": 5
+                        "y": 5,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
@@ -325,18 +327,17 @@
                         "i": "rsdogskmtv-50d46d83-a8ad-4cd8-8072-0ff9e32847e9-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-15926130-b312-11eb-941c-e725acf1fbbc",
                         "items": [
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "description",
                                 "height": 106,
                                 "id": "212099e0-b312-11eb-941c-e725acf1fbbc",
                                 "index": 0,
-                                "listId": "rsdogskmtv-15926130-b312-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "rsdogskmtv-15926130-b312-11eb-941c-e725acf1fbbc"
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -344,7 +345,8 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
@@ -538,16 +540,16 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 3,
                         "moved": false,
                         "name": "Publications and notes",
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null,
+                        "minW": 3
                     }
                 ],
                 "type": "custom"
@@ -756,8 +758,6 @@
             }
         ]
     },
-    "name": "Tool Indicator",
-    "system": false,
-    "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "description": "Tool Indicator Layout"
 }

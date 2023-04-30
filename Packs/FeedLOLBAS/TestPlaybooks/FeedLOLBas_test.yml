@@ -209,4 +209,4 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: FeedMitreAttackv2_test
+fromversion: 6.8.0

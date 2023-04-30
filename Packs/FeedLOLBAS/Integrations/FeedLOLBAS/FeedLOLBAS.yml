@@ -2,13 +2,24 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: LOLBAS Feed
   version: -1
+sectionOrder:
+	- Connect
+	- Collect
 configuration:
+- defaultvalue: 'https://lolbas-project.github.io/api'
+  display: Base URL
+  hidden: false
+  name: base_url
+  required: true
+  type: 0
+  section: Connect
+  advanced: false
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   required: false
   type: 8
-  section: Connect
+  section: Collect
   advanced: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   section: Collect
@@ -177,4 +188,4 @@ script:
   dockerimage: demisto/python3:3.10.7.35188
 fromversion: 6.8.0
 tests:
-- No tests (auto formatted)
+- FeedLOLBas_test 

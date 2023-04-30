@@ -10,7 +10,6 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-BASE_URL = 'https://lolbas-project.github.io/api'
 DEFAULT_FEED_TAGS = {'LOLBAS'}
 ''' CLIENT CLASS '''
 
@@ -25,9 +24,9 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, verify: bool, proxy: bool,
+    def __init__(self, base_url: str, verify: bool, proxy: bool,
                  create_relationships: bool, feed_tags: List[str], tlp_color: str):
-        super().__init__(base_url=BASE_URL, verify=verify, proxy=proxy)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.create_relationships = create_relationships
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
@@ -172,7 +171,7 @@ def get_indicators(client, limit):
     if limit and limit <= 0:
         raise ValueError('Limit must be a positive number.')
     indicators, raw_res = fetch_indicators(client, limit)
-    indicators = indicators[:limit] if isinstance(indicators, List)\
+    indicators = indicators[:limit] if isinstance(indicators, List) \
         else [indicators] if indicators else []
     for record in indicators:
         if record.get('value', '') == '$$DummyIndicator$$':
@@ -195,6 +194,7 @@ def main() -> None:  # pragma: no cover
     :rtype:
     """
     params = demisto.params()
+    base_url = params.get('base_url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     create_relationships = argToBoolean(params.get('create_relationships', True))
@@ -206,6 +206,7 @@ def main() -> None:  # pragma: no cover
     demisto.info(f'Command being called is {command}')
     try:
         client = Client(
+            base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
             create_relationships=create_relationships,
