@@ -2210,6 +2210,10 @@ script:
     polling: true
     description: Runs reputation on files.
     arguments:
+    - name: unfinished_enriches
+      hidden: true
+      defaultValue: '-1'
+      required: true
     - name: file
       required: true
       default: true
@@ -2280,6 +2284,10 @@ script:
   - name: ip
     polling: true
     arguments:
+    - name: unfinished_enriches
+      hidden: true
+      defaultValue: '-1'
+      required: true
     - name: ip
       description: IP address to check.
       default: true
@@ -2341,6 +2349,10 @@ script:
   - name: url
     polling: true
     arguments:
+    - name: unfinished_enriches
+      hidden: true
+      defaultValue: '-1'
+      required: true
     - name: url
       description: A comma-separated list of URLs to check. This command will not work properly on URLs containing commas.
       default: true
@@ -2405,6 +2417,10 @@ script:
   - name: domain
     polling: true
     arguments:
+    - name: unfinished_enriches
+      hidden: true
+      defaultValue: '-1'
+      required: true
     - name: domain
       description: Domain name to check.
       default: true

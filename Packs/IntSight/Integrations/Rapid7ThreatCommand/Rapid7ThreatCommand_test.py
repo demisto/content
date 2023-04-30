@@ -2445,7 +2445,7 @@ def test_finish_reputation_handler(
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json=json_response)
     result = reputation_handler(
-        args={key: "test"},
+        args={key: "test", 'unfinished_enriches': -1},
         client=mock_client,
         handler_command=handler_command,
         key=key,
@@ -2481,10 +2481,10 @@ def test_continue_reputation_handler(
     from Rapid7ThreatCommand import reputation_handler
     execution_metrics = ExecutionMetrics()
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
-    requests_mock.get(url=url, json={"Status": status})
+    requests_mock.get(url=url, json={"OriginalValue": "test", "Status": status})
 
     result = reputation_handler(
-        args={key: "test"},
+        args={key: "test", 'unfinished_enriches': -1},
         client=mock_client,
         handler_command=handler_command,
         key=key,
