@@ -129,6 +129,9 @@ class GCPConfig(object):
 
     @classmethod
     def get_core_packs_unlocked_file(cls):
+        """
+        Find the current server version that is not locked and return the matching corepacks file.
+        """
         for version, core_pack_file_value in cls.CORE_PACKS_FILE_VERSIONS.items():
             if not core_pack_file_value.get('core_packs_file_lock_timestamp', ''):
                 return core_pack_file_value.get('core_packs_file')
