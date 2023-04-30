@@ -242,19 +242,23 @@ def main(command: str, demisto_params: dict):
     if command == 'box-get-events':
         demisto.debug('box-get-events, publishing events to incident')
         return_results(CommandResults('BoxEvents', 'event_id', events))
+        if options.should_push_events:
+            send_events_to_xsiam(events, options.vendor_name, options.product_name)
     if command == 'fetch-events':
         last_run = get_events.get_last_run()
         demisto.debug(
             f'in fetch-events. settings should push events to true, setting {last_run=}'
         )
-        options.should_push_events = True
+        send_events_to_xsiam(events, options.vendor_name, options.product_name)
         demisto.setLastRun(last_run)
     demisto.debug(f'finished fetching events. {options.should_push_events=}')
-    if options.should_push_events:
-        send_events_to_xsiam(events, options.vendor_name, options.product_name)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     # Args is always stronger. Get getLastRun even stronger
     demisto_params_ = demisto.params() | demisto.args() | demisto.getLastRun()
-    main(demisto.command(), demisto_params_)
+    command = demisto.command()
+    try:
+        main(command, demisto_params_)
+    except Exception as e:
+        return_error(f'Failed to execute {command} command.\nError:\n{e}')
