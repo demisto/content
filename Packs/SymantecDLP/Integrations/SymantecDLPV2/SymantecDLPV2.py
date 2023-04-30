@@ -799,7 +799,7 @@ def main() -> None:
         username = credentials.get('identifier', '')
         password = credentials.get('password', '')
         incident_type = argToList(params.get('fetchIncidentType'), 'Network,Discover,Endpoint')
-        incident_status_id = check_status_ids_type(argToList(params.get('incidentStatusId'), ''))
+        incident_status_id = check_status_ids_type(argToList(params.get('incidentStatusId', '')))
         incident_severity = argToList(params.get('incidentSeverity'), 'Medium,High')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
