@@ -488,7 +488,7 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: false
-      description: "Enrichment flag. Use True in case you want to enrich the data about the IOC. Supported IOC types are: Domains, URLs, IP addresses and file hashes. While using this argument, all the other arguments are not relevant (except ioc_value). "
+      description: "Enrichment flag. Use True in case you want to enrich the data about the IOC. Supported IOC types are: Domains, URLs, IP addresses and file hashes. While using this argument, all the other filtering arguments are not relevant (except ioc_value). "
       isArray: false
       name: enrichment
       predefined:
