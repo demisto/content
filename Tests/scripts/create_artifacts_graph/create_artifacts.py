@@ -44,8 +44,8 @@ def create_dependencies(content_dto: ContentDTO, is_bucket_upload: bool, output:
                     "is_test": dependency.is_test,
                 }
         pack_dependencies[pack.object_id] = {
-            "path": str(CONTENT_PATH / pack.path),
-            "fullPath": str(pack.path),
+            "path": str(pack.path),
+            "fullPath": str(CONTENT_PATH / pack.path),
             "dependencies": first_level_dependencies,
             "displayedImages": list(first_level_dependencies.keys()),
             "allLevelDependencies": all_level_dependencies,
