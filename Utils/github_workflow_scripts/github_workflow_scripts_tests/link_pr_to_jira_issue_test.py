@@ -33,33 +33,33 @@ something else to say"""
 
 PR_TEST_CASE = [
     # Pr is not merged, so just need to detect all the issues.
-    (PR_WITH_ONLY_FIXES_WITH_SPACE, False, ['CIAC-3473']),
-    (PR_WITH_ONLY_FIXES_WITH_NEWLINE, False, ['CIAC-3473']),
-    (PR_WITH_ONLY_FIXES_WITHOUT_END_OF_STR, False, ['CIAC-3473']),
-    (PR_WITH_MULTIPLE_FIXES_BY_NEWLINE, False, ['CIAC-3473', 'CIAC-3475']),
+    (PR_WITH_ONLY_FIXES_WITH_SPACE, False, ['CIAC-3473'], ['fixes']),
+    (PR_WITH_ONLY_FIXES_WITH_NEWLINE, False, ['CIAC-3473'], ['fixes']),
+    (PR_WITH_ONLY_FIXES_WITHOUT_END_OF_STR, False, ['CIAC-3473'], ['fixes']),
+    (PR_WITH_MULTIPLE_FIXES_BY_NEWLINE, False, ['CIAC-3473', 'CIAC-3475'], ['fixes', 'fixes']),
 
     # Pr is merged, so need to detect the issues fixed by it.
-    (PR_WITH_ONLY_FIXES_WITH_SPACE, True, ['CIAC-3473']),
-    (PR_WITH_ONLY_FIXES_WITH_NEWLINE, True, ['CIAC-3473']),
-    (PR_WITH_ONLY_FIXES_WITHOUT_END_OF_STR, True, ['CIAC-3473']),
-    (PR_WITH_MULTIPLE_FIXES_BY_NEWLINE, True, ['CIAC-3473', 'CIAC-3475']),
+    (PR_WITH_ONLY_FIXES_WITH_SPACE, True, ['CIAC-3473'], ['fixes']),
+    (PR_WITH_ONLY_FIXES_WITH_NEWLINE, True, ['CIAC-3473'], ['fixes']),
+    (PR_WITH_ONLY_FIXES_WITHOUT_END_OF_STR, True, ['CIAC-3473'], ['fixes']),
+    (PR_WITH_MULTIPLE_FIXES_BY_NEWLINE, True, ['CIAC-3473', 'CIAC-3475'], ['fixes', 'fixes']),
 
     # PR is not merge, so just need to detect all the issues.
-    (PR_WITH_ONLY_RELATES_WITH_SPACE, False, ['CIAC-3472']),
-    (PR_WITH_ONLY_RELATES_WITH_NEWLINE, False, ['CIAC-3472']),
-    (PR_WITH_ONLY_RELATES_WITHOUT_END_OF_STR, False, ['CIAC-3472']),
-    (PR_WITH_BOTH_BY_NEWLINE, False, ['CIAC-3473', 'CIAC-3475']),
+    (PR_WITH_ONLY_RELATES_WITH_SPACE, False, ['CIAC-3472'], ['relates']),
+    (PR_WITH_ONLY_RELATES_WITH_NEWLINE, False, ['CIAC-3472'], ['relates']),
+    (PR_WITH_ONLY_RELATES_WITHOUT_END_OF_STR, False, ['CIAC-3472'], ['relates']),
+    (PR_WITH_BOTH_BY_NEWLINE, False, ['CIAC-3473', 'CIAC-3475'], ['fixes', 'relates']),
 
     # PR is merged, related issues should not be detected.
-    (PR_WITH_ONLY_RELATES_WITH_SPACE, True, []),
-    (PR_WITH_ONLY_RELATES_WITH_NEWLINE, True, []),
-    (PR_WITH_ONLY_RELATES_WITHOUT_END_OF_STR, True, []),
-    (PR_WITH_BOTH_BY_NEWLINE, True, ['CIAC-3473'])
+    (PR_WITH_ONLY_RELATES_WITH_SPACE, True, [], []),
+    (PR_WITH_ONLY_RELATES_WITH_NEWLINE, True, [], []),
+    (PR_WITH_ONLY_RELATES_WITHOUT_END_OF_STR, True, [], []),
+    (PR_WITH_BOTH_BY_NEWLINE, True, ['CIAC-3473'], ['fixes'])
 ]
 
 
-@pytest.mark.parametrize('pr_body, is_merged, expected', PR_TEST_CASE)
-def test_find_fixed_issue_in_body(pr_body, is_merged, expected):
+@pytest.mark.parametrize('pr_body, is_merged, expected_ids, expected_actions', PR_TEST_CASE)
+def test_find_fixed_issue_in_body(pr_body, is_merged, expected_ids, expected_actions):
     """
     Given: A PR representing text containing a few links.
     When: Searching all relevant links for closing/ for connecting
@@ -67,7 +67,11 @@ def test_find_fixed_issue_in_body(pr_body, is_merged, expected):
     """
     res = link_pr_to_jira_issue.find_fixed_issue_in_body(pr_body, is_merged)
     res_ids = [x.get('id') for x in res]
-    assert res_ids == expected
+    assert res_ids == expected_ids
+
+    res_actions = [x.get('action') for x in res]
+    assert res_actions == expected_actions
+
 
 
 TRIGGER_TEST_CASE = [
