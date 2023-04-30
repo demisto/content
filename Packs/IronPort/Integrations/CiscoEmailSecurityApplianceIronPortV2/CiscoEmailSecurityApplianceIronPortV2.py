@@ -660,7 +660,7 @@ def format_timestamp(timestamp: str, output_format: str = DATETIME_FORMAT) -> st
     except ValueError:
         timestamp = timestamp.replace('GMT ', 'GMT')
         datetime_res = arg_to_datetime(timestamp)
-    return datetime_res.strftime(output_format)
+    return datetime_res.strftime(output_format)  # type: ignore
 
 
 def format_number_list_argument(number_list_string: str) -> List[int]:
