@@ -1570,7 +1570,8 @@ def panorama_create_address_command(args: dict):
                                                     'element': '<comments>created via API</comments>'})
             else:
                 raise DemistoException(
-                    f'Failed to create the address object since the tags `{non_existent_tags}` does not exist.'
+                    f'Failed to create the address object since the tags `{non_existent_tags}` does not exist. '
+                    f'You can use the `create_tag` argument to create the tag.'
                 )
 
     fqdn = args.get('fqdn')
