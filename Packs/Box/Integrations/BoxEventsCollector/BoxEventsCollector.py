@@ -254,7 +254,7 @@ def main(command: str, demisto_params: dict):
             demisto.setLastRun(last_run)
         demisto.debug(f'finished fetching events. {options.should_push_events=}')
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{e}')
+        return_error(f'Failed to execute {command} command.\nError:\n{e}\nTraceback:{traceback.format_exc()}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
