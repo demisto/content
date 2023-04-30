@@ -2007,11 +2007,11 @@ class Pack(object):
         return task_status and self.is_changelog_exists()
 
     def is_replace_item_in_folder_collected_list(self, content_item: dict, content_items_to_version_map: dict):
-        """ Checks the fromversion and toversion in the content_item with 
+        """ Checks the fromversion and toversion in the content_item with
             the fromversion toversion in content_items_to_version_map
             If the content_item has a more up to date toversion and fromversion will
             replace it in the map and metadata list
-        Returns: 
+        Returns:
              A boolean whether the version in the list posted to metadata should be
              replaced with the current version from the content item.
         """
@@ -2033,7 +2033,7 @@ class Pack(object):
 
     def get_latest_versions(self, content_items_id_to_version_map: dict, content_item: dict):
         """ Get the latest fromversion and toversion of a content item.
-        Returns: 
+        Returns:
              A tuple containing the latest fromversion and toversion.
         """
         if (curr_content_item := content_items_id_to_version_map.get(
