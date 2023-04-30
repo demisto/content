@@ -1111,7 +1111,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "handling_for_upload_scripts_with_name_x2"
-resolved_reference = "ad7b7826acccc9bf22c2b397b77817d69a94db46"
+resolved_reference = "01a7e6b682d6c987275f70d240793ba62a74ff5a"
 
 [[package]]
 name = "deprecated"
