@@ -20,6 +20,9 @@ SDK_NIGHTLY_JOBS = [
     'demisto-sdk-nightly:run-validations',
     'demisto_sdk_nightly:check_idset_dependent_commands',
     'demisto-sdk-nightly:xsoar-prepare-testing-bucket',
+    'demisto-sdk-nightly:marketplacev2-prepare-testing-bucket',
+    'demisto-sdk-nightly:xpanse-prepare-testing-bucket',
+    'demisto-sdk-nightly:test-upload-flow',
     'demisto-sdk-nightly:run-commands-against-instance',
     'demisto-sdk-nightly:run-end-to-end-tests',
 ]
