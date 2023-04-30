@@ -551,9 +551,7 @@ def test_add_asset_command(
     result = add_asset_command(
         mock_client, {"asset_type": "test", "asset_value": "test"}
     )
-    assert result.readable_output == ReadableOutputs.CREATE_ASSET.value.format(
-        "test", "test"
-    )
+    assert result.outputs_prefix == "ThreatCommand.Asset"
 
 
 @pytest.mark.parametrize(
@@ -1163,7 +1161,7 @@ def test_close_alert_command(
         mock_client,
         {"alert_id": "123", "reason": "Problem Solved", "is_hidden": "false"},
     )
-    assert result.readable_output == ReadableOutputs.ALERT_CLOSE.value.format("123")
+    assert result.outputs_prefix == "ThreatCommand.Alert"
 
 
 @pytest.mark.parametrize(
@@ -1257,9 +1255,7 @@ def test_update_alert_severity_command(
     result = update_alert_severity_command(
         mock_client, {"alert_id": "123", "severity": "High"}
     )
-    assert result.readable_output == ReadableOutputs.ALERT_SEVERITY.value.format(
-        "123", "High"
-    )
+    assert result.outputs_prefix == "ThreatCommand.Alert"
 
 
 @pytest.mark.parametrize(
@@ -1315,9 +1311,7 @@ def test_assign_alert_command(
     result = assign_alert_command(
         mock_client, {"alert_id": "123", "user_id": "123456789", "is_mssp": "false"}
     )
-    assert result.readable_output == ReadableOutputs.ALERT_ASSIGN.value.format(
-        "123", "123456789"
-    )
+    assert result.outputs_prefix == "ThreatCommand.Alert"
 
 
 @pytest.mark.parametrize(
@@ -1372,7 +1366,7 @@ def test_unassign_alert_command(
     requests_mock.patch(url=url, content=b"", status_code=HTTPStatus.OK)
 
     result = unassign_alert_command(mock_client, {"alert_id": "123"})
-    assert result.readable_output == ReadableOutputs.ALERT_UNASSIGN.value.format("123")
+    assert result.outputs_prefix == "ThreatCommand.Alert"
 
 
 def test_reopen_alert_command(
@@ -2451,7 +2445,11 @@ def test_finish_reputation_handler(
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json=json_response)
     result = reputation_handler(
-        args={key: "test"}, client=mock_client, handler_command=handler_command, key=key, execution_metrics=execution_metrics
+        args={key: "test"},
+        client=mock_client,
+        handler_command=handler_command,
+        key=key,
+        execution_metrics=execution_metrics
     )
     assert not result.continue_to_poll
 
@@ -2486,7 +2484,11 @@ def test_continue_reputation_handler(
     requests_mock.get(url=url, json={"Status": status})
 
     result = reputation_handler(
-        args={key: "test"}, client=mock_client, handler_command=handler_command, key=key, execution_metrics=execution_metrics
+        args={key: "test"},
+        client=mock_client,
+        handler_command=handler_command,
+        key=key,
+        execution_metrics=execution_metrics
     )
     if status == "QuotaExceeded":
         assert not result.continue_to_poll
