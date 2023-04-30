@@ -12,7 +12,7 @@ def test_URLEncode():
     """
     res = main({'value': 'https://www.google.com/'})
     assert res == 'https%3A//www.google.com/'
-
+    
 
 def test_URLEncode_encoded_input():
     """Unit test
