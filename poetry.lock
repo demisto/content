@@ -1125,8 +1125,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "29ca4f33e61970e853721122e47adb40816c3ff3"
-resolved_reference = "29ca4f33e61970e853721122e47adb40816c3ff3"
+reference = "4d0207a8a5cf9121a7165eff02f75c3eb46ed33e"
+resolved_reference = "4d0207a8a5cf9121a7165eff02f75c3eb46ed33e"
 
 [[package]]
 name = "deprecated"
@@ -4275,24 +4275,24 @@ files = [
 
 [[package]]
 name = "pyspnego"
-version = "0.8.0"
+version = "0.9.0"
 description = "Windows Negotiate Authentication Client and Server"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pyspnego-0.8.0-cp310-cp310-win32.whl", hash = "sha256:9dbbd3aec5240aa8b75a5baa0b8a78d3b4ec16638c5fe299cd849b2390cfd2ec"},
-    {file = "pyspnego-0.8.0-cp310-cp310-win_amd64.whl", hash = "sha256:2df21796b15e73b99a4b4bbe91e4ecd3fdaa888b7255c4ab697ccb6615dbd6e3"},
-    {file = "pyspnego-0.8.0-cp311-cp311-win32.whl", hash = "sha256:e15d7ecf70cb70f09ec80a7efd57086886380dcfbe0c31b1808f3349484f0b96"},
-    {file = "pyspnego-0.8.0-cp311-cp311-win_amd64.whl", hash = "sha256:ff546dc4a56c92aae253c04c8999baf4357919a523665c8daa65788567a52fe3"},
-    {file = "pyspnego-0.8.0-cp37-cp37m-win32.whl", hash = "sha256:c3cb9d9da79f1d38e8a268988c5af7520f25dc8f6c7bc97444260f8ce3d1efe9"},
-    {file = "pyspnego-0.8.0-cp37-cp37m-win_amd64.whl", hash = "sha256:1f76a924866040cece4600e1973bfdb20656f9a3ceb2935ed6be1f932c990b19"},
-    {file = "pyspnego-0.8.0-cp38-cp38-win32.whl", hash = "sha256:cf8bd2bd2cadc825e7fc7ff86a57eb158d898d30c0f7670940178c48ebe78e31"},
-    {file = "pyspnego-0.8.0-cp38-cp38-win_amd64.whl", hash = "sha256:92501106898b4fa60f454dc9445b8006c133e177c859d49b3c7f260985449cad"},
-    {file = "pyspnego-0.8.0-cp39-cp39-win32.whl", hash = "sha256:3e49fddd34c19d6bd1d534501769de5e2b0716ce9b6f26d50f2f0600158780c9"},
-    {file = "pyspnego-0.8.0-cp39-cp39-win_amd64.whl", hash = "sha256:e2faff077fe942ed7169bd6c84c9396f259f50069237d93de12a5bd5e11bb445"},
-    {file = "pyspnego-0.8.0-py3-none-any.whl", hash = "sha256:55b9bc76efb2ef335640f1bfe6922651c31d21a4c989b0def889eaa2f4865711"},
-    {file = "pyspnego-0.8.0.tar.gz", hash = "sha256:e0499cc066c56762f8a315bb053243d34240cb85e384afc6b87b4fa0142543df"},
+    {file = "pyspnego-0.9.0-cp310-cp310-win32.whl", hash = "sha256:f529b30a0ccfb0219b5b5b996c8a90cf5df0da6bcf19da33262573f9cca4d487"},
+    {file = "pyspnego-0.9.0-cp310-cp310-win_amd64.whl", hash = "sha256:f656b22298a3582d210f8dfdd6541b0fb277b0020f9b649b329dea3688ff60da"},
+    {file = "pyspnego-0.9.0-cp311-cp311-win32.whl", hash = "sha256:2f2e51c7230f95febe9ff4e00eaa7c24ce64b197ae6c53dc85c7df88aa416d93"},
+    {file = "pyspnego-0.9.0-cp311-cp311-win_amd64.whl", hash = "sha256:8d17f5157c572aa0fc5899211f8092917d1bee2ef84046684d939aa481a958f0"},
+    {file = "pyspnego-0.9.0-cp37-cp37m-win32.whl", hash = "sha256:c4111a7584aea4e30b1cd2e0c0b1f8355ed4fb413cce21e2cecef8bfdf0eabcf"},
+    {file = "pyspnego-0.9.0-cp37-cp37m-win_amd64.whl", hash = "sha256:44f39ec4c93c8cc51516a6b16365160e9dff622310afef9ee8456626bafda26b"},
+    {file = "pyspnego-0.9.0-cp38-cp38-win32.whl", hash = "sha256:9b9e5a645dcd4645537c7dd38e69124fa524eba501b65fb1ab2825e80038a5dc"},
+    {file = "pyspnego-0.9.0-cp38-cp38-win_amd64.whl", hash = "sha256:d498ff81da792ace2eea7f55a103a49a363882b820723f99dc5ccf03ea7f3b3e"},
+    {file = "pyspnego-0.9.0-cp39-cp39-win32.whl", hash = "sha256:187aa308fb40be4292753e86f9ee3df1c48500accdb50bcfecb7246b618cd7d8"},
+    {file = "pyspnego-0.9.0-cp39-cp39-win_amd64.whl", hash = "sha256:77b965afaed4214b63dddabefdef762f3f9c9796349408d200c64a5921de809b"},
+    {file = "pyspnego-0.9.0-py3-none-any.whl", hash = "sha256:18da3710c383167e54ae2b01f640f269de2cdc0992a8f72928e349441361c21d"},
+    {file = "pyspnego-0.9.0.tar.gz", hash = "sha256:3f10ca7a2f0d5170c2032bb5d55183384208314032aa44c1684d6920d50e97de"},
 ]
 
 [package.dependencies]
@@ -5575,14 +5575,14 @@ test = ["black (>=22.3.0,<23.0.0)", "coverage (>=6.2,<7.0)", "isort (>=5.0.6,<6.
 
 [[package]]
 name = "types-chardet"
-version = "5.0.4.4"
+version = "5.0.4.5"
 description = "Typing stubs for chardet"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-chardet-5.0.4.4.tar.gz", hash = "sha256:5692bfc24b23f2998d7f13cd0a73c520865db91e4eada42e6a572df0cf3f472c"},
-    {file = "types_chardet-5.0.4.4-py3-none-any.whl", hash = "sha256:91364fc7a9faacb00be37689306691fc41549ad394eceeb37b4a2ee6b7a703be"},
+    {file = "types-chardet-5.0.4.5.tar.gz", hash = "sha256:b3a94b9d24752ade941e269eb9327d78eda2c482e2d373ec46deed3a150af773"},
+    {file = "types_chardet-5.0.4.5-py3-none-any.whl", hash = "sha256:979543861ed7f1efaf97cea9d5ef6b4ac10373da6aa6853a1946061eafda2173"},
 ]
 
 [[package]]
@@ -6479,4 +6479,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "c020c070d81b332877803f21175649267c53470f92c0fe1e34096eeeeb1e75a1"
+content-hash = "5b0287ea2bc23c26f98393e9d1fb2ee327d86dd099991a855e41042632927451"
