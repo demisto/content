@@ -1602,7 +1602,7 @@ def panorama_create_address_command(args: dict):
     if description:
         address_output['Description'] = description
     if tags:
-        address_output['Tags'] = tags
+        address_output['Tags'] = list(tags)
 
     return_results({
         'Type': entryTypes['note'],
