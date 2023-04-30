@@ -2848,7 +2848,10 @@ def get_id_by_attribute_command(client: JiraBaseClient, args: Dict[str, str]) ->
         # Since we compare the given attribute to the email address in order to retrieve the account id, and the email address
         # can be empty for privacy reasons, we want to avoid a situation where we actually receive a valid user, but since the
         # email address can be empty, we will output to the user than no user was found.
-        account_ids = [res[0].get('accountId', '')] if is_jira_cloud else [res[0].get('name', '')]
+        # While using Jira Cloud, the account id is under the key 'accountId', and while using Jira OnPrem, it is under the
+        # key 'name'
+        account_ids = [res[0].get('accountId', '') or res[0].get('name', '')]
+        # if is_jira_cloud else [res[0].get('name', '')]
 
     elif(is_jira_cloud):
         # We check the displayName and emailAddress, because that is what the Cloud API returns
@@ -3481,7 +3484,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
                 string_date=demisto.get(issue, 'fields.created') or '')
             new_fetch_updated_time = convert_string_date_to_specific_format(
                 string_date=demisto.get(issue, 'fields.updated') or '')
-            remove_empty_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
+            parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
             incidents.append(create_incident_from_issue(
                 client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
                 mirror_direction=mirror_direction,
@@ -3507,10 +3510,9 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     return incidents
 
 
-def remove_empty_custom_fields(issue: Dict[str, Any], issue_fields_id_to_name_mapping: Dict[str, str]):
-    """This function will remove empty custom fields returned by the API, and if the custom field is not empty,
-    then parse it to also show the display name of the custom field, since the ids of the custom fields are not
-    intuitive.
+def parse_custom_fields(issue: Dict[str, Any], issue_fields_id_to_name_mapping: Dict[str, str]):
+    """This function will parse custom fields returned by the API, where it will show the display name of
+    the custom field, since the ids of the custom fields are not intuitive.
 
     Args:
         issue (Dict[str, Any]): The issue object returned from the API.
@@ -3518,19 +3520,13 @@ def remove_empty_custom_fields(issue: Dict[str, Any], issue_fields_id_to_name_ma
         issue fields.
     """
     # Since issue.get('renderedFields') can also return the fields of the issue, rendered in HTML
-    # format if possible, therefore, we also need to iterate over them to remove empty custom fields.
+    # format if possible, therefore, we also need to iterate over them
     for issue_fields in [issue.get('fields', {}), issue.get('renderedFields', {})]:
-        # It is important to iterate over list(issue_fields) and not issue_fields or issue_fields.items(),
-        # because we are deleting entries while iterating over the dictionary, if we do not, we will get the error,
-        # RuntimeError: dictionary changed size during iteration
-        for issue_field_id in list(issue_fields):
+        for issue_field_id in issue_fields:
             if issue_field_id.startswith('customfield'):
-                if issue_fields.get(issue_field_id):
-                    issue_fields |= JiraIssueFieldsParser.get_raw_field_data_context(
-                        issue_data=issue, issue_field_id=issue_field_id,
-                        issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping)
-                else:
-                    del issue_fields[issue_field_id]
+                issue_fields |= JiraIssueFieldsParser.get_raw_field_data_context(
+                    issue_data=issue, issue_field_id=issue_field_id,
+                    issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping)
 
 
 def convert_list_of_str_to_int(list_to_convert: List[str] | List[int]) -> List[int]:
@@ -3947,8 +3943,8 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         # Get raw response for issue ID
         issue = client.get_issue(issue_id_or_key=issue_id)
         demisto.debug(f'Got remote data for incident {issue_id}')
-        remove_empty_custom_fields(issue=issue,
-                                   issue_fields_id_to_name_mapping=issue.get('names', {}) or {})
+        parse_custom_fields(issue=issue,
+                            issue_fields_id_to_name_mapping=issue.get('names', {}) or {})
         demisto.debug(f"\n\nRaw issue response: {issue}\n\n")
         issue['parsedDescription'] = JiraIssueFieldsParser.get_description_context(
             issue).get('Description') or ''

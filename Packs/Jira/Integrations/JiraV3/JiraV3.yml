@@ -12,7 +12,7 @@ configuration:
   defaultvalue: https://api.atlassian.com/ex/jira
   type: 0
   required: true
-  additionalinfo: The base URL. For cloud instance, please use the default URL as configured, for OnPrem instance, use your respective domain.
+  additionalinfo: The base URL. For cloud instance, please use the default URL as configured, for OnPrem instance, use your respective domain
 - name: cloud_id
   display: Cloud ID
   hint: 11223344-a1b2-3b33-c444-def123456789
@@ -33,14 +33,14 @@ configuration:
   type: 14
   required: true
 - defaultvalue: status!=done
-  display: Query (in JQL) for fetching incidents.
+  display: Query (in JQL) for fetching incidents
   additionalinfo: The field that was selected in the "Issue Field to Fetch from" can't be used
     in the query.
   name: fetch_query
   required: false
   type: 0
 - defaultvalue: id
-  display: Issue Field to Fetch from.
+  display: Issue Field to fetch by
   name: issue_field_to_fetch_from
   required: false
   options:
@@ -48,6 +48,7 @@ configuration:
   - created date
   - updated date
   type: 15
+  additionalinfo: "This is how the field (e.g, created date) is applied to the query: created >= {created date in last run} ORDER BY created ASC"
 - display: Issue index to start fetching incidents from
   additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch from". This will
     only fetch Jira issues that are part of the same project as the issue that is configured in this parameter.

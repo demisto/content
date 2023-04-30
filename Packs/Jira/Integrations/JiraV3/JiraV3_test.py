@@ -214,10 +214,10 @@ class TestJiraGetIssueCommand:
         When
             - Calling the get create_file_info_from_attachment function to create a file of type EntryType.ENTRY_INFO_FILE
         Then
-            - Validate that the file has been created, is of the correct type, and has the correct file name.
+            - Validate that the file has been created, is of the correct type, has the correct file name, and was created
+            with the correct content.
         """
         import os
-        from CommonServerPython import EntryType
         from JiraV3 import create_file_info_from_attachment
         client = jira_base_client_mock()
         raw_response_attachment_metadata = util_load_json('test_data/get_issue_test/raw_response_attachment_metadata.json')
@@ -225,14 +225,16 @@ class TestJiraGetIssueCommand:
         mocker.patch.object(client, 'get_attachment_metadata', return_value=raw_response_attachment_metadata)
         mocker.patch.object(client, 'get_attachment_content', return_value=dummy_attachment_content)
         file_name = 'dummy_file_name.pdf'
+        file_result_mocker = mocker.patch('JiraV3.fileResult', side_effect=fileResult)
         file_info_res = create_file_info_from_attachment(client=client, attachment_id='dummy_attachment_id',
                                                          file_name=file_name)
+        assert file_result_mocker.call_args[1].get('data') == dummy_attachment_content
         assert file_info_res.get('Type') == EntryType.ENTRY_INFO_FILE
         assert file_info_res.get('File', '') == file_name
         assert os.path.exists(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}")
         os.remove(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}")
 
-    @pytest.mark.parametrize('get_attachments', [
+    @ pytest.mark.parametrize('get_attachments', [
         (True), (False)
     ])
     def test_download_issue_attachments_to_war_room(self, mocker, get_attachments):
@@ -998,18 +1000,257 @@ class TestJiraSprintIssuesCommand:
 
 
 class TestJiraDeleteCommentCommand:
-    """
-    Given:
-        - A Jira client.
-    When
-        - Calling the jira-issue-delete-comment.
-    Then
-        - Validate that the correct message is returned to the user.
-    """
-
     def test_delete_comment_command(self, mocker):
+        """
+        Given:
+            - A Jira client.
+        When
+            - Calling the jira-issue-delete-comment.
+        Then
+            - Validate that the correct message is returned to the user.
+        """
         from JiraV3 import delete_comment_command
         client = jira_base_client_mock()
         mocker.patch.object(client, 'delete_comment', return_value=requests.Response())
         command_results = delete_comment_command(client=client, args={'issue_key': 'dummy_issue_key'})
         assert 'Comment deleted successfully' in command_results.to_context()['HumanReadable']
+
+
+class TestJiraGetIssueAttachmentsCommand:
+    @pytest.mark.parametrize('args,number_of_calls', [
+        ({'attachment_id': '1,2,3'}, 3), ({'attachment_id': '1234'}, 1)
+    ])
+    def test_get_issue_attachments_command(self, mocker, args, number_of_calls):
+        """
+        Given:
+            - A Jira client, and attachment ids to retrieve the content of the attachments.
+        When
+            - Calling the jira-issue-get-attachment.
+        Then
+            - Validate that the number of times the function that is in charge of creating the files to display in the War Room
+            is called with correspondence to the number of attachment ids supplied (The function that is in charge of creating
+            the file themselves has been tested in the class TestJiraGetIssueCommand).
+        """
+        from JiraV3 import issue_get_attachment_command
+        client = jira_base_client_mock()
+        create_file_info_mocker = mocker.patch('JiraV3.create_file_info_from_attachment', return_value={})
+        issue_get_attachment_command(client=client, args=args)
+        assert len(create_file_info_mocker.mock_calls) == number_of_calls
+
+
+class TestJiraUploadFileCommand:
+    def test_get_file_name_and_content(self, mocker):
+        """
+        Given:
+            - An entry id, that is found in a War Room
+        When
+            - Getting the file name and content of it, in order to upload to Jira
+        Then
+            - Validate that the function that is in charge of retrieving the name and content of the file returns
+            the required data.
+        """
+        from JiraV3 import get_file_name_and_content
+        file_path = 'test_data/get_issue_test/dummy_attachment_content.txt'
+        expected_file_name = 'dummy_attachment_content.txt'
+        mocker.patch.object(demisto, 'getFilePath',
+                            return_value={'name': expected_file_name,
+                                          'path': file_path})
+        file_name, file_bytes = get_file_name_and_content(entry_id='dummy_entry_id')
+        expected_file_bytes: bytes = b''
+        with open(file_path, 'rb') as f:
+            expected_file_bytes = f.read()
+        assert expected_file_bytes == file_bytes
+        assert expected_file_name == file_name
+
+    def test_upload_file_command(self, mocker):
+        """
+        Given:
+            - A Jira client.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that correct message is outputted to the user.
+        """
+        from JiraV3 import upload_file_command
+        client = jira_base_client_mock()
+        upload_file_raw_response = util_load_json('test_data/upload_file_test/raw_response.json')
+        expected_command_results_context = util_load_json('test_data/upload_file_test/parsed_result.json')
+        mocker.patch('JiraV3.get_file_name_and_content', return_value=('dummy_file_name.pdf', b'dummy content'))
+        mocker.patch.object(client, 'upload_attachment', return_value=upload_file_raw_response)
+        command_results = upload_file_command(client=client, args={'issue_key': 'COMPANYSA-35'})
+        assert command_results.to_context()['HumanReadable'] == expected_command_results_context['HumanReadable']
+
+
+class TestJiraGetIdByAttribute:
+    @pytest.mark.parametrize('raw_response_path,parsed_result_path', [
+        ('test_data/get_id_by_attribute_test/raw_response_cloud.json',
+         'test_data/get_id_by_attribute_test/parsed_result_cloud.json'),
+        ('test_data/get_id_by_attribute_test/raw_response_onprem.json',
+         'test_data/get_id_by_attribute_test/parsed_result_onprem.json')
+    ])
+    def test_get_id_when_response_returns_one_user(self, mocker, raw_response_path, parsed_result_path):
+        """
+        Given:
+            - A Jira client
+        When
+            - When calling the jira-get-id-by-attribute command, and only getting one user in the response.
+        Then
+            - Validate that the user is returned.
+        """
+        from JiraV3 import get_id_by_attribute_command
+        client = jira_base_client_mock()
+        user_search_raw_response = util_load_json(raw_response_path)
+        expected_command_results_context = util_load_json(parsed_result_path)
+        mocker.patch.object(client, 'get_id_by_attribute', return_value=user_search_raw_response)
+        command_results = get_id_by_attribute_command(client=client, args={'attribute': 'fred@example.com'})
+        assert expected_command_results_context == command_results.to_context()
+
+    @pytest.mark.parametrize('client, raw_response_path', [
+        (jira_cloud_client_mock(), 'test_data/get_id_by_attribute_test/raw_response_cloud.json'),
+        (jira_onprem_client_mock(), 'test_data/get_id_by_attribute_test/raw_response_onprem.json')
+    ])
+    def test_id_not_found_when_response_returns_multiple_users(self, mocker, client, raw_response_path):
+        """
+        Given:
+            - A Jira client, once for Cloud, and once for OnPrem
+        When
+            - When calling the jira-get-id-by-attribute command, and getting multiple responses, and not being able
+            to extract the account id (probably because the attribute was an email, and the email can sometimes not be
+            returned for privacy reasons)
+        Then
+            - Validate that an appropriate message is returned to the user.
+        """
+        from JiraV3 import get_id_by_attribute_command
+        user_search_raw_response = util_load_json(raw_response_path)
+        attribute = 'fred@example.com'
+        command_results_message = (f'Multiple accounts found, but it was not possible to resolve which one'
+                                   f' of them is most relevant to attribute {attribute}. Please try to provide'
+                                   ' the "DisplayName" attribute if not done so before, or supply the full'
+                                   ' attribute.')
+        user_search_raw_response = user_search_raw_response * 2  # To mock that the response returned multiple users
+        mocker.patch.object(client, 'get_id_by_attribute', return_value=user_search_raw_response)
+        command_results = get_id_by_attribute_command(client=client, args={'attribute': attribute})
+        assert command_results_message in command_results.to_context()['HumanReadable']
+
+    @pytest.mark.parametrize('client, raw_response_path', [
+        (jira_cloud_client_mock(), 'test_data/get_id_by_attribute_test/raw_response_cloud.json'),
+        (jira_onprem_client_mock(), 'test_data/get_id_by_attribute_test/raw_response_onprem.json')
+    ])
+    def test_multiple_ids_found_when_response_returns_multiple_users(self, mocker, client, raw_response_path):
+        """
+        Given:
+            - A Jira client, once for Cloud, and once for OnPrem
+        When
+            - When calling the jira-get-id-by-attribute command, and getting multiple responses, and extracting
+            multiple account ids
+        Then
+            - Validate that an appropriate message is returned to the user.
+        """
+        from JiraV3 import get_id_by_attribute_command
+        # client = jira_onprem_client_mock()
+        user_search_raw_response = util_load_json(raw_response_path)
+        attribute = 'fred@example.com'
+        command_results_message = (f'Multiple account IDs were found for attribute: {attribute}.\n'
+                                   f'Please try to provide the other attributes available - Email or DisplayName'
+                                   ' (and Name in the case of Jira OnPrem).')
+        user_search_raw_response = user_search_raw_response * 2  # To mock that the response returned multiple users
+        user_search_raw_response[0]['emailAddress'] = attribute
+        mocker.patch.object(client, 'get_id_by_attribute', return_value=user_search_raw_response)
+        command_results = get_id_by_attribute_command(client=client, args={'attribute': attribute})
+        assert command_results_message in command_results.to_context()['HumanReadable']
+
+    @pytest.mark.parametrize('client, raw_response_path, parsed_result_path', [
+        (jira_cloud_client_mock(), 'test_data/get_id_by_attribute_test/raw_response_cloud.json',
+         'test_data/get_id_by_attribute_test/parsed_result_cloud.json'),
+        (jira_onprem_client_mock(), 'test_data/get_id_by_attribute_test/raw_response_onprem.json',
+         'test_data/get_id_by_attribute_test/parsed_result_onprem.json')
+    ])
+    def test_get_id_from_multiple_ids_when_response_returns_multiple_users(self, mocker, client, raw_response_path,
+                                                                           parsed_result_path):
+        """
+        Given:
+            - A Jira client, once for Cloud, and once for OnPrem
+        When
+            - When calling the jira-get-id-by-attribute command, and getting multiple responses, and extracting
+            the correct account id.
+        Then
+            - Validate that the user is returned.
+        """
+        from JiraV3 import get_id_by_attribute_command
+        user_search_raw_response = util_load_json(raw_response_path)
+        user = user_search_raw_response[0]  # The test data contains only one user in the raw response
+        expected_command_results_context = util_load_json(parsed_result_path)
+        attribute = 'fred@example.com'
+        # To mock that the response returned multiple users
+        user_search_raw_response = [user, user.copy()]
+        user_search_raw_response[0]['emailAddress'] = attribute
+        user_search_raw_response[1]['emailAddress'] = 'wrong attribute'
+        mocker.patch.object(client, 'get_id_by_attribute', return_value=user_search_raw_response)
+        command_results = get_id_by_attribute_command(client=client, args={'attribute': attribute})
+        assert expected_command_results_context == command_results.to_context()
+
+
+class TestJiraGetSpecificField:
+    def test_get_specific_field_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - When calling the jira-get-specific-field
+        Then
+            - Validate that the specified fields are returned in the context data
+        """
+        from JiraV3 import get_specific_fields_command
+        client = jira_base_client_mock()
+        issue_raw_response = util_load_json('test_data/get_specific_field_test/raw_response.json')
+        expected_command_results = util_load_json('test_data/get_specific_field_test/parsed_result.json')
+        mocker.patch.object(client, 'get_issue', return_value=issue_raw_response)
+        command_results = get_specific_fields_command(client=client, args={'issue_key': 'COMPANYSA-35',
+                                                                           'fields': 'watches,rank'})
+        assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
+        assert expected_command_results['HumanReadable'] == command_results.to_context()['HumanReadable']
+
+
+class TestJiraIssueQueryField:
+    def test_issue_query_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - When calling the jira-issue-query, with the `fields` argument
+        Then
+            - Validate that the context data and human readable of the queried issues are returned.
+        """
+        from JiraV3 import issue_query_command
+        client = jira_base_client_mock()
+        issue_query_raw_response = util_load_json('test_data/get_issue_query_test/raw_response.json')
+        expected_command_results = util_load_json('test_data/get_issue_query_test/parsed_result.json')
+        mocker.patch.object(client, 'run_query', return_value=issue_query_raw_response)
+        command_results = issue_query_command(client=client, args={'fields': 'watches,rank'})
+        command_results = command_results if isinstance(command_results, list) else [command_results]
+        for expected_command_result, command_result in zip(expected_command_results, command_results):
+            assert expected_command_result['EntryContext'] == command_result.to_context()['EntryContext']
+            assert expected_command_result['HumanReadable'] == command_result.to_context()['HumanReadable']
+
+
+class TestJiraAddUrlLink:
+    def test_add_url_link(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - When calling the jira-issue-add-link
+        Then
+            - Validate that the correct human readable is returned to the user
+        """
+        from JiraV3 import add_link_command
+        client = jira_base_client_mock()
+        mocker.patch.object(client, 'add_link', return_value={
+            "id": 10000,
+            "self": "https://your-domain.atlassian.net/rest/api/issue/MKY-1/remotelink/10000"
+        })
+        command_result = add_link_command(client=client, args={'issue_key': 'dummy_issue_key'})
+        markdown_dict = {'id': 10000, 'key': None, 'comment': '',
+                         'ticket_link': 'https://your-domain.atlassian.net/rest/api/issue/MKY-1/remotelink/10000'}
+        expected_human_readable = tableToMarkdown(name='Remote Issue Link', t=markdown_dict, removeNull=True)
+        assert command_result.to_context()['HumanReadable'] == expected_human_readable
