@@ -443,7 +443,7 @@ filter _raw_log ~= "\d\:\sAAA"
     message = arrayindex(regextract(_raw_log, "\%ASA\-[session]*\-*\d\-\d+[\:|\s\-]+\s(.*)"),0),
     observer_ip = arrayindex(regextract(_raw_log ,"\d{2}\:\d{2}\:\d{2}Z*\s(\d+\.\d+\.\d+\.\d+)\s"),0),
     action = arrayindex(regextract(_raw_log ,"\%ASA\-[session]*\-*\d\-\d+\:([A-Za-z\s\-]+)\s[A-Za-z]+"),0),
-    dst_username1 = arrayindex(regextract(_raw_log ,"user\s\=\s(\S+)\s"),0),
+    dst_username1 = arrayindex(regextract(_raw_log ,"user\s\=\s(\S+)\s*"),0),
     dst_username2 = arrayindex(regextract(_raw_log ,"for\suser\s(\S{2,})"),0),
     dst_ip = arrayindex(regextract(_raw_log ,"user\sIP\s\=\s(\d+\.\d+\.\d+\.\d+)"),0),
     outcome_reason = arrayindex(regextract(_raw_log ,"reason\s\=\s([\w\s]+)\s"),0)
