@@ -1125,8 +1125,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "095250d4aeddb00180d01b385202a81573211d44"
-resolved_reference = "095250d4aeddb00180d01b385202a81573211d44"
+reference = "356cb9c1f5fe78006970fbce3db1f78e54a7edf3"
+resolved_reference = "356cb9c1f5fe78006970fbce3db1f78e54a7edf3"
 
 [[package]]
 name = "deprecated"
@@ -5857,14 +5857,14 @@ files = [
 
 [[package]]
 name = "types-urllib3"
-version = "1.26.25.11"
+version = "1.26.25.12"
 description = "Typing stubs for urllib3"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-urllib3-1.26.25.11.tar.gz", hash = "sha256:697102ddf4f781eed6f692353f40cee1098643526f5a8b99f49d2ede90fd3754"},
-    {file = "types_urllib3-1.26.25.11-py3-none-any.whl", hash = "sha256:04235e792139cf3624b25d38faab593456738fbdb7439634046172e3b1339400"},
+    {file = "types-urllib3-1.26.25.12.tar.gz", hash = "sha256:a1557355ce8d350a555d142589f3001903757d2d36c18a66f588d9659bbc917d"},
+    {file = "types_urllib3-1.26.25.12-py3-none-any.whl", hash = "sha256:3ba3d3a8ee46e0d5512c6bd0594da4f10b2584b47a470f8422044a2ab462f1df"},
 ]
 
 [[package]]
@@ -6479,4 +6479,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "241f13cf73dd54a8d9a46127d93a4df4b7b0fdfa3a5f7e80c685567d90af6770"
+content-hash = "b1b40dcc6856146f31914ba45ee59f3adbb89ad445c0fa47dd54074178fc44a9"
