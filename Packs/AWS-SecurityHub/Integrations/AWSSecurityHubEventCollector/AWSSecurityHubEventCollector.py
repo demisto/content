@@ -114,7 +114,7 @@ def get_events(client: boto3.client, start_time: dt.datetime | None = None,
 
 
 def fetch_events(client: boto3.client, last_run: dict, first_fetch_time: dt.datetime | None,
-                 page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> tuple[list[dict], Exception | None]:
+                 page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> tuple[list[dict], dict, Exception | None]:
     """
     Fetch events from AWS Security Hub and send them to XSIAM.
 
