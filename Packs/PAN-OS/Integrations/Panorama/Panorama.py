@@ -13124,31 +13124,6 @@ def add_time_filter_to_query_parameter(query: str, last_fetch: datetime) -> str:
     return query + time_generated
 
 
-# def add_unique_id_filter_to_query_parameter(query: str, last_id: str) -> str:
-#     """append unique id filter parameter to original query parameter.
-#     'seqno' is a 64-bit log entry identifier incremented sequentially; each log type has unique number space.
-#     by adding this filter which gives us only entries that have larger id, we insure not have duplicates in our request.
-
-#     Args:
-#         query (str): a string representing a query
-#         last_id (str): largest unique log entry id from last fetch (for a specific log type)
-
-#     Returns:
-#         str: a string representing a query with added time filter parameter
-#     """
-#     if last_id:
-#         last_id_int = arg_to_number(last_id)
-#         if isinstance(last_id_int, int):
-#             # last_id is can be filtered only by '>=' so we need to add 1 to it.
-#             last_id_int += 1
-#             unique_id_filter = f" and (seqno geq '{last_id_int}')"
-#             return query + unique_id_filter
-#         else:
-#             return query
-#     else:
-#         return query
-
-
 def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[str, str]:
     """
     This function finds the largest sequence id per device in the incident entries list.
@@ -13186,7 +13161,7 @@ def remove_duplicates_entries(entries_dict,id_dict):
     for log_type in entries_dict:
         for log in entries_dict[log_type]:
             device_name = log.get("device_name", '')
-            latest_id_par_device = id_dict.get(log_type,{}).get(device_name, 0) # get the latest id for that device, if that device is not in the dict, set the id to 0 to
+            latest_id_par_device = id_dict.get(log_type,{}).get(device_name, 0) # get the latest id for that device, if that device is not in the dict, set the id to 0
             if log.get("seqno") and arg_to_number(log["seqno"]) <= arg_to_number(latest_id_par_device):
                     entries_dict[log_type].remove(log)
     return entries_dict
@@ -13218,8 +13193,8 @@ def update_max_fetch_dict(configured_max_fetch, max_fetch_dict, last_fetch_dict)
     """
     for log_type in last_fetch_dict:
         previus_fetch_timestamp=demisto.getLastRun().get("last_fetch_dict",{}).get(log_type)
-        # the latest timestamp of the corrent fetchis the same as the previus one fetch timestamp,
-        # that means we did not get all logs for that timstamp
+        # if the latest timestamp of the corrent fetchis is the same as the previus fetch timestamp,
+        # that means we did not get all logs for that timestamp
         demisto.debug(
             f"previus_fetch_timestamp: {previus_fetch_timestamp}, last_fetch_dict[log_type]: {last_fetch_dict[log_type]}")
         if previus_fetch_timestamp and previus_fetch_timestamp == last_fetch_dict[log_type]:
@@ -13249,8 +13224,6 @@ def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
             fetch_start_time = fetch_start_datetime_dict.get(log_type)
             if fetch_start_time:
                 query = add_time_filter_to_query_parameter(query, fetch_start_time)
-            #if id := last_id_dict.get(log_type):
-            #    query = add_unique_id_filter_to_query_parameter(query, id)
             entries[log_type] = get_query_entries(log_type, query, max_fetch)
     return entries
 
@@ -13273,7 +13246,6 @@ def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[str 
     new_fetch_datetime = dateparser.parse(last_fetch_string, settings={'TIMEZONE': 'UTC'})
 
     # calculate largest unique id for each log type query
-    #new_largest_id = max({entry.get('seqno', '') for entry in incident_entries})
     new_largest_id = find_largest_id_per_device(incident_entries)
     # convert incident entries to incident context and filter any empty incidents if exists
     parsed_incidents: List[Dict[str, Any]] = [incident_entry_to_incident_context(incident_entry) for incident_entry in incident_entries]
@@ -13471,7 +13443,6 @@ def main(): # pragma: no cover
             last_run = demisto.getLastRun()
             first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
             configured_max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
-            #max_fetch = arg_to_number(last_run.get('max_fetch')) or arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
             queries_dict = log_types_queries_to_dict(params)
             max_fetch_dict = last_run.get('max_fetch_dict') or create_max_fetch_dict(queries_dict=queries_dict ,configured_max_fetch=configured_max_fetch)
 
