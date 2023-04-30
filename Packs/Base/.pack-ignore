@@ -76,3 +76,8 @@ refang
 indicatorssearcher
 FeedIndicatorType
 str
+
+[tests_require_network]
+CommonServerPython
+SanePdfReports
+CheckDockerImageAvailable
