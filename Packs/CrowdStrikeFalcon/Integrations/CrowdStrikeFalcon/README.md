@@ -93,6 +93,7 @@ Searches for devices that match the query.
 | hostname | The host name of the device. | Optional | 
 | platform_name | The platform name of the device. Possible values are: "Windows","Mac", and "Linux". | Optional | 
 | site_name | The site name of the device. | Optional | 
+| extended_data | Whether or not to get additional data about the device. Possible values are: "Yes", "No". | Optional | 
 
 
 #### Context Output
