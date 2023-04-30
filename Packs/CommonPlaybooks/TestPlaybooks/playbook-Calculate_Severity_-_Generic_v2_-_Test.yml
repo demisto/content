@@ -712,10 +712,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: bf649ecc-b6fa-4d3b-84ec-dedc7decfdd7
+    taskid: 57fc2d8e-66d3-4c44-89ff-03ff0500812d
     type: playbook
     task:
-      id: bf649ecc-b6fa-4d3b-84ec-dedc7decfdd7
+      id: 57fc2d8e-66d3-4c44-89ff-03ff0500812d
       version: -1
       name: Calculate Severity - Generic v2
       description: |-
@@ -733,8 +733,42 @@ tasks:
     nexttasks:
       '#none#':
       - "21"
+    scriptarguments:
+      Account:
+        complex:
+          root: NonExistingAccount
+          transformers:
+          - operator: uniq
+      CriticalEndpoints:
+        simple: admin
+      CriticalGroups:
+        simple: admins,administrators
+      CriticalUsers:
+        complex:
+          root: NonExistingCritialUsers
+      DBotScore:
+        complex:
+          root: NonExistentDBotScore
+      EmailAuthenticityCheck:
+        complex:
+          root: NonExistentEmail
+          accessor: AuthenticityCheck
+          transformers:
+          - operator: uniq
+      Endpoint:
+        complex:
+          root: NonExistentEndpoint
+          transformers:
+          - operator: uniq
+      MicrosoftHeadersSeverityCheck:
+        simple: ${Email.MicrosoftHeadersSeverityCheck}
     separatecontext: true
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -763,4 +797,4 @@ view: |-
   }
 inputs: []
 outputs: []
-description: This Test playbook performs testing for Calculate Severity Generic V2 for both empty and provided inputs
+description: This Playbook tests The Calculate Severity Generic V2 playbook with multiple inputs
