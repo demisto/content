@@ -55,6 +55,9 @@ ignore=BA124
 [file:DBotTrainClustering.yml]
 ignore=BA124
 
+[file:FindSimilarAlertsByText.yml]
+ignore=CJ105
+
 [known_words]
 createindicatorrelationship
 commonserverpython
