@@ -949,7 +949,7 @@ class GraphMailUtils:
                 email_body = args.get('htmlBody')
             else:
                 email_body = args.get('body', '')
-            return {
+            processed_args = {
                 'to_recipients': argToList(args.get('to')),
                 'cc_recipients': argToList(args.get('cc')),
                 'bcc_recipients': argToList(args.get('bcc')),
@@ -965,6 +965,9 @@ class GraphMailUtils:
                 'attach_cids': argToList(args.get('attachCIDs') or args.get('attach_cids')),
                 'manual_attachments': args.get('manualAttachObj', [])
             }
+            if command == 'send-mail':
+                processed_args['renderBody'] = argToBoolean(args.get('renderBody') or False)
+            return processed_args
 
         elif command == 'reply-to':
             return {
@@ -1774,6 +1777,7 @@ def send_email_command(client: MsGraphMailBaseClient, args):
     2) if there aren't any attachments larger than 3MB, just send the email as usual.
     """
     prepared_args = GraphMailUtils.prepare_args('send-mail', args)
+    render_body = prepared_args.pop('renderBody', False)
     message_content = GraphMailUtils.build_message(**prepared_args)
     email = args.get('from', client._mailbox_to_fetch)
 
@@ -1800,8 +1804,17 @@ def send_email_command(client: MsGraphMailBaseClient, args):
     message_content['replyTo'] = reply_to_recipients
 
     message_content = assign_params(**message_content)
-    return CommandResults(
-        outputs_prefix='MicrosoftGraph.Email',
-        outputs=message_content,
-        readable_output=tableToMarkdown('Email was sent successfully.', message_content)
-    )
+    results = [
+        CommandResults(
+            outputs_prefix='MicrosoftGraph.Email',
+            outputs=message_content,
+            readable_output=tableToMarkdown('Email was sent successfully.', message_content)
+        )
+    ]
+    if render_body:
+        results.append(CommandResults(
+            entry_type=EntryType.NOTE,
+            content_format=EntryFormat.HTML,
+            raw_response=prepared_args['body'],
+        ))
+    return results

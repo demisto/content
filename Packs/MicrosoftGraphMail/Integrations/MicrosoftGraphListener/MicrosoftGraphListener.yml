@@ -377,6 +377,12 @@ script:
       predefined:
       - text
       - HTML
+    - description: 'Indicates whether to render the email body'
+      name: renderBody
+      default: false
+      isArray: false
+      required: false
+      secret: false
     - auto: PREDEFINED
       defaultValue: notFlagged
       description: 'The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged".'
@@ -385,10 +391,10 @@ script:
       - notFlagged
       - complete
       - flagged
-    - auto: PREDEFINED
-      defaultValue: Low
-      description: 'The importance of the email. Can be: "Low", "Normal", or "High".'
+    - description: 'The importance of the email. Can be: "Low", "Normal", or "High".'
       name: importance
+      auto: PREDEFINED
+      defaultValue: Low
       predefined:
       - Low
       - Normal
@@ -403,8 +409,8 @@ script:
       isArray: true
       name: attach_names
     - description: A comma-separated list of CIDs to embed attachments within the actual email.
-      isArray: true
       name: attach_cids
+      isArray: true
     - description: The email address from which to reply.
       name: from
     - description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
