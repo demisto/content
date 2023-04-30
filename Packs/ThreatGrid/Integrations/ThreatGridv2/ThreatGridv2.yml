@@ -1361,7 +1361,14 @@ script:
       description: The associated IP.
       type: String
   runonce: false
-  dockerimage: demisto/python3:3.10.11.55362
+  dockerimage: demisto/python3:3.10.11.56082
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+detaileddescription: |-
+  1. In your threat grid instance, click your user name at the right top corner.
+  2. Select my account.
+  3. Under the API Key section in the left you will see your API.
+
+  ---
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/threat-grid)
