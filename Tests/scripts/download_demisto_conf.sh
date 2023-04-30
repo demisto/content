@@ -42,7 +42,7 @@ if [[ "$NIGHTLY" == "true" ]] || [[ "$EXTRACT_PRIVATE_TESTDATA" == "true" && "$T
     python ./Tests/scripts/extract_content_test_conf.py --content-path . --content-test-conf-path ./content-test-conf
 fi
 
-rm -rf ./content-test-conf
+# rm -rf ./content-test-conf
 
 set -e
 echo "Successfully downloaded configuration files"

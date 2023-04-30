@@ -22,8 +22,9 @@ def extract(
             missing_content_packs.append(pack.name)
             logger.warning(f"Pack {pack.name} exists in content-test-conf but not in content")
             continue
-        logger.info(f"Copying {pack.name} from content-test-conf")
-        shutil.copytree(pack, content_path / "Packs" / pack.name, dirs_exist_ok=True)
+        destination = content_path / "Packs" / pack.name
+        logger.info(f"Copying {pack.name} from {pack} to {destination} from content-test-conf")
+        shutil.copytree(pack, destination, dirs_exist_ok=True)
     if artifacts_folder := os.getenv("ARTIFACTS_FOLDER"):
         with open(Path(artifacts_folder) / "missing_content_packs_test_conf.txt", "w") as f:
             f.write("\n".join(missing_content_packs))

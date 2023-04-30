@@ -30,4 +30,9 @@ if [[ -z "$MODELING_RULES_TO_TEST" ]]; then
 fi
 
 echo "Testing Modeling Rules"
+# iterate each modeling rules test and run `ls` there
+for modeling_rule in $MODELING_RULES_TO_TEST; do
+    echo "Testing $modeling_rule"
+    ls -la "$modeling_rule"
+done
 demisto-sdk modeling-rules test --xsiam-url="$XSIAM_URL" --auth-id="$AUTH_ID" --api-key="$API_KEY" --xsiam-token="$XSIAM_TOKEN" --non-interactive $(echo "$MODELING_RULES_TO_TEST")
