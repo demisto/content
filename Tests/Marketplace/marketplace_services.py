@@ -2015,9 +2015,9 @@ class Pack(object):
              A boolean whether the version in the list posted to metadata should be
              replaced with the current version from the content item.
         """
-        content_item_fromversion = content_item.get('fromversion', '') or content_item.get('fromVersion', '') or ''
+        content_item_fromversion = content_item.get('fromversion') or content_item.get('fromVersion') or ''
         content_item_toversion = content_item.get(
-            'toversion', MAX_TOVERSION) or content_item.get('toVersion', MAX_TOVERSION) or ''
+            'toversion') or content_item.get('toVersion') or MAX_TOVERSION
         content_item_id = content_item.get('id', '')
         content_item_latest_version = content_items_to_version_map.setdefault(
             content_item_id,
