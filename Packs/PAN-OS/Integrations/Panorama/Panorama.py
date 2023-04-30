@@ -13139,10 +13139,9 @@ def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[s
         id: str = entry.get('seqno', '')
         temp_largest_id_per_device: Dict[str, str] = {device_name: id}
         if device_name in new_largest_id.keys():
-            if id > new_largest_id[device_name]:
-                # update the id if it is larger
-                if id > new_largest_id[device_name]:
-                    new_largest_id[device_name] = id
+            if int(id) > int(new_largest_id[device_name]):
+                # update the id if it is larger than the current id
+                new_largest_id[device_name] = id
         else:
             # add the device and id to the list
             new_largest_id.update(temp_largest_id_per_device)
@@ -13235,7 +13234,7 @@ def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[str 
         incident_entries (list[dict[str,Any]]): list of dictionaries representing raw incident entries
 
     Returns:
-        (str | None ,datetime | None, List[Dict[str, Any]]): (updated last fetch time, parsed incident list) tuple
+        Tuple[Dict[str, str], Optional[datetime], List[Dict[str, Any]]]: a tuple of the largest id, the largest last fetch time and a list of parsed incidents
     """
     # if no new incidents are available, return empty list of incidents
     if not incident_entries:
