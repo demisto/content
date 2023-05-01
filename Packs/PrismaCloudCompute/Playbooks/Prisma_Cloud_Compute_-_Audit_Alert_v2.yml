@@ -78,7 +78,7 @@ tasks:
       version: -1
       name: Pull Images Details
       description: Returns images by the query specification.
-      script: '|||prismacloudcompute-images'
+      script: '|||prisma-cloud-compute-images-scan-list'
       type: regular
       iscommand: true
       brand: ""

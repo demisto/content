@@ -31,7 +31,7 @@ This playbook does not use any sub-playbooks.
 * closeInvestigation
 * prisma-cloud-compute-get-backups
 * prisma-cloud-compute-get-alert-profiles
-* prismacloudcompute-images
+* prisma-cloud-compute-images-scan-list
 * createNewIndicator
 * prisma-cloud-compute-profile-container-forensic-list
 * prisma-cloud-compute-profile-host-list
