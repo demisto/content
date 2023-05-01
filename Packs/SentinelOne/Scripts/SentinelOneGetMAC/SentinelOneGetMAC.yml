@@ -1,0 +1,25 @@
+args:
+- description: AgentID of the SentinelOne Agent
+  name: agentId
+  required: true
+commonfields:
+  id: SentinelOne-Get-MAC
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.11.56082
+enabled: true
+name: SentinelOne-Get-MAC
+outputs:
+- contextPath: SentinelOne.MAC
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
