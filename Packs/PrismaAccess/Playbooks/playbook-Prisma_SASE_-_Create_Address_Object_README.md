@@ -30,7 +30,7 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | IP | The address value \(should match the type\) |  | Optional |
 | TSGID | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. |  | Optional |
-| Folder | The configuration folder group setting.<br/>The default value is 'Shared' | Shared | Optional |
+| Folder | The configuration folder group setting.<br/>The default value is 'Shared'. | Shared | Optional |
 | AutoCommit | Possible Values:<br/>True -&amp;gt; Will Commit and Push Configuration<br/>False -&amp;gt; Manual Push will be required.<br/>Else --&amp;gt; Will ignore the push section and continue the playbook. |  | Optional |
 | Type | IP Netmask: IP address or a network using the slash notation - ip_address/mask<br/>IP Range: Range of IP addresses using the notation ip_address-ip_address<br/>IP Wildcard: IP wildcard address in the format of an IPv4 address followed by a slash and a mask<br/>FQDN: Domain Name |  | Optional |
 | limit | Default: 50 <br/>This input controls the limit size for the get IP objects command.<br/>This will help to avoid object duplicates in the systems.<br/> | 50 | Optional |
