@@ -141,7 +141,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: 'Was an IP provided? '
+      description: Was an IP provided?
       id: 052be5c2-3071-431f-890a-e50ddc44cfe1
       iscommand: false
       name: 'Was an IP provided? '
