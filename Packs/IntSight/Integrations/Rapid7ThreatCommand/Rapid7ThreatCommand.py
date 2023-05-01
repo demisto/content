@@ -4176,8 +4176,7 @@ def reputation_handler(
         command_results.append(handler_command(client=client, obj=response, obj_id=response['OriginalValue']))
     for response in failed_responses + quota_responses:
         command_results.append(
-            CommandResults(readable_output=ReadableErrors.ENRICH_FAIL.value.format(response["Status"]))
-            )
+            CommandResults(readable_output=ReadableErrors.ENRICH_FAIL.value.format(response["Status"])))
 
     command_results.append(cast(CommandResults, execution_metrics.metrics))
 
