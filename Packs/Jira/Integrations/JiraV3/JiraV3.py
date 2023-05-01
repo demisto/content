@@ -3842,8 +3842,6 @@ def convert_string_date_to_specific_format(string_date: str, date_format: str = 
 
 
 # Mirroring
-# Still in development
-
 def get_user_timezone(client: JiraBaseClient) -> str:
     """Returns the timezone of the Jira user.
     This will also print to the debug console the timezone of the Jira user.
@@ -3895,7 +3893,7 @@ def get_modified_remote_data_command(client: JiraBaseClient, args: Dict[str, Any
             client=client, last_update_date=last_update_date, timezone_name=user_timezone_name,
         )
     except Exception as e:
-        demisto.error(f'Error when calling `client.get_user_info` in order to retrieve the user\'s timezone. Error message:\n{e}')
+        demisto.error(f'An error has occurred. Error message:\n{e}')
     finally:
         return GetModifiedRemoteDataResponse(modified_issues_ids)
 

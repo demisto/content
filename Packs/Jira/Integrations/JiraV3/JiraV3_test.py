@@ -1,5 +1,6 @@
 import io
 import json
+from more_itertools import side_effect
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
@@ -1254,3 +1255,281 @@ class TestJiraAddUrlLink:
                          'ticket_link': 'https://your-domain.atlassian.net/rest/api/issue/MKY-1/remotelink/10000'}
         expected_human_readable = tableToMarkdown(name='Remote Issue Link', t=markdown_dict, removeNull=True)
         assert command_result.to_context()['HumanReadable'] == expected_human_readable
+
+
+class TestJiraGetModifiedRemoteIds():
+    USER_INFO_RES = {"accountId": "dummy_account_id", "accountType": "atlassian",
+                     "emailAddress": "admin@example.com", "displayName": "Example Example", "timeZone": "Asia/Jerusalem",
+                     "locale": "en_US"}
+    LAST_UPDATE_TIME = '2023-05-01'
+
+    def test_get_modified_issue_ids(self, mocker):
+        """
+        Given:
+            - A Jira client, the last updated time of an incident, and a timezone
+        When
+            - When calling get_modified_issue_ids in order to get the issues that have an updated time greater than
+            the last updated time of the incident
+        Then
+            - Validate that the correct ids are returned
+        """
+        from JiraV3 import get_modified_issue_ids
+        client = jira_base_client_mock()
+        modified_issues = {'issues': [{'id': '1234'}, {'id': '2345'}]}
+        mocker.patch.object(client, 'run_query', return_value=modified_issues)
+        modified_issues = get_modified_issue_ids(client=client, last_update_date=self.LAST_UPDATE_TIME,
+                                                 timezone_name=self.USER_INFO_RES.get('timeZone', ''))
+        assert modified_issues == ['1234', '2345']
+
+    def test_get_modified_remote_data_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - When calling the mirroring mechanism the command get_modified_remote_data_command is called in order
+            to retrieve the Jira issues that have been updated since the last update time of the incident.
+        Then
+            - Validate that the correct ids are returned
+        """
+        from JiraV3 import get_modified_remote_data_command
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.get_modified_issue_ids', return_value=['1234', '2345'])
+        mocker.patch.object(client, 'get_user_info', return_value=self.USER_INFO_RES)
+        get_modified_remote_data = get_modified_remote_data_command(client=client,
+                                                                    args={'lastUpdate': self.LAST_UPDATE_TIME})
+        assert get_modified_remote_data.modified_incident_ids == ['1234', '2345']
+
+
+class TestJiraGetMappingFields:
+    ISSUE_FIELDS_RES = [{"id": "statuscategorychangedate", "key": "statuscategorychangedate", "name": "Status Category Changed"}, {
+        "id": "parent", "key": "parent", "name": "Parent"}]
+
+    def test_get_mapping_fields_command(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - When calling get-mapping-fields command.
+        Then
+            - Validate that we are able to extract the ids from the response from the API.
+        """
+        from JiraV3 import get_mapping_fields_command
+        client = jira_base_client_mock()
+        mocker.patch.object(client, 'get_issue_fields', return_value=self.ISSUE_FIELDS_RES)
+        mapping_fields = get_mapping_fields_command(client=client)
+        assert list(mapping_fields.scheme_types_mappings[0].fields.keys()) == [
+            "statuscategorychangedate", "parent", "issue_id", "summary",
+            "description", "labels", "components", "priority", "due_date", "assignee", "status", "assignee_id",
+            "original_estimate"
+        ]
+
+
+class TestJiraUpdateRemoteSystem:
+    def test_update_remote_system_using_delta(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - When the mirror out mechanism is called, which calls the update-remote-system command, and
+            we need to edit the issue
+        Then
+            - Validate that the API call to edit the issue was called with the correct data, which was
+            extracted from the delta and data arguments.
+        """
+        from JiraV3 import update_remote_system_command
+        client = jira_base_client_mock()
+        args = {
+            "incidentChanged": "17757",
+            "remoteId": "17757",
+            "data": {"summary": "data", "not_changes_key": "not_changes_val"},
+            "delta": {"summary": "changes", "dbotMirrorDirection": "test"},
+        }
+        edit_issue_mocker = mocker.patch.object(client, 'edit_issue', return_value=requests.Response())
+        update_remote_system_res = update_remote_system_command(client=client, args=args,
+                                                                comment_tag_to_jira='', attachment_tag_to_jira='')
+        assert update_remote_system_res == '17757'
+        edit_issue_mocker.call_args[1]['json_data'] == {'fields': {'summary': 'data'}}
+
+    def test_update_remote_system_using_file_entry_with_correct_tag(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - When the mirror out mechanism is called, which calls the update-remote-system command, and
+            we get an attachment with the appropriate attachment tag.
+        Then
+            - Validate that the attachment gets uploaded to Jira, and that the name of the file contains the
+            constant ATTACHMENT_MIRRORED_FROM_XSOAR
+        """
+        from JiraV3 import (update_remote_system_command, ATTACHMENT_MIRRORED_FROM_XSOAR)
+        client = jira_base_client_mock()
+        args = {
+            "remoteId": "17757",
+            'entries': [{'entry_id': '1234', 'type': EntryType.FILE, 'tags': ['attachment_tag']}],
+        }
+        upload_attachment_mocker = mocker.patch('JiraV3.upload_XSOAR_attachment_to_jira', return_value=[])
+        update_remote_system_res = update_remote_system_command(client=client, args=args,
+                                                                comment_tag_to_jira='',
+                                                                attachment_tag_to_jira='attachment_tag')
+        assert update_remote_system_res == '17757'
+        assert ATTACHMENT_MIRRORED_FROM_XSOAR in upload_attachment_mocker.call_args[1]['attachment_name']
+
+    @pytest.mark.parametrize('client', [
+        (jira_cloud_client_mock()),
+        (jira_onprem_client_mock())
+    ])
+    def test_update_remote_system_using_entry_with_correct_comment_tag(self, mocker, client):
+        """
+        Given:
+            - A Jira client
+        When
+            - When the mirror out mechanism is called, which calls the update-remote-system command, and
+            we get a comment with the appropriate comment tag.
+        Then
+            - Validate that the comment gets uploaded to Jira, and the content of the comment contains the 
+            constant COMMENT_MIRRORED_FROM_XSOAR
+        """
+        from JiraV3 import (update_remote_system_command, COMMENT_MIRRORED_FROM_XSOAR)
+        args = {
+            "remoteId": "17757",
+            'entries': [{'entry_id': '1234', 'tags': ['comment_tag'], 'contents': 'some comment'}],
+        }
+        add_comment_mocker = mocker.patch.object(client, 'add_comment', return_value={})
+        update_remote_system_res = update_remote_system_command(client=client, args=args,
+                                                                comment_tag_to_jira='comment_tag',
+                                                                attachment_tag_to_jira='')
+
+        assert update_remote_system_res == '17757'
+        assert COMMENT_MIRRORED_FROM_XSOAR in str(add_comment_mocker.call_args[1]['json_data'])
+
+
+class TestJiraGetRemoteData:
+    def test_get_attachment_entries(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - When the mirror in mechanism is called, which calls the get-remote-data command, and
+            we want to extract the attachments of the Jira issue
+        Then
+            - Validate that the attachments get added to the appropriate incident field, and only the entries
+            that don't contain the constant ATTACHMENT_MIRRORED_FROM_XSOAR in their names, get the tag added to
+            them.
+        """
+        from JiraV3 import (get_updated_remote_data, ATTACHMENT_MIRRORED_FROM_XSOAR)
+        attachments_entries = [{'File': 'dummy_file_name', 'FileID': 'id1'},
+                               {'File': f'dummy_file_name{ATTACHMENT_MIRRORED_FROM_XSOAR}', 'FileID': 'id2'}]
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.get_attachments_entries_for_fetched_incident', return_value=attachments_entries)
+        mocker.patch('JiraV3.get_comments_entries_for_fetched_incident', return_value=[])
+        updated_incident: Dict[str, Any] = {}
+        parsed_entries = get_updated_remote_data(client=client, issue={}, updated_incident=updated_incident, issue_id='1234',
+                                                 mirror_resolved_issue=False, attachment_tag_from_jira='attachment from jira',
+                                                 comment_tag_from_jira='', user_timezone_name='',
+                                                 incident_modified_date=None)
+        expected_extracted_attachments = [{"path": "id1", "name": "dummy_file_name"},
+                                          {"path": "id2", "name": "dummy_file_name_mirrored_from_xsoar"}]
+        expected_parsed_entries = [{"File": "dummy_file_name", "FileID": "id1", "Tags": ["attachment from jira"]}]
+        assert updated_incident.get('extractedAttachments') == expected_extracted_attachments
+        assert parsed_entries == expected_parsed_entries
+
+    def test_get_comment_entries(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - When the mirror in mechanism is called, which calls the get-remote-data command, and
+            we want to extract the comments of the Jira issue
+        Then
+            - Validate that the comments get added to the appropriate incident field, and only the entries
+            that don't contain the constant ATTACHMENT_MIRRORED_FROM_XSOAR in their names, and have an updated time
+            that is greater than the last incident update get the tag added to them
+        """
+        from JiraV3 import (get_updated_remote_data, COMMENT_MIRRORED_FROM_XSOAR)
+        comments_entries = [
+            {'Comment': f'Comment 1 {COMMENT_MIRRORED_FROM_XSOAR}', 'Updated': '2023-01-01', 'UpdatedUser': 'User 1'},
+            {'Comment': f'Comment 2 {COMMENT_MIRRORED_FROM_XSOAR}', 'Updated': '2023-05-01', 'UpdatedUser': 'User 2'},
+            {'Comment': 'Comment 3', 'Updated': '2023-05-01', 'UpdatedUser': 'User 3'}, ]
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.get_comments_entries_for_fetched_incident', return_value=comments_entries)
+        mocker.patch('JiraV3.get_attachments_entries_for_fetched_incident', return_value=[])
+        user_timezone = 'Asia/Jerusalem'
+        dateparser_parse_mocker = mocker.patch('JiraV3.dateparser.parse', side_effect=dateparser.parse)
+        updated_incident: Dict[str, Any] = {}
+        parsed_entries = get_updated_remote_data(client=client, issue={}, updated_incident=updated_incident, issue_id='1234',
+                                                 mirror_resolved_issue=False, attachment_tag_from_jira='',
+                                                 comment_tag_from_jira='comment from jira', user_timezone_name=user_timezone,
+                                                 incident_modified_date=dateparser.parse('2023-04-01'))
+        expected_extracted_attachments = [
+            {"Comment": "Comment 1 Mirrored from Cortex XSOAR", "Updated": "2023-01-01", "UpdatedUser": "User 1"},
+            {"Comment": "Comment 2 Mirrored from Cortex XSOAR", "Updated": "2023-05-01", "UpdatedUser": "User 2"},
+            {"Comment": "Comment 3", "Updated": "2023-05-01", "UpdatedUser": "User 3"}]
+        expected_parsed_entries = [
+            {"Type": 1, "Contents": "Comment 3\nJira Author: None",
+                "ContentsFormat": "text", "Tags": ["comment from jira"], "Note": True}
+        ]
+        assert updated_incident.get('extractedComments') == expected_extracted_attachments
+        assert parsed_entries == expected_parsed_entries
+        assert dateparser_parse_mocker.call_args[1]['settings']['TIMEZONE'] == user_timezone
+
+    @pytest.mark.parametrize('issue, should_be_closed', [
+        ({'id': '1234', 'fields': {'status': {'name': 'Done'}, 'resolutiondate': ''}},
+         True),
+        ({'id': '1234', 'fields': {'status': {'name': 'Fixed'}, 'resolutiondate': '2023-01-01'}},
+         True),
+        ({'id': '1234', 'fields': {'status': {'name': 'Fixed'}, 'resolutiondate': ''}},
+         False)
+    ])
+    def test_close_incident_entry(self, mocker, issue, should_be_closed):
+        """
+        Given:
+            - A Jira client
+        When
+            - When the mirror in mechanism is called, which calls the get-remote-data command, and
+            the remote Jira issue has been marked as resolved, or status has been changed to Done
+        Then
+            - Validate that correct entry is returned, which contains data about closing the incident in XSOAR
+        """
+        from JiraV3 import get_updated_remote_data
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.get_comments_entries_for_fetched_incident', return_value=[])
+        mocker.patch('JiraV3.get_attachments_entries_for_fetched_incident', return_value=[])
+        parsed_entries = get_updated_remote_data(client=client, issue=issue, updated_incident=issue, issue_id='1234',
+                                                 mirror_resolved_issue=True, attachment_tag_from_jira='',
+                                                 comment_tag_from_jira=' from jira', user_timezone_name='',
+                                                 incident_modified_date=None)
+        if should_be_closed:
+            close_reason = "Issue was marked as \"Resolved\", or status was changed to \"Done\""
+            closed_entry = [{"Type": 1, "Contents": {"dbotIncidentClose": True,
+                                                     "closeReason": close_reason}, "ContentsFormat": "json"}]
+            parsed_entries == closed_entry
+        else:
+            parsed_entries == []
+
+    def test_get_remote_data_response_is_returned(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - When the mirror in mechanism is called, which calls the get-remote-data command
+        Then
+            - Validate that correct entries are indeed returned
+        """
+        from JiraV3 import get_remote_data_command
+        client = jira_base_client_mock()
+        issue_response = {'id': '1234', 'fields': {'summary': 'dummy summary', 'updated': '2023-01-01'}}
+        mocker.patch.object(client, 'get_issue', return_value=issue_response)
+        mocker.patch('JiraV3.get_user_timezone', return_value='Asia/Jerusalem')
+        close_reason = "Issue was marked as \"Resolved\", or status was changed to \"Done\""
+        expected_parsed_entries = [
+            {"Type": 1, "Contents": "Comment 3\nJira Author: None",
+                "ContentsFormat": "text", "Tags": ["comment from jira"], "Note": True},
+            {"File": "dummy_file_name", "FileID": "id1", "Tags": ["attachment from jira"]},
+            {"Type": 1, "Contents": {"dbotIncidentClose": True,
+                                     "closeReason": close_reason}, "ContentsFormat": "json"}
+        ]
+        mocker.patch('JiraV3.get_updated_remote_data', return_value=expected_parsed_entries)
+        remote_data_response = get_remote_data_command(client=client, args={'id': '1234', 'lastUpdate': '2023-01-01'},
+                                                       attachment_tag_from_jira='',
+                                                       comment_tag_from_jira='', mirror_resolved_issue=False)
+        assert remote_data_response.entries == expected_parsed_entries
