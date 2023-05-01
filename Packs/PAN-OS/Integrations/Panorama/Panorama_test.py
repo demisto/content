@@ -6120,20 +6120,7 @@ class TestFetchIncidentsHelperFunctions:
             add_time_filter_to_query_parameter('time_generated geq "2020-01-01T00:00:00Z"',
                                                fetch_incidents_input.utc_time_twelve)
 
-    @pytest.mark.parametrize('query, id, expected_result',
-                             fetch_incidents_input.test_add_unique_id_filter_to_query_parameter_args)
-    def test_add_unique_id_filter_to_query_parameter(self, query, id, expected_result):
-        """
-        Given:
-            - a query from parameters
-        When:
-            - every fetch incidents cycle starts
-        Then:
-            - add_time_filter_to_query_parameter function will append time_generated parameter to the original query to filleter
-              according to the queries log type last fetch time.
-        """
-        from Panorama import add_unique_id_filter_to_query_parameter
-        assert add_unique_id_filter_to_query_parameter(query, id) == expected_result
+
 
     @pytest.mark.parametrize('params, expected_result', fetch_incidents_input.test_parse_queries_args)
     def test_log_types_queries_to_dict(self, params, expected_result):
@@ -6165,7 +6152,7 @@ class TestFetchIncidentsHelperFunctions:
         raw_entry = {'seqno': '1', 'time_generated': '2022/01/01 12:00', 'type': 'TYPE'}
         if occured := dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'}):
             context_entry = {
-                'name': '1',
+                'name': 'None 1',
                 'occurred': occured.strftime(DATE_FORMAT),
                 'rawJSON': json.dumps(raw_entry),
                 'type': 'TYPE'
@@ -6250,7 +6237,7 @@ class TestFetchIncidentsFlows:
         last_run = {}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/22 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
         mocker.patch('Panorama.get_query_entries', return_value={})
 
@@ -6279,10 +6266,10 @@ class TestFetchIncidentsFlows:
         last_run = {}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
         raw_entries = {'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00'}
-        expected_parsed_incident_entries = {'name': '000000001', 'occurred': '2022-01-01T12:00:00Z',
+        expected_parsed_incident_entries = {'name': 'None 000000001', 'occurred': '2022-01-01T12:00:00Z',
                                             'rawJSON': json.dumps(raw_entries), 'type': 'X_log_type'}
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
 
@@ -6294,7 +6281,7 @@ class TestFetchIncidentsFlows:
 
         assert incident_entries_dict[0] == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 12:00:00'
-        assert last_id_dict.get('X_log_type', '') == '000000001'
+        assert last_id_dict.get('X_log_type', '') == {'':'000000001'}
 
     def test_second_fetch_with_no_incidents_flow(self, mocker):
         """
@@ -6315,7 +6302,7 @@ class TestFetchIncidentsFlows:
                     'last_id_dict': {'X_log_type': '000000001'}}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
         raw_entries = []
         expected_parsed_incident_entries = []
@@ -6349,14 +6336,15 @@ class TestFetchIncidentsFlows:
         """
         from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 13:00:00'},
-                    'last_id_dict': {'X_log_type': '000000001'}}
+                    'last_id_dict': {'X_log_type': {'dummy_device': '000000001'}}}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
-        raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022/1/1 13:00:00'}]
+        raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022/1/1 13:00:00',
+                        'device_name': 'dummy_device'}]
 
-        expected_parsed_incident_entries = [{'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
+        expected_parsed_incident_entries = [{'name': 'dummy_device 000000002', 'occurred': '2022-01-01T13:00:00Z',
                                              'rawJSON': json.dumps(raw_entries[0]), 'type': 'X_log_type'}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 12:00:00', settings={'TIMEZONE': 'UTC'})}
 
@@ -6368,7 +6356,7 @@ class TestFetchIncidentsFlows:
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == '000000002'
+        assert last_id_dict.get('X_log_type', '') == {'dummy_device': '000000002'}
 
     def test_second_fetch_with_two_incidents_with_different_log_types_flow(self, mocker):
         """
@@ -6390,20 +6378,22 @@ class TestFetchIncidentsFlows:
         """
         from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 12:00:00'},
-                    'last_id_dict': {'X_log_type': '000000001'}}
+                    'last_id_dict': {'X_log_type': {'dummy_device1': '000000001'}}}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)",
                         'Y_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
-        raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022-01-01 13:00:00'},
-                       {'seqno': '000000001', 'type': 'Y_log_type', 'time_generated': '2022-01-01 13:00:00'}]
+        raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022-01-01 13:00:00',
+                        'device_name': 'dummy_device1'},
+                       {'seqno': '000000001', 'type': 'Y_log_type', 'time_generated': '2022-01-01 13:00:00',
+                        'device_name': 'dummy_device2'}]
 
         fetch_incidents_request_result = {'X_log_type': [raw_entries[0]], 'Y_log_type': [raw_entries[1]]}
 
-        expected_parsed_incident_entries = [{'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
+        expected_parsed_incident_entries = [{'name': 'dummy_device1 000000002', 'occurred': '2022-01-01T13:00:00Z',
                                              'rawJSON': json.dumps(raw_entries[0]), 'type': 'X_log_type'},
-                                            {'name': '000000001', 'occurred': '2022-01-01T13:00:00Z',
+                                            {'name': 'dummy_device2 000000001', 'occurred': '2022-01-01T13:00:00Z',
                                              'rawJSON': json.dumps(raw_entries[1]), 'type': 'Y_log_type'}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse(
             '2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}),
@@ -6418,9 +6408,9 @@ class TestFetchIncidentsFlows:
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == '000000002'
+        assert last_id_dict.get('X_log_type', '') == {'dummy_device1': '000000002'}
         assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('Y_log_type', '') == '000000001'
+        assert last_id_dict.get('Y_log_type', '') == {'dummy_device2': '000000001'}
 
     def test_second_fetch_with_two_incidents_with_different_log_types_and_different_last_fetch_flow(self, mocker):
         """
@@ -6442,19 +6432,21 @@ class TestFetchIncidentsFlows:
         """
         from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 11:00:00', 'Y_log_type': '2022-01-01 13:00:00'},
-                    'last_id_dict': {'X_log_type': '000000001', 'Y_log_type': '000000001'}}
+                    'last_id_dict': {'X_log_type': {'dummy_device1': '000000001'}, 'Y_log_type': {'dummy_device2': '000000002'}}}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)",
                         'Y_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
-        X_log_type_raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022-01-01 13:00:00'}]
-        Y_log_type_raw_entries = [{'seqno': '000000002', 'type': 'Y_log_type', 'time_generated': '2022-01-01 13:00:00'}]
+        X_log_type_raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022-01-01 13:00:00',
+                                   'device_name': 'dummy_device1'}]
+        Y_log_type_raw_entries = [{'seqno': '000000003', 'type': 'Y_log_type', 'time_generated': '2022-01-01 13:00:00',
+                                   'device_name': 'dummy_device2'}]
         fetch_incidents_request_result = {'X_log_type': X_log_type_raw_entries, 'Y_log_type': Y_log_type_raw_entries}
 
-        expected_parsed_incident_entries = [{'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
+        expected_parsed_incident_entries = [{'name': 'dummy_device1 000000002', 'occurred': '2022-01-01T13:00:00Z',
                                              'rawJSON': json.dumps(X_log_type_raw_entries[0]), 'type': 'X_log_type'},
-                                            {'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
+                                            {'name': 'dummy_device2 000000003', 'occurred': '2022-01-01T13:00:00Z',
                                              'rawJSON': json.dumps(Y_log_type_raw_entries[0]), 'type': 'Y_log_type'}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}),
                                      'Y_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
@@ -6467,9 +6459,9 @@ class TestFetchIncidentsFlows:
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == '000000002'
+        assert last_id_dict.get('X_log_type', '') == {'dummy_device1': '000000002'}
         assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('Y_log_type', '') == '000000002'
+        assert last_id_dict.get('Y_log_type', '') == {'dummy_device2': '000000003'}
 
 
 @pytest.mark.parametrize('name_match, name_contain, filters, expected_result',
