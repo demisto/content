@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Prisma SASE - Create Address Object
+Prisma SASE - Create Address Object
 
 ### Integrations
 
