@@ -820,6 +820,10 @@
             "playbookID": "Akamai_WAF_SIEM-Test"
         },
         {
+            "integrations": "FreshworksFreshservice",
+            "playbookID": "FreshworkFreshservice"
+        },
+        {
             "integrations": "Cofense Triage v2",
             "playbookID": "Cofense Triage v2 Test"
         },
@@ -3089,7 +3093,8 @@
             "integrations": "EWSO365",
             "instance_names": "ewso365_dev_team",
             "playbookID": "EWS_O365_test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 500
         },
         {
             "integrations": "EWSO365",
@@ -5098,7 +5103,8 @@
             "instance_names": [
                 "ewso365_dev_team"
             ],
-            "fromversion": "6.5.0"
+            "fromversion": "6.5.0",
+            "timeout": 600
         },
         {
             "integrations": "OpsGenieV3",
@@ -5538,7 +5544,8 @@
         "ThreatGrid_v2_Test": "No instance, developed by Qmasters",
         "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters",
         "awake_security_test_pb": "No instance, CRTX-77572",
-        "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. "
+        "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
+        "SumoLogic-Test": "401 unauthorized, CIAC-6334"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
@@ -5635,6 +5642,7 @@
         "Workday": "No instance - License expired Issue: 29595",
         "FireEyeFeed": "No instance - License expired Issue: 31838",
         "Akamai WAF": "No instance - Issue 32318",
+        "FreshworksFreshservice": "No instance - Issue 32318",
         "FraudWatch": "No instance - Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "AzureKeyVault": "No instance - developed by Qmasters",
