@@ -76,7 +76,7 @@ def create_relationship_list(indicators: List[Dict[str, Any]]) -> List[Dict[str,
     return relationships
 
 
-def get_mitre_data(client: Client):
+def get_mitre_data(client: Client) -> List[Dict[str, Any]]:
     """
     Get MITRE data from GitHub.
     """
@@ -94,7 +94,7 @@ def get_mitre_data(client: Client):
     return requests.get(MITRE_URL, headers=headers, verify=client.verify, proxies=proxies).json().get('objects', [])
 
 
-def map_indicator_fields(pre_indicator):
+def map_indicator_fields(pre_indicator: Dict[str, Any]) -> Dict[str, Any]:
     command_keys = ['Command', 'Description', 'Usecase', 'Category', 'Privileges', 'MitreID', 'OperatingSystem']
 
     mapped_commands = []
@@ -122,7 +122,7 @@ def map_indicator_fields(pre_indicator):
     }
 
 
-def map_mitre_id_to_name(client: Client):
+def map_mitre_id_to_name(client: Client) -> Dict[str, str]:
     """
     Map MITRE ID to MITRE name.
     """
@@ -140,22 +140,29 @@ def map_mitre_id_to_name(client: Client):
     return result_map
 
 
+def pre_process_indicator(client: Client, pre_indicator: Dict[str, Any]) -> List[str]:
+    """
+    Pre-process the indicator, map the MitreID with MitreName and build the relevant tag list.
+    """
+    mitre_tags = []
+    mitre_id_to_name = map_mitre_id_to_name(client)
+    for command in pre_indicator.get('Commands', []):
+        if mitre_id := command.get('MitreID', ''):
+            mitre_name = mitre_id_to_name.get(mitre_id, '')
+            command['MitreID'] = mitre_name
+            mitre_tags.extend([mitre_name, mitre_id, command.get('Category')])
+    return mitre_tags
+
+
 def create_indicators(client: Client, pre_indicators) -> List[Dict[str, Any]]:
     """
     Create indicators from the response.
     """
     demisto.debug(f'Creating {len(pre_indicators)} indicators.')
     indicators: List[Dict[str, Any]] = []
-    mitre_id_to_name = map_mitre_id_to_name(client)
 
     for pre_indicator in pre_indicators:
-        mitre_tags = []
-        for command in pre_indicator.get('Commands', []):
-
-            if mitre_id := command.get('MitreID', ''):
-                mitre_name = mitre_id_to_name.get(mitre_id, '')
-                command['MitreID'] = mitre_name
-                mitre_tags.append(mitre_name)
+        additional_tags = pre_process_indicator(client, pre_indicator)
 
         indicator: Dict[str, Any] = {
             'type': ThreatIntel.ObjectsNames.TOOL,
@@ -166,7 +173,7 @@ def create_indicators(client: Client, pre_indicators) -> List[Dict[str, Any]]:
         if tlp_color := client.tlp_color:
             indicator['fields']['trafficlightprotocol'] = tlp_color
         if feed_tags := client.feed_tags:
-            indicator['fields']['tags'] = feed_tags + mitre_tags
+            indicator['fields']['tags'] = feed_tags + additional_tags
 
         indicators.append(indicator)
     return indicators
