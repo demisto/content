@@ -2006,7 +2006,9 @@ class Pack(object):
 
         return task_status and self.is_changelog_exists()
 
-    def is_replace_item_in_folder_collected_list(self, content_item: dict, content_items_to_version_map: dict, content_item_id: str):
+    def is_replace_item_in_folder_collected_list(self, content_item: dict,
+                                                 content_items_to_version_map: dict,
+                                                 content_item_id: str):
         """ Checks the fromversion and toversion in the content_item with
             the fromversion toversion in content_items_to_version_map
             If the content_item has a more up to date toversion and fromversion will
@@ -2112,7 +2114,7 @@ class Pack(object):
 
                     content_item_tags = content_item.get('tags', [])
                     metadata_toversion = to_version or ''
-                    
+
                     if current_directory == PackFolders.SCRIPTS.value:
                         metadata_output = {
                             'id': content_item.get('commonfields', {}).get('id', ''),
@@ -2429,9 +2431,10 @@ class Pack(object):
                         logging.info(f'Failed to collect: {current_directory}')
                         continue
                     replace_content_item = self.is_replace_item_in_folder_collected_list(
-                         content_item, content_items_id_to_version_map, metadata_output['id'])
+                        content_item, content_items_id_to_version_map, metadata_output['id'])
                     if replace_content_item:
-                        latest_fromversion, latest_toversion = self.get_latest_versions(content_items_id_to_version_map, metadata_output['id'])
+                        latest_fromversion, latest_toversion = self.get_latest_versions(
+                            content_items_id_to_version_map, metadata_output['id'])
                         metadata_output['fromversion'] = latest_fromversion
                         metadata_output['toversion'] = latest_toversion
                         folder_collected_items = [metadata_output
