@@ -2430,9 +2430,9 @@ class Pack(object):
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
                         continue
-                    replace_content_item = self.is_replace_item_in_folder_collected_list(
-                        content_item, content_items_id_to_version_map, metadata_output['id'])
-                    if replace_content_item:
+                    if self.is_replace_item_in_folder_collected_list(
+                            content_item, content_items_id_to_version_map,
+                            metadata_output['id']):
                         latest_fromversion, latest_toversion = self.get_latest_versions(
                             content_items_id_to_version_map, metadata_output['id'])
                         metadata_output['fromversion'] = latest_fromversion
