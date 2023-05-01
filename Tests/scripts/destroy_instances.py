@@ -1,5 +1,6 @@
 import argparse
 import json
+import requests
 import logging
 import os
 from pathlib import Path
