@@ -6484,22 +6484,37 @@ def test_find_largest_id_per_device():
 def test_remove_duplicates_entries():
     """
     Given:
-    - list of dictionares repesenting raw entries.
+    - list of dictionares repesenting raw entries, some contain seqno and some not.
     - dictionary with the largest id per device.
     When:
     - remove_duplicates_entries is called.
     Then:
-    - return a dictionary the entries that there id is larger then the id in the id_dict.
+    - return a dictionary the entries that there id is larger then the id in the id_dict, and the entries that do not have seqno.
     """
     from Panorama import remove_duplicates_entries
-    raw_entries = {"log_type1": [{'device_name': 'dummy_device1', 'seqno': '000000001'},
+    raw_entries = {"log_type1": [{'device_name': 'dummy_device1'},
                    {'device_name': 'dummy_device1', 'seqno': '000000002'},
                    {'device_name': 'dummy_device2', 'seqno': '000000001'}],
                    "log_type2": [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
-    id_dict = {"log_type1": {'dummy_device1': '000000002', 'dummy_device2': '000000001'}}
+    id_dict = {"log_type1": {'dummy_device1': '000000003', 'dummy_device2': '000000001'}}
     res = remove_duplicates_entries(raw_entries, id_dict)
-    assert res == {'log_type1':[{'device_name': 'dummy_device1', 'seqno': '000000002'}],
+    assert res == {'log_type1': [{'device_name': 'dummy_device1'}, {'device_name': 'dummy_device2', 'seqno': '000000001'}],
                    'log_type2': [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
+
+
+def test_create_max_fetch_dict():
+    """
+    Given:
+    - dictionary of queries and max_fetch.
+    When:
+    - create_max_fetch_dict is called.
+    Then:
+    - return a dictionary of queries and max_fetch.
+    """
+    from Panorama import create_max_fetch_dict
+    queries_dict = {'log_type1': '(mock)', 'log_type2': '(mocker)'}
+    res = create_max_fetch_dict(queries_dict, 5)
+    assert res == {'log_type1': 5, 'log_type2': 5}
 
 
 @pytest.mark.parametrize('name_match, name_contain, filters, expected_result',
