@@ -125,7 +125,6 @@ def main():  # pragma: no cover
     proxy = params.get("proxy", False)
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
-    next_run = None
 
     max_fetch = params.get('max_fetch')
     # How much time before the first fetch to retrieve events
@@ -156,22 +155,10 @@ def main():  # pragma: no cover
             result = test_module(client, params, first_fetch_timestamp)
             return_results(result)
 
-        elif command in ('hello-world-get-events', 'fetch-events'):
-            if command == 'hello-world-get-events':
-                should_push_events = argToBoolean(args.pop('should_push_events'))
-                events, results = get_events(client, alert_status)
-                return_results(results)
-
-            else:  # command == 'fetch-events':
-                should_push_events = True
-                last_run = demisto.getLastRun()
-                next_run, events = fetch_events(
-                    client=client,
-                    last_run=last_run,
-                    first_fetch_time=first_fetch_timestamp,
-                    max_fetch=max_fetch,
-                )
-
+        elif command == 'hello-world-get-events':
+            should_push_events = argToBoolean(args.pop('should_push_events'))
+            events, results = get_events(client)
+            return_results(results)
             if should_push_events:
                 add_time_to_events(events)
                 send_events_to_xsiam(
@@ -179,9 +166,23 @@ def main():  # pragma: no cover
                     vendor=VENDOR,
                     product=PRODUCT,
                 )
-                if next_run:
-                    # saves next_run for the time fetch-events is invoked
-                    demisto.setLastRun(next_run)
+
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            next_run, events = fetch_events(
+                client=client,
+                last_run=last_run,
+                first_fetch_time=first_fetch_timestamp,
+                max_fetch=max_fetch,
+            )
+            add_time_to_events(events)
+            send_events_to_xsiam(
+                events,
+                vendor=VENDOR,
+                product=PRODUCT,
+            )
+            # saves next_run for the time fetch-events is invoked
+            demisto.setLastRun(next_run)
 
             # Log exceptions and return errors
     except Exception as e:
