@@ -1,42 +1,33 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 11018d82-4660-4021-8f67-bd073b79d330
-    packName: Sase
-    prevname: ""
     propagationLabels:
     - all
-    toServerVersion: ""
-description: This playbook helps to create an EDL object within the Prisma SASE Objects
-  section.
-id: 661afaba-edfa-478d-8271-21ff1c2ca254
+description: This playbook helps to create an EDL object within the Prisma SASE Objects section.
+id: Prisma SASE - Create or Edit EDL object
 inputs:
 - description: The external dynamic list object name.
   key: Name
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
     The configuration folder group setting.
     The default value is 'Shared'
   key: Folder
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: Shared
-- description: Tenant services group ID. If not provided, the tsg_id integration parameter
-    will be used as the default.
+- description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
   key: TSGID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
     The predefined IP list. If the type is predefined_ip, a value must be provided.
     Possible Values: panw-bulletproof-ip-list,panw-highrisk-ip-list,panw-known-ip-list,panw-torexit-ip-list
   key: IPListName
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -45,12 +36,12 @@ inputs:
     Possible value:
     panw–auth-portal-exclude-list
   key: URLListName
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The source URL. If the type is ip, url or domain, a value must be provided.
   key: SourceURL
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -58,20 +49,19 @@ inputs:
     Possible Values:
     daily,five_minute,hourly,monthly,weekly
   key: Frequency
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: The frequency hour. If the frequency argument is daily, weekly or monthly,
-    value must be provided. Possible values are 00-23.
+- description: The frequency hour. If the frequency argument is daily, weekly or monthly, value must be provided. Possible values are 00-23.
   key: FrequencyTime
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
     Possible values:
     domain,ip,url,predefined_ip,predefined_url
   key: EDLObjectType
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -80,14 +70,14 @@ inputs:
     False -> Manual Push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AutoCommit
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
     Whether to overwrite the original external dynamic list values.
     Default value is 'false'
   key: Overwrite
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "False"
@@ -138,6 +128,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: eddffe16-88d7-4268-8f49-c5f08eec101c
     timertriggers: []
     type: start
@@ -334,6 +325,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 7ce6b664-e597-42aa-81af-ec1586c4f9d5
     timertriggers: []
     type: title
@@ -447,22 +439,22 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
+      bcc:
+      body:
+      cc:
       format: ""
       methods: []
       replyOptions:
       - Push
       - "No"
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: true
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#default#':
       - "6"
@@ -636,3 +628,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

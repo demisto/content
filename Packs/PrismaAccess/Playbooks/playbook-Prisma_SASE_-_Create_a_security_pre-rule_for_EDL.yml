@@ -1,45 +1,36 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 11018d82-4660-4021-8f67-bd073b79d330
-    packName: Sase
-    prevname: ""
     propagationLabels:
     - all
-    toServerVersion: ""
-description: This playbook helps to create a security rule to block indicators from
-  an EDL. This playbook should run only once to setup the EDL object and its rule.
-id: bfefb360-362f-41a0-8995-8442a19ed94b
+description: This playbook helps to create a security rule to block indicators from an EDL. This playbook should run only once to setup the EDL object and its rule.
+id: Prisma SASE - Create a security pre-rule for EDL
 inputs:
-- description: Tenant services group ID. If not provided, the tsg_id integration parameter
-    will be used as the default.
+- description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
   key: TSGID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
     The configuration folder group setting.
     The default value is 'Shared'
   key: Folder
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: Shared
 - description: The source URL. If the type is ip, url or domain, a value must be provided.
   key: URL
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The external dynamic list object name.
   key: EDLObjectName
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The Security Policy Rule name will be created for blocking the indicators.
   key: RuleName
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: 'Block Indicators using EDL - XSOAR incident #${incident.id}'
@@ -47,7 +38,7 @@ inputs:
     Possible values:
     domain,ip,url,predefined_ip,predefined_url
   key: EDLObjectType
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -56,7 +47,7 @@ inputs:
     False -> Manual Push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AutoCommit
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: Prisma SASE - Create a security pre-rule for EDL
@@ -83,6 +74,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: eb5cd09b-3329-4dbc-802b-f1a9afc79ff7
     timertriggers: []
     type: start
@@ -205,6 +197,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 622df06d-75c2-4f69-851e-3e467611fff5
     timertriggers: []
     type: title
@@ -390,10 +383,11 @@ tasks:
       brand: ""
       id: 5b777876-447c-4a3c-8d28-204661342395
       iscommand: false
-      name: Prisma SASE - Create EDL
-      playbookId: 661afaba-edfa-478d-8271-21ff1c2ca254
+      name: 661afaba-edfa-478d-8271-21ff1c2ca254
+      playbookId: Prisma SASE - Create or Edit EDL object
       type: playbook
       version: -1
+      description: ''
     taskid: 5b777876-447c-4a3c-8d28-204661342395
     timertriggers: []
     type: playbook
@@ -444,12 +438,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "This playbook handles the creation or editing of the Security
-        Policy Rule for Pisma SASE integration. \n"
+      description: "This playbook handles the creation or editing of the Security Policy Rule for Pisma SASE integration. \n"
       id: 77c0f310-d4a2-4fd6-8145-42a5d7e0bd5d
       iscommand: false
-      name: Prisma SASE - Create Security Policy Rule
-      playbookId: 436ca6b3-7e89-4f5b-8e18-e3c67e1d0d65
+      name: 436ca6b3-7e89-4f5b-8e18-e3c67e1d0d65
+      playbookId: Prisma SASE - Create or Edit Security Policy Rule
       type: playbook
       version: -1
     taskid: 77c0f310-d4a2-4fd6-8145-42a5d7e0bd5d
@@ -469,22 +462,22 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
+      bcc:
+      body:
+      cc:
       format: ""
       methods: []
       replyOptions:
       - Push
       - "No"
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: true
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#default#':
       - "4"
@@ -525,3 +518,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

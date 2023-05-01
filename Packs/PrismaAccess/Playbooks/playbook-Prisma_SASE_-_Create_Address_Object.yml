@@ -1,34 +1,25 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 11018d82-4660-4021-8f67-bd073b79d330
-    packName: Sase
-    prevname: ""
     propagationLabels:
     - all
-    toServerVersion: ""
-description: This playbook creates new address objects in the Prisma SASE Object section.
-  Those objects can be used later on in other objects such as Security Rules.
-id: 3b724423-a68b-4648-8f51-404ad672ec89
+description: This playbook creates new address objects in the Prisma SASE Object section. Those objects can be used later on in other objects such as Security Rules.
+id: Prisma SASE - Create Address Object
 inputs:
 - description: The address value (should match the type)
   key: IP
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: Tenant services group ID. If not provided, the tsg_id integration parameter
-    will be used as the default.
+- description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
   key: TSGID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
     The configuration folder group setting.
     The default value is 'Shared'
   key: Folder
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: Shared
@@ -38,7 +29,7 @@ inputs:
     False -> Manual Push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AutoCommit
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -47,13 +38,12 @@ inputs:
     IP Wildcard: IP wildcard address in the format of an IPv4 address followed by a slash and a mask
     FQDN: Domain Name
   key: Type
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: "Default: 50 \nThis input controls the limit size for the get IP objects
-    command.\nThis will help to avoid object duplicates in the systems.\n"
+- description: "Default: 50 \nThis input controls the limit size for the get IP objects command.\nThis will help to avoid object duplicates in the systems.\n"
   key: limit
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "50"
@@ -96,6 +86,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 73e9f923-ee52-4693-8196-f6a4c7b5cb0e
     timertriggers: []
     type: start
@@ -203,6 +194,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 060c4380-0f99-4a04-8338-c44b6cbdaa4b
     timertriggers: []
     type: title
@@ -429,22 +421,22 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
+      bcc:
+      body:
+      cc:
       format: ""
       methods: []
       replyOptions:
       - Push
       - "No"
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: true
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#default#':
       - "3"
@@ -489,6 +481,7 @@ tasks:
       name: Check if the Name objects already exist
       type: title
       version: -1
+      description: ''
     taskid: f5b7f9a9-17ab-4b0b-86af-3d37bafe8a10
     timertriggers: []
     type: title
@@ -516,3 +509,5 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)

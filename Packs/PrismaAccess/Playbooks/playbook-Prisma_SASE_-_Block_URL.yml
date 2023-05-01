@@ -1,28 +1,21 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 11018d82-4660-4021-8f67-bd073b79d330
-    packName: Sase
-    prevname: ""
     propagationLabels:
     - all
-    toServerVersion: ""
 description: |-
   The playbook will handle the operation of blocking a URL within the organization.
   If a category is provided, the URL will be added to the list.
   If not, a new URL category will be created, and a new security rule that blocks that category.
-id: 64644a6c-7a99-4d6a-8c23-bc9deba75ed3
+id: Prisma SASE - Block URL
 inputs:
 - description: List of URLs that are needed to be blocked.
   key: URL
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The name of the predefined custom URL category.
   key: CategoryName
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -30,14 +23,13 @@ inputs:
     Remember, this input will only be used when there is no input to the CategoryName.
     Default: Shared
   key: Folder
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: Shared
-- description: Tenant services group ID. If not provided, the tsg_id integration parameter
-    will be used as the default.
+- description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
   key: TSGID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -46,7 +38,7 @@ inputs:
     False -> Manual Push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AutoCommit
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: Prisma SASE - Block URL
@@ -130,6 +122,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 3f502737-194b-4b60-8b41-49768b2f0897
     timertriggers: []
     type: start
@@ -203,6 +196,7 @@ tasks:
       name: Updating URL Predfiened Category List
       type: title
       version: -1
+      description: ''
     taskid: f62cd92a-b7d6-41eb-8d0b-82b272c25a91
     timertriggers: []
     type: title
@@ -309,6 +303,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 5abb3e14-5dce-4845-8d83-44ff4bfa5c11
     timertriggers: []
     type: title
@@ -339,6 +334,7 @@ tasks:
       name: Creating a new Category
       type: title
       version: -1
+      description: ''
     taskid: 07b206b2-cab0-4eb1-8ce1-b1cbb870503d
     timertriggers: []
     type: title
@@ -662,12 +658,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "This playbook handles the creation or editing of the Security
-        Policy Rule for Pisma SASE integration. \n"
+      description: "This playbook handles the creation or editing of the Security Policy Rule for Pisma SASE integration. \n"
       id: ae2421c9-7bef-47f5-806b-149e3bef1a61
       iscommand: false
-      name: Prisma SASE - Create or Edit Security Policy Rule
-      playbookId: 436ca6b3-7e89-4f5b-8e18-e3c67e1d0d65
+      name: 436ca6b3-7e89-4f5b-8e18-e3c67e1d0d65
+      playbookId: Prisma SASE - Create or Edit Security Policy Rule
       type: playbook
       version: -1
     taskid: ae2421c9-7bef-47f5-806b-149e3bef1a61
@@ -696,3 +691,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

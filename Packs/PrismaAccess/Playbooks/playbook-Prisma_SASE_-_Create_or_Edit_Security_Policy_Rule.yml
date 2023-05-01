@@ -1,29 +1,20 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 11018d82-4660-4021-8f67-bd073b79d330
-    packName: Sase
-    prevname: ""
     propagationLabels:
     - all
-    toServerVersion: ""
-description: "This playbook handles the creation or editing of the Security Policy
-  Rule for Pisma SASE integration. \n"
-id: 436ca6b3-7e89-4f5b-8e18-e3c67e1d0d65
+description: "This playbook handles the creation or editing of the Security Policy Rule for Pisma SASE integration. \n"
+id: Prisma SASE - Create or Edit Security Policy Rule
 inputs:
-- description: Tenant services group ID. If not provided, the tsg_id integration parameter
-    will be used as the default.
+- description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
   key: TSGID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
     The configuration folder group setting.
     The default value is 'Shared'
   key: Folder
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: Shared
@@ -31,14 +22,14 @@ inputs:
     Possible Values:
     allow,deny,drop,reset-both,reset-client,reset-server
   key: Action
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
     Rule position.
     The default value is 'pre'
   key: Position
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: pre
@@ -46,7 +37,7 @@ inputs:
     A comma-separated list of source networks.
     The default value is 'any'
   key: Source
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: any
@@ -54,7 +45,7 @@ inputs:
     A comma-separated list of destination networks.
     The default value is 'any'
   key: Destination
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: any
@@ -62,7 +53,7 @@ inputs:
     Services the rule applies to.
     Default value is 'any'
   key: Service
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: any
@@ -70,13 +61,13 @@ inputs:
     A comma-separated list of applications.
     Default value is 'any'
   key: Application
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: any
 - description: The name of the security rule.
   key: RuleName
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: |-
@@ -85,14 +76,14 @@ inputs:
     False -> Manual Push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AutoCommit
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
     Whether to overwrite the original rule values.
     The default value is 'false'
   key: Overwrite
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "False"
@@ -100,7 +91,7 @@ inputs:
     A comma-separated list of categories. You can get category values by running the prisma-sase-custom-url-category-list command.
     Default value is 'any'
   key: Category
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: any
@@ -177,6 +168,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 0e6e9db1-9fbc-4c0f-862c-1faa0d7690da
     timertriggers: []
     type: start
@@ -372,6 +364,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 903970f1-cd5d-4ca1-8226-bea09e658349
     timertriggers: []
     type: title
@@ -600,22 +593,22 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
+      bcc:
+      body:
+      cc:
       format: ""
       methods: []
       replyOptions:
       - Push
       - "No"
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: true
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#default#':
       - "5"
@@ -753,3 +746,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

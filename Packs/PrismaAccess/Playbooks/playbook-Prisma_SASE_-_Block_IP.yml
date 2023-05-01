@@ -1,42 +1,34 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 11018d82-4660-4021-8f67-bd073b79d330
-    packName: Sase
-    prevname: ""
     propagationLabels:
     - all
-    toServerVersion: ""
 description: |-
   This playbook aims to assist in blocking communication with the provided IPs in the Prisma SASE policy.
   If a group name is provided, the IPs will be added to the mentioned static address group (there should be a rule associated with the group name to block communication with that group).
   And if the group name is not provided, a new group will be created with a dedicated rule to block communication with those IPs.
-id: 741ae551-25de-4a5c-8e6f-44812e8a0b50
+id: Prisma SASE - Block IP
 inputs:
-- description: Tenant services group ID. If not provided, the tsg_id integration parameter
-    will be used as the default.
+- description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
   key: TSGID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The address value (should match the type)
   key: IP
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
     The configuration folder group setting.
     The default value is 'Shared'
   key: Folder
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: Shared
 - description: The static address group name will be appended with IP indicators.
   key: StaticAddressGroupName
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -45,7 +37,7 @@ inputs:
     False -> Manual Push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AutoCommit
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: Prisma SASE - Block IP
@@ -143,6 +135,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: e0d1416b-5806-4da5-88c9-b0e992ec9a41
     timertriggers: []
     type: start
@@ -256,6 +249,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 99f457e4-1a30-4314-8bf7-7bb4f9b6a8e6
     timertriggers: []
     type: title
@@ -595,7 +589,7 @@ tasks:
       id: e8535616-fa92-4784-8196-8633d038b74e
       iscommand: false
       name: Prisma SASE - Add IPs to Static Address Group
-      playbookId: 924469aa-d0f8-4967-8227-d8ec94b2b4d4
+      playbookId: Prisma SASE - Add IPs to Static Address Group
       type: playbook
       version: -1
     taskid: e8535616-fa92-4784-8196-8633d038b74e
@@ -647,10 +641,11 @@ tasks:
       brand: ""
       id: db54723e-8606-4c68-8766-e6de873cbda8
       iscommand: false
-      name: Prisma SASE - Create Address Object
-      playbookId: 3b724423-a68b-4648-8f51-404ad672ec89
+      name: 3b724423-a68b-4648-8f51-404ad672ec89
+      playbookId: Prisma SASE - Create Address Object
       type: playbook
       version: -1
+      description: ''
     taskid: db54723e-8606-4c68-8766-e6de873cbda8
     timertriggers: []
     type: playbook
@@ -668,22 +663,22 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
+      bcc:
+      body:
+      cc:
       format: ""
       methods: []
       replyOptions:
       - Push
       - "No"
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: true
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#default#':
       - "3"
@@ -728,6 +723,7 @@ tasks:
       name: Prior to this task we should add a list of the IPs to avoid dup
       type: title
       version: -1
+      description: ''
     taskid: f2e17c01-2f55-4f89-8a8e-cb21d557bf69
     timertriggers: []
     type: title
@@ -751,3 +747,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

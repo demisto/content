@@ -1,21 +1,13 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 11018d82-4660-4021-8f67-bd073b79d330
-    packName: Sase
-    prevname: ""
     propagationLabels:
     - all
-    toServerVersion: ""
 description: 'This playbook appends a Static Address Group with provided IPs. '
-id: 924469aa-d0f8-4967-8227-d8ec94b2b4d4
+id: Prisma SASE - Add IPs to Static Address Group
 inputs:
-- description: Tenant services group ID. If not provided, the tsg_id integration parameter
-    will be used as the default.
+- description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
   key: TSGID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -24,12 +16,12 @@ inputs:
     False -> Manual Push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AutoCommit
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The IP address value,comma-separated form.
   key: IP
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -38,14 +30,14 @@ inputs:
     False -> Manual Push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AddressGroupName
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
     The configuration folder group setting.
     The default value is 'Shared'
   key: Folder
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: Shared
@@ -72,6 +64,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 8dc5f80f-7160-4fa4-8692-3ee097131ab4
     timertriggers: []
     type: start
@@ -181,6 +174,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: b0ac52d5-0098-41d0-8abf-429715147d43
     timertriggers: []
     type: title
@@ -414,13 +408,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This playbook creates new address objects in the Prisma SASE Object
-        section. Those objects can be used later on in other objects such as Security
-        Rules.
+      description: This playbook creates new address objects in the Prisma SASE Object section. Those objects can be used later on in other objects such as Security Rules.
       id: da1f402d-606d-4448-8805-0ee35ad05444
       iscommand: false
-      name: Prisma SASE - Create Address Object
-      playbookId: 3b724423-a68b-4648-8f51-404ad672ec89
+      name: 3b724423-a68b-4648-8f51-404ad672ec89
+      playbookId: Prisma SASE - Create Address Object
       type: playbook
       version: -1
     taskid: da1f402d-606d-4448-8805-0ee35ad05444
@@ -497,22 +489,22 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
+      bcc:
+      body:
+      cc:
       format: ""
       methods: []
       replyOptions:
       - Push
       - "No"
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: true
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#default#':
       - "3"
@@ -553,3 +545,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
