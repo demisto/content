@@ -137,6 +137,29 @@
 					"simple": ""
 				}
 			}
+		},
+		"Phishing": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Categories": {
+					"complex": {
+						"filters": [],
+						"root": "categories",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					}
+				}
+			}
 		}
 	},
 	"name": "MS Graph Mail - Incoming Mapper - Email Communication",
