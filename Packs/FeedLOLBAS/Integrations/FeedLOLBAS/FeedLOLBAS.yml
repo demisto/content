@@ -58,7 +58,6 @@ configuration:
   required: false
   type: 15
   section: Collect
-  advanced: true
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
@@ -109,7 +108,8 @@ configuration:
   - indicatorType
   - suddenDeath
   section: Collect
-- name: feedFetchInterval
+- defaultvalue: '1440'
+  name: feedFetchInterval
   display: Feed Fetch Interval
   type: 19
   required: false
