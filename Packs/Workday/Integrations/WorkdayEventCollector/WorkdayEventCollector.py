@@ -33,8 +33,8 @@ class Client(BaseClient):
         :param proxy (bool): specifies if to use XSOAR proxy settings.
         """
 
-    def __init__(self, base_url, verify, proxy, client_id, client_secret, refresh_token, tenant_name):
-        super().__init__(base_url, verify=verify, proxy=proxy)
+    def __init__(self, base_url, verify, proxy, headers, client_id, client_secret, refresh_token, tenant_name):
+        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
         self.client_id = client_id
         self.client_secret = client_secret
         self.refresh_token = refresh_token
@@ -57,7 +57,8 @@ class Client(BaseClient):
                                                 headers=headers,
                                                 data=data)
         if workday_resp_token:
-            return json.loads(workday_resp_token.text).get("access_token")
+            # return json.loads(workday_resp_token.text).get("access_token")
+            return workday_resp_token.get("access_token")
 
     def http_request(self,
                      method: str,
@@ -117,7 +118,8 @@ def get_max_fetch_activity_logging(client: Client, logging_to_fetch: int, from_d
     activity_loggings = []
     offset = 0
     while logging_to_fetch > 0:
-        res = client.get_activity_logging_request(from_date=from_date, to_date=to_date, offset=offset)
+        limit = logging_to_fetch if logging_to_fetch < 1000 else 1000
+        res = client.get_activity_logging_request(from_date=from_date, to_date=to_date, offset=offset, limit=limit)
         demisto.debug(f'Fetched {len(res)} activity loggings.')
         activity_loggings.extend(res)
         offset += len(res)
@@ -127,6 +129,33 @@ def get_max_fetch_activity_logging(client: Client, logging_to_fetch: int, from_d
             break
     demisto.debug(f'Found {len(activity_loggings)} activity loggings.')
     return activity_loggings
+
+def remove_duplicated_activity_logging(activity_loggings: list, last_run: dict, time_to_check: str):
+    """
+    Removes potential duplicated activity loggings.
+
+    Args:
+        activity_loggings: activity loggings fetched from Workday.
+        last_run: Last run object.
+        time_to_check: last request time from last run or first fetch.
+    """
+    last_fetched_loggings: set = last_run.get('last_fetched_loggings', {})
+    demisto.debug(f'Looking for duplicated loggings with requestTime {time_to_check}')
+    for logging in activity_loggings:
+        logging_id = logging.get('taskId')
+        logging_request_time: str = logging.get('requestTime')
+        if datetime.strptime(logging_request_time, DATE_FORMAT) > datetime.strptime(time_to_check, DATE_FORMAT):
+            demisto.debug(f'Found logging with bigger requestTime, setting {time_to_check=}')
+            time_to_check = logging_request_time
+            last_fetched_loggings = {logging_id}
+        else:
+            if logging_id in last_fetched_loggings:
+                activity_loggings.remove(logging_id)
+            else:
+                last_fetched_loggings.add(logging_id)
+    return last_fetched_loggings
+
+
 
 
 ''' COMMAND FUNCTIONS '''
@@ -179,8 +208,12 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
                                                        to_date=to_date)
     # setting last run object
     if activity_loggings:
+        last_fetched_loggings = remove_duplicated_activity_logging(activity_loggings=activity_loggings,
+                                                                   last_run=last_run,
+                                                                   time_to_check=from_date)
         last_log_time = activity_loggings[-1].get('requestTime')
-        last_run = {'last_fetch_time': last_log_time}
+        last_run = {'last_fetch_time': last_log_time,
+                    'last_fetched_loggings': last_fetched_loggings}
 
     return activity_loggings, last_run
 
@@ -240,7 +273,11 @@ def main() -> None:
             tenant_name=tenant_name,
             refresh_token=token,
             verify=verify_certificate,
-            proxy=proxy)
+            proxy=proxy,
+            headers={
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            })
 
         if command == 'test-module':
             return_results(test_module(client))
