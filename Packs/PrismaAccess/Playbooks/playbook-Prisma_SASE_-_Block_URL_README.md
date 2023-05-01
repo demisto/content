@@ -31,11 +31,11 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| URL | List of URLs that are needed to be blocked. |  | Optional |
+| URL | List of URLs that need to be blocked. |  | Optional |
 | CategoryName | The name of the predefined custom URL category. |  | Optional |
-| Folder | Specify the scope for a newly created security rule to be applied.<br/>Remember, this input will only be used when there is no input to the CategoryName.<br/>Default: Shared | Shared | Optional |
+| Folder | Specify the scope for a newly created security rule to be applied.<br/>This input will only be used when there is no input to the CategoryName.<br/>Default: Shared. | Shared | Optional |
 | TSGID | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. |  | Optional |
-| AutoCommit | Possible Values:<br/>True -&amp;gt; Will Commit and Push Configuration<br/>False -&amp;gt; Manual Push will be required.<br/>Else --&amp;gt; Will ignore the push section and continue the playbook. |  | Optional |
+| AutoCommit | Possible values:<br/>True -&amp;gt; Will commit and push configuration.<br/>False -&amp;gt; Manual push will be required.<br/>Else --&amp;gt; Will ignore the push section and continue the playbook. |  | Optional |
 
 ## Playbook Outputs
 

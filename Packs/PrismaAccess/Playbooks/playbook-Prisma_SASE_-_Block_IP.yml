@@ -3,7 +3,7 @@ contentitemexportablefields:
     propagationLabels:
     - all
 description: |-
-  This playbook aims to assist in blocking communication with the provided IPs in the Prisma SASE policy.
+  This playbook assists in blocking communication with the provided IPs in the Prisma SASE policy.
   If a group name is provided, the IPs will be added to the mentioned static address group (there should be a rule associated with the group name to block communication with that group).
   And if the group name is not provided, a new group will be created with a dedicated rule to block communication with those IPs.
 id: Prisma SASE - Block IP
@@ -13,14 +13,14 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: The address value (should match the type)
+- description: The address value (should match the type).
   key: IP
   playbookInputQuery:
   required: false
   value: {}
 - description: |-
     The configuration folder group setting.
-    The default value is 'Shared'
+    The default value is 'Shared'.
   key: Folder
   playbookInputQuery:
   required: false
@@ -33,8 +33,8 @@ inputs:
   value: {}
 - description: |-
     Possible Values:
-    True -> Will Commit and Push Configuration
-    False -> Manual Push will be required.
+    True -> Will commit and push configuration.
+    False -> Manual push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AutoCommit
   playbookInputQuery:
@@ -97,7 +97,7 @@ outputs:
 - contextPath: PrismaSase.CandidateConfig.job_id
   description: Configuration job ID.
 - contextPath: PrismaSase.CandidateConfig.result
-  description: The configuration push result, e.g. OK, FAIL.
+  description: The configuration push result, e.g., OK, FAIL.
 - contextPath: PrismaSase.CandidateConfig.details
   description: The configuration push details.
 - contextPath: PrismaSase.Address
@@ -386,7 +386,7 @@ tasks:
       description: Create a new security rule.
       id: 729c88ad-57a6-4fe4-8778-9c3356efedda
       iscommand: true
-      name: 'Create New Security Rule '
+      name: Create New Security Rule
       script: '|||prisma-sase-security-rule-create'
       type: regular
       version: -1
@@ -429,7 +429,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if the IPs already exist in the group
+      description: Check if the IPs already exist in the group.
       id: cb95f552-227b-4184-8773-41c388bd5a66
       iscommand: false
       name: Check if the IPs already exist in the group
@@ -585,7 +585,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: 'This playbook appends a Static Address Group with provided IPs. '
+      description: This playbook appends a Static Address Group with provided IPs. 
       id: e8535616-fa92-4784-8196-8633d038b74e
       iscommand: false
       name: Prisma SASE - Add IPs to Static Address Group
@@ -690,10 +690,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: 'Complete this task to push the configuration '
+      description: Complete this task to push the configuration.
       id: 3469ee80-3730-4d2a-897d-57f051d77b22
       iscommand: false
-      name: 'Complete this task to push the configuration '
+      name: Complete this task to push the configuration
       type: condition
       version: -1
     taskid: 3469ee80-3730-4d2a-897d-57f051d77b22

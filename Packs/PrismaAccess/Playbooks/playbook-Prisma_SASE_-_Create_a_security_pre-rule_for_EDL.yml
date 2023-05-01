@@ -12,7 +12,7 @@ inputs:
   value: {}
 - description: |-
     The configuration folder group setting.
-    The default value is 'Shared'
+    The default value is 'Shared'.
   key: Folder
   playbookInputQuery:
   required: false
@@ -43,8 +43,8 @@ inputs:
   value: {}
 - description: |-
     Possible Values:
-    True -> Will Commit and Push Configuration
-    False -> Manual Push will be required.
+    True -> Will commit and push configuration.
+    False -> Manual push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AutoCommit
   playbookInputQuery:
@@ -244,10 +244,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if the Source URL Was provided
+      description: Check if the source URL was provided.
       id: 869ba2b6-659c-4c6b-8236-9d288efaf33f
       iscommand: false
-      name: Check if the Source URL Was provided
+      name: Check if the source URL was provided
       type: condition
       version: -1
     taskid: 869ba2b6-659c-4c6b-8236-9d288efaf33f
@@ -328,10 +328,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Was there returned object?
+      description: Was there a returned object?
       id: e9cff0a1-05a2-47b0-8643-1b58f6a0e912
       iscommand: false
-      name: Was there returned object?
+      name: Was there a returned object?
       type: condition
       version: -1
     taskid: e9cff0a1-05a2-47b0-8643-1b58f6a0e912
@@ -438,7 +438,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "This playbook handles the creation or editing of the Security Policy Rule for Pisma SASE integration. \n"
+      description: This playbook handles the creation or editing of the Security Policy Rule for Prisma SASE integration.
       id: 77c0f310-d4a2-4fd6-8145-42a5d7e0bd5d
       iscommand: false
       name: 436ca6b3-7e89-4f5b-8e18-e3c67e1d0d65
@@ -489,10 +489,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: 'Complete this task to push the configuration '
+      description: Complete this task to push the configuration.
       id: 166e379f-9232-48ec-81ed-e1570c467865
       iscommand: false
-      name: 'Complete this task to push the configuration '
+      name: Complete this task to push the configuration.
       type: condition
       version: -1
     taskid: 166e379f-9232-48ec-81ed-e1570c467865

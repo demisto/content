@@ -17,26 +17,26 @@ inputs:
   value: {}
 - description: |-
     The configuration folder group setting.
-    The default value is 'Shared'
+    The default value is 'Shared'.
   key: Folder
   playbookInputQuery:
   required: false
   value:
     simple: Shared
 - description: |-
-    Possible Values:
-    True -> Will Commit and Push Configuration
-    False -> Manual Push will be required.
+    Possible values:
+    True -> Will commit and push configuration.
+    False -> Manual push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AutoCommit
   playbookInputQuery:
   required: false
   value: {}
 - description: |-
-    IP Netmask: IP address or a network using the slash notation - ip_address/mask
-    IP Range: Range of IP addresses using the notation ip_address-ip_address
-    IP Wildcard: IP wildcard address in the format of an IPv4 address followed by a slash and a mask
-    FQDN: Domain Name
+    IP Netmask: IP address or a network using the slash notation - ip_address/mask.
+    IP Range: Range of IP addresses using the notation ip_address-ip_address.
+    IP Wildcard: IP wildcard address in the format of an IPv4 address followed by a slash and a mask.
+    FQDN: Domain name.
   key: Type
   playbookInputQuery:
   required: false
@@ -234,10 +234,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Are the IPs exist?
+      description: Do the IPs exist?
       id: 5f4a9cd4-8f7b-4170-800d-bc9ee601c150
       iscommand: false
-      name: Are the IPs exist?
+      name: Do the IPs exist?
       type: condition
       version: -1
     taskid: 5f4a9cd4-8f7b-4170-800d-bc9ee601c150
@@ -448,10 +448,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: 'Complete this task to push the configuration '
+      description: Complete this task to push the configuration.
       id: 0bb91649-69cd-4eff-8741-15f147c5f3f4
       iscommand: false
-      name: 'Complete this task to push the configuration '
+      name: Complete this task to push the configuration
       type: condition
       version: -1
     taskid: 0bb91649-69cd-4eff-8741-15f147c5f3f4
@@ -478,7 +478,7 @@ tasks:
       brand: ""
       id: f5b7f9a9-17ab-4b0b-86af-3d37bafe8a10
       iscommand: false
-      name: Check if the Name objects already exist
+      name: Check if the Name objects already exists
       type: title
       version: -1
       description: ''

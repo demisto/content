@@ -12,7 +12,7 @@ inputs:
   value: {}
 - description: |-
     The configuration folder group setting.
-    The default value is 'Shared'
+    The default value is 'Shared'.
   key: Folder
   playbookInputQuery:
   required: false
@@ -25,7 +25,7 @@ inputs:
   value: {}
 - description: |-
     The predefined IP list. If the type is predefined_ip, a value must be provided.
-    Possible Values: panw-bulletproof-ip-list,panw-highrisk-ip-list,panw-known-ip-list,panw-torexit-ip-list
+    Possible values: panw-bulletproof-ip-list,panw-highrisk-ip-list,panw-known-ip-list,panw-torexit-ip-list.
   key: IPListName
   playbookInputQuery:
   required: false
@@ -45,14 +45,14 @@ inputs:
   required: false
   value: {}
 - description: |-
-    Frequency to check for updates on the EDL url.
-    Possible Values:
+    Frequency to check for updates on the EDL URL.
+    Possible values:
     daily,five_minute,hourly,monthly,weekly
   key: Frequency
   playbookInputQuery:
   required: false
   value: {}
-- description: The frequency hour. If the frequency argument is daily, weekly or monthly, value must be provided. Possible values are 00-23.
+- description: The frequency hour. If the frequency argument is daily, weekly or monthly, a value must be provided. Possible values are 00-23.
   key: FrequencyTime
   playbookInputQuery:
   required: false
@@ -65,9 +65,9 @@ inputs:
   required: false
   value: {}
 - description: |-
-    Possible Values:
-    True -> Will Commit and Push Configuration
-    False -> Manual Push will be required.
+    Possible values:
+    True -> Will commit and push configuration.
+    False -> Manual push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AutoCommit
   playbookInputQuery:
@@ -75,7 +75,7 @@ inputs:
   value: {}
 - description: |-
     Whether to overwrite the original external dynamic list values.
-    Default value is 'false'
+    Default value is 'false'.
   key: Overwrite
   playbookInputQuery:
   required: false
@@ -104,7 +104,7 @@ outputs:
 - contextPath: PrismaSase.CandidateConfig.job_id
   description: Configuration job ID.
 - contextPath: PrismaSase.CandidateConfig.result
-  description: The configuration push result, e.g. OK, FAIL.
+  description: The configuration push result, e.g., OK, FAIL.
 - contextPath: PrismaSase.CandidateConfig.details
   description: The configuration push details.
 starttaskid: "0"
@@ -260,10 +260,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if the EDL object is there
+      description: Check if the EDL object exists.
       id: 8b998fb0-bc3e-4ef3-8ec9-b941ff2c716e
       iscommand: false
-      name: Check if the EDL object is there
+      name: Check if the EDL object exists
       type: condition
       version: -1
     taskid: 8b998fb0-bc3e-4ef3-8ec9-b941ff2c716e
@@ -291,7 +291,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Prints an error entry with a given message
+      description: Prints an error entry with a given message.
       id: 5bdc85a4-e416-4ba4-8c5b-987192877757
       iscommand: false
       name: Print Error
@@ -466,10 +466,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: 'Complete this task to push the configuration '
+      description: Complete this task to push the configuration.
       id: 4fda2190-a023-4e22-8c0e-c839d57f550b
       iscommand: false
-      name: 'Complete this task to push the configuration '
+      name: Complete this task to push the configuration.
       type: condition
       version: -1
     taskid: 4fda2190-a023-4e22-8c0e-c839d57f550b
@@ -543,10 +543,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if the object is already defined
+      description: Check if the object was already defined.
       id: 2d707ee6-bea1-4522-86fc-5711f1a4661e
       iscommand: false
-      name: Check if the object is already defined
+      name: Check if the object was already defined
       type: condition
       version: -1
     taskid: 2d707ee6-bea1-4522-86fc-5711f1a4661e
