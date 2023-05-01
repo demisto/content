@@ -3686,7 +3686,15 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         logging.debug(f"Images data {images_data}")
 
     if packs_results:
-        json_write(packs_results_file_path, packs_results)
+        if stage == BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING:
+            json_write(packs_results_file_path, packs_results)
+
+        elif stage == BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE:
+            # write to another file
+            packs_results_file_path = Path(packs_results_file_path)  # type: ignore[assignment]
+            packs_results_file_path = packs_results_file_path.with_name(  # type: ignore[attr-defined]
+                f"{packs_results_file_path.stem}_upload.json")  # type: ignore[attr-defined]
+            json_write(str(packs_results_file_path), packs_results)
 
 
 def load_json(file_path: str) -> dict:
