@@ -15,6 +15,7 @@ def mock_client():
     """
     from FeedLOLBAS import Client
     return Client(
+        base_url="example.com",
         verify=False,
         proxy=False,
         create_relationships=True,
@@ -23,7 +24,7 @@ def mock_client():
     )
 
 
-def test_create_indicators():
+def test_create_indicators(mocker):
     """
         Given: A list of parsed indicators.
         When: Creating XSOAR indicators from the list.
@@ -34,12 +35,14 @@ def test_create_indicators():
     client = mock_client()
     mock_pre_indicators = util_load_json('test_data/response.json')
     expected_response = util_load_json('test_data/expected_create_indicators.json')
+    mocked_mitre_data = util_load_json('test_data/mocked_mitre_data.json')
+    mocker.patch('FeedLOLBAS.get_mitre_data', return_value=mocked_mitre_data)
 
     response = create_indicators(client, mock_pre_indicators)
     assert response == expected_response
 
 
-def test_create_relationship_list():
+def test_create_relationship_list(mocker):
     """
         Given: A list of XSOAR indicators.
         When: Creating relationships between the indicators.
@@ -48,6 +51,8 @@ def test_create_relationship_list():
     from FeedLOLBAS import create_relationship_list
     mock_indicators = util_load_json('test_data/expected_create_indicators.json')
     expected_response = util_load_json('test_data/expected_create_relationships.json')
+    mocked_mitre_data = util_load_json('test_data/mocked_mitre_data.json')
+    mocker.patch('FeedLOLBAS.get_mitre_data', return_value=mocked_mitre_data)
 
     response = create_relationship_list(mock_indicators)
     assert response == expected_response
@@ -64,10 +69,10 @@ def test_create_relationships():
     mock_indicators = util_load_json('test_data/expected_create_indicators.json')
     expected_response = {'value': '$$DummyIndicator$$', 'relationships': [
         {'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator', 'entityA': 'AppInstaller.exe',
-         'entityAFamily': 'Indicator', 'entityAType': 'Tool', 'entityB': 'T1105', 'entityBFamily': 'Indicator',
+         'entityAFamily': 'Indicator', 'entityAType': 'Tool', 'entityB': 'Test Mitre Name 1', 'entityBFamily': 'Indicator',
          'entityBType': 'Attack Pattern', 'fields': {}},
         {'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator', 'entityA': 'Aspnet_Compiler.exe',
-         'entityAFamily': 'Indicator', 'entityAType': 'Tool', 'entityB': 'T1127', 'entityBFamily': 'Indicator',
+         'entityAFamily': 'Indicator', 'entityAType': 'Tool', 'entityB': 'Test Mitre Name 2', 'entityBFamily': 'Indicator',
          'entityBType': 'Attack Pattern', 'fields': {}}]}
 
     response = create_relationships(client, mock_indicators)
@@ -128,6 +133,8 @@ def test_get_indicators(mocker):
     limit = 1
     mocked_response = util_load_json('test_data/response.json')
     mocker.patch.object(client, 'get_indicators', return_value=mocked_response)
+    mocked_mitre_data = util_load_json('test_data/mocked_mitre_data.json')
+    mocker.patch('FeedLOLBAS.get_mitre_data', return_value=mocked_mitre_data)
     expected_outputs = util_load_json('test_data/expected_get_indicators_outputs.json')
     expected_hr = '### LOLBAS indicators\n|Name|Description|' \
                   '\n|---|---|\n| AppInstaller.exe | Tool used for installation of AppX/MSIX applications on Windows 10 |\n'

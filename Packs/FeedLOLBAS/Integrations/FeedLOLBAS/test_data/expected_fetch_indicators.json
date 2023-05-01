@@ -10,7 +10,7 @@
           "usecase": "Download file from Internet",
           "category": "Download",
           "privileges": "User",
-          "mitreid": "T1105",
+          "mitreid": "Ingress Tool Transfer",
           "operatingsystem": "Windows 10, Windows 11"
         }
       ],
@@ -29,7 +29,8 @@
       "trafficlightprotocol": "TEST",
       "tags": [
         "tag1",
-        "tag2"
+        "tag2",
+        "Ingress Tool Transfer"
       ]
     },
     "rawJSON": {
@@ -44,7 +45,7 @@
           "Usecase": "Download file from Internet",
           "Category": "Download",
           "Privileges": "User",
-          "MitreID": "T1105",
+          "MitreID": "Ingress Tool Transfer",
           "OperatingSystem": "Windows 10, Windows 11"
         }
       ],
@@ -77,7 +78,7 @@
           "usecase": "Execute proxied payload with Microsoft signed binary to bypass application control solutions",
           "category": "AWL Bypass",
           "privileges": "User",
-          "mitreid": "T1127",
+          "mitreid": "Trusted Developer Utilities Proxy Execution",
           "operatingsystem": "Windows 10, Windows 11"
         }
       ],
@@ -103,7 +104,8 @@
       "trafficlightprotocol": "TEST",
       "tags": [
         "tag1",
-        "tag2"
+        "tag2",
+        "Trusted Developer Utilities Proxy Execution"
       ]
     },
     "rawJSON": {
@@ -118,7 +120,7 @@
           "Usecase": "Execute proxied payload with Microsoft signed binary to bypass application control solutions",
           "Category": "AWL Bypass",
           "Privileges": "User",
-          "MitreID": "T1127",
+          "MitreID": "Trusted Developer Utilities Proxy Execution",
           "OperatingSystem": "Windows 10, Windows 11"
         }
       ],
@@ -140,7 +142,7 @@
       ],
       "Resources": [
         {
-          "Link": "https://ijustwannared.team/2020/08/01/the-curious-case-of-aspnet_compiler-exe/"
+          "Link": "test_link"
         },
         {
           "Link": "https://docs.microsoft.com/en-us/dotnet/api/system.web.compilation.buildprovider.generatecode?view=netframework-4.8"
@@ -159,7 +161,7 @@
         "entityA": "AppInstaller.exe",
         "entityAFamily": "Indicator",
         "entityAType": "Tool",
-        "entityB": "T1105",
+        "entityB": "Ingress Tool Transfer",
         "entityBFamily": "Indicator",
         "entityBType": "Attack Pattern",
         "fields": {}
@@ -171,7 +173,7 @@
         "entityA": "Aspnet_Compiler.exe",
         "entityAFamily": "Indicator",
         "entityAType": "Tool",
-        "entityB": "T1127",
+        "entityB": "Trusted Developer Utilities Proxy Execution",
         "entityBFamily": "Indicator",
         "entityBType": "Attack Pattern",
         "fields": {}

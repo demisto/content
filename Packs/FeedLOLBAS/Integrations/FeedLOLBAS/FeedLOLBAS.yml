@@ -3,8 +3,8 @@ commonfields:
   id: LOLBAS Feed
   version: -1
 sectionOrder:
-	- Connect
-	- Collect
+- Connect
+- Collect
 configuration:
 - defaultvalue: 'https://lolbas-project.github.io/api'
   display: Base URL
@@ -13,17 +13,14 @@ configuration:
   required: true
   type: 0
   section: Connect
-  advanced: false
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   required: false
   type: 8
   section: Collect
-  advanced: false
-- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   section: Collect
-  advanced: false
   display: Indicator Reputation
   name: feedReputation
   defaultvalue: None
@@ -48,7 +45,6 @@ configuration:
   required: true
   type: 15
   section: Collect
-  advanced: false
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   defaultvalue: CLEAR
   display: Traffic Light Protocol Color
@@ -63,31 +59,11 @@ configuration:
   type: 15
   section: Collect
   advanced: true
-- defaultvalue: never
-  additionalinfo:
-  display: ''
-  name: feedExpirationPolicy
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
-  required: false
-  type: 17
-  section: Collect
-  advanced: true
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '1440'
-  display: Feed Fetch Interval
-  name: feedFetchInterval
-  required: false
-  type: 19
-  section: Collect
-  advanced: true
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   defaultvalue: 'false'
   display: Bypass exclusion list
@@ -121,6 +97,22 @@ configuration:
   name: create_relationships
   required: false
   type: 8
+  section: Collect
+  advanced: true
+- name: feedExpirationPolicy
+  display: ''
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  section: Collect
+- name: feedFetchInterval
+  display: Feed Fetch Interval
+  type: 19
+  required: false
   section: Collect
   advanced: true
 description: 'Living off the land binaries" is a term used to describe malware or hacking techniques that take advantage of legitimate tools and processes that are already present on a computer or network, rather than introducing new malware or malicious code. The goal is to blend in with normal activity and avoid detection. Examples of this include using built-in Windows commands to move laterally through a network, or using scripting languages that are commonly installed on a system to execute malicious code. LOLBAS project is documenting binaries, scripts, and libraries that can be used for Living Off The Land techniques.'
@@ -185,7 +177,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: demisto/python3:3.10.11.56082
 fromversion: 6.8.0
 tests:
-- FeedLOLBas_test 
+- FeedLOLBas_test

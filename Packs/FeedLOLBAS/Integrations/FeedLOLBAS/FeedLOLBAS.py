@@ -9,6 +9,7 @@ from typing import Dict, Any, Tuple, List
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
+MITRE_URL = 'https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json'
 
 DEFAULT_FEED_TAGS = {'LOLBAS'}
 ''' CLIENT CLASS '''
@@ -24,6 +25,8 @@ class Client(BaseClient):
         self.create_relationships = create_relationships
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
+        self.verify = verify
+        self.proxy = proxy
 
     def get_indicators(self) -> str:  # pragma: no cover
         """
@@ -73,6 +76,24 @@ def create_relationship_list(indicators: List[Dict[str, Any]]) -> List[Dict[str,
     return relationships
 
 
+def get_mitre_data(client: Client):
+    """
+    Get MITRE data from GitHub.
+    """
+    headers = {
+        'Content-Type': 'application/taxii+json',
+        'Accept': 'application/vnd.oasis.taxii+json; version=2.0'
+    }
+    if client.proxy:
+        proxies = handle_proxy()
+    else:
+        proxies = {
+            "http": None,
+            "https": None,
+        }
+    return requests.get(MITRE_URL, headers=headers, verify=client.verify, proxies=proxies).json().get('objects', [])
+
+
 def map_indicator_fields(pre_indicator):
     command_keys = ['Command', 'Description', 'Usecase', 'Category', 'Privileges', 'MitreID', 'OperatingSystem']
 
@@ -84,7 +105,7 @@ def map_indicator_fields(pre_indicator):
     paths = pre_indicator.get('Full_Path', [])
     if commands:
         for command in commands:
-            mapped_commands.append({lolbas_filed.lower(): command.get(lolbas_filed) for lolbas_filed in command_keys})
+            mapped_commands.append({lolbas_field.lower(): command.get(lolbas_field) for lolbas_field in command_keys})
     if detections:
         for detection in detections:
             if detection_keys := list(detection.keys()):
@@ -101,13 +122,41 @@ def map_indicator_fields(pre_indicator):
     }
 
 
+def map_mitre_id_to_name(client: Client):
+    """
+    Map MITRE ID to MITRE name.
+    """
+    result_map = {}
+
+    mitre_data = get_mitre_data(client)
+    # filter only the attack-pattern objects.
+    mitre_data = [obj for obj in mitre_data if obj.get('type') == 'attack-pattern']
+    # build a dictionary list of mitre_id: mitre_name.
+    for obj in mitre_data:
+        for external_ref in obj.get('external_references'):
+            mitre_name = obj.get('name')
+            if mitre_id := external_ref.get('external_id'):
+                result_map[mitre_id] = mitre_name
+    return result_map
+
+
 def create_indicators(client: Client, pre_indicators) -> List[Dict[str, Any]]:
     """
     Create indicators from the response.
     """
     demisto.debug(f'Creating {len(pre_indicators)} indicators.')
     indicators: List[Dict[str, Any]] = []
+    mitre_id_to_name = map_mitre_id_to_name(client)
+
     for pre_indicator in pre_indicators:
+        mitre_tags = []
+        for command in pre_indicator.get('Commands', []):
+
+            if mitre_id := command.get('MitreID', ''):
+                mitre_name = mitre_id_to_name.get(mitre_id, '')
+                command['MitreID'] = mitre_name
+                mitre_tags.append(mitre_name)
+
         indicator: Dict[str, Any] = {
             'type': ThreatIntel.ObjectsNames.TOOL,
             'value': pre_indicator.get('Name'),
@@ -117,7 +166,7 @@ def create_indicators(client: Client, pre_indicators) -> List[Dict[str, Any]]:
         if tlp_color := client.tlp_color:
             indicator['fields']['trafficlightprotocol'] = tlp_color
         if feed_tags := client.feed_tags:
-            indicator['fields']['tags'] = feed_tags
+            indicator['fields']['tags'] = feed_tags + mitre_tags
 
         indicators.append(indicator)
     return indicators

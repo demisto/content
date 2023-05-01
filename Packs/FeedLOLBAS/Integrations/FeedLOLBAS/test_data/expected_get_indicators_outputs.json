@@ -7,7 +7,7 @@
       "usecase": "Download file from Internet",
       "category": "Download",
       "privileges": "User",
-      "mitreid": "T1105",
+      "mitreid": "Test Mitre Name 1",
       "operatingsystem": "Windows 10, Windows 11"
     }
   ],

@@ -6,7 +6,7 @@
     "entityA": "AppInstaller.exe",
     "entityAFamily": "Indicator",
     "entityAType": "Tool",
-    "entityB": "T1105",
+    "entityB": "Test Mitre Name 1",
     "entityBFamily": "Indicator",
     "entityBType": "Attack Pattern",
     "fields": {}
@@ -18,7 +18,7 @@
     "entityA": "Aspnet_Compiler.exe",
     "entityAFamily": "Indicator",
     "entityAType": "Tool",
-    "entityB": "T1127",
+    "entityB": "Test Mitre Name 2",
     "entityBFamily": "Indicator",
     "entityBType": "Attack Pattern",
     "fields": {}
