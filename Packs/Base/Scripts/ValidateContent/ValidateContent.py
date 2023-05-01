@@ -1,6 +1,7 @@
 import io
 import json
 import sys
+import time
 import traceback
 import types
 import zipfile
@@ -11,6 +12,7 @@ from pathlib import Path
 from shutil import copy
 from tempfile import TemporaryDirectory
 from typing import Any, Dict, List, Optional, Tuple
+import logging
 
 import git
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType
@@ -257,9 +259,11 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     json_output_path = os.path.join(tmp_directory, 'validation_res.json')
     lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
     output_capture = io.StringIO()
-    code_fp_to_row_offset = None
+    log_capture = io.StringIO()
+
     with redirect_stdout(output_capture):
         with redirect_stderr(output_capture):
+            print("trying to print to sout")
             if filename.endswith('.zip'):
                 path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
                     filename, data, tmp_directory
@@ -269,9 +273,18 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
                     filename, data, tmp_directory
                 )
 
+            handler = logging.StreamHandler(log_capture)
+            for name in [None, 'demisto-sdk']:
+                logger = logging.getLogger(name)
+                logger.handlers.clear()
+                logger.addHandler(handler)
+
             run_validate(path_to_validate, json_output_path)
             run_lint(path_to_validate, lint_output_path)
 
+            handler.flush()
+
+    demisto.debug("log capture:" + log_capture.getvalue())
     all_outputs = []
     with open(json_output_path, 'r') as json_outputs:
         outputs_as_json = json.load(json_outputs)
