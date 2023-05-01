@@ -1,0 +1,638 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 11018d82-4660-4021-8f67-bd073b79d330
+    packName: Sase
+    prevname: ""
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: This playbook helps to create an EDL object within the Prisma SASE Objects
+  section.
+id: 661afaba-edfa-478d-8271-21ff1c2ca254
+inputs:
+- description: The external dynamic list object name.
+  key: Name
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    The configuration folder group setting.
+    The default value is 'Shared'
+  key: Folder
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: Shared
+- description: Tenant services group ID. If not provided, the tsg_id integration parameter
+    will be used as the default.
+  key: TSGID
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    The predefined IP list. If the type is predefined_ip, a value must be provided.
+    Possible Values: panw-bulletproof-ip-list,panw-highrisk-ip-list,panw-known-ip-list,panw-torexit-ip-list
+  key: IPListName
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    The predefined URL list. If the type is predefined_url, a value must be provided.
+
+    Possible value:
+    panw–auth-portal-exclude-list
+  key: URLListName
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: The source URL. If the type is ip, url or domain, a value must be provided.
+  key: SourceURL
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    Frequency to check for updates on the EDL url.
+    Possible Values:
+    daily,five_minute,hourly,monthly,weekly
+  key: Frequency
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: The frequency hour. If the frequency argument is daily, weekly or monthly,
+    value must be provided. Possible values are 00-23.
+  key: FrequencyTime
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    Possible values:
+    domain,ip,url,predefined_ip,predefined_url
+  key: EDLObjectType
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    Possible Values:
+    True -> Will Commit and Push Configuration
+    False -> Manual Push will be required.
+    Else --> Will ignore the push section and continue the playbook.
+  key: AutoCommit
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    Whether to overwrite the original external dynamic list values.
+    Default value is 'false'
+  key: Overwrite
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "False"
+name: Prisma SASE - Create or Edit EDL object
+outputs:
+- contextPath: PrismaSase.ExternalDynamicList
+  type: unknown
+- contextPath: PrismaSase.ExternalDynamicList.id
+  description: The external dynamic list ID.
+- contextPath: PrismaSase.ExternalDynamicList.name
+  description: The external dynamic list name.
+- contextPath: PrismaSase.ExternalDynamicList.folder
+  description: The external dynamic list folder.
+- contextPath: PrismaSase.ExternalDynamicList.description
+  description: The external dynamic list description.
+- contextPath: PrismaSase.ExternalDynamicList.type
+  description: The external dynamic list type.
+- contextPath: PrismaSase.ExternalDynamicList.source
+  description: The external dynamic list source.
+- contextPath: PrismaSase.ExternalDynamicList.frequency
+  description: The external dynamic list frequency.
+- contextPath: PrismaSase.CandidateConfig
+  type: unknown
+- contextPath: PrismaSase.CandidateConfig.job_id
+  description: Configuration job ID.
+- contextPath: PrismaSase.CandidateConfig.result
+  description: The configuration push result, e.g. OK, FAIL.
+- contextPath: PrismaSase.CandidateConfig.details
+  description: The configuration push details.
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eddffe16-88d7-4268-8f49-c5f08eec101c
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: eddffe16-88d7-4268-8f49-c5f08eec101c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -630
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folder:
+        simple: ${inputs.Folder}
+      frequency:
+        simple: ${inputs.Frequency}
+      name:
+        complex:
+          root: inputs.Name
+      predefined_ip_list:
+        simple: ${inputs.IPListName}
+      predefined_url_list:
+        simple: ${inputs.URLListName}
+      source_url:
+        complex:
+          root: inputs.SourceURL
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+      type:
+        complex:
+          root: inputs.EDLObjectType
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Create a new dynamic list.
+      id: afd82eaf-78d0-4d05-88a9-8833e897bfaa
+      iscommand: true
+      name: Create the External Dynamic List Object
+      script: '|||prisma-sase-external-dynamic-list-create'
+      type: regular
+      version: -1
+    taskid: afd82eaf-78d0-4d05-88a9-8833e897bfaa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": -120
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: ${PrismaSase.ExternalDynamicList.id}
+      limit:
+        simple: "123"
+      page:
+        simple: aaaa
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Lists all external dynamic lists.
+      id: 0c0104b3-7e84-4bd5-87b0-c53632fa32ce
+      iscommand: true
+      name: List config
+      script: '|||prisma-sase-external-dynamic-list-list'
+      type: regular
+      version: -1
+    taskid: 0c0104b3-7e84-4bd5-87b0-c53632fa32ce
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 580
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaSase.ExternalDynamicList.id
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              simple: PrismaSase.ExternalDynamicList.id
+      label: "yes"
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if the EDL object is there
+      id: 8b998fb0-bc3e-4ef3-8ec9-b941ff2c716e
+      iscommand: false
+      name: Check if the EDL object is there
+      type: condition
+      version: -1
+    taskid: 8b998fb0-bc3e-4ef3-8ec9-b941ff2c716e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 740
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Raise an error on pushing config
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 5bdc85a4-e416-4ba4-8c5b-987192877757
+      iscommand: false
+      name: Print Error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 5bdc85a4-e416-4ba4-8c5b-987192877757
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 965
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7ce6b664-e597-42aa-81af-ec1586c4f9d5
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 7ce6b664-e597-42aa-81af-ec1586c4f9d5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1060
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folders:
+        complex:
+          root: inputs.Folder
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Push the candidate configuration.
+      id: ed0cd306-58e7-472b-8608-31911ba6a33e
+      iscommand: true
+      name: Push Config
+      script: '|||prisma-sase-candidate-config-push'
+      type: regular
+      version: -1
+    taskid: ed0cd306-58e7-472b-8608-31911ba6a33e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 405
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.AutoCommit
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: Auto Commit
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.AutoCommit
+          operator: isEqualString
+          right:
+            value:
+              simple: "False"
+      label: Manual
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      Auto Commit:
+      - "7"
+      Manual:
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Commit and push configuration to folders?
+      id: bf0b9a81-bddd-4d26-8061-a2f4204458b2
+      iscommand: false
+      name: Commit and push configuration to folders?
+      type: condition
+      version: -1
+    taskid: bf0b9a81-bddd-4d26-8061-a2f4204458b2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - Push
+      - "No"
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#default#':
+      - "6"
+      Push:
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Complete this task to push the configuration '
+      id: 4fda2190-a023-4e22-8c0e-c839d57f550b
+      iscommand: false
+      name: 'Complete this task to push the configuration '
+      type: condition
+      version: -1
+    taskid: 4fda2190-a023-4e22-8c0e-c839d57f550b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 230
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Lists all external dynamic lists.
+      id: 3feee49b-90b3-4d39-8034-bc7d95869491
+      iscommand: true
+      name: List all the External Dynamic Lists
+      script: '|||prisma-sase-external-dynamic-list-list'
+      type: regular
+      version: -1
+    taskid: 3feee49b-90b3-4d39-8034-bc7d95869491
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -480
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaSase.ExternalDynamicList.name
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              simple: inputs.Name
+      label: "yes"
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if the object is already defined
+      id: 2d707ee6-bea1-4522-86fc-5711f1a4661e
+      iscommand: false
+      name: Check if the object is already defined
+      type: condition
+      version: -1
+    taskid: 2d707ee6-bea1-4522-86fc-5711f1a4661e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -320
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folder:
+        simple: ${inputs.Folder}
+      frequency:
+        simple: ${inputs.Frequency}
+      id:
+        complex:
+          accessor: id
+          root: PrismaSase.ExternalDynamicList
+      overwrite:
+        simple: ${inputs.Overwrite}
+      predefined_ip_list:
+        simple: ${inputs.IPListName}
+      predefined_url_list:
+        simple: ${inputs.URLListName}
+      source_url:
+        complex:
+          root: inputs.SourceURL
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+      type:
+        complex:
+          root: inputs.EDLObjectType
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Update an existing dynamic list.
+      id: 6c2d0f47-d7fb-4647-80c7-375fd30bdd40
+      iscommand: true
+      name: Create the External Dynamic List Object
+      script: '|||prisma-sase-external-dynamic-list-update'
+      type: regular
+      version: -1
+    taskid: 6c2d0f47-d7fb-4647-80c7-375fd30bdd40
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": -120
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1755,
+        "width": 870,
+        "x": 240,
+        "y": -630
+      }
+    }
+  }

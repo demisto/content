@@ -1,0 +1,753 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 11018d82-4660-4021-8f67-bd073b79d330
+    packName: Sase
+    prevname: ""
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |-
+  This playbook aims to assist in blocking communication with the provided IPs in the Prisma SASE policy.
+  If a group name is provided, the IPs will be added to the mentioned static address group (there should be a rule associated with the group name to block communication with that group).
+  And if the group name is not provided, a new group will be created with a dedicated rule to block communication with those IPs.
+id: 741ae551-25de-4a5c-8e6f-44812e8a0b50
+inputs:
+- description: Tenant services group ID. If not provided, the tsg_id integration parameter
+    will be used as the default.
+  key: TSGID
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: The address value (should match the type)
+  key: IP
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    The configuration folder group setting.
+    The default value is 'Shared'
+  key: Folder
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: Shared
+- description: The static address group name will be appended with IP indicators.
+  key: StaticAddressGroupName
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    Possible Values:
+    True -> Will Commit and Push Configuration
+    False -> Manual Push will be required.
+    Else --> Will ignore the push section and continue the playbook.
+  key: AutoCommit
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Prisma SASE - Block IP
+outputs:
+- contextPath: PrismaSase.AddressGroup
+  type: unknown
+- contextPath: PrismaSase.AddressGroup.id
+  description: The address group ID.
+- contextPath: PrismaSase.AddressGroup.name
+  description: The address group name.
+- contextPath: PrismaSase.AddressGroup.description
+  description: The address group description.
+- contextPath: PrismaSase.AddressGroup.addresses
+  description: The address group addresses.
+- contextPath: PrismaSase.AddressGroup.dynamic_filter
+  description: The address group filter.
+- contextPath: PrismaSase.AddressGroup.folder
+  description: The address group folder.
+- contextPath: PrismaSase
+  type: unknown
+- contextPath: PrismaSase.SecurityRule
+  description: Created security rule.
+- contextPath: PrismaSase.SecurityRule.action
+  description: Security rule action.
+- contextPath: PrismaSase.SecurityRule.application
+  description: Security rule application.
+- contextPath: PrismaSase.SecurityRule.category
+  description: Security rule category.
+- contextPath: PrismaSase.SecurityRule.description
+  description: Security rule description.
+- contextPath: PrismaSase.SecurityRule.destination
+  description: Security rule destination.
+- contextPath: PrismaSase.SecurityRule.folder
+  description: Security rule folder.
+- contextPath: PrismaSase.SecurityRule.from
+  description: Security rule from field (source zone(s)).
+- contextPath: PrismaSase.SecurityRule.id
+  description: Security rule ID.
+- contextPath: PrismaSase.SecurityRule.name
+  description: Security rule name.
+- contextPath: PrismaSase.SecurityRule.position
+  description: Security rule position.
+- contextPath: PrismaSase.SecurityRule.service
+  description: Security rule service.
+- contextPath: PrismaSase.SecurityRule.source
+  description: Security rule source.
+- contextPath: PrismaSase.SecurityRule.source_user
+  description: Security rule source user.
+- contextPath: PrismaSase.SecurityRule.to
+  description: Security rule to field (destination zone(s)).
+- contextPath: PrismaSase.SecurityRule.profile_setting
+  type: unknown
+- contextPath: PrismaSase.SecurityRule.profile_setting.group
+  description: Security rule group.
+- contextPath: PrismaSase.CandidateConfig
+  type: unknown
+- contextPath: PrismaSase.CandidateConfig.job_id
+  description: Configuration job ID.
+- contextPath: PrismaSase.CandidateConfig.result
+  description: The configuration push result, e.g. OK, FAIL.
+- contextPath: PrismaSase.CandidateConfig.details
+  description: The configuration push details.
+- contextPath: PrismaSase.Address
+  description: Created address object.
+- contextPath: PrismaSase.Address.description
+  description: Address description.
+- contextPath: PrismaSase.Address.folder
+  description: Address folder.
+- contextPath: PrismaSase.Address.id
+  description: Address ID.
+- contextPath: PrismaSase.Address.type
+  description: Address type.
+- contextPath: PrismaSase.Address.address_value
+  description: Address value.
+- contextPath: PrismaSase.Address.name
+  description: Address name.
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e0d1416b-5806-4da5-88c9-b0e992ec9a41
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: e0d1416b-5806-4da5-88c9-b0e992ec9a41
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -60
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.IP
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is there an IP to block?
+      id: fd285080-85fa-487e-8461-7b8710246907
+      iscommand: false
+      name: Is there an IP to block?
+      type: condition
+      version: -1
+    taskid: fd285080-85fa-487e-8461-7b8710246907
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.StaticAddressGroupName
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is there an address group provided?
+      id: 0ca5a10c-a607-43ce-8f5d-1308b8db960c
+      iscommand: false
+      name: Is there an address group provided?
+      type: condition
+      version: -1
+    taskid: 0ca5a10c-a607-43ce-8f5d-1308b8db960c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 410
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 99f457e4-1a30-4314-8bf7-7bb4f9b6a8e6
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 99f457e4-1a30-4314-8bf7-7bb4f9b6a8e6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1680
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folder:
+        simple: ${inputs.Folder}
+      group_id:
+        complex:
+          root: inputs.StaticAddressGroupName
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Lists all address groups.
+      id: 79dd999e-4c64-4b5f-885c-c799d32416e6
+      iscommand: true
+      name: Get the Address Group List
+      script: '|||prisma-sase-address-group-list'
+      type: regular
+      version: -1
+    taskid: 79dd999e-4c64-4b5f-885c-c799d32416e6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 580
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folder:
+        complex:
+          root: inputs.Folder
+      name:
+        simple: Block IP group - Created by XSOAR
+      static_addresses:
+        complex:
+          accessor: name
+          root: PrismaSase.Address
+          transformers:
+          - operator: uniq
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+      type:
+        simple: static
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Create a new address group.
+      id: 029e1e65-93e4-45e9-82bd-22e586cc5b5e
+      iscommand: true
+      name: Create a new Static Address Group
+      script: '|||prisma-sase-address-group-create'
+      type: regular
+      version: -1
+    taskid: 029e1e65-93e4-45e9-82bd-22e586cc5b5e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 750
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: deny
+      description:
+        simple: 'Security Rule Created by XSOAR - Due to inc #${incident.id}'
+      destination:
+        complex:
+          accessor: name
+          root: PrismaSase.AddressGroup
+      folder:
+        simple: ${inputs.Folder}
+      name:
+        simple: Security Rule Created by XSOAR
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Create a new security rule.
+      id: 729c88ad-57a6-4fe4-8778-9c3356efedda
+      iscommand: true
+      name: 'Create New Security Rule '
+      script: '|||prisma-sase-security-rule-create'
+      type: regular
+      version: -1
+    taskid: 729c88ad-57a6-4fe4-8778-9c3356efedda
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 970
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.IP
+          operator: in
+          right:
+            iscontext: true
+            value:
+              simple: PrismaSase.AddressGroup.addresses
+      label: "yes"
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if the IPs already exist in the group
+      id: cb95f552-227b-4184-8773-41c388bd5a66
+      iscommand: false
+      name: Check if the IPs already exist in the group
+      type: condition
+      version: -1
+    taskid: cb95f552-227b-4184-8773-41c388bd5a66
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 750
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folders:
+        simple: Remote Networks, Mobile Users, Service Connections
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Push the candidate configuration.
+      id: 40612048-e6cb-4448-8774-ea6dadce93ab
+      iscommand: true
+      name: Push Config
+      script: '|||prisma-sase-candidate-config-push'
+      type: regular
+      version: -1
+    taskid: 40612048-e6cb-4448-8774-ea6dadce93ab
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 1505
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.AutoCommit
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: Auto Commit
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.AutoCommit
+          operator: isEqualString
+          right:
+            value:
+              simple: "False"
+      label: Manual
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      Auto Commit:
+      - "10"
+      Manual:
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Commit and push configuration to folders?
+      id: 24827071-3736-40b3-8b12-13776b0fe3e1
+      iscommand: false
+      name: Commit and push configuration to folders?
+      type: condition
+      version: -1
+    taskid: 24827071-3736-40b3-8b12-13776b0fe3e1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 1140
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AddressGroupName:
+        complex:
+          root: inputs.StaticAddressGroupName
+      AutoCommit:
+        simple: "False"
+      Folder:
+        complex:
+          root: inputs.Folder
+      IP:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.IP
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: PrismaSase.AddressGroup.addresses
+          root: inputs.IP
+      TSGID:
+        complex:
+          root: inputs.TSGID
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'This playbook appends a Static Address Group with provided IPs. '
+      id: e8535616-fa92-4784-8196-8633d038b74e
+      iscommand: false
+      name: Prisma SASE - Add IPs to Static Address Group
+      playbookId: 924469aa-d0f8-4967-8227-d8ec94b2b4d4
+      type: playbook
+      version: -1
+    taskid: e8535616-fa92-4784-8196-8633d038b74e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 970
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: Else
+      Folder:
+        complex:
+          root: inputs.Folder
+      IP:
+        complex:
+          root: inputs.IP
+      TSGID:
+        complex:
+          root: inputs.TSGID
+      Type:
+        simple: ip_netmask
+      limit:
+        simple: "50"
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: db54723e-8606-4c68-8766-e6de873cbda8
+      iscommand: false
+      name: Prisma SASE - Create Address Object
+      playbookId: 3b724423-a68b-4648-8f51-404ad672ec89
+      type: playbook
+      version: -1
+    taskid: db54723e-8606-4c68-8766-e6de873cbda8
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 250
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - Push
+      - "No"
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#default#':
+      - "3"
+      Push:
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Complete this task to push the configuration '
+      id: 3469ee80-3730-4d2a-897d-57f051d77b22
+      iscommand: false
+      name: 'Complete this task to push the configuration '
+      type: condition
+      version: -1
+    taskid: 3469ee80-3730-4d2a-897d-57f051d77b22
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1310
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f2e17c01-2f55-4f89-8a8e-cb21d557bf69
+      iscommand: false
+      name: Prior to this task we should add a list of the IPs to avoid dup
+      type: title
+      version: -1
+    taskid: f2e17c01-2f55-4f89-8a8e-cb21d557bf69
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 130
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1805,
+        "width": 1090,
+        "x": -260,
+        "y": -60
+      }
+    }
+  }

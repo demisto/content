@@ -1,0 +1,527 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 11018d82-4660-4021-8f67-bd073b79d330
+    packName: Sase
+    prevname: ""
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: This playbook helps to create a security rule to block indicators from
+  an EDL. This playbook should run only once to setup the EDL object and its rule.
+id: bfefb360-362f-41a0-8995-8442a19ed94b
+inputs:
+- description: Tenant services group ID. If not provided, the tsg_id integration parameter
+    will be used as the default.
+  key: TSGID
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    The configuration folder group setting.
+    The default value is 'Shared'
+  key: Folder
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: Shared
+- description: The source URL. If the type is ip, url or domain, a value must be provided.
+  key: URL
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: The external dynamic list object name.
+  key: EDLObjectName
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: The Security Policy Rule name will be created for blocking the indicators.
+  key: RuleName
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: 'Block Indicators using EDL - XSOAR incident #${incident.id}'
+- description: |-
+    Possible values:
+    domain,ip,url,predefined_ip,predefined_url
+  key: EDLObjectType
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    Possible Values:
+    True -> Will Commit and Push Configuration
+    False -> Manual Push will be required.
+    Else --> Will ignore the push section and continue the playbook.
+  key: AutoCommit
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Prisma SASE - Create a security pre-rule for EDL
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eb5cd09b-3329-4dbc-802b-f1a9afc79ff7
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: eb5cd09b-3329-4dbc-802b-f1a9afc79ff7
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": -350
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folders:
+        simple: Remote Networks, Mobile Users, Service Connections
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Push the candidate configuration.
+      id: 50979076-2ea6-4044-869f-88005420a756
+      iscommand: true
+      name: Push Config
+      script: '|||prisma-sase-candidate-config-push'
+      type: regular
+      version: -1
+    taskid: 50979076-2ea6-4044-869f-88005420a756
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1085
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.AutoCommit
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: Auto Commit
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.AutoCommit
+          operator: isEqualString
+          right:
+            value:
+              simple: "False"
+      label: Manual
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      Auto Commit:
+      - "1"
+      Manual:
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Commit and push configuration to folders?
+      id: 82cd0fe9-c86d-4e10-8554-8589bd90ff44
+      iscommand: false
+      name: Commit and push configuration to folders?
+      type: condition
+      version: -1
+    taskid: 82cd0fe9-c86d-4e10-8554-8589bd90ff44
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 730
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 622df06d-75c2-4f69-851e-3e467611fff5
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 622df06d-75c2-4f69-851e-3e467611fff5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1260
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: EDLObjectName
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: EDL Object Exist
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.URL
+          operator: isNotEmpty
+      label: Create New Object
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      Create New Object:
+      - "9"
+      EDL Object Exist:
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if the Source URL Was provided
+      id: 869ba2b6-659c-4c6b-8236-9d288efaf33f
+      iscommand: false
+      name: Check if the Source URL Was provided
+      type: condition
+      version: -1
+    taskid: 869ba2b6-659c-4c6b-8236-9d288efaf33f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -210
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Lists all external dynamic lists.
+      id: 307ad24d-4198-4a7b-8d08-94d76444d687
+      iscommand: true
+      name: 'Get EDL object '
+      script: '|||prisma-sase-external-dynamic-list-list'
+      type: regular
+      version: -1
+    taskid: 307ad24d-4198-4a7b-8d08-94d76444d687
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": -40
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaSase.ExternalDynamicList.id
+          operator: isNotEmpty
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaSase.ExternalDynamicList.source
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              simple: inputs.EDLObjectName
+      label: "yes"
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Was there returned object?
+      id: e9cff0a1-05a2-47b0-8643-1b58f6a0e912
+      iscommand: false
+      name: Was there returned object?
+      type: condition
+      version: -1
+    taskid: e9cff0a1-05a2-47b0-8643-1b58f6a0e912
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 130
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: Else
+      EDLObjectType:
+        complex:
+          root: inputs.EDLObjectType
+      Folder:
+        complex:
+          root: inputs.Folder
+      Name:
+        simple: EDL Block Indicators
+      SourceURL:
+        complex:
+          root: inputs.URL
+      TSGID:
+        complex:
+          root: inputs.TSGID
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5b777876-447c-4a3c-8d28-204661342395
+      iscommand: false
+      name: Prisma SASE - Create EDL
+      playbookId: 661afaba-edfa-478d-8271-21ff1c2ca254
+      type: playbook
+      version: -1
+    taskid: 5b777876-447c-4a3c-8d28-204661342395
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 345
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Action:
+        simple: deny
+      Destination:
+        complex:
+          accessor: name
+          root: PrismaSase.ExternalDynamicList
+      Folder:
+        complex:
+          root: inputs.Folder
+      Overwrite:
+        simple: "False"
+      Possition:
+        simple: Pre
+      RuleName:
+        complex:
+          root: inputs.RuleName
+      TSGID:
+        complex:
+          root: inputs.TSGID
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "This playbook handles the creation or editing of the Security
+        Policy Rule for Pisma SASE integration. \n"
+      id: 77c0f310-d4a2-4fd6-8145-42a5d7e0bd5d
+      iscommand: false
+      name: Prisma SASE - Create Security Policy Rule
+      playbookId: 436ca6b3-7e89-4f5b-8e18-e3c67e1d0d65
+      type: playbook
+      version: -1
+    taskid: 77c0f310-d4a2-4fd6-8145-42a5d7e0bd5d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 550
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - Push
+      - "No"
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#default#':
+      - "4"
+      Push:
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Complete this task to push the configuration '
+      id: 166e379f-9232-48ec-81ed-e1570c467865
+      iscommand: false
+      name: 'Complete this task to push the configuration '
+      type: condition
+      version: -1
+    taskid: 166e379f-9232-48ec-81ed-e1570c467865
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 910
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1675,
+        "width": 1000,
+        "x": 320,
+        "y": -350
+      }
+    }
+  }

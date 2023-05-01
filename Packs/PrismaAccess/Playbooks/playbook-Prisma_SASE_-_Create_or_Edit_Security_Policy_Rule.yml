@@ -1,0 +1,755 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 11018d82-4660-4021-8f67-bd073b79d330
+    packName: Sase
+    prevname: ""
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: "This playbook handles the creation or editing of the Security Policy
+  Rule for Pisma SASE integration. \n"
+id: 436ca6b3-7e89-4f5b-8e18-e3c67e1d0d65
+inputs:
+- description: Tenant services group ID. If not provided, the tsg_id integration parameter
+    will be used as the default.
+  key: TSGID
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    The configuration folder group setting.
+    The default value is 'Shared'
+  key: Folder
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: Shared
+- description: |-
+    Possible Values:
+    allow,deny,drop,reset-both,reset-client,reset-server
+  key: Action
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    Rule position.
+    The default value is 'pre'
+  key: Position
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: pre
+- description: |-
+    A comma-separated list of source networks.
+    The default value is 'any'
+  key: Source
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: any
+- description: |-
+    A comma-separated list of destination networks.
+    The default value is 'any'
+  key: Destination
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: any
+- description: |-
+    Services the rule applies to.
+    Default value is 'any'
+  key: Service
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: any
+- description: |-
+    A comma-separated list of applications.
+    Default value is 'any'
+  key: Application
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: any
+- description: The name of the security rule.
+  key: RuleName
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: |-
+    Possible Values:
+    True -> Will Commit and Push Configuration
+    False -> Manual Push will be required.
+    Else --> Will ignore the push section and continue the playbook.
+  key: AutoCommit
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    Whether to overwrite the original rule values.
+    The default value is 'false'
+  key: Overwrite
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "False"
+- description: |-
+    A comma-separated list of categories. You can get category values by running the prisma-sase-custom-url-category-list command.
+    Default value is 'any'
+  key: Category
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: any
+name: Prisma SASE - Create or Edit Security Policy Rule
+outputs:
+- contextPath: PrismaSase.CandidateConfig
+  type: unknown
+- contextPath: PrismaSase.CandidateConfig.job_id
+  description: Configuration job ID.
+- contextPath: PrismaSase.CandidateConfig.result
+  description: The configuration push result, e.g. OK, FAIL.
+- contextPath: PrismaSase.CandidateConfig.details
+  description: The configuration push details.
+- contextPath: PrismaSase
+  type: unknown
+- contextPath: PrismaSase.SecurityRule
+  description: Found security rule.
+- contextPath: PrismaSase.SecurityRule.action
+  description: Security rule action.
+- contextPath: PrismaSase.SecurityRule.application
+  description: Security rule application.
+- contextPath: PrismaSase.SecurityRule.category
+  description: Security rule category.
+- contextPath: PrismaSase.SecurityRule.description
+  description: Security rule description.
+- contextPath: PrismaSase.SecurityRule.destination
+  description: Security rule destination.
+- contextPath: PrismaSase.SecurityRule.folder
+  description: Security rule folder.
+- contextPath: PrismaSase.SecurityRule.from
+  description: Security rule from field (source zone(s)).
+- contextPath: PrismaSase.SecurityRule.id
+  description: Security rule ID.
+- contextPath: PrismaSase.SecurityRule.log_setting
+  description: Security rule log setting.
+- contextPath: PrismaSase.SecurityRule.name
+  description: Security rule name.
+- contextPath: PrismaSase.SecurityRule.position
+  description: Security rule position.
+- contextPath: PrismaSase.SecurityRule.service
+  description: Security rule service.
+- contextPath: PrismaSase.SecurityRule.source
+  description: Security rule source.
+- contextPath: PrismaSase.SecurityRule.source_user
+  description: Security rule source user.
+- contextPath: PrismaSase.SecurityRule.tag
+  description: Security rule tag.
+- contextPath: PrismaSase.SecurityRule.to
+  description: Security rule to field (destination zone(s)).
+- contextPath: PrismaSase.SecurityRule.negate_destination
+  description: Security rule negate destination.
+- contextPath: PrismaSase.SecurityRule.profile_setting
+  type: unknown
+- contextPath: PrismaSase.SecurityRule.profile_setting.group
+  description: Security rule group.
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0e6e9db1-9fbc-4c0f-862c-1faa0d7690da
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 0e6e9db1-9fbc-4c0f-862c-1faa0d7690da
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 90
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto Networks - Prisma SASE
+      description: Lists all security rules.
+      id: d0687fb0-11f9-4319-8626-6bea70f8512e
+      iscommand: true
+      name: List Security Policy
+      script: Palo Alto Networks - Prisma SASE|||prisma-sase-security-rule-list
+      type: regular
+      version: -1
+    taskid: d0687fb0-11f9-4319-8626-6bea70f8512e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaSase.SecurityRule.name
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              simple: inputs.RuleName
+      label: "yes"
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if the rule is already created
+      id: b2325c73-cbd4-49b6-83ab-9cf9eb086d2c
+      iscommand: false
+      name: Check if the rule is already created
+      type: condition
+      version: -1
+    taskid: b2325c73-cbd4-49b6-83ab-9cf9eb086d2c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.Action
+      application:
+        complex:
+          root: inputs.Application
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: any
+            operator: SetIfEmpty
+      category:
+        complex:
+          root: inputs.Category
+      destination:
+        complex:
+          root: inputs.Destination
+      folder:
+        complex:
+          root: inputs.Folder
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Shared
+            operator: SetIfEmpty
+      name:
+        complex:
+          root: inputs.RuleName
+      position:
+        complex:
+          root: inputs.Position
+      service:
+        complex:
+          root: inputs.Service
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: any
+            operator: SetIfEmpty
+      source:
+        complex:
+          root: inputs.Source
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: any
+            operator: SetIfEmpty
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Create a new security rule.
+      id: d3c57177-a172-4840-86fd-b9d791a247e2
+      iscommand: true
+      name: Create New Security Rule
+      script: '|||prisma-sase-security-rule-create'
+      type: regular
+      version: -1
+    taskid: d3c57177-a172-4840-86fd-b9d791a247e2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 550
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 903970f1-cd5d-4ca1-8226-bea09e658349
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 903970f1-cd5d-4ca1-8226-bea09e658349
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1595
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folder:
+        complex:
+          root: inputs.Folder
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Lists all security rules.
+      id: 582ee6a5-b2e0-4623-8070-579ff946282e
+      iscommand: true
+      name: Check if the policy was pushed successfully.
+      script: '|||prisma-sase-security-rule-list'
+      type: regular
+      version: -1
+    taskid: 582ee6a5-b2e0-4623-8070-579ff946282e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1240
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: aa
+          operator: isEqualString
+          right:
+            value:
+              simple: aa
+      label: "yes"
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'The policy was created successfully? '
+      id: 50d20336-62eb-4f43-8f6a-7fd4d56dbda9
+      iscommand: false
+      name: 'The policy was created successfully? '
+      type: condition
+      version: -1
+    taskid: 50d20336-62eb-4f43-8f6a-7fd4d56dbda9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1400
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: The policy wasn't pushed properly
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: e06bf245-0bdc-4aa5-8c7f-59efd8e33aa7
+      iscommand: false
+      name: Raise error on pushing config
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: e06bf245-0bdc-4aa5-8c7f-59efd8e33aa7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 1580
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folders:
+        complex:
+          root: inputs.Folder
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Push the candidate configuration.
+      id: c7d4f08b-d377-4654-84aa-ce5b3d462df0
+      iscommand: true
+      name: Push Config
+      script: '|||prisma-sase-candidate-config-push'
+      type: regular
+      version: -1
+    taskid: c7d4f08b-d377-4654-84aa-ce5b3d462df0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1075
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.AutoCommit
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: Auto Commit
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.AutoCommit
+          operator: isEqualString
+          right:
+            value:
+              simple: "False"
+      label: Manual
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      Auto Commit:
+      - "10"
+      Manual:
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Commit and push configuration to folders?
+      id: 041a6d58-e043-4069-8e6c-d109b95f81cc
+      iscommand: false
+      name: Commit and push configuration to folders?
+      type: condition
+      version: -1
+    taskid: 041a6d58-e043-4069-8e6c-d109b95f81cc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - Push
+      - "No"
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#default#':
+      - "5"
+      Push:
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Complete this task to push the configuration '
+      id: 4c29e35e-13da-4951-85d0-eeafaa74fd2c
+      iscommand: false
+      name: 'Complete this task to push the configuration '
+      type: condition
+      version: -1
+    taskid: 4c29e35e-13da-4951-85d0-eeafaa74fd2c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 890
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.Action
+      application:
+        complex:
+          root: inputs.Application
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: any
+            operator: SetIfEmpty
+      category:
+        complex:
+          root: inputs.Category
+      destination:
+        complex:
+          root: inputs.Destination
+      folder:
+        complex:
+          root: inputs.Folder
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Shared
+            operator: SetIfEmpty
+      overwrite:
+        complex:
+          root: inputs.Overwrite
+      position:
+        complex:
+          root: inputs.Position
+      rule_id:
+        complex:
+          accessor: id
+          root: PrismaSase.SecurityRule
+      service:
+        complex:
+          root: inputs.Service
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: any
+            operator: SetIfEmpty
+      source:
+        complex:
+          root: inputs.Source
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: any
+            operator: SetIfEmpty
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Update an existing security rule.
+      id: dd503d28-c400-4cf2-8d25-1f5234ac3845
+      iscommand: true
+      name: Update Security Rule
+      script: '|||prisma-sase-security-rule-update'
+      type: regular
+      version: -1
+    taskid: dd503d28-c400-4cf2-8d25-1f5234ac3845
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 550
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_10_Auto Commit": 0.74
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1585,
+        "width": 1340,
+        "x": 240,
+        "y": 90
+      }
+    }
+  }
