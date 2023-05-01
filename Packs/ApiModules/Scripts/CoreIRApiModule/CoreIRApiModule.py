@@ -2,6 +2,7 @@ from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
 import urllib3
 import copy
+import re
 from operator import itemgetter
 
 from typing import Tuple, Callable
@@ -1263,6 +1264,13 @@ class CoreClient(BaseClient):
             method='POST',
             url_suffix='/rbac/get_user_group/',
             json_data={"request_data": {"group_names": groups_name}},
+        )
+
+    def get_list_roles(self, role_names: list) -> dict:
+        return self._http_request(
+            method='POST',
+            url_suffix='/rbac/get_roles/',
+            json_data={"request_data": {"role_names": role_names}},
         )
 
 
@@ -3587,7 +3595,7 @@ def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
     )
 
 
-def parse_list_users(user: dict) -> dict:
+def parse_list_users(user: dict[str, Any]) -> dict[str, Any]:
     return {
         'User email': user.get('user_email'),
         'First Name': user.get('user_first_name'),
@@ -3598,7 +3606,21 @@ def parse_list_users(user: dict) -> dict:
     }
 
 
-def get_list_users_command(client: CoreClient, args: dict) -> CommandResults:
+def get_list_users_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    """
+    Returns a list of all users using the Core API client.
+
+    Args:
+        client: A CoreClient instance used for connecting to the Core API.
+        args: A dictionary containing additional arguments. Possible keys include:
+            - integration_context_brand (str): The name of the integration context brand.
+
+    Returns:
+        A CommandResults object containing the readable_output and outputs fields.
+
+    Raises:
+        ValueError: If the API connection failed.
+    """
     try:
         list_users: list = client.get_list_users().get('reply', [])
     except Exception as e:
@@ -3623,15 +3645,41 @@ def parse_risky_users_or_hosts(user_or_host: dict, table_title: str) -> dict:
     }
 
 
-def find_the_cause_error(err: str, id_or_group: str ) -> str:
-    pattern = fr"{id_or_group} '?(.+)'"
-    
+def find_the_cause_error(err: str, id_or_group_or_role: str) -> str:
+    """
+    Finds the cause of an error message related to a missing ID, group or role.
+
+    Args:
+        err: A string containing the error message to parse.
+        id_or_group_or_role: A string representing the type of entity (ID, group or role) that was not found.
+
+    Returns:
+        A string describing the cause of the error message.
+
+    """
+    pattern = fr"{id_or_group_or_role} \\?‘([\(\)\[\]A-Za-z 0-9]+)\\?’"
     if match := re.search(pattern, err):
-        return f'Error: {id_or_group} {match.group(1)} was not found'
+        return f'Error: {id_or_group_or_role} {match.group(1)} was not found'
     return "Error: "
 
 
-def get_list_risky_users_command(client: CoreClient, args: dict) -> CommandResults:
+def get_list_risky_users_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    """
+    Retrieves a list of risky users or details about a specific user's risk score.
+
+    Args:
+        client: A CoreClient object used to communicate with the API.
+        args: A dictionary containing the following keys (optional):
+            - user_id [str]: ID of the user to retrieve risk score details for.
+            - limit [str]: Specifying the maximum number of risky users to return.
+
+    Returns:
+        A CommandResults object
+
+    Raises:
+        ValueError: If the API connection fails or the specified user ID is not found.
+
+    """
     table_title = 'User ID'
 
     if user_id := args.get('user_id'):
@@ -3646,9 +3694,8 @@ def get_list_risky_users_command(client: CoreClient, args: dict) -> CommandResul
 
     else:
         list_limit = int(args.get('limit', 50))
-        outputs = client.get_list_risky_users().get('reply', [])[:list_limit]
+        outputs: list = client.get_list_risky_users().get('reply', [])[:list_limit]
 
-        
         table_for_markdown = [parse_risky_users_or_hosts(user, table_title) for user in outputs]
 
     readable_output = tableToMarkdown(name='Risky Users', t=table_for_markdown)
@@ -3661,7 +3708,25 @@ def get_list_risky_users_command(client: CoreClient, args: dict) -> CommandResul
     )
 
 
-def get_list_risky_hosts_command(client: CoreClient, args: dict) -> CommandResults:
+def get_list_risky_hosts_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    """
+    This function retrieves a list of risky hosts from the Core API module.
+    If a host ID is provided, it retrieves the details of that host.
+    Otherwise, it will retrieve data for up to a specified limit (default is 50).
+    The function then formats the output into a table and returns it as a Command Results object.
+
+    Args:
+    - client: A CoreClient object that is used to communicate with the Core API module.
+    - args: A dictionary of arguments that are passed to the function. The following keys may be present:
+        - host_id(optional): The ID of the risky host to retrieve details for.
+        - limit(optional): The maximum number of risky hosts to retrieve.
+
+    Returns:
+    - A CommandResults object
+
+    Raises:
+    - ValueError: If the API connection fails or the specified Host ID is not found.
+    """
     table_title = 'Host ID'
 
     if host_id := args.get('host_id'):
@@ -3700,23 +3765,92 @@ def parse_user_groups(group: dict) -> list:
     ]
 
 
-def get_list_user_groups_command(client: CoreClient, args: dict) -> CommandResults:
+def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    """
+     Retrieves a list of user groups from the Core API module based on the specified group names.
+
+    Args:
+        client: A CoreClient object used to communicate with the Core API module.
+        args: A dictionary of arguments passed to the function. The following keys may be present:
+            - group_names (required): A list of group names to retrieve details for.
+
+    Returns:
+        A CommandResults object containing the table of user groups.
+
+    Raises:
+        ValueError: If the API connection fails or the specified group name(s) is not found.
+    """
     group_names = argToList(args.get('group_names'))
     try:
-        outputs = client.get_list_user_groups(group_names)
+        outputs = client.get_list_user_groups(group_names).get("reply", [])
     except DemistoException as e:
         if e.res is not None and e.res.status_code == 500 and 'was not found' in str(e):
             error_msg = find_the_cause_error(str(e), "Group")
-            raise ValueError(f'{error_msg}, Note: If you sent more than one group name, they may not exist either, full error message: {e}') 
+            raise ValueError(
+                f'{error_msg}, Note: If you sent more than one group name, they may not exist either, full error message: {e}'
+            ) from e
         raise
     table_for_markdown: list = []
     for group in outputs:
         table_for_markdown.extend(parse_user_groups(group))
     readable_output = tableToMarkdown(name='Groups', t=table_for_markdown)
-
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.UserGroup',
         outputs_key_field='group_name',
+        outputs=outputs,
+    )
+
+
+def parse_role_names(role_data):
+    return {
+        "Role Name": role_data.get("pretty_name"),
+        "Description": role_data.get("description"),
+        "Permission": role_data.get("permissions", []),
+        "Users": role_data.get("users", []),
+        "Groups": role_data.get("groups", []),
+    }
+
+
+def get_list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    """
+    Retrieves a list of roles with the provided role names from the Core API.
+
+    Args:
+        client: A CoreClient object used to communicate with the Core API module.
+        args: A dictionary of arguments. The 'role_names' key should be present and contain a
+              comma-separated string of role names to retrieve.
+
+    Returns:
+         A CommandResults object containing the table of roles.
+
+    Raises:
+        DemistoException: If an error occurs while retrieving the data from the Core API.
+        ValueError: If the input argument is not valid.
+
+    """
+    role_names = argToList(args.get("role_names"))
+    try:
+        outputs = client.get_list_roles(role_names).get("reply", [])
+    except DemistoException as e:
+        if e.res is not None and e.res.status_code == 500 and 'was not found' in str(e):
+            error_msg = find_the_cause_error(str(e), "Role")
+            raise ValueError(f'{error_msg}, full error message: {e}') from e
+        raise
+
+    if not outputs:
+        return CommandResults(readable_output="No entries")
+
+    headers = ["Role Name", "Description", "Permissions", "Users", "Groups"]
+    table_for_markdown = [parse_role_names(role[0]) for role in outputs]
+    readable_output = tableToMarkdown(
+        name='Roles',
+        t=table_for_markdown,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.Role',
+        outputs_key_field='pretty_name',
         outputs=outputs,
     )

@@ -1608,6 +1608,9 @@ def main():  # pragma: no cover
         elif command == 'xdr-list-user-groups':
             return_results(get_list_user_groups_command(client, args))
 
+        elif command == 'xdr-list-roles':
+            return_results(get_list_roles_command(client, args))
+
     except Exception as err:
         return_error(str(err))
 

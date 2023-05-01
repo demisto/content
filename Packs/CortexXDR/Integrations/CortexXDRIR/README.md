@@ -3162,6 +3162,250 @@ Builtin Roles with this permission includes: "Investigator", "Privileged Investi
 >|---|---|
 >| new ip address | 1.1.1.1 |
 
+### xdr-list-risky-users
+
+***
+Retrieve the risk score of a specific user or list of users with the highest risk score in your environment along with the reason affecting each score.
+
+#### Base Command
+
+`xdr-list-risky-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | Unique ID of a specific user.<br/>User ID should be in the following format: dummy/dummy<br/>. | Optional | 
+| limit | Limit the number of users that will appear in the list. By default, the limit is 50 users.(use limit when you don't asking for specific user). Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.RiskyUser.type | String | Form of identification element. | 
+| PaloAltoNetworksXDR.RiskyUser.id | String | Identification value of the type field. | 
+| PaloAltoNetworksXDR.RiskyUser.score | Integer | The score assigned to the user. | 
+| PaloAltoNetworksXDR.RiskyUser.reasons.date created | String | Date the incident created. | 
+| PaloAltoNetworksXDR.RiskyUser.reasons.description | String | Description of the incident. | 
+| PaloAltoNetworksXDR.RiskyUser.reasons.severity | String | The severity of the incident | 
+| PaloAltoNetworksXDR.RiskyUser.reasons.status | String | Incident status | 
+| PaloAltoNetworksXDR.RiskyUser.reasons.points | integer | Points the incident get | 
+
+#### Command example
+```!xdr-list-risky-users user_id=dummy```
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "RiskyUser": {
+            "id": "dummy",
+            "reasons": [],
+            "score": 0,
+            "type": "user"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Risky Users
+>|Description|Score|User ID|
+>|---|---|---|
+>|  | 0 | dummy |
+
+### xdr-list-users
+
+***
+Retrieve a list of the current users in your environment.
+
+#### Base Command
+
+`xdr-list-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.User.user_email | string | Email address of the user | 
+| PaloAltoNetworksXDR.User.user_first_name | string | First name of the user | 
+| PaloAltoNetworksXDR.User.user_last_name | string | Last name of the user. | 
+| PaloAltoNetworksXDR.User.role_name | string | Role name associated with the user. | 
+| PaloAltoNetworksXDR.User.last_logged_in | integer | Timestamp of when the user last logged in. | 
+| PaloAltoNetworksXDR.User.user_type | string | Type of user. | 
+| PaloAltoNetworksXDR.User.groups | array | Name of user groups associated with the user, if applicable. | 
+| PaloAltoNetworksXDR.User.scope | array | Name of scope associated with the user, if applicable. | 
+
+#### Command example
+```!xdr-list-users```
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "User": [
+            {
+                "groups": [],
+                "last_logged_in": 1648158415051,
+                "role_name": "dummy",
+                "scope": [],
+                "user_email": "dummy@dummy.com",
+                "user_first_name": "dummy",
+                "user_last_name": "dummy",
+                "user_type": "CSP"
+            },
+            {
+                "groups": [],
+                "last_logged_in": null,
+                "role_name": "dummy",
+                "scope": [],
+                "user_email": "dummy@dummy.com",
+                "user_first_name": "dummy",
+                "user_last_name": "dummy",
+                "user_type": "CSP"
+            },
+          
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+
+
+>### Users
+>|First Name|Groups|Last Name|Role|Type|User email|
+>|---|---|---|---|---|---|
+>| dummy |  | dummy | dummy | CSP | dummy@dummy.com |
+>| dummy |  | dummy | dummy | CSP | dummy@dummy.com |
+
+
+### xdr-list-risky-hosts
+
+***
+Retrieve the risk score of a specific host or list of hosts with the highest risk score in your environment along with the reason affecting each score.
+
+#### Base Command
+
+`xdr-list-risky-hosts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | Unique ID of a specific host.<br/>. | Optional | 
+| limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(use limit when you don't asking for specific host). Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.RiskyHost.type | String | Form of identification element. | 
+| PaloAltoNetworksXDR.RiskyHost.id | String | Identification value of the type field. | 
+| PaloAltoNetworksXDR.RiskyHost.score | Integer | The score assigned to the host. | 
+| PaloAltoNetworksXDR.RiskyHost.reasons.date created | String | Date the incident created. | 
+| PaloAltoNetworksXDR.RiskyHost.reasons.description | String | Description of the incident. | 
+| PaloAltoNetworksXDR.RiskyHost.reasons.severity | String | The severity of the incident | 
+| PaloAltoNetworksXDR.RiskyHost.reasons.status | String | Incident status | 
+| PaloAltoNetworksXDR.RiskyHost.reasons.points | integer | Points the incident get | 
+
+#### Command example
+```!xdr-list-risky-hosts host_id=dummy	```
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "RiskyHost": {
+            "id": "dummy",
+            "reasons": [],
+            "score": 0,
+            "type": "host"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Risky Hosts
+>|Description|Host ID|Score|
+>|---|---|---|
+>|  | dummy | 0 |
+
+### xdr-list-roles
+
+***
+Retrieve information about one or more roles created in your environment.
+
+#### Base Command
+
+`xdr-list-roles`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| role_names | List of one or more role names in your environment for which you want detailed information. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.Role.pretty name | String | Name of the role as it appears in the Management Console. | 
+| PaloAltoNetworksXDR.Role.permissions | array | List of permissions associated with this role. | 
+| PaloAltoNetworksXDR.Role.insert time | Number | Timestamp of when the Role was created. | 
+| PaloAltoNetworksXDR.Role.update time | Number | Timestamp of when the Role was last updated. | 
+| PaloAltoNetworksXDR.Role.created by | String | Email of the user who created the Role. | 
+| PaloAltoNetworksXDR.Role.description | String | Description of the Role, if available. | 
+| PaloAltoNetworksXDR.Role.groups | array | Group names associated with the Role. | 
+| PaloAltoNetworksXDR.Role.users | array | Email address of users associated with the Role. | 
+
+#### Command example
+```!xdr-list-roles role_names="dummy"```
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "Role": [
+            [
+                {
+                    "created_by": "dummy dummy",
+                    "description": "The user(s) have full access to the given app(s).",
+                    "groups": [
+                        ""
+                    ],
+                    "insert_time": null,
+                    "permissions": [
+                        "dummy1",
+                        "dummy2",
+                    ],
+                    "pretty_name": "dummy",
+                    "update_time": null,
+                    "users": [
+                        "dummy1@dummy.com",
+                        "dummy2@dummy.com",
+                        "dummy3@dummy.com"
+                    ]
+                }
+            ]
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Roles
+>|Role Name|Description|Permission|Users|Groups|
+>|---|---|---|---|---|
+>| dummy | The user(s) have full access to the given app(s). | dummy,<br/>dummy,<br/>| dummy@dummy.com,<br/>dummy@dummy.com,<br/>dummy@dummy.com,<br/>dummy@dummy.com,<br/> |  |
+
+
 ## xdr-script-run
 ***
 Initiates a new endpoint script execution action using a script from the script library and returns the results.
@@ -3402,6 +3646,8 @@ There are no arguments for this command.
 >|Compute _ Unit _ Expiration|Data _ Enabled _ Pro _ Per _ Endpoint|Forensics _ Expiration|Installed _ Prevent|Installed _ Pro _ Tb|Prevent _ Expiration|Pro _ Per _ Endpoint _ Expiration|Pro _ Tb _ Expiration|Purchased _ Compute _ Unit|Purchased _ Prevent|Purchased _ Pro _ Per _ Endpoint|Purchased _ Pro _ Tb|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  |  |  |  |  |  | May 7th 2025 06:59:59 | May 7th 2025 06:59:59 |  |  | ***agents***: 300 | ***tb***: 1 |
+
+
 
 
 ## Incident Mirroring

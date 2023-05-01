@@ -3649,7 +3649,7 @@ script:
   - arguments:
     - description: |
         Unique ID of a specific user.
-        User ID should be in the following format: netBIOS/samAccount
+        User ID should be in the following format: dummy/dummy
       name: user_id
     - description: Limit the number of users that will appear in the list. By default, the limit is 50 users.(use limit when you don't asking for specific user)
       name: limit
@@ -3681,6 +3681,100 @@ script:
     - contextPath: Core.RiskyUser.reasons.points
       description: Points the incident get
       type: integer
+  - arguments:
+    - description: >
+        Unique ID of a specific host.
+      name: host_id
+    - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(use limit when you don't asking for specific host)
+      name: limit
+      defaultValue: 50
+    name: core-list-risky-hosts
+    description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in your environment along with the reason affecting each score.
+    outputs:
+    - contextPath: Core.RiskyHost.type
+      description: Form of identification element.
+      type: String
+    - contextPath: Core.RiskyHost.id
+      description: Identification value of the type field.
+      type: String
+    - contextPath: Core.RiskyHost.score
+      description: The score assigned to the host.
+      type: Integer
+    - contextPath: Core.RiskyHost.reasons.date created
+      description: Date the incident created.
+      type: String
+    - contextPath: Core.RiskyHost.reasons.description
+      description: Description of the incident.
+      type: String
+    - contextPath: Core.RiskyHost.reasons.severity
+      description: The severity of the incident
+      type: String
+    - contextPath: Core.RiskyHost.reasons.status
+      description: Incident status
+      type: String
+    - contextPath: Core.RiskyHost.reasons.points
+      description: Points the incident get
+      type: integer
+  - arguments:
+    - description: List of one or more user group names for which you want the associated users.
+      name: group_names
+      isArray: true
+      required: true
+    name: core-list-user-groups
+    description: Retrieve a list of the current user emails associated with one or more user groups in your environment.
+    outputs:
+    - contextPath: Core.UserGroup.group_name
+      description: Name of the User Group.
+      type: String
+    - contextPath: Core.UserGroup.description
+      description: Description of the User Group, if available.
+      type: String
+    - contextPath: Core.UserGroup.pretty_name
+      description: Name of the User Group as it appears in the Management Console.
+      type: String
+    - contextPath: Core.UserGroup.insert_time
+      description: Timestamp of when the User Group was created
+      type: Number
+    - contextPath: Core.UserGroup.update_time
+      description: Timestamp of when the User Group was last updated
+      type: Number
+    - contextPath: Core.UserGroup.user_email
+      description: List of email addresses belonging to the users associated with the User Group
+      type: array
+    - contextPath: Core.UserGroup.source
+      description: Type of User Group.
+      type: String   
+  - arguments:
+    - description: List of one or more role names in your environment for which you want detailed information.
+      name: role_names
+      required: true
+    name: core-list-roles
+    description: Retrieve information about one or more roles created in your environment. 
+    outputs:
+    - contextPath: Core.Role.pretty name  
+      description: Name of the role as it appears in the Management Console.
+      type: String
+    - contextPath: Core.Role.permissions
+      description: List of permissions associated with this role.
+      type: array
+    - contextPath: Core.Role.insert time
+      description: Timestamp of when the Role was created.
+      type: Number
+    - contextPath: Core.Role.update time
+      description: Timestamp of when the Role was last updated.
+      type: Number
+    - contextPath: Core.Role.created by
+      description: Email of the user who created the Role.
+      type: String
+    - contextPath: Core.Role.description
+      description: Description of the Role, if available.
+      type: String
+    - contextPath: Core.Role.groups
+      description: Group names associated with the Role.
+      type: array
+    - contextPath: Core.Role.users
+      description: Email address of users associated with the Role.
+      type: array
   feed: false
   isfetch: false
   longRunning: false

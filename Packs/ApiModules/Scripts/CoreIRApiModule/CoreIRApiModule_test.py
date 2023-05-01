@@ -12,7 +12,7 @@ from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoEx
 from CoreIRApiModule import CoreClient
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command, get_list_risky_users_command, get_list_risky_hosts_command, get_list_user_groups_command, \
-    parse_user_groups, get_list_users_command
+    parse_user_groups, get_list_users_command, get_list_roles_command
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
@@ -3372,3 +3372,48 @@ def test_get_list_users_command(mocker):
 
     results = get_list_users_command(client=client, args={})
     assert "dummy@dummy.com" in results.readable_output
+
+
+@pytest.mark.parametrize(
+    "role_data, expected_output",
+    [
+        (
+            {
+                "reply": [
+                    [
+                        {
+                            "pretty_name": "test",
+                            "description": "test",
+                            "permissions": "test",
+                            "users": "test",
+                            "groups": "test",
+                        }
+                    ]
+                ]
+            },
+            "test",
+        ),
+        ({}, "No entries"),
+    ],
+)
+def test_get_list_roles_command(
+    mocker, role_data: dict[str, str], expected_output: str
+) -> None:
+    """
+    Tests the 'get_list_roles_command' function.
+
+    Args:
+        mocker: A pytest-mock object.
+        role_data (dict): A dictionary containing the test data for the roles.
+        expected_output (str): The expected output for the test.
+
+    Raises:
+        AssertionError: If the test fails.
+    """
+    client = CoreClient("test", {})
+
+    mocker.patch.object(CoreClient, "get_list_roles", return_value=role_data)
+
+    results = get_list_roles_command(client=client, args=role_data)
+
+    assert expected_output in results.readable_output
