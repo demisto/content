@@ -4,7 +4,7 @@ alter answerSec = arrayindex(regextract(_raw_log ,"ANSWER\sSECTION\:([^\:]+)AUTH
 | alter answerSec = replex(answerSec ,"\n","")
 | alter answerType = arrayindex(regextract(answerSec ,"TYPE\s+([a-zA-Z]*)"),0),
     answerValue = arrayindex(regextract(answerSec ,"DATA\s+([\d\.]*)"),0)
-//
+// adding testdata
 | alter ResponseRequest=arrayindex(regextract(_raw_log,"(\s|R)\s"),7),
     Context=arrayindex(regextract(_raw_log,"PACKET\s+(\w+)\s"),0)
 | alter xdm.source.port=if(sourcePort!="",to_integer(sourcePort),0),
