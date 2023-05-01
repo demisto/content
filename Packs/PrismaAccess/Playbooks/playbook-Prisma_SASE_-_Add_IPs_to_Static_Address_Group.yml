@@ -27,7 +27,7 @@ inputs:
 - description: |-
     Possible Values:
     True -> Will commit and push configuration.
-    False -> Manual Push will be required.
+    False -> Manual push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AddressGroupName
   playbookInputQuery:
