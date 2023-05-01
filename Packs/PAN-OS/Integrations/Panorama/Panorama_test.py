@@ -6464,6 +6464,44 @@ class TestFetchIncidentsFlows:
         assert last_id_dict.get('Y_log_type', '') == {'dummy_device2': '000000003'}
 
 
+def test_find_largest_id_per_device():
+    """
+    Given:
+    - list of dictionares repesenting raw entries.
+    When:
+        - find_largest_id_per_device is called.
+    Then:
+        - return a dictionary with the largest id per device.
+    """
+    raw_entries = [{'device_name': 'dummy_device1', 'seqno': '000000001'},
+                   {'device_name': 'dummy_device1', 'seqno': '000000002'},
+                   {'device_name': 'dummy_device2', 'seqno': '000000001'}]
+    from Panorama import find_largest_id_per_device
+    res = find_largest_id_per_device(raw_entries)
+    assert res == {'dummy_device1': '000000002', 'dummy_device2': '000000001'}
+
+
+def test_remove_duplicates_entries():
+    """
+    Given:
+    - list of dictionares repesenting raw entries.
+    - dictionary with the largest id per device.
+    When:
+    - remove_duplicates_entries is called.
+    Then:
+    - return a dictionary the entries that there id is larger then the id in the id_dict.
+    """
+    from Panorama import remove_duplicates_entries
+    raw_entries = {"log_type1": [{'device_name': 'dummy_device1', 'seqno': '000000001'},
+                   {'device_name': 'dummy_device1', 'seqno': '000000002'},
+                   {'device_name': 'dummy_device2', 'seqno': '000000001'}],
+                   "log_type2": [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
+    id_dict = {"log_type1": {'dummy_device1': '000000002', 'dummy_device2': '000000001'}}
+    res = remove_duplicates_entries(raw_entries, id_dict)
+    assert res == {'log_type1':[{'device_name': 'dummy_device1', 'seqno': '000000002'}],
+                   'log_type2': [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
+
+
 @pytest.mark.parametrize('name_match, name_contain, filters, expected_result',
                          mock_rules.get_mock_rules_and_application)
 def test_build_xpath_filter(name_match, name_contain, filters, expected_result):
