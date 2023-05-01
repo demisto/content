@@ -28,7 +28,7 @@ args:
 - name: output_name2
   required: true
   description: The key name in the output dictionary to which each of element of the array2 are given
-- name: different_sized
+- name: determine_output_length_by
   auto: PREDEFINED
   predefined:
   - shorter
@@ -42,13 +42,13 @@ args:
   predefined:
   - array1
   - array2
-  - array1<2
-  - array2<1
-  description: Specify which array will be merged into when each of element is given in dictionary. (Choose from array1, array2, array1|2, or array2|1)
+  - array1<array2
+  - array2<array1
+  description: When each element is given in a dictionary, specify the array it will be merged into (Choose from array1, array2, array1<array2, or array2<array1).
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.11.54132
+dockerimage: demisto/python3:3.10.11.56082
 runas: DBotWeakRole
 fromversion: 6.8.0
 tests:

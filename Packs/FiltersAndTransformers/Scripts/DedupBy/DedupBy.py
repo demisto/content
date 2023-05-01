@@ -4,10 +4,29 @@ from typing import Any, List, Union
 
 
 def demisto_get(obj: Any, path: Any) -> Any:
-    """
-    demisto.get(), this supports a syntax of path escaped with backslash.
+    r"""
+    This is an extended function of demisto.get().
+    The `path` argument parameter supports a syntax of path escaped with backslash
+    in order to support a key icluding period charactors.
+
+    e.g.
+       xxx
+        + x.y.z
+         + zzz
+
+       -> path: xxx.x\.y\.z.zzz
+
+    :param obj: The root node.
+    :param path: The path to get values in the node.
+    :return: The value(s) specified with `path` in the node.
     """
     def split_context_path(path: str) -> List[str]:
+        """
+        Get keys in order from the path which supports a syntax of path escaped with backslash.
+
+        :param path: The path.
+        :return: The keys whose escape charactors are removed.
+        """
         nodes = []
         node = []
         itr = iter(path)
@@ -37,7 +56,17 @@ def demisto_get(obj: Any, path: Any) -> Any:
 
 
 class Key(object):
+    """
+    The custom key object class, which enables you to compare any types of data even in different types.
+    This can be used for keys of dict.
+    """
     def __init__(self, value: Any, path: Optional[str] = None) -> None:
+        """
+        Initialize the key.
+
+        :param value: The value to set key, or the node from which to get the value if the `path` is given.
+        :param path: The path to get values in the node.
+        """
         self.__value = value if path is None else demisto_get(value, path)
 
     def __eq__(self, other: Any) -> bool:
@@ -67,9 +96,9 @@ class Key(object):
             if value is None or isinstance(value, (bool, int, float, str)):
                 return value
             elif isinstance(value, dict):
-                return tuple([(k, __get_hash_base(value[k])) for k in sorted(value.keys())])
+                return tuple((k, __get_hash_base(value[k])) for k in sorted(value.keys()))
             elif isinstance(value, list):
-                return tuple([__get_hash_base(v) for v in value])
+                return tuple(__get_hash_base(v) for v in value)
             else:
                 return value
 
@@ -84,7 +113,7 @@ def main():
             temp = {}
             if paths := argToList(args.get('keys')):
                 for v in value:
-                    k: Union[tuple, Key] = tuple([Key(v, path) for path in paths])
+                    k: Union[tuple, Key] = tuple(Key(v, path) for path in paths)
                     if k not in temp:
                         temp[k] = v
             else:

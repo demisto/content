@@ -6,10 +6,29 @@ from typing import Any, List, Tuple
 
 
 def demisto_get(obj: Any, path: Any) -> Any:
-    """
-    demisto.get(), this supports a syntax of path escaped with backslash.
+    r"""
+    This is an extended function of demisto.get().
+    The `path` argument parameter supports a syntax of path escaped with backslash
+    in order to support a key icluding period charactors.
+
+    e.g.
+       xxx
+        + x.y.z
+         + zzz
+
+       -> path: xxx.x\.y\.z.zzz
+
+    :param obj: The root node.
+    :param path: The path to get values in the node.
+    :return: The value(s) specified with `path` in the node.
     """
     def split_context_path(path: str) -> List[str]:
+        """
+        Get keys in order from the path which supports a syntax of path escaped with backslash.
+
+        :param path: The path.
+        :return: The keys whose escape charactors are removed.
+        """
         nodes = []
         node = []
         itr = iter(path)
@@ -39,7 +58,18 @@ def demisto_get(obj: Any, path: Any) -> Any:
 
 
 class Key:
+    """
+    This is a class to provide you a key from an any types of values to sort it.
+    That allows you to sort values even if them have different types of values.
+    The key given by Key.get() can be used for list.sort().
+    """
     def __init__(self, value: Any, path: Optional[str]) -> None:
+        """
+        Initialize the key.
+
+        :param value: The value to set key, or the node from which to get the value if the `path` is given.
+        :param path: The path to get values in the node.
+        """
         self.__value = value if path is None else demisto_get(value, path)
 
     def __get_type_order(self) -> int:
@@ -74,6 +104,11 @@ class Key:
             return json.dumps(v)
 
     def get(self) -> Tuple[int, Any]:
+        """
+        Get the key from the value.
+
+        :return: The key which can be used for list.sort().
+        """
         return self.__get_type_order(), self.__get_key()
 
 

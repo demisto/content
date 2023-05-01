@@ -23,7 +23,7 @@ The one is given by `value` (with `array1_key`), another is given by `array2` (w
 | array2_key | The key or path to get values from the array2 |
 | output_name1 | The key name in the output dictionary to which each of element of the array1 are given |
 | output_name2 | The key name in the output dictionary to which each of element of the array2 are given |
-| different_sized | How to deal with different size lists. \(Choose from shorter, longer, array1, or array2\) |
+| determine_output_length_by | How to deal with different size lists. \(Choose from shorter, longer, array1, or array2\) |
 | merge_dict | Specify which array will be merged into when each of element is given in dictionary. \(Choose from array1, array2, array1\|2, or array2\|1\) |
 
 ## Outputs
@@ -65,9 +65,9 @@ Simply create a list of dictionary by aggregating elements from two arrays.
 
 > output_name1: xxx
 
-> output_name1: yyy
+> output_name2: yyy
 
-> different_sized:
+> determine_output_length_by:
 
 > merge_dict:
 
@@ -133,9 +133,9 @@ Aggregate each of value from the keys given.
 
 > output_name1: xxx
 
-> output_name1: yyy
+> output_name2: yyy
 
-> different_sized:
+> determine_output_length_by:
 
 > merge_dict:
 
@@ -200,9 +200,9 @@ Truncate remaining elements of array2 which is longer than array1.
 
 > output_name1: xxx
 
-> output_name1: yyy
+> output_name2: yyy
 
-> different_sized: array1
+> determine_output_length_by: array1
 
 > merge_dict:
 
@@ -263,9 +263,9 @@ array2 is longer than array1. fill in shorten elements with null.
 
 > output_name1: xxx
 
-> output_name1: yyy
+> output_name2: yyy
 
-> different_sized: array2
+> determine_output_length_by: array2
 
 > merge_dict:
 
@@ -326,9 +326,9 @@ Merge each of dictionary element.
 
 > output_name1: xxx
 
-> output_name1: yyy
+> output_name2: yyy
 
-> different_sized: 
+> determine_output_length_by: 
 
 > merge_dict: array1&lt;2
 
@@ -383,9 +383,9 @@ Merge each of element into a dictionary.
 
 > output_name1: xxx
 
-> output_name1: yyy
+> output_name2: yyy
 
-> different_sized: 
+> determine_output_length_by: 
 
 > merge_dict: array1
 

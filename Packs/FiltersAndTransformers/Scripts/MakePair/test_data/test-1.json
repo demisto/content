@@ -7,7 +7,7 @@
       "array2_key": null,
       "output_name1": "x",
       "output_name2": "y",
-      "different_sized": null,
+      "determine_output_length_by": null,
       "merge_dict": null
     },
     "result": [
@@ -34,7 +34,7 @@
       "array2_key": null,
       "output_name1": "x",
       "output_name2": "y",
-      "different_sized": "shorter",
+      "determine_output_length_by": "shorter",
       "merge_dict": null
     },
     "result": [
@@ -57,7 +57,7 @@
       "array2_key": null,
       "output_name1": "x",
       "output_name2": "y",
-      "different_sized": "shorter",
+      "determine_output_length_by": "shorter",
       "merge_dict": null
     },
     "result": [
@@ -80,7 +80,7 @@
       "array2_key": null,
       "output_name1": "x",
       "output_name2": "y",
-      "different_sized": "longer",
+      "determine_output_length_by": "longer",
       "merge_dict": null
     },
     "result": [
@@ -107,7 +107,7 @@
       "array2_key": null,
       "output_name1": "x",
       "output_name2": "y",
-      "different_sized": "longer",
+      "determine_output_length_by": "longer",
       "merge_dict": null
     },
     "result": [
@@ -134,7 +134,7 @@
       "array2_key": null,
       "output_name1": "x",
       "output_name2": "y",
-      "different_sized": "array1",
+      "determine_output_length_by": "array1",
       "merge_dict": null
     },
     "result": [
@@ -157,7 +157,7 @@
       "array2_key": null,
       "output_name1": "x",
       "output_name2": "y",
-      "different_sized": "array1",
+      "determine_output_length_by": "array1",
       "merge_dict": null
     },
     "result": [
@@ -184,7 +184,7 @@
       "array2_key": null,
       "output_name1": "x",
       "output_name2": "y",
-      "different_sized": "array2",
+      "determine_output_length_by": "array2",
       "merge_dict": null
     },
     "result": [
@@ -211,7 +211,7 @@
       "array2_key": null,
       "output_name1": "x",
       "output_name2": "y",
-      "different_sized": "array2",
+      "determine_output_length_by": "array2",
       "merge_dict": null
     },
     "result": [
@@ -258,7 +258,7 @@
       "array2_key": "key3",
       "output_name1": "xxx",
       "output_name2": "yyy",
-      "different_sized": "shorter",
+      "determine_output_length_by": "shorter",
       "merge_dict": null
     },
     "result": [
@@ -309,7 +309,7 @@
       "array2_key": null,
       "output_name1": "xxx",
       "output_name2": "yyy",
-      "different_sized": "shorter",
+      "determine_output_length_by": "shorter",
       "merge_dict": "array1"
     },
     "result": [
@@ -370,7 +370,7 @@
       "array2_key": null,
       "output_name1": "xxx",
       "output_name2": "yyy",
-      "different_sized": "shorter",
+      "determine_output_length_by": "shorter",
       "merge_dict": "array2"
     },
     "result": [
@@ -431,8 +431,8 @@
       "array2_key": null,
       "output_name1": "xxx",
       "output_name2": "yyy",
-      "different_sized": "shorter",
-      "merge_dict": "array1<2"
+      "determine_output_length_by": "shorter",
+      "merge_dict": "array1<array2"
     },
     "result": [
       {
@@ -484,8 +484,8 @@
       "array2_key": null,
       "output_name1": "xxx",
       "output_name2": "yyy",
-      "different_sized": "shorter",
-      "merge_dict": "array2<1"
+      "determine_output_length_by": "shorter",
+      "merge_dict": "array2<array1"
     },
     "result": [
       {
@@ -535,7 +535,7 @@
       "array2_key": "key3",
       "output_name1": "xxx",
       "output_name2": "yyy",
-      "different_sized": "array1",
+      "determine_output_length_by": "array1",
       "merge_dict": null
     },
     "result": [
@@ -570,7 +570,7 @@
       "array2_key": null,
       "output_name1": "xxx",
       "output_name2": "yyy",
-      "different_sized": null,
+      "determine_output_length_by": null,
       "merge_dict": "array1"
     },
     "result": [

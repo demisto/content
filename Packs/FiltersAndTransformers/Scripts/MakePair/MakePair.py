@@ -5,10 +5,29 @@ from typing import Any, List, Dict, Optional
 
 
 def demisto_get(obj: Any, path: Any) -> Any:
-    """
-    demisto.get(), this supports a syntax of path escaped with backslash.
+    r"""
+    This is an extended function of demisto.get().
+    The `path` argument parameter supports a syntax of path escaped with backslash
+    in order to support a key icluding period charactors.
+
+    e.g.
+       xxx
+        + x.y.z
+         + zzz
+
+       -> path: xxx.x\.y\.z.zzz
+
+    :param obj: The root node.
+    :param path: The path to get values in the node.
+    :return: The value(s) specified with `path` in the node.
     """
     def split_context_path(path: str) -> List[str]:
+        """
+        Get keys in order from the path which supports a syntax of path escaped with backslash.
+
+        :param path: The path.
+        :return: The keys whose escape charactors are removed.
+        """
         nodes = []
         node = []
         itr = iter(path)
@@ -48,13 +67,13 @@ def make_dict(element1: Any,
     elif method == 'array2':
         if isinstance(element2, dict):
             return dict(element2, **{output_name1: element1})
-    elif method == 'array1<2':
+    elif method == 'array1<array2':
         if isinstance(element1, dict):
             if isinstance(element2, dict):
                 return dict(element1, **element2)
             else:
                 return dict(element1, **{output_name2: element2})
-    elif method == 'array2<1':
+    elif method == 'array2<array1':
         if isinstance(element1, dict):
             if isinstance(element2, dict):
                 return dict(element2, **element1)
@@ -77,28 +96,27 @@ def main():
         if array2_key := args.get('array2_key'):
             array2 = [demisto_get(x, array2_key) for x in array2]
 
-        different_sized = args.get('different_sized', 'shorter')
-
-        if different_sized == 'array1':
+        determine_output_length_by = args.get('determine_output_length_by', 'shorter')
+        if determine_output_length_by == 'array1':
             diff = len(array1) - len(array2)
             if diff > 0:
                 array2 += [None] * diff
-            different_sized = 'shorter'
-        elif different_sized == 'array2':
+            determine_output_length_by = 'shorter'
+        elif determine_output_length_by == 'array2':
             diff = len(array2) - len(array1)
             if diff > 0:
                 array1 += [None] * diff
-            different_sized = 'shorter'
+            determine_output_length_by = 'shorter'
 
         output_name1 = args.get('output_name1')
         output_name2 = args.get('output_name2')
         merge_dict = args.get('merge_dict')
-        if different_sized == 'shorter':
+        if determine_output_length_by == 'shorter':
             value = [make_dict(e1, e2, output_name1, output_name2, merge_dict) for e1, e2 in zip(array1, array2)]
-        elif different_sized == 'longer':
+        elif determine_output_length_by == 'longer':
             value = [make_dict(e1, e2, output_name1, output_name2, merge_dict) for e1, e2 in zip_longest(array1, array2)]
         else:
-            raise DemistoException(f'Invalid parameter was given to "different_sized" - {different_sized}')
+            raise DemistoException(f'Invalid parameter was given to "determine_output_length_by" - {determine_output_length_by}')
 
         return_results(value)
     except Exception as err:
