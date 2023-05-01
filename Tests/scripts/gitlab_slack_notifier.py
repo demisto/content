@@ -199,8 +199,6 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XPANSE, title="XPANSE")
         coverage_slack_msg = construct_coverage_slack_msg()
-        from pathlib import Path
-        Path(ARTIFACTS_FOLDER_XSOAR / "missing_content_packs_test_conf.txt").write_text("QRadar\nSplunk")
         missing_packs = get_artifact_data(ARTIFACTS_FOLDER_XSOAR, 'missing_content_packs_test_conf.txt')
         if missing_packs:
             missing_packs = missing_packs.split('\n')
