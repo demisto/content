@@ -12,7 +12,7 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
-__version__ = '2.4'
+__version__ = '2.4.1'
 
 
 # === === === === === === === === === === === === === === ===
@@ -157,11 +157,7 @@ class Client(BaseClient):
 
     def _get_writeback_data(self):
 
-        if demisto.params().get('writeback') != True:
-            # Writeback is OFF.
-            return
-
-        if demisto.callingContext:
+        if demisto.params().get('collective_insights') == "On" and demisto.callingContext:
             calling_context = copy.deepcopy(demisto.callingContext)
             calling_context.get('context', dict()).pop('ExecutionContext', None)
             return calling_context

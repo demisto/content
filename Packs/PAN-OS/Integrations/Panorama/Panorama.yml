@@ -542,6 +542,13 @@ script:
     - description: The tag for the new address.
       isArray: true
       name: tag
+    - auto: PREDEFINED
+      description: Whether to create the tag if it does not exist.
+      defaultValue: 'false'
+      name: create_tag
+      predefined:
+      - 'true'
+      - 'false'
     description: Creates an address object.
     deprecated: true
     name: panorama-create-address
@@ -564,8 +571,8 @@ script:
     - contextPath: Panorama.Addresses.DeviceGroup
       description: The device group for the address (Panorama instances).
       type: String
-    - contextPath: Panorama.Addresses.Tag
-      description: The address tag.
+    - contextPath: Panorama.Addresses.Tags
+      description: The address tags.
       type: String
   - arguments:
     - description: The name of the address to delete.
@@ -610,8 +617,8 @@ script:
     - contextPath: Panorama.AddressGroups.DeviceGroup
       description: The device group for the address group (Panorama instances).
       type: String
-    - contextPath: Panorama.AddressGroups.Tag
-      description: The address group tag.
+    - contextPath: Panorama.AddressGroups.Tags
+      description: The address group tags.
       type: String
   - arguments:
     - description: The address group name.
@@ -689,7 +696,7 @@ script:
     - contextPath: Panorama.AddressGroups.DeviceGroup
       description: The device group for the address group (Panorama instances).
       type: String
-    - contextPath: Panorama.AddressGroups.Tag
+    - contextPath: Panorama.AddressGroups.Tags
       description: The address group tags.
       type: String
   - arguments:
@@ -3940,8 +3947,8 @@ script:
     - contextPath: Panorama.Addresses.DeviceGroup
       description: The device group for the address (Panorama instances).
       type: String
-    - contextPath: Panorama.Addresses.Tag
-      description: The address tag.
+    - contextPath: Panorama.Addresses.Tags
+      description: The address tags.
       type: String
   - arguments:
     - description: The name of the address to edit.
@@ -4009,8 +4016,8 @@ script:
     - contextPath: Panorama.AddressGroups.DeviceGroup
       description: The device group for the address group (Panorama instances).
       type: String
-    - contextPath: Panorama.AddressGroups.Tag
-      description: The address group tag.
+    - contextPath: Panorama.AddressGroups.Tags
+      description: The address group tags.
       type: String
   - arguments:
     - description: The address group name.
@@ -4086,7 +4093,7 @@ script:
     - contextPath: Panorama.AddressGroups.DeviceGroup
       description: The device group for the address group (Panorama instances).
       type: String
-    - contextPath: Panorama.AddressGroups.Tag
+    - contextPath: Panorama.AddressGroups.Tags
       description: The address group tags.
       type: String
   - arguments:
@@ -5475,7 +5482,7 @@ script:
       - filter-pcap
       - threat-pcap
       - dlp-pcap
-    - description: The serial number of the firewall to download the PCAP from.
+    - description: The serial number of the firewall to download the PCAP from, relevant only for Panorama instances.
       name: serialNumber
     - description: The file name for the PCAP type ('dlp-pcap', 'filter-pcap', or 'application-pcap'). Required for 'filter-pcap'.
       name: from
@@ -5489,11 +5496,11 @@ script:
       name: pcapID
     - description: The password for Panorama, needed for the 'dlp-pcap' PCAP type only.
       name: password
-    - description: The device name on which the PCAP is stored. See the Panorama XML API documentation. Required for 'threat-pcap' in pan-os firewalls < 9.0.7 versions
+    - description: The device name on which the PCAP is stored. See the Panorama XML API documentation. Required for 'threat-pcap' when using a Panorama instance.
       name: deviceName
-    - description: The Session ID of the PCAP. See the Panorama XML API documentation. Required for 'threat-pcap' in pan-os firewalls < 9.0.7 versions
+    - description: The Session ID of the PCAP. See the Panorama XML API documentation. Required for 'threat-pcap' when using Panorama instance.
       name: sessionID
-    description: Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to SSH the firewall and run the scp export command to export the PCAP file. See the Palo Alto Networks documentation.
+    description: Returns a PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to connect to the firewall and run the scp export command in order to export the PCAP file. See the Palo Alto Networks documentation.
     name: pan-os-get-pcap
     outputs:
     - contextPath: File.Size
@@ -9552,7 +9559,7 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.49154
+  dockerimage: demisto/pan-os-python:1.0.0.56449
   feed: false
   isfetch: true
   longRunning: false

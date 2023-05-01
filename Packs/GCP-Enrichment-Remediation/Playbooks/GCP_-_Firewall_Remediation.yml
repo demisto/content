@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 0186b87e-cdbe-4ff8-828e-17eb3bc8ceea
+    taskid: b6dc6c62-5a65-4394-8380-6c9fad1591b5
     type: condition
     task:
-      id: 0186b87e-cdbe-4ff8-828e-17eb3bc8ceea
+      id: b6dc6c62-5a65-4394-8380-6c9fad1591b5
       version: -1
       name: Is Google Cloud Compute enabled and are Input values defined?
       description: Determines if the AWS - EC2 integration instance is configured and Input values are defined to pull enrichment data.
@@ -109,6 +109,12 @@ tasks:
             value:
               complex:
                 root: inputs.RemoteProtocol
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.GcpProject
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -200,10 +206,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: c8d90e25-884c-4a12-8131-16a93c0b49ff
+    taskid: bb5838b5-d766-4f31-8343-cc5bae31dbdc
     type: regular
     task:
-      id: c8d90e25-884c-4a12-8131-16a93c0b49ff
+      id: bb5838b5-d766-4f31-8343-cc5bae31dbdc
       version: -1
       name: Get network tags information.
       description: Returns the tags of instance.
@@ -225,6 +231,9 @@ tasks:
           root: inputs.GcpZone
           transformers:
           - operator: uniq
+      project_id:
+        complex:
+          root: inputs.GcpProject
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -274,10 +283,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: b101460b-ebe4-4a3f-84c4-793a04f2f56a
+    taskid: 361485dd-c1c9-420a-85a6-753cf74edc76
     type: regular
     task:
-      id: b101460b-ebe4-4a3f-84c4-793a04f2f56a
+      id: 361485dd-c1c9-420a-85a6-753cf74edc76
       version: -1
       name: Add block everything firewall rule
       description: Creates a firewall rule in the specified project using the data included in the request.
@@ -371,6 +380,9 @@ tasks:
                 iscontext: true
           - operator: toLowerCase
           - operator: uniq
+      project_id:
+        complex:
+          root: inputs.GcpProject
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -389,10 +401,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: d7cbc5a4-3716-47cb-882f-2949989f72e2
+    taskid: dbfbd0eb-ce64-4b52-8f23-fca7bde794a2
     type: regular
     task:
-      id: d7cbc5a4-3716-47cb-882f-2949989f72e2
+      id: dbfbd0eb-ce64-4b52-8f23-fca7bde794a2
       version: -1
       name: Add allow rule
       description: Creates a firewall rule in the specified project using the data included in the request.
@@ -485,6 +497,9 @@ tasks:
                 iscontext: true
           - operator: toLowerCase
           - operator: uniq
+      project_id:
+        complex:
+          root: inputs.GcpProject
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -574,10 +589,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 90b6c0d8-e04c-424c-8532-19c6754f31dd
+    taskid: 147aa1b0-785f-47cb-861c-1a1fdc7c3e95
     type: regular
     task:
-      id: 90b6c0d8-e04c-424c-8532-19c6754f31dd
+      id: 147aa1b0-785f-47cb-861c-1a1fdc7c3e95
       version: -1
       name: Add and set network tags
       description: Add network tag for the specified instance.
@@ -619,6 +634,9 @@ tasks:
       zone:
         complex:
           root: inputs.GcpZone
+      project_id:
+        complex:
+          root: inputs.GcpProject
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -637,10 +655,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 5d9b464b-cbcb-4a81-8be2-957d16ed52c0
+    taskid: c83dc6bc-a51b-40b4-8a38-8dfc3372ab1f
     type: regular
     task:
-      id: 5d9b464b-cbcb-4a81-8be2-957d16ed52c0
+      id: c83dc6bc-a51b-40b4-8a38-8dfc3372ab1f
       version: -1
       name: Lookup Firewall rule names with associated network
       description: Retrieves the list of firewall rules available to the specified project. If these don't exist, the allow and block rules are created of the format remediation-[allow|block]-port-{port#}-{protocol}.
@@ -678,6 +696,9 @@ tasks:
                 value:
                   simple: '"'
           - operator: toLowerCase
+      project_id:
+        complex:
+          root: inputs.GcpProject
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -735,7 +756,19 @@ inputs:
   required: true
   description: The remote protocol that is publicly exposed to.
   playbookInputQuery:
+- key: GcpProject
+  value:
+    complex:
+      root: alert.asmcloud
+      accessor: Project
+      transformers:
+      - operator: FirstArrayElement
+  required: true
+  description: The name of the GCP project associated with the instance and related objects.
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}

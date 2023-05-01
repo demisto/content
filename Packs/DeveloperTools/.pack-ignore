@@ -5,7 +5,7 @@ ignore=auto-test
 ignore=BA101
 
 [file:CreateMockFeed.yml]
-ignore=DO102,DO107
+ignore=DO102,DO107,BA124
 
 [file:CreateIncidents.yml]
 ignore=IN126
@@ -35,4 +35,20 @@ ignore=auto-test
 ignore=auto-test
 
 [known_words]
-Powershell
+powershell
+
+[file:FetchFromInstance.yml]
+ignore=BA124
+
+[file:VerifyIntegrationHealth.yml]
+ignore=BA124
+
+[file:GetInstanceName.yml]
+ignore=BA124
+
+[file:VerifyEnoughIndicators.yml]
+ignore=BA124
+
+[file:VerifyEnoughIncidents.yml]
+ignore=BA124
+

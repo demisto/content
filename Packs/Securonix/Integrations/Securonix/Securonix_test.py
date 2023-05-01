@@ -1,7 +1,9 @@
 import json
+from tempfile import mkdtemp
 
 import demistomock as demisto
 import pytest
+from CommonServerPython import *
 
 from Securonix import reformat_resource_groups_outputs, reformat_outputs, parse_data_arr, Client, list_workflows, \
     get_default_assignee_for_workflow, list_possible_threat_actions, list_resource_groups, list_users, \
@@ -12,7 +14,8 @@ from Securonix import reformat_resource_groups_outputs, reformat_outputs, parse_
     delete_whitelist_entry, add_entry_to_lookup_table, list_lookup_table_entries, create_lookup_table, \
     get_incident_attachments, list_violation_data, get_incident_workflow, get_incident_status, \
     get_incident_available_actions, add_comment_to_incident, get_modified_remote_data_command, \
-    get_remote_data_command, update_remote_system, create_xsoar_to_securonix_state_mapping
+    get_remote_data_command, update_remote_system, create_xsoar_to_securonix_state_mapping, delete_lookup_table_entries, \
+    main, validate_mirroring_parameters, filter_attachment_activity_entries
 
 from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAULT_ASSIGNEE, \
     RESPONSE_POSSIBLE_THREAT_ACTIONS, RESPONSE_LIST_RESOURCE_GROUPS, RESPONSE_LIST_USERS, RESPONSE_LIST_INCIDENT, \
@@ -27,7 +30,9 @@ from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAU
     RESPONSE_LOOKUP_TABLE_ENTRY_ADD, RESPONSE_LOOKUP_TABLE_ENTRIES_LIST, get_mock_attachment_response, \
     RESPONSE_LIST_VIOLATION_6_4, RESPONSE_GET_INCIDENT_WORKFLOW, RESPONSE_GET_INCIDENT_STATUS, \
     RESPONSE_GET_INCIDENT_AVAILABLE_ACTIONS, RESPONSE_ADD_COMMENT_TO_INCIDENT, \
-    MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY, MIRROR_ENTRIES
+    MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY, MIRROR_ENTRIES, RESPONSE_DELETE_LOOKUP_ENTRIES_DELETE, \
+    DELETE_LOOKUP_TABLE_ENTRIES_INVALID_LOOKUP_NAME, DELETE_LOOKUP_TABLE_ENTRIES_INVALID_LOOKUP_KEYS, \
+    MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY_ATTACHMENT
 
 from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT_ASSIGNEE, \
     EXPECTED_POSSIBLE_THREAT_ACTIONS, EXPECTED_LIST_RESOURCE_GROUPS, EXPECTED_LIST_USERS, EXPECTED_LIST_INCIDENT, \
@@ -40,7 +45,31 @@ from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT
     EXPECTED_CREATE_LOOKUP_TABLE, \
     EXPECTED_GET_INCIDENT_ATTACHMENT_HISTORY_6_4, EXPECTED_LIST_VIOLATION_DATA_6_4, EXPECTED_GET_INCIDENT_WORKFLOW, \
     EXPECTED_GET_INCIDENT_STATUS, EXPECTED_GET_INCIDENT_AVAILABLE_ACTIONS, EXPECTED_ADD_COMMENT_TO_INCIDENT, \
-    EXPECTED_XSOAR_STATE_MAPPING
+    EXPECTED_XSOAR_STATE_MAPPING, EXPECTED_DELETE_LOOKUP_ENTRIES_DELETE
+
+
+@pytest.fixture()
+def mock_client(mocker):
+    """Mock a client object with required data to mock."""
+    mocker.patch.object(Client, '_generate_token', return_value='test_token')
+    client = Client('tenant', 'https://127.0.0.1/Snypr/ws', 'username', 'password', 'verify', 'proxies', 0, 0, 'Fixed')
+
+    return client
+
+
+def perform_action_on_incident_request_side_effect(*args, **kwargs):
+    """Side effect function to replicate perform_action_on_incident_request function."""
+    assert kwargs['incident_id'] == '1234'
+    assert kwargs['action_parameters'] == ''
+    assert kwargs['action'] == 'Close Incident'
+    return 'Action performed successfully.'
+
+
+def add_comment_to_incident_request_side_effect(*args, **kwargs):
+    """Side effect function to replicate add_comment_request function."""
+    assert kwargs['comment'] == '[Mirrored From XSOAR] XSOAR Incident ID: 345\nClosed By: admin\nClose Reason: ' \
+                                'Resolved\nClose Notes: Closing XSOAR incident'
+    return 'Comment was added to the incident successfully.'
 
 
 def test_reformat_resource_groups_outputs():
@@ -318,9 +347,9 @@ def test_commands(command, args, response, expected_result, mocker):
     if command == get_incident_attachments:
         assert expected_result[0].get('File') == result[1].get('File')
     elif command == list_violation_data:
-        assert expected_result == result.outputs  # list_violation_data returns CommandResult object
+        assert expected_result == result[0].outputs  # list_violation_data returns CommandResult object
     elif command == add_whitelist_entry or command == create_lookup_table or command == get_incident_workflow or \
-            command == get_incident_status or command == get_incident_available_actions\
+            command == get_incident_status or command == get_incident_available_actions \
             or command == add_comment_to_incident:
         assert expected_result == result[0]
     else:
@@ -409,3 +438,435 @@ def test_create_xsoar_to_securonix_state_mapping():
 
     assert result.outputs == EXPECTED_XSOAR_STATE_MAPPING
     assert result.outputs_prefix == "Securonix.StateMapping"
+
+
+@pytest.mark.parametrize('name,order,err_msg', [
+    ('', 'asc', 'Lookup table name is a required argument.'),
+    (' ', 'asc', 'Lookup table name is a required argument.'),
+    ('test', 'asr', 'Order argument must be "asc" or "desc".')
+])
+def test_list_lookup_table_entries_for_invalid_arguments(mock_client, name, order, err_msg):
+    """Test case to validate that ValueError should be raised for invalid arguments."""
+    with pytest.raises(ValueError) as error:
+        args = {'name': name, 'order': order}
+        list_lookup_table_entries(mock_client, args)
+
+    assert str(error.value) == err_msg
+
+
+def test_list_lookup_table_entries_verify_default_values(mock_client, mocker):
+    """Test case to verify the default values of attribute, max, offset & page_num when no values provided in args."""
+    list_lookup_table_mock = mocker.patch.object(Client, 'list_lookup_table_entries_request',
+                                                 return_value=RESPONSE_LOOKUP_TABLE_ENTRIES_LIST)
+    list_lookup_table_entries(mock_client, {'name': 'test_table'})
+
+    assert list_lookup_table_mock.call_args[1]['attribute'] == 'key'
+    assert list_lookup_table_mock.call_args[1]['max_records'] == 15
+    assert list_lookup_table_mock.call_args[1]['offset'] == 0
+    assert list_lookup_table_mock.call_args[1]['page_num'] == 1
+    assert list_lookup_table_mock.call_args[1]['order'] == 'asc'
+
+
+@pytest.mark.parametrize('name,keys,err_msg', [
+    ('', 'key1', 'Lookup table name is a required parameter.'),
+    (' ', 'key1', 'Lookup table name is a required parameter.'),
+    ('name', '', 'At least one lookup table key is required to execute the command.'),
+    ('name', ' ', 'At least one lookup table key is required to execute the command.')
+])
+def test_delete_lookup_table_entries_for_invalid_arguments(mock_client, name, keys, err_msg):
+    """Test case to validate that ValueError should be raised for invalid arguments."""
+    with pytest.raises(ValueError) as error:
+        args = {'name': name, 'lookup_unique_keys': keys}
+        delete_lookup_table_entries(mock_client, args)
+
+    assert str(error.value) == err_msg
+
+
+@pytest.mark.parametrize('name,keys', [('test_table', 'key1'), ('test_table', 'key1,key2')])
+def test_delete_lookup_table_entries_for_valid_arguments(mock_client, mocker, name, keys):
+    """Test case to validate that valid human-readable and raw response should be returned for valid arguments."""
+    expected_human_readable = f'Successfully deleted following entries from {name}: {", ".join(argToList(keys))}.'
+
+    mocker.patch.object(mock_client, 'http_request', return_value=RESPONSE_DELETE_LOOKUP_ENTRIES_DELETE)
+    args = {'name': name, 'lookup_unique_keys': keys}
+    resp = delete_lookup_table_entries(mock_client, args)
+
+    assert resp[0] == expected_human_readable
+    assert resp[1] == EXPECTED_DELETE_LOOKUP_ENTRIES_DELETE  # As this command doesn't return any context data.
+    assert resp[2] == RESPONSE_DELETE_LOOKUP_ENTRIES_DELETE
+
+
+@pytest.mark.parametrize('name,keys,mock_response', [
+    ('test_table', 'key1', DELETE_LOOKUP_TABLE_ENTRIES_INVALID_LOOKUP_NAME),
+    ('test_table', 'key1', DELETE_LOOKUP_TABLE_ENTRIES_INVALID_LOOKUP_KEYS)
+])
+def test_delete_lookup_table_entries_for_bad_request(requests_mock, mock_client, mocker, name, keys, mock_response):
+    """Test case to verify that an exception should be raised if invalid name and key value."""
+    requests_mock.delete(re.compile("/lookupTable/deleteLookupKeys"), json=mock_response, status_code=500)
+    expected_error_msg = f'Error in API call to Securonix 500. Reason: {json.dumps(mock_response)}'
+
+    with pytest.raises(Exception) as error:
+        args = {'name': name, 'lookup_unique_keys': keys}
+        delete_lookup_table_entries(mock_client, args)
+
+    assert str(error.value) == expected_error_msg
+
+
+@pytest.mark.parametrize('name,json_data,file_entry_id,err_msg', [
+    ('', '{}', '234@2973', 'Lookup table name is a required parameter.'),
+    (' ', '{}', '234@2973', 'Lookup table name is a required parameter.'),
+    ('test_table', '', '', 'Either JSON data or file entry ID is required to add data to lookup table.'),
+    ('test_table', ' ', ' ', 'Either JSON data or file entry ID is required to add data to lookup table.'),
+])
+def test_add_entry_to_lookup_table_invalid_arguments(mock_client, name, json_data, file_entry_id, err_msg):
+    """Test case to verify that ValueError should be raised for invalid arguments."""
+    with pytest.raises(ValueError) as error:
+        add_entry_to_lookup_table(mock_client, {'name': name, 'json_data': json_data, 'file_entry_id': file_entry_id})
+
+    assert str(error.value) == err_msg
+
+
+def test_add_entry_to_lookup_table_when_invalid_json_data_provided(mock_client):
+    """Test case to verify that Exception should be raised when invalid JSON data is provided."""
+    expected_error_message = 'Could not able to parse the provided JSON data. ' \
+                             'Error: Expecting value: line 1 column 9 (char 8)'
+
+    with pytest.raises(Exception) as error:
+        add_entry_to_lookup_table(mock_client, {'name': 'test_table', 'json_data': '{"key1":}'})
+
+    assert str(error.value) == expected_error_message
+
+
+def test_add_entry_to_look_table_when_invalid_json_data_provided_via_file_entry_id(mock_client, mocker):
+    """Test case to verify that Exception should be raised when invalid JSON data is provided via file entry ID."""
+    tmp_dir = mkdtemp()
+    file_name = 'test_file.json'
+    file_obj = {
+        'name': file_name,
+        'path': os.path.join(tmp_dir, file_name)
+    }
+    with open(file_obj['path'], 'w') as f:
+        f.write('{"key1":}')
+
+    expected_error_message = 'Could not able to parse the provided JSON data. ' \
+                             'Error: Expecting value: line 1 column 9 (char 8)'
+    mocker.patch.object(demisto, 'getFilePath', return_value=file_obj)
+
+    with pytest.raises(Exception) as error:
+        add_entry_to_lookup_table(mock_client, {'name': 'test_table', 'file_entry_id': '27@1344'})
+
+    assert str(error.value) == expected_error_message
+
+
+@pytest.mark.parametrize('name,json_data', [
+    ('XSOAR_TEST', '{"key1": "value1", "expiryDate": "02/13/2023"}'),
+    ('XSOAR_TEST', '[{"key1": "value1", "key2": "value2", "expiryDate": "02/13/2023"}]')
+])
+def test_add_entry_to_lookup_table_when_valid_json_data_provided(mock_client, name, json_data, mocker):
+    """Test case to verify that the command should be successful when valid JSON data is provided."""
+    mocker.patch.object(mock_client, 'http_request', return_value=RESPONSE_LOOKUP_TABLE_ENTRY_ADD)
+    args = {'name': name, 'json_data': json_data}
+    resp = add_entry_to_lookup_table(mock_client, args)
+
+    assert resp[0] == RESPONSE_LOOKUP_TABLE_ENTRY_ADD
+    assert resp[1] == EXPECTED_LOOKUP_TABLE_ENTRY_ADD  # As this command doesn't return any context data.
+    assert resp[2] == RESPONSE_LOOKUP_TABLE_ENTRY_ADD
+
+
+@pytest.mark.parametrize('name,json_data', [
+    ('XSOAR_TEST', '{"key1": "value1", "expiryDate": "Something"}'),
+    ('XSOAR_TEST', '{"key1": "value1", "expiryDate": "15th Dec 2023"}'),
+    ('XSOAR_TEST', '{"key1": "value1", "expiryDate": "15/03/2023"}'),
+    ('XSOAR_TEST', '{"key1": "value1", "expiryDate": "2023/02/01T00:00:00Z"}'),
+    ('XSOAR_TEST', '{"key1": "value1", "expiryDate": "Jan 23, 2023"}'),
+])
+def test_add_entry_to_lookup_table_when_invalid_expiry_date_provided(mock_client, name, json_data):
+    """Test case to verify that ValueError should be raised when invalid expiry date is provided."""
+    expected_error_message = "The value of expiryDate field is not in MM/DD/YYYY format."
+
+    with pytest.raises(ValueError) as error:
+        add_entry_to_lookup_table(mock_client, {'name': name, 'json_data': json_data})
+
+    assert str(error.value) == expected_error_message
+
+
+def test_update_remote_system_with_close_incidents(mock_client, mocker):
+    """Test case scenario to verify that remote Securonix incident is closed once the XSOAR incident is closed."""
+    mocker.patch.object(demisto, 'params', return_value={'host': 'https://127.0.0.1/Snypr',
+                                                         'closed_state_action_mapping': 'Close Incident',
+                                                         'closed_state_status_mapping': 'Completed'})
+    mocker.patch.object(demisto, 'command', return_value='update-remote-system')
+
+    mock_args = {
+        'remoteId': '1234',
+        'data': {
+            'id': '345',
+            'securonixcloseincident': False
+        },
+        'incidentChanged': True,
+        'status': 2,
+        'delta': {
+            "closeNotes": "Closing XSOAR incident",
+            "closeReason": "Resolved",
+            "closingUserId": "admin"
+        }
+    }
+    mocker.patch.object(demisto, 'args', return_value=mock_args)
+
+    mocker.patch.object(Client, 'perform_action_on_incident_request',
+                        side_effect=perform_action_on_incident_request_side_effect)
+    mocker.patch.object(Client, 'add_comment_to_incident_request',
+                        side_effect=add_comment_to_incident_request_side_effect)
+
+    main()
+
+
+def test_get_remote_data_command_with_attachment(mock_client, mocker):
+    """Test case scenario to verify that the get_remote_data command when attachment is added to Securonix incident."""
+    mocker.patch.object(mock_client, 'get_incident_request', return_value=RESPONSE_GET_INCIDENT['result']['data'])
+    mocker.patch.object(mock_client, 'get_incident_activity_history_request',
+                        return_value=MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY_ATTACHMENT['result'][
+                            'activityStreamData'])
+    mocker.patch.object(mock_client, 'get_incident_attachments_request', return_value=get_mock_attachment_response())
+    mock_args = {'id': '2849604490', 'lastUpdate': 1424683062000}
+
+    entries = get_remote_data_command(mock_client, mock_args, ['closed', 'completed'])
+    new_entries = entries.entries
+
+    assert len(new_entries) == 1
+    assert new_entries[0]['File'] == 'test.txt'
+    assert new_entries[0]['ContentsFormat'] == 'text'
+
+
+def test_filter_attachment_activity_entries():
+    """Test case to verify that the filter_attachment_activity_entries function works as expected."""
+    mock_activity_history = [
+        {'actiontaken': 'COMMENTS_ADDED'},
+        {'actiontaken': 'ATTACHED_FILE'},
+        {'actiontaken': 'COMMENTS_ADDED'},
+        {'actiontaken': 'ATTACHED_FILE'},
+        {'actiontaken': 'ATTACHED_FILE'}
+    ]
+
+    resp = filter_attachment_activity_entries(mock_activity_history)
+
+    assert len(resp) == 3
+
+
+@pytest.mark.parametrize('close_states_of_securonix', ['', ' '])
+def test_validate_mirroring_parameters_for_incoming_mirroring_direction(close_states_of_securonix):
+    """Test case to verify that ValueError should be raised when value is not provided for close_states_of_securonix."""
+    expected_error_message = 'Following field is required for Incoming Mirroring: "Securonix workflow state(s) ' \
+                             'that can be considered as Close state in XSOAR for Incoming mirroring".'
+
+    with pytest.raises(ValueError) as error:
+        validate_mirroring_parameters(
+            {'close_states_of_securonix': close_states_of_securonix, 'mirror_direction': 'Incoming'})
+
+    assert str(error.value) == expected_error_message
+
+
+@pytest.mark.parametrize('active_state_action,active_state_status,close_state_action,close_state_status,'
+                         'comment_entry_tag', [
+                             ('', 'In Progress', 'Close Investigation', 'Completed', 'Comment'),
+                             ('  ', 'In Progress', 'Close Investigation', 'Completed', 'Comment'),
+                             ('Start Investigation', '', 'Close Investigation', 'Completed', 'Comment'),
+                             ('Start Investigation', '  ', 'Close Investigation', 'Completed', 'Comment'),
+                             ('Start Investigation', 'In Progress', '', 'Completed', 'Comment'),
+                             ('Start Investigation', 'In Progress', '  ', 'Completed', 'Comment'),
+                             ('Start Investigation', 'In Progress', 'Close Investigation', '', 'Comment'),
+                             ('Start Investigation', 'In Progress', 'Close Investigation', '  ', 'Comment'),
+                             ('Start Investigation', 'In Progress', 'Close Investigation', 'Completed', ''),
+                             ('Start Investigation', 'In Progress', 'Close Investigation', 'Completed', '  '),
+                         ])
+def test_validate_mirroring_parameters_for_outgoing_mirroring_direction(active_state_action, active_state_status,
+                                                                        close_state_action, close_state_status,
+                                                                        comment_entry_tag):
+    """Test case to verify that ValueError should be raised, when required parameters are not provided for outgoing
+    mirroring."""
+    expected_error_message = 'Following fields are required for Outgoing Mirroring: "Securonix action name to map ' \
+                             'with XSOAR\'s active state for Outgoing mirroring", "Securonix status to map with ' \
+                             'XSOAR\'s active state for Outgoing mirroring", "Securonix action name to map with ' \
+                             'XSOAR\'s closed state for Outgoing mirroring", "Securonix status to map with XSOAR\'s ' \
+                             'closed state for Outgoing mirroring", "Comment Entry Tag".'
+
+    with pytest.raises(ValueError) as error:
+        validate_mirroring_parameters({
+            'mirror_direction': 'Outgoing',
+            'active_state_action': active_state_action,
+            'active_state_status': active_state_status,
+            'close_state_action': close_state_action,
+            'close_state_status': close_state_status,
+            'comment_entry_tag': comment_entry_tag
+        })
+
+    assert str(error.value) == expected_error_message
+
+
+@pytest.mark.parametrize('active_state_action,active_state_status,close_state_action,close_state_status,'
+                         'comment_entry_tag,close_states_of_securonix', [
+                             ('', 'In Progress', 'Close Investigation', 'Completed', 'Comment', 'Closed'),
+                             ('  ', 'In Progress', 'Close Investigation', 'Completed', 'Comment', 'Closed'),
+                             ('Start Investigation', '', 'Close Investigation', 'Completed', 'Comment', 'Closed'),
+                             ('Start Investigation', '  ', 'Close Investigation', 'Completed', 'Comment', 'Closed'),
+                             ('Start Investigation', 'In Progress', '', 'Completed', 'Comment', 'Closed'),
+                             ('Start Investigation', 'In Progress', '  ', 'Completed', 'Comment', 'Closed'),
+                             ('Start Investigation', 'In Progress', 'Close Investigation', '', 'Comment', 'Closed'),
+                             ('Start Investigation', 'In Progress', 'Close Investigation', '  ', 'Comment', 'Closed'),
+                             ('Start Investigation', 'In Progress', 'Close Investigation', 'Completed', '', 'Closed'),
+                             ('Start Investigation', 'In Progress', 'Close Investigation', 'Completed', '  ', 'Closed'),
+                             ('Start Investigation', 'In Progress', 'Close Investigation', 'Completed', 'Comment', ''),
+                             ('Start Investigation', 'In Progress', 'Close Investigation', 'Completed', 'Comment', ' '),
+                         ])
+def test_validate_mirroring_parameters_for_incoming_and_outgoing_mirroring_direction(active_state_action,
+                                                                                     active_state_status,
+                                                                                     close_state_action,
+                                                                                     close_state_status,
+                                                                                     comment_entry_tag,
+                                                                                     close_states_of_securonix):
+    """Test case to verify that ValueError should be raised, when required parameters are not provided for outgoing
+    mirroring."""
+    expected_error_message = 'Following fields are required for Incoming And Outgoing Mirroring: "Securonix workflow ' \
+                             'state(s) that can be considered as Close state in XSOAR for Incoming mirroring", ' \
+                             '"Securonix action name to map with XSOAR\'s active state for Outgoing mirroring", ' \
+                             '"Securonix status to map with XSOAR\'s active state for Outgoing mirroring", ' \
+                             '"Securonix action name to map with XSOAR\'s closed state for Outgoing mirroring", ' \
+                             '"Securonix status to map with XSOAR\'s closed state for Outgoing mirroring", ' \
+                             '"Comment Entry Tag".'
+
+    with pytest.raises(ValueError) as error:
+        validate_mirroring_parameters({
+            'mirror_direction': 'Incoming And Outgoing',
+            'active_state_action': active_state_action,
+            'active_state_status': active_state_status,
+            'close_state_action': close_state_action,
+            'close_state_status': close_state_status,
+            'comment_entry_tag': comment_entry_tag,
+            'close_states_of_securonix': close_states_of_securonix
+        })
+
+    assert str(error.value) == expected_error_message
+
+
+@pytest.mark.parametrize('active_state_action,active_state_status,close_state_action,close_state_status', [
+    ('', 'In Progress', 'Close Investigation', 'Completed'),
+    ('  ', 'In Progress', 'Close Investigation', 'Completed'),
+    ('Start Investigation', '', 'Close Investigation', 'Completed'),
+    ('Start Investigation', '  ', 'Close Investigation', 'Completed'),
+    ('Start Investigation', 'In Progress', '', 'Completed'),
+    ('Start Investigation', 'In Progress', '  ', 'Completed'),
+    ('Start Investigation', 'In Progress', 'Close Investigation', ''),
+    ('Start Investigation', 'In Progress', 'Close Investigation', '  ')
+])
+def test_validate_mirroring_parameters_for_close_incident_checkbox(active_state_action, active_state_status,
+                                                                   close_state_action, close_state_status):
+    """Test case to verify that ValueError should be raised, when required parameters are not provided for close
+    Securonix incident checkbox."""
+    expected_error_message = 'Following fields are required for closing incident on Securonix: "Securonix action name' \
+                             ' to map with XSOAR\'s active state for Outgoing mirroring", "Securonix status to map ' \
+                             'with XSOAR\'s active state for Outgoing mirroring", "Securonix action name to map with ' \
+                             'XSOAR\'s closed state for Outgoing mirroring", "Securonix status to map with XSOAR\'s ' \
+                             'closed state for Outgoing mirroring".'
+
+    with pytest.raises(ValueError) as error:
+        validate_mirroring_parameters({
+            'close_incident': True,
+            'mirror_direction': 'test',
+            'active_state_action': active_state_action,
+            'active_state_status': active_state_status,
+            'close_state_action': close_state_action,
+            'close_state_status': close_state_status,
+        })
+
+    assert str(error.value) == expected_error_message
+
+
+def test_fetch_securonix_incident_when_no_new_incident_found(mock_client, mocker):
+    """Test case to verify that when 0 incident returned from API, offset value should be updated."""
+    mocker.patch.object(demisto, 'params', return_value={'host': 'https://127.0.0.1/Snypr'})
+    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+    mocker.patch.object(demisto, 'args', return_value={'close_incident': True, 'entity_type_to_fetch': 'Incident'})
+    mocker.patch.object(demisto, 'getLastRun', return_value={"value": json.dumps({'already_fetched': ['100107'],
+                                                                                  'from': '1675900800000',
+                                                                                  'to': '1676367548000',
+                                                                                  'offset': 1})})
+    mocker.patch.object(Client, 'list_incidents_request', return_value={'totalIncidents': 0.0,
+                                                                        'incidentItems': []})
+    mock_set_last_run = mocker.patch.object(demisto, 'setLastRun')
+
+    main()
+    call_args = json.loads(mock_set_last_run.call_args[0][0]['value'])
+
+    assert call_args['offset'] == 0
+    assert call_args['from'] == '1676367548000'
+    assert call_args['already_fetched'] == ['100107']
+
+
+def test_fetch_securonix_incident_when_time_key_found_in_last_run_object(mock_client, mocker):
+    """Test case to verify that when time key is found in last run object, its value should be set in from key."""
+    mocker.patch.object(demisto, 'params', return_value={'host': 'https://127.0.0.1/Snypr', 'close_incident': True,
+                                                         'entity_type_to_fetch': 'Incident', 'incident_status': 'All'})
+    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+    mocker.patch.object(demisto, 'getLastRun', return_value={"value": json.dumps({'already_fetched': ['100108'],
+                                                                                  'time': '2020-06-07T08:32:41.679579Z'}
+                                                                                 )})
+    mocker.patch.object(Client, 'list_incidents_request', return_value=RESPONSE_FETCH_INCIDENTS)
+    mock_set_last_run = mocker.patch.object(demisto, 'setLastRun')
+
+    main()
+    call_args = json.loads(mock_set_last_run.call_args[0][0]['value'])
+
+    assert call_args['offset'] == 1
+    assert call_args['from'] == date_to_timestamp('2020-06-07T08:32:41.679579Z', '%Y-%m-%dT%H:%M:%S.%fZ')
+    assert call_args['already_fetched'] == ['100108', '100107']
+
+
+@pytest.mark.parametrize('args,err_msg', [
+    ({'whitelist_name': 'test_whitelist', 'whitelist_type': 'invalid'}, 'Provide valid whitelist_type'),
+    ({'whitelist_name': 'test_whitelist', 'whitelist_type': 'Global', 'entity_type': 'test_entity'},
+     'Provide valid entity_type'),
+    ({'whitelist_name': 'test_whitelist', 'whitelist_type': 'Attribute', 'attribute_name': 'test_attribute',
+      'violation_type': 'Policy'}, 'Provide valid attribute_name'),
+    ({'whitelist_name': 'test_whitelist', 'whitelist_type': 'Attribute', 'attribute_name': 'resourcetype',
+      'violation_type': 'test_violation'}, 'Provide valid violation_type'),
+    ({'whitelist_name': 'test_whitelist', 'whitelist_type': 'Attribute', 'attribute_name': 'resourcetype',
+      'violation_type': 'Policy', 'expiry_date': '13-03-2023'}, 'exipry_date is not in MM/DD/YYYY format')
+])
+def test_whitelist_entry_add_for_invalid_arguments(mock_client, args, err_msg):
+    """Test case to validate that Exception should be raised for invalid arguments."""
+    with pytest.raises(Exception) as error:
+        add_whitelist_entry(mock_client, args)
+
+    assert str(error.value) == err_msg
+
+
+@pytest.mark.parametrize('command_name,args,response,err_msg', [
+    (create_lookup_table, {}, 'Error in command.',
+     'Failed to create lookup table.\nResponse from Securonix is:Error in command.'),
+    (add_entry_to_lookup_table, {'name': 'test_lookup_table', 'json_data': '{"id": "1"}'}, 'Error in command.',
+     'Failed adding entries to the lookup table. Error from Securonix: Error in command.'),
+    (delete_whitelist_entry, {'tenant_name': 'test', 'whitelist_name': 'test_whitelist', 'entity_id': 'test_entity'},
+     {'result': 'Error in command.'},
+     'Failed to remove entry from whitelist.\nResponse from Securonix is:Error in command.'),
+    (delete_lookup_table_config_and_data, {'name': 'test_lookup_table'}, 'Error in command.',
+     'Failed to delete lookup table and its data.\nResponse from Securonix is: Error in command.'),
+    (create_whitelist, {'whitelist_name': 'test_whitelist', 'entity_type': 'Activityaccount'},
+     {'messages': 'Error in command.'},
+     'Failed to create whitelist.\nResponse from Securonix is:{\'messages\': \'Error in command.\'}'),
+    (get_whitelist_entry, {'whitelist_name': 'test_whitelist'}, {'result': {}},
+     'Whitelist does not contain items.\nMake sure the whitelist_name is not empty and it is correct.'),
+    (add_entity_to_watchlist, {'watchlist_name': 'test_watchlist', 'entity_name': {'test_entity'}}, 'Error in command',
+     'Failed to add entity {\'test_entity\'} to the watchlist test_watchlist.\nError from Securonix is: Error in '
+     'command.'),
+    (create_watchlist, {'watchlist_name': 'test_watchlist'}, 'Error in command.',
+     'Failed to list watchlists.\nResponse from Securonix is:Error in command.')
+])
+def test_exceptions_in_command(command_name, args, response, err_msg, mocker):
+    """Test case scenario to validate Exceptions for the commands."""
+    mocker.patch.object(Client, '_generate_token')
+    client = Client('tenant', 'server_url', 'username', 'password', 'verify', 'proxies', 0, 0, 'Fixed')
+    mocker.patch.object(client, 'http_request', return_value=response)
+    with pytest.raises(Exception) as error:
+        command_name(client, args)
+
+    assert str(error.value) == err_msg

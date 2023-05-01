@@ -724,6 +724,7 @@ Creates an address object.
 | ip_wildcard       | The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255 | Optional | 
 | device-group      | The device group for which to return addresses (Panorama instances). | Optional | 
 | tag               | The tag for the new address. | Optional | 
+| create_tag        | Whether to create the tag if it does not exist. | Optional | 
 
 
 #### Context Output
@@ -736,7 +737,7 @@ Creates an address object.
 | Panorama.Addresses.IP_Netmask | string | Address IP Netmask. | 
 | Panorama.Addresses.IP_Range | string | Address IP range. | 
 | Panorama.Addresses.DeviceGroup | String | Device group for the address \(Panorama instances\). | 
-| Panorama.Addresses.Tag | String | Address tag. | 
+| Panorama.Addresses.Tags | String | Address tags. | 
 
 
 #### Command Example
@@ -827,7 +828,7 @@ Returns a list of address groups.
 | Panorama.AddressGroups.Description | string | Address group description. | 
 | Panorama.AddressGroups.Addresses | String | Static Address group addresses. | 
 | Panorama.AddressGroups.DeviceGroup | String | Device group for the address group \(Panorama instances\). | 
-| Panorama.AddressGroups.Tag | String | Address group tag. | 
+| Panorama.AddressGroups.Tags | String | Address group tags. | 
 
 
 #### Command Example
@@ -952,7 +953,7 @@ Creates a static or dynamic address group.
 | Panorama.AddressGroups.Addresses | string | Static Address group list of addresses. | 
 | Panorama.AddressGroups.Description | string | Address group description. | 
 | Panorama.AddressGroups.DeviceGroup | String | Device group for the address group \(Panorama instances\). | 
-| Panorama.AddressGroups.Tag | String | Address group tags. | 
+| Panorama.AddressGroups.Tags | String | Address group tags. | 
 
 
 #### Command Example
@@ -2724,10 +2725,28 @@ Returns the push status for a configuration.
 ***
 Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall and run the scp export command to export the PCAP file. For more information, see the Palo Alto Networks documentation.
 
+When trying to retrieve threat-PCAPs of a firewall through a panorama instance, be sure to forward the log containing the threat PCAP file from the firewall to the panorama instance. 
+
+For more information follow instructions from [here](https://docs.paloaltonetworks.com/panorama/10-2/panorama-admin/manage-log-collection/configure-log-forwarding-to-panorama).
+
 
 #### Base Command
 
 `pan-os-get-pcap`
+
+
+#### PCAPs api docs
+You can find information about required/optional arguments for each pcap type here:
+
+![filter pcap api](../../doc_files/fliter-pcap-api.png)
+
+![dlp pcap api](../../doc_files/dlp-pcap-api.png)
+
+![application pcap api](../../doc_files/application-pcap-api.png)
+
+![threat pcap api](../../doc_files/threat-pcap-api.png)
+
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2767,7 +2786,7 @@ Returns information for a Panorama PCAP file. The recommended maximum file size 
 
 ### pan-os-list-pcaps
 ***
-Returns a list of all PCAP files by PCAP type. Not available for threat PCAPs.
+Returns a list of all PCAP files by PCAP type. **Not available for threat PCAPs.**
 
 #### Base Command
 

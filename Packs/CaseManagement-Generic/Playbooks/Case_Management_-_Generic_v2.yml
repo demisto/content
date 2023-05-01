@@ -82,6 +82,25 @@ inputs:
   required: false
   value:
     simple: '1440'
+- key: SendOnCallNotification
+  value:
+    simple: "No"
+  required: false
+  description: "Whether to send the on call notification email based on the Incidents Severity. \n\nSet to Yes to send notifications, and add the emails to the NotificationEmails. "
+  playbookInputQuery:
+- key: NotificationEmails
+  value: {}
+  required: false
+  description: 'The email addresses to send the message to, can be comma separated. '
+  playbookInputQuery:
+- key: MinimumSeverity
+  value:
+    simple: "3"
+  required: false
+  description: |-
+    The minimum severity level for the Incident to send notification for.  Default is 3 (High).   XSOAR Severity values:
+    Critical (4), High (3), Medium (2), Low (1), Information (0.5), Unknown (0)
+  playbookInputQuery:
 name: Case Management - Generic v2
 outputs: []
 starttaskid: '0'
@@ -100,12 +119,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 16ba667f-3dd6-4a11-89b6-7ea9d5e65dfc
+      id: f0095fd7-5fa2-4f35-82a3-f9e25b9bc811
       iscommand: false
       name: ''
       version: -1
       description: ''
-    taskid: 16ba667f-3dd6-4a11-89b6-7ea9d5e65dfc
+    taskid: f0095fd7-5fa2-4f35-82a3-f9e25b9bc811
     timertriggers: []
     type: start
     view: |-
@@ -127,20 +146,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 130af4f4-5944-482c-82fb-9aaafa56b704
+      id: e71cd0e0-cd3c-4f90-8ae7-822cfa854559
       iscommand: false
       name: 'Done '
       type: title
       version: -1
       description: ''
-    taskid: 130af4f4-5944-482c-82fb-9aaafa56b704
+    taskid: e71cd0e0-cd3c-4f90-8ae7-822cfa854559
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2145
+          "y": 2640
         }
       }
     continueonerrortype: ""
@@ -159,19 +178,19 @@ tasks:
     task:
       brand: Builtin
       description: "### Analyst Investigation\n\nPlease ensure to take the following actions:\n\n### Assign to yourself, or another Analyst\n- Click Assign to Me to assign this to yourself.\n- Select an Owner via the Owner field to assign or reassign to another Analyst.\n\n### Select Actions -> Close Incident to close this when completed. \n- Please ensure to capture the appropriate close reason, and closing notes/resolution as required.\n\n### Timers\n- Time to Assignment will stop when an Owner is assigned, and the Remediation SLA Timer will be started.\n- The Remediation SLA timers will not stop until the Incident is closed"
-      id: dd7178e8-2538-45ab-8504-e3e9f42cf055
+      id: ea2c0e6c-b67f-4a0e-879d-1d3ff47b86f8
       iscommand: false
       name: Manual - Analyst Investigation
       type: regular
       version: -1
-    taskid: dd7178e8-2538-45ab-8504-e3e9f42cf055
+    taskid: ea2c0e6c-b67f-4a0e-879d-1d3ff47b86f8
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1970
+          "y": 2465
         }
       }
     continueonerrortype: ""
@@ -189,14 +208,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 47fa3a5f-e596-48f2-8bd3-20ebecfcea72
+      id: dac6c740-325c-4206-82c1-c89f91f37da4
       iscommand: false
       name: Calculate Severity - Standard
       type: playbook
       version: -1
-      description: ''
       playbookName: Calculate Severity - Standard
-    taskid: 47fa3a5f-e596-48f2-8bd3-20ebecfcea72
+      description: ''
+    taskid: dac6c740-325c-4206-82c1-c89f91f37da4
     timertriggers: []
     type: playbook
     view: |-
@@ -237,12 +256,12 @@ tasks:
     task:
       brand: ''
       description: Checks whether the Enrich playbook input is set to True.
-      id: ae6fd9f2-155d-4c1c-864d-6bfb8dc16520
+      id: d9cecc86-bac0-4873-8091-67f54141dfad
       iscommand: false
       name: Should indicators be extracted and enriched?
       type: condition
       version: -1
-    taskid: ae6fd9f2-155d-4c1c-864d-6bfb8dc16520
+    taskid: d9cecc86-bac0-4873-8091-67f54141dfad
     timertriggers: []
     type: condition
     view: |-
@@ -267,13 +286,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 10c62e54-56a5-4da2-8a17-7aac10ceab1a
+      id: b376d9f7-c94a-4d0d-8fac-8065f6972c8f
       iscommand: false
       name: Enrich indicators
       type: title
       version: -1
       description: ''
-    taskid: 10c62e54-56a5-4da2-8a17-7aac10ceab1a
+    taskid: b376d9f7-c94a-4d0d-8fac-8065f6972c8f
     timertriggers: []
     type: title
     view: |-
@@ -304,13 +323,13 @@ tasks:
     task:
       brand: Builtin
       description: Extracts all indicators that match the regex for the indicator type, and enriches the repuration using the reputation command defined for the indicator type.
-      id: d00b80ad-7d43-4224-8c7f-135228d15cca
+      id: 7de47577-2c67-4421-8875-216993c60f11
       iscommand: true
       name: Extract Indicators from Incident
       script: Builtin|||extractIndicators
       type: regular
       version: -1
-    taskid: d00b80ad-7d43-4224-8c7f-135228d15cca
+    taskid: 7de47577-2c67-4421-8875-216993c60f11
     timertriggers: []
     type: regular
     view: |-
@@ -335,13 +354,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 0fdcd68f-e137-4d32-8b7d-5132ecc94f83
+      id: 5c66c155-dc5b-49e3-8d31-50757dd9d4e6
       iscommand: false
       name: Calculate Severity
       type: title
       version: -1
       description: ''
-    taskid: 0fdcd68f-e137-4d32-8b7d-5132ecc94f83
+    taskid: 5c66c155-dc5b-49e3-8d31-50757dd9d4e6
     timertriggers: []
     type: title
     view: |-
@@ -366,13 +385,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 51a1b4a5-c1fc-4729-849d-dba7a37521d2
+      id: 974cd6d9-8675-4823-8444-ff091aed82c0
       iscommand: false
       name: Start SLA Timers
       type: title
       version: -1
       description: ''
-    taskid: 51a1b4a5-c1fc-4729-849d-dba7a37521d2
+    taskid: 974cd6d9-8675-4823-8444-ff091aed82c0
     timertriggers: []
     type: title
     view: |-
@@ -411,12 +430,12 @@ tasks:
     task:
       brand: ''
       description: Checks if the SetSLAs input is set to True, and if so moves to the sub-playbook to set the SLAs based on Severity.
-      id: 64613864-7465-4c52-8739-a6a15d928c36
+      id: dc09d806-3b03-4112-88df-aed9b28de993
       iscommand: false
       name: Should we set SLAs based on Severity?
       type: condition
       version: -1
-    taskid: 64613864-7465-4c52-8739-a6a15d928c36
+    taskid: dc09d806-3b03-4112-88df-aed9b28de993
     timertriggers: []
     type: condition
     view: |-
@@ -484,14 +503,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: ac3032bb-9a4a-47d2-8561-1b15bc3070af
+      id: 7115607e-0d36-492d-876f-d971fc975e8c
       iscommand: false
       name: Case Management - Generic - Set SLAs based on Severity
       type: playbook
       version: -1
-      description: ''
       playbookName: Case Management - Generic - Set SLAs based on Severity
-    taskid: ac3032bb-9a4a-47d2-8561-1b15bc3070af
+      description: ''
+    taskid: 7115607e-0d36-492d-876f-d971fc975e8c
     timertriggers: []
     type: playbook
     view: |-
@@ -516,13 +535,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 5c11f903-f3de-444f-8efa-b64a3552fa31
+      id: 76089d0f-8f55-40a8-8ba1-d0a0e54d6ffb
       iscommand: false
       name: Set SLAs
       type: title
       version: -1
       description: ''
-    taskid: 5c11f903-f3de-444f-8efa-b64a3552fa31
+    taskid: 76089d0f-8f55-40a8-8ba1-d0a0e54d6ffb
     timertriggers: []
     type: title
     view: |-
@@ -535,10 +554,10 @@ tasks:
     continueonerrortype: ""
   "32":
     id: "32"
-    taskid: d4684072-8462-4adb-8e0f-2849127bcd39
+    taskid: ce018ba1-f304-480d-8c40-c65226809c70
     type: playbook
     task:
-      id: d4684072-8462-4adb-8e0f-2849127bcd39
+      id: ce018ba1-f304-480d-8c40-c65226809c70
       version: -1
       name: Case Management - Generic - Start SLA Timers
       playbookName: Case Management - Generic - Start SLA Timers
@@ -549,6 +568,7 @@ tasks:
     nexttasks:
       '#none#':
       - "33"
+      - "34"
     separatecontext: true
     continueonerrortype: ""
     view: |-
@@ -567,10 +587,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: db6acbda-7787-4a39-863f-110f857adeda
+    taskid: 3490ded4-1832-46e1-8b91-19eede066c95
     type: title
     task:
-      id: db6acbda-7787-4a39-863f-110f857adeda
+      id: 3490ded4-1832-46e1-8b91-19eede066c95
       version: -1
       name: Investigation
       type: title
@@ -586,7 +606,127 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: bdbb8546-1d2e-44c8-84a2-c289a7af3007
+    type: title
+    task:
+      id: bdbb8546-1d2e-44c8-84a2-c289a7af3007
+      version: -1
+      name: Notification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
           "y": 1825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: f1918e2d-b3ec-4d45-81bb-beef42cbeb15
+    type: playbook
+    task:
+      id: f1918e2d-b3ec-4d45-81bb-beef42cbeb15
+      version: -1
+      name: Case Management - Generic - Send On Call Notification
+      description: "This playbook can be used to send email notification if an Incidents severity is Critical or High.  \n\nCan be used as a sub-playbook to perform the same logic across different playbooks/use cases."
+      playbookName: Case Management - Generic - Send On Call Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      emails:
+        complex:
+          root: inputs.NotificationEmails
+      minimum_severity:
+        complex:
+          root: inputs.MinimumSeverity
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 6ddf3aa2-3e0c-46a7-8986-3d1a472d7e5b
+    type: condition
+    task:
+      id: 6ddf3aa2-3e0c-46a7-8986-3d1a472d7e5b
+      version: -1
+      name: Should we send on call notification?
+      description: Checks whether the SendOnCallNotification is set to Yes, and will send the on call notification if the Incident severity is critical or high.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SendOnCallNotification
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1970
         }
       }
     note: false
@@ -602,7 +742,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2160,
+        "height": 2655,
         "width": 492.5,
         "x": 50,
         "y": 50

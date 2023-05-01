@@ -1438,7 +1438,7 @@ def test_module_hec_url(mocker):
         - Run test-module command
 
     Then:
-        - Validate taht the request.get was called with the expected args
+        - Validate that the request.get was called with the expected args
     """
     # prepare
     mocker.patch.object(demisto, 'params', return_value={'hec_url': 'test_hec_url'})
@@ -1453,6 +1453,30 @@ def test_module_hec_url(mocker):
 
     # validate
     assert requests.get.call_args[0][0] == 'test_hec_url/services/collector/health'
+
+
+def test_module_message_object(mocker):
+    """
+    Given:
+        - query results with one message item.
+
+    When:
+        - Run test-module command.
+
+    Then:
+        - Validate the test_module run successfully and the info method was called once.
+    """
+    import splunklib.results as results
+    # prepare
+    mocker.patch.object(demisto, 'params', return_value={'isFetch': True, 'fetchQuery': 'something'})
+    message = results.Message("DEBUG", "There's something in that variable...")
+    mocker.patch('splunklib.results.ResultsReader', return_value=[message])
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    # run
+    splunk.test_module(service)
+
+    # validate
+    assert service.info.call_count == 1
 
 
 def test_labels_with_non_str_values(mocker):
@@ -1655,3 +1679,33 @@ def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs)
     mocker.patch.object(mapper, '_get_record', side_effect=mocked_get_record)
     res = mapper.get_splunk_user_by_xsoar_command(xsoar_names)
     assert res.outputs == expected_outputs
+
+
+@pytest.mark.parametrize(argnames='username, expected_username, basic_auth', argvalues=[
+    ('test_user', 'test_user', False),
+    ('test@_basic', 'test', True)])
+def test_basic_authentication_param(mocker, username, expected_username, basic_auth):
+    """
+    Given: - the username contain '@_basic' suffix
+    When:  - connecting to Splunk server
+    Then:  - validate the connection args was sent as expected
+
+    """
+    mocked_params = {
+        'host': 'test_host',
+        'port': '8089',
+        'proxy': 'false',
+        'authentication': {
+            'identifier': username,
+            'password': 'test_password'
+        }
+    }
+    mocker.patch.object(client, 'connect')
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='not_impl_command')
+
+    with pytest.raises(NotImplementedError):
+        splunk.main()
+
+    assert client.connect.call_args[1]['username'] == expected_username
+    assert ('basic' in client.connect.call_args[1]) == basic_auth

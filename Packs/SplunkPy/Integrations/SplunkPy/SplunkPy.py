@@ -2356,6 +2356,10 @@ def test_module(service: client.Service) -> None:
                 return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
                              'timezone of the Splunk server being used in the integration configuration.')
             for item in results.ResultsReader(service.jobs.oneshot(query, **kwargs)):  # type: ignore
+
+                if isinstance(item, results.Message):
+                    continue
+
                 if EVENT_ID not in item:
                     if MIRROR_DIRECTION.get(params.get('mirror_direction')):
                         return_error('Cannot mirror incidents if fetch query does not use the `notable` macro.')
@@ -2625,6 +2629,9 @@ def main():  # pragma: no cover
         connection_args['splunkToken'] = password
         auth_token = password
     else:
+        if '@_basic' in username:
+            username = username.split('@_basic')[0]
+            connection_args['basic'] = True
         connection_args['username'] = username
         connection_args['password'] = password
         connection_args['autologin'] = True

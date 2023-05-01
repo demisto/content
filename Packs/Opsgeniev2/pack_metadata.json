@@ -2,13 +2,13 @@
     "name": "Opsgenie v2",
     "description": "Create and read alerts, schedules and on-call information from OpsGenie.",
     "support": "community",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "Adam Baumeister",
     "url": "",
     "email": "",
     "created": "2020-12-20T17:38:25Z",
     "categories": [
-        "Messaging"
+        "Messaging and Conferencing"
     ],
     "tags": [],
     "useCases": [],

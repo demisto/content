@@ -52,6 +52,7 @@ QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 FETCH_DEFAULT_TIME = '1 day'
 MAX_INCIDENTS_TO_FETCH = 100
 FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
+GET_LOG_JOB_ID_MAX_RETRIES = 10
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -1554,7 +1555,24 @@ def panorama_create_address_command(args: dict):
     """
     address_name = args['name']
     description = args.get('description')
-    tags = argToList(args['tag']) if 'tag' in args else None
+
+    if tags := set(argToList(args.get('tag', []))):
+        result = http_request(URL, 'GET', params={'type': 'config', 'action': 'get', 'key': API_KEY, 'xpath': f'{XPATH_OBJECTS}tag'})
+        entries = result.get('response', {}).get('result', {}).get('tag', {}).get('entry', [])
+        if isinstance(entries, dict):  # In case there is only one tag.
+            entries = [entries]
+        existing_tags = set([entry.get('@name') for entry in entries])
+        if non_existent_tags := tags - existing_tags:
+            if argToBoolean(args.get('create_tag', False)):
+                for tag in non_existent_tags:
+                    http_request(URL, 'POST', body={'type': 'config', 'action': 'set', 'key': API_KEY,
+                                                    'xpath': f"{XPATH_OBJECTS}tag/entry[@name='{tag}']",
+                                                    'element': '<comments>created via API</comments>'})
+            else:
+                raise DemistoException(
+                    f'Failed to create the address object since the tags `{non_existent_tags}` does not exist. '
+                    f'You can use the `create_tag` argument to create the tag.'
+                )
 
     fqdn = args.get('fqdn')
     ip_netmask = args.get('ip_netmask')
@@ -1584,7 +1602,7 @@ def panorama_create_address_command(args: dict):
     if description:
         address_output['Description'] = description
     if tags:
-        address_output['Tags'] = tags
+        address_output['Tags'] = list(tags)
 
     return_results({
         'Type': entryTypes['note'],
@@ -3503,7 +3521,7 @@ def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, quer
     }
 
     if query:
-        params["xpath"] = f'{params["xpath"]}[{query}]'
+        params["xpath"] = f'{params["xpath"]}[{query.replace(" eq ", " = ")}]'
     elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
         params["xpath"] = f'{params["xpath"]}[{xpath_filter}]'
 
@@ -4244,12 +4262,16 @@ def panorama_list_applications_command(args:Dict[str, str]):
 
 
 def prettify_edls_arr(edls_arr: Union[list, dict]):
+
+    if isinstance(edls_arr, dict):  # handle case of only one edl in the instance
+        parse_pan_os_un_committed_data(edls_arr, ['@admin', '@dirtyId', '@time'])
+        return prettify_edl(edls_arr)
+
     for edl in edls_arr:
         parse_pan_os_un_committed_data(edl, ['@admin', '@dirtyId', '@time'])
 
     pretty_edls_arr = []
-    if not isinstance(edls_arr, list):  # handle case of only one edl in the instance
-        return prettify_edl(edls_arr)
+
     for edl in edls_arr:
         pretty_edl = {
             'Name': edl['@name'],
@@ -4608,8 +4630,11 @@ def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: int)
         'type': 'user-id',
         'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register>{entry}'
                f'</register></payload></uid-message>',
-        'key': API_KEY
+        'key': API_KEY,
     }
+    if VSYS:
+        params['vsys'] = VSYS
+
     result = http_request(
         URL,
         'POST',
@@ -4632,8 +4657,6 @@ def panorama_register_ip_tag_command(args: dict):
 
     major_version = get_pan_os_major_version()
 
-    if timeout and persistent == '1':
-        raise DemistoException('When the persistent argument is true, you can not use the timeout argument.')
     if major_version <= 8 and timeout:
         raise DemistoException('The timeout argument is only applicable on 9.x PAN-OS versions or higher.')
 
@@ -4677,8 +4700,11 @@ def panorama_unregister_ip_tag(tag: str, ips: list):
         'type': 'user-id',
         'cmd': '<uid-message><version>2.0</version><type>update</type><payload><unregister>' + entry
                + '</unregister></payload></uid-message>',
-        'key': API_KEY
+        'key': API_KEY,
     }
+    if VSYS:
+        params['vsys'] = VSYS
+
     result = http_request(
         URL,
         'POST',
@@ -4722,8 +4748,10 @@ def panorama_register_user_tag(tag: str, users: List, timeout: Optional[int]):
         'type': 'user-id',
         'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register-user>{entry}'
                f'</register-user></payload></uid-message>',
-        'key': API_KEY
+        'key': API_KEY,
     }
+    if VSYS:
+        params['vsys'] = VSYS
 
     result = http_request(
         URL,
@@ -4783,8 +4811,11 @@ def panorama_unregister_user_tag(tag: str, users: list):
         'type': 'user-id',
         'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><unregister-user>{entry}'
                f'</unregister-user></payload></uid-message>',
-        'key': API_KEY
+        'key': API_KEY,
     }
+    if VSYS:
+        params['vsys'] = VSYS
+
     result = http_request(
         URL,
         'POST',
@@ -13044,7 +13075,20 @@ def get_query_entries_by_id_request(job_id: str) -> Dict[str, Any]:
         Dict[str,Any]: a dictionary of the raw entries linked to the Job ID
     """
     params = assign_params(key=API_KEY, type='log', action='get', job_id=job_id)
-    return http_request(URL, 'GET', params=params)
+    
+    # if the job has not finished, wait for 1 second and try again (until success or max retries)
+    for try_num in range(1, GET_LOG_JOB_ID_MAX_RETRIES + 1):
+        response = http_request(URL, 'GET', params=params)
+        status = response.get('response', {}).get('result', {}).get('job', {}).get('status', '')
+        demisto.debug(f'Job ID {job_id}, response status: {status}')
+        demisto.debug(f'raw response: {response}')
+        if status == 'FIN':
+            return response
+        else:
+            demisto.debug(f'Attempt number: {try_num}. Job not completed, Retrying in 1 second...')
+            time.sleep(1) # due to short job life, saving the unfinished job id's to the context to query in the next fetch cycle is not a valid solution.
+    demisto.debug(f'Maximum attempt number: {try_num} has reached. Job ID {job_id} might be not completed which could result in missing incidents.')
+    return {}
 
 
 def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[Any, Any]]:
@@ -13063,7 +13107,7 @@ def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[An
     job_id = get_query_by_job_id_request(log_type, query, max_fetch)
     demisto.debug(f'{job_id=}')
 
-    # second http request: send request with job id, valid response will contain a dictionary of entries.
+    # second http request: send request with job id, valid response will contain a dictionary of entries. 
     query_entries = get_query_entries_by_id_request(job_id)
 
     # extract all entries from response

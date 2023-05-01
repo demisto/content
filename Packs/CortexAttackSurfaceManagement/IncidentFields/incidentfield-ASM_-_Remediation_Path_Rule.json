@@ -77,7 +77,7 @@
     "description": "Shows information on matching remediation path rule",
     "editForm": true,
     "group": 0,
-    "hidden": true,
+    "hidden": false,
     "id": "incident_asmremediationpathrule",
     "isReadOnly": false,
     "locked": false,

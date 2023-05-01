@@ -122,6 +122,7 @@ Fetch all incidents
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Search query/qualification format of '&lt;field&gt; LIKE "&lt;values&gt;"' (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"'). | Optional | 
+| sort | Sort query results in descending or ascending order. Format:'&lt;field&gt;.asc' or '&lt;field&gt;.desc' (e.g. 'Assigned To.asc'). | Optional |
 
 
 #### Context Output

@@ -16,8 +16,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -41,8 +40,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -77,9 +75,7 @@ configuration:
   name: maxIndicators
   required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -103,9 +99,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time
-  Threat Intelligence indicators. Get IOCs such as domains, URLs, hashes, and IP addresses
-  straight into the XSOAR platform.
+description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time Threat Intelligence indicators. Get IOCs such as domains, URLs, hashes, and IP addresses straight into the XSOAR platform.
 display: Sixgill DarkFeed Threat Intelligence
 name: Sixgill_Darkfeed
 script:
@@ -123,7 +117,7 @@ script:
     description: Fetching Sixgill DarkFeed indicators
     execution: true
     name: sixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.48723
+  dockerimage: demisto/sixgill:1.0.0.56489
   feed: true
   isfetch: false
   longRunning: false
@@ -132,3 +126,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

@@ -329,7 +329,8 @@ def main() -> None:
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            auth=(credentials.get('identifier'), credentials.get('password'))
+            auth=(credentials.get('identifier'), credentials.get('password')),
+            proxy=params.get('proxy')
         )
 
         if command == 'test-module':
