@@ -6,7 +6,7 @@ script: ''
 type: javascript
 tags:
 - Utility
-comment: Expose the incident owner into IncidentOwner context key
+comment: Expose the incident owner into <-Incident->Owner context key
 enabled: true
 outputs:
 - contextPath: IncidentOwner.name
