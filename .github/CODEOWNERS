@@ -87,8 +87,8 @@ Utils/trigger_nightly_sdk_build.sh @dorschw
 /Packs/ApiModules/Scripts/CoreIRApiModule/* @dansterenson
 
 # Dependencies
-pyproject.toml @ilaner
-poetry.lock @ilaner
+pyproject.toml @ilaner @dorschw
+poetry.lock @ilaner @dorschw
 
 # Devcontainers
 .devcontainer/* @ilaner
