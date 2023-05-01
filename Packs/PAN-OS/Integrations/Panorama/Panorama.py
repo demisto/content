@@ -13227,7 +13227,7 @@ def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
     return entries
 
 
-def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[str | None ,datetime | None, List[Dict[str, Any]]]:
+def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[Dict[str, str]| None ,datetime | None, List[Dict[str, Any]]]:
     """parses raw incident entries of a specific log type query into basic context incidents.
     
     Args:
