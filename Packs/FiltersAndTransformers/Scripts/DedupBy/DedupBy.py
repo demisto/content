@@ -4,10 +4,10 @@ from typing import Any, List, Union
 
 
 def demisto_get(obj: Any, path: Any) -> Any:
-    r"""
+    """
     This is an extended function of demisto.get().
     The `path` argument parameter supports a syntax of path escaped with backslash
-    in order to support a key icluding period charactors.
+    in order to support a key including period characters.
 
     e.g.
        xxx
@@ -25,7 +25,7 @@ def demisto_get(obj: Any, path: Any) -> Any:
         Get keys in order from the path which supports a syntax of path escaped with backslash.
 
         :param path: The path.
-        :return: The keys whose escape charactors are removed.
+        :return: The keys whose escape characters are removed.
         """
         nodes = []
         node = []
