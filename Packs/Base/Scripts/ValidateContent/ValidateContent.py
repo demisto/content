@@ -263,7 +263,6 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
 
     with redirect_stdout(output_capture):
         with redirect_stderr(output_capture):
-            print("trying to print to sout")
             if filename.endswith('.zip'):
                 path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
                     filename, data, tmp_directory
