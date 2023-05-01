@@ -141,10 +141,11 @@ def cmds_command(client, args):
         outputs=outputs,
         readable_output=md
     )
-    return_results(command_results)
+    
+    return command_results
 
 
-def main():
+def main():     # pragma: no cover
 
     params = demisto.params()
     args = demisto.args()
@@ -175,7 +176,8 @@ def main():
     if command == 'test-module':
         test_command(client)
     elif command == 'netmiko-cmds':
-        cmds_command(client, args)
+        results = cmds_command(client, args)
+        return_results(results)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
