@@ -13338,7 +13338,7 @@ def log_types_queries_to_dict(params: Dict[str, str]) -> Dict[str, str]:
     return queries_dict
 
 
-def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, Any]]], last_fetch_dict: Dict[str,str], last_id_dict: Dict[str,str]) -> Dict[str,Any]:
+def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, Any]]], last_fetch_dict: Dict[str,str], last_id_dict: Dict[str,Dict]) -> Dict[str,Any]:
     """for each log type incident entries array, parse the raw incidents into context incidents.
     if necessary, update the latest fetch time and last ID values in their corresponding dictionaries.
 
