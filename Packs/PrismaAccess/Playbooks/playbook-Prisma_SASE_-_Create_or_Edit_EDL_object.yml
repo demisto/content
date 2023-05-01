@@ -601,7 +601,7 @@ tasks:
       description: Update an existing dynamic list.
       id: 6c2d0f47-d7fb-4647-80c7-375fd30bdd40
       iscommand: true
-      name: Create the External Dynamic List Object
+      name: Update the External Dynamic List Object
       script: '|||prisma-sase-external-dynamic-list-update'
       type: regular
       version: -1

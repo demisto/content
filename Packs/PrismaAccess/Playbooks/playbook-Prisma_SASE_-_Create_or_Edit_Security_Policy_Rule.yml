@@ -416,16 +416,17 @@ tasks:
       }
   "7":
     conditions:
-    - condition:
-      - - left:
-            iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
             value:
-              simple: aa
-          operator: isEqualString
+              simple: inputs.RuleName
+            iscontext: true
           right:
             value:
-              simple: aa
-      label: "yes"
+              simple: PrismaSase.SecurityRule.name
+            iscontext: true
     continueonerrortype: ""
     id: "7"
     ignoreworker: false
