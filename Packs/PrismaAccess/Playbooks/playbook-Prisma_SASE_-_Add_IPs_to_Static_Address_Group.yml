@@ -12,7 +12,7 @@ inputs:
   value: {}
 - description: |-
     Possible Values:
-    True -> Will Commit and Push Configuration
+    True -> Will commit and push configuration.
     False -> Manual Push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AutoCommit
