@@ -3298,7 +3298,7 @@ Retrieve the risk score of a specific host or list of hosts with the highest ris
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | Unique ID of a specific host.<br/>. | Optional | 
+| host_id | Unique ID of a specific host.<br/> | Optional | 
 | limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(use limit when you don't asking for specific host). Default is 50. | Optional | 
 
 #### Context Output
