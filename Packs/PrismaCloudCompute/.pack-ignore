@@ -33,6 +33,15 @@ ignore=IF113
 [file:incidentfield-PCC_Defender_Logs.json]
 ignore=IF113
 
+[file:TagIndicatorButton.yml]
+ignore=BA124
+
+[file:CreatePrismaCloudComputeLink.yml]
+ignore=BA124
+
+[file:CreatePrismaCloudComputeComplianceReportButton.yml]
+ignore=BA124
+
 [known_words]
 resourceType
 resourceID
