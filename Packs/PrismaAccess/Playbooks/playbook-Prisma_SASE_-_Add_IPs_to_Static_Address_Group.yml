@@ -19,7 +19,7 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: The IP address value,comma-separated form.
+- description: A comma-separated list of IP addresses.
   key: IP
   playbookInputQuery:
   required: false
