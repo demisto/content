@@ -86,13 +86,14 @@ filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alert
     get_email_timestamp = arraystring(regextract(analyzedMessageEvidence_receivedDateTime, "\d+\/\d+\/\d+ \d+:\d+:\d+ [A-Z]{2}"), ""),
     get_email_zone = replex(arraystring(regextract(analyzedMessageEvidence_receivedDateTime, "[+|-]\d+:\d+"), ""), ":", ""),
     check_ipv4 = if(ipEvidence_ipAddress !~= ":", ipEvidence_ipAddress, null),
-    check_ipv6 = if(ipEvidence_ipAddress ~= ":", ipEvidence_ipAddress, null)
+    check_ipv6 = if(ipEvidence_ipAddress ~= ":", ipEvidence_ipAddress, null),
+    outcome_check = coalesce(fileEvidence_detectionStatus, processEvidence_detectionStatus, classification)
 | alter
     xdm.observer.unique_identifier = id,
     xdm.event.description = title,
     xdm.event.is_completed = check_resolved,
     xdm.alert.subcategory = category,
-    xdm.event.outcome = if(fileEvidence_detectionStatus = "blocked", XDM_CONST.OUTCOME_SUCCESS, fileEvidence_detectionStatus = "detected", XDM_CONST.OUTCOME_FAILED, fileEvidence_detectionStatus = "prevented", XDM_CONST.OUTCOME_PARTIAL, processEvidence_detectionStatus = "blocked", XDM_CONST.OUTCOME_SUCCESS, processEvidence_detectionStatus = "detected", XDM_CONST.OUTCOME_FAILED, processEvidence_detectionStatus = "prevented", XDM_CONST.OUTCOME_PARTIAL, classification = "falsePositive", XDM_CONST.OUTCOME_SUCCESS, classification = "truePositive", XDM_CONST.OUTCOME_FAILED, classification = "benignPositive", XDM_CONST.OUTCOME_PARTIAL, coalesce(fileEvidence_detectionStatus, processEvidence_detectionStatus, classification) = null, null, to_string(coalesce(fileEvidence_detectionStatus, processEvidence_detectionStatus, classification))),
+    xdm.event.outcome = if(fileEvidence_detectionStatus = "blocked", XDM_CONST.OUTCOME_SUCCESS, fileEvidence_detectionStatus = "detected", XDM_CONST.OUTCOME_FAILED, fileEvidence_detectionStatus = "prevented", XDM_CONST.OUTCOME_PARTIAL, processEvidence_detectionStatus = "blocked", XDM_CONST.OUTCOME_SUCCESS, processEvidence_detectionStatus = "detected", XDM_CONST.OUTCOME_FAILED, processEvidence_detectionStatus = "prevented", XDM_CONST.OUTCOME_PARTIAL, classification = "falsePositive", XDM_CONST.OUTCOME_SUCCESS, classification = "truePositive", XDM_CONST.OUTCOME_FAILED, classification = "benignPositive", XDM_CONST.OUTCOME_PARTIAL, outcome_check = null, null, to_string(outcome_check)),
     xdm.event.tags = arraycreate(coalesce(alertEvidence_tags, analyzedMessageEvidence_tags, cloudApplicationEvidence_tags, deviceEvidence_tags, fileEvidence_tags, ipEvidence_tags, mailboxEvidence_tags, processEvidence_tags, registryKeyEvidence_tags, registryValueEvidence_tags, urlEvidence_tags)),
     xdm.alert.severity = coalesce(severity, deviceEvidence_riskScore),
     xdm.source.host.device_id = tenantId,
