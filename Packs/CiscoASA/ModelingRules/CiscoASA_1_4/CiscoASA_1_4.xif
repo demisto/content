@@ -112,8 +112,8 @@ filter _raw_log ~= "\w+\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\sto\s[a-zA-Z0-9
     xdm.target.ipv4 = dest_ip,
     xdm.target.port = to_integer(dest_port),
     xdm.target.zone = dest_interface,
-    xdm.source.user.username = source_username,
-    xdm.target.user.username = dst_username,
+    xdm.source.user.username = coalesce(source_username,dst_username),
+    xdm.target.user.username = coalesce(source_username,dst_username),
     xdm.network.icmp.code = to_integer(icmp_code),
     xdm.network.icmp.type = to_integer(icmp_type),
     xdm.event.outcome_reason = action,
@@ -443,17 +443,20 @@ filter _raw_log ~= "\d\:\sAAA"
     message = arrayindex(regextract(_raw_log, "\%ASA\-[session]*\-*\d\-\d+[\:|\s\-]+\s(.*)"),0),
     observer_ip = arrayindex(regextract(_raw_log ,"\d{2}\:\d{2}\:\d{2}Z*\s(\d+\.\d+\.\d+\.\d+)\s"),0),
     action = arrayindex(regextract(_raw_log ,"\%ASA\-[session]*\-*\d\-\d+\:([A-Za-z\s\-]+)\s[A-Za-z]+"),0),
-    dst_username1 = arrayindex(regextract(_raw_log ,"user\s\=\s(\S+)\s*"),0),
-    dst_username2 = arrayindex(regextract(_raw_log ,"for\suser\s(\S{2,})"),0),
-    dst_ip = arrayindex(regextract(_raw_log ,"user\sIP\s\=\s(\d+\.\d+\.\d+\.\d+)"),0),
+    src_username1 = arrayindex(regextract(_raw_log ,"user\s\=\s(\S+)\s*"),0),
+    src_username2 = arrayindex(regextract(_raw_log ,"for\suser\s(\S{2,})"),0),
+    src_ip = arrayindex(regextract(_raw_log ,"user\sIP\s\=\s(\d+\.\d+\.\d+\.\d+)"),0),
+    dst_ip = arrayindex(regextract(_raw_log ,"server\s*\=*\s+(\d+\.\d+\.\d+\.\d+)"),0),
     outcome_reason = arrayindex(regextract(_raw_log ,"reason\s\=\s([\w\s]+)\s"),0)
-| alter dst_username = coalesce(dst_username1 , dst_username2 )
+| alter src_username = coalesce(src_username1 , src_username2 )
 | alter xdm.event.original_event_type = to_string(event_id),
+    xdm.event.outcome = if(action contains "Rejected",XDM_CONST.OUTCOME_FAILED,action in ("Successful","ACCEPT"), XDM_CONST.OUTCOME_SUCCESS, null),
     xdm.event.description = message,
     xdm.alert.severity = severity,
+    xdm.source.ipv4 = src_ip,
+    xdm.source.user.username = src_username,
     xdm.target.ipv4 = dst_ip,
-    xdm.target.user.username = dst_username,
-    xdm.event.outcome_reason = coalesce(action,outcome_reason ),
+    xdm.event.outcome_reason = coalesce(outcome_reason, action),
     xdm.observer.name = observer_ip,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
 
