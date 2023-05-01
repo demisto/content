@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# pack version: 3.1.1
 import io
 import json
 import traceback
@@ -3479,7 +3478,7 @@ def main():
 
                 return_results(fetch_handler(client, fetch_dict))
             else:
-                return_results('Please define what type to fetch. Alerts or Threats.')
+                return_results('Please define what type to fetch. Alerts, Threats or Both.')
 
         else:
             if command in commands['common']:
