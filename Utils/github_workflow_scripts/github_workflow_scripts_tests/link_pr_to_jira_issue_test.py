@@ -73,19 +73,18 @@ def test_find_fixed_issue_in_body(pr_body, is_merged, expected_ids, expected_act
     assert res_actions == expected_actions
 
 
-
 TRIGGER_TEST_CASE = [
     (
         True,
         [  # case one link with fixes:
-            {'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3473', 'id': 'CIAC-3473'}
+            {'action': 'fixes', 'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3473', 'id': 'CIAC-3473'}
         ]
     ),
     (
         False,
         [  # case multiple links only related:
-            {'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3473', 'id': 'CIAC-3473'},
-            {'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3475', 'id': 'CIAC-3475'}
+            {'action': 'fixes', 'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3473', 'id': 'CIAC-3473'},
+            {'action': 'relates', 'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3475', 'id': 'CIAC-3475'}
         ]
     )
 ]
@@ -113,7 +112,7 @@ def test_trigger_generic_webhook(requests_mock, is_merged, expected):
     option_mock = OptionMock('pr_link_example', '1', 'dummy pr', PR_WITH_BOTH_BY_NEWLINE, is_merged)
     link_pr_to_jira_issue.trigger_generic_webhook(option_mock)
     res = post_mock.last_request.json()
-    assert res.get('name') == link_pr_to_jira_issue.GENERIC_WEBHOOK_NAME
+    assert res.get('name') == f'{link_pr_to_jira_issue.GENERIC_WEBHOOK_NAME} - #1'
     assert 'raw_json' in res
     assert 'closeIssue' in res.get('raw_json')
     assert res.get('raw_json').get('JiraIssues') == expected
