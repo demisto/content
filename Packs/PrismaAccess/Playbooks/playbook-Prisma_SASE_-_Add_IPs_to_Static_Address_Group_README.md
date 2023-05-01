@@ -10,7 +10,7 @@ Prisma SASE - Create Address Object
 
 ### Integrations
 
-* PrismaSASE
+PrismaSASE
 
 ### Scripts
 
