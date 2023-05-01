@@ -2006,7 +2006,7 @@ class Pack(object):
 
         return task_status and self.is_changelog_exists()
 
-    def is_replace_item_in_folder_collected_list(self, content_item: dict, content_items_to_version_map: dict):
+    def is_replace_item_in_folder_collected_list(self, content_item: dict, content_items_to_version_map: dict, content_item_id: str):
         """ Checks the fromversion and toversion in the content_item with
             the fromversion toversion in content_items_to_version_map
             If the content_item has a more up to date toversion and fromversion will
@@ -2018,7 +2018,6 @@ class Pack(object):
         content_item_fromversion = content_item.get('fromversion') or content_item.get('fromVersion') or ''
         content_item_toversion = content_item.get(
             'toversion') or content_item.get('toVersion') or MAX_TOVERSION
-        content_item_id = content_item.get('id', '')
         content_item_latest_version = content_items_to_version_map.setdefault(
             content_item_id,
             {'fromversion': content_item_fromversion,
@@ -2033,13 +2032,13 @@ class Pack(object):
             }
         return replace_old_playbook
 
-    def get_latest_versions(self, content_items_id_to_version_map: dict, content_item: dict):
+    def get_latest_versions(self, content_items_id_to_version_map: dict, content_item_id: str):
         """ Get the latest fromversion and toversion of a content item.
         Returns:
              A tuple containing the latest fromversion and toversion.
         """
         if (curr_content_item := content_items_id_to_version_map.get(
-                content_item.get('id', ''))):
+                content_item_id)):
             latest_fromversion = curr_content_item.get('fromversion', '')
             latest_toversion = curr_content_item.get('toversion', '')
         else:
@@ -2112,11 +2111,8 @@ class Pack(object):
                                                                           self._pack_name)
 
                     content_item_tags = content_item.get('tags', [])
-
-                    replace_content_item = self.is_replace_item_in_folder_collected_list(
-                        content_item, content_items_id_to_version_map)
-                    latest_fromversion, latest_toversion = self.get_latest_versions(content_items_id_to_version_map, content_item)
-
+                    metadata_toversion = to_version or ''
+                    
                     if current_directory == PackFolders.SCRIPTS.value:
                         metadata_output = {
                             'id': content_item.get('commonfields', {}).get('id', ''),
@@ -2124,8 +2120,8 @@ class Pack(object):
                             'description': content_item.get('comment', ''),
                             'tags': content_item_tags,
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                         if not self._contains_transformer and 'transformer' in content_item_tags:
@@ -2141,8 +2137,8 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ['xsoar', 'marketplacev2']),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
                     elif current_directory == PackFolders.INTEGRATIONS.value:
                         integration_commands = content_item.get('script', {}).get('commands', [])
@@ -2156,8 +2152,8 @@ class Pack(object):
                                 {'name': c.get('name', ''), 'description': c.get('description', '')}
                                 for c in integration_commands],
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.INCIDENT_FIELDS.value:
@@ -2167,8 +2163,8 @@ class Pack(object):
                             'type': content_item.get('type', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.INCIDENT_TYPES.value:
@@ -2181,8 +2177,8 @@ class Pack(object):
                             'days': int(content_item.get('days', 0)),
                             'weeks': int(content_item.get('weeks', 0)),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.DASHBOARDS.value:
@@ -2190,8 +2186,8 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.INDICATOR_FIELDS.value:
@@ -2201,8 +2197,8 @@ class Pack(object):
                             'type': content_item.get('type', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.REPORTS.value:
@@ -2211,8 +2207,8 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.INDICATOR_TYPES.value:
@@ -2222,8 +2218,8 @@ class Pack(object):
                             'reputationScriptName': content_item.get('reputationScriptName', ''),
                             'enhancementScriptNames': content_item.get('enhancementScriptNames', []),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.LAYOUTS.value:
@@ -2231,8 +2227,8 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
                         layout_description = content_item.get('description')
                         if layout_description is not None:
@@ -2244,8 +2240,8 @@ class Pack(object):
                             'name': content_item.get('name') or content_item.get('id', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.WIDGETS.value:
@@ -2255,8 +2251,8 @@ class Pack(object):
                             'dataType': content_item.get('dataType', ''),
                             'widgetType': content_item.get('widgetType', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.LISTS.value:
@@ -2264,8 +2260,8 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.GENERIC_DEFINITIONS.value:
@@ -2274,8 +2270,8 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif parent_directory == PackFolders.GENERIC_FIELDS.value:
@@ -2285,8 +2281,8 @@ class Pack(object):
                             'description': content_item.get('description', ''),
                             'type': content_item.get('type', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.GENERIC_MODULES.value:
@@ -2295,8 +2291,8 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif parent_directory == PackFolders.GENERIC_TYPES.value:
@@ -2305,8 +2301,8 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.PREPROCESS_RULES.value:
@@ -2315,8 +2311,8 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.JOBS.value:
@@ -2326,8 +2322,8 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'details': content_item.get('details', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.PARSING_RULES.value and pack_file_name.startswith("external-"):
@@ -2336,8 +2332,8 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith("external-"):
@@ -2348,8 +2344,8 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                             'datasets': list(schema.keys()),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.CORRELATION_RULES.value and pack_file_name.startswith("external-"):
@@ -2359,8 +2355,8 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.XSIAM_DASHBOARDS.value and pack_file_name.startswith("external-"):
@@ -2370,8 +2366,8 @@ class Pack(object):
                             'name': content_item.get('dashboards_data', [{}])[0].get('name', ''),
                             'description': content_item.get('dashboards_data', [{}])[0].get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                         if preview:
@@ -2384,8 +2380,8 @@ class Pack(object):
                             'name': content_item.get('templates_data', [{}])[0].get('report_name', ''),
                             'description': content_item.get('templates_data', [{}])[0].get('report_description', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                         if preview:
@@ -2411,8 +2407,8 @@ class Pack(object):
                             'os_type': content_item.get('os_type', ''),
                             'profile_type': content_item.get('profile_type', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                     elif current_directory == PackFolders.LAYOUT_RULES.value and pack_file_name.startswith(
@@ -2423,8 +2419,8 @@ class Pack(object):
                             'name': content_item.get('rule_name', ''),
                             'layout_id': content_item.get('layout_id', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'fromversion': latest_fromversion,
-                            'toversion': latest_toversion,
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
                         layout_rule_description = content_item.get('description')
                         if layout_rule_description is not None:
@@ -2432,15 +2428,20 @@ class Pack(object):
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
                         continue
+                    replace_content_item = self.is_replace_item_in_folder_collected_list(
+                         content_item, content_items_id_to_version_map, metadata_output['id'])
                     if replace_content_item:
+                        latest_fromversion, latest_toversion = self.get_latest_versions(content_items_id_to_version_map, metadata_output['id'])
+                        metadata_output['fromversion'] = latest_fromversion
+                        metadata_output['toversion'] = latest_toversion
                         folder_collected_items = [metadata_output
                                                   if d["id"] == metadata_output["id"]
                                                   else d
                                                   for d in folder_collected_items]
                     elif not content_items_id_to_version_map.get(
-                            content_item.get('id', {}), {}).get('added_to_metadata_list', ''):
+                            metadata_output['id'], {}).get('added_to_metadata_list', ''):
                         folder_collected_items.append(metadata_output)
-                        content_items_id_to_version_map.get(content_item.get('id', {}), {})['added_to_metadata_list'] = True
+                        content_items_id_to_version_map.get(metadata_output['id'], {})['added_to_metadata_list'] = True
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = CONTENT_ITEM_NAME_MAPPING[current_directory]
