@@ -1,6 +1,6 @@
 The playbook will handle the operation of blocking a URL within the organization.
 If a category is provided, the URL will be added to the list.
-If not, a new URL category will be created, and a new security rule that blocks that category.
+If not, a new URL category and a new security rule that blocks that category will be created.
 
 ## Dependencies
 
@@ -8,11 +8,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Prisma SASE - Create or Edit Security Policy Rule
+Prisma SASE - Create or Edit Security Policy Rule
 
 ### Integrations
 
-* PrismaSASE
+PrismaSASE
 
 ### Scripts
 
