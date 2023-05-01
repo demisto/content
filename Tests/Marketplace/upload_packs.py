@@ -407,46 +407,53 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
 
     """
     required_core_packs = GCPConfig.get_core_packs(marketplace)
-    core_packs_public_urls = []
-    bucket_core_packs = set()
-    for pack in os.scandir(index_folder_path):
-        if pack.is_dir() and pack.name in required_core_packs:
-            pack_metadata_path = os.path.join(index_folder_path, pack.name, Pack.METADATA)
-
-            if not os.path.exists(pack_metadata_path):
-                logging.critical(f"{pack.name} pack {Pack.METADATA} is missing in {GCPConfig.INDEX_NAME}")
-                sys.exit(1)
-
-            with open(pack_metadata_path, 'r') as metadata_file:
-                metadata = json.load(metadata_file)
-
-            pack_current_version = metadata.get('currentVersion', Pack.PACK_INITIAL_VERSION)
-            core_pack_relative_path = os.path.join(pack.name, pack_current_version, f"{pack.name}.zip")
-            core_pack_storage_path = os.path.join(storage_base_path, core_pack_relative_path)
-
-            if not storage_bucket.blob(core_pack_storage_path).exists():
-                logging.critical(f"{pack.name} pack does not exist under {core_pack_storage_path} path")
-                sys.exit(1)
-
-            core_packs_public_urls.append(core_pack_relative_path)
-            bucket_core_packs.add(pack.name)
-
-    missing_core_packs = set(required_core_packs).difference(bucket_core_packs)
-    unexpected_core_packs = set(bucket_core_packs).difference(required_core_packs)
-
-    if missing_core_packs:
-        logging.critical(
-            f"missing {len(missing_core_packs)} packs (expected in core_packs configuration, but not found in bucket): "
-            f"{','.join(sorted(missing_core_packs))}")
-    if unexpected_core_packs:
-        logging.critical(
-            f"unexpected {len(missing_core_packs)} packs in bucket (not in the core_packs configuration): "
-            f"{','.join(sorted(unexpected_core_packs))}")
-    if missing_core_packs or unexpected_core_packs:
-        sys.exit(1)
-
-    corepacks_files_names = {GCPConfig.CORE_PACK_FILE_NAME, GCPConfig.get_core_packs_unlocked_file()}
+    corepacks_files_names = [GCPConfig.CORE_PACK_FILE_NAME]
+    corepacks_files_names.extend(GCPConfig.get_core_packs_unlocked_files())
     for corepacks_file in corepacks_files_names:
+        core_packs_public_urls = []
+        bucket_core_packs = set()
+        for pack in os.scandir(index_folder_path):
+            if pack.is_dir() and pack.name in required_core_packs:
+                pack_metadata_path = os.path.join(index_folder_path, pack.name, Pack.METADATA)
+
+                if not os.path.exists(pack_metadata_path):
+                    logging.critical(f"{pack.name} pack {Pack.METADATA} is missing in {GCPConfig.INDEX_NAME}")
+                    sys.exit(1)
+
+                with open(pack_metadata_path, 'r') as metadata_file:
+                    metadata = json.load(metadata_file)
+
+                pack_current_version = metadata.get('currentVersion', Pack.PACK_INITIAL_VERSION)
+                core_pack_relative_path = os.path.join(pack.name, pack_current_version, f"{pack.name}.zip")
+                core_pack_storage_path = os.path.join(storage_base_path, core_pack_relative_path)
+
+                if not storage_bucket.blob(core_pack_storage_path).exists():
+                    logging.critical(f"{pack.name} pack does not exist under {core_pack_storage_path} path")
+                    sys.exit(1)
+
+                if corepacks_file == GCPConfig.CORE_PACK_FILE_NAME:
+                    core_pack_public_url = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name,
+                                                        core_pack_storage_path)
+                else:  # versioned core pack file
+                    core_pack_public_url = core_pack_relative_path  # in versioned core pack files, use relative paths (CIAC-5745)
+
+                core_packs_public_urls.append(core_pack_public_url)
+                bucket_core_packs.add(pack.name)
+
+        missing_core_packs = set(required_core_packs).difference(bucket_core_packs)
+        unexpected_core_packs = set(bucket_core_packs).difference(required_core_packs)
+
+        if missing_core_packs:
+            logging.critical(
+                f"missing {len(missing_core_packs)} packs (expected in core_packs configuration, but not found in bucket): "
+                f"{','.join(sorted(missing_core_packs))}")
+        if unexpected_core_packs:
+            logging.critical(
+                f"unexpected {len(missing_core_packs)} packs in bucket (not in the core_packs configuration): "
+                f"{','.join(sorted(unexpected_core_packs))}")
+        if missing_core_packs or unexpected_core_packs:
+            sys.exit(1)
+
         corepacks_json_path = os.path.join(artifacts_dir, corepacks_file)
         core_packs_data = {
             'corePacks': core_packs_public_urls,

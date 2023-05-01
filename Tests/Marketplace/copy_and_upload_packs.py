@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 import argparse
@@ -8,7 +9,7 @@ from google.cloud.storage import Blob, Bucket
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
-    store_successful_and_failed_packs_in_ci_artifacts, \
+    load_json, store_successful_and_failed_packs_in_ci_artifacts, \
     get_upload_data
 from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PACKS_FULL_PATH, IGNORED_FILES
@@ -142,7 +143,8 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
         build_bucket_base_path (str): the path in the build bucket of the corepacks.json.
 
     """
-    corepacks_files = {GCPConfig.CORE_PACK_FILE_NAME, GCPConfig.get_core_packs_unlocked_file()}
+    corepacks_files = [GCPConfig.CORE_PACK_FILE_NAME]
+    corepacks_files.extend(GCPConfig.get_core_packs_unlocked_files())
     for corepacks_file in corepacks_files:
         build_corepacks_file_path = os.path.join(build_bucket_base_path, corepacks_file)
         build_corepacks_blob = build_bucket.blob(build_corepacks_file_path)
@@ -151,15 +153,47 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
             logging.critical(f"{corepacks_file} is missing in {build_bucket.name} bucket, exiting...")
             sys.exit(1)
 
-        prod_corepacks_storage_path = os.path.join(storage_base_path, corepacks_file)
-        copied_corepacks_file = build_bucket.copy_blob(
-            blob=build_corepacks_blob, destination_bucket=production_bucket, new_name=prod_corepacks_storage_path
-        )
-        if copied_corepacks_file.exists():
-            logging.success(f"Finished uploading {corepacks_file} to storage.")
+        if corepacks_file == GCPConfig.CORE_PACK_FILE_NAME:
+            temp_corepacks_file_path = os.path.join(extract_destination_path, GCPConfig.CORE_PACK_FILE_NAME)
+            build_corepacks_blob.download_to_filename(temp_corepacks_file_path)
+            corepacks_file = load_json(temp_corepacks_file_path)
+
+            # change the storage paths to the prod bucket
+            corepacks_list = corepacks_file.get('corePacks', [])
+            try:
+                corepacks_list = [os.path.join(GCPConfig.GCS_PUBLIC_URL, production_bucket.name, storage_base_path,
+                                               LATEST_ZIP_REGEX.findall(corepack_path)[0]) for corepack_path in
+                                  corepacks_list]
+            except IndexError:
+                corepacks_list_str = '\n'.join(corepacks_list)
+                logging.exception(f"GCS paths in build bucket corepacks.json file are not of format: "
+                                  f"{GCPConfig.GCS_PUBLIC_URL}/<BUCKET_NAME>/.../content/packs/...\n"
+                                  f"List of build bucket corepacks paths:\n{corepacks_list_str}")
+                sys.exit(1)
+
+            # construct core pack data with public gcs urls
+            core_packs_data = {
+                'corePacks': corepacks_list,
+                'upgradeCorePacks': corepacks_file.get('upgradeCorePacks', []),
+                'buildNumber': build_number
+            }
+
+            # upload core pack json file to gcs
+            prod_corepacks_file_path = os.path.join(storage_base_path, GCPConfig.CORE_PACK_FILE_NAME)
+            prod_corepacks_blob = production_bucket.blob(prod_corepacks_file_path)
+            prod_corepacks_blob.upload_from_string(json.dumps(core_packs_data, indent=4))
+            logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.")
+
         else:
-            logging.error(f"Failed copying {corepacks_file} from build bucket - blob does not exist.")
-            sys.exit(1)
+            prod_corepacks_storage_path = os.path.join(storage_base_path, corepacks_file)
+            copied_corepacks_file = build_bucket.copy_blob(
+                blob=build_corepacks_blob, destination_bucket=production_bucket, new_name=prod_corepacks_storage_path
+            )
+            if copied_corepacks_file.exists():
+                logging.success(f"Finished uploading {corepacks_file} to storage.")
+            else:
+                logging.error(f"Failed copying {corepacks_file} from build bucket - blob does not exist.")
+                sys.exit(1)
 
 
 def upload_versions_metadata(production_bucket: Bucket, build_bucket: Bucket, storage_base_path: str,
