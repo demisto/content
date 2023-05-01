@@ -114,3 +114,6 @@ ignore=RM108
 
 [file:playbook-Block_Account_-_Generic_v2.yml]
 ignore=PB119
+
+[file:playbook-User_Investigation_-_Generic.yml]
+ignore=PB119
