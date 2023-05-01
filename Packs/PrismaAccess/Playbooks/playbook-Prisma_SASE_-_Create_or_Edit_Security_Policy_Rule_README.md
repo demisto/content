@@ -1,4 +1,4 @@
-This playbook handles the creation or editing of the Security Policy Rule for Pisma SASE integration. 
+This playbook handles the creation or editing of the Security Policy Rule for Prisma SASE integration. 
 
 
 ## Dependencies
@@ -16,7 +16,7 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* PrintErrorEntry
+PrintErrorEntry
 
 ### Commands
 
@@ -32,17 +32,17 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | TSGID | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. |  | Optional |
-| Folder | The configuration folder group setting.<br/>The default value is 'Shared' | Shared | Optional |
-| Action | Possible Values:<br/>allow,deny,drop,reset-both,reset-client,reset-server |  | Optional |
-| Position | Rule position.<br/>The default value is 'pre' | pre | Optional |
-| Source | A comma-separated list of source networks.<br/>The default value is 'any' | any | Optional |
-| Destination | A comma-separated list of destination networks.<br/>The default value is 'any' | any | Optional |
-| Service | Services the rule applies to.<br/>Default value is 'any' | any | Optional |
-| Application | A comma-separated list of applications.<br/>Default value is 'any' | any | Optional |
+| Folder | The configuration folder group setting.<br/>The default value is 'Shared'. | Shared | Optional |
+| Action | Possible values:<br/>allow,deny,drop,reset-both,reset-client,reset-server. |  | Optional |
+| Position | Rule position.<br/> | pre | Optional |
+| Source | A comma-separated list of source networks.<br/> | any | Optional |
+| Destination | A comma-separated list of destination networks.<br/> | any | Optional |
+| Service | Services the rule applies to.<br/> | any | Optional |
+| Application | A comma-separated list of applications.<br/> | any | Optional |
 | RuleName | The name of the security rule. |  | Required |
-| AutoCommit | Possible Values:<br/>True -&amp;gt; Will Commit and Push Configuration<br/>False -&amp;gt; Manual Push will be required.<br/>Else --&amp;gt; Will ignore the push section and continue the playbook. |  | Optional |
-| Overwrite | Whether to overwrite the original rule values.<br/>The default value is 'false' | False | Optional |
-| Category | A comma-separated list of categories. You can get category values by running the prisma-sase-custom-url-category-list command.<br/>Default value is 'any' | any | Optional |
+| AutoCommit | Possible values:<br/>True -&amp;gt; Will commit and push configuration.<br/>False -&amp;gt; Manual push will be required.<br/>Else --&amp;gt; Will ignore the push section and continue the playbook. |  | Optional |
+| Overwrite | Whether to overwrite the original rule values.<br/> | False | Optional |
+| Category | A comma-separated list of categories. You can get category values by running the prisma-sase-custom-url-category-list command.<br/> | any | Optional |
 
 ## Playbook Outputs
 
@@ -52,7 +52,7 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- |
 | PrismaSase.CandidateConfig |  | unknown |
 | PrismaSase.CandidateConfig.job_id | Configuration job ID. | unknown |
-| PrismaSase.CandidateConfig.result | The configuration push result, e.g. OK, FAIL. | unknown |
+| PrismaSase.CandidateConfig.result | The configuration push result, e.g., OK, FAIL. | unknown |
 | PrismaSase.CandidateConfig.details | The configuration push details. | unknown |
 | PrismaSase |  | unknown |
 | PrismaSase.SecurityRule | Found security rule. | unknown |

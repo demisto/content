@@ -2,7 +2,7 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: "This playbook handles the creation or editing of the Security Policy Rule for Pisma SASE integration. \n"
+description: "This playbook handles the creation or editing of the Security Policy Rule for Prisma SASE integration. \n"
 id: Prisma SASE - Create or Edit Security Policy Rule
 inputs:
 - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
@@ -12,22 +12,22 @@ inputs:
   value: {}
 - description: |-
     The configuration folder group setting.
-    The default value is 'Shared'
+    The default value is 'Shared'.
   key: Folder
   playbookInputQuery:
   required: false
   value:
     simple: Shared
 - description: |-
-    Possible Values:
-    allow,deny,drop,reset-both,reset-client,reset-server
+    Possible values:
+    allow,deny,drop,reset-both,reset-client,reset-server.
   key: Action
   playbookInputQuery:
   required: false
   value: {}
 - description: |-
     Rule position.
-    The default value is 'pre'
+    The default value is 'pre'.
   key: Position
   playbookInputQuery:
   required: false
@@ -35,7 +35,7 @@ inputs:
     simple: pre
 - description: |-
     A comma-separated list of source networks.
-    The default value is 'any'
+    The default value is 'any'.
   key: Source
   playbookInputQuery:
   required: false
@@ -43,7 +43,7 @@ inputs:
     simple: any
 - description: |-
     A comma-separated list of destination networks.
-    The default value is 'any'
+    The default value is 'any'.
   key: Destination
   playbookInputQuery:
   required: false
@@ -51,7 +51,7 @@ inputs:
     simple: any
 - description: |-
     Services the rule applies to.
-    Default value is 'any'
+    Default value is 'any'.
   key: Service
   playbookInputQuery:
   required: false
@@ -59,7 +59,7 @@ inputs:
     simple: any
 - description: |-
     A comma-separated list of applications.
-    Default value is 'any'
+    Default value is 'any'.
   key: Application
   playbookInputQuery:
   required: false
@@ -71,9 +71,9 @@ inputs:
   required: true
   value: {}
 - description: |-
-    Possible Values:
-    True -> Will Commit and Push Configuration
-    False -> Manual Push will be required.
+    Possible values:
+    True -> Will commit and push configuration.
+    False -> Manual push will be required.
     Else --> Will ignore the push section and continue the playbook.
   key: AutoCommit
   playbookInputQuery:
@@ -81,7 +81,7 @@ inputs:
   value: {}
 - description: |-
     Whether to overwrite the original rule values.
-    The default value is 'false'
+    The default value is 'false'.
   key: Overwrite
   playbookInputQuery:
   required: false
@@ -89,7 +89,7 @@ inputs:
     simple: "False"
 - description: |-
     A comma-separated list of categories. You can get category values by running the prisma-sase-custom-url-category-list command.
-    Default value is 'any'
+    Default value is 'any'.
   key: Category
   playbookInputQuery:
   required: false
@@ -102,7 +102,7 @@ outputs:
 - contextPath: PrismaSase.CandidateConfig.job_id
   description: Configuration job ID.
 - contextPath: PrismaSase.CandidateConfig.result
-  description: The configuration push result, e.g. OK, FAIL.
+  description: The configuration push result, e.g., OK, FAIL.
 - contextPath: PrismaSase.CandidateConfig.details
   description: The configuration push details.
 - contextPath: PrismaSase
@@ -240,10 +240,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if the rule is already created
+      description: Check if the rule was already created.
       id: b2325c73-cbd4-49b6-83ab-9cf9eb086d2c
       iscommand: false
-      name: Check if the rule is already created
+      name: Check if the rule was already created
       type: condition
       version: -1
     taskid: b2325c73-cbd4-49b6-83ab-9cf9eb086d2c
@@ -442,10 +442,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: 'The policy was created successfully? '
+      description: The policy was created successfully?
       id: 50d20336-62eb-4f43-8f6a-7fd4d56dbda9
       iscommand: false
-      name: 'The policy was created successfully? '
+      name: The policy was created successfully?
       type: condition
       version: -1
     taskid: 50d20336-62eb-4f43-8f6a-7fd4d56dbda9
@@ -473,7 +473,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Prints an error entry with a given message
+      description: Prints an error entry with a given message.
       id: e06bf245-0bdc-4aa5-8c7f-59efd8e33aa7
       iscommand: false
       name: Raise error on pushing config
@@ -620,10 +620,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: 'Complete this task to push the configuration '
+      description: Complete this task to push the configuration.
       id: 4c29e35e-13da-4951-85d0-eeafaa74fd2c
       iscommand: false
-      name: 'Complete this task to push the configuration '
+      name: Complete this task to push the configuration.
       type: condition
       version: -1
     taskid: 4c29e35e-13da-4951-85d0-eeafaa74fd2c

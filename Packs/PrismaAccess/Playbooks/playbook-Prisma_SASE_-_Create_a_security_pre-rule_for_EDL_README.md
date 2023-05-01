@@ -11,7 +11,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* PrismaSASE
+PrismaSASE
 
 ### Scripts
 
@@ -29,12 +29,12 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | TSGID | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. |  | Optional |
-| Folder | The configuration folder group setting.<br/>The default value is 'Shared' | Shared | Optional |
+| Folder | The configuration folder group setting.<br/>The default value is 'Shared'. | Shared | Optional |
 | URL | The source URL. If the type is ip, url or domain, a value must be provided. |  | Optional |
 | EDLObjectName | The external dynamic list object name. |  | Optional |
 | RuleName | The Security Policy Rule name will be created for blocking the indicators. | Block Indicators using EDL - XSOAR incident #${incident.id} | Optional |
-| EDLObjectType | Possible values:<br/>domain,ip,url,predefined_ip,predefined_url |  | Optional |
-| AutoCommit | Possible Values:<br/>True -&amp;gt; Will Commit and Push Configuration<br/>False -&amp;gt; Manual Push will be required.<br/>Else --&amp;gt; Will ignore the push section and continue the playbook. |  | Optional |
+| EDLObjectType | Possible values:<br/>domain,ip,url,predefined_ip,predefined_url. |  | Optional |
+| AutoCommit | Possible values:<br/>True -&amp;gt; Will commit and push configuration.<br/>False -&amp;gt; Manual push will be required.<br/>Else --&amp;gt; Will ignore the push section and continue the playbook. |  | Optional |
 
 ## Playbook Outputs
 
