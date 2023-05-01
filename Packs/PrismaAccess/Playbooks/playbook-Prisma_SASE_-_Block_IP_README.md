@@ -1,4 +1,4 @@
-This playbook aims to assist in blocking communication with the provided IPs in the Prisma SASE policy.
+This playbook assists in blocking communication with the provided IPs in the Prisma SASE policy.
 If a group name is provided, the IPs will be added to the mentioned static address group (there should be a rule associated with the group name to block communication with that group).
 And if the group name is not provided, a new group will be created with a dedicated rule to block communication with those IPs.
 
@@ -13,7 +13,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* PrismaSASE
+PrismaSASE
 
 ### Scripts
 
@@ -33,10 +33,10 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | TSGID | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. |  | Optional |
-| IP | The address value \(should match the type\) |  | Optional |
-| Folder | The configuration folder group setting.<br/>The default value is 'Shared' | Shared | Optional |
+| IP | The address value \(should match the type\). |  | Optional |
+| Folder | The configuration folder group setting.<br/>The default value is 'Shared'. | Shared | Optional |
 | StaticAddressGroupName | The static address group name will be appended with IP indicators. |  | Optional |
-| AutoCommit | Possible Values:<br/>True -&amp;gt; Will Commit and Push Configuration<br/>False -&amp;gt; Manual Push will be required.<br/>Else --&amp;gt; Will ignore the push section and continue the playbook. |  | Optional |
+| AutoCommit | Possible values:<br/>True -&amp;gt; Will commit and push configuration.<br/>False -&amp;gt; Manual push will be required.<br/>Else --&amp;gt; Will ignore the push section and continue the playbook. |  | Optional |
 
 ## Playbook Outputs
 
@@ -71,7 +71,7 @@ This playbook does not use any scripts.
 | PrismaSase.SecurityRule.profile_setting.group | Security rule group. | unknown |
 | PrismaSase.CandidateConfig |  | unknown |
 | PrismaSase.CandidateConfig.job_id | Configuration job ID. | unknown |
-| PrismaSase.CandidateConfig.result | The configuration push result, e.g. OK, FAIL. | unknown |
+| PrismaSase.CandidateConfig.result | The configuration push result, e.g., OK, FAIL. | unknown |
 | PrismaSase.CandidateConfig.details | The configuration push details. | unknown |
 | PrismaSase.Address | Created address object. | unknown |
 | PrismaSase.Address.description | Address description. | unknown |
