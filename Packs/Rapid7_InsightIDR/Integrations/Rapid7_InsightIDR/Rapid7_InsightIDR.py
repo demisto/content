@@ -640,7 +640,7 @@ def insight_idr_query_log_set_command(client: Client, log_set_id: str, query: st
     new_data = []
 
     # 202 if there is a callback, and 200 if that's the full response
-    if results.status_code == 202:
+    if 'links' in results.json():
         for link in results.json().get('links', []):
             url = link.get('href')
             data = client.query_log_callback(url)
