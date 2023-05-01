@@ -25,10 +25,7 @@ inputs:
   required: false
   value: {}
 - description: |-
-    Possible Values:
-    True -> Will commit and push configuration.
-    False -> Manual push will be required.
-    Else --> Will ignore the push section and continue the playbook.
+   The address group name to be appanded.
   key: AddressGroupName
   playbookInputQuery:
   required: false
