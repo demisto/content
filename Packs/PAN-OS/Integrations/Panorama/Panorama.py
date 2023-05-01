@@ -13345,7 +13345,7 @@ def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, 
     Args:
         incident_entries_dict (Dict[str, List[Dict[str, Any]]]): list of dictionaries representing raw incident entries
         last_fetch_dict (Dict[str,str]): last fetch dictionary
-        last_id_dict (Dict[str,str]): last id dictionary
+        last_id_dict (Dict[str,Dict]): last id dictionary
 
     Returns:
         Dict[str,Any]: parsed context incident dictionary
