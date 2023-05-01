@@ -3745,6 +3745,7 @@ script:
       description: Type of User Group.
       type: String   
   - arguments:
+  
     - description: List of one or more role names in your environment for which you want detailed information.
       name: role_names
       required: true
