@@ -5,8 +5,7 @@ name: Recorded Future Identity
 display: Recorded Future Identity
 category: Data Enrichment & Threat Intelligence
 image:
-description: Recorded Future Identity Integration that provides access to Recorded
-  Future Identity module data.
+description: Recorded Future Identity Integration that provides access to Recorded Future Identity module data.
 configuration:
 - display: Server URL (e.g., https://api.recordedfuture.com/gw/xsoar-identity)
   name: server_url
@@ -49,7 +48,7 @@ configuration:
   defaultvalue: "500"
   required: false
   type: 0
-- display: Domains list separated by semicolon. (e.g. mycompany.com; othercompany.com )
+- display: Domains list separated by comma (e.g. norsegods.online, norsegods.online ). This will be used for identity search command as a default value.
   name: domains
   type: 12
   required: true
@@ -58,7 +57,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.11.54132
   commands:
   - name: recordedfuture-identity-search
     description: Search for identities in Recorded Future Identity Dataset
@@ -66,11 +65,12 @@ script:
     - name: latest-downloaded
       required: false
       defaultValue: "All time"
-      description: Time period for last downloaded time.(e.g. "7 days ago",
-        "Three months ago", "Last Year", "All time")
+      description: Time period for last downloaded time.(e.g. "7 days ago", "Three months ago", "Last Year", "All time")
+    - name: domains
+      description: Domains list separated by comma. (e.g. norsegods.online, norsegods.online ). If not specified, domains from app instance will be used.
+      required: false
     - name: domain-type
-      description: Type of identities to search for (Authorization or Email). If not
-        specified use All.
+      description: Type of identities to search for (Authorization or Email). If not specified use All.
       required: false
       auto: PREDEFINED
       defaultValue: "All"
@@ -82,18 +82,44 @@ script:
     - contextPath: RecordedFuture.Credentials.SearchIdentities
       description: Recorded Future identity email values.
       type: string
+  - name: recordedfuture-password-lookup
+    description: Lookup for password in Recorded Future Dataset
+    arguments:
+    - name: password-hash
+      description: Password hash value.
+    - name: hash-algorithm
+      required: false
+      defaultValue: "SHA256"
+      description: Password hash algorithm.
+      auto: PREDEFINED
+      predefined:
+      - "SHA1"
+      - "SHA256"
+      - "NTLM"
+      - "MD5"
+    outputs:
+    - contextPath: RecordedFuture.Credentials.Password.Hash
+      description: Recorded Future password hash value.
+      type: string
+    - contextPath: RecordedFuture.Credentials.Password.Algorithm
+      description: Recorded Future password hash algorithm.
+      type: string
+    - contextPath: RecordedFuture.Credentials.Password.ExposureStatus
+      description: Recorded Future password exposure status.
+      type: string
   - name: recordedfuture-identity-lookup
     description: Lookup for identities in Recorded Future Identity Dataset
     arguments:
     - name: identities
       required: true
-      description: Identities for the lookup separated by semicolon.(e.g. "test@test.com;
-        test1@google.com").
+      description: Identities for the lookup separated by comma.(e.g. "09719@norsegods.online, 1000739@norsegods.online").
+    - name: domains
+      required: false
+      description: Domains list separated by comma. (e.g. norsegods.online, norsegods.online )
     - name: first-downloaded
       required: false
       defaultValue: "All time"
-      description: Time period for first downloaded time.(e.g. "7 days ago",
-        "Three months ago", "Last Year", "All time")
+      description: Time period for first downloaded time.(e.g. "7 days ago", "Three months ago", "Last Year", "All time")
     outputs:
     - contextPath: RecordedFuture.Credentials.Identities.identity.subjects
       description: Identity value.
