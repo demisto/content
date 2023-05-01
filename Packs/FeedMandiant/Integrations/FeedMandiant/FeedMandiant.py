@@ -179,25 +179,19 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
         List: new indicators
 
     """
-    demisto.debug('Start: get_new_indicators!!')
     start_date = arg_to_datetime(last_run, settings=DATETIME_SETTINGS)
-    demisto.debug(f'start_date: {start_date}')
 
     params = {}
     if indicator_type == 'Indicators':
-        demisto.debug(f'indicator_type is {start_date}')
         # for indicator type the earliest time to fetch is 90 days ago
         earliest_fetch = arg_to_datetime('90 days ago', settings=DATETIME_SETTINGS)
-        demisto.debug(f'earliest_fetch: {earliest_fetch}')
         start_date = max(earliest_fetch, start_date)  # type:ignore
-        demisto.debug('Compare succeed!!!!')
         params = {'start_epoch': int(start_date.timestamp()), 'limit': limit}  # type:ignore
 
     new_indicators_list = client.get_indicators(indicator_type, params=params)
 
     if indicator_type != 'Indicators': \
             # new to old
-        demisto.debug(f'indicator_type not indicators just: {indicator_type}')
         new_indicators_list.sort(key=lambda x: arg_to_datetime(x.get('last_updated')), reverse=True)  # type:ignore
         new_indicators_list = list(
             filter(lambda x: arg_to_datetime(x['last_updated']).timestamp() > start_date.timestamp(),  # type: ignore
@@ -219,7 +213,6 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
     Returns:
         List[Dict]: list of indicators
     """
-    demisto.debug('Start: get_indicator_list!!')
     last_run_dict = demisto.getLastRun()
     indicators_list = last_run_dict.get(f'{indicator_type}List', [])
     if len(indicators_list) < limit:
@@ -534,7 +527,6 @@ def fetch_indicators(client: MandiantClient, args: Dict = None, update_context: 
     Returns:
         List of all indicators
     """
-    demisto.debug('Start: fetch_indicators!!')
     args = args if args else {}
     limit = int(args.get('limit', client.limit))
     metadata = argToBoolean(args.get('indicatorMetadata', client.metadata))
@@ -542,7 +534,6 @@ def fetch_indicators(client: MandiantClient, args: Dict = None, update_context: 
     types = argToList(args.get('type', client.types))
 
     first_fetch = client.first_fetch
-    demisto.debug(f'first_fetch: {first_fetch}')
 
     result = []
     for indicator_type in types:
