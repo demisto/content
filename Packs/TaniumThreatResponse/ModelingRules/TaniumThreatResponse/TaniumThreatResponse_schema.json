@@ -1,0 +1,12 @@
+{
+    "tanium_tanium_raw": {
+      "EdgeResponseBytes": {
+          "type": "int",
+          "is_array": false
+        },
+      "EdgePathingOp": {
+          "type": "string",
+          "is_array": false
+        }
+    }
+}
