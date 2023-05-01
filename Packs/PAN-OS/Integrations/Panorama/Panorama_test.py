@@ -6518,6 +6518,25 @@ class TestFetchIncidentsFlows:
         assert last_id_dict.get('Y_log_type', '') == {'dummy_device2': '000000003'}
 
 
+def test_update_max_fetch_dict(mocker):
+    """
+    Given:
+    - configured_max_fetch - maximum number of incidents the client configured to fetch.
+    - max_fetch_dict - dictionary with the maximum number of incidents to fetch per log type.
+    - last_fetch_dict - dictionary with the last fetch time per log type.
+    When:
+        - update_max_fetch_dict is called.
+        - last_fetch_dict has a log type that is not in max_fetch_dict.
+    Then:
+        - The max_fetch_dict is updated with the maximum number of incidents to fetch per log type.
+    """
+    from Panorama import update_max_fetch_dict
+    mocker.patch('demistomock.getLastRun', return_value={"last_fetch_dict": {"log_type1": "2023-05-01 07:22:08"}})
+    res = update_max_fetch_dict(configured_max_fetch=5, max_fetch_dict={"log_type1": 10, "log_type2": 15},
+                                last_fetch_dict={"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:08"})
+    assert res == {'log_type1': 15, 'log_type2': 5}
+
+
 def test_find_largest_id_per_device():
     """
     Given:
