@@ -215,8 +215,8 @@ def extract_credentials_from_secret(secret_path: str) -> Tuple[str, str]:
     """
     logging.info("Retrieving the credentials for Cortex XSOAR server")
     secret_conf_file = load_json(file_path=secret_path)
-    username: str = secret_conf_file.get("username")
-    password: str = secret_conf_file.get("userPassword")
+    username: str = secret_conf_file.get("username", "")
+    password: str = secret_conf_file.get("userPassword", "")
     return username, password
 
 
