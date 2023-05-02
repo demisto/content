@@ -3698,7 +3698,7 @@ def get_list_risky_users_command(client: CoreClient, args: dict[str, str]) -> Co
 
     else:
         list_limit = int(args.get('limit', 50))
-        outputs: list = client.get_list_risky_users().get('reply', [])[:list_limit]
+        outputs = client.get_list_risky_users().get('reply', [])[:list_limit]
 
         table_for_markdown = [parse_risky_users_or_hosts(user, table_title) for user in outputs]
 
@@ -3747,7 +3747,7 @@ def get_list_risky_hosts_command(client: CoreClient, args: dict[str, str]) -> Co
 
         outputs = client.get_list_risky_hosts().get('reply', [])[:list_limit]
         table_for_markdown = [parse_risky_users_or_hosts(host, table_title) for host in outputs]
-    
+
     readable_output = tableToMarkdown(name='Risky Hosts', t=table_for_markdown)
 
     return CommandResults(
