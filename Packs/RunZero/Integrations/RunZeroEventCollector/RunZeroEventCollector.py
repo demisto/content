@@ -250,7 +250,7 @@ def main() -> None:
             result = test_module(client, first_fetch_epoch_time)
             return_results(result)
 
-        if command == 'runzero-get-events':
+        elif command == 'runzero-get-events':
             events, results = get_events_command(
                 client, query_string=f'created_at:>{first_fetch_epoch_time}',
                 limit=arg_to_number(args.get("limit", DEFAULT_LIMIT))  # type: ignore
