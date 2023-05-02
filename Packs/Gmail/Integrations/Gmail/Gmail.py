@@ -2161,11 +2161,11 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     send_mail_result = sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, rendering_body,
                                           subject)
     if render_body:
-        html_result = CommandResults(
-            entry_type=EntryType.NOTE,
-            content_format=EntryFormat.HTML,
-            raw_response=html_body,
-        )
+        html_result = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['html'],
+            'Contents': html_body
+        }
 
         return [send_mail_result, html_result]
 

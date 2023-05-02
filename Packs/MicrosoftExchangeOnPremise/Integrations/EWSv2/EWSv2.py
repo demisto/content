@@ -2229,11 +2229,11 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
         'HumanReadable': tableToMarkdown('Sent email', result_object),
     }]
     if renderBody:
-        results.append(CommandResults(
-            entry_type=EntryType.NOTE,
-            content_format=EntryFormat.HTML,
-            raw_response=htmlBody,
-        ))
+        results.append({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['html'],
+            'Contents': htmlBody
+        })
 
     return results
 
