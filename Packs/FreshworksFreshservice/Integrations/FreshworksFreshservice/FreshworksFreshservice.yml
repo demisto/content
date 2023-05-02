@@ -40,6 +40,7 @@ configuration:
   type: 16
 - additionalinfo: Incident priorities to fetch. The default is All. You can choose multiple priorities.
   defaultvalue: All
+  display: Ticket Priority
   name: ticket_priority
   options:
   - All
