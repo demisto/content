@@ -11,8 +11,8 @@ from Tests.scripts.utils.log_util import install_logging
 import demisto_client
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
+import urllib3
+urllib3.disable_warnings()
 
 def main():
     install_logging('Destroy_instances.log')
