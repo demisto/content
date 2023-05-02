@@ -268,7 +268,8 @@ script:
         - description: If specified, it will override the target port specified in the
             integration instrance.
           name: override_port
-        - name: override_platform
+        - auto: PREDEFINED
+          name: override_platform
           description: If specified, it will override the target platform specified in the
             integration instrance.
           required: false
@@ -491,4 +492,4 @@ script:
   type: python
 fromversion: 6.0.0
 tests:
-  - Netmiko_test
+  - No tests (auto formatted)
