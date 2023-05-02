@@ -248,7 +248,7 @@ def fetch_indicators(client: Client, feed_tags: List, tlp_color: Optional[str], 
         sort='last_modified_date'
     )
 
-    if len(indicators) == limit:
+    if len(indicators) >= limit:
         # we need to store the offset and the same last modified time for the next run
         last_run = {
             'last_modified_time': last_modified_time,
