@@ -1296,7 +1296,6 @@ script:
       description: The type of the resolution.
       type: String
   - name: vt-analysis-get
-    description: Get analysis of a file submitted to VirusTotal.
     arguments:
     - name: id
       required: true
@@ -1357,6 +1356,7 @@ script:
     - contextPath: VirusTotal.Analysis.id
       description: The analysis ID.
       type: String
+    description: Get analysis of a file submitted to VirusTotal.
   - name: vt-file-sigma-analysis
     description: Result of the last Sigma analysis in markdown format.
     arguments:
@@ -1419,6 +1419,7 @@ script:
     - contextPath: VirusTotal.SigmaAnalysis.data.id
       description: ID of the analysis.
       type: String
+
   - name: vt-privatescanning-file
     description: Checks the file reputation of the specified private hash.
     arguments:
@@ -1645,7 +1646,7 @@ script:
       type: String
 
   runonce: false
-  dockerimage: demisto/python3:3.10.11.55362
+  dockerimage: demisto/python3:3.10.11.56082
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test
