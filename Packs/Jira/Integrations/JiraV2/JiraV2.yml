@@ -537,7 +537,6 @@ script:
     - description: The name of the assignee. Relevant for Jira Server only
       name: assignee
       required: true
-      type: textArea
     description: Change assignee using dedicated endpoint for it
     name: jira-issue-assign
     outputs:
