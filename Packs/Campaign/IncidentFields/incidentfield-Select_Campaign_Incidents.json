@@ -4,7 +4,7 @@
     "cliName": "selectcampaignincidents",
     "closeForm": false,
     "content": true,
-    "description": "Select Campaign Incidents ",
+    "description": "TEST",
     "editForm": true,
     "fieldCalcScript": "GetCampaignIncidentsIdsAsOptions",
     "group": 0,
