@@ -15,6 +15,7 @@ from Utils.trigger_private_build import GET_WORKFLOW_URL, PRIVATE_REPO_WORKFLOW_
 import urllib3
 urllib3.disable_warnings()
 
+
 def get_workflow_status(github_token: str, workflow_id: str) -> Tuple[str, str, str]:
     """ Returns a set with the workflow job status, job conclusion and current step that running now in the job
         for the given workflow id.

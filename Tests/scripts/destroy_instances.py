@@ -3,7 +3,6 @@ import logging
 import os
 import shutil
 import sys
-import requests
 
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions  # pylint: disable=E0611,E0401
 
@@ -13,6 +12,7 @@ import demisto_client
 # Disable insecure warnings
 import urllib3
 urllib3.disable_warnings()
+
 
 def main():
     install_logging('Destroy_instances.log')

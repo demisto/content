@@ -281,8 +281,10 @@ def aggregate_release_notes_for_marketplace(pack_versions_dict: dict):
 
     """
     pack_release_notes, _ = merge_version_blocks(pack_versions_dict)
-    pack_release_notes = f'{pack_release_notes}\n' if not pack_release_notes.endswith('\n') else pack_release_notes  # type: ignore[union-attr]
-    pack_release_notes = f'\n{pack_release_notes}' if not pack_release_notes.startswith('\n') else pack_release_notes  # type: ignore[union-attr]
+    pack_release_notes = f'{pack_release_notes}\n' if not pack_release_notes.endswith(  # type: ignore[union-attr]
+        '\n') else pack_release_notes
+    pack_release_notes = f'\n{pack_release_notes}' if not pack_release_notes.startswith(  # type: ignore[union-attr]
+        '\n') else pack_release_notes
     return pack_release_notes
 
 

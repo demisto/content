@@ -447,7 +447,7 @@ def main():
             continue
 
         if not task_status:
-            pack.status = PackStatus.FAILED_UPLOADING_PACK.name # type: ignore[misc]
+            pack.status = PackStatus.FAILED_UPLOADING_PACK.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
