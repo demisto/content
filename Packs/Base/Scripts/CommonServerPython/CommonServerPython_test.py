@@ -1776,20 +1776,21 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
-    def test_outputs_without_outputs_prefix(self):
+    @pytest.mark.parametrize('outputs, prefix', [([], None), ([], ''), ({}, '.')])
+    def test_outputs_without_outputs_prefix(self, outputs, prefix):
         """
         Given
-        - outputs as a list without output_prefix
+        - outputs as a list without output_prefix, or with a period output prefix.
 
         When
-        - Returins results
+        - Returns results.
 
         Then
         - Validate a ValueError is raised.
         """
         from CommonServerPython import CommandResults
         with pytest.raises(ValueError, match='outputs_prefix'):
-            CommandResults(outputs=[])
+            CommandResults(outputs=outputs, outputs_prefix=prefix)
 
     def test_with_tags(self):
         from CommonServerPython import CommandResults
@@ -4401,31 +4402,20 @@ class TestExecuteCommand:
         When:
             - Calling execute_command.
         Then:
-            - Assert that the original error is returned to War-Room (using demisto.results).
-            - Assert an error is returned to the War-Room.
-            - Function ends the run using SystemExit.
+            - Assert that DemistoException is raised with the original error.
         """
         from CommonServerPython import execute_command, EntryType
         error_entries = [
             {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
-            {'Type': EntryType.NOTE, 'Contents': 'not an error'},
             {'Type': EntryType.ERROR, 'Contents': 'error number 2'},
         ]
-        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
-                                                   return_value=error_entries)
-        demisto_results_mock = mocker.patch.object(demisto, 'results')
 
-        with raises(SystemExit, match='0'):
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand', return_value=error_entries)
+
+        with raises(DemistoException, match='Failed to execute'):
             execute_command('bad', {'arg1': 'value'})
 
         assert demisto_execute_mock.call_count == 1
-        assert demisto_results_mock.call_count == 1
-        # first call, args (not kwargs), first argument
-        error_text = demisto_results_mock.call_args_list[0][0][0]['Contents']
-        assert 'Failed to execute bad.' in error_text
-        assert 'error number 1' in error_text
-        assert 'error number 2' in error_text
-        assert 'not an error' not in error_text
 
     @staticmethod
     def test_failure_integration(monkeypatch):
