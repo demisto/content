@@ -282,6 +282,7 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
             run_lint(path_to_validate, lint_output_path)
 
             handler.flush()
+            handler.close()
 
     demisto.debug("log capture:" + log_capture.getvalue())
     all_outputs = []
