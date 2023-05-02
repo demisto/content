@@ -572,11 +572,13 @@ def insight_idr_query_log_command(client: Client, log_id: str, query: str, time_
     data_for_readable_output = []
     new_data = []
 
-    # 202 if there is a callback, and 200 if that's the full response
-    if results.status_code == 202:
+    # if 'links' in the response is a callback, and we need to get the full response
+    demisto.debug(f'\nresults.json(): {results.json()}\n')
+    if 'links' in results.json():
         for link in results.json().get('links', []):
             url = link.get('href')
             data = client.query_log_callback(url)
+            demisto.debug(f'\ndata: {data}\n')
             new_data.append(data)
             events = data.get('events', [])
             for event in events:
@@ -639,11 +641,13 @@ def insight_idr_query_log_set_command(client: Client, log_set_id: str, query: st
     data_for_readable_output = []
     new_data = []
 
-    # 202 if there is a callback, and 200 if that's the full response
+    # if 'links' in the response is a callback, and we need to get the full response
+    demisto.debug(f'\nresults.json(): {results.json()}\n')
     if 'links' in results.json():
         for link in results.json().get('links', []):
             url = link.get('href')
             data = client.query_log_callback(url)
+            demisto.debug(f'\ndata: {data}\n')
             new_data.append(data)
             events = data.get('events', [])
             for event in events:

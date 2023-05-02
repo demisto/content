@@ -1,6 +1,8 @@
 """InsightIDR Integration for Cortex XSOAR - Unit Tests file"""
 import io
 import json
+
+import pytest
 from CommonServerPython import *
 
 REGION = 'us'
@@ -429,7 +431,11 @@ def test_insight_idr_query_log(requests_mock) -> None:
     assert response.outputs == outputs
 
 
-def test_insight_idr_query_log_set(requests_mock) -> None:
+@pytest.mark.parametrize('is_callback, mock_file', [
+    (False, 'list_log_sets.json'),
+    (True, 'list_log_sets_with_callback.json')]
+)
+def test_insight_idr_query_log_set(requests_mock, is_callback, mock_file) -> None:
     """
     Scenario: test query log set
     Given:
@@ -444,7 +450,7 @@ def test_insight_idr_query_log_set(requests_mock) -> None:
     """
     from Rapid7_InsightIDR import Client, insight_idr_query_log_set_command
 
-    mock_response = util_load_json('test_data/list_log_sets.json')
+    mock_response = util_load_json(f'test_data/{mock_file}')
     requests_mock.get(
         f'https://{REGION}.api.insight.rapid7.com/log_search/query/logsets/x', json=mock_response)
 
@@ -456,6 +462,8 @@ def test_insight_idr_query_log_set(requests_mock) -> None:
         },
         proxy=False
     )
+    if is_callback:
+        mock_response_link = util_load_json('test_data/list_log_sets.json')
     response = insight_idr_query_log_set_command(client, 'x', '', '', '')
 
     outputs = []

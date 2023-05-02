@@ -1,0 +1,18 @@
+
+{
+  "events": [],
+  "id": "123-456-789",
+  "leql": {
+    "statement": "google"
+  },
+  "links": [
+    {
+      "href": "https://us.api.insight.rapid7.com/log_search/query/6c4c54:0:a8ae:30:2f2:",
+      "rel": "Self"
+    }
+  ],
+  "logs": [
+    "20b-20b1-27b6-b9g6-2b7f45fh"
+  ],
+  "progress": 0
+}
