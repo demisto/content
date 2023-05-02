@@ -1,6 +1,5 @@
 id: DatadogCloudSIEM
-version: 3
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: DatadogCloudSIEM
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: 'This playbook verifies the output context.'
     nexttasks:
       '#none#':
       - "1"
@@ -3017,6 +3017,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3047,3 +3048,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.8.0
+description: This playbook verifies the command results.

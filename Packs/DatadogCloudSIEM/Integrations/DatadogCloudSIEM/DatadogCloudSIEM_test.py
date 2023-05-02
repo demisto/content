@@ -968,7 +968,8 @@ def test_pagination(
     limit: The maximum number of results to retrieve.
     page: The page number of the results to retrieve.
     page_size: The number of results per page.
-    expected: The expected output of the pagination function. If an exception is expected, the value should be an Exception object.
+    expected: The expected output of the pagination function.
+    If an exception is expected, the value should be an Exception object.
 
     Returns:
     None. The function asserts the output of the pagination function against the expected output.

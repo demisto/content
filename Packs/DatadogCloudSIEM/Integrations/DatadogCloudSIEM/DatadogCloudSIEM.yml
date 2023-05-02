@@ -4,7 +4,6 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: Datadog website URL
-  defaultvalue: datadoghq.com
   display: Server URL
   name: site
   required: true
@@ -58,7 +57,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: "The body of the event.\nLimited to 4000 characters.\nThe text supports markdown. To use markdown in the event text, start the text block with %%% \\n and end the text block with \\n %%% "
+      description: "A description of the event.\nLimited to 4000 characters.\nThe description supports markdown. To use markdown in the event text, start the text block with %%% \\n and end the text block with \\n %%% "
       isArray: false
       name: text
       required: true
@@ -70,7 +69,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "Limited to events no older than 18 hours.\nFormat :  \nyyyy-MM-dd’T’HH:mm:ssZ or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”."
+      description: "The timestamp cannot be older than 18 hours.\nFormat :  \nyyyy-MM-dd’T’HH:mm:ssZ or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”."
       isArray: false
       name: date_happened
       required: false
@@ -82,7 +81,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Host name to associate with the event '
+      description: 'Host name to associate with the event.'
       isArray: false
       name: host_name
       required: false
@@ -93,7 +92,7 @@ script:
         The priority of the event.
 
         Restricted value : low
-        Permitted value :  normal (Bug will be fixed in near future)
+        Permitted value : normal (Bug will be fixed in the near future.)
       isArray: false
       name: priority
       predefined:
@@ -108,7 +107,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "A list of tags to apply to the event. \nComma seperated strings.\nEx: \"environment:production, region:East” "
+      description: "A comma-separated list of tags to apply to the event. \nEx: \"environment:production, region:East” "
       isArray: false
       name: tags
       required: false
@@ -120,7 +119,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The type of event being posted. A complete list of source attribute values available here. https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/
+      description: "The type of event being posted. A complete list of source attribute values are available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/."
       isArray: false
       name: source_type_name
       required: false
@@ -146,16 +145,16 @@ script:
     name: datadog-event-create
     outputs:
     - contextPath: Datadog.Event.date_happened
-      description: POSIX timestamp of the event
+      description: The timestamp of when the event happened.
       type: Number
     - contextPath: Datadog.Event.id
       description: Integer ID of the event.
       type: Number
     - contextPath: Datadog.Event.priority
-      description: 'The priority of the event. For example, normal or low. Allowed enum values: normal, low.'
+      description: "The priority of the event.  Possible values: normal, low."
       type: String
     - contextPath: Datadog.Event.text
-      description: The body of the event. Limited to 4000 characters. The text supports markdown.
+      description: The description of the event. Limited to 4000 characters. The description supports markdown.
       type: String
     - contextPath: Datadog.Event.tags
       description: A list of tags to apply to the event.
@@ -170,10 +169,10 @@ script:
       description: The event title.
       type: String
     - contextPath: Datadog.Event.alert_type
-      description: 'Allowed enum values: error, warning, info, success, user update, recommendation, snapshot'
+      description: 'The alert type. Possible values: error, warning, info, success, user_update, recommendation, snapshot.'
       type: String
     - contextPath: Datadog.Event.device_name
-      description: A device name.
+      description: A device name associated with the event.
       type: String
     - contextPath: Datadog.Event.source_type_name
       description: The type of event being posted.
@@ -212,14 +211,14 @@ script:
       secret: false
     - default: false
       description: |-
-        A comma separated string of sources.
-        A complete list of source attribute values available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/
+        A comma-separated string of sources.
+        A complete list of source attribute values is available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/.
       isArray: false
       name: sources
       required: false
       secret: false
     - default: false
-      description: "A comma separated list indicating what tags, if any, should be used to filter the list of events. \nComma seperated string \nEx: \"environment:production, region:East\"."
+      description: "A comma-separated list indicating what tags, if any, should be used to filter the list of events. \nEx: \"environment:production, region:East\"."
       isArray: false
       name: tags
       required: false
@@ -251,7 +250,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      description: The maximum number of records to return from the collection. Default is 50. If the page_size argument is set by the user then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -263,15 +262,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a list of Events / Get the details of a particular Event.
+    description: Get a list of events / Get the details of a particular event.
     execution: false
     name: datadog-event-list
     outputs:
     - contextPath: Datadog.Event.alert_type
-      description: 'Allowed enum values: error,warning,info,success,user_update,recommendation,snapshot'
+      description: 'The alert type. Possible values: error, warning, info, success, user_update, recommendation, snapshot.'
       type: String
     - contextPath: Datadog.Event.date_happened
-      description: POSIX timestamp of the event
+      description: The timestamp of when the event happened.
       type: Number
     - contextPath: Datadog.Event.device_name
       description: 'A device name. '
@@ -280,10 +279,10 @@ script:
       description: Integer ID of the event.
       type: Number
     - contextPath: Datadog.Event.priority
-      description: 'The priority of the event. For example, normal or low. Allowed enum values: normal, low.'
+      description: "The priority of the event.  Possible values: normal, low."
       type: String
     - contextPath: Datadog.Event.text
-      description: The body of the event. Limited to 4000 characters. The text supports markdown.
+      description: The description of the event. Limited to 4000 characters. The description supports markdown.
       type: String
     - contextPath: Datadog.Event.tags
       description: A list of tags to apply to the event.
@@ -317,7 +316,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -325,7 +324,7 @@ script:
     - default: false
       description: |-
         Source to filter.
-        Ex : user, datadog.
+        Ex: user, datadog.
       isArray: false
       name: source
       required: false
@@ -349,7 +348,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "A list of tags to apply to the host. \nComma seperated values. Ex: \"environment:production, region:East” "
+      description: "A list of tags to apply to the host. \nComma-seperated values. Ex: \"environment:production, region:East” "
       isArray: false
       name: tags
       required: true
@@ -375,13 +374,13 @@ script:
     - default: false
       description: |-
         Source to filter.
-        Ex : user, datadog.
+        Ex: user, datadog.
       isArray: false
       name: source
       required: false
       secret: false
     - default: false
-      description: 'The page number. Default is 1. '
+      description: 'The page number. Default is 1.'
       isArray: false
       name: page
       required: false
@@ -393,7 +392,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
+      description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -417,7 +416,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "A list of tags to apply to the host  \nPrevious tags will be replaced by new tags. \nComma seperated values. Ex: \"environment:production, region:East”  "
+      description: "A comma-separated list of tags to apply to the host  \nPrevious tags will be replaced by new tags. Ex: \"environment:production, region:East” "
       isArray: false
       name: tags
       required: false
@@ -435,7 +434,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Host name to remove associated tags.
+      description: Host name from which to remove associated tags.
       isArray: false
       name: host_name
       required: true
@@ -455,7 +454,7 @@ script:
       description: |-
         Hostname for filtering the list of metrics.
 
-        Please do not fill this field ( Bug will be fixed in near future)
+        Please do not complete this field (Bug will be fixed in the near future.)
       isArray: false
       name: host_name
       required: false
@@ -481,7 +480,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
+      description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -492,7 +491,7 @@ script:
     name: datadog-active-metric-list
     outputs:
     - contextPath: Datadog.Metric.from
-      description: Time when the metrics were active, seconds since the Unix epoch.
+      description: Time when the metrics were active in seconds since the Unix epoch.
       type: String
     - contextPath: Datadog.Metric
       description: List of metric names.
@@ -501,7 +500,7 @@ script:
     - default: false
       description: |-
         Query string to search metrics from last 24 hours in Datadog.
-        A complete list of query string values available here. https://app.datadoghq.com/metric/summary
+        A complete list of query string values are available here: https://app.datadoghq.com/metric/summary
       isArray: false
       name: query
       required: true
@@ -536,16 +535,16 @@ script:
       description: Per unit of the metric such as second in bytes per second.
       type: String
     - contextPath: Datadog.MetricMetadata.short_name
-      description: A more human-readable and abbreviated version of the metric name.
+      description:  A human-readable and abbreviated version of the metric name.
       type: String
     - contextPath: Datadog.MetricMetadata.statsd_interval
       description: StatsD flush interval of the metric in seconds if applicable.
       type: Number
     - contextPath: Datadog.MetricMetadata.type
-      description: Metric type
+      description: Metric type.
       type: String
     - contextPath: Datadog.MetricMetadata.unit
-      description: Primary unit of the metric
+      description: Primary unit of the metric.
       type: String
     - contextPath: Datadog.MetricMetadata.metric_name
       description: The metric name.
@@ -564,13 +563,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Per unit of the metric  \nA complete list of metric units values available here. https://docs.datadoghq.com/metrics/units/#unit-list"
+      description: "Per unit of the metric  \nA complete list of metric units values are available here: https://docs.datadoghq.com/metrics/units/#unit-list."
       isArray: false
       name: per_unit
       required: false
       secret: false
     - default: false
-      description: A more human-readable and abbreviated version of the metric name.
+      description: A human-readable and abbreviated version of the metric name.
       isArray: false
       name: short_name
       required: false
@@ -596,7 +595,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Primary unit of the metric
+      description: Primary unit of the metric.
       isArray: false
       name: unit
       required: false
@@ -613,16 +612,16 @@ script:
       description: Per unit of the metric such as second in bytes per second.
       type: String
     - contextPath: Datadog.MetricMetadata.short_name
-      description: A more human-readable and abbreviated version of the metric name.
+      description: A human-readable and abbreviated version of the metric name.
       type: String
     - contextPath: Datadog.MetricMetadata.statsd_interval
       description: StatsD flush interval of the metric in seconds if applicable.
       type: Number
     - contextPath: Datadog.MetricMetadata.type
-      description: Metric type
+      description: Metric type.
       type: String
     - contextPath: Datadog.MetricMetadata.unit
-      description: Primary unit of the metric
+      description: Primary unit of the metric.
       type: String
     - contextPath: Datadog.MetricMetadata.metric_name
       description: The metric name.
@@ -634,7 +633,7 @@ script:
         A flag indicating whether the incident caused customer impact.
 
         Restricted value : True
-        Permitted value : False ( Bug will be fixed in near future)
+        Permitted value : False (Bug will be fixed in the near future.)
       isArray: false
       name: customer_impacted
       predefined:
@@ -666,7 +665,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The State of the incident.
+      description: The state of the incident.
       isArray: false
       name: state
       predefined:
@@ -702,9 +701,8 @@ script:
       secret: false
     - default: false
       description: |-
-        The Markdown content of the cell  which is used to format using the Markdown syntax rules.
-        Markdown cells usually serve as explanatory or descriptive texts to your code.
-        If content is provided important is required.
+        The Markdown content of the cell  that is used to format using the Markdown syntax rules.
+        If content is provided, important attribute is required.
       isArray: false
       name: content
       required: false
@@ -732,7 +730,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Datadog Incidents Create is used to Create an incident.
+    description: Create an incident.
     execution: false
     name: datadog-incident-create
     outputs:
@@ -899,7 +897,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Timestamp  when customers began being impacted by the incident .
+        Timestamp when customers began being impacted by the incident.
         Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'.
       isArray: false
       name: customer_impact_start
@@ -926,7 +924,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: |-
-        The Severity of the incident.
+        The severity of the incident.
         Default value=unknown
       isArray: false
       name: severity
@@ -941,7 +939,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The State of the incident.
+      description: The state of the incident.
       isArray: false
       name: state
       predefined:
@@ -1202,7 +1200,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
+      description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -1371,27 +1369,27 @@ script:
       required: true
       secret: false
     - default: false
-      description: "Query string.\nEx : query=\"system.cpu.idle\" \nA complete list of query string values available here. https://app.datadoghq.com/metric/summary"
+      description: "Query string.\nEx : query=\"system.cpu.idle\" \nA complete list of query string values are available here: https://app.datadoghq.com/metric/summary."
       isArray: false
       name: query
       required: true
       secret: false
     deprecated: false
-    description: Query of Sequence of data points which are collected over time intervals, allowing us to track changes over time.
+    description: Query of sequence of data points that are collected over time intervals, allowing us to track changes over time.
     execution: false
     name: datadog-time-series-point-query
     outputs:
     - contextPath: Datadog.TimeSeriesPoint.from_date
-      description: Start of requested time window, milliseconds since Unix epoch.
+      description: Start of requested time window in milliseconds since Unix epoch.
       type: Date
     - contextPath: Datadog.TimeSeriesPoint.error
-      description: Message indicating the errors if status is not ok.
+      description: Message indicating the errors if status is not OK.
       type: String
     - contextPath: Datadog.TimeSeriesPoint.group_by
-      description: 'List of tag keys on which to group. '
+      description: 'List of tag keys on which to group.'
       type: Unknown
     - contextPath: Datadog.TimeSeriesPoint.message
-      description: Message indicating success if status is ok.
+      description: Message indicating success if status is OK.
       type: String
     - contextPath: Datadog.TimeSeriesPoint.query
       description: Query string.
@@ -1406,7 +1404,7 @@ script:
       description: Display name of the metric.
       type: String
     - contextPath: Datadog.TimeSeriesPoint.series.end
-      description: End of the time window, milliseconds since Unix epoch.
+      description: End of the time window in milliseconds since Unix epoch.
       type: Date
     - contextPath: Datadog.TimeSeriesPoint.series.expression
       description: Metric expression.
@@ -1427,10 +1425,10 @@ script:
       description: The index of the series query within the request.
       type: Number
     - contextPath: Datadog.TimeSeriesPoint.series.scope
-      description: Metric scope, comma separated list of tags.
+      description: Metric scope, comma-separated list of tags.
       type: String
     - contextPath: Datadog.TimeSeriesPoint.series.start
-      description: Start of the time window, milliseconds since Unix epoch.
+      description: Start of the time window in milliseconds since Unix epoch.
       type: Date
     - contextPath: Datadog.TimeSeriesPoint.series.tag_set
       description: Unique tags identifying this series.
@@ -1454,7 +1452,7 @@ script:
       description: Status of the query.
       type: String
     - contextPath: Datadog.TimeSeriesPoint.to_date
-      description: End of requested time window, milliseconds since Unix epoch.
+      description: End of requested time window in milliseconds since Unix epoch.
       type: Date
   dockerimage: demisto/datadog-api-client:1.0.0.56402
   feed: false
@@ -1467,4 +1465,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
+fromversion: 6.8.0
