@@ -1,0 +1,116 @@
+category: Analytics & SIEM
+commonfields:
+  id: Traceable
+  version: -1
+configuration:
+  - display: Traceable Platform URL
+    name: url
+    defaultvalue: https://api.traceable.ai
+    type: 0
+    required: true
+  - display: ""
+    displaypassword: API Token
+    name: credentials
+    type: 9
+    required: false
+    hiddenusername: true
+  - display: Fetch incidents
+    name: isFetch
+    type: 8
+    required: false
+  - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+    name: first_fetch
+    defaultvalue: 7 days
+    type: 0
+    required: false
+  - display: "Query Return Limit"
+    name: limit
+    defaultvalue: "100"
+    type: 0
+    required: false
+  - display: Incidents Fetch Interval
+    name: incidentFetchInterval
+    defaultvalue: "5"
+    type: 19
+    required: false
+  - display: Fetch indicators
+    name: feed
+    type: 8
+    required: false
+  - display: Incident type
+    name: incidentType
+    type: 13
+    required: false
+  - display: "Comma Separated Environment List To Process"
+    name: environment
+    type: 12
+    required: false
+  - display: "Security Score Category"
+    name: securityScoreCategory
+    defaultvalue: CRITICAL,HIGH,MEDIUM
+    type: 16
+    required: false
+    options:
+      - CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+  - display: "Threat Category"
+    name: threatCategory
+    defaultvalue: Malicious Activities,API Abuse,Malicious Sources
+    type: 16
+    required: false
+    options:
+      - Malicious Activities
+      - API Abuse
+      - Malicious Sources
+  - display: "IP Reputation Level"
+    name: ipReputationLevel
+    defaultvalue: CRITICAL,HIGH,MEDIUM
+    type: 16
+    required: false
+    options:
+      - CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+  - display: "IP Abuse Velocity"
+    name: ipAbuseVelocity
+    defaultvalue: CRITICAL,HIGH,MEDIUM
+    type: 16
+    required: false
+    options:
+      - CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+description: "[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]"
+display: "Traceable"
+name: Traceable
+script:
+  commands:
+    - arguments:
+        - default: false
+          description: "[Enter a description of the argument, including any important information users need to know, for example, default values.]"
+          isArray: false
+          name: dummy
+          required: true
+          secret: false
+      deprecated: false
+      description: "[Enter a description of the command, including any important information users need to know, for example required permissions.]"
+      execution: false
+      name: baseintegration-dummy
+      outputs:
+        - contextPath: BaseIntegration.Output
+          description: "[Enter a description of the data returned in this output.]"
+          type: String
+  isfetch: true
+  isFetchSamples: true
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.11.56082
+fromversion: 5.5.0
+tests:
+  - No tests (auto formatted)

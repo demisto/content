@@ -1,0 +1,23 @@
+{
+    "name": "Traceable",
+    "description": "Traceable Threat Integration",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Mayuresh Kshirsagar, Traceable Inc",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "mayuresh@traceable.ai"
+    ],
+    "githubUser": []
+}
