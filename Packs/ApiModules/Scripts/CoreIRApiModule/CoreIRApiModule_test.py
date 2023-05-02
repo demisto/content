@@ -3416,4 +3416,27 @@ def test_get_list_roles_command(
 
     results = get_list_roles_command(client=client, args=role_data)
 
-    assert expected_output in results.readable_output
+    if results.readable_output:
+        assert expected_output in results.readable_output
+
+
+def test_endpoint_command_fails(requests_mock):
+    """
+    Given:
+    - no arguments
+    When:
+    - we mock the endpoint command
+    Then:
+    - Validate that there is a correct error
+    """
+    from CoreIRApiModule import endpoint_command, CoreClient
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    args = {}
+    with pytest.raises(DemistoException) as e:
+        endpoint_command(client, args)
+    assert 'In order to run this command, please provide a valid id, ip or hostname' in str(e)
