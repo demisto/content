@@ -1,10 +1,10 @@
 {
-    "id": "incident_datadog",
+    "id": "incident_datadogcloudsiem",
     "version": -1,
     "modified": "2023-04-28T07:59:19.527998197+05:30",
-    "name": "Datadog",
+    "name": "Datadog Cloud SIEM",
     "ownerOnly": false,
-    "cliName": "datadog",
+    "cliName": "datadogcloudsiem",
     "type": "grid",
     "closeForm": false,
     "editForm": true,

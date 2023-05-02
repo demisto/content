@@ -1,10 +1,10 @@
 {
-    "id": "incident_datadogdetectedmethod",
+    "id": "incident_datadogcloudsiemdetectedmethod",
     "version": -1,
     "modified": "2023-04-28T07:59:19.744651293+05:30",
-    "name": "Datadog Detected Method",
+    "name": "Datadog Cloud SIEM Detected Method",
     "ownerOnly": false,
-    "cliName": "datadogdetectedmethod",
+    "cliName": "datadogcloudsiemdetectedmethod",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

@@ -1,10 +1,10 @@
 {
-    "id": "incident_datadogrepairtime",
+    "id": "incident_datadogcloudsiemrepairtime",
     "version": -1,
     "modified": "2023-04-28T07:59:20.07639828+05:30",
-    "name": "Datadog Repair Time",
+    "name": "Datadog Cloud SIEM Repair Time",
     "ownerOnly": false,
-    "cliName": "datadogrepairtime",
+    "cliName": "datadogcloudsiemrepairtime",
     "type": "number",
     "closeForm": false,
     "editForm": true,

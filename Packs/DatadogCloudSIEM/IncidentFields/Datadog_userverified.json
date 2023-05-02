@@ -1,10 +1,10 @@
 {
-    "id": "incident_datadoguserverified",
+    "id": "incident_datadogcloudsiemuserverified",
     "version": -1,
     "modified": "2023-04-28T07:59:20.34785182+05:30",
-    "name": "Datadog User Verified",
+    "name": "Datadog Cloud SIEM User Verified",
     "ownerOnly": false,
-    "cliName": "datadoguserverified",
+    "cliName": "datadogcloudsiemuserverified",
     "type": "boolean",
     "closeForm": false,
     "editForm": true,

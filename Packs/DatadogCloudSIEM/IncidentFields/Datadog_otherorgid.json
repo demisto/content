@@ -1,10 +1,10 @@
 {
-    "id": "incident_datadogotherorgid",
+    "id": "incident_datadogcloudsiemotherorgid",
     "version": -1,
     "modified": "2023-04-28T07:59:19.974561743+05:30",
-    "name": "Datadog Other Org Id",
+    "name": "Datadog Cloud SIEM Other Org Id",
     "ownerOnly": false,
-    "cliName": "datadogotherorgid",
+    "cliName": "datadogcloudsiemotherorgid",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

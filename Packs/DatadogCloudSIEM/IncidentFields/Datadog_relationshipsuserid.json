@@ -1,10 +1,10 @@
 {
-    "id": "incident_datadogrelationshipsuserid",
+    "id": "incident_datadogcloudsiemrelationshipsuserid",
     "version": -1,
     "modified": "2023-04-28T07:59:20.051034309+05:30",
-    "name": "Datadog Relationships User ID",
+    "name": "Datadog Cloud SIEM Relationships User ID",
     "ownerOnly": false,
-    "cliName": "datadogrelationshipsuserid",
+    "cliName": "datadogcloudsiemrelationshipsuserid",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

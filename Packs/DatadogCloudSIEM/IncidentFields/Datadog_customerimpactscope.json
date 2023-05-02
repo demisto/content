@@ -1,10 +1,10 @@
 {
-    "id": "incident_datadogcustomerimpactscope",
+    "id": "incident_datadogcloudsiemcustomerimpactscope",
     "version": -1,
     "modified": "2023-04-28T07:59:19.607387757+05:30",
-    "name": "Datadog Customer Impact Scope",
+    "name": "Datadog Cloud SIEM Customer Impact Scope",
     "ownerOnly": false,
-    "cliName": "datadogcustomerimpactscope",
+    "cliName": "datadogcloudsiemcustomerimpactscope",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
