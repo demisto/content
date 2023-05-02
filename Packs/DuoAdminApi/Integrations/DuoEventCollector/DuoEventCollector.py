@@ -32,7 +32,6 @@ class Params(BaseModel):
     def set_mintime_value(self, mintime: list, log_type: LogType) -> None:  # pragma: no cover
         self.mintime[log_type] = mintime
 
-
 class Client:
     """
     A class for the client request handling
@@ -44,39 +43,49 @@ class Client:
                                          params.get('integration_key'),  # type: ignore[attr-defined]
                                          (params.get('secret_key')).get('password'))  # type: ignore[attr-defined]
 
-    def call(self, request_order: list) -> dict:  # pragma: no cover
+    def call(self, request_order: list) -> tuple:  # pragma: no cover
         retries = int(self.params.retries)
         auth_api_version = int(self.params.auth_api_version)
+        response_metadata = None
         while retries != 0:
             try:
                 if request_order[0] == LogType.AUTHENTICATION:
                     if auth_api_version == 2:
-                        response = self.admin_api.get_authentication_log(
-                            mintime=self.params.mintime[LogType.AUTHENTICATION] * AUTH_API_V2_TIME_MODIFIER,
-                            api_version=2, limit='1000')
+                        if not self.params.mintime[LogType.AUTHENTICATION].get('next_offset'):
+                            response = self.admin_api.get_authentication_log(
+                                min_time=self.params.mintime[LogType.AUTHENTICATION].get('min_time'),
+                                api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc')
+                        else:
+                            response = self.admin_api.get_authentication_log(
+                                next_offset=self.params.mintime[LogType.AUTHENTICATION].get('next_offset'),
+                                api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc')
                         # The v2 API returns a different object, so we do this to normalize it
+                        response_metadata = response.get('metadata')
                         response = response.get('authlogs', [])
-                    elif auth_api_version == 1:
-                        response = self.admin_api.get_authentication_log(
-                            mintime=self.params.mintime[LogType.AUTHENTICATION])
+
                 elif request_order[0] == LogType.ADMINISTRATION:
                     response = self.admin_api.get_administrator_log(
                         mintime=self.params.mintime[LogType.ADMINISTRATION])
+
                 elif request_order[0] == LogType.TELEPHONY:
                     response = self.admin_api.get_telephony_log(
                         mintime=self.params.mintime[LogType.TELEPHONY])
-                return response
+                return response, response_metadata
             except Exception as exc:
                 msg = f'something went wrong with the sdk call {exc}'
                 demisto.debug(msg)
                 if str(exc) == 'Received 429 Too Many Requests':
                     retries -= 1
                 else:
-                    retries = 0
-        return {}
+                    raise exc
 
-    def set_next_run_filter(self, mintime: int, log_type: LogType):  # pragma: no cover
-        self.params.set_mintime_value(mintime + 1, log_type)
+        return ([], [])
+
+    def set_next_run_filter(self, mintime: int, log_type: LogType, metadata=None): #pragma: no cover
+        if metadata:
+            self.params.set_mintime_value({'min_time': mintime, 'next_offset': metadata.get('next_offset')}, log_type)
+        else:
+            self.params.set_mintime_value(mintime + 1, log_type)
 
 
 class GetEvents:
@@ -93,22 +102,22 @@ class GetEvents:
         temp.rotate(-1)
         self.request_order = list(temp)
 
-    def make_sdk_call(self):  # pragma: no cover
-        events: list = self.client.call(self.request_order)  # type: ignore
+    def make_sdk_call(self) -> tuple:  # pragma: no cover
+        events, metadata = self.client.call(self.request_order)  # type: ignore
         events = sorted(events, key=lambda e: e['timestamp'])
         events = events[: int(self.client.params.limit)]
-        return events
+        return events, metadata
 
     def _iter_events(self) -> None:  # type: ignore  # pragma: no cover
         """
         Function that responsible for the iteration over the events returned from the Duo api
         """
-        events: list = self.make_sdk_call()
+        events, metadata = self.make_sdk_call()
         while True:
             if events:
-                self.client.set_next_run_filter(events[-1]['timestamp'], self.request_order[0])
+                self.client.set_next_run_filter(events[-1]['timestamp'], self.request_order[0], metadata=metadata)
             yield events
-            events = self.make_sdk_call()
+            events, metadata = self.make_sdk_call()
             try:
                 assert events
             except (IndexError, AssertionError):
@@ -134,7 +143,9 @@ class GetEvents:
         Get the info from the last run, it returns the time to query from
         """
         self.rotate_request_order()
-        return {'after': self.client.params.mintime, 'request_order': self.request_order}
+        last_run = {'after': self.client.params.mintime,
+                    'request_order': self.request_order}
+        return last_run
 
 
 def override_make_request(self, method: str, uri: str, body: dict, headers: dict):  # pragma: no cover
@@ -182,7 +193,7 @@ def main():  # pragma: no cover
         if 'after' not in last_run:
             after = dateparser.parse(demisto_params['after'].strip())
             last_run = after.timestamp()  # type: ignore
-            last_run = {LogType.AUTHENTICATION.value: last_run,
+            last_run = {LogType.AUTHENTICATION.value: {'min_time': last_run, 'next_offset': []},
                         LogType.ADMINISTRATION.value: last_run,
                         LogType.TELEPHONY.value: last_run}
 
@@ -213,7 +224,7 @@ def main():  # pragma: no cover
             else:
                 # fetch-events
                 demisto.debug(f'Sending {len(events)} events to XSIAM')
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                # send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun(get_events.get_last_run())
 
     except Exception as e:

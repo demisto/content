@@ -8,6 +8,8 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
+openpyxl = "^3.1.2"
+duo-client = "^5.0.0"
 
 [tool.poetry.group.dev.dependencies]
 demisto_sdk = "1.13.0"
