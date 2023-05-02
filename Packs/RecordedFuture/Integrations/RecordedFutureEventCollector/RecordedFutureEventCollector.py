@@ -175,26 +175,31 @@ def main() -> None:
         if command == 'test-module':
             test_module(client)
 
-        elif command in ('recorded-future-get-events', 'fetch-events'):
-            if command == 'recorded-future-get-events':
-                events = get_events(client, params={'limit': args.get('limit', 10)})
-
-            if command == 'fetch-events':
-                if not (last_run := demisto.getLastRun().get('last_run_time')):
-                    last_run = arg_to_datetime(params.get('first_fetch', '3 days')).strftime(DATE_FORMAT)  # type: ignore
-                events = fetch_events(
-                    client=client,
-                    limit=args.get('limit') or params.get('max_fetch') or 1000,
-                    last_run=last_run
-                )
-
-            if argToBoolean(args.get('should_push_events', False)) or command == 'fetch-events':
+        elif command == 'recorded-future-get-events':
+            events = get_events(client, params={'limit': args.get('limit', 10)})
+            if argToBoolean(args.get('should_push_events', False)):
                 add_time_key_to_events(events)
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
                     product=PRODUCT
                 )
+
+        elif command == 'fetch-events':
+            if not (last_run := demisto.getLastRun().get('last_run_time')):
+                last_run = arg_to_datetime(params.get('first_fetch', '3 days')).strftime(DATE_FORMAT)  # type: ignore
+            events = fetch_events(
+                client=client,
+                limit=args.get('limit') or params.get('max_fetch') or 1000,
+                last_run=last_run
+            )
+
+            add_time_key_to_events(events)
+            send_events_to_xsiam(
+                events,
+                vendor=VENDOR,
+                product=PRODUCT
+            )
 
     # Log exceptions and return errors
     except Exception as e:
