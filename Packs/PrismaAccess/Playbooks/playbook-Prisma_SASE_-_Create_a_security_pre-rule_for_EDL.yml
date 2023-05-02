@@ -383,7 +383,7 @@ tasks:
       brand: ""
       id: 5b777876-447c-4a3c-8d28-204661342395
       iscommand: false
-      name: 661afaba-edfa-478d-8271-21ff1c2ca254
+      name: Prisma SASE - Create or Edit EDL object
       playbookId: Prisma SASE - Create or Edit EDL object
       type: playbook
       version: -1
@@ -441,7 +441,7 @@ tasks:
       description: This playbook handles the creation or editing of the Security Policy Rule for Prisma SASE integration.
       id: 77c0f310-d4a2-4fd6-8145-42a5d7e0bd5d
       iscommand: false
-      name: 436ca6b3-7e89-4f5b-8e18-e3c67e1d0d65
+      name: Prisma SASE - Create or Edit Security Policy Rule
       playbookId: Prisma SASE - Create or Edit Security Policy Rule
       type: playbook
       version: -1

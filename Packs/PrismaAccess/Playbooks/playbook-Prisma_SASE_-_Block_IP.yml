@@ -589,7 +589,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This playbook appends a Static Address Group with provided IPs. 
+      description: This playbook appends a Static Address Group with provided IPs.
       id: e8535616-fa92-4784-8196-8633d038b74e
       iscommand: false
       name: Prisma SASE - Add IPs to Static Address Group
@@ -645,7 +645,7 @@ tasks:
       brand: ""
       id: db54723e-8606-4c68-8766-e6de873cbda8
       iscommand: false
-      name: 3b724423-a68b-4648-8f51-404ad672ec89
+      name: Prisma SASE - Create Address Object
       playbookId: Prisma SASE - Create Address Object
       type: playbook
       version: -1
