@@ -15,7 +15,6 @@ for dir in $*; do
   if [[ $(find $dir -name "*.py" -maxdepth 1 | wc -l) -eq 0 ]]; then
     continue
   fi
-  echo "Running mypy on $dir"
   mypy_out=$(python3 -m mypy $dir 2>&1)
   if [[ $? -ne 0 && $? -ne 2 ]]; then
     echo -e "$mypy_out" | sort | uniq | grep -v -f $ignored_messages_file
