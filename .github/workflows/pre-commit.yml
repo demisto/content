@@ -48,7 +48,8 @@ jobs:
         detailed_summary: true
         annotate_only: true
 
-    - name: "Check file existence"
+    - name: "Check coverage.xml exists"
+
       id: check_files
       uses: andstor/file-existence-action@v2
       with:
