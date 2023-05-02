@@ -607,7 +607,7 @@ def main():
         elif command == 'fetch-indicators':
             indicators = fetch_attributes_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
-                demisto.createIndicators(iter_)
+                demisto.createIndicators(iter_)OK, thank you
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
