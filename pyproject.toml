@@ -18,6 +18,7 @@ mypy-baseline = "^0.5.0"
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
 flake8 = "^4.0.1"
+ruff = "^0.0.264"
 
 [tool.poetry.group.testing.dependencies]
 pytest = "^7.1.2"
