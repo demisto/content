@@ -384,7 +384,8 @@ def Druva_Decommission(clientObj, resource_id):
     else:
         raise RuntimeError('Internal Error')
 
-def Execute_command(command,clientObj):
+
+def Execute_command(command, clientObj):
     if command == 'druva-list-quarantine-ranges':
         return_results(Druva_ListQuarantineRanges_Command(clientObj))
 
@@ -435,8 +436,8 @@ def Execute_command(command,clientObj):
         from_date = demisto.args().get('from_date')
         to_date = demisto.args().get('to_date')
         return_results(Druva_UpdateQuarantineRange_Command(clientObj,
-                                                            resource_id, resource_type, range_id, from_date,
-                                                            to_date))
+                                                           resource_id, resource_type, range_id, from_date,
+                                                           to_date))
         return_results(Druva_ListQuarantineRanges_Command(clientObj))
 
     if command == 'druva-list-quarantine-snapshots':
@@ -471,7 +472,8 @@ def Execute_command(command,clientObj):
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration Test button.
         return_outputs(test_module(clientObj))
-    
+
+
 def main():
     command = demisto.command()
     params = demisto.params()
@@ -491,7 +493,7 @@ def main():
             proxy=proxy)
 
         clientObj.updateHeaders(base64String)
-        Execute_command(command,clientObj)
+        Execute_command(command, clientObj)
     except Exception as e:
         return_error('Failed to execute:' + command + 'Error:' + str(e))
 
