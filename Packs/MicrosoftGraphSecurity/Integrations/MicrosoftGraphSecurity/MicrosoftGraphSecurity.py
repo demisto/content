@@ -364,7 +364,7 @@ def get_alert_details_command(client: MsGraphClient, args):
         table_headers = ['ID', 'DetectionSource', 'ServiceSource', 'Title', 'Category', 'Severity', 'CreatedDate',
                          'LastUpdateDateTime', 'Status', 'IncidentId']
         ec = {
-            'MsGraph.Alert(val.id && val.id === obj.id)': outputs
+            'MsGraph.Alert(val.ID && val.ID === obj.ID)': outputs
         }
         hr += tableToMarkdown('', outputs, table_headers, removeNull=True)
     else:
