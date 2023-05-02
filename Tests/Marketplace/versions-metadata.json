@@ -2,7 +2,7 @@
   "version_map": {
     "6.11.0": {
       "core_packs_file": "corepacks-6.11.0.json",
-      "core_packs_file_is_locked": true
+      "core_packs_file_is_locked": false
     },
     "8.2.0": {
       "core_packs_file": "corepacks-8.2.0.json",
