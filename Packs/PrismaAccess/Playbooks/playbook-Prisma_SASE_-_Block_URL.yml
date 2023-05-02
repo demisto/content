@@ -665,7 +665,7 @@ tasks:
       description: "This playbook handles the creation or editing of the Security Policy Rule for Pisma SASE integration. \n"
       id: ae2421c9-7bef-47f5-806b-149e3bef1a61
       iscommand: false
-      name: 436ca6b3-7e89-4f5b-8e18-e3c67e1d0d65
+      name: Prisma SASE - Create or Edit Security Policy Rule
       playbookId: Prisma SASE - Create or Edit Security Policy Rule
       type: playbook
       version: -1

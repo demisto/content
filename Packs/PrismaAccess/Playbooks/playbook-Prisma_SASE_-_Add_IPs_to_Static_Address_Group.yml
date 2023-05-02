@@ -25,7 +25,7 @@ inputs:
   required: false
   value: {}
 - description: |-
-   The address group name to be appanded.
+    The address group name to be appanded.
   key: AddressGroupName
   playbookInputQuery:
   required: false
@@ -408,7 +408,7 @@ tasks:
       description: This playbook creates new address objects in the Prisma SASE Object section. Those objects can be used later on in other objects such as Security Rules.
       id: da1f402d-606d-4448-8805-0ee35ad05444
       iscommand: false
-      name: 3b724423-a68b-4648-8f51-404ad672ec89
+      name: Prisma SASE - Create Address Object
       playbookId: Prisma SASE - Create Address Object
       type: playbook
       version: -1
