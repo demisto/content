@@ -4,6 +4,10 @@ errors=0
 echo "Starting mypy run"
 
 for dir in $*; do
+  if [[ $dir == "." ]]; then
+    continue
+  fi
+  echo "Running mypy on $dir"
   python3 -m mypy $dir 2>&1
   if [[ $? -ne 0 ]]; then
     errors=1
