@@ -1,32 +1,50 @@
 id: Unisolate Endpoint - Cybereason
-version: -1
+version: 6
+contentitemexportablefields:
+  contentitemfields:
+    packID: Cybereason
+    packName: Cybereason
+    itemVersion: 2.1.5
+    fromServerVersion: 5.5.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Unisolate Endpoint - Cybereason
 description: This playbook unisolates a machine based on the hostname provided.
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 8dab4dea-7c75-49b5-8752-3e11f6a071e5
     type: start
     task:
       id: 8dab4dea-7c75-49b5-8752-3e11f6a071e5
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '1':
-    id: '1'
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
     taskid: 29f3ba5b-96f3-4885-8d29-39d1927feb35
     type: condition
     task:
@@ -38,26 +56,35 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      no:
-      - '2'
-      yes:
-      - '3'
+      "no":
+      - "2"
+      "yes":
+      - "3"
     scriptarguments:
       brandname:
         simple: Cybereason
     results:
     - brandInstances
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 240\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '2':
-    id: '2'
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
     taskid: 649ec0e2-13f5-4534-8e29-f052ece40603
     type: title
     task:
@@ -66,49 +93,66 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1030\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1030
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '3':
-    id: '3'
-    taskid: 409410a8-e855-455f-85fa-38ededec41d7
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d2f9f02b-0f1b-48cd-8cad-6dafd2707221
     type: condition
     task:
-      id: 409410a8-e855-455f-85fa-38ededec41d7
+      id: d2f9f02b-0f1b-48cd-8cad-6dafd2707221
       version: -1
       name: Is there an endpoint to unisolate?
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '2'
-      yes:
-      - '4'
+      - "2"
+      "yes":
+      - "4"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.Hostname
+              complex:
+                root: inputs.Hostname
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 420\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 420
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '4':
-    id: '4'
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
     taskid: b7f22dfd-7f2f-4340-8246-767d4570afc8
     type: regular
     task:
@@ -119,30 +163,48 @@ tasks:
       script: '|||cybereason-unisolate-machine'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       machine:
         simple: ${inputs.Hostname}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1040,\n    \"y\": 600\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: "{\n  \"linkLabelsPosition\": {\n    \"3_2_#default#\": 0.37\n  },\n  \"paper\"\
-  : {\n    \"dimensions\": {\n      \"height\": 1045,\n      \"width\": 970,\n   \
-  \   \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_2_#default#": 0.37
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1045,
+        "width": 970,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
 inputs:
 - key: Hostname
   value: {}
   required: false
   description: The hostname of the endpoint to unisolate using Cybereason.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
-tests:
-- Cybereason Test
-fromversion: 5.5.0
