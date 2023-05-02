@@ -141,7 +141,7 @@ def cmds_command(client, args):
         outputs=outputs,
         readable_output=md
     )
-    
+
     return command_results
 
 
