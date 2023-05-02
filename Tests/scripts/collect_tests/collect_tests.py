@@ -205,10 +205,10 @@ class CollectionResult:
 
         if test:
             if not is_sanity:  # sanity tests do not show in the id_set
-                if test not in id_set.id_to_test_playbook:  # type:ignore[union-attr]
+                if test not in id_set.id_to_test_playbook:  # type: ignore[union-attr]
                     raise TestMissingFromIdSetException(test)
 
-                test_playbook = id_set.id_to_test_playbook[test]  # type:ignore[union-attr]
+                test_playbook = id_set.id_to_test_playbook[test]  # type: ignore[union-attr]
                 if not (pack_id := test_playbook.pack_id):
                     raise ValueError(f'{test} has no pack_id')
                 if not (playbook_path := test_playbook.path):
@@ -216,17 +216,17 @@ class CollectionResult:
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
                     raise SkippedTestException(test, skip_place='.pack_ignore')
                 for integration in test_playbook.implementing_integrations:
-                    if reason := conf.skipped_integrations.get(integration):  # type:ignore[union-attr, assignment]
+                    if reason := conf.skipped_integrations.get(integration):  # type: ignore[union-attr, assignment]
                         raise SkippedTestException(
                             test_name=test,
                             skip_place='conf.json (integrations)',
                             skip_reason=f'{test=} uses {integration=}, which is skipped ({reason=})'
                         )
 
-            if skip_reason := conf.skipped_tests.get(test):  # type:ignore[union-attr]
+            if skip_reason := conf.skipped_tests.get(test):  # type: ignore[union-attr]
                 raise SkippedTestException(test, skip_place='conf.json (skipped_tests)', skip_reason=skip_reason)
 
-            if test in conf.private_tests:  # type:ignore[union-attr]
+            if test in conf.private_tests:  # type: ignore[union-attr]
                 raise PrivateTestException(test)
 
         if pack:
@@ -242,10 +242,10 @@ class CollectionResult:
                     raise
 
         if is_nightly:
-            if test and test in conf.non_api_tests:  # type:ignore[union-attr]
+            if test and test in conf.non_api_tests:  # type: ignore[union-attr]
                 return
 
-            if pack and pack not in conf.nightly_packs:  # type:ignore[union-attr]
+            if pack and pack not in conf.nightly_packs:  # type: ignore[union-attr]
                 raise NonNightlyPackInNightlyBuildException(pack)
 
     @staticmethod
@@ -355,11 +355,11 @@ class TestCollector(ABC):
                 logger.warning('Nothing was collected, and no sanity-test-triggering files were changed')
                 return None
 
-        self._validate_tests_in_id_set(result.tests)  # type:ignore[union-attr]
+        self._validate_tests_in_id_set(result.tests)  # type: ignore[union-attr]
         if result.packs_to_install:
-            result += self._always_installed_packs  # type:ignore[operator]
-        result += self._collect_test_dependencies(result.tests if result else ())  # type:ignore[union-attr]
-        result.machines = Machine.get_suitable_machines(result.version_range)  # type:ignore[union-attr]
+            result += self._always_installed_packs  # type: ignore[operator]
+        result += self._collect_test_dependencies(result.tests if result else ())  # type: ignore[union-attr]
+        result.machines = Machine.get_suitable_machines(result.version_range)  # type: ignore[union-attr]
 
         return result
 
@@ -373,9 +373,8 @@ class TestCollector(ABC):
 
             # collect the pack containing the test playbook
             pack_id = self.id_set.id_to_test_playbook[test_id].pack_id
-            assert pack_id, "Invalid pack id, should not be empty"
             result.append(self._collect_pack(
-                pack_id=pack_id,
+                pack_id=pack_id,  # type: ignore[arg-type]
                 reason=CollectionReason.PACK_TEST_DEPENDS_ON,
                 reason_description=f'test {test_id} is saved under pack {pack_id}',
                 content_item_range=test_object.version_range,
@@ -387,11 +386,10 @@ class TestCollector(ABC):
             for integration in test_object.integrations:
                 if integration_object := self.id_set.id_to_integration.get(integration):
                     pack_id = integration_object.pack_id
-                    assert pack_id, "Invalid pack id, should not be empty"
                     result.append(self._collect_test_dependency(
                         dependency_name=integration,
                         test_id=test_id,
-                        pack_id=pack_id,
+                        pack_id=pack_id,  # type: ignore[arg-type]
                         dependency_type='integration',
                     ))
                 else:
@@ -402,11 +400,10 @@ class TestCollector(ABC):
             for script in test_object.scripts:
                 if script_object := self.id_set.id_to_script.get(script):
                     pack_id = script_object.pack_id
-                    assert pack_id, "Invalid pack id, should not be empty"
                     result.append(self._collect_test_dependency(
                         dependency_name=script,
                         test_id=test_id,
-                        pack_id=pack_id,
+                        pack_id=pack_id,  # type: ignore[arg-type]
                         dependency_type='script',
                     ))
                 else:
@@ -481,9 +478,8 @@ class TestCollector(ABC):
 
     def _validate_content_item_compatibility(self, content_item: ContentItem, is_integration: bool) -> None:
         object_id = content_item.id_
-        assert object_id, "Invalid object id, should not be empty"
         self.__validate_compatibility(
-            id_=object_id,
+            id_=object_id,  # type: ignore[arg-type]
             pack_id=content_item.pack_id,
             marketplaces=content_item.marketplaces,
             path=content_item.path,
@@ -496,11 +492,9 @@ class TestCollector(ABC):
             raise RuntimeError(f'could not find pack of {id_set_item.name}')
         object_id = id_set_item.id_
         path = id_set_item.path
-        assert object_id, "Invalid object id, should not be empty"
-        assert path, "Invalid path, should not be empty"
         self.__validate_compatibility(
-            id_=object_id,
-            pack_id=pack_id,
+            id_=object_id,  # type: ignore[arg-type]
+            pack_id=pack_id,  # type: ignore[arg-type]
             marketplaces=id_set_item.marketplaces,
             path=path,
             version_range=id_set_item.version_range,
@@ -1252,9 +1246,8 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
             try:
                 path = PATHS.content_path / modeling_rule.file_path_str
                 pack_id = modeling_rule.pack_id
-                assert pack_id, "pack_id should not be empty"
                 result.append(self._collect_pack_for_modeling_rule(
-                    pack_id=pack_id,
+                    pack_id=pack_id,  # type: ignore[arg-type]
                     changed_file_path=path,
                     reason=CollectionReason.MODELING_RULE_NIGHTLY,
                     reason_description=f'{modeling_rule.file_path_str} ({modeling_rule.id_})',
