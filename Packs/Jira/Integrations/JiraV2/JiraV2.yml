@@ -534,7 +534,6 @@ script:
     - description: The ID of the issue to edit.
       name: issueId
       required: true
-      type: textArea
     - description: The name of the assignee. Relevant for Jira Server only
       name: assignee
       required: true
