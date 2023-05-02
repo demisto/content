@@ -67,6 +67,10 @@
       "evidence": {
         "type": "string",
         "is_array": true
+      },
+      "classification": {
+        "type": "string",
+        "is_array": true
       }
     }
   }
