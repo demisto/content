@@ -2444,7 +2444,6 @@ def sub_main():     # pragma: no cover
             "ews-get-folder": get_folder,
             "ews-expand-group": get_expanded_group,
             "ews-mark-items-as-read": mark_item_as_read,
-            "send-mail": send_email,
         }
 
         # commands that may return multiple results or non-note result
@@ -2467,6 +2466,10 @@ def sub_main():     # pragma: no cover
             demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
 
             demisto.incidents(incidents)
+        elif command == "send-mail":
+            commands_res = send_email(client, **args)
+            for res in commands_res:
+                return_results(res)
 
         # special outputs commands
         elif command in special_output_commands:
