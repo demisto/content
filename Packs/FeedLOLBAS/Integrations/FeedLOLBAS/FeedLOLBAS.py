@@ -137,15 +137,18 @@ def map_mitre_id_to_name(client: Client) -> Dict[str, str]:
             mitre_name = obj.get('name')
             if mitre_id := external_ref.get('external_id'):
                 result_map[mitre_id] = mitre_name
+    for mitre_id in result_map.keys():
+        if len(mitre_id.split('.')) == 2:
+            main_mitre_id = mitre_id.split('.')[0]
+            result_map[mitre_id] = f"{result_map[main_mitre_id]}: {result_map[mitre_id]}"
     return result_map
 
 
-def pre_process_indicator(client: Client, pre_indicator: Dict[str, Any]) -> List[str]:
+def pre_process_indicator(pre_indicator: Dict[str, Any], mitre_id_to_name) -> List[str]:
     """
     Pre-process the indicator, map the MitreID with MitreName and build the relevant tag list.
     """
     mitre_tags = []
-    mitre_id_to_name = map_mitre_id_to_name(client)
     for command in pre_indicator.get('Commands', []):
         if mitre_id := command.get('MitreID', ''):
             mitre_name = mitre_id_to_name.get(mitre_id, '')
@@ -160,9 +163,10 @@ def create_indicators(client: Client, pre_indicators) -> List[Dict[str, Any]]:
     """
     demisto.debug(f'Creating {len(pre_indicators)} indicators.')
     indicators: List[Dict[str, Any]] = []
+    mitre_id_to_name = map_mitre_id_to_name(client)
 
     for pre_indicator in pre_indicators:
-        additional_tags = pre_process_indicator(client, pre_indicator)
+        additional_tags = pre_process_indicator(pre_indicator, mitre_id_to_name)
 
         indicator: Dict[str, Any] = {
             'type': ThreatIntel.ObjectsNames.TOOL,

@@ -32,7 +32,7 @@ configuration:
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: C - Completely reliable
+  defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: feedReliability
   options:
