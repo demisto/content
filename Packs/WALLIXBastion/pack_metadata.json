@@ -7,13 +7,18 @@
     "url": "https://www.wallix.com/privileged-access-management/",
     "email": "",
     "categories": [
-        "Authentication"
+        "Authentication & Identity Management"
     ],
     "tags": [
-        "wallix",
-        "pam"
+        "Compliance",
+        "IT",
+        "IAM"
     ],
-    "useCases": [],
+    "useCases": [
+        "Asset Management",
+        "Identity and Access Management",
+        "Compliance"
+    ],
     "keywords": [
         "wallix",
         "wab",
