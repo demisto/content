@@ -50,7 +50,7 @@ class Client(BaseClient):
             headers["X-Auth-User"] = self._auth_user
 
             # retry
-            resp: Response = super()._http_request(
+            resp = super()._http_request(
                 *args, **kwargs, resp_type="response"
             )
 
