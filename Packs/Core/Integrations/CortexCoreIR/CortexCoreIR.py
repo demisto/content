@@ -460,7 +460,7 @@ def main():  # pragma: no cover
 
         elif command == 'core-list-user-groups':
             return_results(get_list_user_groups_command(client, args))
-            
+
         elif command == 'core-list-roles':
             return_results(get_list_roles_command(client, args))
 

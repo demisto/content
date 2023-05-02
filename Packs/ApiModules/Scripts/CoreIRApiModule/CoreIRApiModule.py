@@ -3688,7 +3688,7 @@ def get_list_risky_users_command(client: CoreClient, args: dict[str, str]) -> Co
         except DemistoException as e:
             if e.res is not None and e.res.status_code == 500 and 'was not found' in str(e):
                 error_msg = find_the_cause_error(str(e), "id")
-                raise ValueError(f'{error_msg}, full error message: {e}')
+                raise ValueError(f'{error_msg}, full error message: {e}') from e
             raise
         table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]
 
@@ -3735,7 +3735,7 @@ def get_list_risky_hosts_command(client: CoreClient, args: dict[str, str]) -> Co
         except DemistoException as e:
             if e.res is not None and e.res.status_code == 500 and 'was not found' in str(e):
                 error_msg = find_the_cause_error(str(e), "id")
-                raise ValueError(f'{error_msg}, full error message: {e}')
+                raise ValueError(f'{error_msg}, full error message: {e}') from e
             raise
         table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]
     else:
@@ -3743,7 +3743,7 @@ def get_list_risky_hosts_command(client: CoreClient, args: dict[str, str]) -> Co
 
         outputs = client.get_list_risky_hosts().get('reply', [])[:list_limit]
         table_for_markdown = [parse_risky_users_or_hosts(host, table_title) for host in outputs]
-
+    
     readable_output = tableToMarkdown(name='Risky Hosts', t=table_for_markdown)
 
     return CommandResults(
