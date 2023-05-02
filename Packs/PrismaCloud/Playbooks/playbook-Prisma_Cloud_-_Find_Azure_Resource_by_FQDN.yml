@@ -1,4 +1,5 @@
 description: |
+  Deprecated. Use Prisma Cloud - Find Azure Resource by FQDN v2 instead.
   Find Azure resources by FQDN using Prisma Cloud inventory.
   Supported services: Azure VM, Azure Load Balancer, Azure Application Gateway, AKS, Azure Web Apps, Azure Storage.
 id: Prisma Cloud - Find Azure Resource by FQDN
@@ -1390,4 +1391,5 @@ view: |-
   }
 fromversion: 6.0.0
 tests:
-- No tests
+- No tests (deprecated)
+deprecated: true

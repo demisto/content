@@ -1797,7 +1797,7 @@ def prepare_args(command, args):
             email_body = args.get('htmlBody')
         else:
             email_body = args.get('body', '')
-        return {
+        processed_args = {
             'to_recipients': argToList(args.get('to')),
             'cc_recipients': argToList(args.get('cc')),
             'bcc_recipients': argToList(args.get('bcc')),
@@ -1813,6 +1813,9 @@ def prepare_args(command, args):
             'attach_cids': argToList((args.get('attachCIDs'))),
             'manual_attachments': args.get('manualAttachObj', [])
         }
+        if command == 'send-mail':
+            processed_args['renderBody'] = argToBoolean(args.get('renderBody') or False)
+        return processed_args
 
     elif command == 'reply-to':
         return {
@@ -1906,6 +1909,7 @@ def send_email_command(client: MsGraphClient, args):
     2) if there aren't any attachments larger than 3MB, just send the email as usual.
     """
     prepared_args = prepare_args('send-mail', args)
+    render_body = prepared_args.pop('renderBody', False)
     message_content = MsGraphClient.build_message(**prepared_args)
     email = args.get('from', client._mailbox_to_fetch)
 
@@ -1931,10 +1935,17 @@ def send_email_command(client: MsGraphClient, args):
     message_content['replyTo'] = reply_to_recipients
 
     message_content = assign_params(**message_content)
-    human_readable = tableToMarkdown('Email was sent successfully.', message_content)
-    ec = {CONTEXT_SENT_EMAIL_PATH: message_content}
-
-    return_outputs(human_readable, ec)
+    results = [
+        CommandResults(readable_output=tableToMarkdown('Email was sent successfully.', message_content),
+                       outputs={CONTEXT_SENT_EMAIL_PATH: message_content})
+    ]
+    if render_body:
+        results.append(CommandResults(
+            entry_type=EntryType.NOTE,
+            content_format=EntryFormat.HTML,
+            raw_response=prepared_args['body'],
+        ))
+    return results
 
 
 def prepare_outputs_for_reply_mail_command(reply, email_to, message_id):
