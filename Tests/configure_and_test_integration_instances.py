@@ -1162,31 +1162,21 @@ def set_integration_params(build,
     """
     for integration in integrations:
         logging.info(f"*** DEBUG integration['name'] - {integration['name']}")
-        if integration['name'] == "Core REST API":
-            logging.info(f"*** DEBUG build.is_cloud - {build.is_cloud}, build.base_url - {build.base_url}, build.xdr_auth_key: {build.xdr_auth_key}")
-            if build.is_cloud:
-                integration_params = {  # type: ignore
-                    "url": build.base_url,
-                    "creds_apikey": {
-                        "identifier": str(build.xdr_auth_id),
-                        "password": build.api_key,
-                    },
-                    "auth_method": "Standard",
-                    "insecure": True,
-                }
-            else:
-                integration_params = {  # type: ignore
-                    "url": "https://localhost",
-                    "creds_apikey": {
-                        "identifier": '',
-                        "password": build.api_key,
-                    },
-                    "auth_method": "Standard",
-                    "insecure": True,
-                }
-        else:
-            integration_params = [change_placeholders_to_values(placeholders_map, item) for item
-                                  in secret_params if item['name'] == integration['name']]
+        integration_params = [change_placeholders_to_values(placeholders_map, item) for item
+                              in secret_params if item['name'] == integration['name']]
+        if integration['name'] == "Core REST API" and build.is_cloud:
+            logging.info(
+                f"*** DEBUG build.is_cloud - {build.is_cloud}, build.base_url - {build.base_url}, build.xdr_auth_key: {build.xdr_auth_key}")
+            integration_params = {  # type: ignore
+                "url": build.base_url,
+                "creds_apikey": {
+                    "identifier": str(build.xdr_auth_id),
+                    "password": build.api_key,
+                },
+                "auth_method": "Standard",
+                "insecure": True,
+            }
+
         if integration_params:
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
