@@ -1,7 +1,7 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "stringsifter",
+    "cliName": "RDPCacheHuntingstringsifter",
     "closeForm": false,
     "columns": [
         {
@@ -40,10 +40,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_stringsifter",
+    "id": "incident_RDPCacheHunting_stringsifter",
     "isReadOnly": false,
     "locked": false,
-    "name": "String Sifter",
+    "name": "RDPCacheHunting String Sifter",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

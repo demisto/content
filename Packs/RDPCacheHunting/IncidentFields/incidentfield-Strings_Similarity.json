@@ -1,7 +1,7 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "stringssimilarity",
+    "cliName": "RDPCacheHuntingstringssimilarity",
     "closeForm": false,
     "columns": [
         {
@@ -53,10 +53,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_stringssimilarity",
+    "id": "incident_rdpachehunting_stringssimilarity",
     "isReadOnly": false,
     "locked": false,
-    "name": "Strings Similarity",
+    "name": "RDPCacheHunting Strings Similarity",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
