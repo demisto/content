@@ -492,4 +492,4 @@ script:
   type: python
 fromversion: 6.0.0
 tests:
-  - No tests (auto formatted)
+  - Netmiko_test
