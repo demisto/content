@@ -85,6 +85,7 @@ name: Prisma SASE - Create or Edit EDL object
 outputs:
 - contextPath: PrismaSase.ExternalDynamicList
   type: unknown
+  description: The external dynamic list object.
 - contextPath: PrismaSase.ExternalDynamicList.id
   description: The external dynamic list ID.
 - contextPath: PrismaSase.ExternalDynamicList.name
@@ -101,6 +102,7 @@ outputs:
   description: The external dynamic list frequency.
 - contextPath: PrismaSase.CandidateConfig
   type: unknown
+  description: Configuration job object.
 - contextPath: PrismaSase.CandidateConfig.job_id
   description: Configuration job ID.
 - contextPath: PrismaSase.CandidateConfig.result

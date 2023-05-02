@@ -43,6 +43,7 @@ inputs:
 name: Prisma SASE - Block IP
 outputs:
 - contextPath: PrismaSase.AddressGroup
+  description: The Prisma Access Address group object.
   type: unknown
 - contextPath: PrismaSase.AddressGroup.id
   description: The address group ID.
@@ -57,6 +58,7 @@ outputs:
 - contextPath: PrismaSase.AddressGroup.folder
   description: The address group folder.
 - contextPath: PrismaSase
+  description: The root context key for Prisma SASE integration output.
   type: unknown
 - contextPath: PrismaSase.SecurityRule
   description: Created security rule.
@@ -89,10 +91,12 @@ outputs:
 - contextPath: PrismaSase.SecurityRule.to
   description: Security rule to field (destination zone(s)).
 - contextPath: PrismaSase.SecurityRule.profile_setting
+  description: The Security rule group object in the rule.
   type: unknown
 - contextPath: PrismaSase.SecurityRule.profile_setting.group
   description: Security rule group.
 - contextPath: PrismaSase.CandidateConfig
+  description: Configuration job object.
   type: unknown
 - contextPath: PrismaSase.CandidateConfig.job_id
   description: Configuration job ID.

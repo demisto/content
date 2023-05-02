@@ -50,6 +50,7 @@ inputs:
 name: Prisma SASE - Create Address Object
 outputs:
 - contextPath: PrismaSase
+  description: The root context key for Prisma SASE integration output.
   type: unknown
 - contextPath: PrismaSase.Address
   description: Created address object.

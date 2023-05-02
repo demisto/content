@@ -45,6 +45,7 @@ name: Prisma SASE - Block URL
 outputs:
 - contextPath: PrismaSase
   type: unknown
+  description: The root context key for Prisma SASE integration output.
 - contextPath: PrismaSase.SecurityRule
   description: Created security rule.
 - contextPath: PrismaSase.SecurityRule.action
@@ -77,10 +78,12 @@ outputs:
   description: Security rule to field (destination zone(s)).
 - contextPath: PrismaSase.SecurityRule.profile_setting
   type: unknown
+  description: The Security rule group object in the rule.
 - contextPath: PrismaSase.SecurityRule.profile_setting.group
   description: Security rule group.
 - contextPath: PrismaSase.CandidateConfig
   type: unknown
+  description: Configuration job object.
 - contextPath: PrismaSase.CandidateConfig.job_id
   description: Configuration job ID.
 - contextPath: PrismaSase.CandidateConfig.result
@@ -89,6 +92,7 @@ outputs:
   description: The configuration push details.
 - contextPath: PrismaSase.CustomURLCategory
   type: unknown
+  description: The custom URL category object.
 - contextPath: PrismaSase.CustomURLCategory.id
   description: The URL category ID.
 - contextPath: PrismaSase.CustomURLCategory.name

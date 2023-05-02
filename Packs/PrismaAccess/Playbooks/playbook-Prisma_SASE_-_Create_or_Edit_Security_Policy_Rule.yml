@@ -99,6 +99,7 @@ name: Prisma SASE - Create or Edit Security Policy Rule
 outputs:
 - contextPath: PrismaSase.CandidateConfig
   type: unknown
+  description: Configuration job object.
 - contextPath: PrismaSase.CandidateConfig.job_id
   description: Configuration job ID.
 - contextPath: PrismaSase.CandidateConfig.result
@@ -107,6 +108,7 @@ outputs:
   description: The configuration push details.
 - contextPath: PrismaSase
   type: unknown
+  description: The root context key for Prisma SASE integration output.
 - contextPath: PrismaSase.SecurityRule
   description: Found security rule.
 - contextPath: PrismaSase.SecurityRule.action
@@ -145,6 +147,7 @@ outputs:
   description: Security rule negate destination.
 - contextPath: PrismaSase.SecurityRule.profile_setting
   type: unknown
+  description: The Security rule group object in the rule.
 - contextPath: PrismaSase.SecurityRule.profile_setting.group
   description: Security rule group.
 starttaskid: "0"
