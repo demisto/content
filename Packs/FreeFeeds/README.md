@@ -1,0 +1,1 @@
+This pack bundles all the different kinds of free feeds available for TIM.
