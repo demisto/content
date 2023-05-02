@@ -17,7 +17,7 @@
     "ownerOnly": false,
     "placeholder": "Select one or more Incidents",
     "required": false,
-    "script": "CollectCampaignRecipients",
+    "script": "only_test",
     "selectValues": [],
     "sla": 0,
     "system": false,
