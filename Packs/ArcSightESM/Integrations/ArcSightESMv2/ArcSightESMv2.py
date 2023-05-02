@@ -1,6 +1,6 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 """ IMPORTS """
 from datetime import datetime
@@ -8,7 +8,7 @@ import requests
 import base64
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # type: ignore
+requests.packages.urllib3.disable_warnings()
 
 """ GLOBALS """
 MAX_UNIQUE = int(demisto.params().get('max_unique', 2000))
@@ -65,7 +65,7 @@ def decode_ip(address_by_bytes):
 
     try:
         # if it's not an int, it should be Base64 encoded string
-        decoded_string = base64.b64decode(address_by_bytes).hex()
+        decoded_string = base64.b64decode(address_by_bytes).encode('hex')
         if len(address_by_bytes) >= 20:
             # split the IPv6 address into 8 chunks of 4
             decoded_string = [decoded_string[i:i + 4] for i in range(0, len(decoded_string), 4)]  # type: ignore
@@ -76,10 +76,10 @@ def decode_ip(address_by_bytes):
         else:
             return address_by_bytes
 
-    except Exception as e:
+    except Exception as ex:
         # sometimes ArcSight would not encode IPs, this will cause the decoder to
         # throw an exception, and in turn, we will return the input in its original form.
-        demisto.debug(str(e))
+        demisto.debug(str(ex))
         return address_by_bytes
 
 
@@ -110,10 +110,7 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
         if isinstance(d, list):
             return [decode_arcsight_output(d_, depth + 1) for d_ in d]
         if isinstance(d, dict):
-            for key, value in d.copy().items():
-                if isinstance(value, list):
-                    for value_ in value:
-                        decode_arcsight_output(value_, depth + 1)
+            for key, value in d.items():
                 if isinstance(value, dict):
                     decode_arcsight_output(value, depth + 1)
                 elif value in NONE_VALUES:
@@ -134,8 +131,6 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
                     # the platform rounds number larger than 10000000000000000
                     # so we cast them to string to keep as is
                     d[key] = str(value)
-                elif isinstance(value, bytes):
-                    d[key] = value.decode()
     return d
 
 
@@ -275,7 +270,6 @@ def get_query_viewer_results(query_viewer_id):
 
     return_object = None
     res_json = res.json()
-
     if "qvs.getMatrixDataResponse" in res_json and "qvs.return" in res_json["qvs.getMatrixDataResponse"]:
         # ArcSight ESM version 6.7 & 6.9 rest API supports qvs.getMatrixDataResponse
         return_object = res_json.get("qvs.getMatrixDataResponse").get("qvs.return")
@@ -384,7 +378,7 @@ def fetch():
     """
     events_query_viewer_id = demisto.params().get('viewerId')
     cases_query_viewer_id = demisto.params().get('casesQueryViewerId')
-    type_of_incident = 'case' if events_query_viewer_id else 'event'
+    type_of_incident = 'event' if events_query_viewer_id else 'case'
     last_run = json.loads(demisto.getLastRun().get('value', '{}'))
     already_fetched = last_run.get('already_fetched', [])
 
@@ -878,57 +872,50 @@ def get_all_query_viewers_command():
 
 
 AUTH_TOKEN = demisto.getIntegrationContext().get('auth_token') or login()
+try:
+    if demisto.command() == 'test-module':
+        test()
+        demisto.results('ok')
+
+    elif demisto.command() == 'as-fetch-incidents' or demisto.command() == 'fetch-incidents':
+        fetch()
+
+    elif demisto.command() == 'as-get-matrix-data' or demisto.command() == 'as-get-query-viewer-results':
+        get_query_viewer_results_command()
+
+    elif demisto.command() == 'as-get-all-cases':
+        get_all_cases_command()
+
+    elif demisto.command() == 'as-get-case':
+        get_case_command()
+
+    elif demisto.command() == 'as-update-case':
+        update_case_command()
+
+    elif demisto.command() == 'as-case-delete':
+        delete_case_command()
+
+    elif demisto.command() == 'as-get-security-events':
+        get_security_events_command()
+
+    elif demisto.command() == 'as-get-entries':
+        get_entries_command()
+
+    elif demisto.command() == 'as-add-entries':
+        entries_command(func='addEntries')
+
+    elif demisto.command() == 'as-delete-entries':
+        entries_command(func='deleteEntries')
+
+    elif demisto.command() == 'as-clear-entries':
+        clear_entries_command()
+
+    elif demisto.command() == 'as-get-case-event-ids':
+        get_case_event_ids_command()
+
+    elif demisto.command() == 'as-get-all-query-viewers':
+        get_all_query_viewers_command()
 
 
-def main():
-    try:
-        if demisto.command() == 'test-module':
-            test()
-            demisto.results('ok')
-
-        elif demisto.command() == 'as-fetch-incidents' or demisto.command() == 'fetch-incidents':
-            fetch()
-
-        elif demisto.command() == 'as-get-matrix-data' or demisto.command() == 'as-get-query-viewer-results':
-            get_query_viewer_results_command()
-
-        elif demisto.command() == 'as-get-all-cases':
-            get_all_cases_command()
-
-        elif demisto.command() == 'as-get-case':
-            get_case_command()
-
-        elif demisto.command() == 'as-update-case':
-            update_case_command()
-
-        elif demisto.command() == 'as-case-delete':
-            delete_case_command()
-
-        elif demisto.command() == 'as-get-security-events':
-            get_security_events_command()
-
-        elif demisto.command() == 'as-get-entries':
-            get_entries_command()
-
-        elif demisto.command() == 'as-add-entries':
-            entries_command(func='addEntries')
-
-        elif demisto.command() == 'as-delete-entries':
-            entries_command(func='deleteEntries')
-
-        elif demisto.command() == 'as-clear-entries':
-            clear_entries_command()
-
-        elif demisto.command() == 'as-get-case-event-ids':
-            get_case_event_ids_command()
-
-        elif demisto.command() == 'as-get-all-query-viewers':
-            get_all_query_viewers_command()
-
-    except Exception as e:
-        return_error('Unexpected error:' + str(e), error=traceback.format_exc())
-
-
-# python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins", "__main__"):
-    main()
+except Exception as e:
+    return_error('Unexpected error:' + str(e), error=traceback.format_exc())
