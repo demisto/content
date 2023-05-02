@@ -3207,10 +3207,13 @@ def test_get_list_risky_users_and_hosts_command(
 
     Args:
         mocker: The pytest-mock object.
-        func_command (function): The function being tested (either `get_list_risky_users_command` or `get_list_risky_hosts_command`).
-        func_http (str): The name of the CoreClient method being called in the function being tested (either "get_list_risky_users" or "get_list_risky_hosts").
+        func_command (function): The function being tested
+            (either `get_list_risky_users_command` or `get_list_risky_hosts_command`).
+        func_http (str): The name of the CoreClient method being called in the
+            function being tested (either "get_list_risky_users" or "get_list_risky_hosts").
         args (dict): The arguments to pass to the function being tested.
-        expected_calls (dict): A dictionary that specifies the expected number of calls to `get_risk_score_user_or_host` and `func_http`.
+        expected_calls (dict): A dictionary that specifies the expected number
+            of calls to `get_risk_score_user_or_host` and `func_http`.
 
     Returns:
         None
@@ -3386,7 +3389,8 @@ def test_get_list_user_groups_command_raise_exception(mocker):
     )
     with pytest.raises(
         Exception,
-        match="Error: Group test was not found, Note: If you sent more than one group name, they may not exist either, full error message: Group 'test' was not found",
+        match="Error: Group test was not found, Note: If you sent more than one group name, "
+              "they may not exist either, full error message: Group 'test' was not found",
     ):
         get_list_user_groups_command(client, {"group_names": "test"})
 
