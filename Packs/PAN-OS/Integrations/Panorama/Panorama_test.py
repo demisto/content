@@ -6195,8 +6195,6 @@ class TestFetchIncidentsHelperFunctions:
             add_time_filter_to_query_parameter('time_generated geq "2020-01-01T00:00:00Z"',
                                                fetch_incidents_input.utc_time_twelve)
 
-
-
     @pytest.mark.parametrize('params, expected_result', fetch_incidents_input.test_parse_queries_args)
     def test_log_types_queries_to_dict(self, params, expected_result):
         """
@@ -6356,7 +6354,7 @@ class TestFetchIncidentsFlows:
 
         assert incident_entries_dict[0] == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 12:00:00'
-        assert last_id_dict.get('X_log_type', '') == {'':'000000001'}
+        assert last_id_dict.get('X_log_type', '') == {'': '000000001'}
 
     def test_second_fetch_with_no_incidents_flow(self, mocker):
         """
