@@ -21,8 +21,8 @@ If no file path is specified, the default risk list file is used.
 
 Recorded Future's indicators scoring:
 - Above 90 - Very Malicious
-- Between 65 to 90 - Malicious
-- Between 25 to 90 - Suspicious
-- Between 5 to 25 - Unusual
+- Between 65 to 89 - Malicious
+- Between 25 to 64 - Suspicious
+- Between 5 to 24 - Unusual
 
 To access this resource, a valid Recorded Future API token is required.
