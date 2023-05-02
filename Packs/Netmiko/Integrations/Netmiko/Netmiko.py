@@ -126,14 +126,14 @@ def cmds_command(client, args):
             demisto.error(f"Error with raw print output - {err}")
 
     else:
-        md = tableToMarkdown(f'Command(s) against {client.hostname} ({client.platform}):', output.get('Commands', []))
+        md = tableToMarkdown(f'Command(s) against {client.hostname} ({client.platform}):', output)
     outputs_key_field = None
     outputs_prefix = None
     outputs = None
     if not disable_context:
         outputs_prefix = "Netmiko"
         outputs_key_field = 'DateTimeUTC'
-        outputs = output.get('Commands')
+        outputs = output
 
     command_results = CommandResults(
         outputs_prefix=outputs_prefix,
