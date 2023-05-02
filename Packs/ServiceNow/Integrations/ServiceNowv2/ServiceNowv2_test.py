@@ -539,20 +539,23 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '2',
+                            'sys_id': '2'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
-                            'number': '4'
+                            'number': '4',
+                            'sys_id': '4'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=2)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
-                            'number': '5'
+                            'number': '5',
+                            'sys_id': '5'
                         }
                     ]
                 },
@@ -562,6 +565,7 @@ class TestFetchIncidentsWithLookBack:
                     ).strftime(API_TIME_FORMAT),
                     'severity': '1',
                     'number': '3',
+                    'sys_id': '3'
                 },
                 {
                     'opened_at': (
@@ -569,6 +573,7 @@ class TestFetchIncidentsWithLookBack:
                     ).strftime(API_TIME_FORMAT),
                     'severity': '1',
                     'number': '1',
+                    'sys_id': '1'
                 },
                 15
             ),
@@ -581,20 +586,23 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '2',
+                            'sys_id': '2'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=2, minutes=26)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
-                            'number': '4'
+                            'number': '4',
+                            'sys_id': '4'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=1, minutes=20)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
-                            'number': '5'
+                            'number': '5',
+                            'sys_id': '5'
                         }
                     ]
                 },
@@ -604,6 +612,7 @@ class TestFetchIncidentsWithLookBack:
                     ).strftime(API_TIME_FORMAT),
                     'severity': '1',
                     'number': '3',
+                    'sys_id': '3'
                 },
                 {
                     'opened_at': (
@@ -611,6 +620,7 @@ class TestFetchIncidentsWithLookBack:
                     ).strftime(API_TIME_FORMAT),
                     'severity': '1',
                     'number': '1',
+                    'sys_id': '1'
                 },
                 1000
             )
@@ -688,20 +698,23 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '1',
+                            'sys_id': '1'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=8)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
-                            'number': '2'
+                            'number': '2',
+                            'sys_id': '2'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=7)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
-                            'number': '3'
+                            'number': '3',
+                            'sys_id': '3'
                         }
                     ]
                 },
@@ -713,6 +726,7 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '4',
+                            'sys_id': '4'
                         }
                     ]
                 },
@@ -724,6 +738,7 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '5',
+                            'sys_id': '5'
                         }
                     ]
                 },
@@ -737,20 +752,23 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '1',
+                            'sys_id': '1'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=45)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
-                            'number': '2'
+                            'number': '2',
+                            'sys_id': '2'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=44)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
-                            'number': '3'
+                            'number': '3',
+                            'sys_id': '3'
                         }
                     ]
                 },
@@ -762,6 +780,7 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '4',
+                            'sys_id': '4'
                         }
                     ]
                 },
@@ -773,6 +792,7 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '5',
+                            'sys_id': '5'
                         }
                     ]
                 }
