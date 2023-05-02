@@ -3661,7 +3661,7 @@ def find_the_cause_error(err: str, id_or_group_or_role: str) -> str:
         A string describing the cause of the error message.
 
     """
-    pattern = fr"{id_or_group_or_role} \\?‘([\(\)\[\]A-Za-z 0-9]+)\\?’"
+    pattern = fr"{id_or_group_or_role} \\?'([\(\)\[\]A-Za-z 0-9]+)\\?'"
     if match := re.search(pattern, err):
         return f'Error: {id_or_group_or_role} {match.group(1)} was not found'
     return "Error: "
