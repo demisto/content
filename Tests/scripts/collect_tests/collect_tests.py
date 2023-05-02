@@ -496,7 +496,7 @@ class TestCollector(ABC):
             id_=object_id,  # type: ignore[arg-type]
             pack_id=pack_id,  # type: ignore[arg-type]
             marketplaces=id_set_item.marketplaces,
-            path=path,
+            path=path,  # type: ignore[arg-type]
             version_range=id_set_item.version_range,
             is_integration=is_integration,
         )

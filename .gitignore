@@ -72,7 +72,7 @@ neo4j-data
 Packs/Whois/Integrations/Whois/test_data/microsocks
 
 # Precommit configs
-.pre-commit-config.yaml
+.pre-commit-config-content.yaml
 .report.json
 .report_pytest.xml
 .report_mypy.xml
