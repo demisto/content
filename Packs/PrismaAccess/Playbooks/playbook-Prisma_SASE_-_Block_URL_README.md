@@ -63,7 +63,7 @@ This playbook does not use any scripts.
 | PrismaSase.SecurityRule.profile_setting.group | Security rule group. | unknown |
 | PrismaSase.CandidateConfig |  | unknown |
 | PrismaSase.CandidateConfig.job_id | Configuration job ID. | unknown |
-| PrismaSase.CandidateConfig.result | The configuration push result, e.g. OK, FAIL. | unknown |
+| PrismaSase.CandidateConfig.result | The configuration push result, e.g., OK, FAIL. | unknown |
 | PrismaSase.CandidateConfig.details | The configuration push details. | unknown |
 | PrismaSase.CustomURLCategory |  | unknown |
 | PrismaSase.CustomURLCategory.id | The URL category ID. | unknown |
