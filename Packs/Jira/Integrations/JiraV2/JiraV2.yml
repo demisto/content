@@ -537,7 +537,7 @@ script:
     - description: The name of the assignee. Relevant for Jira Server only
       name: assignee
       required: true
-    description: Change assignee using dedicated endpoint for it
+    description: Edit the assignee of an existing issue.
     name: jira-issue-assign
     outputs:
     - contextPath: Ticket.Id
