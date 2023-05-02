@@ -314,7 +314,7 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == 'fetch-events':
             events = fetch_events_command(client, api_version, last_run, max_fetch)
             send_events_to_xsiam(events=events, vendor=vendor, product=product)
-            demisto.debug(f'Setting the last_run to: {last_run}')    
+            demisto.debug(f'Setting the last_run to: {last_run}')
             demisto.setLastRun(last_run)
 
     # Log exceptions and return errors
