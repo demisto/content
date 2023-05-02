@@ -21,6 +21,9 @@ Follow the below steps to configure the socket receiver:
 
 More information can be found [here](https://docs.tanium.com/threat_response/threat_response/overview.html#Integrat)
 
+<u>**Note:**</u>
+Make sure to send the log in UTC time. 
+
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
