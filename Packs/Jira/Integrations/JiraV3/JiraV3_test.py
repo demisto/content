@@ -1,6 +1,5 @@
 import io
 import json
-from more_itertools import side_effect
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
@@ -1386,7 +1385,7 @@ class TestJiraUpdateRemoteSystem:
             - When the mirror out mechanism is called, which calls the update-remote-system command, and
             we get a comment with the appropriate comment tag.
         Then
-            - Validate that the comment gets uploaded to Jira, and the content of the comment contains the 
+            - Validate that the comment gets uploaded to Jira, and the content of the comment contains the
             constant COMMENT_MIRRORED_FROM_XSOAR
         """
         from JiraV3 import (update_remote_system_command, COMMENT_MIRRORED_FROM_XSOAR)
@@ -1533,3 +1532,409 @@ class TestJiraGetRemoteData:
                                                        attachment_tag_from_jira='',
                                                        comment_tag_from_jira='', mirror_resolved_issue=False)
         assert remote_data_response.entries == expected_parsed_entries
+
+
+class TestJiraFetchIncidents:
+    FETCH_INCIDENTS_QUERY_CASES = [
+        ('id', 'status!=done', '1234', '2023-05-01', '2023-05-02', '2023-02-01', [1, 2, 3, 4],
+         'status!=done AND id >= 1234 AND ID NOT IN (1, 2, 3, 4) ORDER BY id ASC'),
+        ('id', 'status!=done', '1234', '2023-05-01', '2023-05-02', '2023-02-01', [],
+         'status!=done AND id >= 1234 ORDER BY id ASC'),
+        ('created date', 'status!=done', '1234', '2023-05-01', '2023-05-02', '2023-02-01', [1, 2, 3, 4],
+         'status!=done AND created >= "2023-05-01" AND ID NOT IN (1, 2, 3, 4) ORDER BY created ASC'),
+        ('created date', 'status!=done', '1234', '2023-05-01', '2023-05-02', '2023-02-01', [],
+         'status!=done AND created >= "2023-05-01" ORDER BY created ASC'),
+        ('created date', 'status!=done', '1234', '', '2023-05-02', '2023-02-01', [],
+         'status!=done AND created >= "2023-02-01" ORDER BY created ASC'),
+        ('created date', 'status!=done', '1234', '', '2023-05-02', '2023-02-01', [1, 2, 3, 4],
+         'status!=done AND created >= "2023-02-01" AND ID NOT IN (1, 2, 3, 4) ORDER BY created ASC'),
+
+        ('updated date', 'status!=done', '1234', '2023-05-01', '2023-05-02', '2023-02-01', [1, 2, 3, 4],
+         'status!=done AND updated >= "2023-05-02" AND ID NOT IN (1, 2, 3, 4) ORDER BY updated ASC'),
+        ('updated date', 'status!=done', '1234', '2023-05-01', '2023-05-02', '2023-02-01', [],
+         'status!=done AND updated >= "2023-05-02" ORDER BY updated ASC'),
+        ('updated date', 'status!=done', '1234', '2023-05-01', '', '2023-02-01', [],
+         'status!=done AND updated >= "2023-02-01" ORDER BY updated ASC'),
+        ('updated date', 'status!=done', '1234', '2023-05-01', '', '2023-02-01', [1, 2, 3, 4],
+         'status!=done AND updated >= "2023-02-01" AND ID NOT IN (1, 2, 3, 4) ORDER BY updated ASC')
+    ]
+
+    @pytest.mark.parametrize(('issue_field_to_fetch_from, fetch_query, last_fetch_id,'
+                              'last_fetch_created_time, last_fetch_updated_time,'
+                              'first_fetch_interval, issue_ids_to_exclude, expected_fetch_query'), FETCH_INCIDENTS_QUERY_CASES)
+    def test_create_fetch_incidents_query(self, issue_field_to_fetch_from: str, fetch_query: str, last_fetch_id: int,
+                                          last_fetch_created_time: str, last_fetch_updated_time: str,
+                                          first_fetch_interval: str, issue_ids_to_exclude: List[int], expected_fetch_query: str):
+        """
+        Given:
+            - Arguments to create the fetch query, which are:
+                1. issue_field_to_fetch_from: the issue field to fetch by
+                2. fetch_query: the query to include in every fetch
+                3. last_fetch_id: the last fetched id
+                4. last_fetch_created_time: the created time of the last fetch issue
+                5. last_fetch_updated_time: the updated time of the last fetch issue
+                6. first_fetch_interval: the first fetch interval to fetch from if the fetch timestamp is empty,
+                    and we are fetching using created or updated time.
+                7. issue_ids_to_exclude: the ids of the issues that we want to exclude.
+        When
+            - When fetching incidents
+        Then
+            - Validate that the correct fetch query is created given the above arguments
+        """
+        from JiraV3 import create_fetch_incidents_query
+        fetch_query = create_fetch_incidents_query(issue_field_to_fetch_from, fetch_query, last_fetch_id, last_fetch_created_time,
+                                                   last_fetch_updated_time, first_fetch_interval, issue_ids_to_exclude)
+        assert fetch_query == expected_fetch_query
+
+    def test_get_comments_entries_for_fetched_incident(self, mocker):
+        """
+        Given:
+            - A Jira client, and an issue id or key
+        When
+            - When extracting the issue's comments as entries to put in the incident field
+        Then
+            - Validate that the correct data is extracted and returned
+        """
+        from JiraV3 import get_comments_entries_for_fetched_incident
+        client = jira_base_client_mock()
+        comments_raw_response = util_load_json('test_data/get_comments_test/raw_response.json')
+        mocker.patch.object(client, 'get_comments', return_value=comments_raw_response)
+        comments_entries = get_comments_entries_for_fetched_incident(client=client, issue_id_or_key='1234')
+        expected_comments_entries = [
+            {'Id': '18322', 'Comment': 'Hello there', 'User': 'Tomer Malache', 'Created': '2023-03-23T07:45:29.056+0200',
+             'Updated': '2023-03-23T07:45:29.056+0200', 'UpdateUser': 'Tomer Malache'},
+            {'Id': '18329', 'Comment': 'Second comment', 'User': 'Tomer Malache', 'Created': '2023-03-27T20:54:15.878+0300',
+             'Updated': '2023-03-27T20:54:15.878+0300', 'UpdateUser': 'Tomer Malache'},
+            {'Id': '18394', 'Comment': 'This is a comment from Jira demo', 'User': 'Tomer Malache',
+             'Created': '2023-04-24T15:41:54.472+0300', 'Updated': '2023-04-24T15:41:54.472+0300', 'UpdateUser': 'Tomer Malache'}]
+        expected_comments_entries == comments_entries
+
+    def test_get_attachments_entries_for_fetched_incident(self, mocker):
+        """
+        Given:
+            - A Jira client, and an issue id or key
+        When
+            - When extracting the issue's attachments as entries to put in the incident field
+        Then
+            - Validate that the correct data is extracted and returned
+        """
+        from JiraV3 import get_attachments_entries_for_fetched_incident
+        client = jira_base_client_mock()
+        attachment_metadata_raw_response = util_load_json('test_data/get_issue_test/raw_response_attachment_metadata.json')
+        expected_attachments_entries = [
+            {'Contents': '', 'ContentsFormat': 'dummy_format', 'Type': 'dummy_type', 'File': 'dummy_filename_1',
+             'FileID': 'dummy_id_1'}, {
+                'Contents': '', 'ContentsFormat': 'dummy_format', 'Type': 'dummy_type', 'File': 'dummy_filename_2', 'FileID':
+                    'dummy_id_2'}]
+        mocker.patch('JiraV3.create_file_info_from_attachment', side_effect=expected_attachments_entries)
+        attachments_entries = get_attachments_entries_for_fetched_incident(client=client,
+                                                                           attachments_metadata=[attachment_metadata_raw_response,
+                                                                                                 attachment_metadata_raw_response])
+        expected_attachments_entries == attachments_entries
+
+    def test_get_fetched_attachments(self, mocker):
+        """
+        Given:
+            - A Jira client, and the issue response
+        When
+            - Extracting the attachments of the fetched issue
+        Then
+            - Validate that the correct data is extracted and returned
+        """
+        from JiraV3 import get_fetched_attachments
+        attachments_entries = [
+            {'Contents': '', 'ContentsFormat': 'dummy_format', 'Type': 'dummy_type', 'File': 'dummy_filename_1',
+             'FileID': 'dummy_id_1'}, {
+                'Contents': '', 'ContentsFormat': 'dummy_format', 'Type': EntryType.ERROR, 'File': 'dummy_filename_2', 'FileID':
+                    'dummy_id_2'}]
+        mocker.patch('JiraV3.get_attachments_entries_for_fetched_incident', return_value=attachments_entries)
+        client = jira_base_client_mock()
+        expected_fetched_attachments = [{'path': 'dummy_id_1', 'name': 'dummy_filename_1'}]
+        fetched_attachments = get_fetched_attachments(client=client, issue={})
+        assert expected_fetched_attachments == fetched_attachments
+
+    def test_get_fetched_comments(self, mocker):
+        """
+        Given:
+            - A Jira client, the issue response, and the labels which will be returned as part of the data of
+            the fetched incident
+        When
+            - Extracting the comments of the fetched issue
+        Then
+            - Validate that the correct data is extracted and returned
+        """
+        from JiraV3 import get_fetched_comments
+        comments_entries = [
+            {'Id': '18322', 'Comment': 'Hello there', 'User': 'Tomer Malache', 'Created': '2023-03-23T07:45:29.056+0200',
+             'Updated': '2023-03-23T07:45:29.056+0200', 'UpdateUser': 'Tomer Malache'},
+            {'Id': '18329', 'Comment': 'Second comment', 'User': 'Tomer Malache', 'Created': '2023-03-27T20:54:15.878+0300',
+             'Updated': '2023-03-27T20:54:15.878+0300', 'UpdateUser': 'Tomer Malache'}]
+        mocker.patch('JiraV3.get_comments_entries_for_fetched_incident', return_value=comments_entries)
+        attachments_entries = [
+            {'Contents': '', 'ContentsFormat': 'dummy_format', 'Type': 'dummy_type', 'File': 'dummy_filename_1',
+             'FileID': 'dummy_id_1'}, {
+                'Contents': '', 'ContentsFormat': 'dummy_format', 'Type': EntryType.ERROR, 'File': 'dummy_filename_2', 'FileID':
+                    'dummy_id_2'}]
+        mocker.patch('JiraV3.get_attachments_entries_for_fetched_incident', return_value=attachments_entries)
+        client = jira_base_client_mock()
+        labels: List[Dict[str, str]] = []
+        issue: Dict[str, Any] = {}
+        get_fetched_comments(client=client, issue_id='1234', issue=issue, labels=labels)
+        expected_issue = {'extractedComments': comments_entries}
+        expected_labels = [{'type': 'comments', 'value': str(comments_entries)}]
+        assert labels == expected_labels
+        assert issue == expected_issue
+
+    def test_add_extracted_data_to_incident(self):
+        """
+        Given:
+            - An issue response
+        When
+            - Extracting data from the issue raw response, to insert it to the respective incident fields
+        Then
+            - Validate that the correct data is extracted and returned
+        """
+        from JiraV3 import add_extracted_data_to_incident
+        issue = util_load_json('test_data/get_issue_test/raw_response.json')
+        add_extracted_data_to_incident(issue=issue)
+        expected_extracted_issue_data = {'extractedSubtasks': [
+            {'id': '21525', 'key': 'COMPANYSA-63'}, {'id': '21538', 'key': 'COMPANYSA-70'}],
+            'extractedCreator': 'Tomer Malache(admin@demistodev.com)', 'extractedComponents': [
+                'Almost-Done', 'dummy-comp', 'Integration', 'New-Component']}
+        assert expected_extracted_issue_data.items() <= issue.items()
+
+    @pytest.mark.parametrize('issue_field_priority, severity', [
+        ({'name': 'Highest'}, 4),
+        ({'name': 'High'}, 3),
+        ({'name': 'Medium'}, 2),
+        ({'name': 'Low'}, 1),
+        ({'name': 'Lowest'}, 1),
+        ({'name': 'Extreme'}, 0),
+    ])
+    def test_get_jira_issue_severity(self, issue_field_priority, severity):
+        """
+        Given:
+            - The priority field of an issue
+        When
+            - Determining the severity of the incident
+        Then
+            - Validate that the priority of the issue is mapped to the correct severity
+        """
+        from JiraV3 import get_jira_issue_severity
+        assert severity == get_jira_issue_severity(issue_field_priority)
+
+    def test_parse_custom_fields(self):
+        """
+        Given:
+            - An issue response
+        When
+            - Parsing the custom fields in the response to a more human readable form
+        Then
+            - Validate that the data of the custom fields get parsed and show the correct data
+        """
+        from JiraV3 import parse_custom_fields
+        issue = util_load_json('test_data/get_issue_test/raw_response.json')
+        expected_parsed_custom_fields = util_load_json('test_data/parsed_issue_custom_fields.json')
+        parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=issue.get('names', {}) or {})
+        assert expected_parsed_custom_fields == issue
+
+    def test_set_last_run_when_first_time_running_fetch(self, mocker):
+        """
+        Given:
+            - Arguments to use when calling the fetch incidents mechanism
+        When
+            - Calling the fetch incidents mechanism for the first time (last_run is empty)
+        Then
+            - Validate that the last run object gets saved with the correct data
+        """
+        from JiraV3 import (fetch_incidents, DEFAULT_FETCH_LIMIT)
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.demisto.getLastRun', return_value={})
+        mocker.patch('JiraV3.create_incident_from_issue', return_value={})
+        set_last_run_mocker = mocker.patch('JiraV3.demisto.setLastRun', side_effect=demisto.setLastRun)
+        query_raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
+        query_raw_response = {
+            'issues': [
+                {'id': '1', 'fields': {'created': '2023-12-11 21:09', 'updated': '2023-12-12 21:09'}},
+                {'id': '2', 'fields': {'created': '2023-12-11 22:09', 'updated': '2023-12-12 22:09'}}
+            ]
+        }
+        mocker.patch.object(client, 'run_query', return_value=query_raw_response)
+        fetch_incidents(
+            client=client,
+            issue_field_to_fetch_from='created date',
+            fetch_query='status!=done',
+            id_offset=1234,
+            fetch_attachments=True,
+            fetch_comments=True,
+            max_fetch_incidents=DEFAULT_FETCH_LIMIT,
+            first_fetch_interval='3 days',
+            mirror_direction='Incoming And Outgoing',
+            comment_tag_to_jira='comment_tag_to_jira',
+            comment_tag_from_jira='comment_tag_from_jira',
+            attachment_tag_to_jira='attachment_tag_to_jira',
+            attachment_tag_from_jira='attachment_tag_from_jira'
+        )
+        expected_last_run = {'issue_ids': [1, 2], 'id': 2, 'created_date': '2023-12-11 22:09',
+                             'updated_date': '2023-12-12 22:09'}
+        assert expected_last_run == set_last_run_mocker.call_args[0][0]
+
+    def test_set_last_run_when_last_run_is_not_empty(self, mocker):
+        """
+        Given:
+            - Arguments to use when calling the fetch incidents mechanism
+        When
+            - Calling the fetch incidents mechanism, and the last_run object is not empty
+        Then
+            - Validate that the last run object gets saved with the correct data
+        """
+        from JiraV3 import (fetch_incidents, DEFAULT_FETCH_LIMIT)
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.demisto.getLastRun',
+                     return_value={'issue_ids': ['1', '2'], 'id': '2', 'created_date': '2023-12-11 22:09',
+                                   'updated_date': '2023-12-12 22:09'})
+        mocker.patch('JiraV3.create_incident_from_issue', return_value={})
+        set_last_run_mocker = mocker.patch('JiraV3.demisto.setLastRun', side_effect=demisto.setLastRun)
+        query_raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
+        query_raw_response = {
+            'issues': [
+                {'id': '3', 'fields': {'created': '2024-01-11 21:09', 'updated': '2024-01-12 21:09'}},
+                {'id': '4', 'fields': {'created': '2024-01-11 22:09', 'updated': '2024-01-12 22:09'}}
+            ]
+        }
+        mocker.patch.object(client, 'run_query', return_value=query_raw_response)
+        fetch_incidents(
+            client=client,
+            issue_field_to_fetch_from='created date',
+            fetch_query='status!=done',
+            id_offset=1234,
+            fetch_attachments=True,
+            fetch_comments=True,
+            max_fetch_incidents=DEFAULT_FETCH_LIMIT,
+            first_fetch_interval='3 days',
+            mirror_direction='Incoming And Outgoing',
+            comment_tag_to_jira='comment_tag_to_jira',
+            comment_tag_from_jira='comment_tag_from_jira',
+            attachment_tag_to_jira='attachment_tag_to_jira',
+            attachment_tag_from_jira='attachment_tag_from_jira'
+        )
+        expected_last_run = {'issue_ids': [3, 4], 'id': 4, 'created_date': '2024-01-11 22:09',
+                             'updated_date': '2024-01-12 22:09'}
+        assert expected_last_run == set_last_run_mocker.call_args[0][0]
+
+    def test_set_last_run_when_we_did_not_progress_in_created_time(self, mocker):
+        """
+        Given:
+            - Arguments to use when calling the fetch incidents mechanism
+        When
+            - Fetching incidents by the created date field, and we did no progress in terms of
+            time (the created time stayed the same as the last fetch)
+        Then
+            - Validate that the issue ids from the last run get also added as part of the
+            last_run object, since we did not progress in time
+        """
+        from JiraV3 import (fetch_incidents, DEFAULT_FETCH_LIMIT)
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.demisto.getLastRun',
+                     return_value={'issue_ids': ['1', '2'], 'id': '2', 'created_date': '2023-12-11 22:09',
+                                   'updated_date': '2023-12-12 22:09'})
+        mocker.patch('JiraV3.create_incident_from_issue', return_value={})
+        set_last_run_mocker = mocker.patch('JiraV3.demisto.setLastRun', side_effect=demisto.setLastRun)
+        query_raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
+        query_raw_response = {
+            'issues': [
+                {'id': '3', 'fields': {'created': '2023-12-11 22:09', 'updated': '2024-01-12 21:09'}},
+                {'id': '4', 'fields': {'created': '2023-12-11 22:09', 'updated': '2024-01-12 22:09'}}
+            ]
+        }
+        mocker.patch.object(client, 'run_query', return_value=query_raw_response)
+        fetch_incidents(
+            client=client,
+            issue_field_to_fetch_from='created date',
+            fetch_query='status!=done',
+            id_offset=1234,
+            fetch_attachments=True,
+            fetch_comments=True,
+            max_fetch_incidents=DEFAULT_FETCH_LIMIT,
+            first_fetch_interval='3 days',
+            mirror_direction='Incoming And Outgoing',
+            comment_tag_to_jira='comment_tag_to_jira',
+            comment_tag_from_jira='comment_tag_from_jira',
+            attachment_tag_to_jira='attachment_tag_to_jira',
+            attachment_tag_from_jira='attachment_tag_from_jira'
+        )
+        expected_last_run = {'issue_ids': [3, 4, 1, 2], 'id': 4, 'created_date': '2023-12-11 22:09',
+                             'updated_date': '2024-01-12 22:09'}
+        assert expected_last_run == set_last_run_mocker.call_args[0][0]
+
+    def test_set_last_run_when_we_did_not_progress_in_updated_time(self, mocker):
+        """
+        Given:
+            - Arguments to use when calling the fetch incidents mechanism
+        When
+            - Fetching incidents by the updated date field, and we did no progress in terms of
+            time (the created time stayed the same as the last fetch)
+        Then
+            - Validate that the issue ids from the last run get also added as part of the
+            last_run object, since we did not progress in time
+        """
+        from JiraV3 import (fetch_incidents, DEFAULT_FETCH_LIMIT)
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.demisto.getLastRun',
+                     return_value={'issue_ids': ['1', '2'], 'id': '2', 'created_date': '2023-12-11 22:09',
+                                   'updated_date': '2023-12-12 22:09'})
+        mocker.patch('JiraV3.create_incident_from_issue', return_value={})
+        set_last_run_mocker = mocker.patch('JiraV3.demisto.setLastRun', side_effect=demisto.setLastRun)
+        query_raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
+        query_raw_response = {
+            'issues': [
+                {'id': '3', 'fields': {'created': '2022-01-12 22:09', 'updated': '2023-12-12 22:09'}},
+                {'id': '4', 'fields': {'created': '2022-01-11 22:09', 'updated': '2023-12-12 22:09'}}
+            ]
+        }
+        mocker.patch.object(client, 'run_query', return_value=query_raw_response)
+        fetch_incidents(
+            client=client,
+            issue_field_to_fetch_from='updated date',
+            fetch_query='status!=done',
+            id_offset=1234,
+            fetch_attachments=True,
+            fetch_comments=True,
+            max_fetch_incidents=DEFAULT_FETCH_LIMIT,
+            first_fetch_interval='3 days',
+            mirror_direction='Incoming And Outgoing',
+            comment_tag_to_jira='comment_tag_to_jira',
+            comment_tag_from_jira='comment_tag_from_jira',
+            attachment_tag_to_jira='attachment_tag_to_jira',
+            attachment_tag_from_jira='attachment_tag_from_jira'
+        )
+        expected_last_run = {'issue_ids': [3, 4, 1, 2], 'id': 4, 'created_date': '2022-01-11 22:09',
+                             'updated_date': '2023-12-12 22:09'}
+        assert expected_last_run == set_last_run_mocker.call_args[0][0]
+
+    # def test_create_incident_from_issue(self, mocker):
+    #     from JiraV3 import fetch_incidents
+    #     query_raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
+    #     client = jira_base_client_mock()
+    #     mocker.patch.object(client, 'run_query', return_value=query_raw_response)
+    #     mocker.patch('JiraV3.get_fetched_attachments', return_value=[{'FileID': '1'}, {'FileID': '2'}])
+    #     comments_entries = [
+    #         {'Id': '18322', 'Comment': 'Hello there', 'User': 'Tomer Malache', 'Created': '2023-03-23T07:45:29.056+0200',
+    #          'Updated': '2023-03-23T07:45:29.056+0200', 'UpdateUser': 'Tomer Malache'}]
+    #     mocker.patch('JiraV3.get_comments_entries_for_fetched_incident', return_value=comments_entries)
+    #     incidents = fetch_incidents(
+    #         client=client,
+    #         issue_field_to_fetch_from='updated date',
+    #         fetch_query='status!=done',
+    #         id_offset=1234,
+    #         fetch_attachments=True,
+    #         fetch_comments=True,
+    #         max_fetch_incidents=3,
+    #         first_fetch_interval='3 days',
+    #         mirror_direction='Incoming And Outgoing',
+    #         comment_tag_to_jira='comment_tag_to_jira',
+    #         comment_tag_from_jira='comment_tag_from_jira',
+    #         attachment_tag_to_jira='attachment_tag_to_jira',
+    #         attachment_tag_from_jira='attachment_tag_from_jira'
+    #     )
+    #     x = 0

@@ -3476,7 +3476,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     demisto.debug(f'Running the query with the following parameters {query_params}')
     if query_res := client.run_query(query_params=query_params):
         for issue in query_res.get('issues', []):
-            issue_id: int = issue.get('id')  # The ID returned by the API is an integer
+            issue_id: int = int(issue.get('id'))  # The ID returned by the API is an integer
             demisto.debug(f'Creating an incident for Jira issue with ID: {issue_id}')
             new_issue_ids.append(issue_id)
             last_fetch_id = issue_id
@@ -3566,7 +3566,7 @@ def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: st
         last_fetch_created_time (str): The created time of the last fetch issue.
         last_fetch_updated_time (str): The updated time of the last fetch issue.
         first_fetch_interval (str): The first fetch interval to fetch from if the fetch timestamp is empty,
-        and we are fetching using created time.
+        and we are fetching using created or updated time.
         issue_ids_to_exclude (List[int]): The ids of the issues that we want to exclude.
 
     Raises:
@@ -3577,40 +3577,32 @@ def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: st
     """
     if issue_field_to_fetch_from in fetch_query:
         raise DemistoException('The issue field to fetch from cannot be in the fetch query')
-    error_message = 'Could not create the proper fetch query'
-    exclude_issue_ids_query = f"AND ID NOT IN ({', '.join(map(str, issue_ids_to_exclude))})" if issue_ids_to_exclude else ''
+    error_message = f'Could not create the proper fetch query for the issue field {issue_field_to_fetch_from}'
+    exclude_issue_ids_query = f" AND ID NOT IN ({', '.join(map(str, issue_ids_to_exclude))}) " if issue_ids_to_exclude else ' '
     if issue_field_to_fetch_from == 'id':
         if 'id' not in fetch_query:
-            return f'{fetch_query} AND id >= {last_fetch_id} {exclude_issue_ids_query} ORDER BY id ASC'
+            return f'{fetch_query} AND id >= {last_fetch_id}{exclude_issue_ids_query}ORDER BY id ASC'
         error_message = f'{error_message}\nThe issue field to fetch from cannot be in the fetch query'
     elif issue_field_to_fetch_from == 'created date':
         if 'created' not in fetch_query:
-            return (f'{fetch_query} AND created >= "{last_fetch_created_time or first_fetch_interval}" {exclude_issue_ids_query}'
-                    ' ORDER BY created ASC')
+            return (f'{fetch_query} AND created >= "{last_fetch_created_time or first_fetch_interval}"{exclude_issue_ids_query}'
+                    'ORDER BY created ASC')
         error_message = f'{error_message}\nThe issue field to fetch from cannot be in the fetch query'
     elif issue_field_to_fetch_from == 'updated date':
         if 'updated' not in fetch_query:
-            return (f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}" {exclude_issue_ids_query}'
-                    ' ORDER BY updated ASC')
+            return (f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}"{exclude_issue_ids_query}'
+                    'ORDER BY updated ASC')
         error_message = f'{error_message}\nThe issue field to fetch from cannot be in the fetch query'
     raise DemistoException(error_message)
 
 
 def get_comments_entries_for_fetched_incident(
-        client: JiraBaseClient, issue_id_or_key: str,
-        incident_modified_date: datetime | None = None) -> List[Dict[str, str]]:
+        client: JiraBaseClient, issue_id_or_key: str) -> List[Dict[str, str]]:
     """Return the comments' entries, for a fetched incident.
-    If incident_modified_date is not None, that means we only want to return the comment entries that were updated after the date
-    incident_modified_date.
 
     Args:
         client (JiraBaseClient): The Jira client.
         issue_id_or_key (str): The issue id or key.
-        incident_modified_date (datetime | None): This will hold the timestamp of the last updated time of the incident in XSOAR
-        that corresponds to the issue that holds the comments. This argument will be used when mirroring in, in order to retrieve
-        comments that were updated after the incident's modified date, the argument is None when we don't want to take into
-        consideration the incident's modified date. NOTE: Talked to TPM, and we decided to keep all attachments, old and new ones,
-        therefore, I will delete this argument later.
 
     Returns:
         List[Dict[str, Any]]: The comment entries for a fetched or mirrored incident.
@@ -3620,31 +3612,19 @@ def get_comments_entries_for_fetched_incident(
     if comments_response := get_comments_response.get('comments', []):
         for comment_response in comments_response:
             comment_entry = extract_comment_entry_from_raw_response(comment_response)
-            # if incident_modified_date:
-            #     if (updated_date := comment_response.get('updated')) \
-            #             and (comment_updated_date := dateparser.parse(updated_date)):
-            #         if True:  # Was comment_updated_date > incident_modified_date
-            #             comments_entries.append(comment_entry)
-            # else:
             comments_entries.append(comment_entry)
     return comments_entries
 
 
 def get_attachments_entries_for_fetched_incident(
         client: JiraBaseClient,
-        attachments_metadata: List[Dict[str, Any]],
-        incident_modified_date: datetime | None = None) -> List[Dict[str, Any]]:
+        attachments_metadata: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Return the attachments' entries for a fetched and mirrored incident
 
     Args:
         client (JiraBaseClient): The Jira client.
         attachments_metadata (List[str]): The metadata of the attachments, which includes the ids and created time of the
         attachments.
-        incident_modified_date (datetime | None): This will hold the timestamp of the last updated time of the incident in XSOAR
-        that corresponds to the issue that holds the attachments. This argument will be used when mirroring, in order to retrieve
-        attachments that were created after the incident's modified date. The argument is None when we don't want to take into
-        consideration the incident's modified date. NOTE: Talked to TPM, and we decided to keep all attachments, old and new ones,
-        therefore, I will delete this argument later.
 
     Returns:
         List[Dict[str, Any]]: The attachment entries for a fetched or mirrored incident.
@@ -3652,12 +3632,6 @@ def get_attachments_entries_for_fetched_incident(
     attachment_ids: List[str] = []
     for attachment_metadata in attachments_metadata:
         attachment_id = attachment_metadata.get('id', '')
-        # if incident_modified_date:
-        #     if (created_date := attachment_metadata.get('created')) \
-        #             and (attachment_created_date := dateparser.parse(created_date)):
-        #         if True:  # Was attachment_created_date > incident_modified_date
-        #             attachment_ids.append(attachment_id)
-        # else:
         attachment_ids.append(attachment_id)
     demisto.debug(f"The fetched attachments' ids {attachment_ids}")
     attachments_entries: List[Dict[str, Any]] = [
@@ -4036,8 +4010,7 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
     updated_incident['extractedAttachments'] = attachments_incident_field
     comments_entries = get_comments_entries_for_fetched_incident(
         client=client,
-        issue_id_or_key=issue_id,
-        incident_modified_date=incident_modified_date
+        issue_id_or_key=issue_id
     )
     for comment_entry in comments_entries:
         comment_body = comment_entry.get('Comment', '')
