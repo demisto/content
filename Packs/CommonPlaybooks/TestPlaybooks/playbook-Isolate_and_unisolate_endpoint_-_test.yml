@@ -1,6 +1,5 @@
 id: Isolate and unisolate endpoint - test
-version: 7
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Isolate and unisolate endpoint - test
 starttaskid: "0"
 tasks:
@@ -14,11 +13,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -31,6 +30,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -41,14 +41,11 @@ tasks:
       id: bd4d9269-f92d-4a81-8913-9c5a9abbce0b
       version: -1
       name: Unisolate Endpoint - Generic
-      description: "This playbook unisolates endpoints according to the endpoint ID
-        or host name provided in the playbook.\nIt currently supports the following
-        integrations:\n- Carbon Black Response\n- Cortex XDR\n- Crowdstrike Falcon\n-
-        FireEye HX \n- Cybereason\n- Microsoft Defender For Endpoint"
       playbookName: Unisolate Endpoint - Generic
       type: playbook
       iscommand: false
       brand: ""
+      description: "This playbook unisolates endpoints according to the endpoint ID or host name provided in the playbook.\nIt currently supports the following integrations:\n- Carbon Black Response\n- Cortex XDR\n- Crowdstrike Falcon\n- FireEye HX \n- Cybereason\n- Microsoft Defender For Endpoint"
     nexttasks:
       '#none#':
       - "3"
@@ -59,7 +56,6 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -77,6 +73,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -90,8 +87,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -104,6 +101,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -114,13 +112,13 @@ tasks:
       id: 928ea5bf-a199-48be-87f1-dc735ce7765b
       version: -1
       name: Isolate Endpoint - Generic V2
-      description: |-
-        This playbook isolates a given endpoint using various endpoint product integrations.
-        Make sure to provide valid playbook inputs for the integration you are using.
       playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
+      description: |-
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
     nexttasks:
       '#none#':
       - "2"
@@ -131,7 +129,6 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -149,6 +146,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -162,6 +160,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -271,10 +270,7 @@ tasks:
       id: 41af0134-3453-4ade-8f2a-188ca4dc0c64
       version: -1
       name: Unisolate Endpoint - Generic
-      description: "This playbook unisolates endpoints according to the endpoint ID
-        or host name provided in the playbook.\nIt currently supports the following
-        integrations:\n- Carbon Black Response\n- Cortex XDR\n- Crowdstrike Falcon\n-
-        FireEye HX \n- Cybereason\n- Microsoft Defender For Endpoint"
+      description: "This playbook unisolates endpoints according to the endpoint ID or host name provided in the playbook.\nIt currently supports the following integrations:\n- Carbon Black Response\n- Cortex XDR\n- Crowdstrike Falcon\n- FireEye HX \n- Cybereason\n- Microsoft Defender For Endpoint"
       playbookName: Unisolate Endpoint - Generic
       type: playbook
       iscommand: false
@@ -314,6 +310,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -391,5 +388,7 @@ inputs:
     simple: 15dbb9d8f06b45fe9f61eb46e829d986
   required: false
   description: 'The id of the endpoint that you wish get details on. '
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+fromversion: 5.5.0
+description: this test playbooks is testing for multiple test condition including empty input
