@@ -4369,11 +4369,42 @@ def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker):
     assert outputs.readable_output == expected_hr
 
 
+filter_args = {'key1': 'val1,val2', 'key2': 'val3', 'key3': None}
+custom_filter = 'key1:"val1"+key2:["val3","val4"]'
+
+@pytest.mark.parametrize(
+    'filter_args, custom_filter, output_filter',
+    (
+        (filter_args, custom_filter, 'key1:"val1"%2Bkey2:["val3","val4"]%2Bkey1:[\'val1\', \'val2\']%2Bkey2:[\'val3\']'),
+        (filter_args, None, 'key1:[\'val1\', \'val2\']%2Bkey2:[\'val3\']'),
+        ({}, custom_filter, 'key1:"val1"%2Bkey2:["val3","val4"]')
+    )
+)
+def test_build_cs_falcon_filter(filter_args, custom_filter, output_filter):
+    """
+    Test build_cs_falcon_filter.
+
+    Given
+        - A dictionary filter and a custom filter.
+
+    When
+        - Before an cs-falcon query.
+
+    Then
+        - Return a merged FQL filter as a single string.
+    """
+    from CrowdStrikeFalcon import build_cs_falcon_filter
+
+    result = build_cs_falcon_filter(custom_filter, **filter_args)
+
+    assert output_filter == result
+
+
 @pytest.mark.parametrize(
     'input_params, call_params',
     (
-        ({'key1': 'val1', 'key2': None}, {'key1': 'val1'}),
-        ({'key1': 'val1', 'key2': 'val2'},) * 2
+        ({'key1': 'val1', 'key2': None}, 'key1=val1'),
+        ({'key1': 'val1', 'key2': 'val2'}, 'key1=val1&key2=val2')
     )
 )
 def test_ODS_query_scans_request(mocker, input_params, call_params):
@@ -4394,17 +4425,10 @@ def test_ODS_query_scans_request(mocker, input_params, call_params):
 
     http_request = mocker.patch('CrowdStrikeFalcon.http_request')
     ODS_query_scans_request(**input_params)
-    http_request.assert_called_with('GET', '/ods/queries/scans/v1', params=call_params)
+    http_request.assert_called_with('GET', f'/ods/queries/scans/v1?{call_params}')
 
 
-@pytest.mark.parametrize(
-    'ids_list, ids_string, is_error',
-    (
-        (['<id1>', '<id2>', '<id3>'], 'ids=<id1>&ids=<id2>&ids=<id3>', False),
-        ([], '', True)
-    )
-)
-def test_ODS_get_scans_by_id_request(mocker, ids_list, ids_string, is_error):
+def test_ODS_get_scans_by_id_request(mocker):
     """
     Test ODS_get_scans_by_id_request.
 
@@ -4420,18 +4444,18 @@ def test_ODS_get_scans_by_id_request(mocker, ids_list, ids_string, is_error):
 
     from CrowdStrikeFalcon import ODS_get_scans_by_id_request
 
+    ids_list = ['<id1>', '<id2>', '<id3>']
+    ids_string = 'ids=<id1>&ids=<id2>&ids=<id3>'
+
     http_request = mocker.patch('CrowdStrikeFalcon.http_request')
-    if is_error:
-        with pytest.raises(DemistoException):
-            ODS_get_scans_by_id_request(ids_list)
-    else:
-        ODS_get_scans_by_id_request(ids_list)
-        http_request.assert_called_with('GET', f'/ods/entities/scans/v1?{ids_string}')
+
+    ODS_get_scans_by_id_request(ids_list)
+    http_request.assert_called_with('GET', f'/ods/entities/scans/v1?{ids_string}')
 
 
 def test_map_scan_resource_to_UI(mocker):
     """
-    Test get_scan_resources_to_human_readable.
+    Test map_scan_resource_to_UI.
 
     Given
         - A dictionary response from /ods/entities/scans.
@@ -4440,7 +4464,7 @@ def test_map_scan_resource_to_UI(mocker):
         - The user runs the "cs-falcon-ods-query-scan" command
 
     Then
-        - Return a markdown resembling the cs-falcon UI.
+        - Return a dict with keys corresponding the cs-falcon UI.
     """
     from CrowdStrikeFalcon import map_scan_resource_to_UI
 
@@ -4521,38 +4545,238 @@ def test_map_scan_resource_to_UI(mocker):
         'End time': "2023-04-18T14:56:38.527255649Z",
         'Run by': "f7acf1bd5d3d4b40afe77546cbbaefde"
     }
-    
+
     output = map_scan_resource_to_UI(resource)
-    
+
     assert output == mapped_resource
 
 
-filter_args = {'key1': 'val1,val2', 'key2': 'val3', 'key3': None}
-custom_filter = 'key1:"val1"+key2:["val3","val4"]'
-
 @pytest.mark.parametrize(
-    'filter_args, custom_filter, output_filter',
+    'input_params, call_params',
     (
-        (filter_args, custom_filter, 'key1:"val1"%2Bkey2:["val3","val4"]%2Bkey1:[\'val1\', \'val2\']%2Bkey2:[\'val3\']'),
-        (filter_args, None, 'key1:[\'val1\', \'val2\']%2Bkey2:[\'val3\']'),
-        ({}, custom_filter, 'key1:"val1"%2Bkey2:["val3","val4"]')
+        ({'key1': 'val1', 'key2': None}, 'key1=val1'),
+        ({'key1': 'val1', 'key2': 'val2'}, 'key1=val1&key2=val2')
     )
 )
-def test_build_cs_falcon_filter(filter_args, custom_filter, output_filter):
+def test_ODS_query_scheduled_scans_request(mocker, input_params, call_params):
     """
-    Test build_cs_falcon_filter.
+    Test ODS_query_scheduled_scans_request.
 
     Given
-        - A dictionary filter and a custom filter.
+        - A request for a list of ODS endpoint scheduled scans by id.
 
     When
-        - Before an cs-falcon query.
+        - The user runs the "cs-falcon-ods-query-scheduled-scan" command without specifying ids.
 
     Then
-        - Return a merged FQL filter as a single string.
+        - Call /ods/queries/scheduled-scans/v1 with a filter, limit and offset if given and return the ids in response.
     """
-    from CrowdStrikeFalcon import build_cs_falcon_filter
 
-    result = build_cs_falcon_filter(custom_filter, **filter_args)
-    
-    assert output_filter == result
+    from CrowdStrikeFalcon import ODS_query_scheduled_scans_request
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+    ODS_query_scheduled_scans_request(**input_params)
+    http_request.assert_called_with('GET', f'/ods/queries/scheduled-scans/v1?{call_params}')
+
+
+def test_ODS_get_scheduled_scans_by_id_request(mocker):
+    """
+    Test ODS_get_scheduled_scans_by_id_request.
+
+    Given
+        - A request for info on ODS endpoint scheduled scans.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scheduled-scan" command and we obtain a non-empty list of ids.
+
+    Then
+        - Call /ods/entities/scheduled-scans/v1 with the ids and return the response.
+    """
+
+    from CrowdStrikeFalcon import ODS_get_scheduled_scans_by_id_request
+
+    ids_list = ['<id1>', '<id2>', '<id3>']
+    ids_string = 'ids=<id1>&ids=<id2>&ids=<id3>'
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    ODS_get_scheduled_scans_by_id_request(ids_list)
+    http_request.assert_called_with('GET', f'/ods/entities/scheduled-scans/v1?{ids_string}')
+
+
+def test_map_scheduled_scan_resource_to_UI(mocker):
+    """
+    Test map_scan_resource_to_UI.
+
+    Given
+        - A dictionary response from /ods/entities/scheduled-scans.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scheduled-scan" command
+
+    Then
+        - Return a dict with keys corresponding the cs-falcon UI.
+    """
+    from CrowdStrikeFalcon import map_scheduled_scan_resource_to_UI
+
+    resource = {}
+    mapped_resource = {}
+
+    output = map_scheduled_scan_resource_to_UI(resource)
+
+    assert output == mapped_resource
+
+
+@pytest.mark.parametrize(
+    'input_params, call_params',
+    (
+        ({'key1': 'val1', 'key2': None}, 'key1=val1'),
+        ({'key1': 'val1', 'key2': 'val2'}, 'key1=val1&key2=val2')
+    )
+)
+def test_ODS_query_scan_hosts_request(mocker, input_params, call_params):
+    """
+    Test ODS_query_scan_hosts_request.
+
+    Given
+        - A request for a list of ODS endpoint scan hosts by id.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scan-host" command without specifying ids.
+
+    Then
+        - Call /ods/queries/scan-hosts/v1 with a filter, limit and offset if given and return the ids in response.
+    """
+
+    from CrowdStrikeFalcon import ODS_query_scan_hosts_request
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+    ODS_query_scan_hosts_request(**input_params)
+    http_request.assert_called_with('GET', f'/ods/queries/scan-hosts/v1?{call_params}')
+
+
+def test_ODS_get_scan_hosts_by_id_request(mocker):
+    """
+    Test ODS_get_scan_hosts_by_id_request.
+
+    Given
+        - A request for info on ODS endpoint scan hosts.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scan-hosts" command and we obtain a non-empty list of ids.
+
+    Then
+        - Call /ods/entities/scan-hosts/v1 with the ids and return the response.
+    """
+
+    from CrowdStrikeFalcon import ODS_get_scan_hosts_by_id_request
+
+    ids_list = ['<id1>', '<id2>', '<id3>']
+    ids_string = 'ids=<id1>&ids=<id2>&ids=<id3>'
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    ODS_get_scan_hosts_by_id_request(ids_list)
+    http_request.assert_called_with('GET', f'/ods/entities/scan-hosts/v1?{ids_string}')
+
+
+def test_map_scan_host_resource_to_UI(mocker):
+    """
+    Test map_scan_resource_to_UI.
+
+    Given
+        - A dictionary response from /ods/entities/scan-hosts.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scan-host" command
+
+    Then
+        - Return a dict with keys corresponding the cs-falcon UI.
+    """
+    from CrowdStrikeFalcon import map_scan_host_resource_to_UI
+
+    resource = {}
+    mapped_resource = {}
+
+    output = map_scan_host_resource_to_UI(resource)
+
+    assert output == mapped_resource
+
+
+
+@pytest.mark.parametrize(
+    'input_params, call_params',
+    (
+        ({'key1': 'val1', 'key2': None}, 'key1=val1'),
+        ({'key1': 'val1', 'key2': 'val2'}, 'key1=val1&key2=val2')
+    )
+)
+def test_ODS_query_malicious_files_request(mocker, input_params, call_params):
+    """
+    Test ODS_query_malicious_files_request.
+
+    Given
+        - A request for a list of ODS endpoint malicious files by id.
+
+    When
+        - The user runs the "cs-falcon-ods-query-malicious-file" command without specifying ids.
+
+    Then
+        - Call /ods/queries/malicious-files/v1 with a filter, limit and offset if given and return the ids in response.
+    """
+
+    from CrowdStrikeFalcon import ODS_query_malicious_files_request
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+    ODS_query_malicious_files_request(**input_params)
+    http_request.assert_called_with('GET', f'/ods/queries/malicious-files/v1?{call_params}')
+
+
+def test_ODS_get_malicious_files_by_id_request(mocker):
+    """
+    Test ODS_get_malicious_files_by_id_request.
+
+    Given
+        - A request for info on ODS endpoint malicious files.
+
+    When
+        - The user runs the "cs-falcon-ods-query-malicious-files" command and we obtain a non-empty list of ids.
+
+    Then
+        - Call /ods/entities/malicious-files/v1 with the ids and return the response.
+    """
+
+    from CrowdStrikeFalcon import ODS_get_malicious_files_by_id_request
+
+    ids_list = ['<id1>', '<id2>', '<id3>']
+    ids_string = 'ids=<id1>&ids=<id2>&ids=<id3>'
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    ODS_get_malicious_files_by_id_request(ids_list)
+    http_request.assert_called_with('GET', f'/ods/entities/malicious-files/v1?{ids_string}')
+
+
+def test_map_malicious_file_resource_to_UI(mocker):
+    """
+    Test map_scan_resource_to_UI.
+
+    Given
+        - A dictionary response from /ods/entities/malicious-files.
+
+    When
+        - The user runs the "cs-falcon-ods-query-malicious-file" command
+
+    Then
+        - Return a dict with keys corresponding the cs-falcon UI.
+    """
+    from CrowdStrikeFalcon import map_malicious_file_resource_to_UI
+
+    resource = {}
+    mapped_resource = {}
+
+    output = map_malicious_file_resource_to_UI(resource)
+
+    assert output == mapped_resource
+
+

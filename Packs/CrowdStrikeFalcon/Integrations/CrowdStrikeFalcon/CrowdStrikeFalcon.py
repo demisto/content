@@ -4148,22 +4148,24 @@ def build_cs_falcon_filter(custom_filter: str = None, **filter_args) -> str:
 
     :custom_filter: custom filter from user (will take priority if conflicts with dictionary), defaults to None
     :filter_args: args to translate to FQL format.
-    
+
     :return: FQL syntax filter.
     """
+
+    custom_filter_list = custom_filter.split('+') if custom_filter else []
     arguments = [f'{key}:{argToList(value)}' for key, value in filter_args.items() if value]
-    # custom_filter takes priority because it is first 
-    return "%2B".join(([custom_filter.replace('+', '%2B')] if custom_filter else []) + arguments)
+    # custom_filter takes priority because it is first
+    return "%2B".join(custom_filter_list + arguments)
 
 
-# Command 1 -------------------------------------------------------------------------------------------------
+# Command 1 ------------------------------------------------------------------------------------------------- V T
 def ODS_query_scans_request(**query_params) -> dict:
-    
+
     remove_nulls_from_dictionary(query_params)
     # http_request messes up the params, so they were put directly in the url:
-    url_params = "&".join(f"{k}={v}" for k,v in query_params.items())
+    url_params = "&".join(f"{k}={v}" for k, v in query_params.items())
     return http_request('GET', f'/ods/queries/scans/v1?{url_params}')
-    
+
 
 def ODS_get_scans_by_id_request(ids: list[str]) -> dict:
 
@@ -4192,7 +4194,7 @@ def map_scan_resource_to_UI(resource: dict) -> dict:
 
 def ODS_get_scan_resources_to_human_readable(resources: list[dict]) -> str:
     # TODO ask if to use default headers for UI
-    
+
     human_readable = tableToMarkdown(
         'CrowdStrike Falcon ODS Scans',
         [map_scan_resource_to_UI(resource) for resource in resources],
@@ -4201,36 +4203,36 @@ def ODS_get_scan_resources_to_human_readable(resources: list[dict]) -> str:
                  'File paths', 'Maximum CPU utilization',
                  'Hosts/Host groups', 'End time', 'Start time', 'Run by']
     )
-    
+
     return human_readable
 
 
-def get_ODS_scan_ids(args: dict) -> list[str]:
-    
-    demisto.debug('Fecthing IDs from query api (/ods/queries/scans/v1)')
+def get_ODS_scan_ids(args: dict) -> list[str] | None:
+
+    demisto.debug('Fetching IDs from query api')
 
     query_filter = build_cs_falcon_filter(
-        custom_filter = args.get('filter'),
-        initiated_from = args.get('initiated_from'),
-        status = args.get('status'),
-        severity = args.get('severity'), # TODO
-        scan_started_on = args.get('scan_started_on'),
-        scan_completed_on = args.get('scan_completed_on'),
+        custom_filter=args.get('filter'),
+        initiated_from=args.get('initiated_from'),
+        status=args.get('status'),
+        severity=args.get('severity'),  # TODO
+        scan_started_on=args.get('scan_started_on'),
+        scan_completed_on=args.get('scan_completed_on'),
     )
-    
+
     raw_response = ODS_query_scans_request(
-        filter = query_filter,
-        offset = args.get('offset'),
-        limit = args.get('limit'),
+        filter=query_filter,
+        offset=args.get('offset'),
+        limit=args.get('limit'),
     )
-    
-    return raw_response.get('resources')    
+
+    return raw_response.get('resources')
 
 
 def cs_falcon_ODS_query_scans_command(args: dict) -> CommandResults:
     # call the query api if no ids given
     ids = argToList(args.get('ids')) or get_ODS_scan_ids(args)
-    
+
     if not ids:
         return CommandResults(readable_output='No IDs to get results for.')
 
@@ -4249,25 +4251,46 @@ def cs_falcon_ODS_query_scans_command(args: dict) -> CommandResults:
     return command_results
 
 
-# Command 2 -------------------------------------------------------------------------------------------------
+# Command 2 ------------------------------------------------------------------------------------------------- V
 def ODS_query_scheduled_scans_request(**query_params) -> dict:
     remove_nulls_from_dictionary(query_params)
     # http_request messes up the params, so they were put directly in the url:
-    url_params = "&".join(f"{k}={v}" for k,v in query_params.items())
+    url_params = "&".join(f"{k}={v}" for k, v in query_params.items())
     return http_request('GET', f'/ods/queries/scheduled-scans/v1?{url_params}')
-    
+
 
 def ODS_get_scheduled_scans_by_id_request(ids: list[str]) -> dict:
-    
     url_params = '&'.join(f'ids={query_id}' for query_id in ids)
     return http_request('GET', f'/ods/entities/scheduled-scans/v1?{url_params}')
 
 
+def map_scheduled_scan_resource_to_UI(resource: dict) -> dict:
+    output = {
+        'ID': resource.get('id'),
+        'Hosts targeted': len(resource.get('metadata', [])),
+        'Description': resource.get('description'),
+        'Host groups': resource.get('host_groups'),
+        'Start time': resource.get('schedule', {}).get('start_timestamp'),
+        'Created by': resource.get('created_by'),
+    }
+    return output
+
+
 def ODS_get_scheduled_scan_resources_to_human_readable(resources: list[dict]) -> str:
-    return ''
+    # TODO NEEDS ALL FIELDS IN UI
+    human_readable = tableToMarkdown(
+        'CrowdStrike Falcon ODS Scans',
+        [map_scheduled_scan_resource_to_UI(resource) for resource in resources],
+        headers=['ID', 'Hosts targeted', 'Description',
+                 'Host groups', 'Start time', 'Created by']
+    )
+
+    return human_readable
 
 
-def get_ODS_scheduled_scan_ids(args: dict) -> list[str]:
+def get_ODS_scheduled_scan_ids(args: dict) -> list[str] | None:
+
+    demisto.debug('Fetching IDs from query api')
 
     query_filter = build_cs_falcon_filter(**{
         'custom_filter': args.get('filter'),
@@ -4278,20 +4301,20 @@ def get_ODS_scheduled_scan_ids(args: dict) -> list[str]:
         'schedule.start_timestamp': args.get('start_timestamp'),
         'deleted': args.get('deleted'),
     })
-    
+
     raw_response = ODS_query_scheduled_scans_request(
-        filter = query_filter,
-        offset = args.get('offset'),
-        limit = args.get('limit'),
+        filter=query_filter,
+        offset=args.get('offset'),
+        limit=args.get('limit'),
     )
-    
-    return raw_response.get('resources')    
+
+    return raw_response.get('resources')
 
 
 def cs_falcon_ODS_query_scheduled_scan_command(args: dict) -> CommandResults:
     # call the query api if no ids given
     ids = argToList(args.get('ids')) or get_ODS_scheduled_scan_ids(args)
-    
+
     if not ids:
         return CommandResults(readable_output='No IDs to get results for.')
 
@@ -4309,48 +4332,53 @@ def cs_falcon_ODS_query_scheduled_scan_command(args: dict) -> CommandResults:
 
     return command_results
 
+
 # Command 3 -------------------------------------------------------------------------------------------------
 def ODS_query_scan_hosts_request(**query_params) -> dict:
     remove_nulls_from_dictionary(query_params)
     # http_request messes up the params, so they were put directly in the url:
-    url_params = "&".join(f"{k}={v}" for k,v in query_params.items())
+    url_params = "&".join(f"{k}={v}" for k, v in query_params.items())
     return http_request('GET', f'/ods/queries/scan-hosts/v1?{url_params}')
 
 
 def ODS_get_scan_hosts_by_id_request(ids: list[str]) -> dict:
-    
+
     url_params = '&'.join(f'ids={query_id}' for query_id in ids)
     return http_request('GET', f'/ods/entities/scan-hosts/v1?{url_params}')
 
 
-def get_ODS_scan_host_ids(args: dict) -> list[str]:
-    
+def get_ODS_scan_host_ids(args: dict) -> list[str] | None:
+
     query_filter = build_cs_falcon_filter(
-        custom_filter = args.get('filter'),
-        host_id = args.get('host_ids'),
-        scan_id = args.get('scan_ids'),
-        status = args.get('status'),
-        started_on = args.get('started_on'),
-        completed_on = args.get('completed_on'),
+        custom_filter=args.get('filter'),
+        host_id=args.get('host_ids'),
+        scan_id=args.get('scan_ids'),
+        status=args.get('status'),
+        started_on=args.get('started_on'),
+        completed_on=args.get('completed_on'),
     )
-    
+
     raw_response = ODS_query_scan_hosts_request(
-        filter = query_filter,
-        offset = args.get('offset'),
-        limit = args.get('limit'),
+        filter=query_filter,
+        offset=args.get('offset'),
+        limit=args.get('limit'),
     )
-    
+
     return raw_response.get('resources')
 
 
+def map_scan_host_resource_to_UI(resource: dict) -> dict:
+    pass  # TODO
+
+
 def ODS_get_scan_hosts_resources_to_human_readable(resources: list[dict]) -> str:
-    return ''  # TODO
-    
+    pass  # TODO
+
 
 def cs_falcon_ods_query_scan_host_command(args: dict) -> CommandResults:
-    
+
     ids = get_ODS_scan_host_ids(args)
-    
+
     if not ids:
         return CommandResults(readable_output='No IDs to get results for.')
 
@@ -4370,53 +4398,59 @@ def cs_falcon_ods_query_scan_host_command(args: dict) -> CommandResults:
 
 
 # Command 4 -------------------------------------------------------------------------------------------------
-def ODS_query_mailicious_files_request(**query_params) -> dict:
+def ODS_query_malicious_files_request(**query_params) -> dict:
     remove_nulls_from_dictionary(query_params)
     # http_request messes up the params, so they were put directly in the url:
-    url_params = "&".join(f"{k}={v}" for k,v in query_params.items())
+    url_params = "&".join(f"{k}={v}" for k, v in query_params.items())
     return http_request('GET', f'/ods/queries/malicious-files/v1?{url_params}')
-    
 
-def ODS_get_mailicious_files_by_id_request(ids: list[str]) -> dict:
-    
+
+def ODS_get_malicious_files_by_id_request(ids: list[str]) -> dict:
+
     url_params = '&'.join(f'ids={query_id}' for query_id in ids)
     return http_request('GET', f'/ods/entities/malicious-files/v1?{url_params}')
 
 
-def ODS_get_mailicious_files_resources_to_human_readable(resources: list[dict]) -> str:
-    return ''
+def map_malicious_file_resource_to_UI(resource: dict) -> dict:
+    pass
 
 
-def get_ODS_mailicious_files_ids(args: dict) -> list[str]:
+def ODS_get_malicious_files_resources_to_human_readable(resources: list[dict]) -> str:
+    pass
+
+
+def get_ODS_malicious_files_ids(args: dict) -> list[str] | None:
+
+    demisto.debug('Fetching IDs from query api')
 
     query_filter = build_cs_falcon_filter(
-        custom_filter = args.get('filter'),
-        host_id = args.get('host_ids'),
-        scan_id = args.get('scan_ids'),
-        filepath = args.get('file_paths'),
-        filename = args.get('file_names'),
-        hash = args.get('hash'),
+        custom_filter=args.get('filter'),
+        host_id=args.get('host_ids'),
+        scan_id=args.get('scan_ids'),
+        filepath=args.get('file_paths'),
+        filename=args.get('file_names'),
+        hash=args.get('hash'),
     )
-    
-    raw_response = ODS_query_mailicious_files_request(
-        filter = query_filter,
-        offset = args.get('offset'),
-        limit = args.get('limit'),
+
+    raw_response = ODS_query_malicious_files_request(
+        filter=query_filter,
+        offset=args.get('offset'),
+        limit=args.get('limit'),
     )
-    
-    return raw_response.get('resources')    
+
+    return raw_response.get('resources')
 
 
 def cs_falcon_ODS_query_malicious_files_command(args: dict) -> CommandResults:
     # call the query api if no file_ids given
-    ids = argToList(args.get('file_ids')) or get_ODS_mailicious_files_ids(args)
-    
+    ids = argToList(args.get('file_ids')) or get_ODS_malicious_files_ids(args)
+
     if not ids:
         return CommandResults(readable_output='No IDs to get results for.')
 
-    response = ODS_get_mailicious_files_by_id_request(ids)
+    response = ODS_get_malicious_files_by_id_request(ids)
     resources = response.get('resources', [])
-    human_readable = ODS_get_mailicious_files_resources_to_human_readable(resources)
+    human_readable = ODS_get_malicious_files_resources_to_human_readable(resources)
 
     command_results = CommandResults(
         raw_response=response,
@@ -4438,79 +4472,72 @@ schedule_interval_str_to_int = {
     'every 4 weeks': 28,
     'monthly': 30,
 }
- 
+
+
 def create_ODS_scan_request(body: dict) -> dict:
     remove_nulls_from_dictionary(body)
-    return http_request('POST', '/ods/entities/scans/v1', body=body)
+    return http_request('POST', '/ods/entities/scans/v1', data=body)
 
 
 def create_ODS_scheduled_scan_request(body: dict) -> dict:
     remove_nulls_from_dictionary(body)
-    return http_request('POST', '/ods/entities/scheduled-scans/v1', body=body)
-
+    return http_request('POST', '/ods/entities/scheduled-scans/v1', data=body)
 
 
 def make_create_scan_request_body(args: dict) -> dict:
-    # TODO configure behavior for 'None' args
     result = {
         'hosts': argToList(args.get('hosts')),
         'host_groups': argToList(args.get('host_groups')),
         'file_paths': argToList(args.get('file_paths')),
-        'scan_inclusions': argToList(args.get('scan_inclusions')),
         'scan_exclusions': argToList(args.get('scan_exclusions')),
         'initiated_from': args.get('initiated_from'),
-        'cpu_priority': CPU_UTILITY_INT_TO_STR_KEY_MAP.get(int(args.get('cpu_priority'))),
+        'cpu_priority': CPU_UTILITY_INT_TO_STR_KEY_MAP.get(arg_to_number(args.get('cpu_priority'))),
         'description': args.get('description'),
-        'quarantine': argToBoolean(args.get('quarantine')),
-        'endpoint_notification': True, # TODO check if to make default
-        'pause_duration': int(args.get('pause_duration')),
-        'sensor_ml_level_detection': int(args.get('sensor_ml_level_detection')),
-        'sensor_ml_level_prevention': int(args.get('sensor_ml_level_prevention')),
-        'cloud_ml_level_detection': int(args.get('cloud_ml_level_detection')),
-        'cloud_ml_level_prevention': int(args.get('cloud_ml_level_prevention')),
-        'max_duration': int(args.get('max_duration') or 2),
-    }
-    return result
-
-
-def make_create_scheduled_scan_request_body(args: dict) -> dict:
-    result = {
+        'quarantine': argToBoolean(quarantine) if (quarantine := args.get('quarantine')) is not None else None,
+        'endpoint_notification': True,  # TODO check if to make default
+        'pause_duration': arg_to_number(args.get('pause_duration') or 2),
+        'sensor_ml_level_detection': arg_to_number(args.get('sensor_ml_level_detection')),
+        'sensor_ml_level_prevention': arg_to_number(args.get('sensor_ml_level_prevention')),
+        'cloud_ml_level_detection': arg_to_number(args.get('cloud_ml_level_detection')),
+        'cloud_ml_level_prevention': arg_to_number(args.get('cloud_ml_level_prevention')),
+        'max_duration': arg_to_number(args.get('max_duration') or 2),
         'schedule': {
             'ignored_by_channelfile': True,
             'interval': args.get('schedule_start_timestamp'),
             'start_timestamp': schedule_interval_str_to_int.get(str(args.get('schedule_start_timestamp')).lower()),
         }
     }
-    return result | make_create_scan_request_body(args)
-    
-    
+    return result
+
+
 def ODS_create_ODS_scan_resources_to_human_readable(a: Any) -> str:
     pass
 
 
-def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
-    
+def ODS_verify_create_scan_command(args: dict) -> None:
+
     if not (args.get('hosts') or args.get('host_groups')):
         raise DemistoException('MUST set host OR host_groups')
-    
+
     if not (args.get('file_paths') or args.get('scan_exclusions')):
         raise DemistoException('MUST set file_paths OR scan_exclusions')
-    
-    if argToBoolean(args.get('is_scheduled')):
-        # 'schedule_start_timestamp' and 'schedule_interval' can be falsy but not 'host_groups'
-        if (args.get('schedule_start_timestamp') is None
-            or args.get('schedule_interval') is None
-            or not args.get('host_groups')):
-            raise DemistoException(
-                'MUST provide schedule_start_timestamp AND schedule_interval AND host_groups for scheduled scans.')
-        
-        body = make_create_scheduled_scan_request_body(args)
-        response = create_ODS_scheduled_scan_request(body)
-        
-    else:
-        body = make_create_scan_request_body(args)
-        response = create_ODS_scan_request(body)
-        
+
+    if argToBoolean(args.get('is_scheduled')) and not (
+            args.get('schedule_start_timestamp')
+            and args.get('schedule_interval')
+            and args.get('host_groups')):
+        raise DemistoException(
+            'MUST provide schedule_start_timestamp AND schedule_interval AND host_groups for scheduled scans.')
+
+
+def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
+
+    request_body = make_create_scan_request_body(args)
+    response = \
+        create_ODS_scheduled_scan_request(request_body) \
+        if argToBoolean(args.get('is_scheduled')) \
+        else create_ODS_scan_request(request_body)
+
     resources = response.get('resources', [])
     human_readable = ODS_create_ODS_scan_resources_to_human_readable(resources)
 
@@ -4525,18 +4552,43 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
     return command_results
 
 
-# Command 6 -------------------------------------------------------------------------------------------------
-def ODS_delete_scans_request(ids: list[str]) -> dict:
-    url_params = '&'.join(f'ids={scan_id}' for scan_id in ids)
+# Command 6 ------------------------------------------------------------------------------------------------- V
+def ODS_delete_scheduled_scans_request(ids: list[str], filter: str = None) -> dict:
+    url_params = '&'.join([f'ids={scan_id}' for scan_id in ids] + ([f'filter={filter}'] if filter else []))
     return http_request('DELETE', f'/ods/entities/scheduled-scans/v1?{url_params}')
-    
+
+
 def cs_falcon_ods_delete_scheduled_scan_command(args: dict) -> CommandResults:
-    pass
+
+    ids, query_filter = argToList(args.get('ids')), args.get('filter')
+    response = ODS_delete_scheduled_scans_request(ids, query_filter)
+    human_readable = tableToMarkdown('Deleted Scans:', response.get('resources'), headers=['ID'])
+
+    command_results = CommandResults(
+        raw_response=response,
+        readable_output=human_readable,
+    )
+
+    return command_results
 
 
-# Command 7 -------------------------------------------------------------------------------------------------
+# Command 7 ------------------------------------------------------------------------------------------------- V
+def ODS_cancel_scans_request(ids: list[str]) -> dict:
+    return http_request('POST', '/ods/entities/scan-control-actions/cancel/v1', data={'ids': ids})
+
+
 def cs_falcon_ods_cancel_scan_command(args: dict) -> CommandResults:
-    pass
+
+    ids = argToList(args.get('ids'))
+    response = ODS_cancel_scans_request(ids)
+    human_readable = tableToMarkdown('Canceled Scans:', response.get('resources'), headers=['ID'])
+
+    command_results = CommandResults(
+        raw_response=response,
+        readable_output=human_readable,
+    )
+
+    return command_results
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''

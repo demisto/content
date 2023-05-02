@@ -2906,44 +2906,235 @@ script:
       required: true
     description: Updates CrowdStrike Incident with the comment.
     name: cs-falcon-update-incident-comment
-
   - arguments:
-    - description: A valid CS-Falcon-FQL filter.
+    - description: Valid CS-Falcon-FQL filter to query with.
       name: filter
       required: false
-    - description: A comma-separated list of scan IDs. If set will override all other arguments.
+    - description: Comma-separated list of scan IDs to retrieve details about. If set will override all other arguments.
       isArray: true
       name: ids
       required: false
-    - description: A comma-separated list of scan initiation sources to filter by.
+    - description: Comma-separated list of scan initiation sources to filter by.
       isArray: true
       name: initiated_from
       required: false
-    - description: A comma-separated list of scan statuses to filter by.
+    - description: Comma-separated list of scan statuses to filter by.
       isArray: true
       name: status
       required: false
-    - description: A comma-separated list of scan severities to filter by.
+    - description: Comma-separated list of scan severities to filter by.
       isArray: true
       name: severity
       required: false
-    - description: A UTC-format time of scan start to filter by.
+    - description: UTC-format time of scan start to filter by.
       name: scan_started_on
       required: false
-    - description: A UTC-format time of scan start to filter by.
+    - description: UTC-format time of scan start to filter by.
       name: scan_completed_on
       required: false
     - description: Starting index of overall result set from which to return ids.
-      isArray: true
       name: offset
       required: false
     - description: Maximum number of resources to return.
-      isArray: true
       name: limit
       required: false
     description: Retrieve ODS scan details.
     name: cs-falcon-ods-query-scan
-
+  - arguments:
+    - description: Valid CS-Falcon-FQL filter to query with.
+      name: filter
+      required: false
+    - description: Comma-separated list of scan IDs to retrieve details about. If set will override all other arguments.
+      isArray: true
+      name: ids
+      required: false
+    - description: Comma-separated list of scan initiation sources to filter by.
+      isArray: true
+      name: initiated_from
+      required: false
+    - description: Comma-separated list of scan statuses to filter by.
+      isArray: true
+      name: status
+      required: false
+    - description: UTC-format time of scan creation to filter by.
+      name: created_on
+      required: false
+    - description: UTC-format time of scan creator to filter by.
+      name: created_by
+      required: false
+    - description: UTC-format time of scan start to filter by.
+      name: start_timestamp
+      required: false
+    - description: Deleted scans only.
+      name: deleted
+      required: false
+    - description: Starting index of overall result set from which to return ids.
+      name: offset
+      required: false
+    - description: Maximum number of resources to return.
+      name: limit
+      required: false
+    description: Retrieve ODS scheduled scan details.
+    name: cs-falcon-ods-query-scheduled-scan
+  - arguments:
+    - description: Valid CS-Falcon-FQL filter to query with.
+      name: filter
+      required: false
+    - description: Comma-separated list of host IDs to filter by.
+      isArray: true
+      name: host_ids
+      required: false
+    - description: Comma-separated list of scan IDs to filter by.
+      isArray: true
+      name: scan_ids
+      required: false
+    - description: Comma-separated list of scan statuses to filter by.
+      isArray: true
+      name: status
+      required: false
+    - description: UTC-format time of scan start to filter by.
+      name: started_on
+      required: false
+    - description: UTC-format time of scan completion to filter by.
+      name: completed_on
+      required: false
+    - description: Starting index of overall result set from which to return ids.
+      name: offset
+      required: false
+    - description: Maximum number of resources to return.
+      name: limit
+      required: false
+    description: Retrieve ODS scan host details.
+    name: cs-falcon-ods-query-scan-host
+  - arguments:
+    - description: Valid CS-Falcon-FQL filter to query with.
+      name: filter
+      required: false
+    - description: Comma-separated list of malicious file IDs to retrieve details about. If set will override all other arguments.
+      isArray: true
+      name: file_ids
+      required: false
+    - description: Comma-separated list of host IDs to filter by.
+      isArray: true
+      name: host_ids
+      required: false
+    - description: Comma-separated list of scan IDs to filter by.
+      isArray: true
+      name: scan_ids
+      required: false
+    - description: Comma-separated list of file paths to filter by.
+      isArray: true
+      name: file_paths
+      required: false
+    - description: Comma-separated list of file names to filter by.
+      isArray: true
+      name: file_names
+      required: false
+    - description: Comma-separated list of hashes to filter by.
+      isArray: true
+      name: hash
+      required: false
+    - description: Starting index of overall result set from which to return ids.
+      name: offset
+      required: false
+    - description: Maximum number of resources to return.
+      name: limit
+      required: false
+    description: Retrieve ODS malicious file details.
+    name: cs-falcon-ods-query-malicious-files
+  - arguments:
+    - description: List of hosts to be scanned. "hosts" OR "host_groups" must be set.
+      isArray: true
+      name: hosts
+      required: false
+    - description: List of host groups to be scanned. Must be set if scan is scheduled. "hosts" OR "host_groups" must be set.
+      isArray: true
+      name: host_groups
+      required: false
+    - description: List of file paths to be scanned. "file_paths" OR "scan_exclusions" must be set.
+      isArray: true
+      name: file_paths
+      required: false
+    - description: List of included files or locations for this scan.
+      isArray: true
+      name: scan_inclusions
+    - description: List of excluded files or locations for this scan. "file_paths" OR "scan_exclusions" must be set.
+      isArray: true
+      name: scan_exclusions
+      required: false
+    - description: Scan origin.
+      name: initiated_from
+      required: false
+    - description: Set the scan CPU priority.
+      name: cpu_priority
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - Highest
+        - High
+        - Medium
+        - Low
+        - Lowest
+    - description: Scan description.
+      name: description
+      required: false
+    - description: Flag indicating if identified threats should be quarantined.
+      name: quarantine
+      required: false
+    - description: Amount of time (in seconds) for scan pauses.
+      name: pause_duration
+      required: false
+    - description: Sensor ML detection level.
+      name: sensor_ml_level_detection
+      required: false
+    - description: Sensor ML prevention level.
+      name: sensor_ml_level_prevention
+      required: false
+    - description: ML Detection level for the scan.
+      name: cloud_ml_level_detection
+      required: false
+    - description: ML Prevention level for the scan.
+      name: cloud_ml_level_prevention
+      required: false
+    - description: Maximum time (in seconds) the scan is allowed to execute.
+      name: max_duration
+      required: false
+    - description: If to make it a scheduled scan.
+      name: is_scheduled
+      required: false
+    - description: Time to start scan in yyyy-MM-ddThh:mm format. Must be set if scan is scheduled.
+      name: schedule_start_timestamp
+      required: false
+    - description: Set the schedule interval. Must be set if scan is scheduled.
+      name: schedule_interval
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - Never
+        - Daily
+        - Weekly
+        - Every other week
+        - Every 4 weeks
+        - Monthly
+    description: Create an ODS scan.
+    name: cs-falcon-ods-create-scan
+  - arguments:
+    - description: Comma-separated list of scheduled scan IDs to delete.
+      isArray: true
+      name: ids
+      required: false
+    - description: Valid CS-Falcon-FQL filter to delete scans by.
+      name: filter
+      required: false
+    description: Delete ODS scheduled scans.
+    name: cs-falcon-ods-delete-scheduled-scan
+  - arguments:
+    - description: Comma-separated list of scan IDs to cancel.
+      isArray: true
+      name: ids
+      required: true
+    description: Cancel ODS scans.
+    name: cs-falcon-ods-cancel-scan
   dockerimage: demisto/python3:3.10.11.54132
   isfetch: true
   ismappable: true
