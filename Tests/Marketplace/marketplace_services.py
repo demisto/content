@@ -36,6 +36,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 PULL_REQUEST_PATTERN = '\(#(\d+)\)'
 TAGS_SECTION_PATTERN = '(.|\s)+?'
 SPECIAL_DISPLAY_NAMES_PATTERN = re.compile(r'- \*\*(.+?)\*\*')
+MAX_TOVERSION = '99.99.99'
 
 
 class Pack(object):
@@ -2005,6 +2006,49 @@ class Pack(object):
 
         return task_status and self.is_changelog_exists()
 
+    def is_replace_item_in_folder_collected_list(self, content_item: dict,
+                                                 content_items_to_version_map: dict,
+                                                 content_item_id: str):
+        """ Checks the fromversion and toversion in the content_item with
+            the fromversion toversion in content_items_to_version_map
+            If the content_item has a more up to date toversion and fromversion will
+            replace it in the map and metadata list
+        Returns:
+             A boolean whether the version in the list posted to metadata should be
+             replaced with the current version from the content item.
+        """
+        content_item_fromversion = content_item.get('fromversion') or content_item.get('fromVersion') or ''
+        content_item_toversion = content_item.get(
+            'toversion') or content_item.get('toVersion') or MAX_TOVERSION
+        content_item_latest_version = content_items_to_version_map.setdefault(
+            content_item_id,
+            {'fromversion': content_item_fromversion,
+             'toversion': content_item_toversion,
+             'added_to_metadata_list': False,
+             })
+        if (replace_old_playbook := content_item_latest_version.get('toversion') < content_item_fromversion):
+            content_items_to_version_map[content_item_id] = {
+                'fromversion': content_item_fromversion,
+                'toversion': content_item_toversion,
+                'added_to_metadata_list': True,
+            }
+        return replace_old_playbook
+
+    def get_latest_versions(self, content_items_id_to_version_map: dict, content_item_id: str):
+        """ Get the latest fromversion and toversion of a content item.
+        Returns:
+             A tuple containing the latest fromversion and toversion.
+        """
+        if (curr_content_item := content_items_id_to_version_map.get(
+                content_item_id)):
+            latest_fromversion = curr_content_item.get('fromversion', '')
+            latest_toversion = curr_content_item.get('toversion', '')
+        else:
+            latest_fromversion = ''
+            latest_toversion = ''
+        latest_toversion = latest_toversion if latest_toversion != MAX_TOVERSION else ''
+        return latest_fromversion, latest_toversion
+
     def collect_content_items(self):
         """ Iterates over content items folders inside pack and collects content items data.
 
@@ -2014,6 +2058,7 @@ class Pack(object):
         """
         task_status = False
         content_items_result: dict = {}
+        content_items_id_to_version_map: dict = {}
 
         try:
 
@@ -2026,7 +2071,7 @@ class Pack(object):
                 elif current_directory in [PackFolders.GENERIC_TYPES.value, PackFolders.GENERIC_FIELDS.value]:
                     continue
 
-                folder_collected_items = []
+                folder_collected_items: list = []
                 for pack_file_name in pack_files_names:
                     if not pack_file_name.endswith(('.json', '.yml')):
                         continue
@@ -2068,15 +2113,18 @@ class Pack(object):
                                                                           self._pack_name)
 
                     content_item_tags = content_item.get('tags', [])
+                    metadata_toversion = to_version or ''
 
                     if current_directory == PackFolders.SCRIPTS.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('commonfields', {}).get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('comment', ''),
                             'tags': content_item_tags,
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                         if not self._contains_transformer and 'transformer' in content_item_tags:
                             self._contains_transformer = True
@@ -2086,17 +2134,18 @@ class Pack(object):
 
                     elif current_directory == PackFolders.PLAYBOOKS.value:
                         self.add_pack_type_tags(content_item, 'Playbook')
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
-
+                            'marketplaces': content_item.get('marketplaces', ['xsoar', 'marketplacev2']),
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
                     elif current_directory == PackFolders.INTEGRATIONS.value:
                         integration_commands = content_item.get('script', {}).get('commands', [])
                         self.add_pack_type_tags(content_item, 'Integration')
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('commonfields', {}).get('id', ''),
                             'name': content_item.get('display', ''),
                             'description': content_item.get('description', ''),
@@ -2105,19 +2154,23 @@ class Pack(object):
                                 {'name': c.get('name', ''), 'description': c.get('description', '')}
                                 for c in integration_commands],
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.INCIDENT_FIELDS.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'type': content_item.get('type', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.INCIDENT_TYPES.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'playbook': content_item.get('playbookId', ''),
@@ -2126,181 +2179,218 @@ class Pack(object):
                             'days': int(content_item.get('days', 0)),
                             'weeks': int(content_item.get('weeks', 0)),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.DASHBOARDS.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.INDICATOR_FIELDS.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'type': content_item.get('type', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.REPORTS.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.INDICATOR_TYPES.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'details': content_item.get('details', ''),
                             'reputationScriptName': content_item.get('reputationScriptName', ''),
                             'enhancementScriptNames': content_item.get('enhancementScriptNames', []),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.LAYOUTS.value:
-                        layout_metadata = {
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
                         layout_description = content_item.get('description')
                         if layout_description is not None:
-                            layout_metadata['description'] = layout_description
-                        folder_collected_items.append(layout_metadata)
+                            metadata_output['description'] = layout_description
 
                     elif current_directory == PackFolders.CLASSIFIERS.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name') or content_item.get('id', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.WIDGETS.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'dataType': content_item.get('dataType', ''),
                             'widgetType': content_item.get('widgetType', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.LISTS.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.GENERIC_DEFINITIONS.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif parent_directory == PackFolders.GENERIC_FIELDS.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'type': content_item.get('type', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.GENERIC_MODULES.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif parent_directory == PackFolders.GENERIC_TYPES.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.PREPROCESS_RULES.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.JOBS.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             # note that `name` may technically be blank, but shouldn't pass validations
                             'name': content_item.get('name', ''),
                             'details': content_item.get('details', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.PARSING_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'ParsingRule')
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'ModelingRule')
                         schema: Dict[str, Any] = json.loads(content_item.get('schema') or '{}')
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                             'datasets': list(schema.keys()),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.CORRELATION_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'CorrelationRule')
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('global_rule_id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.XSIAM_DASHBOARDS.value and pack_file_name.startswith("external-"):
                         preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_DASHBOARDS.value)
-                        dashboard = {
+                        metadata_output = {
                             'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('dashboards_data', [{}])[0].get('name', ''),
                             'description': content_item.get('dashboards_data', [{}])[0].get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                         if preview:
-                            dashboard.update({"preview": preview})
-                        folder_collected_items.append(dashboard)
+                            metadata_output.update({"preview": preview})
 
                     elif current_directory == PackFolders.XSIAM_REPORTS.value and pack_file_name.startswith("external-"):
                         preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_REPORTS.value)
-                        report = {
+                        metadata_output = {
                             'id': content_item.get('templates_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('templates_data', [{}])[0].get('report_name', ''),
                             'description': content_item.get('templates_data', [{}])[0].get('report_description', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
 
                         if preview:
-                            report.update({"preview": preview})
-                        folder_collected_items.append(report)
+                            metadata_output.update({"preview": preview})
 
                     elif current_directory == PackFolders.WIZARDS.value:
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
@@ -2308,35 +2398,53 @@ class Pack(object):
                             'fromVersion': content_item.get('fromVersion', ''),
                             'toVersion': content_item.get('toVersion', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                        }
 
                     elif current_directory == PackFolders.XDRC_TEMPLATES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'XDRCTemplate')
-                        folder_collected_items.append({
+                        metadata_output = {
                             'id': content_item.get('content_global_id', ''),
                             'content_global_id': content_item.get('content_global_id', ''),
                             'name': content_item.get('name', ''),
                             'os_type': content_item.get('os_type', ''),
                             'profile_type': content_item.get('profile_type', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                        })
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
 
                     elif current_directory == PackFolders.LAYOUT_RULES.value and pack_file_name.startswith(
                             "external-"):
                         self.add_pack_type_tags(content_item, 'LayoutRule')
-                        layout_rule_metadata = {
+                        metadata_output = {
                             'id': content_item.get('rule_id', ''),
                             'name': content_item.get('rule_name', ''),
                             'layout_id': content_item.get('layout_id', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                         }
                         layout_rule_description = content_item.get('description')
                         if layout_rule_description is not None:
-                            layout_rule_metadata['description'] = layout_rule_description
-                        folder_collected_items.append(layout_rule_metadata)
-
+                            metadata_output['description'] = layout_rule_description
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
+                        continue
+                    if self.is_replace_item_in_folder_collected_list(
+                            content_item, content_items_id_to_version_map,
+                            metadata_output['id']):
+                        latest_fromversion, latest_toversion = self.get_latest_versions(
+                            content_items_id_to_version_map, metadata_output['id'])
+                        metadata_output['fromversion'] = latest_fromversion
+                        metadata_output['toversion'] = latest_toversion
+                        folder_collected_items = [metadata_output
+                                                  if d["id"] == metadata_output["id"]
+                                                  else d
+                                                  for d in folder_collected_items]
+                    elif not content_items_id_to_version_map.get(
+                            metadata_output['id'], {}).get('added_to_metadata_list', ''):
+                        folder_collected_items.append(metadata_output)
+                        content_items_id_to_version_map.get(metadata_output['id'], {})['added_to_metadata_list'] = True
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = CONTENT_ITEM_NAME_MAPPING[current_directory]
