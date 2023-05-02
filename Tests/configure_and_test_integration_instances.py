@@ -53,7 +53,8 @@ DOCKER_HARDENING_CONFIGURATION = {
     'docker.cpu.limit': '1.0',
     'docker.run.internal.asuser': 'true',
     'limit.docker.cpu': 'true',
-    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',  # noqa: E501
+    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',
+    # noqa: E501
     'powershell.pass.extra.keys': f'--env##no_proxy={NO_PROXY}',
     'monitoring.pprof': 'true',
     'enable.pprof.memory.dump': 'true',
@@ -757,7 +758,7 @@ class CloudBuild(Build):
         super().__init__(options)
         self.is_cloud = True
         self.cloud_machine = options.cloud_machine
-        self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
+        self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id = \
             self.get_cloud_configuration(options.cloud_machine, options.cloud_servers_path,
                                          options.cloud_servers_api_keys)
         self.servers = [CloudServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
@@ -1160,8 +1161,32 @@ def set_integration_params(build,
         (bool): True if integrations params were filled with secret configuration values, otherwise false
     """
     for integration in integrations:
-        integration_params = [change_placeholders_to_values(placeholders_map, item) for item
-                              in secret_params if item['name'] == integration['name']]
+        logging.info(f"*** DEBUG integration['name'] - {integration['name']}")
+        if integration['name'] == "Core REST API":
+            logging.info(f"*** DEBUG build.is_cloud - {build.is_cloud}, build.base_url - {build.base_url}, build.xdr_auth_key: {build.xdr_auth_key}")
+            if build.is_cloud:
+                integration_params = {  # type: ignore
+                    "url": build.base_url,
+                    "creds_apikey": {
+                        "identifier": str(build.xdr_auth_id),
+                        "password": build.api_key,
+                    },
+                    "auth_method": "Standard",
+                    "insecure": True,
+                }
+            else:
+                integration_params = {  # type: ignore
+                    "url": "https://localhost",
+                    "creds_apikey": {
+                        "identifier": '',
+                        "password": build.api_key,
+                    },
+                    "auth_method": "Standard",
+                    "insecure": True,
+                }
+        else:
+            integration_params = [change_placeholders_to_values(placeholders_map, item) for item
+                                  in secret_params if item['name'] == integration['name']]
         if integration_params:
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
@@ -1219,7 +1244,7 @@ def set_module_params(param_conf, integration_params):
     if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
         # param defined in conf
         key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
-        if key == 'credentials':
+        if key == 'credentials' or key == "creds_apikey":
             credentials = integration_params[key]
             param_value = {
                 'credential': '',
@@ -1836,7 +1861,8 @@ def get_packs_with_higher_min_version(packs_names: Set[str],
     for pack_name in packs_names:
         pack_metadata = get_json_file(f"{extract_content_packs_path}/{pack_name}/metadata.json")
         server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION,
-                                               pack_metadata.get('server_min_version', Metadata.SERVER_DEFAULT_MIN_VERSION))
+                                               pack_metadata.get('server_min_version',
+                                                                 Metadata.SERVER_DEFAULT_MIN_VERSION))
 
         if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
             packs_with_higher_version.add(pack_name)

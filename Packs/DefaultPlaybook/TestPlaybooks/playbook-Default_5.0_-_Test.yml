@@ -10,7 +10,7 @@ tasks:
     task:
       id: ce563e6a-6165-4be5-8a71-90d678297d24
       version: -1
-      name: ""
+      name: "test"
       iscommand: false
       brand: ""
       description: ''
