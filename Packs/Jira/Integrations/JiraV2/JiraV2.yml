@@ -544,7 +544,7 @@ script:
     outputs:
     - contextPath: Ticket.Id
       description: The ticket ID.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Key
       description: The ticket key.
       type: Unknown
