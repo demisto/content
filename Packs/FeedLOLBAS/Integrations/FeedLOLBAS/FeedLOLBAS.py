@@ -65,7 +65,7 @@ def create_relationship_list(indicators: List[Dict[str, Any]]) -> List[Dict[str,
     for indicator in indicators:
         entity_a = indicator.get('value')
         for command in indicator.get('fields', {}).get('Commands', []):
-            if mitre_id := command.get('mitreid'):
+            if mitre_id := command.get('mitrename'):
                 relation_obj = EntityRelationship(
                     name=EntityRelationship.Relationships.RELATED_TO,
                     entity_a=entity_a,
@@ -95,7 +95,7 @@ def get_mitre_data(client: Client) -> List[Dict[str, Any]]:
 
 
 def map_indicator_fields(pre_indicator: Dict[str, Any]) -> Dict[str, Any]:
-    command_keys = ['Command', 'Description', 'Usecase', 'Category', 'Privileges', 'MitreID', 'OperatingSystem']
+    command_keys = ['Command', 'Description', 'Usecase', 'Category', 'Privileges', 'MitreID', 'OperatingSystem', 'MitreName']
 
     mapped_commands = []
     mapped_detections = []
@@ -152,7 +152,7 @@ def pre_process_indicator(pre_indicator: Dict[str, Any], mitre_id_to_name) -> Li
     for command in pre_indicator.get('Commands', []):
         if mitre_id := command.get('MitreID', ''):
             mitre_name = mitre_id_to_name.get(mitre_id, '')
-            command['MitreID'] = mitre_name
+            command['MitreName'] = mitre_name
             mitre_tags.extend([mitre_name, mitre_id, command.get('Category')])
     return mitre_tags
 
