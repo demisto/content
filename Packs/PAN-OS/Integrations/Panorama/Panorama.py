@@ -7143,6 +7143,8 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
     edl = args.get('dns_signature_source')
     action = args.get('action')
     packet_capture = args.get('packet_capture', 'disable')
+        
+    # for Panorama instance
     params = {
         'action': 'set',
         'type': 'config',
@@ -7156,6 +7158,10 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
                    f'</lists>'
                    f'</botnet-domains>'
     }
+    if VSYS:  # if it's a firewall instance, modify the xpath param
+        params['xpath'] = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']" \
+         f"/profiles/spyware/entry[@name='{anti_spy_ware_name}']"
+            
     result = http_request(
         URL,
         'POST',
