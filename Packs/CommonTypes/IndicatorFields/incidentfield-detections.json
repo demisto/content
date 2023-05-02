@@ -39,8 +39,8 @@
         {
             "key": "content",
             "displayName": "Content",
-            "type": "url",
-            "orgType": "url",
+            "type": "shortText",
+            "orgType": "shortText",
             "required": false,
             "script": "",
             "width": 150,
