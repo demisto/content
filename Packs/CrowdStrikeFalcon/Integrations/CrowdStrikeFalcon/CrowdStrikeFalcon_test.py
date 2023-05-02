@@ -637,7 +637,7 @@ def test_get_script_without_content(requests_mock, mocker):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/scripts/v1?ids={script_id}',
+        f'{SERVER_URL}/real-time-response/entities/scripts/v2?ids={script_id}',
         json=response,
         status_code=200
     )
@@ -714,7 +714,7 @@ def test_get_script_with_content(requests_mock, mocker, request):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/scripts/v1?ids={script_id}',
+        f'{SERVER_URL}/real-time-response/entities/scripts/v2?ids={script_id}',
         json=response,
         status_code=200
     )
@@ -765,7 +765,7 @@ def test_get_script_does_not_exist(requests_mock, mocker):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/scripts/v1?ids={script_id}',
+        f'{SERVER_URL}/real-time-response/entities/scripts/v2?ids={script_id}',
         json=response,
         status_code=200
     )
@@ -905,7 +905,7 @@ def test_list_scripts(requests_mock):
         ]
     }
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/scripts/v1',
+        f'{SERVER_URL}/real-time-response/entities/scripts/v2',
         json=response
     )
     results = list_scripts_command()
@@ -1052,7 +1052,7 @@ def test_get_file_without_content(requests_mock, mocker):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/put-files/v1?ids={file_id}',
+        f'{SERVER_URL}/real-time-response/entities/put-files/v2?ids={file_id}',
         json=response,
         status_code=200
     )
@@ -1130,7 +1130,7 @@ def test_get_file_with_content(requests_mock, mocker, request):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/put-files/v1?ids={file_id}',
+        f'{SERVER_URL}/real-time-response/entities/put-files/v2?ids={file_id}',
         json=response,
         status_code=200
     )
@@ -1185,7 +1185,7 @@ def test_get_file_does_not_exist(requests_mock, mocker):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/put-files/v1?ids={file_id}',
+        f'{SERVER_URL}/real-time-response/entities/put-files/v2?ids={file_id}',
         json=response,
         status_code=200
     )
@@ -1321,7 +1321,7 @@ def test_list_files(requests_mock):
         ]
     }
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/put-files/v1',
+        f'{SERVER_URL}/real-time-response/entities/put-files/v2',
         json=response
     )
     results = list_files_command()
@@ -1634,7 +1634,7 @@ def test_list_host_files(requests_mock, mocker):
         status_code=201
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/file/v1',
+        f'{SERVER_URL}/real-time-response/entities/file/v2',
         json=response,
         status_code=201
     )
@@ -4369,6 +4369,283 @@ def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker):
     assert outputs.readable_output == expected_hr
 
 
+def test_create_ml_exclusion_command(requests_mock):
+    from CrowdStrikeFalcon import create_ml_exclusion_command
+    requests_mock.post(
+        f'{SERVER_URL}/policy/entities/ml-exclusions/v1',
+        json=load_json('test_data/create_ml_exclusion.json')
+    )
+
+    results = create_ml_exclusion_command({'value': '/test', 'excluded_from': ['blocking'], 'groups': 123456})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('value') == '/test'
+
+
+def test_update_ml_exclusion_command_with_args(requests_mock):
+    from CrowdStrikeFalcon import update_ml_exclusion_command
+    requests_mock.patch(
+        f'{SERVER_URL}/policy/entities/ml-exclusions/v1',
+        json=load_json('test_data/create_ml_exclusion.json')
+    )
+
+    results = update_ml_exclusion_command({'id': 123456, 'value': '/test', 'excluded_from': ['blocking'], 'groups': 123456})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('value') == '/test'
+
+
+def test_update_ml_exclusion_command_without_args(requests_mock):
+    from CrowdStrikeFalcon import update_ml_exclusion_command
+    requests_mock.patch(
+        f'{SERVER_URL}/policy/entities/ml-exclusions/v1',
+        json=load_json('test_data/create_ml_exclusion.json')
+    )
+
+    with pytest.raises(Exception) as e:
+        update_ml_exclusion_command({'id': 123456})
+
+    assert str(e.value) == 'At least one argument (besides the id argument) should be provided to update the exclusion.'
+
+
+def test_delete_ml_exclusion_command(requests_mock):
+    from CrowdStrikeFalcon import delete_ml_exclusion_command
+    requests_mock.delete(
+        f'{SERVER_URL}/policy/entities/ml-exclusions/v1',
+        json=load_json('test_data/create_ml_exclusion.json')
+    )
+
+    results = delete_ml_exclusion_command({'ids': '123456 789456'})
+
+    assert results.readable_output == "The machine learning exclusions with IDs 123456 789456 was successfully deleted."
+
+
+def test_search_ml_exclusion_command_by_ids(requests_mock):
+    from CrowdStrikeFalcon import search_ml_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/entities/ml-exclusions/v1?ids=123456&ids=789012',
+        json=load_json('test_data/create_ml_exclusion.json')
+    )
+
+    results = search_ml_exclusion_command({'ids': '123456,789012'})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('value') == '/test'
+
+
+def test_search_ml_exclusion_command_by_value(requests_mock):
+    from CrowdStrikeFalcon import search_ml_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/queries/ml-exclusions/v1?filter=value%3A%27%2Ftest%27',
+        json={'resources': ['123456']}
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/policy/entities/ml-exclusions/v1?ids=123456',
+        json=load_json('test_data/create_ml_exclusion.json')
+    )
+
+    results = search_ml_exclusion_command({'value': '/test'})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('value') == '/test'
+
+
+def test_search_ml_exclusion_command_by_value_no_results(requests_mock):
+    from CrowdStrikeFalcon import search_ml_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/queries/ml-exclusions/v1?filter=value%3A%27%2Ftest-mock%27',
+        json={}
+    )
+
+    results = search_ml_exclusion_command({'value': '/test-mock'})
+
+    assert results.readable_output == 'The arguments/filters you provided did not match any exclusion.'
+
+
+def test_search_ml_exclusion_command_by_filter(requests_mock):
+    from CrowdStrikeFalcon import search_ml_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/queries/ml-exclusions/v1?filter=value%3A%27%2Ftest%27',
+        json={'resources': ['123456']}
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/policy/entities/ml-exclusions/v1?ids=123456',
+        json=load_json('test_data/create_ml_exclusion.json')
+    )
+
+    results = search_ml_exclusion_command({'filter': 'value:\'/test\''})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('value') == '/test'
+
+
+def test_create_ioa_exclusion_command(requests_mock):
+    from CrowdStrikeFalcon import create_ioa_exclusion_command
+    requests_mock.post(
+        f'{SERVER_URL}/policy/entities/ioa-exclusions/v1',
+        json=load_json('test_data/create_ioa_exclusion.json')
+    )
+
+    results = create_ioa_exclusion_command({'exclusion_name': 'test', 'pattern_id': 123456, 'groups': 123456})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('name') == 'test'
+
+
+def test_update_ioa_exclusion_command_with_args(requests_mock):
+    from CrowdStrikeFalcon import update_ioa_exclusion_command
+    requests_mock.patch(
+        f'{SERVER_URL}/policy/entities/ioa-exclusions/v1',
+        json=load_json('test_data/create_ioa_exclusion.json')
+    )
+
+    results = update_ioa_exclusion_command({'id': 123456, 'exclusion_name': 'test'})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('name') == 'test'
+
+
+def test_update_ioa_exclusion_command_without_args(requests_mock):
+    from CrowdStrikeFalcon import update_ioa_exclusion_command
+    requests_mock.patch(
+        f'{SERVER_URL}/policy/entities/ioa-exclusions/v1',
+        json=load_json('test_data/create_ioa_exclusion.json')
+    )
+
+    with pytest.raises(Exception) as e:
+        update_ioa_exclusion_command({'id': 123456})
+
+    assert str(e.value) == 'At least one argument (besides the id argument) should be provided to update the exclusion.'
+
+
+def test_delete_ioa_exclusion_command(requests_mock):
+    from CrowdStrikeFalcon import delete_ioa_exclusion_command
+    requests_mock.delete(
+        f'{SERVER_URL}/policy/entities/ioa-exclusions/v1',
+        json=load_json('test_data/create_ioa_exclusion.json')
+    )
+
+    results = delete_ioa_exclusion_command({'ids': '123456, 456789'})
+
+    assert results.readable_output == "The IOA exclusions with IDs 123456 456789 was successfully deleted."
+
+
+def test_search_ioa_exclusion_command_by_ids(requests_mock):
+    from CrowdStrikeFalcon import search_ioa_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/entities/ioa-exclusions/v1?ids=123456&ids=789012',
+        json=load_json('test_data/create_ioa_exclusion.json')
+    )
+
+    results = search_ioa_exclusion_command({'ids': '123456,789012'})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('name') == 'test'
+
+
+def test_search_ioa_exclusion_command_by_name(requests_mock):
+    from CrowdStrikeFalcon import search_ioa_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3A~%27test%27',
+        json={'resources': ['123456']}
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/policy/entities/ioa-exclusions/v1?ids=123456',
+        json=load_json('test_data/create_ioa_exclusion.json')
+    )
+
+    results = search_ioa_exclusion_command({'name': 'test'})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('name') == 'test'
+
+
+def test_search_ioa_exclusion_command_by_name_no_results(requests_mock):
+    from CrowdStrikeFalcon import search_ioa_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3A~%27test-mock%27',
+        json={}
+    )
+
+    results = search_ioa_exclusion_command({'name': 'test-mock'})
+
+    assert results.readable_output == 'The arguments/filters you provided did not match any exclusion.'
+
+
+def test_search_ioa_exclusion_command_by_filter(requests_mock):
+    from CrowdStrikeFalcon import search_ioa_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3A%27test%27',
+        json={'resources': ['123456']}
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/policy/entities/ioa-exclusions/v1?ids=123456',
+        json=load_json('test_data/create_ioa_exclusion.json')
+    )
+
+    results = search_ioa_exclusion_command({'filter': 'name:\'test\''})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('name') == 'test'
+
+
+def test_list_quarantined_file_command(requests_mock):
+    from CrowdStrikeFalcon import list_quarantined_file_command
+    requests_mock.get(
+        f'{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27%5B%27INSTANCE-1%27%5D%27&limit=50',
+        json={'resources': ['121212', '171717']}
+    )
+    requests_mock.post(
+        f'{SERVER_URL}/quarantine/entities/quarantined-files/GET/v1',
+        json=load_json('test_data/list_quarantine_files.json')
+    )
+
+    results = list_quarantined_file_command({'hostname': 'INSTANCE-1'})
+
+    assert len(results.outputs) == 2
+    assert results.outputs[0].get('id') == '121212'
+    assert results.outputs[1].get('id') == '171717'
+
+
+def test_list_quarantined_file_command_no_results(requests_mock):
+    from CrowdStrikeFalcon import list_quarantined_file_command
+    requests_mock.get(
+        f'{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27%5B%27INSTANCE-1%27%5D%27&limit=50',
+        json={}
+    )
+
+    results = list_quarantined_file_command({'hostname': 'INSTANCE-1'})
+
+    assert results.readable_output == 'The arguments/filters you provided did not match any files.'
+
+
+def test_apply_quarantine_file_action_command(requests_mock):
+    from CrowdStrikeFalcon import apply_quarantine_file_action_command
+    requests_mock.get(
+        f'{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27%5B%27INSTANCE-1%27%5D%27&limit=50',
+        json={'resources': ['121212', '171717']}
+    )
+    mock_request = requests_mock.patch(
+        f'{SERVER_URL}/quarantine/entities/quarantined-files/v1',
+        json={}
+    )
+
+    results = apply_quarantine_file_action_command({'hostname': 'INSTANCE-1', 'comment': 'Added a test comment.'})
+
+    assert results.readable_output == "The Quarantined File with IDs ['121212', '171717'] was successfully updated."
+    assert mock_request.last_request.text == '{"ids": ["121212", "171717"], "comment": "Added a test comment."}'
+
+
 filter_args = {'key1': 'val1,val2', 'key2': 'val3', 'key3': None}
 custom_filter = 'key1:"val1"+key2:["val3","val4"]'
 
@@ -4780,3 +5057,122 @@ def test_map_malicious_file_resource_to_UI(mocker):
     assert output == mapped_resource
 
 
+@pytest.mark.parametrize(
+    'args, is_scheduled, expected_result',
+    (
+        ({'is_scheduled': True, 'quarantine': 'false', 'schedule_start_timestamp': 'every other week'}, True, {'quarantine': False}),
+        ({'is_scheduled': False, 'cpu_priority': 'Low'}, False, {'cpu_priority': 2}),
+    )
+)
+def test_make_create_scan_request_body(args, is_scheduled, expected_result):
+    """
+    Test make_create_scan_request_body.
+
+    Given
+        - Arguments to create a scan/scheduled-scan.
+
+    When
+        - The user runs the "cs-falcon-ods-create-scan" command
+
+    Then
+        - Return a dict to send as the body for a create scan request.
+    """
+
+    from CrowdStrikeFalcon import make_create_scan_request_body
+
+    output = make_create_scan_request_body(args, is_scheduled)
+
+    if is_scheduled:
+        assert 'hosts' not in output
+        assert type(output['schedule']['start_timestamp']) is int  # function doesn't enforce this
+    else:
+        assert 'hosts' in output
+        assert 'schedule' not in output
+
+    for key, value in expected_result.items():
+        assert output[key] == value
+
+
+@pytest.mark.parametrize(
+    'args, is_error, expected_error_info',
+    (
+        ({'is_scheduled': 'False'}, True, 'MUST set hosts OR host_groups.'),
+        ({'hosts': 'john doe', 'is_scheduled': 'False'}, True, 'MUST set file_paths OR scan_exclusions.'),
+        ({'hosts': 'john doe', 'file_paths': '*', 'is_scheduled': 'true'}, True, 'MUST set schedule_start_timestamp AND schedule_interval AND host_groups for scheduled scans.'),
+        ({'hosts': 'john doe', 'file_paths': '*', 'is_scheduled': 'False'}, False, None),
+    )
+)
+def test_ODS_verify_create_scan_command(args, is_error, expected_error_info):
+    """
+    Test ODS_verify_create_scan_command.
+
+    Given
+        - Arguments to create a scan/scheduled-scan.
+
+    When
+        - The user runs the "cs-falcon-ods-create-scan" command
+
+    Then
+        - Return a dict to send as the body for a create scan request.
+    """
+
+    from CrowdStrikeFalcon import ODS_verify_create_scan_command
+
+    if is_error:
+        with pytest.raises(DemistoException) as error_info:
+            ODS_verify_create_scan_command(args)
+        assert str(error_info.value) == expected_error_info
+    else:
+        ODS_verify_create_scan_command(args)
+
+
+@pytest.mark.parametrize(
+    'ids, scans_filter, url_params',
+    (
+        (['id1', 'id2'], None, 'ids=id1&ids=id2'),
+        ([], 'key1:val1+key2:val2', 'filter=key1:val1%2Bkey2:val2'),
+        (['id1', 'id2'], 'key1:val1+key2:val2', 'ids=id1&ids=id2&filter=key1:val1%2Bkey2:val2'),
+    )
+)
+def test_ODS_delete_scheduled_scans_request(mocker, ids, scans_filter, url_params):
+    """
+    Test ODS_delete_scheduled_scans_request.
+
+    Given
+        - Arguments to delete a scheduled-scans.
+
+    When
+        - The user runs the "cs-falcon-ods-delete-scheduled-scan" command
+
+    Then
+        - Delete ODS scheduled scans.
+    """
+
+    from CrowdStrikeFalcon import ODS_delete_scheduled_scans_request
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+    ODS_delete_scheduled_scans_request(ids, scans_filter)
+    http_request.assert_called_with('DELETE', f'/ods/entities/scheduled-scans/v1?{url_params}')
+    
+    
+def test_ODS_cancel_scans_request(mocker):
+    """
+    Test ODS_cancel_scans_request.
+
+    Given
+        - List of ongoing scans to cancel.
+
+    When
+        - The user runs the "cs-falcon-ods-cancel-scan" command
+
+    Then
+        - Cancel ODS scans.
+    """
+    # TODO need to find better check
+    from CrowdStrikeFalcon import ODS_cancel_scans_request
+    
+    ids = ['id1', 'id2']
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+    ODS_cancel_scans_request(ids)
+    http_request.assert_called_with('POST', '/ods/entities/scan-control-actions/cancel/v1', data={'ids': ids})
