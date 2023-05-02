@@ -2468,8 +2468,7 @@ def sub_main():     # pragma: no cover
             demisto.incidents(incidents)
         elif command == "send-mail":
             commands_res = send_email(client, **args)
-            for res in commands_res:
-                return_results(res)
+            return_results(commands_res)
 
         # special outputs commands
         elif command in special_output_commands:
