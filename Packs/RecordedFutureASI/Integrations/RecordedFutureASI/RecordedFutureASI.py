@@ -531,12 +531,13 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], is_by_host: bool,
 
 
 def main() -> None:
-    api_key = demisto.params().get('apikey')
-    project_id = demisto.params().get('project_id')
-    is_by_host = demisto.params().get('issue_grouping') == 'By Host'
-    expand_issues = demisto.params().get('expand_issues') == 'True'
-    incident_limit = int(demisto.params().get('max_fetch', DEFAULT_HOST_LIMIT))
-    min_severity = demisto.params().get('min_severity', DEFAULT_MIN_SEVERITY)
+    params = demisto.params()
+    api_key = params.get('apikey')
+    project_id = params.get('project_id')
+    is_by_host = params.get('issue_grouping') == 'By Host'
+    expand_issues = params.get('expand_issues') == 'True'
+    incident_limit = int(params.get('max_fetch', DEFAULT_HOST_LIMIT))
+    min_severity = params.get('min_severity', DEFAULT_MIN_SEVERITY)
 
     # get the service API url
     base_url = 'https://api.securitytrails.com/v1/asi'
@@ -554,17 +555,18 @@ def main() -> None:
             verify=True,
             headers=headers)
 
-        if demisto.command() == 'test-module':
+        command_args = demisto.args()
+        if command == 'test-module':
             return_results(test_module(client))
-        elif demisto.command() == 'asi-project-issues-fetch':
+        elif command == 'asi-project-issues-fetch':
             next_run, incidents = fetch_incidents(
                 client=client,
-                last_run={'last_fetch': int(demisto.args().get('issues_start', 0))},
-                is_by_host=demisto.args().get('group_by_host', 'false') == 'true',
-                expand_issues=demisto.args().get('expand_issues', 'false') == 'true'
+                last_run={'last_fetch': int(command_args.get('issues_start', 0))},
+                is_by_host=command_args.get('group_by_host', 'false') == 'true',
+                expand_issues=command_args.get('expand_issues', 'false') == 'true'
             )
             demisto.incidents(incidents)
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
@@ -577,7 +579,7 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
