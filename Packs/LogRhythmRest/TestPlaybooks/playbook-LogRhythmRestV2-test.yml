@@ -2445,7 +2445,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: LogRhythm.AlarmSummary.additionalDetails
