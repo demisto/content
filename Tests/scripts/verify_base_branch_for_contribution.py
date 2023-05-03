@@ -15,7 +15,8 @@ def get_base_branch(pr_num):
     """
 
     # Disable insecure warnings
-    requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+    import urllib3
+    urllib3.disable_warnings()
 
     url = 'https://api.github.com/repos/demisto/content/pulls/{}'.format(pr_num)
 
