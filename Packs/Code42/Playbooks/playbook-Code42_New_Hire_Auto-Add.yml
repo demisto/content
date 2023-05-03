@@ -1,17 +1,19 @@
 id: New Hire Auto-Add
 version: -1
+fromversion: 6.8.0
 name: New Hire Auto-Add
-description: Queries stand-up tickets from a ticketing system and passes relevant employee data to the Add Employees to New Hire Watchlist playbook.
+description: Queries stand-up tickets from a ticketing system and passes relevant
+  employee data to the Add Employees to New Hire Watchlist playbook.
 tags:
 - Code42 Incydr
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cfe1ecab-9e34-4146-8293-38c0015e7211
+    taskid: 516f439e-6fe9-4d45-8ce2-3f9fe4fca1f6
     type: start
     task:
-      id: cfe1ecab-9e34-4146-8293-38c0015e7211
+      id: 516f439e-6fe9-4d45-8ce2-3f9fe4fca1f6
       version: -1
       name: ""
       iscommand: false
@@ -38,10 +40,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: afdbd5ad-c846-4091-8211-0791010d209e
+    taskid: 05c90160-f09a-462b-84c8-ba265bdd035f
     type: title
     task:
-      id: afdbd5ad-c846-4091-8211-0791010d209e
+      id: 05c90160-f09a-462b-84c8-ba265bdd035f
       version: -1
       name: Playbook Complete
       type: title
@@ -54,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 270,
-          "y": 1025
+          "y": 855
         }
       }
     note: false
@@ -66,13 +68,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: ca81e831-1571-4e88-807f-f944110f7d8a
+    taskid: a324257b-d602-422c-8489-3d31b9504b09
     type: regular
     task:
-      id: ca81e831-1571-4e88-807f-f944110f7d8a
+      id: a324257b-d602-422c-8489-3d31b9504b09
       version: -1
       name: Query Stand-Up Tickets
-      description: Set a value in context under the key you entered.
+      description: "This task is meant to be edited/replaced with one that makes a
+        query to a ticketing or HR system for newly hired employees. \n        \nFor
+        example, if your company's employee lifecycle process includes creating a
+        new Jira ticket when an employee starts work, you would set this task to query
+        Jira tickets for the relevant project or subject and extract appropriate fields
+        from the ticket.\n\nIf the query returns any results, it should set a list
+        of `Ticket` objects in the context, with one required property `Ticket.username`
+        (the email address that matches the Code42 user account), and an optional
+        `Ticket.departure_date` property (in YYYY-MM-DD format)."
       scriptName: Set
       type: regular
       iscommand: false
@@ -84,7 +94,8 @@ tasks:
       key:
         simple: Ticket
       value:
-        simple: Replace this task with input from a ticketing system and direct the output to a key called Ticket.
+        simple: Replace this task with input from a ticketing system and direct the
+          output to a key called Ticket. See "Details" tab for more information.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -101,49 +112,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: 9e301572-443b-4d17-88cf-d7072fed0a9d
-    type: regular
-    task:
-      id: 9e301572-443b-4d17-88cf-d7072fed0a9d
-      version: -1
-      name: Count Number of Tickets
-      description: Count an array size
-      scriptName: CountArraySize
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      array:
-        simple: ${Ticket}
-      contextKey:
-        simple: ticket_count
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -190,
-          "y": -180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 4462c968-c990-468e-8d23-00a7c6c79d91
+    taskid: 82287946-0c7b-4fe2-8eba-304a906c0481
     type: regular
     task:
-      id: 4462c968-c990-468e-8d23-00a7c6c79d91
+      id: 82287946-0c7b-4fe2-8eba-304a906c0481
       version: -1
       name: Delete All Context Except Log
       description: |-
@@ -174,7 +148,7 @@ tasks:
       {
         "position": {
           "x": 270,
-          "y": 680
+          "y": 510
         }
       }
     note: false
@@ -186,10 +160,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 89ca3220-4923-4421-8563-b3d70f34eafb
+    taskid: 53db0567-7501-44e6-809b-7e0222975f0c
     type: condition
     task:
-      id: 89ca3220-4923-4421-8563-b3d70f34eafb
+      id: 53db0567-7501-44e6-809b-7e0222975f0c
       version: -1
       name: Are There Open Tickets?
       description: ""
@@ -200,7 +174,7 @@ tasks:
       '#default#':
       - "14"
       "Yes":
-      - "10"
+      - "19"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -229,10 +203,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 8b1dcd8e-73cc-456a-84ca-7791f5ad077f
+    taskid: 1b83b69b-54b9-4703-8839-6e08af1e4bbd
     type: regular
     task:
-      id: 8b1dcd8e-73cc-456a-84ca-7791f5ad077f
+      id: 1b83b69b-54b9-4703-8839-6e08af1e4bbd
       version: -1
       name: Set "No Tickets" Log Message
       description: Set a value in context under the key you entered.
@@ -268,10 +242,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: bef23f88-e173-4576-8a41-2ce1acad7de0
+    taskid: 0abbc216-2427-4e2c-842b-bc337698e334
     type: regular
     task:
-      id: bef23f88-e173-4576-8a41-2ce1acad7de0
+      id: 0abbc216-2427-4e2c-842b-bc337698e334
       version: -1
       name: Write Log to Incident War Room
       description: Prints text to war room (Markdown supported)
@@ -291,7 +265,7 @@ tasks:
       {
         "position": {
           "x": 270,
-          "y": 850
+          "y": 680
         }
       }
     note: false
@@ -303,13 +277,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: c1f452cc-61db-417f-8ef6-a2e75060c4df
+    taskid: 14aad8d6-dfc5-4c1b-8173-707dd41ed5e7
     type: playbook
     task:
-      id: c1f452cc-61db-417f-8ef6-a2e75060c4df
+      id: 14aad8d6-dfc5-4c1b-8173-707dd41ed5e7
       version: -1
       name: Add Employees to New Hire Watchlist
-      description: Loops through stand-up tickets provided by the New Hire Auto-Add playbook and adds employees to the New Hire watchlist in Code42 Incydr.
+      description: Loops through stand-up tickets provided by the New Hire Auto-Add
+        playbook and adds employees to the New Hire watchlist in Code42 Incydr.
       playbookName: Add Employees to New Hire Watchlist
       type: playbook
       iscommand: false
@@ -336,7 +311,7 @@ tasks:
       {
         "position": {
           "x": -190,
-          "y": 340
+          "y": 170
         }
       }
     note: false
@@ -348,12 +323,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: aa941916-a34a-49ba-8d43-d4ae0896d2b3
+    taskid: 3a8b1308-ca89-4410-88c3-282a49009d23
     type: regular
     task:
-      id: aa941916-a34a-49ba-8d43-d4ae0896d2b3
+      id: 3a8b1308-ca89-4410-88c3-282a49009d23
       version: -1
-      name: Set "Ticket Count" Log Message
+      name: Set "Retrieved Ticket(s)" Log Message
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -368,14 +343,14 @@ tasks:
       key:
         simple: Log
       value:
-        simple: Retrieved ${ticket_count} ticket(s).
+        simple: Retrieved stand-up ticket(s).
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -190,
-          "y": -5
+          "y": -180
         }
       }
     note: false
@@ -387,10 +362,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 1de5e1fa-a150-4219-8c66-33a8ccdfa20b
+    taskid: 9182e12d-2f63-4e30-8413-476246435da5
     type: regular
     task:
-      id: 1de5e1fa-a150-4219-8c66-33a8ccdfa20b
+      id: 9182e12d-2f63-4e30-8413-476246435da5
       version: -1
       name: Set "Job Complete" Log Message
       description: Set a value in context under the key you entered.
@@ -414,7 +389,7 @@ tasks:
       {
         "position": {
           "x": 270,
-          "y": 510
+          "y": 340
         }
       }
     note: false
@@ -426,10 +401,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: b121f0ad-4394-45a8-8ed4-ac9df4d6e60c
+    taskid: 63ad0694-c936-4afd-8f04-a19adddb8a59
     type: regular
     task:
-      id: b121f0ad-4394-45a8-8ed4-ac9df4d6e60c
+      id: 63ad0694-c936-4afd-8f04-a19adddb8a59
       version: -1
       name: Query New Hire Watchlist
       description: List all users who have been explicitly added to a given watchlist.
@@ -449,7 +424,7 @@ tasks:
       {
         "position": {
           "x": -190,
-          "y": 170
+          "y": 0
         }
       }
     note: false
@@ -461,10 +436,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: d324592a-6437-40d3-89bd-ba4c1b88fa17
+    taskid: 9b75881b-9d1e-418c-85b2-c2607168b272
     type: regular
     task:
-      id: d324592a-6437-40d3-89bd-ba4c1b88fa17
+      id: 9b75881b-9d1e-418c-85b2-c2607168b272
       version: -1
       name: Set "Job Starting" Log Message
       description: Set a value in context under the key you entered.
@@ -503,7 +478,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1920,
+        "height": 1750,
         "width": 840,
         "x": -190,
         "y": -830
@@ -512,6 +487,3 @@ view: |-
   }
 inputs: []
 outputs: []
-tests:
-- Code42 File Search Test
-fromversion: 6.8.0
