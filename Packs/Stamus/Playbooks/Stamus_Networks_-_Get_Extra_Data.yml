@@ -42,8 +42,8 @@ tasks:
       id: af372da4-9b8f-4cf0-8e48-f4cfca8eedb1
       version: -1
       name: Get Event
-      description: '[Enter a description of the command, including any important information
-        users need to know, for example required permissions.]'
+      description: '[Get base events including protocol metadata
+        that can be used as IOCs.]'
       script: '|||stamus-get-events'
       type: regular
       iscommand: true
