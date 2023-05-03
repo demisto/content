@@ -862,7 +862,7 @@ def atp_batch_report_command(client: Client, args: Dict) -> List[CommandResults]
     return command_results_list
 
 
-def atp_report_pcap_command(client: Client, args: Dict) -> List[CommandResults]:
+def atp_report_pcap_command(client: Client, args: Dict):
 
     report_id = args.get("report_id")
 
@@ -874,11 +874,13 @@ def atp_report_pcap_command(client: Client, args: Dict) -> List[CommandResults]:
         command_results_list: List[CommandResults] = []
 
         try:
-            result = client.atp_report_pcap_request(args=query)
+            response = client.atp_report_pcap_request(args=query)
+            response_data_headers = json.loads(json.dumps(dict(response.headers)))
+            response_content = response.content
 
         except DemistoException as err:
             if err.res is not None and err.res.status_code == 404:
-                result = {}
+                response = {}
                 readable_output = f"There is no information about the {str(report_id)}"
                 command_results_list.append(
                     CommandResults(readable_output=readable_output)
@@ -887,13 +889,13 @@ def atp_report_pcap_command(client: Client, args: Dict) -> List[CommandResults]:
                 raise
 
         # check for octet-stream response for PCAP
-        if result.headers['Content-Type'] == 'application/octet-stream':
+        if response_data_headers.get("Content-Type") == 'application/octet-stream':
 
             # set the pcap filename to the report_id.pcap
             pcap_name = report_id + ".pcap"
 
             # write the file prperties to the context
-            return_results(fileResult(pcap_name, result.content))
+            return_results(fileResult(pcap_name, response_content))
 
             ec = {'ID': report_id, 'Name': pcap_name}
 

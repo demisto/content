@@ -13,7 +13,6 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-  display: ""
 - display: Source Reliability
   name: integrationReliability
   type: 15
@@ -27,7 +26,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -135,6 +133,7 @@ script:
       name: cve
       required: true
       secret: false
+    deprecated: false
     description: Checks the reputation of CVE in Threat Vault.
     name: cve
     outputs:
@@ -1246,7 +1245,7 @@ script:
     - contextPath: ThreatVault.ATP.PCAP.Name
       description: Threatvault ATP PCAP Name
       type: string
-  dockerimage: demisto/crypto:1.0.0.55630
+  dockerimage: demisto/crypto:1.0.0.56396
   isfetch: true
   runonce: false
   script: ''
