@@ -1028,9 +1028,15 @@ def delete_issue_command(issue_id_or_key):
         demisto.results('Failed to delete issue.')
 
 
-def update_issue_assignee(issue_id, assignee):
+def update_issue_assignee(issue_id, assignee=None, assignee_id=None):
+    if assignee:
+        body = {"name": assignee}
+    elif assignee_id:
+        body = {"accountId": assignee_id}
+    else:
+        raise DemistoException(f'Please provide assignee for Jira server or assignee_id for jira cloud')
     url = f'rest/api/latest/issue/{issue_id}/assignee'
-    jira_req('PUT', url, json.dumps({"name": assignee}))
+    jira_req('PUT', url, json.dumps(body))
     return get_issue(issue_id, is_update=True)
 
 
