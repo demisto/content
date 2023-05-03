@@ -2,17 +2,18 @@ id: Add Employees to New Hire Watchlist
 version: -1
 fromversion: "6.8.0"
 name: Add Employees to New Hire Watchlist
-description: Loops through stand-up tickets provided by the New Hire Auto-Add playbook and adds employees to the New Hire watchlist in Code42 Incydr.
+description: Loops through stand-up tickets provided by the New Hire Auto-Add playbook
+  and adds employees to the New Hire watchlist in Code42 Incydr.
 tags:
 - Code42 Incydr
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 08f37568-5152-4500-85b2-3c7e919d4423
+    taskid: 59df06b9-b554-44da-80b2-e2eac2d5b8f9
     type: start
     task:
-      id: 08f37568-5152-4500-85b2-3c7e919d4423
+      id: 59df06b9-b554-44da-80b2-e2eac2d5b8f9
       version: -1
       name: ""
       description: ""
@@ -39,10 +40,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 5ede1a24-cb2d-41db-81cd-f1d50f26b93a
+    taskid: d06f9f06-5c7f-42af-8619-d791401f8d2d
     type: regular
     task:
-      id: 5ede1a24-cb2d-41db-81cd-f1d50f26b93a
+      id: d06f9f06-5c7f-42af-8619-d791401f8d2d
       version: -1
       name: Add User to New Hire Watchlist
       description: Add a user to a watchlist.
@@ -79,10 +80,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: bd73e57d-821f-42e8-8926-0457a245f80a
+    taskid: faf3a096-0b81-4c56-800b-2e691bd283e8
     type: condition
     task:
-      id: bd73e57d-821f-42e8-8926-0457a245f80a
+      id: faf3a096-0b81-4c56-800b-2e691bd283e8
       version: -1
       name: Is Username Already in Watchlist?
       description: ""
@@ -124,10 +125,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: e1c0ba1d-a18b-405c-8699-70ecab33091f
+    taskid: 0b24a979-3119-43ee-849c-90fb509c907f
     type: regular
     task:
-      id: e1c0ba1d-a18b-405c-8699-70ecab33091f
+      id: 0b24a979-3119-43ee-849c-90fb509c907f
       version: -1
       name: Set "No Action Taken" Log Message
       description: Set a value in context under the key you entered.
@@ -144,7 +145,8 @@ tasks:
       key:
         simple: Log
       value:
-        simple: No action taken on ${inputs.ticket_username}. Employee is in the New Hire watchlist with a start date of ${inputs.ticket_start_date}.
+        simple: No action taken on ${inputs.ticket_username}. Employee is in the New
+          Hire watchlist with a start date of ${inputs.ticket_start_date}.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -163,10 +165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: eee5078e-6ce1-4a39-8bdb-a6ae58994c73
+    taskid: 8fcc4eb3-d69b-4739-86c2-e22d75165dfa
     type: regular
     task:
-      id: eee5078e-6ce1-4a39-8bdb-a6ae58994c73
+      id: 8fcc4eb3-d69b-4739-86c2-e22d75165dfa
       version: -1
       name: Set "Added User" Log Message
       description: Set a value in context under the key you entered.
@@ -183,7 +185,8 @@ tasks:
       key:
         simple: Log
       value:
-        simple: Added ${inputs.ticket_username} to New Hire watchlist with a start date of ${inputs.ticket_start_date}.
+        simple: Added ${inputs.ticket_username} to New Hire watchlist with a start
+          date of ${inputs.ticket_start_date}.
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -203,10 +206,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 000d66a6-005d-4c28-8068-1900645ca98c
+    taskid: d3d142b2-cb9e-4409-8278-332718940f04
     type: regular
     task:
-      id: 000d66a6-005d-4c28-8068-1900645ca98c
+      id: d3d142b2-cb9e-4409-8278-332718940f04
       version: -1
       name: Set "Error Adding" Log Message
       description: Set a value in context under the key you entered.
@@ -242,10 +245,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 1119842e-2372-41cf-8314-e45749a380a0
+    taskid: 2202dbcf-1bce-49d4-8f24-756331ffbb93
     type: title
     task:
-      id: 1119842e-2372-41cf-8314-e45749a380a0
+      id: 2202dbcf-1bce-49d4-8f24-756331ffbb93
       version: -1
       name: Playbook Complete
       description: ""
@@ -270,10 +273,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 6d48a507-19ce-4f4b-8257-f2940bf7aa57
+    taskid: 1e70dec7-2b85-4747-8770-455f32bd9579
     type: regular
     task:
-      id: 6d48a507-19ce-4f4b-8257-f2940bf7aa57
+      id: 1e70dec7-2b85-4747-8770-455f32bd9579
       version: -1
       name: Delete New Hire Context
       description: |-
@@ -310,10 +313,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 32f8f637-a00f-437e-84db-9faca5892bd6
+    taskid: 000d65d9-6ab8-462b-8ac1-4314b5831106
     type: regular
     task:
-      id: 32f8f637-a00f-437e-84db-9faca5892bd6
+      id: 000d65d9-6ab8-462b-8ac1-4314b5831106
       version: -1
       name: Update Incydr User Profile
       description: Update a user's risk profile.
@@ -384,18 +387,19 @@ inputs:
 - key: ticket_username
   value: {}
   required: true
-  description: The username (in email format) provided in a stand-up ticket from Jira, Zendesk, etc.
-  playbookInputQuery:
+  description: The username (in email format) provided in a stand-up ticket from Jira,
+    Zendesk, etc.
+  playbookInputQuery: null
 - key: ticket_start_date
   value: {}
   required: true
-  description: The start date (in YYYY-MM-DD format) provided in a stand-up ticket from Jira, Zendesk, etc.
-  playbookInputQuery:
+  description: The start date (in YYYY-MM-DD format) provided in a stand-up ticket
+    from Jira, Zendesk, etc.
+  playbookInputQuery: null
 - key: ticket_key
   value: {}
   required: false
-  description: The unique identifier of a stand-up ticket from Jira, Zendesk, etc. (optional).
-  playbookInputQuery:
+  description: The unique identifier of a stand-up ticket from Jira, Zendesk, etc.
+    (optional).
+  playbookInputQuery: null
 outputs: []
-tests:
-- Code42 File Search Test
