@@ -13,7 +13,7 @@ filter _raw_log ~= "\s(WF)\s"
     xdm.source.ipv4 = src_ip_v4,
     xdm.source.ipv6 = src_ip_v6
 | alter
-    xdm.source.port = to_number(arraystring(regextract(_raw_log, "WF(?:\s\S+){3}\s(\S+)"), "")),
+    xdm.source.port = to_integer(arraystring(regextract(_raw_log, "WF(?:\s\S+){3}\s(\S+)"), "")),
     extract_target_ip = arraystring(regextract(_raw_log, "WF(?:\s\S+){4}\s(\S+)"), "")
 | alter
     trg_ip_v4 = if(extract_target_ip !~= ":", extract_target_ip, null),
@@ -22,7 +22,7 @@ filter _raw_log ~= "\s(WF)\s"
     xdm.target.ipv4 = trg_ip_v4,
     xdm.target.ipv6 = trg_ip_v6
 | alter
-    xdm.target.port = to_number(arraystring(regextract(_raw_log, "WF(?:\s\S+){5}\s(\S+)"), "")),
+    xdm.target.port = to_integer(arraystring(regextract(_raw_log, "WF(?:\s\S+){5}\s(\S+)"), "")),
     xdm.network.rule = arraystring(regextract(_raw_log, "WF(?:\s\S+){6}\s(\S+)"), ""),
     //rule_type = arraystring(regextract(_raw_log, "WF\s\S+\s\S+\s\S+\s\S+\s\S+\s\S+\s\S+\s(\S+)"), "")
     xdm.observer.action = arraystring(regextract(_raw_log, "WF(?:\s\S+){8}\s(\S+)"), ""),
@@ -64,18 +64,18 @@ filter _raw_log ~= "\s(TR)\s"
     xdm.intermediate.ipv4 = server_intermediate_ip_v4,
     xdm.intermediate.ipv6 = server_intermediate_ip_v6
 | alter
-    xdm.target.port = to_number(arraystring(regextract(_raw_log, "TR\s\S+\s(\S+)"), "")),
-    xdm.source.port = to_number(arraystring(regextract(_raw_log, "TR(?:\s\S+){3}\s(\S+)"), "")),
+    xdm.target.port = to_integer(arraystring(regextract(_raw_log, "TR\s\S+\s(\S+)"), "")),
+    xdm.source.port = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){3}\s(\S+)"), "")),
     xdm.source.user.username = arraystring(regextract(_raw_log, "TR(?:\s\S+){4}\s(\S+)"), ""),
     //certificate_user = arraystring(regextract(_raw_log, "TR\s\S+\s\S+\s\S+\s\S+\s\S+\s(\S+)"), "")
     xdm.network.http.method = arraystring(regextract(_raw_log, "TR(?:\s\S+){6}\s(\S+)"), ""),
     xdm.network.application_protocol = arraystring(regextract(_raw_log, "TR(?:\s\S+){7}\s(\S+)"), ""),
     //version = arraystring(regextract(_raw_log, "TR\s\S+\s\S+\s\S+\s\S+\s\S+\s\S+\s\S+\s\S+\s\S+\s(\S+)"), "")
     xdm.network.http.response_code = arraystring(regextract(_raw_log, "TR(?:\s\S+){10}\s(\S+)"), ""),
-    xdm.source.sent_bytes = to_number(arraystring(regextract(_raw_log, "TR(?:\s\S+){11}\s(\S+)"), "")),
-    xdm.target.sent_bytes = to_number(arraystring(regextract(_raw_log, "TR(?:\s\S+){12}\s(\S+)"), "")),
-    xdm.event.duration = to_number(arraystring(regextract(_raw_log, "TR(?:\s\S+){14}\s(\S+)"), "")),
-    xdm.intermediate.port = to_number(arraystring(regextract(_raw_log, "TR(?:\s\S+){16}\s(\S+)"), "")),
+    xdm.source.sent_bytes = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){11}\s(\S+)"), "")),
+    xdm.target.sent_bytes = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){12}\s(\S+)"), "")),
+    xdm.event.duration = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){14}\s(\S+)"), "")),
+    xdm.intermediate.port = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){16}\s(\S+)"), "")),
     xdm.observer.action = arraystring(regextract(_raw_log, "TR(?:\s\S+){21}\s(\S+)"), ""),
     xdm.target.url = arraystring(regextract(_raw_log, "TR(?:\s\S+){23}\s(\S+)"), ""),
     //query_part = arraystring(regextract(_raw_log, "TR(?:\s\S+){24}\s(\S+)"), ""),
@@ -102,7 +102,7 @@ filter _raw_log ~= "\s(AUDIT)\s"
     xdm.source.ipv4 = src_ip_v4,
     xdm.source.ipv6 = src_ip_v6
 | alter
-    xdm.source.port = to_number(arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){3}\s(\S+)"), "")),
+    xdm.source.port = to_integer(arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){3}\s(\S+)"), "")),
     xdm.event.operation = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){4}\s(\S+)"), ""),
     xdm.source.process.name = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){6}\s(\S+)"), ""),
     xdm.target.resource.type = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){8}\s(\S+)"), ""),
@@ -129,7 +129,7 @@ filter _raw_log ~= "\s(NF)\s"
     xdm.target.ipv4 = trg_ip_v4,
     xdm.target.ipv6 = trg_ip_v6
 | alter
-    xdm.source.port = to_number(arraystring(regextract(_raw_log, "NF(?:\s\S+){3}\s(\S+)"), "")),
-    xdm.target.port = to_number(arraystring(regextract(_raw_log, "NF(?:\s\S+){5}\s(\S+)"), "")),
+    xdm.source.port = to_integer(arraystring(regextract(_raw_log, "NF(?:\s\S+){3}\s(\S+)"), "")),
+    xdm.target.port = to_integer(arraystring(regextract(_raw_log, "NF(?:\s\S+){5}\s(\S+)"), "")),
     xdm.observer.action = arraystring(regextract(_raw_log, "NF(?:\s\S+){6}\s(\S+)"), ""),
     xdm.network.rule = arraystring(regextract(_raw_log, "NF(?:\s\S+){7}\s(\S+)"), "");
