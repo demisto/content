@@ -27,7 +27,7 @@ args:
 - name: subject_include_incident_id
   required: false
   description: Include the Incident id within the email subject.
-  defaultValue: false
+  defaultValue: 'false'
 comment: |-
   Send email reply
   This automation runs using the default Limited User role, unless you explicitly change the permissions.

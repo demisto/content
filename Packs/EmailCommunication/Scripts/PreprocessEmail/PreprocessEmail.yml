@@ -9,6 +9,7 @@ args:
   required: false
   description: Skip incident creation for email that we can't find existing incident for them.
   defaultValue: false
+  type: 8
 comment: |-
   Preprocessing script for email communication layout.
   This script checks if the incoming email contains an Incident ID to link the mail to an existing incident, and tags the email as "email-thread".

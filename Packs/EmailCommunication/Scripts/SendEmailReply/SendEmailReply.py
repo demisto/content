@@ -77,8 +77,8 @@ def validate_email_sent(incident_id, email_subject, subject_include_incident_id,
 def execute_reply_mail(incident_id, email_subject, subject_include_incident_id, email_to, reply_body, service_mail,
                        email_cc, email_bcc, reply_html_body, entry_id_list, email_latest_message, email_code,
                        mail_sender_instance):
-    if subject_include_incident_id and f'[${incident_id}]' not in email_subject:
-        email_subject = f'[${incident_id}] ${email_subject}'
+    if subject_include_incident_id and f'[{incident_id}]' not in email_subject:
+        email_subject = f'[{incident_id}] {email_subject}'
 
     if f'<{email_code}' not in email_subject:
         subject_with_id = f"<{email_code}> {email_subject}"
@@ -274,8 +274,8 @@ def send_new_mail_request(incident_id, email_subject, subject_include_incident_i
             service_mail: Address the email is sent from
         Returns: Results from the 'send-mail' command
         """
-    if subject_include_incident_id and f'[${incident_id}]' not in email_subject:
-        email_subject = f'[${incident_id}] ${email_subject}'
+    if subject_include_incident_id and f'[{incident_id}]' not in email_subject:
+        email_subject = f'[{incident_id}] {email_subject}'
 
     if f'<{email_code}' not in email_subject:
         subject_with_id = f"<{email_code}> {email_subject}"
@@ -919,8 +919,8 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
                                          reply_code, mail_sender_instance)
             return_results(result)
 
-            if subject_include_incident_id and f'[${incident_id}]' not in reply_subject:
-                reply_subject = f'[${incident_id}] ${reply_subject}'
+            if subject_include_incident_id and f'[{incident_id}]' not in reply_subject:
+                reply_subject = f'[{incident_id}] ${reply_subject}'
 
             if f'<{reply_code}' not in reply_subject:
                 subject_with_id = f"<{reply_code}> {reply_subject}"
@@ -971,7 +971,7 @@ def main():
     new_email_subject = custom_fields.get('emailnewsubject')
     new_email_body = custom_fields.get('emailnewbody')
     email_selected_thread = custom_fields.get('emailselectedthread')
-    subject_include_incident_id = args.get('subject_include_incident_id', False)
+    subject_include_incident_id = argToBoolean(args.get('subject_include_incident_id', False))
 
     if new_email_attachments:
         new_attachment_names = ', '.join([attachment.get('name', '') for attachment in new_email_attachments])
