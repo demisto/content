@@ -3356,11 +3356,11 @@ Retrieve information about one or more roles created in your environment.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.Role.pretty name | String | Name of the role as it appears in the Management Console. | 
+| PaloAltoNetworksXDR.Role.pretty_name | String | Name of the role as it appears in the Management Console. | 
 | PaloAltoNetworksXDR.Role.permissions | array | List of permissions associated with this role. | 
-| PaloAltoNetworksXDR.Role.insert time | Number | Timestamp of when the Role was created. | 
-| PaloAltoNetworksXDR.Role.update time | Number | Timestamp of when the Role was last updated. | 
-| PaloAltoNetworksXDR.Role.created by | String | Email of the user who created the Role. | 
+| PaloAltoNetworksXDR.Role.insert_time | Number | Timestamp of when the Role was created. | 
+| PaloAltoNetworksXDR.Role.update_time | Number | Timestamp of when the Role was last updated. | 
+| PaloAltoNetworksXDR.Role.created_by | String | Email of the user who created the Role. | 
 | PaloAltoNetworksXDR.Role.description | String | Description of the Role, if available. | 
 | PaloAltoNetworksXDR.Role.groups | array | Group names associated with the Role. | 
 | PaloAltoNetworksXDR.Role.users | array | Email address of users associated with the Role. | 
