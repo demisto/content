@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id:  Palo Alto Networks - Prisma SASE
+  id:  Palo Alto Networks - Prisma SASE Dev
   version: -1
 configuration:
 - defaultvalue: https://api.sase.paloaltonetworks.com
@@ -36,8 +36,8 @@ configuration:
   section: Connect
   advanced: true
 description: Provides commands for interaction with Prisma SASE API.
-display:  Palo Alto Networks - Prisma SASE
-name:  Palo Alto Networks - Prisma SASE
+display:  Palo Alto Networks - Prisma SASE Dev
+name:  Palo Alto Networks - Prisma SASE Dev
 script:
   commands:
   - arguments:
@@ -594,7 +594,10 @@ script:
       required: false
     - auto: PREDEFINED
       default: false
-      description: The type of the address.
+      description: "The type of the address. \nThe optional types are: \nIP Netmask: IP address or a network using the slash notation - ip_address/mask.
+      \nIP Range: Range of IP addresses using the notation ip_address-ip_address.
+      \nIP Wildcard: IP wildcard address in the format of an IPv4 address followed by a slash and a mask.
+      \nFQDN: Domain Name."
       isArray: false
       name: type
       predefined:
@@ -746,7 +749,10 @@ script:
       required: false
     - auto: PREDEFINED
       default: false
-      description: The type of the address.
+      description: "The type of the address. \nThe optional types are: \nIP Netmask: IP address or a network using the slash notation - ip_address/mask.
+      \nIP Range: Range of IP addresses using the notation ip_address-ip_address.
+      \nIP Wildcard: IP wildcard address in the format of an IPv4 address followed by a slash and a mask.
+      \nFQDN: Domain Name."
       isArray: false
       name: type
       predefined:
