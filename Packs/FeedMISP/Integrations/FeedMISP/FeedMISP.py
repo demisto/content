@@ -499,7 +499,7 @@ Command Functions
 
 def test_module(client: Client) -> str:
     """
-    Test connectivity to server.
+    Fetch a single feed item to assure configuration is valid.
 
     Args:
         client: Client object.
