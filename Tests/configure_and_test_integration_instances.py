@@ -1167,7 +1167,7 @@ def set_integration_params(build,
         if integration['name'] == "Core REST API" and build.is_cloud:
             logging.info(
                 f"*** DEBUG build.is_cloud - {build.is_cloud}, build.base_url - {build.base_url}, build.xdr_auth_key: {build.xdr_auth_id}")
-            integration_params = {  # type: ignore
+            integration_params = [{  # type: ignore
                 "url": build.base_url,
                 "creds_apikey": {
                     "identifier": str(build.xdr_auth_id),
@@ -1175,7 +1175,7 @@ def set_integration_params(build,
                 },
                 "auth_method": "Standard",
                 "insecure": True,
-            }
+            }]
 
         if integration_params:
             matched_integration_params = integration_params[0]
