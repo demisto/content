@@ -1,17 +1,19 @@
 id: New Hire Clean-Up
 version: -1
+fromversion: 6.8.0
 name: New Hire Clean-Up
-description: Queries the New Hire watchlist in Code42 Incydr and passes relevant employee data to the Remove Employees from New Hire Watchlist playbook.
+description: Queries the New Hire watchlist in Code42 Incydr and passes relevant employee
+  data to the Remove Employees from New Hire Watchlist playbook.
 tags:
 - Code42 Incydr
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2d022d1c-3a45-4e09-8815-c0361922c7c9
+    taskid: e325aaca-e87e-46b1-8b14-76a3c9f39d7c
     type: start
     task:
-      id: 2d022d1c-3a45-4e09-8815-c0361922c7c9
+      id: e325aaca-e87e-46b1-8b14-76a3c9f39d7c
       version: -1
       name: ""
       description: ""
@@ -38,10 +40,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 4bdce348-8a0b-4ff4-878b-347223fadda9
+    taskid: f6ccebac-5a6c-4a11-8f25-6b3dcec227c9
     type: regular
     task:
-      id: 4bdce348-8a0b-4ff4-878b-347223fadda9
+      id: f6ccebac-5a6c-4a11-8f25-6b3dcec227c9
       version: -1
       name: Query New Hire Watchlist
       description: List all users who have been explicitly added to a given watchlist.
@@ -76,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 0fd2746f-d01f-445c-8dbc-7d7dc05899af
+    taskid: b4d03dc7-0296-44d5-8632-fa8f93bb8746
     type: title
     task:
-      id: 0fd2746f-d01f-445c-8dbc-7d7dc05899af
+      id: b4d03dc7-0296-44d5-8632-fa8f93bb8746
       version: -1
       name: Playbook Complete
       description: ""
@@ -102,49 +104,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: c3142f68-5ff3-4f49-8e48-49fd6c8f7955
-    type: regular
-    task:
-      id: c3142f68-5ff3-4f49-8e48-49fd6c8f7955
-      version: -1
-      name: Count Number of Watchlist Entries
-      description: Count an array size
-      scriptName: CountArraySize
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      array:
-        simple: ${Code42.WatchlistUsers}
-      contextKey:
-        simple: watchlist_count
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -170,
-          "y": 100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 7f540276-ddee-4024-8c24-077b73920788
+    taskid: 01af4522-ec86-41a4-8d4d-5146510c5c55
     type: condition
     task:
-      id: 7f540276-ddee-4024-8c24-077b73920788
+      id: 01af4522-ec86-41a4-8d4d-5146510c5c55
       version: -1
       name: Are There Watchlist Entries?
       description: ""
@@ -155,7 +120,7 @@ tasks:
       '#default#':
       - "8"
       "Yes":
-      - "6"
+      - "15"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -184,10 +149,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 95660210-ea71-4e54-8051-00539b68d912
+    taskid: 25154e2e-3a5a-4af3-86b4-7bf542c9f622
     type: regular
     task:
-      id: 95660210-ea71-4e54-8051-00539b68d912
+      id: 25154e2e-3a5a-4af3-86b4-7bf542c9f622
       version: -1
       name: Set "No Entries" Log Message
       description: Set a value in context under the key you entered.
@@ -223,13 +188,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 0723e35a-aff9-4900-8e4a-4c48c2592901
+    taskid: ebef4922-720f-4958-87df-ae12f572f143
     type: playbook
     task:
-      id: 0723e35a-aff9-4900-8e4a-4c48c2592901
+      id: ebef4922-720f-4958-87df-ae12f572f143
       version: -1
       name: Remove Employees from New Hire Watchlist
-      description: ""
+      description: Loops through New Hire watchlist entries from Code42 Incydr and
+        removes employees based on specified criteria.
       playbookName: Remove Employees from New Hire Watchlist
       type: playbook
       iscommand: false
@@ -264,10 +230,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 0f1f6610-b275-4319-8384-559baa733d05
+    taskid: 0fd99491-d244-4f83-8e42-ce9ef4140ef0
     type: regular
     task:
-      id: 0f1f6610-b275-4319-8384-559baa733d05
+      id: 0fd99491-d244-4f83-8e42-ce9ef4140ef0
       version: -1
       name: Delete All Context Except Log
       description: |-
@@ -310,10 +276,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 85de201b-772f-4447-89df-4c52af483781
+    taskid: 8752f555-cbd4-4fcb-810a-097e1b220f5b
     type: regular
     task:
-      id: 85de201b-772f-4447-89df-4c52af483781
+      id: 8752f555-cbd4-4fcb-810a-097e1b220f5b
       version: -1
       name: Write Log to Incident War Room
       description: Prints text to war room (Markdown supported)
@@ -345,12 +311,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c8912172-cd05-43c2-8325-ab9f7c974d42
+    taskid: 4206a615-8c0b-4585-86c2-6289c3c4528d
     type: regular
     task:
-      id: c8912172-cd05-43c2-8325-ab9f7c974d42
+      id: 4206a615-8c0b-4585-86c2-6289c3c4528d
       version: -1
-      name: Set "Entry Count" Log Message
+      name: Set "Employee(s) Retrieved" Log Message
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -365,14 +331,14 @@ tasks:
       key:
         simple: Log
       value:
-        simple: Retrieved ${watchlist_count} employee(s) from New Hire watchlist.
+        simple: Retrieved employee(s) from New Hire watchlist.
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -170,
-          "y": 270
+          "y": 100
         }
       }
     note: false
@@ -384,10 +350,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 17f664b1-24c6-4d21-8cc1-a758f4838423
+    taskid: 6b66264e-5903-42b8-881d-a7f8939af13b
     type: regular
     task:
-      id: 17f664b1-24c6-4d21-8cc1-a758f4838423
+      id: 6b66264e-5903-42b8-881d-a7f8939af13b
       version: -1
       name: Set "Job Complete" Log Message
       description: Set a value in context under the key you entered.
@@ -423,10 +389,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 35656551-8cc8-4c38-866e-6b1982c706d6
+    taskid: b9b219fc-bba1-48c6-84a0-aae6511d50fb
     type: regular
     task:
-      id: 35656551-8cc8-4c38-866e-6b1982c706d6
+      id: b9b219fc-bba1-48c6-84a0-aae6511d50fb
       version: -1
       name: Set "Job Starting" Log Message
       description: Set a value in context under the key you entered.
@@ -474,6 +440,3 @@ view: |-
   }
 inputs: []
 outputs: []
-tests:
-- Code42 File Search Test
-fromversion: 6.8.0
