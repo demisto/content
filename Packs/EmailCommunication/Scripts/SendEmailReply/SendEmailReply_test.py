@@ -44,8 +44,8 @@ def test_append_email_signature_fails(mocker):
     - Validate that a debug message is saved indicating the list couldn't be fetched
     """
     from SendEmailReply import append_email_signature
-    getList_error_response = util_load_json('test_data/getList_signature_error.json')
-    mocker.patch.object(demisto, 'executeCommand', return_value=getList_error_response)
+    get_list_error_response = util_load_json('test_data/getList_signature_error.json')
+    mocker.patch.object(demisto, 'executeCommand', return_value=get_list_error_response)
     debug_mocker = mocker.patch.object(demisto, 'debug')
     append_email_signature('<html><body>Simple HTML message.\r\n</body></html>')
     debug_mocker_call_args = debug_mocker.call_args
@@ -398,12 +398,12 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
     mocker.patch('SendEmailReply.get_utc_now',
                  return_value=datetime.strptime('2022-02-04T20:58:20UTC', "%Y-%m-%dT%H:%M:%SUTC"))
     mocker.patch.object(SendEmailReply, 'get_email_threads', return_value=email_threads)
-    appendContext_mocker = mocker.patch.object(SendEmailReply, "appendContext", return_value=True)
+    append_context_mocker = mocker.patch.object(SendEmailReply, "appendContext", return_value=True)
     create_thread_context(email_code, 'cc_user@company.com', 'bcc_user@company.com',
                           'Email body.', 'soc_sender@company.com', '<html>body><Email body.</body></html>',
                           '10', 'soc_sender@company.com', 'soc_sender@company.com',
                           'Email Subject', 'end_user@company.com', '123', '')
-    call_args = appendContext_mocker.call_args
+    call_args = append_context_mocker.call_args
     if scenario == 'thread_found':
         expected = {'EmailCommsThreadId': '69433507', 'EmailCommsThreadNumber': '0',
                     'EmailCC': 'cc_user@company.com', 'EmailBCC': 'bcc_user@company.com',
@@ -531,7 +531,7 @@ def test_single_thread_reply(email_code, mocker):
     - Validate that if no email_code is provided, 'get_unique_code' is called to generate one
     """
 
-    def get_reply_body_side_effect(notes, incident_id, attachments):
+    def get_reply_body_side_effect(notes, incident_id, attachments):  # noqa
         return 'Email body.', '<html><body>Email body.</body></html>'
 
     from SendEmailReply import single_thread_reply
@@ -640,7 +640,7 @@ def test_multi_thread_new(scenario, mocker):
     import SendEmailReply
     return_error_mocker = mocker.patch.object(SendEmailReply, 'return_error', return_value=True)
     mocker.patch.object(SendEmailReply, 'get_unique_code', return_value='87654321')
-    setIncident_mocker = mocker.patch.object(demisto, 'executeCommand', return_value=True)
+    set_incident_mocker = mocker.patch.object(demisto, 'executeCommand', return_value=True)
     mocker.patch.object(SendEmailReply, 'get_entry_id_list', return_value=[])
     mocker.patch.object(SendEmailReply, 'format_body', return_value='<html>Some HTML</html>')
     send_new_email_mocker = mocker.patch.object(SendEmailReply, 'send_new_email', return_value=True)
@@ -658,9 +658,9 @@ def test_multi_thread_new(scenario, mocker):
         multi_thread_new('New Subject', False, 'end_user@company.com', 'Email Body', 1, '', '', '',
                          'soc_sender@company.com', 'cc_user@company.com', 'bcc_user@company.com',
                          'soc_sender@company.com', '')
-        setIncident_call_args = setIncident_mocker.call_args
+        set_incident_call_args = set_incident_mocker.call_args
         send_new_email_mocker_args = send_new_email_mocker.call_args
-        assert setIncident_call_args.args[1] == {'id': 1, 'customFields': {'emailgeneratedcodes': '87654321'}}
+        assert set_incident_call_args.args[1] == {'id': 1, 'customFields': {'emailgeneratedcodes': '87654321'}}
         valid_args = (1, 'New Subject', False, 'end_user@company.com', 'Email Body', 'soc_sender@company.com',
                       'cc_user@company.com', 'bcc_user@company.com', '<html>Some HTML</html>', [], '87654321',
                       'soc_sender@company.com', '')
@@ -671,9 +671,9 @@ def test_multi_thread_new(scenario, mocker):
         multi_thread_new('New Subject', False, 'end_user@company.com', 'Email Body', 1, '12345678', '', '',
                          'soc_sender@company.com', 'cc_user@company.com', 'bcc_user@company.com',
                          'soc_sender@company.com', '')
-        setIncident_call_args = setIncident_mocker.call_args
+        set_incident_call_args = set_incident_mocker.call_args
         send_new_email_mocker_args = send_new_email_mocker.call_args
-        assert setIncident_call_args.args[1] == {'id': 1, 'customFields': {'emailgeneratedcodes': '12345678,87654321'}}
+        assert set_incident_call_args.args[1] == {'id': 1, 'customFields': {'emailgeneratedcodes': '12345678,87654321'}}
         valid_args = (1, 'New Subject', False, 'end_user@company.com', 'Email Body', 'soc_sender@company.com',
                       'cc_user@company.com', 'bcc_user@company.com', '<html>Some HTML</html>', [], '87654321',
                       'soc_sender@company.com', '')
@@ -681,7 +681,7 @@ def test_multi_thread_new(scenario, mocker):
         assert reset_fields_mocker.called is True
 
 
-def test_collect_thread_details(mocker):
+def test_collect_thread_details():
     """
     Unit test scenario
         Given
@@ -742,7 +742,7 @@ def test_multi_thread_reply(scenario, mocker):
 
     email_threads = util_load_json('test_data/email_threads.json')
     resend_first_contact_mocker = mocker.patch.object(SendEmailReply, 'resend_first_contact', return_value=True)
-    reset_fields_mocker = mocker.patch.object(SendEmailReply, 'reset_fields', return_value=True)
+    mocker.patch.object(SendEmailReply, 'reset_fields', return_value=True)
     mocker.patch.object(SendEmailReply, 'return_results', return_value=True)
     mocker.patch.object(SendEmailReply, 'format_body', return_value='<html><body>Email body</body></html>')
     mocker.patch.object(SendEmailReply, 'append_email_signature',

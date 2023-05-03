@@ -18,6 +18,10 @@ ignore=IF115
 
 [known_words]
 SendEmailReply
+HTML
+preprocess
+RBAC
+Preprocessing
 
 [file:classifier-MSGraphMail_-_Classifier_-_Email_Communication.json]
 ignore=BA101
