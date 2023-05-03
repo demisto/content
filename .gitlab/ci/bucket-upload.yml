@@ -512,15 +512,13 @@ upload-id-set-bucket:
   extends:
     - .bucket-upload-rule
     - .default-job-settings
-  rules:
-    - if: '$TEST_UPLOAD == "false"'
   script:
     # This is needed because we still use id_set.json in other repos
-    # - |
-    #   if [[ $TEST_UPLOAD == "true" ]]; then
-    #     echo "Skipping uploading id-set to the bucket in test upload-flow"
-    #     exit 0
-    #   fi
+    - |
+      if [[ $TEST_UPLOAD == "true" ]]; then
+        echo "Skipping uploading id-set to the bucket in test upload-flow"
+        exit 0
+      fi
 
     - !reference [.create-id-set-xsoar]
     - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY"
@@ -537,14 +535,12 @@ sync-buckets-between-projects:
   stage: upload-to-marketplace
   needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace"]
   when: always
-  rules:
-    - if: '$TEST_UPLOAD == "false"'
   script:
-    # - |
-    #   if [[ $TEST_UPLOAD == "true" ]]; then
-    #     echo "Skipping syncing buckets in test upload-flow"
-    #     exit 0
-    #   fi
+    - |
+      if [[ $TEST_UPLOAD == "true" ]]; then
+        echo "Skipping syncing buckets in test upload-flow"
+        exit 0
+      fi
 
     - |
       if [[ -z "$GCS_XSOAR_CONTENT_DEV_KEY" ]] || [[ -z "$GCS_XSOAR_CONTENT_PROD_KEY" ]]; then
