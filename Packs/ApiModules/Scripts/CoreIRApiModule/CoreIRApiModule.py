@@ -2925,42 +2925,42 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> Tuple[s
     )
 
 
-# @polling_function(
-#     name=demisto.command(),
-#     interval=arg_to_number(demisto.args().get('polling_interval_in_seconds', 10)),
-#     timeout=arg_to_number(demisto.args().get('polling_timeout', 600)),
-#     requires_polling_arg=False  # means it will always be default to poll, poll=true
-# )
-# def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
-#
-#     if action_id := args.get('action_id'):
-#         response = client.get_script_execution_status(action_id)
-#         general_status = response.get('reply', {}).get('general_status') or ''
-#
-#         return PollResult(
-#             response=get_script_execution_results_command(
-#                 client, {'action_id': action_id, 'integration_context_brand': 'PaloAltoNetworksXDR'}
-#             ),
-#             continue_to_poll=general_status.upper() in ('PENDING', 'IN_PROGRESS')
-#         )
-#
-#     else:
-#         endpoint_ids = argToList(args.get('endpoint_ids'))
-#         response = get_run_script_execution_response(client, args)
-#         reply = response.get('reply')
-#         action_id = reply.get('action_id')
-#
-#         args['action_id'] = action_id
-#
-#         return PollResult(
-#             response=None,  # since polling defaults to true, no need to deliver response here
-#             continue_to_poll=True,  # if an error is raised from the api, an exception will be raised
-#             partial_result=CommandResults(
-#                 readable_output=f'Waiting for the script to finish running '
-#                                 f'on the following endpoints: {endpoint_ids}...'
-#             ),
-#             args_for_next_run=args
-#         )
+@polling_function(
+    name=demisto.command(),
+    interval=arg_to_number(demisto.args().get('polling_interval_in_seconds', 10)),
+    timeout=arg_to_number(demisto.args().get('polling_timeout', 600)),
+    requires_polling_arg=False  # means it will always be default to poll, poll=true
+)
+def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
+
+    if action_id := args.get('action_id'):
+        response = client.get_script_execution_status(action_id)
+        general_status = response.get('reply', {}).get('general_status') or ''
+
+        return PollResult(
+            response=get_script_execution_results_command(
+                client, {'action_id': action_id, 'integration_context_brand': 'PaloAltoNetworksXDR'}
+            ),
+            continue_to_poll=general_status.upper() in ('PENDING', 'IN_PROGRESS')
+        )
+
+    else:
+        endpoint_ids = argToList(args.get('endpoint_ids'))
+        response = get_run_script_execution_response(client, args)
+        reply = response.get('reply')
+        action_id = reply.get('action_id')
+
+        args['action_id'] = action_id
+
+        return PollResult(
+            response=None,  # since polling defaults to true, no need to deliver response here
+            continue_to_poll=True,  # if an error is raised from the api, an exception will be raised
+            partial_result=CommandResults(
+                readable_output=f'Waiting for the script to finish running '
+                                f'on the following endpoints: {endpoint_ids}...'
+            ),
+            args_for_next_run=args
+        )
 
 
 def get_run_script_execution_response(client: CoreClient, args: Dict):
