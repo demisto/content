@@ -1,6 +1,4 @@
-Deprecated. Use ***EWS Extension Online Powershell v3*** instead.
-
-## EWS Extension Online Powershell v2
+## EWS Extension Online Powershell v3
 
 ### App authentication
 To use this integration, you need to connect an application with a certificate.
