@@ -3471,12 +3471,12 @@ def test_get_list_roles_command(
 )
 def test_user_role_command(mocker, func, expected_output: str):
     client = CoreClient("test", {})
-    
+
     mocker.patch.object(CoreClient, "set_user_role", return_value=None)
     mocker.patch.object(CoreClient, "remove_user_role", return_value=None)
-    
+
     results = func(client=client, args={})
-    
+
     assert expected_output in results.readable_output
 
 
@@ -3500,4 +3500,3 @@ def test_endpoint_command_fails(requests_mock):
     with pytest.raises(DemistoException) as e:
         endpoint_command(client, args)
     assert 'In order to run this command, please provide a valid id, ip or hostname' in str(e)
-

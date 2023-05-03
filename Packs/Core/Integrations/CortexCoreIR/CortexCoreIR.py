@@ -463,10 +463,10 @@ def main():  # pragma: no cover
 
         elif command == 'core-list-roles':
             return_results(get_list_roles_command(client, args))
-            
+
         elif command == 'core-set-user-role':
             return_results(set_user_role_command(client, args))
-        
+
         elif command == 'core-remove-user-role':
             return_results(remove_user_role_command(client, args))
 
