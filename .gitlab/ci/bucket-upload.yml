@@ -517,6 +517,7 @@ upload-id-set-bucket:
     - |
       if [[ $TEST_UPLOAD == "true" ]]; then
         echo "Skipping uploading id-set to the bucket in test upload-flow"
+        job-done
         exit 0
       fi
 
