@@ -31,25 +31,62 @@ class Client:
         self.max_retries = 3
         self.session = Session()
         self.url = get_server_url(url) + '/rest'
-        self.access_key = access_key
-        self.secret_key = secret_key
-        self.user_name = user_name
-        self.password = password
-
-        self.headers = {
+        self.headers: dict[str, Any] = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
+        integration_context = demisto.getIntegrationContext()
+        self.cookie = integration_context.get('cookie')
+        if not (user_name and password) and not (secret_key and access_key):
+            return_error("Please provide either user_name and password or secret_key and access_key")
+        if secret_key and access_key:
+            self.headers['x-apikey'] = {'accesskey': access_key, 'secretkey': secret_key}
+            self.send_request = self.send_request_new
+        else:
+            self.token = integration_context.get('token')
+            self.user_name = user_name
+            self.password = password
+            self.send_request = self.send_request_old
+            if not self.token or not self.cookie:
+                self.login()
+
         if not proxy:
             del os.environ['HTTP_PROXY']
             del os.environ['HTTPS_PROXY']
             del os.environ['http_proxy']
             del os.environ['https_proxy']
-        integration_context = demisto.getIntegrationContext()
-        self.token = integration_context.get('token')
-        self.cookie = integration_context.get('cookie')
 
-    def send_request(self, path, method='get', body=None, params=None, headers=None, try_number=1):
+    def send_request_new(self, path, method='get', body=None, params=None, headers=None, try_number=1):
+        body = body if body is not None else {}
+        params = params if params is not None else {}
+        headers = headers if headers is not None else self.headers
+
+        url = f'{self.url}/{path}'
+
+        session_cookie = cookies.create_cookie('TNS_SESSIONID', self.cookie)
+        self.session.cookies.set_cookie(session_cookie)  # type: ignore
+
+        res = self.session.request(method, url, data=json.dumps(body), params=params, headers=headers, verify=self.verify_ssl)
+
+        if res.status_code == 403 and try_number <= self.max_retries:
+            self.login()
+            headers['X-SecurityCenter'] = self.token  # The Token is being updated in the login
+            return self.send_request(path, method, body, params, headers, try_number + 1)
+
+        elif res.status_code < 200 or res.status_code >= 300:
+            try:
+                error = res.json()
+            except Exception:
+                # type: ignore
+                return_error(
+                    f'Error: Got status code {str(res.status_code)} with {url=} \
+                    with body {res.content} with headers {str(res.headers)}')   # type: ignore
+
+            return_error(f"Error: Got an error from TenableSC, code: {error['error_code']}, \
+                        details: {error['error_msg']}")  # type: ignore
+        return res.json()
+
+    def send_request_old(self, path, method='get', body=None, params=None, headers=None, try_number=1):
         body = body if body is not None else {}
         params = params if params is not None else {}
         headers = headers if headers is not None else self.headers
@@ -104,8 +141,7 @@ class Client:
         demisto.setIntegrationContext({'token': token})
 
     def send_login_request(self, login_body):
-        path = 'token'
-        url = '{}/{}'.format(self.url, path)
+        url = f'{self.url}/token'
 
         headers = self.headers
         res = self.session.request('post', url, headers=headers, data=json.dumps(login_body), verify=self.verify_ssl)
@@ -1684,16 +1720,6 @@ def main():
     secret_key = params.get('creds_keys', {}).get('password')
     url = params.get('server')
 
-    client = Client(
-        verify_ssl=verify_ssl,
-        proxy=proxy,
-        user_name=user_name,
-        password=password,
-        access_key=access_key,
-        secret_key=secret_key,
-        url=url
-    )
-
     demisto.info(f'Executing command {command}')
 
     command_dict = {
@@ -1724,8 +1750,15 @@ def main():
     }
 
     try:
-        if not client.token or not client.cookie:
-            client.login()
+        client = Client(
+            verify_ssl=verify_ssl,
+            proxy=proxy,
+            user_name=user_name,
+            password=password,
+            access_key=access_key,
+            secret_key=secret_key,
+            url=url
+        )
 
         if command == 'test-module':
             demisto.results('ok')
@@ -1739,7 +1772,8 @@ def main():
             f'Failed to execute {command} command. Error: {str(e)}'
         )
     finally:
-        client.logout()
+        if (user_name and password) and not (access_key and secret_key):
+            client.logout()
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -19,7 +19,8 @@ configuration:
   section: Connect
 - display: Username
   name: credentials
-  required: true
+  required: false
+  hidden: true
   type: 9
   section: Connect
 - display: Trust any certificate (not secure)
