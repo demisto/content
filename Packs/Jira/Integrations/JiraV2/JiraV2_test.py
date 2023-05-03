@@ -1527,6 +1527,7 @@ def test_append_to_existing_field_command(mocker):
 
     mock_update.assert_called_with('id', {'labels': ['test', 'New']})
 
+
 @pytest.mark.parametrize(
     'assignee, assignee_id, excpected_body_request',
     [
