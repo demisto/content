@@ -1,1 +1,1 @@
-!jira-issue-assign issueId=21492 assignee_id=6028fe1a39ed51006a2e24e8
+!jira-issue-assign issueId=21492 assignee_id=1234
