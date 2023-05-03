@@ -4064,7 +4064,7 @@ def is_ignored_pack_file(modified_file_path_parts):
             if not file_suffixes:  # Ignore all pack folder files
                 return True
 
-            for file_suffix in file_suffixes:
+            for file_suffix in file_suffixes:  # type: ignore[attr-defined]
                 if file_suffix in modified_file_path_parts[-1]:
                     return True
 
