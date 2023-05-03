@@ -1552,3 +1552,16 @@ def test_update_issue_assignee_command(mocker, assignee, assignee_id, excpected_
     assert jira_req_mocker.call_args_list[0].args[2] == excpected_body_request
 
 
+def test_test_update_issue_assignee_command_no_assignees():
+    """
+    Given:
+        - issue id, without assignee / assignee_id
+    When
+        - Running the update_issue_assignee_command
+    Then
+        - Ensure an exception is raised
+    """
+    from JiraV2 import update_issue_assignee_command
+
+    with pytest.raises(DemistoException):
+        update_issue_assignee_command(issue_id='19141', assignee=None, assignee_id=None)
