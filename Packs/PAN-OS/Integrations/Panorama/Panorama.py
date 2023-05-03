@@ -13167,12 +13167,12 @@ def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[s
     return new_largest_id
 
 
-def remove_duplicate_entries(entries_dict: Dict[str, List[Dict[str,Any]]], id_dict: Dict[str, str]):
+def remove_duplicate_entries(entries_dict: Dict[str, List[Dict[str,Any]]], id_dict: Dict[str, Dict[str, str]]):
     """
     this function removes entries that have already been fetched in the previous fetch cycle.
     Args:
         entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries
-        id_dict (Dict[str, str]): a dictionary of devices and there largest id so far
+        id_dict (Dict[str, Dict[str, str]]): a dictionary of devices and there largest id so far
     Returns:
         new_entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries without entries that have already been fetched in the previous fetch cycle
     """
