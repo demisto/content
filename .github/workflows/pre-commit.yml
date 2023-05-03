@@ -33,7 +33,7 @@ jobs:
         key: ${{ runner.os }}-pre-commit
 
     - name: run pre-commit
-      run: poetry run demisto-sdk pre-commit -g --unit-test --validate --sdk-ref 4bcbd13666d636bb82982b383b2c3e280d988f2a
+      run: poetry run demisto-sdk pre-commit -g --unit-test --validate --sdk-ref 76a712ce336578e6f28549dd9dc2c1d4e7422eea
 
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
