@@ -34,7 +34,7 @@ jobs:
         key: ${{ runner.os }}-pre-commit
 
     - name: run pre-commit
-      run: poetry run demisto-sdk pre-commit -g --unit-test --validate --sdk-ref 49d3b7fd36151bd6617a554878bd90838cbef193 -v
+      run: poetry run demisto-sdk pre-commit -g --unit-test --validate --sdk-ref 922002d50c3829b958d87e3fa62c001329ce4716 -v
     - name: check-content-files
       run: ls -la
     - name: Publish Test Report
