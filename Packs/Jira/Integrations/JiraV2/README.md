@@ -826,7 +826,7 @@ Edit the assignee of an existing issue.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | issueId | The ID of the issue to edit. | Required | 
-| assignee | The name of the assignee. Relevant for Jira Server only, If you are using Jira Cloud, provide the assignee_id argument instead. | Optional | 
+| assignee | The name of the assignee. Relevant for Jira Server only, if you are using Jira Cloud, provide the assignee_id argument instead. | Optional | 
 | assignee_id | The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID. | Optional | 
 
 #### Context Output
