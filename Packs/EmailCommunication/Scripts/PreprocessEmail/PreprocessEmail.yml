@@ -8,8 +8,7 @@ args:
 - name: create_incidents_untagged
   required: false
   description: Skip incident creation for email that we can't find existing incident for them.
-  defaultValue: false
-  type: 8
+  defaultValue: 'false'
 comment: |-
   Preprocessing script for email communication layout.
   This script checks if the incoming email contains an Incident ID to link the mail to an existing incident, and tags the email as "email-thread".
@@ -28,7 +27,7 @@ tags:
 - email
 - preProcessing
 type: python
-dockerimage: demisto/python3:3.10.9.45313
+dockerimage: demisto/python3:3.10.11.56082
 runas: DBotRole
 tests:
 - No tests (auto formatted)

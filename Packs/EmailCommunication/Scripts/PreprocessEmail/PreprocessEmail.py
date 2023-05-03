@@ -393,7 +393,7 @@ def main():
     email_replyto = custom_fields.get('emailreplyto', '')
     attachments = incident.get('attachment', [])
     email_latest_message = custom_fields.get('emaillatestmessage', '')
-    create_incidents_untagged = args.get('create_incidents_untagged', False)
+    create_incidents_untagged = argToBoolean(args.get('create_incidents_untagged', False))
 
     try:
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]
