@@ -4691,7 +4691,6 @@ def build_cs_falcon_filter(custom_filter: str = None, **filter_args) -> str:
     return "%2B".join(custom_filter_list + arguments).replace(',', '%2C')
 
 
-# Command 1 ------------------------------------------------------------------------------------------------- V T
 def ODS_query_scans_request(**query_params) -> dict:
 
     remove_nulls_from_dictionary(query_params)
@@ -4711,7 +4710,7 @@ def map_scan_resource_to_UI(resource: dict) -> dict:
         'ID': resource.get('id'),
         'Status': resource.get('status'),
         'Severity': '--',  # TODO ask if needed
-        'Hosts with detections': sum(1 for host in resource.get('metadata', [{}]) if host.get('filecount', {}).get('malicious')),  # TODO omly in UI response
+        'Hosts with detections': sum(1 for host in resource.get('metadata', [{}]) if host.get('filecount', {}).get('malicious')),   # TODO omly in UI response
         'Hosts targeted': len(resource.get('metadata', [])),
         'Incomplete hosts': sum(1 for host in resource.get('metadata', [{}]) if host.get('status') != 'completed'),
         'Description': resource.get('description'),
@@ -4767,7 +4766,7 @@ def cs_falcon_ODS_query_scans_command(args: dict) -> CommandResults:
     ids = argToList(args.get('ids')) or get_ODS_scan_ids(args)
 
     if not ids:
-        return CommandResults(readable_output='No IDs to get results for.')
+        return CommandResults(readable_output='No scans match the arguments/filter.')
 
     response = ODS_get_scans_by_id_request(ids)
     resources = response.get('resources', [])
@@ -4784,7 +4783,6 @@ def cs_falcon_ODS_query_scans_command(args: dict) -> CommandResults:
     return command_results
 
 
-# Command 2 ------------------------------------------------------------------------------------------------- V
 def ODS_query_scheduled_scans_request(**query_params) -> dict:
     remove_nulls_from_dictionary(query_params)
     # http_request messes up the params, so they were put directly in the url:
@@ -4849,7 +4847,7 @@ def cs_falcon_ODS_query_scheduled_scan_command(args: dict) -> CommandResults:
     ids = argToList(args.get('ids')) or get_ODS_scheduled_scan_ids(args)
 
     if not ids:
-        return CommandResults(readable_output='No IDs to get results for.')
+        return CommandResults(readable_output='No scheduled scans match the arguments/filter.')
 
     response = ODS_get_scheduled_scans_by_id_request(ids)
     resources = response.get('resources', [])
@@ -4866,7 +4864,6 @@ def cs_falcon_ODS_query_scheduled_scan_command(args: dict) -> CommandResults:
     return command_results
 
 
-# Command 3 -------------------------------------------------------------------------------------------------
 def ODS_query_scan_hosts_request(**query_params) -> dict:
     remove_nulls_from_dictionary(query_params)
     # http_request messes up the params, so they were put directly in the url:
@@ -4913,7 +4910,7 @@ def cs_falcon_ods_query_scan_host_command(args: dict) -> CommandResults:
     ids = get_ODS_scan_host_ids(args)
 
     if not ids:
-        return CommandResults(readable_output='No IDs to get results for.')
+        return CommandResults(readable_output='No scan hosts match the arguments/filter.')
 
     response = ODS_get_scan_hosts_by_id_request(ids)
     resources = response.get('resources', [])
@@ -4930,7 +4927,6 @@ def cs_falcon_ods_query_scan_host_command(args: dict) -> CommandResults:
     return command_results
 
 
-# Command 4 -------------------------------------------------------------------------------------------------
 def ODS_query_malicious_files_request(**query_params) -> dict:
     remove_nulls_from_dictionary(query_params)
     # http_request messes up the params, so they were put directly in the url:
@@ -4979,7 +4975,7 @@ def cs_falcon_ODS_query_malicious_files_command(args: dict) -> CommandResults:
     ids = argToList(args.get('file_ids')) or get_ODS_malicious_files_ids(args)
 
     if not ids:
-        return CommandResults(readable_output='No IDs to get results for.')
+        return CommandResults(readable_output='No malicious files match the arguments/filter.')
 
     response = ODS_get_malicious_files_by_id_request(ids)
     resources = response.get('resources', [])
@@ -4996,7 +4992,6 @@ def cs_falcon_ODS_query_malicious_files_command(args: dict) -> CommandResults:
     return command_results
 
 
-# Command 5 -------------------------------------------------------------------------------------------------
 schedule_interval_str_to_int = {
     'never': 0,
     'daily': 1,
@@ -5085,7 +5080,6 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
     return command_results
 
 
-# Command 6 ------------------------------------------------------------------------------------------------- V
 def ODS_delete_scheduled_scans_request(ids: list[str], scan_filter: str | None = None) -> dict:
     ids_params = [f'ids={scan_id}' for scan_id in ids]
     filter_param = [f'filter={scan_filter.replace("+", "%2B")}'] if scan_filter else []
@@ -5107,7 +5101,6 @@ def cs_falcon_ods_delete_scheduled_scan_command(args: dict) -> CommandResults:
     return command_results
 
 
-# Command 7 ------------------------------------------------------------------------------------------------- V
 def ODS_cancel_scans_request(ids: list[str]) -> dict:
     return http_request('POST', '/ods/entities/scan-control-actions/cancel/v1', data={'ids': ids})
 
