@@ -157,9 +157,9 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
             # change the storage paths to the prod bucket
             temp_corepacks_file_path = os.path.join(extract_destination_path, GCPConfig.CORE_PACK_FILE_NAME)
             build_corepacks_blob.download_to_filename(temp_corepacks_file_path)
-            corepacks_file = load_json(temp_corepacks_file_path)
+            corepacks_file_content = load_json(temp_corepacks_file_path)
 
-            corepacks_list = corepacks_file.get('corePacks', [])
+            corepacks_list = corepacks_file_content.get('corePacks', [])
             try:
                 corepacks_list = [os.path.join(GCPConfig.GCS_PUBLIC_URL, production_bucket.name, storage_base_path,
                                                LATEST_ZIP_REGEX.findall(corepack_path)[0]) for corepack_path in
@@ -174,7 +174,7 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
             # construct core pack data with public gcs urls
             core_packs_data = {
                 'corePacks': corepacks_list,
-                'upgradeCorePacks': corepacks_file.get('upgradeCorePacks', []),
+                'upgradeCorePacks': corepacks_file_content.get('upgradeCorePacks', []),
                 'buildNumber': build_number
             }
 
