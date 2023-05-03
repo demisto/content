@@ -36,7 +36,7 @@ jobs:
         key: ${{ runner.os }}-pre-commit
 
     - name: run pre-commit
-      run: poetry run demisto-sdk pre-commit -g --unit-test --validate --sdk-ref 04456f686b621fcb9cbbb5c224f37cf98624e1ac -v
+      run: poetry run demisto-sdk pre-commit -g --unit-test --validate --sdk-ref b6c2fb894fce0cf547ceb3c9e16eef3a646128b1 -v
 
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
@@ -74,7 +74,7 @@ jobs:
     - name: Append coverage to summary
       if: always()
       id: append-coverage
-        run: |
-          if [[ -f code-coverage-results.md ]]; then
-            cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY || echo "Missing coverage report"
-          fi
+      run: |
+        if [[ -f code-coverage-results.md ]]; then
+          cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY || echo "Missing coverage report"
+        fi

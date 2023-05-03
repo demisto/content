@@ -17,7 +17,6 @@ class AlertSeverity(Enum):
     CRITICAL = 4
 
 
-
 class AlertStatus(Enum):
     PENDING = 0
     ACTIVE = 1
