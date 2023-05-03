@@ -573,7 +573,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dic
 def main():
     params = demisto.params()
     base_url = params.get('url').rstrip('/')
-    timeout = arg_to_number(params.get('timeout', 60))
+    timeout = arg_to_number(params.get('timeout')) or 60
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
