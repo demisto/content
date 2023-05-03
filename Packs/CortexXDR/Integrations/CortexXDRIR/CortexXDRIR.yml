@@ -3313,16 +3313,6 @@ script:
       description: Name of scope associated with the user, if applicable.
       type: array
   - arguments:
-    - description: List of one or more user emails of users you want to add to or remove from a role.
-      name: user_emails
-      isArray: true
-      required: true
-    - description: Name of the role you want to add a user to.
-      name: role_name
-      required: true
-    name: xdr-set-user-role
-    description: Add or remove one or more users from a role.
-  - arguments:
     - description: |
         Unique ID of a specific user.
         User ID should be in the following format: dummy/dummy
@@ -3361,7 +3351,7 @@ script:
     - description: >
         Unique ID of a specific host.
       name: host_id
-    - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(use limit when you don't asking for specific host)
+    - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(use limit when you don't asking for specific host).
       name: limit
       defaultValue: 50
     name: xdr-list-risky-hosts
@@ -3389,7 +3379,7 @@ script:
       description: Incident status
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.points
-      description: Points the incident get
+      description: Points the incident get.
       type: integer
   - arguments:
     - description: List of one or more user group names for which you want the associated users.
@@ -3409,13 +3399,13 @@ script:
       description: Name of the User Group as it appears in the Management Console.
       type: String
     - contextPath: PaloAltoNetworksXDR.UserGroup.insert_time
-      description: Timestamp of when the User Group was created
+      description: Timestamp of when the User Group was created.
       type: Number
     - contextPath: PaloAltoNetworksXDR.UserGroup.update_time
-      description: Timestamp of when the User Group was last updated
+      description: Timestamp of when the User Group was last updated.
       type: Number
     - contextPath: PaloAltoNetworksXDR.UserGroup.user_email
-      description: List of email addresses belonging to the users associated with the User Group
+      description: List of email addresses belonging to the users associated with the User Group.
       type: array
     - contextPath: PaloAltoNetworksXDR.UserGroup.source
       description: Type of User Group.
@@ -3427,19 +3417,19 @@ script:
     name: xdr-list-roles
     description: Retrieve information about one or more roles created in your environment. 
     outputs:
-    - contextPath: PaloAltoNetworksXDR.Role.pretty name  
+    - contextPath: PaloAltoNetworksXDR.Role.pretty_name  
       description: Name of the role as it appears in the Management Console.
       type: String
     - contextPath: PaloAltoNetworksXDR.Role.permissions
       description: List of permissions associated with this role.
       type: array
-    - contextPath: PaloAltoNetworksXDR.Role.insert time
+    - contextPath: PaloAltoNetworksXDR.Role.insert_time
       description: Timestamp of when the Role was created.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.Role.update time
+    - contextPath: PaloAltoNetworksXDR.Role.update_time
       description: Timestamp of when the Role was last updated.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.Role.created by
+    - contextPath: PaloAltoNetworksXDR.Role.created_by
       description: Email of the user who created the Role.
       type: String
     - contextPath: PaloAltoNetworksXDR.Role.description
@@ -3451,6 +3441,23 @@ script:
     - contextPath: PaloAltoNetworksXDR.Role.users
       description: Email address of users associated with the Role.
       type: array
+  - arguments:
+    - description: List of one or more user emails of users you want to add to a role.
+      name: user_emails
+      required: true
+      isArray: true
+    - description: Name of the role you want to add a user to.
+      name: role_name
+      required: true
+    name: xdr-set-user-role
+    description: Add one or more users to a role.
+  - arguments:
+    - description: List of one or more user emails of users you want to remove from a role.
+      name: user_emails
+      required: true
+      isArray: true
+    name: xdr-remove-user-role
+    description: Remove one or more users from a role.
   dockerimage: demisto/python3:3.10.11.54132
   isfetch: true
   runonce: false

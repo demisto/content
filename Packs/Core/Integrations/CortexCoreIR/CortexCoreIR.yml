@@ -3646,6 +3646,8 @@ script:
       description: Name of user groups associated with the user, if applicable. 
       type: array
     - contextPath: Core.User.scope
+      description: Name of scope associated with the user, if applicable.
+      type: array
   - arguments:
     - description: |
         Unique ID of a specific user.
@@ -3685,7 +3687,7 @@ script:
     - description: >
         Unique ID of a specific host.
       name: host_id
-    - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(use limit when you don't asking for specific host)
+    - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(use limit when you don't asking for specific host).
       name: limit
       defaultValue: 50
     name: core-list-risky-hosts
@@ -3707,13 +3709,13 @@ script:
       description: Description of the incident.
       type: String
     - contextPath: Core.RiskyHost.reasons.severity
-      description: The severity of the incident
+      description: The severity of the incident.
       type: String
     - contextPath: Core.RiskyHost.reasons.status
-      description: Incident status
+      description: Incident status.
       type: String
     - contextPath: Core.RiskyHost.reasons.points
-      description: Points the incident get
+      description: Points the incident get.
       type: integer
   - arguments:
     - description: List of one or more user group names for which you want the associated users.
@@ -3736,10 +3738,10 @@ script:
       description: Timestamp of when the User Group was created
       type: Number
     - contextPath: Core.UserGroup.update_time
-      description: Timestamp of when the User Group was last updated
+      description: Timestamp of when the User Group was last updated.
       type: Number
     - contextPath: Core.UserGroup.user_email
-      description: List of email addresses belonging to the users associated with the User Group
+      description: List of email addresses belonging to the users associated with the User Group.
       type: array
     - contextPath: Core.UserGroup.source
       description: Type of User Group.
@@ -3751,19 +3753,19 @@ script:
     name: core-list-roles
     description: Retrieve information about one or more roles created in your environment. 
     outputs:
-    - contextPath: Core.Role.pretty name  
+    - contextPath: Core.Role.pretty_name  
       description: Name of the role as it appears in the Management Console.
       type: String
     - contextPath: Core.Role.permissions
       description: List of permissions associated with this role.
       type: array
-    - contextPath: Core.Role.insert time
+    - contextPath: Core.Role.insert_time
       description: Timestamp of when the Role was created.
       type: Number
-    - contextPath: Core.Role.update time
+    - contextPath: Core.Role.update_time
       description: Timestamp of when the Role was last updated.
       type: Number
-    - contextPath: Core.Role.created by
+    - contextPath: Core.Role.created_by
       description: Email of the user who created the Role.
       type: String
     - contextPath: Core.Role.description
@@ -3775,6 +3777,23 @@ script:
     - contextPath: Core.Role.users
       description: Email address of users associated with the Role.
       type: array
+  - arguments:
+    - description: List of one or more user emails of users you want to add to a role.
+      name: user_emails
+      required: true
+      isArray: true
+    - description: Name of the role you want to add a user to.
+      name: role_name
+      required: true
+    name: core-set-user-role
+    description: Add one or more users to a role.
+  - arguments:
+    - description: List of one or more user emails of users you want to remove from a role.
+      name: user_emails
+      required: true
+      isArray: true
+    name: core-remove-user-role
+    description: Remove one or more users from a role.
   feed: false
   isfetch: false
   longRunning: false

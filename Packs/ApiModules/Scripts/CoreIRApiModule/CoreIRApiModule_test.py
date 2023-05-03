@@ -12,7 +12,7 @@ from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoEx
 from CoreIRApiModule import CoreClient
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command, get_list_risky_users_command, get_list_risky_hosts_command, get_list_user_groups_command, \
-    parse_user_groups, get_list_users_command, get_list_roles_command
+    parse_user_groups, get_list_users_command, get_list_roles_command, set_user_role_command, remove_user_role_command
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
@@ -3462,6 +3462,24 @@ def test_get_list_roles_command(
         assert expected_output in results.readable_output
 
 
+@pytest.mark.parametrize(
+    "func, expected_output",
+    [
+        (set_user_role_command, "User Role Was Updated Successfully"),
+        (remove_user_role_command, "User Role Was Removed Successfully")
+    ]
+)
+def test_user_role_command(mocker, func, expected_output: str):
+    client = CoreClient("test", {})
+    
+    mocker.patch.object(CoreClient, "set_user_role", return_value=None)
+    mocker.patch.object(CoreClient, "remove_user_role", return_value=None)
+    
+    results = func(client=client, args={})
+    
+    assert expected_output in results.readable_output
+
+
 def test_endpoint_command_fails(requests_mock):
     """
     Given:
@@ -3482,3 +3500,4 @@ def test_endpoint_command_fails(requests_mock):
     with pytest.raises(DemistoException) as e:
         endpoint_command(client, args)
     assert 'In order to run this command, please provide a valid id, ip or hostname' in str(e)
+

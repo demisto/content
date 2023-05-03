@@ -1273,6 +1273,25 @@ class CoreClient(BaseClient):
             json_data={"request_data": {"role_names": role_names}},
         )
 
+    def set_user_role(self, user_emails: list[str], role_name: str ) -> None:
+        self._http_request(
+            method='POST',
+            # url_suffix='/rbac/set_role/',
+            json_data={"request_data": {
+                "user_emails": user_emails,
+                "role_name": role_name
+                }},
+        )
+
+    def remove_user_role(self, user_emails: list[str]) -> None:
+            self._http_request(
+                method='POST',
+                # url_suffix='/rbac/set_role/',
+                json_data={"request_data": {
+                    "user_emails": user_emails,
+                    "role_name": ""
+                    }},
+            )
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: Optional[str], arg_type: str, option_mapper: dict = None):
@@ -3858,3 +3877,26 @@ def get_list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandR
         outputs_key_field='pretty_name',
         outputs=outputs,
     )
+
+
+def set_user_role_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    user_emails = argToList(args.get('user_emails'))
+    role_name = args.get('role_name')
+    
+    try: 
+        client.set_user_role(user_emails, role_name)
+    except DemistoException:
+        raise
+
+    return CommandResults(readable_output="User Role Was Updated Successfully")
+
+
+def remove_user_role_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    user_emails = argToList(args.get('user_emails'))
+    
+    try: 
+        client.remove_user_role(user_emails)
+    except DemistoException:
+        raise
+
+    return CommandResults(readable_output="User Role Was Removed Successfully")    
