@@ -206,6 +206,7 @@ class Metadata(object):
     URL = 'url'
     MARKETPLACES = 'marketplaces'
     DISABLE_MONTHLY = 'disableMonthly'
+    MODULES = 'modules'
 
 
 class PackFolders(enum.Enum):
