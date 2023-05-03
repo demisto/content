@@ -804,15 +804,13 @@ def get_edl_on_demand() -> tuple[str, int]:
     if EDL_ON_DEMAND_KEY in ctx:
         ctx.pop(EDL_ON_DEMAND_KEY, None)
         request_args = RequestArguments.from_context_json(ctx)
-        edl_data, original_indicators_count = create_new_edl(request_args)
+        edl_data, EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE = create_new_edl(request_args)
 
         try:
             demisto.debug("edl: Writing EDL data to cache")
 
             with open(EDL_ON_DEMAND_CACHE_PATH, 'w') as file:
                 file.write(edl_data)
-
-            EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE = original_indicators_count
 
         except Exception as e:
             demisto.debug(f"edl: Error in writing to file: {str(e)}")
@@ -828,15 +826,13 @@ def get_edl_on_demand() -> tuple[str, int]:
             with open(EDL_ON_DEMAND_CACHE_PATH, 'r') as file:
                 edl_data = file.read()
 
-            original_indicators_count = EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE
-
         except Exception as e:
             demisto.debug(f"edl: Error reading cache file: {str(e)}")
             raise e
 
         demisto.debug("edl: Finished reading EDL data from cache")
 
-    return edl_data, original_indicators_count
+    return edl_data, EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE
 
 
 def validate_basic_authentication(headers: dict, username: str, password: str) -> bool:
