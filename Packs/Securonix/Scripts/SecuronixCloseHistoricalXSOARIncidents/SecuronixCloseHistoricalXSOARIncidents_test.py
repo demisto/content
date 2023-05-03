@@ -64,7 +64,6 @@ def test_close_xsoar_incident_when_incident_in_progress(mock_execute_command):
     with open('test_data/incident_activity_history_get_response.json', 'r') as f:
         mock_activity_history = json.load(f)[:2]
     MOCK_EXECUTE_COMMAND_RESPONSE[0]["Contents"] = mock_activity_history
-    print(MOCK_EXECUTE_COMMAND_RESPONSE)
 
     mock_execute_command.side_effect = [MOCK_EXECUTE_COMMAND_RESPONSE]
 
