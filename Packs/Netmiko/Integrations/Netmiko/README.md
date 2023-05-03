@@ -96,20 +96,20 @@ Executes a command, or series of commands, over an SSH connection. Outputs from 
 
 #### Context Example #### 
 
-> {
->&emsp;"Netmiko": [{
->&emsp;&emsp;"Command": "whoami",
->		"DateTimeUTC": "2023-04-24T21:59:02.177240",
->		"Hostname": "192.168.0.1",
->		"Output": "[someuser@somehost ~]$ root"
->	}, 
->	{
->		"Command": "who",
->		"DateTimeUTC": "2023-04-24T21:59:04.882842",
->		"Hostname": "192.168.0.1",
->		"Output": "[someuser@somehost ~]$ root pts/0        2023-04-24 17:58 (192.168.0.1)"
->	}]
->}
+>{<br>
+>&emsp;"Netmiko": [{<br>
+>&emsp;&emsp;"Command": "whoami",<br>
+>&emsp;&emsp;"DateTimeUTC": "2023-04-24T21:59:02.177240",<br>
+>&emsp;&emsp;"Hostname": "192.168.0.1",<br>
+>&emsp;&emsp;"Output": "[someuser@somehost ~]$ root"<br>
+>&emsp;},<br>
+>&emsp;{<br>
+>&emsp;&emsp;"Command": "who",<br>
+>&emsp;&emsp;"DateTimeUTC": "2023-04-24T21:59:04.882842",<br>
+>&emsp;&emsp;"Hostname": "192.168.0.1",<br>
+>&emsp;&emsp;"Output": "[someuser@somehost ~]$ root pts/0        2023-04-24 17:58 (192.168.0.1)"<br>
+>&emsp;}]<br>
+>}<br>
 
 #### Human Readable Output ####
 #### Command(s) against 192.168.0.1 (linux) ####
