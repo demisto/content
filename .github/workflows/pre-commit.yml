@@ -50,11 +50,19 @@ jobs:
         detailed_summary: true
         annotate_only: true      
 
+    - name: "Check coverage.xml exists"
+      if: always()
+      id: check_files
+      uses: andstor/file-existence-action@v2
+      with:
+        files: "coverage.xml"
+      
+
     - name: Code Coverage Report
-      # if: steps.check_files.outputs.files_exists == 'true'
+      if: steps.check_files.outputs.files_exists == 'true'
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: "/home/runner/work/content/content/coverage.xml"
+        filename: "coverage.xml"
         badge: true
         fail_below_min: true
         format: markdown
