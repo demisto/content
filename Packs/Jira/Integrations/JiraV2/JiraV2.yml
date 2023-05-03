@@ -61,6 +61,8 @@ configuration:
   type: 8
 - defaultvalue: 'false'
   display: Mirror incoming incidents
+  hidden:
+    - marketplacev2
   name: incoming_mirror
   required: false
   type: 8
@@ -73,18 +75,24 @@ configuration:
   required: false
   type: 8
 - display: Mirror outgoing incidents
+  hidden:
+    - marketplacev2
   name: outgoing_mirror
   required: false
   type: 8
 - additionalinfo: Choose the tag to add to an entry to mirror it as an attachment in Jira.
   defaultvalue: attachment
   display: File entry tag
+  hidden:
+    - marketplacev2
   name: file_tag
   required: false
   type: 0
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Jira.
   defaultvalue: comment
   display: Comment entry tag
+  hidden:
+    - marketplacev2
   name: comment_tag
   required: false
   type: 0
@@ -545,19 +553,19 @@ script:
       type: String
     - contextPath: Ticket.Key
       description: The ticket key.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Assignee
       description: The user assigned to the ticket.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Creator
       description: The user who created the ticket.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Summary
       description: The ticket summary.
-      type: Unknown
+      type: String
     - contextPath: Ticket.Status
       description: The ticket status.
-      type: Unknown
+      type: String
   dockerimage: demisto/oauthlib:1.0.0.55861
   isfetch: true
   ismappable: true
@@ -569,4 +577,5 @@ script:
   type: python
 tests:
 - Jira-v2-Test
+defaultmapperin: classifier-mapper-incoming-JiraV2
 fromversion: 5.0.0
