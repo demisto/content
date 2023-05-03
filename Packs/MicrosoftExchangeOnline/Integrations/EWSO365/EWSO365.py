@@ -1935,12 +1935,12 @@ def add_additional_headers(additional_headers):
 def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
-               additionalHeader=None, raw_message=None, from_address=None, replyTo=None, importance=None,
-               renderBody=False):     # pragma: no cover
+               additionalHeader=None, raw_message=None, from_address=None, replyTo=None, importance=None):     # pragma: no cover
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
     reply_to = argToList(replyTo)
+    render_body = argToBoolean(args.get('renderBody', False))
 
     # Basic validation - we allow pretty much everything but you have to have at least a recipient
     # We allow messages without subject and also without body
@@ -1980,7 +1980,7 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
     client.send_email(message)
 
     results = [CommandResults(entry_type=EntryType.NOTE, raw_response='Mail sent successfully')]
-    if renderBody:
+    if render_body:
         results.append(CommandResults(
             entry_type=EntryType.NOTE,
             content_format=EntryFormat.HTML,

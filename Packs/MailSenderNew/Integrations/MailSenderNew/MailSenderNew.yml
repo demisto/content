@@ -160,6 +160,10 @@ script:
       name: renderBody
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     deprecated: false
     description: Send an email
     execution: false
