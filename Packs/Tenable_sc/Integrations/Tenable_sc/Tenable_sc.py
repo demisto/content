@@ -24,9 +24,16 @@ ACTION_TYPE_TO_VALUE = {
 }
 
 
-class Client:
+class Client(BaseClient):
     def __init__(self, verify_ssl: bool = True, proxy: bool = False, user_name: str = "",
                  password: str = "", access_key: str = "", secret_key: str = "", url: str = ""):
+
+        if not proxy:
+            del os.environ['HTTP_PROXY']
+            del os.environ['HTTPS_PROXY']
+            del os.environ['http_proxy']
+            del os.environ['https_proxy']
+
         self.url = f"{get_server_url(url)}/rest"
         self.verify_ssl = verify_ssl
         self.max_retries = 3
@@ -51,15 +58,9 @@ class Client:
             if not self.token or not self.cookie:
                 self.login()
 
-        if not proxy:
-            del os.environ['HTTP_PROXY']
-            del os.environ['HTTPS_PROXY']
-            del os.environ['http_proxy']
-            del os.environ['https_proxy']
-
     def send_request_new(self, path, method='get', body=None, params=None, headers=None):
         headers = headers or self.headers
-        return self._http_request(method, url_suffix=path, params=params, body=body)
+        return self._http_request(method, url_suffix=path, params=params, data=body)
 
     def send_request_old(self, path, method='get', body=None, params=None, headers=None, try_number=1):
         body = body if body is not None else {}
