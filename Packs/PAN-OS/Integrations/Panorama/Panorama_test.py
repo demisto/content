@@ -6573,23 +6573,23 @@ def test_find_largest_id_per_device():
     assert res == {'dummy_device1': '000000002', 'dummy_device2': '000000001'}
 
 
-def test_remove_duplicates_entries():
+def test_remove_duplicate_entries():
     """
     Given:
     - list of dictionares repesenting raw entries, some contain seqno and some not.
     - dictionary with the largest id per device.
     When:
-    - remove_duplicates_entries is called.
+    - remove_duplicate_entries is called.
     Then:
     - return a dictionary the entries that there id is larger then the id in the id_dict, and the entries that do not have seqno.
     """
-    from Panorama import remove_duplicates_entries
+    from Panorama import remove_duplicate_entries
     raw_entries = {"log_type1": [{'device_name': 'dummy_device1'},
                    {'device_name': 'dummy_device1', 'seqno': '000000002'},
                    {'device_name': 'dummy_device2', 'seqno': '000000001'}],
                    "log_type2": [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
     id_dict = {"log_type1": {'dummy_device1': '000000003', 'dummy_device2': '000000001'}}
-    res = remove_duplicates_entries(raw_entries, id_dict)
+    res = remove_duplicate_entries(raw_entries, id_dict)
     assert res == {'log_type1': [{'device_name': 'dummy_device1'}, {'device_name': 'dummy_device2', 'seqno': '000000001'}],
                    'log_type2': [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
 

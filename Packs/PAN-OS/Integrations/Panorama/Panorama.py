@@ -13160,33 +13160,30 @@ def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[s
     for entry in incident_entries:
         device_name: str = entry.get('device_name', '')
         id: str = entry.get('seqno', '')
-        temp_largest_id_per_device: Dict[str, str] = {device_name: id}
-        if device_name in new_largest_id.keys():
-            if int(id) > int(new_largest_id[device_name]):
-                # update the id if it is larger than the current id
-                new_largest_id[device_name] = id
-        else:
-            # add the device and id to the list
-            new_largest_id.update(temp_largest_id_per_device)
+    
+        # Upsert the device's id if it's a new device, or it's a larger id
+        if not device_name in new_largest_id.keys() or int(id) > int(new_largest_id[device_name]):
+            new_largest_id[device_name] = id
     return new_largest_id
 
 
-def remove_duplicates_entries(entries_dict,id_dict):
+def remove_duplicate_entries(entries_dict: Dict[str, List[Dict[str,Any]]], id_dict: Dict[str, str]):
     """
     this function removes entries that have already been fetched in the previous fetch cycle.
     Args:
         entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries
         id_dict (Dict[str, str]): a dictionary of devices and there largest id so far
     Returns:
-        entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries without duplicates
+        new_entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries without entries that have already been fetched in the previous fetch cycle
     """
+    new_entries_dict: Dict = {}
     for log_type in entries_dict:
         for log in entries_dict[log_type]:
             device_name = log.get("device_name", '')
             latest_id_par_device = id_dict.get(log_type,{}).get(device_name, 0) # get the latest id for that device, if that device is not in the dict, set the id to 0
-            if log.get("seqno") and arg_to_number(log["seqno"]) <= arg_to_number(latest_id_par_device):     # type: ignore
-                    entries_dict[log_type].remove(log)
-    return entries_dict
+            if log.get("seqno") and arg_to_number(log["seqno"]) > arg_to_number(latest_id_par_device):     # type: ignore
+                    new_entries_dict.setdefault(log_type, []).append(log)
+    return new_entries_dict
 
 
 def create_max_fetch_dict(queries_dict, configured_max_fetch):
@@ -13200,7 +13197,7 @@ def create_max_fetch_dict(queries_dict, configured_max_fetch):
     """
     max_fetch_dict = {}
     for key in queries_dict.keys():
-        max_fetch_dict.update({key:configured_max_fetch})
+        max_fetch_dict.update({key: configured_max_fetch})
     return max_fetch_dict
 
 
@@ -13214,7 +13211,7 @@ def update_max_fetch_dict(configured_max_fetch, max_fetch_dict, last_fetch_dict)
         max_fetch_dict (Dict[str, int]): a dictionary of log type and its updated max fetch value
     """
     for log_type in last_fetch_dict:
-        previus_fetch_timestamp=demisto.getLastRun().get("last_fetch_dict",{}).get(log_type)
+        previus_fetch_timestamp=demisto.getLastRun().get("last_fetch_dict", {}).get(log_type)
         # if the latest timestamp of the corrent fetchis is the same as the previus fetch timestamp,
         # that means we did not get all logs for that timestamp
         demisto.debug(
@@ -13361,14 +13358,14 @@ def log_types_queries_to_dict(params: Dict[str, str]) -> Dict[str, str]:
     return queries_dict
 
 
-def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, Any]]], last_fetch_dict: Dict[str,str], last_id_dict: Dict[str,Dict]) -> Dict[str,Any]:
+def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, Any]]], last_fetch_dict: Dict[str, str], last_id_dict: Dict[str, Dict]) -> Dict[str, Any]:
     """for each log type incident entries array, parse the raw incidents into context incidents.
     if necessary, update the latest fetch time and last ID values in their corresponding dictionaries.
 
     Args:
         incident_entries_dict (Dict[str, List[Dict[str, Any]]]): list of dictionaries representing raw incident entries
-        last_fetch_dict (Dict[str,str]): last fetch dictionary
-        last_id_dict (Dict[str,Dict]): last id dictionary
+        last_fetch_dict (Dict[str, str]): last fetch dictionary
+        last_id_dict (Dict[str, Dict]): last id dictionary
 
     Returns:
         Dict[str,Any]: parsed context incident dictionary
@@ -13415,7 +13412,7 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
     demisto.debug('raw incident entries fetching has completed.')
     
     # remove duplicated incidents from incident_entries_dict
-    unique_incident_entries_dict = remove_duplicates_entries(entries_dict=incident_entries_dict, id_dict =last_id_dict)
+    unique_incident_entries_dict = remove_duplicate_entries(entries_dict=incident_entries_dict, id_dict =last_id_dict)
     
     parsed_incident_entries_dict = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict, last_id_dict)
 
