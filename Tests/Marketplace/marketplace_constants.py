@@ -131,13 +131,13 @@ class GCPConfig(object):
     @classmethod
     def get_core_packs_unlocked_files(cls):
         """
-        Find the current server versions that are not locked and return the matching corepacks files.
+        Find the current server versions that are unlocked and return the matching corepacks files.
         """
-        unlocked_files = []
+        unlocked_corepacks_files = []
         for version, core_pack_file_value in cls.CORE_PACKS_FILE_VERSIONS.items():
             if not core_pack_file_value.get('core_packs_file_is_locked'):
-                unlocked_files.append(core_pack_file_value.get('core_packs_file'))
-        return unlocked_files
+                unlocked_corepacks_files.append(core_pack_file_value.get('core_packs_file'))
+        return unlocked_corepacks_files
 
 
 class PackTags(object):

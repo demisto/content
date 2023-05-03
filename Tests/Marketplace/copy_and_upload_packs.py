@@ -154,11 +154,11 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
             sys.exit(1)
 
         if corepacks_file == GCPConfig.CORE_PACK_FILE_NAME:
+            # change the storage paths to the prod bucket
             temp_corepacks_file_path = os.path.join(extract_destination_path, GCPConfig.CORE_PACK_FILE_NAME)
             build_corepacks_blob.download_to_filename(temp_corepacks_file_path)
             corepacks_file = load_json(temp_corepacks_file_path)
 
-            # change the storage paths to the prod bucket
             corepacks_list = corepacks_file.get('corePacks', [])
             try:
                 corepacks_list = [os.path.join(GCPConfig.GCS_PUBLIC_URL, production_bucket.name, storage_base_path,
