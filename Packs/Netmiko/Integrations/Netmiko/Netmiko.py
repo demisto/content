@@ -14,6 +14,12 @@ from netmiko import Netmiko
 ''' HELPER FUNCTIONS '''
 
 
+# Return only specific keys from dictionary
+def include_keys(dictionary, keys):
+    key_set = set(keys) & set(dictionary.keys())
+    return {key: dictionary[key] for key in key_set}
+
+
 def return_file(keys):
     return_file.readlines = lambda: keys.split("\n")  # type: ignore
     return return_file
@@ -39,7 +45,7 @@ class Client:
         else:
             try:
                 self.net_connect = Netmiko(device_type=self.platform, host=self.hostname, port=self.port,
-                                           use_keys=True, username=self.username, password=self.password)
+                                           use_keys=False, username=self.username, password=self.password)
             except Exception as err:
                 return_error(err)
 
@@ -81,6 +87,8 @@ def test_command(client):
 
 
 def cmds_command(client, args):
+
+    interestingKeys = ("Hostname", "DateTimeUTC", "Command", "Output")
 
     # Parse the commands
     cmds = args.get('cmds')
@@ -126,7 +134,19 @@ def cmds_command(client, args):
             demisto.error(f"Error with raw print output - {err}")
 
     else:
-        md = tableToMarkdown(f'Command(s) against {client.hostname} ({client.platform}):', output)
+        hdrs = ["Hostname", "DateTimeUTC", "Command", "Output"]
+        data = []
+
+        # Single command
+        if len(cmds) == 1:
+            data.append(output["Commands"][0])
+
+        # Multiple commands
+        else:
+            for item in output["Commands"]:
+                data.append(include_keys(item, interestingKeys))
+
+        md = tableToMarkdown(f'Command(s) against {client.hostname} ({client.platform}):', data, headers=hdrs)
     outputs_key_field = None
     outputs_prefix = None
     outputs = None
