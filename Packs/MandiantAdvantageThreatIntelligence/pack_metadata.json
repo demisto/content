@@ -4,7 +4,7 @@
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Mandiant",
-    "hidden": true,
+    "hidden": false,
     "url": "https://www.mandiant.com/support",
     "email": "customersupport@mandiant.com",
     "categories": [
