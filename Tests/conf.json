@@ -3093,7 +3093,8 @@
             "integrations": "EWSO365",
             "instance_names": "ewso365_dev_team",
             "playbookID": "EWS_O365_test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 500
         },
         {
             "integrations": "EWSO365",
@@ -3624,6 +3625,13 @@
         {
             "integrations": "EWS Extension Online Powershell v2",
             "playbookID": "playbook-O365-EWS-Extension-Powershell-Online-V2-Test",
+            "fromversion": "6.0.0",
+            "toversion": "6.0.9",
+            "timeout": 250
+        },
+        {
+            "integrations": "EWS Extension Online Powershell v3",
+            "playbookID": "playbook-O365-EWS-Extension-Powershell-Online-V3-Test",
             "fromversion": "6.0.0",
             "toversion": "6.0.9",
             "timeout": 250
@@ -5102,7 +5110,8 @@
             "instance_names": [
                 "ewso365_dev_team"
             ],
-            "fromversion": "6.5.0"
+            "fromversion": "6.5.0",
+            "timeout": 600
         },
         {
             "integrations": "OpsGenieV3",
@@ -5543,7 +5552,8 @@
         "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters",
         "awake_security_test_pb": "No instance, CRTX-77572",
         "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
-        "SumoLogic-Test": "401 unauthorized, CIAC-6334"
+        "SumoLogic-Test": "401 unauthorized, CIAC-6334",
+        "Audit Log - Test": "Basic Auth is no longer supported, only OAuth 2.0 is (which requires an update to the playbook). - XSUP-23266"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
