@@ -935,6 +935,7 @@ class BranchTestCollector(TestCollector):
         self._validate_path(path)
 
         file_type = find_type(str(path))
+        logger.info(f"DEBUG: File type is {file_type} of {str(path)}")
 
         if file_type in IGNORED_FILE_TYPES:
             raise NothingToCollectException(path, f'ignored type {file_type}')
