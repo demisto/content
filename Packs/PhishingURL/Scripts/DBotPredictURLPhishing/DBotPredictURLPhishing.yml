@@ -59,6 +59,19 @@ args:
   - 'True'
   required: false
   secret: false
+- auto: PREDEFINED
+  description: Reliability of the source providing the intelligence data.
+  defaultValue: A+ - 3rd party enrichment
+  display: Reliability
+  name: reliability
+  predefined:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
 comment: Predict phishing URLs using a pre-trained model.
 commonfields:
   id: DBotPredictURLPhishing
