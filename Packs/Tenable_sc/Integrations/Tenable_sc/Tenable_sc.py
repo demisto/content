@@ -26,24 +26,25 @@ ACTION_TYPE_TO_VALUE = {
 
 class Client:
     def __init__(self, verify_ssl: bool = True, proxy: bool = False, user_name: str = "",
-                 password: str = "", access_key: str = "", secret_key: str = "", url: str = "",):
+                 password: str = "", access_key: str = "", secret_key: str = "", url: str = ""):
+        self.url = f"{get_server_url(url)}/rest"
         self.verify_ssl = verify_ssl
         self.max_retries = 3
-        self.session = Session()
-        self.url = get_server_url(url) + '/rest'
         self.headers: dict[str, Any] = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
-        integration_context = demisto.getIntegrationContext()
-        self.cookie = integration_context.get('cookie')
         if not (user_name and password) and not (secret_key and access_key):
             return_error("Please provide either user_name and password or secret_key and access_key")
         if secret_key and access_key:
             self.headers['x-apikey'] = {'accesskey': access_key, 'secretkey': secret_key}
+            BaseClient.__init__(self, base_url=self.url, headers=self.headers, verify=verify_ssl, proxy=proxy)
             self.send_request = self.send_request_new
         else:
+            self.session = Session()
+            integration_context = demisto.getIntegrationContext()
             self.token = integration_context.get('token')
+            self.cookie = integration_context.get('cookie')
             self.user_name = user_name
             self.password = password
             self.send_request = self.send_request_old
@@ -56,35 +57,9 @@ class Client:
             del os.environ['http_proxy']
             del os.environ['https_proxy']
 
-    def send_request_new(self, path, method='get', body=None, params=None, headers=None, try_number=1):
-        body = body if body is not None else {}
-        params = params if params is not None else {}
-        headers = headers if headers is not None else self.headers
-
-        url = f'{self.url}/{path}'
-
-        session_cookie = cookies.create_cookie('TNS_SESSIONID', self.cookie)
-        self.session.cookies.set_cookie(session_cookie)  # type: ignore
-
-        res = self.session.request(method, url, data=json.dumps(body), params=params, headers=headers, verify=self.verify_ssl)
-
-        if res.status_code == 403 and try_number <= self.max_retries:
-            self.login()
-            headers['X-SecurityCenter'] = self.token  # The Token is being updated in the login
-            return self.send_request(path, method, body, params, headers, try_number + 1)
-
-        elif res.status_code < 200 or res.status_code >= 300:
-            try:
-                error = res.json()
-            except Exception:
-                # type: ignore
-                return_error(
-                    f'Error: Got status code {str(res.status_code)} with {url=} \
-                    with body {res.content} with headers {str(res.headers)}')   # type: ignore
-
-            return_error(f"Error: Got an error from TenableSC, code: {error['error_code']}, \
-                        details: {error['error_msg']}")  # type: ignore
-        return res.json()
+    def send_request_new(self, path, method='get', body=None, params=None, headers=None):
+        headers = headers or self.headers
+        return self._http_request(method, url_suffix=path, params=params, body=body)
 
     def send_request_old(self, path, method='get', body=None, params=None, headers=None, try_number=1):
         body = body if body is not None else {}
