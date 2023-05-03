@@ -2409,6 +2409,10 @@ def endpoint_command(client, args):
     endpoint_ip_list = argToList(args.get('ip'))
     endpoint_hostname_list = argToList(args.get('hostname'))
 
+    if not any((endpoint_id_list, endpoint_ip_list, endpoint_hostname_list)):
+        raise DemistoException(f'{args.get("integration_name", "CoreApiModule")} -'
+                               f' In order to run this command, please provide a valid id, ip or hostname')
+
     endpoints = client.get_endpoints(
         endpoint_id_list=endpoint_id_list,
         ip_list=endpoint_ip_list,
