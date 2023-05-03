@@ -71,12 +71,12 @@ Executes a command, or series of commands, over an SSH connection. Outputs from 
 `!netmiko-cmds cmds="whoami"`
 #### Context Example ####
 
-> { 	
-> "Command": "whoami",
-> "DateTimeUTC": "2023-04-24T21:40:21.755985",
-> "Hostname": "192.168.0.1",
-> "Output": "[someuser@someserver ~]$ root"
-> }
+>{<br> 	
+>&emsp;"Command": "whoami",<br>
+>&emsp;"DateTimeUTC": "2023-04-24T21:40:21.755985",<br>
+>&emsp;"Hostname": "192.168.0.1",<br>
+>&emsp;"Output": "[someuser@someserver ~]$ root"<br>
+>}<br>
 
 #### Human Readable Output ####
 #### Command(s) against 192.168.0.1 (linux) ####
