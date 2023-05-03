@@ -208,6 +208,7 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"get_endpoints response = {reply}")
 
         endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
@@ -891,6 +892,8 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"retrieve_file = {reply}")
+
         return reply.get('reply')
 
     def generate_files_dict(self, endpoint_id_list: list, file_path_list: list) -> Dict[str, Any]:
@@ -912,7 +915,7 @@ class CoreClient(BaseClient):
                 files['windows'].append(file_path)
             elif 'linux' in endpoint_os_type.lower():
                 files['linux'].append(file_path)
-            elif 'macos' in endpoint_os_type.lower():
+            elif 'mac' in endpoint_os_type.lower():
                 files['macos'].append(file_path)
 
         # remove keys with no value
@@ -931,9 +934,11 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"retrieve_file_details = {reply}")
 
         return reply.get('reply').get('data')
 
+    @logger
     def get_scripts(self, name: list, description: list, created_by: list, windows_supported,
                     linux_supported, macos_supported, is_high_risk) -> Dict[str, Any]:
 
@@ -1098,8 +1103,11 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"action_status_get = {reply}")
+
         return reply.get('reply').get('data')
 
+    @logger
     def get_file(self, file_link):
         reply = self._http_request(
             method='GET',
@@ -1118,6 +1126,7 @@ class CoreClient(BaseClient):
         )
         return reply
 
+    @logger
     def get_endpoints_by_status(self, status, last_seen_gte=None, last_seen_lte=None):
         filters = []
 
@@ -1510,11 +1519,10 @@ def validate_args_scan_commands(args):
         if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
                 or ip_list or group_name or platform or alias or hostname:
             raise Exception(err_msg)
-    else:
-        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
+    elif not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
                 and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
                 and not alias and not hostname:
-            raise Exception(err_msg)
+        raise Exception(err_msg)
 
 
 def endpoint_scan_command(client: CoreClient, args) -> CommandResults:
@@ -1689,7 +1697,7 @@ def convert_os_to_standard(endpoint_os):
         os_type = "Windows"
     elif 'linux' in endpoint_os:
         os_type = "Linux"
-    elif 'macos' in endpoint_os:
+    elif 'mac' in endpoint_os:
         os_type = "Macos"
     elif 'android' in endpoint_os:
         os_type = "Android"
@@ -2917,42 +2925,42 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> Tuple[s
     )
 
 
-@polling_function(
-    name=demisto.command(),
-    interval=arg_to_number(demisto.args().get('polling_interval_in_seconds', 10)),
-    timeout=arg_to_number(demisto.args().get('polling_timeout', 600)),
-    requires_polling_arg=False  # means it will always be default to poll, poll=true
-)
-def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
-
-    if action_id := args.get('action_id'):
-        response = client.get_script_execution_status(action_id)
-        general_status = response.get('reply', {}).get('general_status') or ''
-
-        return PollResult(
-            response=get_script_execution_results_command(
-                client, {'action_id': action_id, 'integration_context_brand': 'PaloAltoNetworksXDR'}
-            ),
-            continue_to_poll=general_status.upper() in ('PENDING', 'IN_PROGRESS')
-        )
-
-    else:
-        endpoint_ids = argToList(args.get('endpoint_ids'))
-        response = get_run_script_execution_response(client, args)
-        reply = response.get('reply')
-        action_id = reply.get('action_id')
-
-        args['action_id'] = action_id
-
-        return PollResult(
-            response=None,  # since polling defaults to true, no need to deliver response here
-            continue_to_poll=True,  # if an error is raised from the api, an exception will be raised
-            partial_result=CommandResults(
-                readable_output=f'Waiting for the script to finish running '
-                                f'on the following endpoints: {endpoint_ids}...'
-            ),
-            args_for_next_run=args
-        )
+# @polling_function(
+#     name=demisto.command(),
+#     interval=arg_to_number(demisto.args().get('polling_interval_in_seconds', 10)),
+#     timeout=arg_to_number(demisto.args().get('polling_timeout', 600)),
+#     requires_polling_arg=False  # means it will always be default to poll, poll=true
+# )
+# def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
+#
+#     if action_id := args.get('action_id'):
+#         response = client.get_script_execution_status(action_id)
+#         general_status = response.get('reply', {}).get('general_status') or ''
+#
+#         return PollResult(
+#             response=get_script_execution_results_command(
+#                 client, {'action_id': action_id, 'integration_context_brand': 'PaloAltoNetworksXDR'}
+#             ),
+#             continue_to_poll=general_status.upper() in ('PENDING', 'IN_PROGRESS')
+#         )
+#
+#     else:
+#         endpoint_ids = argToList(args.get('endpoint_ids'))
+#         response = get_run_script_execution_response(client, args)
+#         reply = response.get('reply')
+#         action_id = reply.get('action_id')
+#
+#         args['action_id'] = action_id
+#
+#         return PollResult(
+#             response=None,  # since polling defaults to true, no need to deliver response here
+#             continue_to_poll=True,  # if an error is raised from the api, an exception will be raised
+#             partial_result=CommandResults(
+#                 readable_output=f'Waiting for the script to finish running '
+#                                 f'on the following endpoints: {endpoint_ids}...'
+#             ),
+#             args_for_next_run=args
+#         )
 
 
 def get_run_script_execution_response(client: CoreClient, args: Dict):
