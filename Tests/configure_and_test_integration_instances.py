@@ -53,8 +53,7 @@ DOCKER_HARDENING_CONFIGURATION = {
     'docker.cpu.limit': '1.0',
     'docker.run.internal.asuser': 'true',
     'limit.docker.cpu': 'true',
-    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',
-    # noqa: E501
+    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',  # noqa: E501
     'powershell.pass.extra.keys': f'--env##no_proxy={NO_PROXY}',
     'monitoring.pprof': 'true',
     'enable.pprof.memory.dump': 'true',
@@ -759,7 +758,7 @@ class CloudBuild(Build):
         super().__init__(options)
         self.is_cloud = True
         self.cloud_machine = options.cloud_machine
-        self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id = \
+        self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
             self.get_cloud_configuration(options.cloud_machine, options.cloud_servers_path,
                                          options.cloud_servers_api_keys)
         self.servers = [CloudServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
@@ -1171,7 +1170,7 @@ def set_integration_params(build,
                 f"key: {build.api_key}")
             logging.info(
                 f"*** DEBUG integration_params {integration_params}")
-            integration_params = [{  # type: ignore
+            integration_params['params'] = [{  # type: ignore
                 "url": build.base_url,
                 "creds_apikey": {
                     "identifier": str(build.xdr_auth_id),
@@ -1183,6 +1182,8 @@ def set_integration_params(build,
             }]
 
         if integration_params:
+            logging.info(
+                f"*** DEBUG integration_params {integration_params}")
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
             # values in our secret conf for multiple instances of the given integration and now we
@@ -1236,10 +1237,16 @@ def set_module_params(param_conf, integration_params):
     Returns:
         (dict): The configured parameter object
     """
+    logging.info(
+        "*** DEBUG in SET module")
+    logging.info(
+        f"*** DEBUG integration_params {integration_params}")
     if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
         # param defined in conf
         key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
         if key == 'credentials' or key == "creds_apikey":
+            logging.info(
+                f"*** DEBUG key {key}")
             credentials = integration_params[key]
             param_value = {
                 'credential': '',
@@ -1256,6 +1263,8 @@ def set_module_params(param_conf, integration_params):
         # if the parameter doesn't have a value provided in the integration's configuration values
         # but does have a default value then assign it to the parameter for the module instance
         param_conf['value'] = param_conf['defaultValue']
+    logging.info(
+        f"*** DEBUG param_conf {param_conf}")
     return param_conf
 
 
