@@ -47,21 +47,13 @@ jobs:
             **/Packs/**/Integrations/**/.report_pytest.xml
         github_token: ${{ secrets.GITHUB_TOKEN }}
         detailed_summary: true
-        annotate_only: true
-
-    # - name: "Check coverage.xml exists"
-
-    #   id: check_files
-    #   uses: andstor/file-existence-action@v2
-    #   with:
-    #     files: "coverage.xml"
-      
+        annotate_only: true      
 
     - name: Code Coverage Report
       # if: steps.check_files.outputs.files_exists == 'true'
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: "coverage.xml"
+        filename: "**/coverage.xml"
         badge: true
         fail_below_min: true
         format: markdown
@@ -73,4 +65,6 @@ jobs:
       if: always()
       id: append-coverage
       run: |
-        cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY || echo "Missing coverage report"
+        if [[ -f code-coverage-results.md ]]; then
+          cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY || echo "Missing coverage report"
+        fi
