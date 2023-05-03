@@ -124,7 +124,7 @@ def unit_tests_results():
 
 def bucket_upload_results(bucket_artifact_folder):
     steps_fields = []
-    pack_results_path = os.path.join(bucket_artifact_folder, BucketUploadFlow.PACKS_RESULTS_FILE)
+    pack_results_path = os.path.join(bucket_artifact_folder, BucketUploadFlow.PACKS_RESULTS_FILE_FOR_SLACK)
     marketplace_name = os.path.basename(bucket_artifact_folder).upper()
 
     logging.info(f'retrieving upload data from "{pack_results_path}"')
@@ -199,6 +199,14 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XPANSE, title="XPANSE")
         coverage_slack_msg = construct_coverage_slack_msg()
+        missing_packs = get_artifact_data(ARTIFACTS_FOLDER_XSOAR, 'missing_content_packs_test_conf.txt')
+        if missing_packs:
+            missing_packs_lst = missing_packs.split('\n')
+            content_fields.append({
+                "title": f"{title} - Notice - Missing packs - ({len(missing_packs_lst)})",
+                "value": f"The following packs exist in content-test-conf, but not in content: {', '.join(missing_packs_lst)}",
+                "short": False
+            })
 
     slack_msg = [{
         'fallback': title,
