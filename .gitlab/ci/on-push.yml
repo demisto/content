@@ -138,7 +138,7 @@ validate-content-conf:
 
     - echo "Updating the content graph"
     - mkdir $ARTIFACTS_FOLDER/content_graph
-    - demisto-sdk create-content-graph --marketplace $MARKETPLACE_VERSION -o $ARTIFACTS_FOLDER/content_graph
+    - demisto-sdk update-content-graph --marketplace $MARKETPLACE_VERSION -o $ARTIFACTS_FOLDER/content_graph
     - echo "Successfully updated content graph"
 
     - section_end "Create or update content graph"
@@ -211,21 +211,21 @@ xsoar-prepare-testing-bucket:
   extends:
     - .generic-prepare-testing-bucket
 
-xpanse-prepare-testing-bucket:
-  variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
-    MARKETPLACE_VERSION: "xpanse"
-    PRODUCTNAME: "Cortex XPANSE"
-    MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
-  extends:
-    - .generic-prepare-testing-bucket
-
 mpv2-prepare-testing-bucket:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     MARKETPLACE_VERSION: "marketplacev2"
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
     PRODUCTNAME: "Cortex XSIAM"
+  extends:
+    - .generic-prepare-testing-bucket
+
+xpanse-prepare-testing-bucket:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    MARKETPLACE_VERSION: "xpanse"
+    PRODUCTNAME: "Cortex XPANSE"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
   extends:
     - .generic-prepare-testing-bucket
 
@@ -544,7 +544,6 @@ xsoar_ng_server_ga:
   needs:
     - job: xsoar-prepare-testing-bucket
       optional: true
-  allow_failure: true
 
 
 test-upload-flow:
