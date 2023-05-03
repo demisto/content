@@ -1,6 +1,6 @@
 {
     "name": "Free Feeds",
-    "description": "This content Pack helps set up free feeds (Plug & Fetch, Free with signup and Generic) available in TIM",
+    "description": "This content Pack helps set up free feeds (Plug & Fetch, Free with signup and Generic) available for TIM",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
