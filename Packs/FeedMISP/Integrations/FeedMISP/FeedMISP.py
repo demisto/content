@@ -140,13 +140,6 @@ class Client(BaseClient):
                                   timeout=self.timeout,
                                   )
 
-    def get_pymisp_version(self):
-        return self._http_request('GET',
-                                  url_suffix='/servers/getVersion',
-                                  resp_type='json',
-                                  timeout=self.timeout,
-                                  )
-
 
 """ Helper Functions """
 
@@ -514,7 +507,7 @@ def test_module(client: Client) -> str:
     Returns:
         ok if feed is accessible
     """
-    client.get_pymisp_version()
+    client.search_query(body={"limit": 1})
     return 'ok'
 
 
