@@ -30,6 +30,7 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | incydr_departure_date | The departure date \(in YYYY-MM-DD format\) provided by Code42 Incydr. |  | Required |
 | incydr_username | The username \(in email format\) provided by Code42 Incydr. |  | Required |
+| look_back | Number of days to compare the departure date against and check for post-departure activity \(e.g. "30", "7", etc.\). Default is 30. | 30 | Required |
 | incydr_uid | The unique identifier of a user provided by Code42 Incydr \(optional\). |  | Optional |
 
 ## Playbook Outputs
