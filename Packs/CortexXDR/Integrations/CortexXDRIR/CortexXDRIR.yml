@@ -3287,27 +3287,27 @@ script:
   - name: xdr-list-users
     description: Retrieve a list of the current users in your environment.
     arguments: []
-    outputs: 
+    outputs:
     - contextPath: PaloAltoNetworksXDR.User.user_email
       description: Email address of the user
-      type: string 
+      type: string
     - contextPath: PaloAltoNetworksXDR.User.user_first_name
       description: First name of the user
-      type: string 
-    - contextPath: PaloAltoNetworksXDR.User.user_last_name 
+      type: string
+    - contextPath: PaloAltoNetworksXDR.User.user_last_name
       description: Last name of the user.
       type: string
-    - contextPath: PaloAltoNetworksXDR.User.role_name  
+    - contextPath: PaloAltoNetworksXDR.User.role_name
       description: Role name associated with the user.
       type: string
     - contextPath: PaloAltoNetworksXDR.User.last_logged_in
-      description: Timestamp of when the user last logged in. 
+      description: Timestamp of when the user last logged in.
       type: integer
     - contextPath: PaloAltoNetworksXDR.User.user_type
       description: Type of user.
-      type: string  
+      type: string
     - contextPath: PaloAltoNetworksXDR.User.groups
-      description: Name of user groups associated with the user, if applicable. 
+      description: Name of user groups associated with the user, if applicable.
       type: array
     - contextPath: PaloAltoNetworksXDR.User.scope
       description: Name of scope associated with the user, if applicable.
@@ -3409,15 +3409,15 @@ script:
       type: array
     - contextPath: PaloAltoNetworksXDR.UserGroup.source
       description: Type of User Group.
-      type: String  
+      type: String
   - arguments:
     - description: List of one or more role names in your environment for which you want detailed information.
       name: role_names
       required: true
     name: xdr-list-roles
-    description: Retrieve information about one or more roles created in your environment. 
+    description: Retrieve information about one or more roles created in your environment.
     outputs:
-    - contextPath: PaloAltoNetworksXDR.Role.pretty_name  
+    - contextPath: PaloAltoNetworksXDR.Role.pretty_name
       description: Name of the role as it appears in the Management Console.
       type: String
     - contextPath: PaloAltoNetworksXDR.Role.permissions
@@ -3458,7 +3458,7 @@ script:
       isArray: true
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.56082
   isfetch: true
   runonce: false
   script: ''
