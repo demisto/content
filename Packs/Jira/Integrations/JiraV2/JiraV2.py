@@ -1028,13 +1028,13 @@ def delete_issue_command(issue_id_or_key):
         demisto.results('Failed to delete issue.')
 
 
-def update_issue_assignee(issue_id, assignee=None, assignee_id=None):
-    if assignee:
+def update_issue_assignee_command(issue_id, assignee=None, assignee_id=None):
+    if assignee:  # for jira server
         body = {"name": assignee}
-    elif assignee_id:
+    elif assignee_id:  # for jira cloud
         body = {"accountId": assignee_id}
     else:
-        raise DemistoException(f'Please provide assignee for Jira server or assignee_id for jira cloud')
+        raise DemistoException('Please provide assignee for Jira server or assignee_id for jira cloud')
     url = f'rest/api/latest/issue/{issue_id}/assignee'
     jira_req('PUT', url, json.dumps(body))
     return get_issue(issue_id, is_update=True)
@@ -1518,7 +1518,7 @@ def main():
             return_results(get_modified_remote_data_command(demisto.args()))
 
         elif demisto.command() == 'jira-issue-assign':
-            human_readable, outputs, raw_response = update_issue_assignee(**snakify(demisto.args()))
+            human_readable, outputs, raw_response = update_issue_assignee_command(**snakify(demisto.args()))
             return_outputs(human_readable, outputs, raw_response)
         else:
             raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
