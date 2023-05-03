@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
-from typing import Dict, List, Set, Any, Callable, Optional
+from typing import Dict, List, Set, Any, Callable, Optional, Union
 from collections import OrderedDict
 import traceback
 import requests
