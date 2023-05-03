@@ -886,8 +886,9 @@ def route_edl() -> Response:
         if not validate_basic_authentication(headers, username, password):
             err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
             demisto.debug(err_msg)
-            return Response(err_msg, status=401, mimetype='text/plain',
-                            headers=[('WWW-Authenticate', 'Basic realm="Login Required"')])
+            return Response(err_msg, status=401, mimetype='text/plain', headers=[
+                ('WWW-Authenticate', 'Basic realm="Login Required"'),
+            ])
 
     request_args = get_request_args(request.args, params)
     on_demand = params.get('on_demand')
