@@ -207,7 +207,7 @@ There is no context output for this command.
 * In case all fields are selected, there is a potential memory issue when dealing with CSV or JSON format files that exceed 150,000 entries.
 
 #### Custom HTTP Headers
-The response from EDL's endpoint includes some custom headers, starting with `X-EDL` that can be used for debugging.  
+The response from EDL's endpoint includes custom headers, starting with the `X-EDL` prefix, that can be used for debugging purposes.  
 The headers are:
 - `X-EDL-Created` - The date and time the response was created.
 - `X-EDL-Query-Time-Secs` - The time it took to execute the query and format the response.
