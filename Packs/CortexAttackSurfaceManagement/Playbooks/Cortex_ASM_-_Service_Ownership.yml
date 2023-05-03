@@ -1,17 +1,15 @@
 id: Cortex ASM - Service Ownership
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Cortex ASM - Service Ownership
 description: Identifies and recommends the most likely owners of the service, additionally citing an explanation and ranking score for each.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 57784b86-a171-4ca0-8dbc-35f4041c70d4
+    taskid: 57e985be-0db1-4244-832b-b27213d31989
     type: start
     task:
-      id: 57784b86-a171-4ca0-8dbc-35f4041c70d4
+      id: 57e985be-0db1-4244-832b-b27213d31989
       version: -1
       name: ""
       iscommand: false
@@ -38,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: a374f22a-49ab-4417-86de-1bb33e146025
+    taskid: 911821d8-f053-4873-8384-d08acd8bbb6d
     type: condition
     task:
-      id: a374f22a-49ab-4417-86de-1bb33e146025
+      id: 911821d8-f053-4873-8384-d08acd8bbb6d
       version: -1
       name: Is service account defined?
       description: Determine whether a service account was included among the potential service owners.
@@ -91,10 +89,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 2012bbb6-f57f-40a9-8eff-9c07a604d70a
+    taskid: 4a61e141-236d-4725-8abb-9e8b143943f4
     type: regular
     task:
-      id: 2012bbb6-f57f-40a9-8eff-9c07a604d70a
+      id: 4a61e141-236d-4725-8abb-9e8b143943f4
       version: -1
       name: Lookup project owner
       description: Retrieves the IAM access control policy for the specified project.
@@ -158,10 +156,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 922b8cd3-2e61-4bdc-88a2-35d141bc99bf
+    taskid: b5acafc7-f647-4210-881b-13d9d5f252f8
     type: regular
     task:
-      id: 922b8cd3-2e61-4bdc-88a2-35d141bc99bf
+      id: b5acafc7-f647-4210-881b-13d9d5f252f8
       version: -1
       name: Add project owner to service owner grid field
       description: |-
@@ -227,10 +225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: b599f435-c52e-4011-87e8-53c33eb46998
+    taskid: 2b90887f-a6ba-47a6-875f-622c8285dffc
     type: regular
     task:
-      id: b599f435-c52e-4011-87e8-53c33eb46998
+      id: 2b90887f-a6ba-47a6-875f-622c8285dffc
       version: -1
       name: Normalize and rank likely service owners
       description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
@@ -262,10 +260,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: d54d5bb2-8548-4919-887e-06e80951d23e
+    taskid: 7ca75c22-47ac-40a9-84f2-fc68e43d7d53
     type: regular
     task:
-      id: d54d5bb2-8548-4919-887e-06e80951d23e
+      id: 7ca75c22-47ac-40a9-84f2-fc68e43d7d53
       version: -1
       name: Back up service owners gridfield
       description: |-
@@ -341,10 +339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: cac1ca6c-b210-436c-8bd0-7e5424ece378
+    taskid: b0bddb17-8cec-405c-8441-478959b9e8c4
     type: regular
     task:
-      id: cac1ca6c-b210-436c-8bd0-7e5424ece378
+      id: b0bddb17-8cec-405c-8441-478959b9e8c4
       version: -1
       name: Get current time
       description: |
@@ -374,12 +372,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: ac078da7-4471-46bd-8a34-05287cb76a50
+    taskid: 1bad13f3-b959-46d9-8b56-90282a3afdcf
     type: condition
     task:
-      id: ac078da7-4471-46bd-8a34-05287cb76a50
+      id: 1bad13f3-b959-46d9-8b56-90282a3afdcf
       version: -1
       name: Is asmserviceowner populated?
+      description: Determines if the asmserviceowner field exists and if the common fields within it also exists.
       type: condition
       iscommand: false
       brand: ""
@@ -439,10 +438,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 7bed726c-405d-4725-8bdf-568e6e478b9c
+    taskid: 97716817-0eab-418a-8517-40dc54d22f00
     type: title
     task:
-      id: 7bed726c-405d-4725-8bdf-568e6e478b9c
+      id: 97716817-0eab-418a-8517-40dc54d22f00
       version: -1
       name: Done
       type: title
@@ -467,10 +466,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 7d42f01f-4398-417d-8fff-a2c0ba57b0ca
+    taskid: 1e322e1d-faef-420f-81bf-56d3d57eb27d
     type: condition
     task:
-      id: 7d42f01f-4398-417d-8fff-a2c0ba57b0ca
+      id: 1e322e1d-faef-420f-81bf-56d3d57eb27d
       version: -1
       name: Is GCP - IAM enabled?
       description: Determines if the GCP-IAM integration instance is configured.
@@ -546,4 +545,4 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0
+fromversion: 6.5.0
