@@ -64,7 +64,7 @@ tasks:
       ignore-outputs:
         simple: "true"
       query:
-        simple: ${incident.sourceBrand:Code42 and incident.status:Active}
+        simple: sourceBrand:Code42 and status:Active
     separatecontext: false
     continueonerrortype: ""
     view: |-
