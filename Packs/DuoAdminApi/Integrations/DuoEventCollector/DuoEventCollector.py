@@ -4,8 +4,8 @@ import duo_client
 from pydantic import BaseModel  # pylint: disable=E0611
 from CommonServerPython import *
 
-VENDOR = "duo"
-PRODUCT = "duo"
+VENDOR = "duo_test"
+PRODUCT = "duo_test"
 # This variable is used to convert the meantime for the v2 API for auth to milliseconds while the others use seconds
 AUTH_API_V2_TIME_MODIFIER = 1000
 
@@ -224,7 +224,7 @@ def main():  # pragma: no cover
             else:
                 # fetch-events
                 demisto.debug(f'Sending {len(events)} events to XSIAM')
-                # send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun(get_events.get_last_run())
 
     except Exception as e:
