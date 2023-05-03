@@ -6588,7 +6588,7 @@ def test_remove_duplicate_entries():
                    {'device_name': 'dummy_device1', 'seqno': '000000002'},
                    {'device_name': 'dummy_device2', 'seqno': '000000001'}],
                    "log_type2": [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
-    id_dict = {"log_type1": {'dummy_device1': '000000003', 'dummy_device2': '000000001'}}
+    id_dict = {"log_type1": {'dummy_device1': '000000003', 'dummy_device2': '000000000'}}
     res = remove_duplicate_entries(raw_entries, id_dict)
     assert res == {'log_type1': [{'device_name': 'dummy_device1'}, {'device_name': 'dummy_device2', 'seqno': '000000001'}],
                    'log_type2': [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
