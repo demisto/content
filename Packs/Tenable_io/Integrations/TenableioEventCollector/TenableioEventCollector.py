@@ -2,11 +2,10 @@ import time
 from typing import Dict
 
 import demistomock as demisto
-import requests
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+import urllib3
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
