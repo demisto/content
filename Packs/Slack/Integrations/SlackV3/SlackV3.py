@@ -2816,32 +2816,61 @@ def conversation_replies():
 
     context = []
     for message in messages:
-        user_id = message['user']
-        body = {
-            'user': user_id
-        }
-        user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
-        user_details = user_details_response['user']
-        if 'parent_user_id' not in message:
-            entry = {
-                'Type': message['type'],
-                'Text': message['text'],
-                'UserId': message['user'],
-                'Name': user_details['name'],
-                'FullName': user_details['real_name'],
-                'IsParent': 'Yes'
+        if 'subtype' not in message:
+            user_id = message['user']
+            body = {
+                'user': user_id
             }
-            context.append(entry)
+            user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
+            user_details = user_details_response['user']
+            if 'reply_count' not in message:
+                entry = {
+                    'Type': message['type'],
+                    'Text': message['text'],
+                    'UserId': message['user'],
+                    'Name': user_details['name'],
+                    'FullName': user_details['real_name'],
+                    'TimeStamp': message['ts'],
+                    'ThreadTimeStamp': message['thread_ts'],
+                    'IsParent': 'No'
+                }
+                context.append(entry)
+            else:
+                entry = {
+                    'Type': message['type'],
+                    'Text': message['text'],
+                    'UserId': message['user'],
+                    'Name': user_details['name'],
+                    'FullName': user_details['real_name'],
+                    'TimeStamp': message['ts'],
+                    'ThreadTimeStamp': message['thread_ts'],
+                    'IsParent': 'Yes'
+                }
+                context.append(entry)
         else:
-            entry = {
-                'Type': message['type'],
-                'Text': message['text'],
-                'UserId': message['user'],
-                'Name': user_details['name'],
-                'FullName': user_details['real_name'],
-                'IsParent': 'No'
-            }
-            context.append(entry)
+            if 'reply_count' not in message:
+                entry = {
+                    'Type': message['type'],
+                    'Text': message['text'],
+                    'UserId': message['username'],
+                    'Name': message['username'],
+                    'FullName': message['username'],
+                    'TimeStamp': message['ts'],
+                    'ThreadTimeStamp': message['thread_ts'],
+                    'IsParent': 'No'
+                }
+            else:
+                entry = {
+                    'Type': message['type'],
+                    'Text': message['text'],
+                    'UserId': message['username'],
+                    'Name': message['username'],
+                    'FullName': message['username'],
+                    'TimeStamp': message['ts'],
+                    'ThreadTimeStamp': message['thread_ts'],
+                    'IsParent': 'Yes'
+                }
+                context.append(entry)
 
 
     readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
@@ -2850,7 +2879,7 @@ def conversation_replies():
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': messages,
-        'EntryContext': {'Slack.Messages': context},
+        'EntryContext': {'Slack.Threads': context},
         'ContentsFormat': formats['json'],
         'HumanReadable': readable_output,
         'ReadableContentsFormat': formats['markdown']
