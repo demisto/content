@@ -11,6 +11,7 @@ from collections import OrderedDict
 import traceback
 import requests
 import urllib3
+import re
 
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 from sixgill.sixgill_feed_client import SixgillFeedClient
