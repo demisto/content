@@ -2103,3 +2103,14 @@ function mergeContextLists(newItems, oldItems, objectKey) {
     var newItemsByKey = newItems.reduce(toMapByKey, {});
     return Object.values(Object.assign(oldItemsByKey, newItemsByKey)).filter(function() {return !e['remove']});
 }
+
+
+function fileResult(){
+  return {
+        Type: entryTypes.file,
+        FileID: fileEntryId,
+        File: file_name,
+        Contents: file_content,
+        HumanReadable: md
+    };
+}

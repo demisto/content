@@ -1,3 +1,5 @@
+import "Lodaash";
+
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
@@ -167,6 +169,47 @@ var sendRequest = function(method, uri, body, raw) {
         }
     }
 };
+/* helper functions */
+function generate_uuidv4() {
+    var d = new Date().getTime();//Timestamp
+    var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16;//random number between 0 and 16
+        if(d > 0){//Use timestamp until depleted
+            r = (d + r)%16 | 0;
+            d = Math.floor(d/16);
+        } else {//Use microseconds since page-load if supported
+            r = (d2 + r)%16 | 0;
+            d2 = Math.floor(d2/16);
+        }
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+}
+
+function fileResult(filename, data, file_type = null) {
+    var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5,
+         userManagement: 6, image: 7, plagroundError: 8, playgroundError: 8, entryInfoFile: 9,
+         map: 15, widget: 17};
+    console.log(file_type);
+    if (file_type === null) {
+        file_type = entryTypes['file'];
+    }
+
+    const temp = generate_uuidv4(); // crypto.randomUUID()
+    if (typeof data === 'string') {
+        data = Buffer.from(data, 'utf-8');
+    }
+    const fs = require('fs');
+    fs.writeFileSync(`${temp}`, data);
+    return {
+        'Contents': '',
+        'ContentsFormat': formats['text'],
+        'Type': file_type,
+        'File': filename,
+        'FileID': temp
+    };
+}
+
 
 function reduce_one_entry(data, keep_fields) {
     var new_d = {};
@@ -299,6 +342,62 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
     }
 };
 
+var fileUploadCommand = function(incident_id, file_content, file_name, entryID, target ) {
+    /**
+     * Upload a new file
+    Arguments:
+        @param {String} incident_id  -- incident id to upload the file to
+        @param {String} file_content -- content of the file to upload
+        @param {String} file_name  -- name of the file in the dest incident
+        @param {String} entryID  -- entry ID of the file
+        @param {String} target -- upload the file as an attachment or an war room entry
+    Returns:
+        CommandResults -- Readable output
+    Note:
+        You can give either the entryID or file_name.
+    """
+     */
+    if ((!file_name) && (!entryID)) {
+        throw 'Either file_name or entry_id argument must be provided.';
+    }
+    var service = (target == 'Incident Attachment') ? 'incident' : 'entry';
+    var body = {
+        files : {
+            file: {
+                value: file_content,
+                options: {
+                    filename: file_name,
+                    contentType: 'application/octet-stream'
+                }
+            }
+        }
+    };
+    console.log(body)
+    var res = sendRequest('POST', `/${service}/upload/${incident_id}`, JSON.stringify(body));
+    if (isError(res[0])) {
+        throw res[0].Contents;
+    }
+
+    var response = res['response'];
+    var md = `File ${file_name} uploaded successfully to incident ${incident_id}.`;
+    // in case the file uploaded as war room entry
+    if (target === 'war room entry') {
+        md += ` Entry ID is ${response.entries[0].id}`;
+    }
+    //return fileResult(file_name, response, 'entryInfoFile')
+    let fileEntryId = saveFile(file_content);
+    return {
+        Type: alert(colorCodes.back),
+        FileID: fileEntryId,
+        File: file_name,
+        Contents: file_content,
+        HumanReadable: md
+    };
+};
+
+
+
+
 switch (command) {
     case 'test-module':
         sendRequest('GET','user');
@@ -346,6 +445,16 @@ switch (command) {
     case 'demisto-api-install-packs':
     case 'core-api-install-packs':
         return installPacks(args.packs_to_install, args.file_url, args.entry_id, args.skip_verify, args.skip_validation);
+    case 'core-api-file-upload':
+        console.log('in case')
+        console.log(args)
+        return fileUploadCommand(args.incident_id, args.file_content, args.file_name, args.entryID, args.target)
+    case 'core-api-file-delete':
+        return null
+    case 'core-api-file-attachment-delete':
+        return null
+    case 'core-api-file-check':
+        return null
     default:
         throw 'Core REST APIs - unknown command';
 }

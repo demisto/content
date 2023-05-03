@@ -1,8 +1,8 @@
 commonfields:
-  id: Core REST API
+  id: Core REST API_mm
   version: -1
-name: Core REST API
-display: Core REST API
+name: Core REST API_mm
+display: Core REST API_mm
 category: Utilities
 description: Use Core REST APIs
 configuration:
@@ -248,6 +248,67 @@ script:
         - 'true'
         - 'false'
     description: Upload packs to core server from url or the marketplace.
+  - name: core-api-file-upload
+    arguments:
+    - name: incident_id
+      required: true
+      description: The incident's id.
+    - name: file_name
+      required: true
+      description: "The new file's name."
+    - name: file_content
+      description: "The new file's content."
+    - name: entry_id
+      description: "The War Room entry ID of the pack zip file."
+      required: false
+      isArray: false
+    - name: target
+      description: "Where to upload the file."
+      required: false
+      isArray: false
+      defaultValue: 'War Room Entry'
+      auto: PREDEFINED
+      predefined:
+        - 'War Room Entry'
+        - 'Incident Attachment'
+    description: This command uploads to the incident a file that the user provided according to the entry_id or the content of the file
+  - name: core-api-file-delete
+    arguments:
+    - name: entry_id
+      description: "The War Room entry ID of the pack zip file."
+      required: true
+      isArray: false
+    description: This command deletes a file from Xsoar by entry_id.
+  - name: core-api-file-attachment-delete
+    arguments:
+    - name: incident_id
+      required: true
+      description: The incident's id.
+    - name: file_path
+      required: true
+      description: "The file's path."
+    - name: field_name
+      defaultValue: 'incident.attachment'
+      required: false
+      description: "Name of the field (type attachment) you want to remove the attachment."
+    description: This command deletes the attachment from the incident and from the XSOAR server
+  - name: core-api-file-check
+    arguments:
+    - name: entry_id
+      description: "The War Room entry ID of the pack zip file."
+      required: true
+      isArray: false
+    description: This command checks if the file is existing in Xsoar by entry_id
+  - name: core-api-file-rename
+    arguments:
+    - name: entry_id
+      description: "The War Room entry ID of the pack zip file."
+      required: true
+      isArray: false
+    - name: new_file_name
+      required: true
+      description: "The new file's name."
+    description: This command “rename” the given file by deleting the current file (by entry_id) and uploading a new file with the new name and the current content.
   runonce: false
 tests:
 - No tests
