@@ -31,6 +31,7 @@ MAP_INDICATORS_TYPE = {'fqdn': FeedIndicatorType.Domain,
                        'sha1': FeedIndicatorType.File,
                        'sha256': FeedIndicatorType.File,
                        'url': FeedIndicatorType.URL}
+DATETIME_SETTINGS = settings = {'TIMEZONE': 'Z', 'RETURN_AS_TIMEZONE_AWARE': True}
 
 ''' CLIENT CLASS '''
 
@@ -178,12 +179,12 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
         List: new indicators
 
     """
-    start_date = arg_to_datetime(last_run)
+    start_date = arg_to_datetime(last_run, settings=DATETIME_SETTINGS)
 
     params = {}
     if indicator_type == 'Indicators':
         # for indicator type the earliest time to fetch is 90 days ago
-        earliest_fetch = arg_to_datetime('90 days ago')
+        earliest_fetch = arg_to_datetime('90 days ago', settings=DATETIME_SETTINGS)
         start_date = max(earliest_fetch, start_date)  # type:ignore
         params = {'start_epoch': int(start_date.timestamp()), 'limit': limit}  # type:ignore
 
