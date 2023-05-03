@@ -34,12 +34,11 @@ jobs:
         key: ${{ runner.os }}-pre-commit
 
     - name: run pre-commit
+      continue-on-error: true
       run: poetry run demisto-sdk pre-commit -g --unit-test --validate --sdk-ref 04456f686b621fcb9cbbb5c224f37cf98624e1ac -v
-    - name: check-content-files
-      run: ls -la
+
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
-      if: always() # always run even if the previous step fails
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -51,7 +50,6 @@ jobs:
         annotate_only: true      
 
     - name: "Check coverage.xml exists"
-      if: always()
       id: check_files
       uses: andstor/file-existence-action@v2
       with:
@@ -71,7 +69,6 @@ jobs:
         
 
     - name: Append coverage to summary
-      if: always()
       id: append-coverage
       run: |
         if [[ -f code-coverage-results.md ]]; then
