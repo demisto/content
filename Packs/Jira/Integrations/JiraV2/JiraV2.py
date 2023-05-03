@@ -1034,7 +1034,7 @@ def update_issue_assignee_command(issue_id, assignee=None, assignee_id=None):
     elif assignee_id:  # for jira cloud
         body = {"accountId": assignee_id}
     else:
-        raise DemistoException('Please provide assignee for Jira server or assignee_id for jira cloud')
+        raise DemistoException('Please provide assignee for Jira Server or assignee_id for Jira Cloud')
     url = f'rest/api/latest/issue/{issue_id}/assignee'
     jira_req('PUT', url, json.dumps(body))
     return get_issue(issue_id, is_update=True)
