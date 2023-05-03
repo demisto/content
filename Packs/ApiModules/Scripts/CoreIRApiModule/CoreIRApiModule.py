@@ -3885,7 +3885,8 @@ def set_user_role_command(client: CoreClient, args: dict[str, str]) -> CommandRe
     role_name = args.get('role_name')
 
     try:
-        client.set_user_role(user_emails, role_name)
+        if role_name:
+            client.set_user_role(user_emails, role_name)
     except DemistoException:
         raise
 
@@ -3900,4 +3901,4 @@ def remove_user_role_command(client: CoreClient, args: dict[str, str]) -> Comman
     except DemistoException:
         raise
 
-    return CommandResults(readable_output="User Role Was Removed Successfully")    
+    return CommandResults(readable_output="User Role Was Removed Successfully")
