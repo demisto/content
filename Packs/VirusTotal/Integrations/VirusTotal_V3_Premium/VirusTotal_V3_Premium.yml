@@ -24,14 +24,12 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) or
-    a date or epoch timestamp.
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) or a date or epoch timestamp.
   name: first_fetch
   required: false
   type: 0
 - defaultvalue: ''
-  display: "Tag: The ruleset's name or the identifier for the YARA rule matching the\
-    \ file to fetch its notifications. Leave blank to fetch all."
+  display: "Tag: The ruleset's name or the identifier for the YARA rule matching the file to fetch its notifications. Leave blank to fetch all."
   name: tag
   required: false
   type: 0
@@ -84,8 +82,7 @@ script:
       description: 'The file extension. For example: "xls".'
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in
-        file entries).
+      description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
     deprecated: false
     description: Downloads file from VirusTotal
@@ -93,8 +90,7 @@ script:
     name: vt-private-download-file
   - arguments:
     - default: true
-      description: A commma separated list of hashes (SHA-256, SHA-1, or MD5) for
-        the files included in the ZIP.
+      description: A commma separated list of hashes (SHA-256, SHA-1, or MD5) for the files included in the ZIP.
       isArray: true
       name: file
       required: true
@@ -200,8 +196,7 @@ script:
       description: 'The file extension. For example: "xls".'
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in
-        file entries).
+      description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
     deprecated: false
     description: Download a ZIP file.
@@ -243,8 +238,7 @@ script:
       description: 'The file extension. For example: "xls".'
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in
-        file entries).
+      description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
     deprecated: false
     description: Extracted PCAP from a sandbox analysis.
@@ -265,8 +259,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The order value can be sorted depends on the query type. See documentation.
-        https://developers.virustotal.com/v3.0/reference#intelligence-search
+      description: The order value can be sorted depends on the query type. See documentation. https://developers.virustotal.com/v3.0/reference#intelligence-search
       isArray: false
       name: order
       required: false
@@ -316,8 +309,7 @@ script:
       description: number of timeouts when analysing this URL/file.
       type: Number
     - contextPath: VirusTotal.IntelligenceSearch.attributes.reputation
-      description: file's score calculated from all votes posted by the VirusTotal
-        community.
+      description: file's score calculated from all votes posted by the VirusTotal community.
       type: Number
     - contextPath: VirusTotal.IntelligenceSearch.attributes.last_modification_date
       description: date when the object itself was last modified. UTC timestamp.
@@ -343,8 +335,7 @@ script:
     name: vt-private-intelligence-search
   - arguments:
     - default: false
-      description: File search query. For example, query="type:peexe size:90kb+ positives:5+
-        behaviour:'taskkill'"
+      description: File search query. For example, query="type:peexe size:90kb+ positives:5+ behaviour:'taskkill'"
       isArray: false
       name: query
       required: true
@@ -352,8 +343,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Return all of the results, note that it can be thousands of results.
-        Prefer not to use in playbooks. The default value is "false"
+      description: Return all of the results, note that it can be thousands of results. Prefer not to use in playbooks. The default value is "false"
       isArray: false
       name: fullResponse
       predefined:
@@ -374,8 +364,7 @@ script:
     name: vt-private-search-file
   - arguments:
     - default: true
-      description: Ruleset identifier. Can be retreived from the vt-private-livehunt-rules-list
-        command.
+      description: Ruleset identifier. Can be retreived from the vt-private-livehunt-rules-list command.
       isArray: false
       name: id
       required: true
@@ -400,10 +389,7 @@ script:
       description: contains the names of all rules in the ruleset.
       type: String
     - contextPath: VirusTotal.LiveHuntRule.attributes.limit
-      description: max number of notifications that will be generated by the ruleset
-        in a 24h period. If a match is found, number of generated hunting notifications
-        in the last 24h is looked up and if it's greater than this limit, that match
-        is ignored.
+      description: max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored.
       type: Number
     - contextPath: VirusTotal.LiveHuntRule.attributes.number_of_rules
       description: Number of rules presented in the set
@@ -485,10 +471,7 @@ script:
       description: contains the names of all rules in the ruleset.
       type: String
     - contextPath: VirusTotal.LiveHuntRule.attributes.limit
-      description: max number of notifications that will be generated by the ruleset
-        in a 24h period. If a match is found, number of generated hunting notifications
-        in the last 24h is looked up and if it's greater than this limit, that match
-        is ignored.
+      description: max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored.
       type: Number
     - contextPath: VirusTotal.LiveHuntRule.attributes.number_of_rules
       description: Number of rules presented in the set
@@ -537,10 +520,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: max number of notifications that will be generated by the ruleset
-        in a 24h period. If a match is found, number of generated hunting notifications
-        in the last 24h is looked up and if it's greater than this limit, that match
-        is ignored.
+      description: max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored.
       isArray: false
       name: limit
       required: false
@@ -565,10 +545,7 @@ script:
       description: contains the names of all rules in the ruleset.
       type: String
     - contextPath: VirusTotal.LiveHuntRule.attributes.limit
-      description: max number of notifications that will be generated by the ruleset
-        in a 24h period. If a match is found, number of generated hunting notifications
-        in the last 24h is looked up and if it's greater than this limit, that match
-        is ignored.
+      description: max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored.
       type: Number
     - contextPath: VirusTotal.LiveHuntRule.attributes.number_of_rules
       description: Number of rules presented in the set
@@ -588,8 +565,7 @@ script:
     name: vt-private-livehunt-rules-create
   - arguments:
     - default: true
-      description: Rule identifier. Can be retrieved from the vt-private-livehunt-rules-list
-        command.
+      description: Rule identifier. Can be retrieved from the vt-private-livehunt-rules-list command.
       isArray: false
       name: id
       required: true
@@ -618,10 +594,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: max number of notifications that will be generated by the ruleset
-        in a 24h period. If a match is found, number of generated hunting notifications
-        in the last 24h is looked up and if it's greater than this limit, that match
-        is ignored.
+      description: max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored.
       isArray: false
       name: limit
       required: false
@@ -646,10 +619,7 @@ script:
       description: contains the names of all rules in the ruleset.
       type: String
     - contextPath: VirusTotal.LiveHuntRule.attributes.limit
-      description: max number of notifications that will be generated by the ruleset
-        in a 24h period. If a match is found, number of generated hunting notifications
-        in the last 24h is looked up and if it's greater than this limit, that match
-        is ignored.
+      description: max number of notifications that will be generated by the ruleset in a 24h period. If a match is found, number of generated hunting notifications in the last 24h is looked up and if it's greater than this limit, that match is ignored.
       type: Number
     - contextPath: VirusTotal.LiveHuntRule.attributes.number_of_rules
       description: Number of rules presented in the set
@@ -680,16 +650,14 @@ script:
     name: vt-private-livehunt-rules-delete
   - arguments:
     - default: false
-      description: Maximum number of notifications to retrieve. Maximum can be up
-        to 40.
+      description: Maximum number of notifications to retrieve. Maximum can be up to 40.
       defaultValue: "10"
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Fetch notification from given time. Can be epoch time, a date or
-        time range (3 days, 1 year)
+      description: Fetch notification from given time. Can be epoch time, a date or time range (3 days, 1 year)
       isArray: false
       name: from_time
       required: false
@@ -793,28 +761,22 @@ script:
       description: Trend Micro's TLSH hash
       type: String
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.vhash
-      description: in-house similarity clustering algorithm value, based on a simple
-        structural feature hash allows you to find similar files.
+      description: in-house similarity clustering algorithm value, based on a simple structural feature hash allows you to find similar files.
       type: String
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool
-      description: exiftool is a program for extracting Exif metadata from different
-        file formats. Metadata shown may vary depending on the file type, and given
-        the nature of Exif metadata, some fields may appear or not.
+      description: exiftool is a program for extracting Exif metadata from different file formats. Metadata shown may vary depending on the file type, and given the nature of Exif metadata, some fields may appear or not.
       type: String
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.trid.file_type
-      description: TrID is a utility designed to identify file types from their binary
-        signatures.
+      description: TrID is a utility designed to identify file types from their binary signatures.
       type: String
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.trid.probability
       description: probability of file format identification (given as percentage).
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.creation_date
-      description: extracted when possible from the file's metadata. Indicates when
-        it was built or compiled. It can also be faked by malware creators. UTC timestamp.
+      description: extracted when possible from the file's metadata. Indicates when it was built or compiled. It can also be faked by malware creators. UTC timestamp.
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.reputation
-      description: file's score calculated from all votes posted by the VirusTotal
-        community.
+      description: file's score calculated from all votes posted by the VirusTotal community.
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.names
       description: all file names associated with the file.
@@ -844,8 +806,7 @@ script:
       description: most recent date the file was posted to VirusTotal. UTC timestamp.
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.downloadable
-      description: true if the file can be downloaded, false otherwise. (use vt-private-download-file)
-        to download the file)
+      description: true if the file can be downloaded, false otherwise. (use vt-private-download-file) to download the file)
       type: Boolean
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.sha256
       description: SHA-256 of the file.
@@ -857,8 +818,7 @@ script:
       description: most recent scan date. UTC timestamp.
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.unique_sources
-      description: indicates from how many different sources the file has been posted
-        from.
+      description: indicates from how many different sources the file has been posted from.
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.first_submission_date
       description: date when the file was first seen in VirusTotal. UTC timestamp.
@@ -959,8 +919,7 @@ script:
     name: vt-private-livehunt-notifications-files-list
   - arguments:
     - default: false
-      description: Hashes to search within VirusTotal. Will search only hashes and
-        will ignore any other value.
+      description: Hashes to search within VirusTotal. Will search only hashes and will ignore any other value.
       isArray: true
       name: hash
       required: true
@@ -985,28 +944,22 @@ script:
       description: Trend Micro's TLSH hash
       type: String
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.vhash
-      description: in-house similarity clustering algorithm value, based on a simple
-        structural feature hash allows you to find similar files.
+      description: in-house similarity clustering algorithm value, based on a simple structural feature hash allows you to find similar files.
       type: String
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool
-      description: exiftool is a program for extracting Exif metadata from different
-        file formats. Metadata shown may vary depending on the file type, and given
-        the nature of Exif metadata, some fields may appear or not.
+      description: exiftool is a program for extracting Exif metadata from different file formats. Metadata shown may vary depending on the file type, and given the nature of Exif metadata, some fields may appear or not.
       type: String
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.trid.file_type
-      description: TrID is a utility designed to identify file types from their binary
-        signatures.
+      description: TrID is a utility designed to identify file types from their binary signatures.
       type: String
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.trid.probability
       description: probability of file format identification (given as percentage).
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.creation_date
-      description: extracted when possible from the file's metadata. Indicates when
-        it was built or compiled. It can also be faked by malware creators. UTC timestamp.
+      description: extracted when possible from the file's metadata. Indicates when it was built or compiled. It can also be faked by malware creators. UTC timestamp.
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.reputation
-      description: file's score calculated from all votes posted by the VirusTotal
-        community.
+      description: file's score calculated from all votes posted by the VirusTotal community.
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.names
       description: all file names associated with the file.
@@ -1036,8 +989,7 @@ script:
       description: most recent date the file was posted to VirusTotal. UTC timestamp.
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.downloadable
-      description: true if the file can be downloaded, false otherwise. (use vt-private-download-file)
-        to download the file)
+      description: true if the file can be downloaded, false otherwise. (use vt-private-download-file) to download the file)
       type: Boolean
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.sha256
       description: SHA-256 of the file.
@@ -1049,8 +1001,7 @@ script:
       description: most recent scan date. UTC timestamp.
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.unique_sources
-      description: indicates from how many different sources the file has been posted
-        from.
+      description: indicates from how many different sources the file has been posted from.
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.first_submission_date
       description: date when the file was first seen in VirusTotal. UTC timestamp.
@@ -1151,8 +1102,7 @@ script:
     name: vt-private-livehunt-notifications-files-get-by-hash
   - arguments:
     - default: true
-      description: Rule identifier. Can be retrieved from the vt-private-livehunt-rules-list
-        command.
+      description: Rule identifier. Can be retrieved from the vt-private-livehunt-rules-list command.
       isArray: false
       name: id
       required: true
@@ -1334,17 +1284,13 @@ script:
       description: Trend Micro's TLSH hash
       type: String
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.vhash
-      description: in-house similarity clustering algorithm value, based on a simple
-        structural feature hash allows you to find similar files.
+      description: in-house similarity clustering algorithm value, based on a simple structural feature hash allows you to find similar files.
       type: String
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool
-      description: exiftool is a program for extracting Exif metadata from different
-        file formats. Metadata shown may vary depending on the file type, and given
-        the nature of Exif metadata, some fields may appear or not.
+      description: exiftool is a program for extracting Exif metadata from different file formats. Metadata shown may vary depending on the file type, and given the nature of Exif metadata, some fields may appear or not.
       type: String
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.trid.file_type
-      description: TrID is a utility designed to identify file types from their binary
-        signatures.
+      description: TrID is a utility designed to identify file types from their binary signatures.
       type: String
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.trid.probability
       description: probability of file format identification (given as percentage).
@@ -1371,8 +1317,7 @@ script:
       description: ruleset source.
       type: String
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.creation_date
-      description: extracted when possible from the file's metadata. Indicates when
-        it was built or compiled. It can also be faked by malware creators. UTC timestamp.
+      description: extracted when possible from the file's metadata. Indicates when it was built or compiled. It can also be faked by malware creators. UTC timestamp.
       type: Number
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.names
       description: all file names associated with the file.
@@ -1396,9 +1341,7 @@ script:
       description: file size in bytes.
       type: Number
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.authentihash
-      description: sha256 hash used by Microsoft to verify that the relevant sections
-        of a PE image file have not been altered. This specific type of hash is used
-        by Microsoft AppLocker.
+      description: sha256 hash used by Microsoft to verify that the relevant sections of a PE image file have not been altered. This specific type of hash is used by Microsoft AppLocker.
       type: String
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.times_submitted
       description: number of times the file has been posted to VirusTotal.
@@ -1425,8 +1368,7 @@ script:
       description: Most recent scan date. UTC timestamp.
       type: Number
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.unique_sources
-      description: indicates from how many different sources the file has been posted
-        from.
+      description: indicates from how many different sources the file has been posted from.
       type: Number
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.first_submission_date
       description: date when the file was first seen in VirusTotal. UTC timestamp.
@@ -1468,8 +1410,7 @@ script:
       description: number of reports saying that is undetected.
       type: Number
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.reputation
-      description: file's score calculated from all votes posted by the VirusTotal
-        community.
+      description: file's score calculated from all votes posted by the VirusTotal community.
       type: Number
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_stats.high
       description: number of matched high severity rules.
@@ -1510,9 +1451,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The "main" corpus is a composition of files sent to VirusTotal
-        during the last few months. The "goodware" corpus is a random selection of
-        ~1.000.000 files from the NSRL that are not detected by any antivirus engine.
+      description: The "main" corpus is a composition of files sent to VirusTotal during the last few months. The "goodware" corpus is a random selection of ~1.000.000 files from the NSRL that are not detected by any antivirus engine.
       isArray: false
       name: corpus
       defaultValue: "main"
@@ -1529,16 +1468,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Fetch retrohunt jobs from given time. Can be epoch time, a date
-        or time range (3 days, 1 year)
+      description: Fetch retrohunt jobs from given time. Can be epoch time, a date or time range (3 days, 1 year)
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: Fetch retrohunt jobs to given time. Can be epoch time, a date or
-        time range. If start_time supplied and not end_time, end_time will be the
-        current time.
+      description: Fetch retrohunt jobs to given time. Can be epoch time, a date or time range. If start_time supplied and not end_time, end_time will be the current time.
       isArray: false
       name: end_time
       required: false
@@ -1595,8 +1531,7 @@ script:
     name: vt-private-retrohunt-jobs-create
   - arguments:
     - default: true
-      description: User ID or API key. If not supplied, will use the API Key configured
-        in the integration.
+      description: User ID or API key. If not supplied, will use the API Key configured in the integration.
       isArray: false
       name: id
       required: false
@@ -1776,7 +1711,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.11.56082
 defaultmapperin: VirusTotal Intelligence LiveHunt Notification
 fromversion: 5.5.0
 tests:

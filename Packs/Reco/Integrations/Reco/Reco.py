@@ -43,12 +43,12 @@ class RecoClient(BaseClient):
         )
 
     def get_incidents(
-        self,
-        risk_level: Optional[int] = None,
-        source: Optional[str] = None,
-        before: Optional[datetime] = None,
-        after: Optional[datetime] = None,
-        limit: int = 1000,
+            self,
+            risk_level: Optional[int] = None,
+            source: Optional[str] = None,
+            before: Optional[datetime] = None,
+            after: Optional[datetime] = None,
+            limit: int = 1000,
     ) -> List[Dict[str, Any]]:
         """
         Fetch incidents from Reco API
@@ -248,7 +248,7 @@ class RecoClient(BaseClient):
             raise e
 
     def get_assets_user_has_access(
-        self, email_address: str, only_sensitive: bool
+            self, email_address: str, only_sensitive: bool
     ) -> List[Dict[str, Any]]:
         """Get assets user has access to. Returns a list of assets."""
         params: Dict[str, Any] = {
@@ -320,9 +320,14 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
-    def get_sensitive_assets_information(self, asset_name: str, regex_search: bool) -> List[Dict[str, Any]]:
-        """Get sensitive assets information. Returns a list of assets."""
+    def get_sensitive_assets_information(self,
+                                         asset_name: Optional[str],
+                                         asset_id: Optional[str],
+                                         regex_search: bool) -> List[Dict[str, Any]]:
+        """Get sensitive assets' information. Returns a list of assets."""
         filter = "regexCaseInsensitive" if regex_search else "stringEquals"
+        field_to_search = "file_name" if asset_name else "file_id"
+        value_to_search = asset_name if asset_name else asset_id
         params: Dict[str, Any] = {
             "getTableRequest": {
                 "tableName": "files_view",
@@ -336,9 +341,9 @@ class RecoClient(BaseClient):
                                 "filters": {
                                     "filters": [
                                         {
-                                            "field": "file_name",
+                                            "field": field_to_search,
                                             filter: {
-                                                "value": asset_name
+                                                "value": value_to_search
                                             },
                                         }
                                     ]
@@ -388,7 +393,7 @@ class RecoClient(BaseClient):
             raise e
 
     def set_entry_label_relations(
-        self, entry_id: str, label_name: str, label_status: str, entry_type: str
+            self, entry_id: str, label_name: str, label_status: str, entry_type: str
     ) -> Any:
         """Set entry label relations.
         :param entry_id: The entry id to set (email_address, asset_id etc.)
@@ -523,7 +528,7 @@ def add_leaving_org_user(reco_client: RecoClient, email_address: str) -> Command
 
 
 def enrich_incident(
-    reco_client: RecoClient, single_incident: Dict[str, Any]
+        reco_client: RecoClient, single_incident: Dict[str, Any]
 ) -> Dict[str, Any]:
     alert_as_dict = parse_table_row_to_dict(single_incident.get("cells", {}))
     if RECO_INCIDENT_ID_FIELD in alert_as_dict.keys():
@@ -542,7 +547,7 @@ def enrich_incident(
 
 
 def map_reco_score_to_demisto_score(
-    reco_score: int,
+        reco_score: int,
 ) -> Union[int, float]:  # pylint: disable=E1136
     # demisto_unknown = 0  (commented because of linter issues)
     demisto_informational = 0.5
@@ -564,7 +569,7 @@ def map_reco_score_to_demisto_score(
 
 
 def parse_incidents_objects(
-    reco_client: RecoClient, incidents_raw: List[Dict[str, Any]]
+        reco_client: RecoClient, incidents_raw: List[Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
     demisto.info("parse_incidents_objects enter")
     incidents = []
@@ -577,7 +582,7 @@ def parse_incidents_objects(
 
 
 def get_assets_user_has_access(
-    reco_client: RecoClient, email_address: str, only_sensitive: bool
+        reco_client: RecoClient, email_address: str, only_sensitive: bool
 ) -> CommandResults:
     """Get assets from Reco. If only_sensitive is True, only sensitive assets will be returned."""
     assets = reco_client.get_assets_user_has_access(email_address, only_sensitive)
@@ -608,7 +613,12 @@ def get_assets_user_has_access(
 
 def get_sensitive_assets_by_name(reco_client: RecoClient, asset_name: str, regex_search: bool) -> CommandResults:
     """Get sensitive assets from Reco. If contains is True, the asset name will be searched as a regex."""
-    assets = reco_client.get_sensitive_assets_information(asset_name, regex_search)
+    assets = reco_client.get_sensitive_assets_information(asset_name, None, regex_search)
+    return assets_to_command_result(assets)
+
+
+def assets_to_command_result(assets: List[Dict[str, Any]]) -> CommandResults:
+    """Convert assets to CommandResults."""
     assets_list = []
     for asset in assets:
         asset_as_dict = parse_table_row_to_dict(asset.get("cells", {}))
@@ -635,14 +645,20 @@ def get_sensitive_assets_by_name(reco_client: RecoClient, asset_name: str, regex
     )
 
 
+def get_sensitive_assets_by_id(reco_client: RecoClient, asset_id: str) -> CommandResults:
+    """Get sensitive assets from Reco by file id."""
+    assets = reco_client.get_sensitive_assets_information(None, asset_id, False)
+    return assets_to_command_result(assets)
+
+
 def fetch_incidents(
-    reco_client: RecoClient,
-    last_run: Dict[str, Any],
-    max_fetch: int,
-    risk_level: Optional[int] = None,
-    source: Optional[str] = None,
-    before: Optional[datetime] = None,
-    after: Optional[datetime] = None,
+        reco_client: RecoClient,
+        last_run: Dict[str, Any],
+        max_fetch: int,
+        risk_level: Optional[int] = None,
+        source: Optional[str] = None,
+        before: Optional[datetime] = None,
+        after: Optional[datetime] = None,
 ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     demisto.info(f"fetch-incidents called {max_fetch=}")
     next_run = {}
@@ -782,11 +798,17 @@ def main() -> None:
                 regex_search,
             )
             return_results(result)
+        elif command == "reco-get-sensitive-assets-by-id":
+            result = get_sensitive_assets_by_id(
+                reco_client,
+                demisto.args()["asset_id"]
+            )
+            return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")
     except Exception as e:
         demisto.error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
-        raise e
+        return_error(str(e))
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
