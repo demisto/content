@@ -15,6 +15,7 @@
     ],
     "useCases": [],
     "keywords": [],
+    "keywords": ["Access", "Pan-os", "PAN_OS", "PAN-OS", "pan-os"],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
