@@ -1,4 +1,4 @@
-This pack bundles all the different kinds of free feeds available for TIM. Each pack will now have tags specifying if the feed is free, requires signup, credentials, etc.
+This pack bundles all the different kinds of free feeds available for TIM. Each pack will have tags specifying if the feed is free, requires signup, credentials, etc.
 
 These 4 new tags have been added to all the relevant feeds:
 - **Plug & Fetch** - Free feed, no credentials or registration needed.
