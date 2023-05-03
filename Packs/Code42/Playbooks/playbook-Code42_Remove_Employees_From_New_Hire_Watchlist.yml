@@ -1,17 +1,19 @@
 id: Remove Employees from New Hire Watchlist
 version: -1
+fromversion: 6.8.0
 name: Remove Employees from New Hire Watchlist
-description: Loops through New Hire watchlist entries from Code42 Incydr and removes employees based on specified criteria.
+description: Loops through New Hire watchlist entries from Code42 Incydr and removes
+  employees based on specified criteria.
 tags:
 - Code42 Incydr
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 391c308b-0a9f-49d5-8bdf-c9a079845c1e
+    taskid: 953732ec-59ab-4349-8352-e79378909d05
     type: start
     task:
-      id: 391c308b-0a9f-49d5-8bdf-c9a079845c1e
+      id: 953732ec-59ab-4349-8352-e79378909d05
       version: -1
       name: ""
       description: ""
@@ -19,14 +21,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "23"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 460,
-          "y": -290
+          "y": -480
         }
       }
     note: false
@@ -38,12 +40,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 7c8c9ecd-35d3-4f76-885b-5f726625b033
+    taskid: 72a3ce84-04db-47c5-88bd-fea1a9d7f47b
     type: condition
     task:
-      id: 7c8c9ecd-35d3-4f76-885b-5f726625b033
+      id: 72a3ce84-04db-47c5-88bd-fea1a9d7f47b
       version: -1
-      name: Is Start Date More Than 30 Days Ago?
+      name: Is Start Date Before Look-Back Input?
       description: ""
       type: condition
       iscommand: false
@@ -85,7 +87,8 @@ tasks:
                   args:
                     variation:
                       value:
-                        simple: 30 days ago
+                        simple: ${relative_look_back}
+                      iscontext: true
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -104,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 64009f58-b931-4443-8e95-6d24bc536eb0
+    taskid: ea09e6f2-c127-4ac4-81eb-38ce6406936a
     type: regular
     task:
-      id: 64009f58-b931-4443-8e95-6d24bc536eb0
+      id: ea09e6f2-c127-4ac4-81eb-38ce6406936a
       version: -1
       name: Get Incydr User Profile Information
       description: Update a user's risk profile.
@@ -162,10 +165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 16fd226b-0ffa-4ab1-8eca-63a5881760a2
+    taskid: 78e2e8a9-6b5a-43cb-8a29-05016a281e76
     type: regular
     task:
-      id: 16fd226b-0ffa-4ab1-8eca-63a5881760a2
+      id: 78e2e8a9-6b5a-43cb-8a29-05016a281e76
       version: -1
       name: Remove User from New Employee Watchlist
       description: Remove a user from a watchlist.
@@ -202,10 +205,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: b7e944ba-7a26-456a-8bc1-1f2a3cd14384
+    taskid: d57897d5-7dcc-4db6-8011-003613442233
     type: regular
     task:
-      id: b7e944ba-7a26-456a-8bc1-1f2a3cd14384
+      id: d57897d5-7dcc-4db6-8011-003613442233
       version: -1
       name: Set "No Action Taken" Log Message
       description: Set a value in context under the key you entered.
@@ -215,14 +218,15 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "22"
     scriptarguments:
       append:
         simple: "true"
       key:
         simple: Log
       value:
-        simple: No action taken on ${inputs.incydr_username}. Start date of ${Code42.UpdatedUserRiskProfiles.[0].StartDate} is more than 30 days ago.
+        simple: No action taken on ${inputs.incydr_username}. Start date is within
+          defined look-back.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -241,10 +245,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 742bdcf7-906e-48aa-83fd-663d3445883e
+    taskid: 4237fba4-9c5a-419f-8789-8c5bed109fcc
     type: regular
     task:
-      id: 742bdcf7-906e-48aa-83fd-663d3445883e
+      id: 4237fba4-9c5a-419f-8789-8c5bed109fcc
       version: -1
       name: Set "Removed from Watchlist" Log Message
       description: Set a value in context under the key you entered.
@@ -254,21 +258,22 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "22"
     scriptarguments:
       append:
         simple: "true"
       key:
         simple: Log
       value:
-        simple: Removed ${inputs.incydr_username} from New Hire watchlist. Start date of ${Code42.UpdatedUserRiskProfiles.StartDate} is more than 30 days ago.
+        simple: Removed ${inputs.incydr_username} from New Hire watchlist. Start date
+          is before defined look-back.
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 690,
-          "y": 705
+          "y": 710
         }
       }
     note: false
@@ -280,10 +285,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: caba25d1-3a9f-42f9-8790-cd67f6b15970
+    taskid: 62296c53-3809-40e0-8024-6cbd98644c2a
     type: regular
     task:
-      id: caba25d1-3a9f-42f9-8790-cd67f6b15970
+      id: 62296c53-3809-40e0-8024-6cbd98644c2a
       version: -1
       name: Set "Error Removing" Log Message
       description: Set a value in context under the key you entered.
@@ -293,14 +298,15 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "22"
     scriptarguments:
       append:
         simple: "true"
       key:
         simple: Log
       value:
-        simple: Attempted to remove ${inputs.incydr_username} from New Hire watchlist but encountered an error.
+        simple: Attempted to remove ${inputs.incydr_username} from New Hire watchlist
+          but encountered an error.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -319,10 +325,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 2848d242-632e-4c3b-8633-f0664c800e2d
+    taskid: 9575d0b3-e439-4a1f-8e5c-03772ad90d83
     type: regular
     task:
-      id: 2848d242-632e-4c3b-8633-f0664c800e2d
+      id: 9575d0b3-e439-4a1f-8e5c-03772ad90d83
       version: -1
       name: Format Start Date for Time Comparison
       description: Set a value in context under the key you entered.
@@ -356,10 +362,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 0ca4f571-a551-438b-809a-4a4095d64b24
+    taskid: 9452c454-b0e9-4881-8eb3-d27b19af2931
     type: regular
     task:
-      id: 0ca4f571-a551-438b-809a-4a4095d64b24
+      id: 9452c454-b0e9-4881-8eb3-d27b19af2931
       version: -1
       name: Update Incydr User Profile
       description: Update a user's risk profile.
@@ -412,12 +418,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: fdc6355b-f2dd-4bcc-8145-58e53d2babf6
+  "22":
+    id: "22"
+    taskid: 942bb6fe-671f-46b5-8d3f-cf0832286e83
     type: regular
     task:
-      id: fdc6355b-f2dd-4bcc-8145-58e53d2babf6
+      id: 942bb6fe-671f-46b5-8d3f-cf0832286e83
       version: -1
       name: Delete Code42 Context
       description: |-
@@ -432,12 +438,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "24"
     scriptarguments:
-      all:
-        simple: "no"
       key:
-        simple: Code42
+        simple: Code42.UpdatedUserRiskProfiles
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -454,12 +458,49 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: b03b6dd9-4954-454d-832e-313a678cd038
+  "23":
+    id: "23"
+    taskid: 0ca0220d-8bd8-48d9-86b6-6400ba702b20
+    type: regular
+    task:
+      id: 0ca0220d-8bd8-48d9-86b6-6400ba702b20
+      version: -1
+      name: Set Relative Look-Back String
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: relative_look_back
+      value:
+        simple: ${inputs.look_back} days ago
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 6a75cf82-f5d6-448b-8e3b-9089f7af982c
     type: title
     task:
-      id: b03b6dd9-4954-454d-832e-313a678cd038
+      id: 6a75cf82-f5d6-448b-8e3b-9089f7af982c
       version: -1
       name: Playbook Complete
       type: title
@@ -472,7 +513,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 1100
+          "y": 1060
         }
       }
     note: false
@@ -487,10 +528,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1455,
+        "height": 1605,
         "width": 1290,
         "x": 230,
-        "y": -290
+        "y": -480
       }
     }
   }
@@ -499,8 +540,12 @@ inputs:
   value: {}
   required: true
   description: The username (in email format) provided by Code42 Incydr.
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: look_back
+  value:
+    simple: "30"
+  required: true
+  description: Number of days to compare the start date against (e.g. "30", "7", etc.).
+    Default is 30.
+  playbookInputQuery: null
 outputs: []
-fromversion: 6.8.0
-tests:
-- Code42 File Search Test
