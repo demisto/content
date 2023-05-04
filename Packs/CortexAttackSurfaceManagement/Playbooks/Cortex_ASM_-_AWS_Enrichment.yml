@@ -49,7 +49,6 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-      - "5"
       - "9"
       - "22"
     separatecontext: false
@@ -113,58 +112,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: ab965f19-8325-40ed-8352-3db388798394
-    type: regular
-    task:
-      id: ab965f19-8325-40ed-8352-3db388798394
-      version: -1
-      name: Set service owner grid field
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      gridfield:
-        simple: asmserviceowner
-      keys:
-        simple: Name,Email,Source,Timestamp
-      val1:
-        complex:
-          root: AWS.IAM.Users
-          accessor: UserName
-      val2:
-        simple: n/a
-      val3:
-        simple: AWS
-      val4:
-        complex:
-          root: TimeNowUnix
-          transformers:
-          - operator: TimeStampToDate
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -330,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 4ffedfe9-8fe1-4a9f-8ed8-b7caaab25993
@@ -209,49 +156,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: 78f7f10e-f123-4ba5-8383-57494f55fda9
-    type: condition
-    task:
-      id: 78f7f10e-f123-4ba5-8383-57494f55fda9
-      version: -1
-      name: Is there IAM information?
-      description: Determines if there is IAM information to set in the service owner field.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "20"
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: AWS.IAM.Users
-                accessor: UserName
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -330,
-          "y": 505
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: e7493afb-647e-4a81-8c46-dcdf53f65653
@@ -274,37 +178,6 @@ tasks:
         "position": {
           "x": 770,
           "y": 765
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: f829c2b2-a8f3-4c8b-8e20-5dabd6ff27dc
-    type: title
-    task:
-      id: f829c2b2-a8f3-4c8b-8e20-5dabd6ff27dc
-      version: -1
-      name: Service Owner
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "21"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -330,
-          "y": 755
         }
       }
     note: false
@@ -858,39 +731,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 1f48f4f0-0d1b-4e38-8748-f308a770d539
-    type: regular
-    task:
-      id: 1f48f4f0-0d1b-4e38-8748-f308a770d539
-      version: -1
-      name: Get current time
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -330,
-          "y": 880
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: 92f9163b-841b-4f5c-8326-d72b2adc86d8
@@ -945,8 +785,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1845,
-        "width": 2340,
-        "x": -330,
+        "width": 1900,
+        "x": 110,
         "y": 50
       }
     }
