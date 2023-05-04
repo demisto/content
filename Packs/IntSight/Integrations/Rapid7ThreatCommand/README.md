@@ -1339,6 +1339,12 @@ Send mail with the alert details and a question.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!threat-command-alert-send-mail alert_id=6432e3aa6ff61aae819dc46b email_addresses=test@test.com content=test```
+#### Human Readable Output
+
+>The alert "6432e3aa6ff61aae819dc46b" successfully send to "['test@test.com']".
+
 ### threat-command-alert-analyst-ask
 
 ***
@@ -2049,6 +2055,57 @@ Get CVE's list from account.
 | ThreatCommand.CVE.related_malware | String | Related malware. | 
 | ThreatCommand.CVE.related_campaigns | String | Related campaigns. | 
 
+#### Command example
+```!threat-command-cve-list limit=1```
+#### Context Example
+```json
+{
+    "ThreatCommand": {
+        "CVE": {
+            "clear_web_cyber_blogs_mentions": 1,
+            "code_repositories_mentions": 0,
+            "cpe": [
+                {
+                    "title": "Familyconnect Project 1.5.0 Android",
+                    "value": "cpe:2.3:a:familyconnect_project:familyconnect:1.5.0:*:*:*:*:android:*:*",
+                    "vendor_product": "Familyconnect Project Familyconnect"
+                }
+            ],
+            "cvss_score": 5.4,
+            "dark_web_mentions": 0,
+            "exploit_availability": false,
+            "exploit_mentions": 0,
+            "first_mention_date": "2021-11-03T19:39:00.000Z",
+            "hacking_forum_mentions": 0,
+            "id": "CVE-2014-5600",
+            "instant_message_mentions": 0,
+            "intsights_score": 17,
+            "last_mention_date": "2021-11-03T19:39:00.000Z",
+            "paste_site_mentions": 1,
+            "poc_mentions": 0,
+            "published_date": "2014-09-09T01:55:00.000Z",
+            "related_campaigns": [],
+            "related_malware": [],
+            "related_threat_actors": [],
+            "severity": "Low",
+            "social_media_mentions": 0,
+            "update_date": "2023-04-30T22:00:37.673Z",
+            "vulnerability_origin": [
+                "Technologies in use asset"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CVE list.
+>|Id|Published Date|Update Date|Severity|Intsights Score|Cvss Score|
+>|---|---|---|---|---|---|
+>| CVE-2014-5600 | 2014-09-09T01:55:00.000Z | 2023-04-30T22:00:37.673Z | Low | 17 | 5.4 |
+
+
 ### threat-command-cve-add
 
 ***
@@ -2085,6 +2142,12 @@ Delete CVEs from account.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!threat-command-cve-delete cve_ids=CVE-1999-0002```
+#### Human Readable Output
+
+>The "CVE-1999-0002" CVEs successfully deleted.
+
 ### threat-command-asset-add
 
 ***
@@ -2132,6 +2195,45 @@ Get account assets grouped by asset type.
 | ThreatCommand.Asset.type | String | The type of the asset. | 
 | ThreatCommand.Asset.value | String | The value of the asset type. | 
 
+#### Command example
+```!threat-command-asset-list limit=4```
+#### Context Example
+```json
+{
+    "ThreatCommand": {
+        "Asset": [
+            {
+                "type": "Domains",
+                "value": "com.com"
+            },
+            {
+                "type": "Domains",
+                "value": "google.com"
+            },
+            {
+                "type": "Domains",
+                "value": "moh.gov.il"
+            },
+            {
+                "type": "Domains",
+                "value": "qmasters.co"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Asset list.
+>|Type|Value|
+>|---|---|
+>| Domains | com.com |
+>| Domains | google.com |
+>| Domains | moh.gov.il |
+>| Domains | qmasters.co |
+
+
 ### threat-command-asset-type-list
 
 ***
@@ -2173,6 +2275,12 @@ Delete asset by type and value.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!threat-command-asset-delete asset_type=CompanyNames asset_value=test```
+#### Human Readable Output
+
+>Asset "test" successfully deleted from "CompanyNames" asset list.
+
 ### threat-command-account-system-modules-list
 
 ***
@@ -2235,6 +2343,334 @@ Search for strings in the scrapes database.
 | ThreatCommand.Mentions.short_content | String | Mention short content. | 
 | ThreatCommand.Mentions.title | String | Mention title. | 
 | ThreatCommand.Mentions.date | Date | Mention date. | 
+
+#### Command example
+```!threat-command-mention-search search=test.com```
+#### Context Example
+```json
+{
+    "ThreatCommand": {
+        "Mentions": [
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": false,
+                    "emails": false,
+                    "ips": false,
+                    "ssns": false,
+                    "urls": false
+                },
+                "author": "jamedoefo",
+                "comment_number": 321,
+                "date": "2023-05-04T10:20:02",
+                "id": "b95c143c7ad0c5382f3d316e2475092605e6c4f3",
+                "insertion_date": "2023-05-04T09:55:46.794664",
+                "original_url": "https://cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/unread",
+                "short_content": "i was here",
+                "source_date": "2023-05-04T10:20:02",
+                "title": "",
+                "type": "comment",
+                "url": "https://cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/page-33"
+            },
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": true,
+                    "emails": false,
+                    "ips": false,
+                    "ssns": false,
+                    "urls": true
+                },
+                "author": "anon",
+                "comment_number": 48,
+                "date": "2023-05-04T10:17:00",
+                "id": "f15c68c9c4d8a4ccc7efc21373f228a7f9d7826a",
+                "insertion_date": "2023-05-04T10:09:30.652547",
+                "original_url": "https://www.wilderssecurity.com/threads/brave-browser-discussion-update-thread.388288/unread",
+                "short_content": "brave v1.51.110 (may 3, 2023) \nhttps://brave.com/latest/\n\nspoiler: release notes v1.51.110 (may 3, 2023)\nrelease notes v1.51.110 (may 3, 2023)\nweb3\n\nadded the ability to set brave wallet permission duration when connecting to dapps. (#28841)\n[security] prevent blind cross chain signing as reported o",
+                "source_date": "2023-05-04T10:17:00",
+                "title": "",
+                "type": "comment",
+                "url": "https://www.wilderssecurity.com/threads/brave-browser-discussion-update-thread.388288/page-36"
+            },
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": false,
+                    "emails": false,
+                    "ips": false,
+                    "is_product_for_sale": false,
+                    "ssns": false,
+                    "urls": false
+                },
+                "author": "aleksandermachulin",
+                "date": "2023-05-04T10:16:18",
+                "id": "5ceb7e6e084d4d3da869abab12f15e6c442c894f",
+                "insertion_date": "2023-05-04T10:21:44.790150",
+                "short_content": "#include <cassert>\r\n#include <cstddef>\r\n#include <string>\r\n#include <utility>\r\n\r\ntemplate <typename Type>\r\nclass SingleLinkedList {\r\n    // Узел списка\r\n    struct Node {\r\n        Node() = default;\r\n        Node(const Type& val, Node* next)\r\n                : value(val)\r\n                , next_node(",
+                "source_date": "2023-05-04T10:16:18",
+                "title": "итераторы",
+                "type": "paste",
+                "url": "https://pastebin.com/z2sZCecJ"
+            },
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": false,
+                    "emails": false,
+                    "ips": false,
+                    "ssns": false,
+                    "urls": false
+                },
+                "author": "no_author",
+                "date": "2023-05-04T10:16:08",
+                "id": "01b2a09ab8abab28f48c44aef1d3cce141cc1131",
+                "insertion_date": "2023-05-04T10:21:45.660025",
+                "short_content": "#include <iostream>\r\n\r\nusing namespace std;\r\n\r\nstruct nod{\r\n    int info;\r\n    nod * urm;\r\n};\r\n\r\nint cmmdc(int a , int b)\r\n{\r\n    int r;\r\n    if(b == 0) return a;\r\n    return cmmdc(b , a % b);\r\n}\r\n\r\nint numarare(nod *p)\r\n{\r\n    int perechi = 0;\r\n    for(nod *q  = p ; q -> urm ; q = q -> urm)\r\n      ",
+                "source_date": "2023-05-04T10:16:08",
+                "title": "untitled",
+                "type": "paste",
+                "url": "https://pastebin.com/tQ4pR7pi"
+            },
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": false,
+                    "emails": false,
+                    "ips": false,
+                    "ssns": false,
+                    "urls": false
+                },
+                "author": "no_author",
+                "date": "2023-05-04T10:16:05",
+                "id": "0b847ec3750cf77211057d978a50226a4a6aba8b",
+                "insertion_date": "2023-05-04T10:21:46.495238",
+                "short_content": "To navigate from a SwiftUI view wrapped in a `UIHostingController` to another `UIViewController`, you can use a custom `UIViewControllerRepresentable`. This approach allows you to create a bridge between SwiftUI and UIKit components. Here's a step-by-step process to achieve this:\r\n\r\n1. First, create",
+                "source_date": "2023-05-04T10:16:05",
+                "title": "untitled",
+                "type": "paste",
+                "url": "https://pastebin.com/bQcx0nuj"
+            },
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": false,
+                    "emails": false,
+                    "ips": false,
+                    "ssns": false,
+                    "urls": false
+                },
+                "author": "juanliraz",
+                "comment_number": 28,
+                "date": "2023-05-04T10:16:01",
+                "id": "c61a9a37a18baef534d0cece9cd1e28207e75b5a",
+                "insertion_date": "2023-05-04T10:09:12.482796",
+                "original_url": "https://cybercarders.com/threads/heart-sender-3-0-33-full-clean-all-other-sources-are-fake-contains-malware.233594/unread",
+                "short_content": "checking",
+                "source_date": "2023-05-04T10:16:01",
+                "title": "",
+                "type": "comment",
+                "url": "https://cybercarders.com/threads/heart-sender-3-0-33-full-clean-all-other-sources-are-fake-contains-malware.233594/page-3"
+            },
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": true,
+                    "emails": false,
+                    "ips": false,
+                    "ssns": false,
+                    "urls": true
+                },
+                "author": "no_author",
+                "date": "2023-05-04T10:15:56",
+                "id": "6a6c18dba343a6446070f47a07c68135f0005ee1",
+                "insertion_date": "2023-05-04T10:21:47.505657",
+                "short_content": "/*************************************************** \r\n  This is an example for the Adafruit VS1053 Codec Breakout\r\n\r\n  Designed specifically to work with the Adafruit VS1053 Codec Breakout \r\n  ----> https://www.adafruit.com/products/1381\r\n\r\n  Adafruit invests time and resources providing this open ",
+                "source_date": "2023-05-04T10:15:56",
+                "title": "basicplayeronesp32",
+                "type": "paste",
+                "url": "https://pastebin.com/qwcJVs8E"
+            },
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": true,
+                    "emails": false,
+                    "ips": false,
+                    "ssns": false,
+                    "urls": true
+                },
+                "author": "no_author",
+                "date": "2023-05-04T10:15:49",
+                "id": "d0a330840ac6908ce40fe7692b6151011a2334e7",
+                "insertion_date": "2023-05-04T10:21:48.530660",
+                "short_content": "const axios = require('axios');\r\n\r\nmodule.exports = {\r\n config: {\r\n name: \"binary\",\r\n aliases: [\"bin\"],\r\n version: \"1.0\",\r\n author: \"shinpei\",\r\n countDown: 0,\r\n role: 0,\r\n shortDescription: {\r\n en: \"Converts text to binary.\"\r\n },\r\n longDescription: {\r\n en: \"Converts text to binary using an API.\"\r\n }",
+                "source_date": "2023-05-04T10:15:49",
+                "title": "untitled",
+                "type": "paste",
+                "url": "https://pastebin.com/6Gm6jjGG"
+            },
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": true,
+                    "emails": false,
+                    "ips": true,
+                    "ssns": false,
+                    "urls": false
+                },
+                "author": "no_author",
+                "date": "2023-05-04T10:15:42",
+                "id": "f0e20e7cf875b7d0d6cc042014ec1a3dcff6e3e6",
+                "insertion_date": "2023-05-04T10:21:49.433871",
+                "short_content": "##\r\n# Host Database\r\n#\r\n# localhost is used to configure the loopback interface\r\n# when the system is booting.  Do not change this entry.\r\n##\r\n127.0.0.1    localhost\r\n255.255.255.255    broadcasthost\r\n::1             localhost\r\n# Added by Docker Desktop\r\n# To allow the same kube context to work on t",
+                "source_date": "2023-05-04T10:15:42",
+                "title": "untitled",
+                "type": "paste",
+                "url": "https://pastebin.com/0Te6vfhK"
+            },
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": true,
+                    "emails": false,
+                    "ips": false,
+                    "ssns": false,
+                    "urls": false
+                },
+                "author": "no_author",
+                "date": "2023-05-04T10:15:32",
+                "id": "f908cce77843dd1f974281d5e5ea67d43114c016",
+                "insertion_date": "2023-05-04T10:21:50.308696",
+                "short_content": "[12:08:46 ERROR]: Could not pass event PlayerVelocityEvent to LibsDisguises v10.0.33\r\njava.lang.NoSuchMethodError: org.bukkit.World.getGameTime()J\r\n        at me.libraryaddict.disguise.utilities.DisguiseUtilities.setPlayerVelocity(DisguiseUtilities.java:556) ~[?:?]\r\n        at me.libraryaddict.disgu",
+                "source_date": "2023-05-04T10:15:32",
+                "title": "untitled",
+                "type": "paste",
+                "url": "https://pastebin.com/GHNnERD4"
+            },
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": false,
+                    "emails": false,
+                    "ips": true,
+                    "ssns": false,
+                    "urls": false
+                },
+                "author": "no_author",
+                "date": "2023-05-04T10:15:18",
+                "id": "60e0bdce36800a3539b03ef010345d943d5669c4",
+                "insertion_date": "2023-05-04T10:21:51.176037",
+                "short_content": "-- logger module started --\r\nmain debug: VLC media player - 4.0.0-dev Otto Chriek\r\nmain debug: Copyright © 1996-2023 the VideoLAN team\r\nmain debug: revision 4.0.0-dev-23638-gdccda0e133\r\nmain debug: configured with /builds/videolan/vlc/extras/package/win32/../../../configure  '--enable-update-check' ",
+                "source_date": "2023-05-04T10:15:18",
+                "title": "untitled",
+                "type": "paste",
+                "url": "https://pastebin.com/uL32rurg"
+            },
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": false,
+                    "emails": false,
+                    "ips": false,
+                    "ssns": false,
+                    "urls": false
+                },
+                "author": "no_author",
+                "date": "2023-05-04T10:15:11",
+                "id": "3fc8bf2c1c67a61c8f35b0dd188ec555a629c6fa",
+                "insertion_date": "2023-05-04T10:21:52.029357",
+                "short_content": "Yeet",
+                "source_date": "2023-05-04T10:15:11",
+                "title": "password",
+                "type": "paste",
+                "url": "https://pastebin.com/ypvSpgA8"
+            },
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": false,
+                    "emails": false,
+                    "ips": true,
+                    "ssns": false,
+                    "urls": false
+                },
+                "author": "no_author",
+                "date": "2023-05-04T10:15:06",
+                "id": "f51f0fb266db888d946f8206ac82057e38dde44a",
+                "insertion_date": "2023-05-04T10:21:52.895423",
+                "short_content": "absl-py==1.4.0\r\naiofiles==23.1.0\r\naiohttp==3.8.4\r\naiosignal==1.3.1\r\naltair==4.2.2\r\nanyio @ file:///home/conda/feedstock_root/build_artifacts/anyio_1666191106763/work/dist\r\nappdirs==1.4.4\r\nargon2-cffi @ file:///home/conda/feedstock_root/build_artifacts/argon2-cffi_1640817743617/work\r\nargon2-cffi-bind",
+                "source_date": "2023-05-04T10:15:06",
+                "title": "untitled",
+                "type": "paste",
+                "url": "https://pastebin.com/dp4wF6MR"
+            },
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": true,
+                    "emails": false,
+                    "ips": false,
+                    "ssns": false,
+                    "urls": false
+                },
+                "author": "no_author",
+                "date": "2023-05-04T10:15:02",
+                "id": "f55651764e3c6c05376f7e38cf6555f64fc23158",
+                "insertion_date": "2023-05-04T10:21:53.834800",
+                "short_content": "[10:13:58 WARN]: [org.javacord.core.util.gateway.DiscordWebSocketAdapter] Websocket error!\r\ncom.neovisionaries.ws.client.WebSocketException: Flushing frames to the server failed: Connection or outbound has closed\r\n        at com.neovisionaries.ws.client.WritingThread.doFlush(WritingThread.java:434) ",
+                "source_date": "2023-05-04T10:15:02",
+                "title": "untitled",
+                "type": "paste",
+                "url": "https://pastebin.com/pK0YYRsa"
+            },
+            {
+                "Tags": {
+                    "credit_cards": false,
+                    "domains": false,
+                    "emails": false,
+                    "ips": false,
+                    "ssns": false,
+                    "urls": false
+                },
+                "author": "bellgamin",
+                "comment_number": 33,
+                "date": "2023-05-04T10:15:00",
+                "id": "a6f37b218dad85e7472d11b3332546ad985cd46c",
+                "insertion_date": "2023-05-04T09:23:49.643335",
+                "original_url": "https://www.wilderssecurity.com/threads/laptop-battery-question.451238/unread",
+                "short_content": "thanks for the comments bill. live long & prosper.\n\nas to \"...when you might want to turn off smart charging\" -- i quoted that part of the ms article in the comment where i linked to the ms article. ms is stating a few exceptions to ms's implicit rule, and that implicit rule is: \"turn on smart charg",
+                "source_date": "2023-05-04T10:15:00",
+                "title": "",
+                "type": "comment",
+                "url": "https://www.wilderssecurity.com/threads/laptop-battery-question.451238/page-2"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Mentions for "test.com" (page number 0).
+>|Author|Original Url|Url|Type|Id|Short Content|Title|Date|
+>|---|---|---|---|---|---|---|---|
+>| jamedoefo | https:<span>//</span>cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/unread | https:<span>//</span>cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/page-33 | comment | b95c143c7ad0c5382f3d316e2475092605e6c4f3 | i was here |  | 2023-05-04T10:20:02 |
+>| anon | https:<span>//</span>www.wilderssecurity.com/threads/brave-browser-discussion-update-thread.388288/unread | https:<span>//</span>www.wilderssecurity.com/threads/brave-browser-discussion-update-thread.388288/page-36 | comment | f15c68c9c4d8a4ccc7efc21373f228a7f9d7826a | brave v1.51.110 (may 3, 2023) <br/>https:<span>//</span>brave.com/latest/<br/><br/>spoiler: release notes v1.51.110 (may 3, 2023)<br/>release notes v1.51.110 (may 3, 2023)<br/>web3<br/><br/>added the ability to set brave wallet permission duration when connecting to dapps. (#28841)<br/>[security] prevent blind cross chain signing as reported o |  | 2023-05-04T10:17:00 |
+>| aleksandermachulin |  | https:<span>//</span>pastebin.com/z2sZCecJ | paste | 5ceb7e6e084d4d3da869abab12f15e6c442c894f | #include <cassert><br/>#include <cstddef><br/>#include <string><br/>#include <utility><br/><br/>template <typename Type><br/>class SingleLinkedList {<br/>    // Узел списка<br/>    struct Node {<br/>        Node() = default;<br/>        Node(const Type& val, Node* next)<br/>                : value(val)<br/>                , next_node( | итераторы | 2023-05-04T10:16:18 |
+>| no_author |  | https:<span>//</span>pastebin.com/tQ4pR7pi | paste | 01b2a09ab8abab28f48c44aef1d3cce141cc1131 | #include <iostream><br/><br/>using namespace std;<br/><br/>struct nod{<br/>    int info;<br/>    nod * urm;<br/>};<br/><br/>int cmmdc(int a , int b)<br/>{<br/>    int r;<br/>    if(b == 0) return a;<br/>    return cmmdc(b , a % b);<br/>}<br/><br/>int numarare(nod *p)<br/>{<br/>    int perechi = 0;<br/>    for(nod *q  = p ; q -> urm ; q = q -> urm)<br/>       | untitled | 2023-05-04T10:16:08 |
+>| no_author |  | https:<span>//</span>pastebin.com/bQcx0nuj | paste | 0b847ec3750cf77211057d978a50226a4a6aba8b | To navigate from a SwiftUI view wrapped in a \`UIHostingController\` to another \`UIViewController\`, you can use a custom \`UIViewControllerRepresentable\`. This approach allows you to create a bridge between SwiftUI and UIKit components. Here's a step-by-step process to achieve this:<br/><br/>1. First, create | untitled | 2023-05-04T10:16:05 |
+>| juanliraz | https:<span>//</span>cybercarders.com/threads/heart-sender-3-0-33-full-clean-all-other-sources-are-fake-contains-malware.233594/unread | https:<span>//</span>cybercarders.com/threads/heart-sender-3-0-33-full-clean-all-other-sources-are-fake-contains-malware.233594/page-3 | comment | c61a9a37a18baef534d0cece9cd1e28207e75b5a | checking |  | 2023-05-04T10:16:01 |
+>| no_author |  | https:<span>//</span>pastebin.com/qwcJVs8E | paste | 6a6c18dba343a6446070f47a07c68135f0005ee1 | /*************************************************** <br/>  This is an example for the Adafruit VS1053 Codec Breakout<br/><br/>  Designed specifically to work with the Adafruit VS1053 Codec Breakout <br/>  ----> https:<span>//</span>www.adafruit.com/products/1381<br/><br/>  Adafruit invests time and resources providing this open  | basicplayeronesp32 | 2023-05-04T10:15:56 |
+>| no_author |  | https:<span>//</span>pastebin.com/6Gm6jjGG | paste | d0a330840ac6908ce40fe7692b6151011a2334e7 | const axios = require('axios');<br/><br/>module.exports = {<br/> config: {<br/> name: "binary",<br/> aliases: ["bin"],<br/> version: "1.0",<br/> author: "shinpei",<br/> countDown: 0,<br/> role: 0,<br/> shortDescription: {<br/> en: "Converts text to binary."<br/> },<br/> longDescription: {<br/> en: "Converts text to binary using an API."<br/> } | untitled | 2023-05-04T10:15:49 |
+>| no_author |  | https:<span>//</span>pastebin.com/0Te6vfhK | paste | f0e20e7cf875b7d0d6cc042014ec1a3dcff6e3e6 | ##<br/># Host Database<br/>#<br/># localhost is used to configure the loopback interface<br/># when the system is booting.  Do not change this entry.<br/>##<br/>127.0.0.1    localhost<br/>255.255.255.255    broadcasthost<br/>::1             localhost<br/># Added by Docker Desktop<br/># To allow the same kube context to work on t | untitled | 2023-05-04T10:15:42 |
+>| no_author |  | https:<span>//</span>pastebin.com/GHNnERD4 | paste | f908cce77843dd1f974281d5e5ea67d43114c016 | [12:08:46 ERROR]: Could not pass event PlayerVelocityEvent to LibsDisguises v10.0.33<br/>java.lang.NoSuchMethodError: org.bukkit.World.getGameTime()J<br/>        at me.libraryaddict.disguise.utilities.DisguiseUtilities.setPlayerVelocity(DisguiseUtilities.java:556) ~[?:?]<br/>        at me.libraryaddict.disgu | untitled | 2023-05-04T10:15:32 |
+>| no_author |  | https:<span>//</span>pastebin.com/uL32rurg | paste | 60e0bdce36800a3539b03ef010345d943d5669c4 | -- logger module started --<br/>main debug: VLC media player - 4.0.0-dev Otto Chriek<br/>main debug: Copyright © 1996-2023 the VideoLAN team<br/>main debug: revision 4.0.0-dev-23638-gdccda0e133<br/>main debug: configured with /builds/videolan/vlc/extras/package/win32/../../../configure  '--enable-update-check'  | untitled | 2023-05-04T10:15:18 |
+>| no_author |  | https:<span>//</span>pastebin.com/ypvSpgA8 | paste | 3fc8bf2c1c67a61c8f35b0dd188ec555a629c6fa | Yeet | password | 2023-05-04T10:15:11 |
+>| no_author |  | https:<span>//</span>pastebin.com/dp4wF6MR | paste | f51f0fb266db888d946f8206ac82057e38dde44a | absl-py==1.4.0<br/>aiofiles==23.1.0<br/>aiohttp==3.8.4<br/>aiosignal==1.3.1<br/>altair==4.2.2<br/>anyio @ file:///home/conda/feedstock_root/build_artifacts/anyio_1666191106763/work/dist<br/>appdirs==1.4.4<br/>argon2-cffi @ file:///home/conda/feedstock_root/build_artifacts/argon2-cffi_1640817743617/work<br/>argon2-cffi-bind | untitled | 2023-05-04T10:15:06 |
+>| no_author |  | https:<span>//</span>pastebin.com/pK0YYRsa | paste | f55651764e3c6c05376f7e38cf6555f64fc23158 | [10:13:58 WARN]: [org.javacord.core.util.gateway.DiscordWebSocketAdapter] Websocket error!<br/>com.neovisionaries.ws.client.WebSocketException: Flushing frames to the server failed: Connection or outbound has closed<br/>        at com.neovisionaries.ws.client.WritingThread.doFlush(WritingThread.java:434)  | untitled | 2023-05-04T10:15:02 |
+>| bellgamin | https:<span>//</span>www.wilderssecurity.com/threads/laptop-battery-question.451238/unread | https:<span>//</span>www.wilderssecurity.com/threads/laptop-battery-question.451238/page-2 | comment | a6f37b218dad85e7472d11b3332546ad985cd46c | thanks for the comments bill. live long & prosper.<br/><br/>as to "...when you might want to turn off smart charging" -- i quoted that part of the ms article in the comment where i linked to the ms article. ms is stating a few exceptions to ms's implicit rule, and that implicit rule is: "turn on smart charg |  | 2023-05-04T10:15:00 |
+
 
 ### threat-command-mssp-customer-list
 
