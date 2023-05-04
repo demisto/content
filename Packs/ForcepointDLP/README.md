@@ -5,7 +5,7 @@ This pack includes Cortex XSIAM content.
 ## Configuration on Server Side
 Use the Settings > General > Remediation page in the Data Security module of the Forcepoint Security Manager to define the location of the syslog server and mail release gateway used for remediation.
 
-1. Under Syslog Settings, enter the IP address or hostname of the syslog server, and the logging Port. 
+1. Under Syslog Settings, enter the IP address or hostname of the syslog server, and the logging port. 
 2. To set the origin of syslog messages, select Use syslog facility for these messages, then use the drop-down menu to select the type of message to appear in the syslog:
    * User-level Messages (#1) logs generic user-level messages, such as "username/password expired".
    * Security/Authorization Messages (#4) logs authentication- and authorization-related commands, such as "authentication failed for admin user".
