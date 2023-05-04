@@ -999,7 +999,7 @@ class TestChangelogCreation:
         mocker.patch("builtins.open", mock_open(read_data=modified_rn_file))
         same_block_versions_dict = {'1.0.2': modified_rn_file, '1.0.3': modified_rn_file}
         assert dummy_pack.get_same_block_versions(release_notes_dir, version, AGGREGATED_CHANGELOG) == \
-               (same_block_versions_dict, higher_nearest_version)
+            (same_block_versions_dict, higher_nearest_version)
 
     def test_get_modified_release_notes_lines(self, mocker, dummy_pack):
         """
@@ -1286,7 +1286,7 @@ This is visible
                                                                   id_set=id_set)
 
         assert version_changelog['releaseNotes'] == \
-               "#### Integrations\n##### Integration 2 Display Name\n- Fixed another issue"
+            "#### Integrations\n##### Integration 2 Display Name\n- Fixed another issue"
 
     def test_create_filtered_changelog_entry_no_related_modifications(self, dummy_pack: Pack):
         """
@@ -1737,7 +1737,7 @@ class TestFilterChangelog:
                 - Ensure the filtered entries resulte is as expected.
         """
         assert dummy_pack.filter_entries_by_display_name(self.RN_ENTRIES_DICTIONARY, id_set) == \
-               expected_result
+            expected_result
 
     @pytest.mark.parametrize('changelog_entry, marketplace, id_set, expected_rn', [
         ({Changelog.RELEASE_NOTES: '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.'},
@@ -3165,7 +3165,7 @@ class TestDetectModified:
         status, _ = dummy_pack.detect_modified(content_repo, dummy_path, 'current_hash', 'previous_hash')
 
         assert dummy_pack._modified_files['Integrations'][0] == \
-               'Packs/TestPack/Integrations/integration/integration.yml'
+            'Packs/TestPack/Integrations/integration/integration.yml'
         assert status is True
 
 
