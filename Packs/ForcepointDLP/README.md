@@ -16,7 +16,7 @@ Use the Settings > General > Remediation page in the Data Security module of the
 4. Under Release Quarantined Emails, specify which gateway to use when releasing a quarantined email message.
    * The default is **Use the gateway that detected the incident**. This gateway could be Forcepoint Email Security or the protector MTA, depending on your subscription.
    * To define a specific gateway, select **Use the following gateway**, then enter the gateway IP address or hostname and port.
-5. If only recipients of a message should be able to release it from quarantine, select Validate user before releasing message.
+5. If only recipients of a message should be able to release it from quarantine, select **Validate user before releasing message**.
 The system then ensures that the person attempting to release a message is a recipient of the message, and therefore authorized. Unauthorized users receive an email notification that they are not allowed release the message.
 6. Click OK to save your changes.
 
