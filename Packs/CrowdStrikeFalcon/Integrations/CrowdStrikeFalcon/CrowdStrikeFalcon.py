@@ -4709,13 +4709,9 @@ def map_scan_resource_to_UI(resource: dict) -> dict:
     output = {
         'ID': resource.get('id'),
         'Status': resource.get('status'),
-        'Severity': '--',  # TODO ask if needed
-        'Hosts with detections': sum(1 for host in resource.get('metadata', [{}]) if host.get('filecount', {}).get('malicious')),   # TODO omly in UI response
-        'Hosts targeted': len(resource.get('metadata', [])),
-        'Incomplete hosts': sum(1 for host in resource.get('metadata', [{}]) if host.get('status') != 'completed'),
+        'Severity': resource.get('severity'),
+        # 'File Count': '\n'.join(f'{k}: {v}' for k, v in resource.get('filecount', {}).items()), TODO
         'Description': resource.get('description'),
-        'File paths': resource.get('scan_inclusions'),
-        'Maximum CPU utilization': CPU_UTILITY_INT_TO_STR_KEY_MAP.get(resource.get('cpu_priority')),
         'Hosts/Host groups': resource.get('hosts') or resource.get('host_groups'),
         'Start time': resource.get('scan_started_on'),
         'End time': resource.get('scan_completed_on'),
@@ -4730,9 +4726,7 @@ def ODS_get_scan_resources_to_human_readable(resources: list[dict]) -> str:
     human_readable = tableToMarkdown(
         'CrowdStrike Falcon ODS Scans',
         [map_scan_resource_to_UI(resource) for resource in resources],
-        headers=['ID', 'Status', 'Severity', 'Hosts with detections',
-                 'Hosts targeted', 'Incomplete hosts', 'Description',
-                 'File paths', 'Maximum CPU utilization',
+        headers=['ID', 'Status', 'Severity', 'File Count', 'Description',
                  'Hosts/Host groups', 'End time', 'Start time', 'Run by']
     )
 
@@ -4810,7 +4804,7 @@ def map_scheduled_scan_resource_to_UI(resource: dict) -> dict:
 def ODS_get_scheduled_scan_resources_to_human_readable(resources: list[dict]) -> str:
     # TODO NEEDS ALL FIELDS IN UI
     human_readable = tableToMarkdown(
-        'CrowdStrike Falcon ODS Scans',
+        'CrowdStrike Falcon ODS Scheduled Scans',
         [map_scheduled_scan_resource_to_UI(resource) for resource in resources],
         headers=['ID', 'Hosts targeted', 'Description',
                  'Host groups', 'Start time', 'Created by']
@@ -4910,7 +4904,7 @@ def cs_falcon_ods_query_scan_host_command(args: dict) -> CommandResults:
     ids = get_ODS_scan_host_ids(args)
 
     if not ids:
-        return CommandResults(readable_output='No scan hosts match the arguments/filter.')
+        return CommandResults(readable_output='No hosts to display.')
 
     response = ODS_get_scan_hosts_by_id_request(ids)
     resources = response.get('resources', [])
@@ -5023,8 +5017,8 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
     result |= {
         'schedule': {
             'ignored_by_channelfile': True,
-            'interval': args.get('schedule_interval'),
-            'start_timestamp': schedule_interval_str_to_int.get(str(args.get('schedule_start_timestamp')).lower()),
+            'interval': schedule_interval_str_to_int.get(str(args.get('schedule_interval')).lower()),
+            'start_timestamp': args.get('schedule_start_timestamp'),
         }
     } if is_scheduled else {
         'hosts': argToList(args.get('hosts')),
@@ -5036,7 +5030,7 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
 def create_ODS_scan_request(args: dict, is_scheduled: bool) -> dict:
     body = make_create_scan_request_body(args, is_scheduled)
     remove_nulls_from_dictionary(body)
-    return http_request('POST', f'/ods/entities/{"scheduled-"*is_scheduled}scans/v1', data=body)
+    return http_request('POST', f'/ods/entities/{"scheduled-"*is_scheduled}scans/v1', json=body)
 
 
 def ODS_create_ODS_scan_resources_to_human_readable(a: Any) -> str:
@@ -5053,7 +5047,7 @@ def ODS_verify_create_scan_command(args: dict) -> None:
 
     if argToBoolean(args.get('is_scheduled')) and not (
             args.get('schedule_start_timestamp')
-            and args.get('schedule_interval') is None  # can be zero
+            and args.get('schedule_interval') is not None  # can be zero
             and args.get('host_groups')):
         raise DemistoException(
             'MUST set schedule_start_timestamp AND schedule_interval AND host_groups for scheduled scans.')
@@ -5102,7 +5096,7 @@ def cs_falcon_ods_delete_scheduled_scan_command(args: dict) -> CommandResults:
 
 
 def ODS_cancel_scans_request(ids: list[str]) -> dict:
-    return http_request('POST', '/ods/entities/scan-control-actions/cancel/v1', data={'ids': ids})
+    return http_request('POST', '/ods/entities/scan-control-actions/cancel/v1', json={'ids': ids})
 
 
 def cs_falcon_ods_cancel_scan_command(args: dict) -> CommandResults:

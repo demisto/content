@@ -4808,13 +4808,8 @@ def test_map_scan_resource_to_UI(mocker):
     mapped_resource = {
         'ID': "91000dbf0a4e4f5eb2a02528c00fa902",
         'Status': "failed",
-        'Severity': '--',
-        'Hosts with detections': 0,
-        'Hosts targeted': 2,
-        'Incomplete hosts': 1,
+        'Severity': None,
         'Description': "desc3456346",
-        'File paths': ["*"],
-        'Maximum CPU utilization': "Low",
         'Hosts/Host groups': [
             "7471ba0636b34cbb8c65fae7979a6a9b"
         ],
@@ -4896,8 +4891,56 @@ def test_map_scheduled_scan_resource_to_UI(mocker):
     """
     from CrowdStrikeFalcon import map_scheduled_scan_resource_to_UI
 
-    resource = {}
-    mapped_resource = {}
+    resource = {
+        "id": "9055945bdfbc4b42bf7c9c16976186ca",
+        "cid": "20879a8064904ecfbb62c118a6a19411",
+        "description": "desc3456346",
+        "scan_inclusions": [
+            "*"
+        ],
+        "initiated_from": "cloud_scheduled",
+        "quarantine": True,
+        "cpu_priority": 2,
+        "preemption_priority": 15,
+        "metadata": [
+            {
+                "host_id": "046761c46ec84f40b27b6f79ce7cd32c",
+                "last_updated": "2023-05-01T13:54:48.51553853Z"
+            }
+        ],
+        "status": "scheduled",
+        "host_groups": [
+            "7471ba0636b34cbb8c65fae7979a6a9b"
+        ],
+        "endpoint_notification": True,
+        "pause_duration": 2,
+        "max_duration": 2,
+        "max_file_size": 60,
+        "sensor_ml_level_detection": 2,
+        "sensor_ml_level_prevention": 2,
+        "cloud_ml_level_detection": 2,
+        "cloud_ml_level_prevention": 2,
+        "policy_setting": [
+            26439818674573,
+        ],
+        "schedule": {
+            "start_timestamp": "2023-06-15T15:57",
+            "interval": 0
+        },
+        "created_on": "2023-05-01T13:54:48.51553853Z",
+        "created_by": "f7acf1bd5d3d4b40afe77546cbbaefde",
+        "last_updated": "2023-05-01T13:54:48.51553853Z",
+        "deleted": False
+    }
+
+    mapped_resource = {
+        'ID': '9055945bdfbc4b42bf7c9c16976186ca',
+        'Hosts targeted': 1,
+        'Description': 'desc3456346',
+        'Host groups': ['7471ba0636b34cbb8c65fae7979a6a9b'],
+        'Start time': '2023-06-15T15:57',
+        'Created by': 'f7acf1bd5d3d4b40afe77546cbbaefde',
+    }
 
     output = map_scheduled_scan_resource_to_UI(resource)
 
