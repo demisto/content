@@ -209,10 +209,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 12d2b2c4-e9ce-4ca9-8a0b-a4c401e9b191
+    taskid: 97825721-3306-45d7-8a68-b647783580d9
     type: playbook
     task:
-      id: 12d2b2c4-e9ce-4ca9-8a0b-a4c401e9b191
+      id: 97825721-3306-45d7-8a68-b647783580d9
       version: -1
       name: Retrieve File from Endpoint - Generic V3
       description: |-
@@ -225,8 +225,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "8"
     scriptarguments:
+      Agent_ID:
+        simple: "4"
       Host:
         complex:
           root: Get Endpoint
@@ -278,7 +280,81 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 950
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d790f956-606e-4106-8070-054cba1c9849
+    type: condition
+    task:
+      id: d790f956-606e-4106-8070-054cba1c9849
+      version: -1
+      name: Check If File Was Retrieved
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "Yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 6f75061d-af5b-4201-8921-11deabdb987c
+    type: regular
+    task:
+      id: 6f75061d-af5b-4201-8921-11deabdb987c
+      version: -1
+      name: Test Failure
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: No File to Retrieve
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1175
         }
       }
     note: false
@@ -293,15 +369,14 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1265,
-        "width": 380,
-        "x": 750,
+        "height": 1520,
+        "width": 870,
+        "x": 260,
         "y": -250
       }
     }
   }
 inputs: []
 outputs: []
-quiet: true
 fromversion: 6.8.0
-description: The Playbooks tests the Retrieve File from Endpoint V3 Generic Playbook for multiple inputs
+description: This Test Plyaook tests the Retrive File from endpoint V3 playbook with multiple inputs
