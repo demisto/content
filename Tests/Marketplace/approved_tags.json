@@ -39,7 +39,11 @@
 			"New",
 			"Trending",
 			"Relationship",
-			"Elasticsearch"],
+			"Elasticsearch",
+			"Free Feed",
+			"Plug & Fetch",
+			"Generic Feed"
+		],
 		"xsoar": [],
 		"marketplacev2": ["Data Source"],
 		"xpanse": ["Data Source"]
