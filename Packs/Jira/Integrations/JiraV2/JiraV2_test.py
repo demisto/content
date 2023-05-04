@@ -1526,3 +1526,43 @@ def test_append_to_existing_field_command(mocker):
     _, outputs, _ = append_to_field_command('id', field_json='{"labels":"New"}')
 
     mock_update.assert_called_with('id', {'labels': ['test', 'New']})
+
+
+@pytest.mark.parametrize(
+    'assignee, assignee_id, excpected_body_request',
+    [
+        ("server_assignee", None, '{"name": "server_assignee"}'),
+        (None, "cloud_assignee", '{"accountId": "cloud_assignee"}')
+    ]
+)
+def test_update_issue_assignee_command(mocker, assignee, assignee_id, excpected_body_request):
+    """
+    Given:
+        - issue id, and assignees for cloud/server jira
+    When
+        - Running the update_issue_assignee_command
+    Then
+        - Ensure the body request is ok for both cloud/server jira
+    """
+    from test_data.raw_response import GET_ISSUE_RESPONSE
+    from JiraV2 import update_issue_assignee_command
+
+    jira_req_mocker = mocker.patch('JiraV2.jira_req', side_effect=['', GET_ISSUE_RESPONSE])
+
+    assert update_issue_assignee_command(issue_id='19141', assignee=assignee, assignee_id=assignee_id)
+    assert jira_req_mocker.call_args_list[0].args[2] == excpected_body_request
+
+
+def test_test_update_issue_assignee_command_no_assignees():
+    """
+    Given:
+        - issue id, without assignee / assignee_id
+    When
+        - Running the update_issue_assignee_command
+    Then
+        - Ensure an exception is raised
+    """
+    from JiraV2 import update_issue_assignee_command
+
+    with pytest.raises(DemistoException):
+        update_issue_assignee_command(issue_id='19141', assignee=None, assignee_id=None)
