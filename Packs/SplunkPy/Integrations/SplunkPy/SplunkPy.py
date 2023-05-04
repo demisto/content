@@ -700,6 +700,7 @@ class Cache:
         not_yet_submitted_notables (list): The list of all notables that were fetched but not yet submitted.
         submitted_notables (list): The list of all submitted notables that needs to be handled.
     """
+
     def __init__(self, not_yet_submitted_notables=None, submitted_notables=None):
         self.not_yet_submitted_notables = not_yet_submitted_notables if not_yet_submitted_notables else []
         self.submitted_notables = submitted_notables if submitted_notables else []
@@ -2146,10 +2147,11 @@ def splunk_results_command(service: client.Service):
     try:
         job = service.job(sid)
     except HTTPError as error:
-        if error.message == 'HTTP 404 Not Found -- Unknown sid.':  # pylint: disable=no-member
+        msg = error.message if hasattr(error, 'message') else str(error)
+        if error.status == 404:
             demisto.results("Found no job for sid: {}".format(sid))
         else:
-            return_error(error.message, error)  # pylint: disable=no-member
+            return_error(msg, error)
     else:
         for result in results.ResultsReader(job.results(count=limit)):
             if isinstance(result, results.Message):
