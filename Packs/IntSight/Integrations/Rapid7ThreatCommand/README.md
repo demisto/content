@@ -597,6 +597,12 @@ You can add an IOC to your user whitelist (even if it is already on the system w
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!threat-command-account-whitelist-update is_whitelisted="Add to the user whitelist" domains=test.com```
+#### Human Readable Output
+
+>The status "Add to the user whitelist" successfully updated to "['test.com']" IOCs in the account whitelist.
+
 ### threat-command-account-whitelist-remove
 
 ***
@@ -981,6 +987,27 @@ Create a new alert. You have to insert scenario or type and sub_type.
 | --- | --- | --- |
 | ThreatCommand.Alert.id | String | Alert ID. | 
 
+#### Command example
+```!threat-command-alert-create title="test" description="test" severity="Low" source_type="Application Store" source_network_type="Clear Web" source_url="test.com" scenario="ACompanyEmailAddressReportedAsMalicious"```
+#### Context Example
+```json
+{
+    "ThreatCommand": {
+        "Alert": {
+            "id": "64538b71ba5d3f7a8fb27ddc"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Alert successfully created
+>|Id|
+>|---|
+>| 64538b71ba5d3f7a8fb27ddc |
+
+
 ### threat-command-alert-close
 
 ***
@@ -1319,6 +1346,12 @@ Removes a tag from the alert.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!threat-command-alert-tag-remove alert_id=6432e3aa6ff61aae819dc46b tag_id=6453871c0d771fdc938f18d5```
+#### Human Readable Output
+
+>The tag "6453871c0d771fdc938f18d5" successfully removed from "6432e3aa6ff61aae819dc46b" Alert.
+
 ### threat-command-alert-send-mail
 
 ***
@@ -2124,6 +2157,12 @@ Add CVEs to account.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!threat-command-cve-add cve_ids=CVE-1999-0002```
+#### Human Readable Output
+
+>The "CVE-1999-0002" CVEs successfully added.
+
 ### threat-command-cve-delete
 
 ***
@@ -2170,6 +2209,28 @@ Add assets by type and value. Assets include any company resource that could lea
 | --- | --- | --- |
 | ThreatCommand.Asset.type | String | The type of the asset. | 
 | ThreatCommand.Asset.value | String | The value of the asset type. | 
+
+#### Command example
+```!threat-command-asset-add asset_type=CompanyNames asset_value=test```
+#### Context Example
+```json
+{
+    "ThreatCommand": {
+        "Asset": {
+            "type": "CompanyNames",
+            "value": "test"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Asset "test" successfully added to "CompanyNames" asset list.
+>|Type|Value|
+>|---|---|
+>| CompanyNames | test |
+
 
 ### threat-command-asset-list
 
@@ -2300,6 +2361,65 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | ThreatCommand.SystemModule.module_name | String | Module name. | 
 | ThreatCommand.SystemModule.status | String | Whether the module module is enabled. | 
+
+#### Command example
+```!threat-command-account-system-modules-list```
+#### Context Example
+```json
+{
+    "ThreatCommand": {
+        "SystemModule": [
+            {
+                "module_name": "discovery",
+                "status": true
+            },
+            {
+                "module_name": "remediation",
+                "status": true
+            },
+            {
+                "module_name": "ioc",
+                "status": true
+            },
+            {
+                "module_name": "virtualappliance",
+                "status": true
+            },
+            {
+                "module_name": "investigationpage",
+                "status": true
+            },
+            {
+                "module_name": "threatlibrary",
+                "status": false
+            },
+            {
+                "module_name": "intellifind",
+                "status": true
+            },
+            {
+                "module_name": "cve",
+                "status": true
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### System modules
+>|Module Name|Status|
+>|---|---|
+>| discovery | true |
+>| remediation | true |
+>| ioc | true |
+>| virtualappliance | true |
+>| investigationpage | true |
+>| threatlibrary | false |
+>| intellifind | true |
+>| cve | true |
+
 
 ### threat-command-mention-search
 
@@ -2697,6 +2817,30 @@ Get all Managed Security Service Provider's (MSSP) sub-accounts.
 | ThreatCommand.MsspCustomer.status | String | Customer status. | 
 | ThreatCommand.MsspCustomer.note | String | Customer note. | 
 
+#### Command example
+```!threat-command-mssp-customer-list limit=1```
+#### Context Example
+```json
+{
+    "ThreatCommand": {
+        "MsspCustomer": {
+            "company_name": "Demo - Qmasters",
+            "id": "59490ca49b655c027458d115",
+            "note": "test",
+            "status": "Enabled"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### MSSP customer list
+>|Id|Company Name|Status|Note|
+>|---|---|---|---|
+>| 59490ca49b655c027458d115 | Demo - Qmasters | Enabled | test |
+
+
 ### threat-command-mssp-user-list
 
 ***
@@ -2721,6 +2865,30 @@ Get the details of the MSSPs users (In case you are an MSSP account).
 | ThreatCommand.MsspUser.email | String | User email. | 
 | ThreatCommand.MsspUser.role | String | User role. | 
 | ThreatCommand.MsspUser.is_deleted | String | Whether the user was deleted. | 
+
+#### Command example
+```!threat-command-mssp-user-list limit=1```
+#### Context Example
+```json
+{
+    "ThreatCommand": {
+        "MsspUser": {
+            "email": "ronh+mssp@qmasters.co",
+            "id": "64214bc94c75609d09ebb56a",
+            "is_deleted": false,
+            "role": "Admin"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### MSSP user list
+>|Id|Email|Role|Is Deleted|
+>|---|---|---|---|
+>| 64214bc94c75609d09ebb56a | ronh+mssp@qmasters.co | Admin | false |
+
 
 ### threat-command-account-user-list
 
@@ -2752,6 +2920,95 @@ List the users in your account. Mainly used to assign alerts.
 | ThreatCommand.AccountUser.role | String | User role. | 
 | ThreatCommand.AccountUser.is_deleted | String | Whether the user was deleted. | 
 
+#### Command example
+```!threat-command-account-user-list limit=1```
+#### Context Example
+```json
+{
+    "ThreatCommand": {
+        "AccountUser": {
+            "email": "gregorin@qmasters.co",
+            "first_name": "Gregori",
+            "id": "59490cd818a3b902664b4ed7",
+            "is_deleted": false,
+            "last_name": "Nazrovsky",
+            "permissions": {
+                "Automation": {
+                    "Extend": true,
+                    "Integrations": true,
+                    "Policy": true,
+                    "Profiler": true
+                },
+                "Configurations": {
+                    "PhishingWatchManager": true
+                },
+                "Data": {
+                    "Actions": {
+                        "AskTheAnalyst": true,
+                        "Assignment": true,
+                        "ChangeSeverity": true,
+                        "ChangeStatus": true,
+                        "Remediation": {
+                            "Report": true,
+                            "Takedown": true
+                        },
+                        "Share": true
+                    },
+                    "AlertTypes": {
+                        "AttackIndication": true,
+                        "BrandSecurity": true,
+                        "DataLeakage": true,
+                        "ExploitableData": true,
+                        "Phishing": true,
+                        "vip": true
+                    },
+                    "Assets": {
+                        "Edit": true,
+                        "View": true
+                    },
+                    "Reports": {
+                        "View": true
+                    },
+                    "StrategicInsights": {
+                        "Edit": true,
+                        "View": true
+                    }
+                },
+                "TIP": {
+                    "EditSources": true,
+                    "IntelliFind": true,
+                    "InvestigationPage": true,
+                    "ThreatLibrary": true,
+                    "View": true
+                },
+                "ThreatThirdParty": {
+                    "RiskAssessment": {
+                        "Assess": true,
+                        "View": true
+                    },
+                    "TailoredRisk": {
+                        "Assess": true,
+                        "View": true
+                    }
+                },
+                "Vulnerabilities": {
+                    "View": true
+                }
+            },
+            "role": "Admin"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Account user list
+>|Id|Email|First Name|Last Name|Role|Is Deleted|
+>|---|---|---|---|---|---|
+>| 59490cd818a3b902664b4ed7 | gregorin@qmasters.co | Gregori | Nazrovsky | Admin | false |
+
+
 ### threat-command-alert-type-list
 
 ***
@@ -2775,6 +3032,28 @@ List alert types and sub-types. They are mainly used to add manual alerts.
 | ThreatCommand.AlertType.type | String | Type. | 
 | ThreatCommand.AlertType.sub_type | String | Sub-type of the type. | 
 
+#### Command example
+```!threat-command-alert-type-list limit=1```
+#### Context Example
+```json
+{
+    "ThreatCommand": {
+        "AlertType": {
+            "sub_type": "VulnerabilityInTechnologyInUse",
+            "type": "ExploitableData"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Alert types
+>|Type|Sub Type|
+>|---|---|
+>| ExploitableData | VulnerabilityInTechnologyInUse |
+
+
 ### threat-command-alert-source-type-list
 
 ***
@@ -2796,6 +3075,27 @@ List alert source types. They are mainly used to add manual alerts.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatCommand.AlertSourceType | String | List of source types. | 
+
+#### Command example
+```!threat-command-alert-source-type-list limit=1```
+#### Context Example
+```json
+{
+    "ThreatCommand": {
+        "AlertSourceType": [
+            "Application Store"
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Alert source types
+>|Source Type|
+>|---|
+>| Application Store |
+
 
 ### threat-command-alert-scenario-list
 
@@ -2823,6 +3123,30 @@ List alert scenarios. They are mainly used to add manual alerts.
 | ThreatCommand.Scenario.subtype | String | Alert sub-type. | 
 | ThreatCommand.Scenario.scenario | String | Name of the scenario. | 
 | ThreatCommand.Scenario.description | String | Short description of the scenario. | 
+
+#### Command example
+```!threat-command-alert-scenario-list limit=1```
+#### Context Example
+```json
+{
+    "ThreatCommand": {
+        "Scenario": {
+            "description": "A company email address reported as spamming",
+            "scenario": "ACompanyEmailAddressReportedAsMalicious",
+            "subtype": "AssetReportedAsMalicious",
+            "type": "AttackIndication"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Alert scenario list
+>|Scenario|Description|Type|Subtype|
+>|---|---|---|---|
+>| ACompanyEmailAddressReportedAsMalicious | A company email address reported as spamming | AttackIndication | AssetReportedAsMalicious |
+
 
 ### file
 
