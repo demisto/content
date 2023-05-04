@@ -1,0 +1,26 @@
+[
+  {
+    "endpoint_id": "3",
+    "endpoint_name": "ip-3.3.3.3",
+    "endpoint_type": "AGENT_TYPE_WORKSTATION",
+    "endpoint_status": "CONNECTED",
+    "os_type": "AGENT_OS_WINDOWS",
+    "ip": [
+      "3.3.3.3"
+    ],
+    "users": [
+      "ec2-user"
+    ],
+    "domain": "",
+    "alias": "",
+    "first_seen": 1575795969644,
+    "last_seen": 1575875404040,
+    "content_version": "105-15865",
+    "installation_package": "windows",
+    "active_directory": null,
+    "install_date": 1575795969644,
+    "endpoint_version": "7.0.0.1915",
+    "is_isolated": "AGENT_UNISOLATED",
+    "group_name": null
+  }
+]

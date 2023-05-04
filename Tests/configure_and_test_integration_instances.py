@@ -289,13 +289,13 @@ class Build(ABC):
             (bool): whether new (current) marketplace was added to the pack_metadata or not
         """
         spaced_diff = " ".join(diff.split())
-        return (f'+ "{self.marketplace_name}"' in spaced_diff) and not (f'- "{self.marketplace_name}"' in spaced_diff)
+        return (f'+ "{self.marketplace_name}"' in spaced_diff) and f'- "{self.marketplace_name}"' not in spaced_diff
 
     def disable_instances(self):
         for server in self.servers:
             disable_all_integrations(server.client)
 
-    def get_changed_integrations(self, packs_not_to_install: Set[str] = None) -> Tuple[List[str], List[str]]:
+    def get_changed_integrations(self, packs_not_to_install: Set[str] | None = None) -> Tuple[List[str], List[str]]:
         """
         Return 2 lists - list of new integrations names and list of modified integrations names since the commit of the git_sha1.
         The modified list is exclude the packs_not_to_install and the new list is including it
@@ -362,6 +362,7 @@ class Build(ABC):
         """
         server_numeric_version: str = self.server_numeric_version
         tests: dict = self.tests
+        tests_for_iteration: list[dict]
         if Build.run_environment == Running.CI_RUN:
             filtered_tests = BuildContext._extract_filtered_tests()
             if self.is_nightly:
@@ -762,7 +763,7 @@ class CloudBuild(Build):
                                          options.cloud_servers_api_keys)
         self.servers = [CloudServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
                                     self.cloud_machine)]
-        self.marketplace_tag_name = options.marketplace_name
+        self.marketplace_tag_name: str = options.marketplace_name
         self.artifacts_folder = options.artifacts_folder
         self.marketplace_buckets = options.marketplace_buckets
 
@@ -1651,7 +1652,9 @@ def get_non_added_packs_ids(build: Build):
     :param build: the build object
     :return: all non added packs i.e. unchanged packs (dependencies) and modified packs
     """
-    compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
+    compare_against = (
+        'master~1' if build.branch_name == 'master' else 'origin/master'
+    )
     added_files = run_command(f'git diff --name-only --diff-filter=A '
                               f'{compare_against}..refs/heads/{build.branch_name} -- Packs/*/pack_metadata.json')
     if os.getenv('CONTRIB_BRANCH'):
@@ -1743,7 +1746,7 @@ def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -
     return hidden_integrations_names
 
 
-def update_integration_lists(new_integrations_names: List[str], packs_not_to_install: Set[str],
+def update_integration_lists(new_integrations_names: List[str], packs_not_to_install: Set[str] | None,
                              modified_integrations_names: List[str]) -> Tuple[List[str], List[str]]:
     """
     Add the turned non-hidden integrations names to the new integrations names list and
@@ -1798,7 +1801,7 @@ def get_packs_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
 
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
 
-    packs_with_higher_min_version = get_packs_with_higher_min_version(set(build.pack_ids_to_install) - non_hidden_packs,
+    packs_with_higher_min_version = get_packs_with_higher_min_version(set(build.pack_ids_to_install),
                                                                       build.server_numeric_version)
     # packs to install used in post update
     build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
