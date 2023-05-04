@@ -2,14 +2,14 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
 import traceback
 from typing import Dict
 import jwt
 import uuid
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+import urllib3
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' CONSTANTS '''
@@ -140,7 +140,7 @@ def jwt_generate_access_token_command(client, args, params):
 def jwt_decode_token_command(args):
     token = args.get('token')
     secret = args.get('secret', 'nosecret')
-    result = jwt.decode(token, secret, algorithms="HS256", options={"verify_signature": False})
+    result = jwt.decode(token, secret, algorithms=["HS256"], options={"verify_signature": False})
     return CommandResults(
         outputs_prefix='JWT.DecodedToken',
         outputs_key_field='ID',

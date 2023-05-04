@@ -12,18 +12,16 @@ filter
     xdm.intermediate.host.fqdn = HOST,
     xdm.source.user.username = username,
     xdm.event.outcome_reason = reason,
-    xdm.event.outcome = result,
+    xdm.event.outcome = if(result = "FAILURE", XDM_CONST.OUTCOME_FAILED, result = "SUCCESS", XDM_CONST.OUTCOME_SUCCESS, result = "ERROR", XDM_CONST.OUTCOME_UNKNOWN, result = null, null, to_string(result)),    
     xdm.source.application.name = integration,
     xdm.auth.auth_method = factor;
-
 filter
     eventtype = "administrator"
 | alter
-    xdm.event.operation = action,
+    xdm.event.operation = coalesce(action,context),
     xdm.event.description = description,
     xdm.target.resource.name = object,
     xdm.source.user.username = username,
-    xdm.source.user.user_type = context,
     xdm.target.user.identifier = phone,
     xdm.event.type = eventtype,
     xdm.event.operation_sub_type = type,
@@ -31,6 +29,6 @@ filter
     xdm.target.user.upn = json_extract_scalar(description, "$.email"),
     xdm.auth.auth_method = json_extract_scalar(description, "$.factor"),
     xdm.source.ipv4 =  json_extract_scalar(description, "$.ip_address"),
-    xdm.target.user.user_type  = json_extract_scalar(description, "$.role"),
+    xdm.target.user.groups  = arraycreate(coalesce(json_extract_scalar(description, "$.role"),"")),
     xdm.target.user.username = json_extract_scalar(description, "$.email"),
     xdm.target.resource.type = json_extract_scalar(description, "$.factor");

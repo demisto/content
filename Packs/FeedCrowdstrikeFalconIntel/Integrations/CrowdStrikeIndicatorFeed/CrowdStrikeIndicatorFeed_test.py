@@ -174,3 +174,157 @@ def test_crowdstrike_to_xsoar_types():
     from CrowdStrikeIndicatorFeed import CROWDSTRIKE_TO_XSOAR_TYPES
 
     assert None not in CROWDSTRIKE_TO_XSOAR_TYPES
+
+
+@pytest.mark.parametrize(
+    'first_fetch, filter, integration_context, get_indicators_response, filter_arg_call, expected_results',
+    [
+        (
+            '1662650320',
+            '',
+            {'last_updated': '1662650343'},
+            {},
+            '(last_updated:>=1662650343)',
+            ('', 0)
+        ),
+        (
+            '1662650320',
+            '',
+            {'last_updated': '1662650343'},
+            {'resources': [
+                {
+                    "id": "dummy",
+                    "indicator": "dummy",
+                    "type": "hash_md5",
+                    "deleted": "False",
+                    "published_date": 1622198010,
+                    "last_updated": 1662650343,
+                    "reports": [],
+                    "actors": [
+                        "DOPPELSPIDER"
+                    ],
+                    "malware_families": [
+                        "DoppelDridex"
+                    ],
+                    "kill_chains": [],
+                    "ip_address_types": [],
+                    "domain_types": [],
+                    "malicious_confidence": "high",
+                    "_marker": "test_marker_test",
+                    "labels": []
+                }
+            ]},
+            '(last_updated:>=1662650343)',
+            ("(_marker:>'test_marker_test')", 1)
+        ),
+        (
+            '1662650320',
+            '',
+            {},
+            {'resources': [
+                {
+                    "id": "dummy",
+                    "indicator": "dummy",
+                    "type": "hash_md5",
+                    "deleted": "False",
+                    "published_date": 1622198010,
+                    "last_updated": 1662650343,
+                    "reports": [],
+                    "actors": [
+                        "DOPPELSPIDER"
+                    ],
+                    "malware_families": [
+                        "DoppelDridex"
+                    ],
+                    "kill_chains": [],
+                    "ip_address_types": [],
+                    "domain_types": [],
+                    "malicious_confidence": "high",
+                    "_marker": "test_marker_test",
+                    "labels": []
+                }
+            ]},
+            '(last_updated:>=1662650320)',
+            ("(_marker:>'test_marker_test')", 1)
+        ),
+        (
+            '',
+            '',
+            {},
+            {'resources': [
+                {
+                    "id": "dummy",
+                    "indicator": "dummy",
+                    "type": "hash_md5",
+                    "deleted": "False",
+                    "published_date": 1622198010,
+                    "last_updated": 1662650343,
+                    "reports": [],
+                    "actors": [
+                        "DOPPELSPIDER"
+                    ],
+                    "malware_families": [
+                        "DoppelDridex"
+                    ],
+                    "kill_chains": [],
+                    "ip_address_types": [],
+                    "domain_types": [],
+                    "malicious_confidence": "high",
+                    "_marker": "test_marker_test",
+                    "labels": []
+                }
+            ]},
+            None,
+            ("(_marker:>'test_marker_test')", 1)
+        )
+    ]
+)
+def test_handling_first_fetch_and_old_integration_context(mocker,
+                                                          requests_mock,
+                                                          first_fetch,
+                                                          filter,
+                                                          integration_context,
+                                                          get_indicators_response,
+                                                          filter_arg_call,
+                                                          expected_results):
+
+    from CrowdStrikeIndicatorFeed import Client
+
+    requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
+    client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
+                    type='ALL', include_deleted='false', limit=2, first_fetch=first_fetch)
+    mocker.patch('CrowdStrikeIndicatorFeed.demisto.getIntegrationContext', return_value=integration_context)
+    get_indicator_call = mocker.patch.object(client, 'get_indicators', return_value=get_indicators_response)
+
+    results = client.handle_first_fetch_context_or_pre_2_1_0(filter)
+
+    assert get_indicator_call.call_args.kwargs['params'].get('filter') == filter_arg_call
+    assert results[0] == expected_results[0]
+    assert len(results[1]) == expected_results[1]
+
+
+@pytest.mark.parametrize(
+    'indicator, expected_results',
+    [
+        (
+            {'indicator': '1.1.1.1', 'type': 'ip_address'},
+            'IP'
+        ),
+        (
+            {'indicator': 'fe80:0000:0000:0000:91ba:7558:26d3:acde', 'type': 'ip_address'},
+            'IPv6'
+        ),
+        (
+            {'indicator': 'test_test', 'type': 'username'},
+            'Account'
+        ),
+        (
+            {'indicator': 'test_test', 'type': 'password'},
+            None
+        )
+    ]
+)
+def test_auto_detect_indicator_type_from_cs(indicator: dict, expected_results: str | None):
+    from CrowdStrikeIndicatorFeed import auto_detect_indicator_type_from_cs
+
+    assert auto_detect_indicator_type_from_cs(indicator['indicator'], indicator['type']) == expected_results

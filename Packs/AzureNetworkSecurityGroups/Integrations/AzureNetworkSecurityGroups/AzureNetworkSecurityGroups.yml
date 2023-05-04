@@ -560,7 +560,11 @@ script:
     description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: azure-nsg-auth-reset
-  dockerimage: demisto/crypto:1.0.0.47103
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: azure-nsg-generate-login-url
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false
   longRunning: false

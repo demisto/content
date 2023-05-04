@@ -1,0 +1,28 @@
+{
+  "simulation": {
+    "id": 8396,
+    "name": "cortexTestSimulation3",
+    "description": "",
+    "schedule_id": 878,
+    "agent_id": 2465,
+    "is_active": true,
+    "integrations": null,
+    "protocols": [
+      {
+        "module_id": 1,
+        "protocols": [
+          "https"
+        ]
+      }
+    ],
+    "obfuscation_methods": null,
+    "template_id": null
+  },
+  "run_info": {
+    "id": 24084,
+    "status": "SCHEDULED",
+    "browser": ""
+  },
+  "run_immediately": true,
+  "simulation_already_exist": false
+}

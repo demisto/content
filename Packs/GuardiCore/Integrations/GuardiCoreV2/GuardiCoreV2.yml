@@ -1,4 +1,4 @@
-category: Deception
+category: Deception & Breach Simulation
 commonfields:
   id: GuardiCore v2
   version: -1
@@ -1267,7 +1267,7 @@ script:
         - contextPath: Endpoint.MACAddress
           description: The endpoint's MAC address.
           type: String
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false

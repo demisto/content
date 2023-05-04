@@ -11,8 +11,10 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-    "Getting Started",
-    "Threat Intelligence Management"
+        "Getting Started",
+        "Threat Intelligence Management",
+        "Free Feed",
+        "Plug & Fetch"
     ],
     "useCases": [],
     "keywords": [],

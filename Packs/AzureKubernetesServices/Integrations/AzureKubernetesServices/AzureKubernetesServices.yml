@@ -306,7 +306,11 @@ script:
     description: Updates a managed cluster with the specified configuration.
     execution: false
     name: azure-ks-cluster-addon-update
-  dockerimage: demisto/crypto:1.0.0.47103
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: azure-ks-generate-login-url
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false
   longRunning: false

@@ -1,0 +1,814 @@
+id: Prisma Cloud Remediation - Azure Network Misconfiguration v2
+version: -1
+fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma Cloud Remediation - Azure Network Misconfiguration v2
+description: |-
+  This playbook remediates Prisma Cloud Azure Network alerts. It calls sub-playbooks that perform the actual remediation steps.
+
+  Remediation:
+
+  - Azure Network Security Group (NSG) having Inbound rule overly permissive to allow all traffic from any source on any protocol
+  - Azure Network Security Group (NSG) having Inbound rule overly permissive to allow all traffic from any source on TCP protocol
+  - Azure Network Security Group (NSG) having Inbound rule overly permissive to allow all traffic from any source on UDP protocol
+  - Azure Network Security Group (NSG) allows SSH traffic from internet on port 22
+  - Azure Network Security Group (NSG) allows traffic from internet on port 3389
+  - Azure Network Security Group allows DNS (TCP Port 53)
+  - Azure Network Security Group allows FTP (TCP Port 21)
+  - Azure Network Security Group allows FTP-Data (TCP Port 20)
+  - Azure Network Security Group allows MSQL (TCP Port 4333)
+  - Azure Network Security Group allows MySQL (TCP Port 3306)
+  - Azure Network Security Group allows Windows RPC (TCP Port 135)
+  - Azure Network Security Group allows Windows SMB (TCP Port 445)
+  - Azure Network Security Group allows PostgreSQL (TCP Port 5432)
+  - Azure Network Security Group allows SMTP (TCP Port 25)
+  - Azure Network Security Group allows SqlServer (TCP Port 1433)
+  - Azure Network Security Group allows Telnet (TCP Port 23)
+  - Azure Network Security Group allows VNC Listener (TCP Port 5500)
+  - Azure Network Security Group allows all traffic on ICMP (Ping)
+  - Azure Network Security Group allows CIFS (UDP Port 445)
+  - Azure Network Security Group allows NetBIOS (UDP Port 137)
+  - Azure Network Security Group allows NetBIOS (UDP Port 138)
+  - Azure Network Security Group allows SQLServer (UDP Port 1434)
+  - Azure Network Security Group allows DNS (UDP Port 53)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61bee172-14d4-4a48-815c-913b49bef800
+    type: start
+    task:
+      id: 61bee172-14d4-4a48-815c-913b49bef800
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1826b574-2085-4229-82f2-8dc09b963292
+    type: condition
+    task:
+      id: 1826b574-2085-4229-82f2-8dc09b963292
+      version: -1
+      name: Is Azure Network Security Groups integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    scriptarguments:
+      brandname:
+        simple: Azure Network Security Groups
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+    type: title
+    task:
+      id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 223403a2-356c-4acb-813a-a8286d359ebb
+    type: condition
+    task:
+      id: 223403a2-356c-4acb-813a-a8286d359ebb
+      version: -1
+      name: Is there a policy to remediate?
+      description: Checks for a Prisma Cloud policy ID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: a2344123-1f43-4a53-8cf4-ea7474e2af8e
+    type: condition
+    task:
+      id: a2344123-1f43-4a53-8cf4-ea7474e2af8e
+      version: -1
+      name: Update network automatically?
+      description: Auto remediate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoRemediateAzureNetwork
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: fdee1b8a-3337-49e1-8fef-d1409e5563fb
+    type: condition
+    task:
+      id: fdee1b8a-3337-49e1-8fef-d1409e5563fb
+      version: -1
+      name: Auto remediate?
+      description: Remediate automatically or manually update?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "Yes":
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: ${incident.id} Autoremediate?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 25c06945-d2ac-4126-85b8-94618b8563fb
+    type: condition
+    task:
+      id: 25c06945-d2ac-4126-85b8-94618b8563fb
+      version: -1
+      name: Execute playbook
+      description: Execute the appropriate remediation sub-playbook based on the Prisma Cloud policy ID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      securityGroup:
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: securityGroup
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 3beed53c-3f2d-47b6-bb6f-95da39ff0f26
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: a36a7170-d628-47fe-aab2-0e734702373d
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 0c620876-4549-46c4-a5b3-16e86e3cefe7
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 472e08a2-c741-43eb-a3ca-e2f5cd275cf7
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: f48eda6b-5d66-4d73-a62e-671de3844555
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 5826e50f-2f29-4444-9cad-3bb4e66ee3ca
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 5dbd0da1-cfa4-4bce-a753-56dade428bd4
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 4afdc071-53ca-4516-8a3c-d5c91345c409
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 500e9f2a-1063-4066-8eea-780efa90a0d7
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: a0791206-a669-4948-a845-cc735212013c
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: ac851899-1007-48c8-842f-dddb9a38c4ba
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 3aa12e75-d78b-4157-9eca-6049187a30d7
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 936dd3cb-a9cc-4a13-9a2c-ea5d40856072
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 91a53c5d-d629-45bb-9610-fbd2cb4c6f3c
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 840b4b1c-a50b-11e8-98d0-529269fb1459
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 0a3f1d49-4c05-47c4-98e2-3a42b822d05b
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: bc7929f8-fe70-48ec-8690-4288aa0b98ae
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 18e1dd76-9d0f-4cdb-96d4-9d01b5cd68dc
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 3784cdfd-dd25-4cf3-b506-ad77033ccc35
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 0546188d-6f21-449d-948e-677c285a5fcf
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 709b47cd-6b7a-4500-b99e-a58529a6c79e
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: d979e854-a50d-11e8-98d0-529269fb1459
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 543c6a0a-a50c-11e8-98d0-529269fb1459
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: cfe6460f-9ef9-4da7-80d1-0e90a50b1351
+    type: regular
+    task:
+      id: cfe6460f-9ef9-4da7-80d1-0e90a50b1351
+      version: -1
+      name: Manually update network
+      description: |-
+        1. Log in to the Azure Portal.
+        2. Select 'All services'.
+        3. Select 'Network security groups', under NETWORKING.
+        4. Select the Network security group you need to modify.
+        5. Select 'Inbound security rules' under Settings.
+        6. Select the rule you need to modify, and edit it to allow specific IP addresses OR set the 'Action' to 'Deny' OR 'Delete' the rule based on your requirement.
+        7. 'Save' your changes.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: c3d736e6-e9ab-4cfc-8ed0-7276f754c074
+    type: regular
+    task:
+      id: c3d736e6-e9ab-4cfc-8ed0-7276f754c074
+      version: -1
+      name: Close investigation
+      description: Close the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        complex:
+          root: incident
+          accessor: id
+      mndadone: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: edf547ca-7606-4d2b-8c3c-fc5cb0348c6e
+    type: condition
+    task:
+      id: edf547ca-7606-4d2b-8c3c-fc5cb0348c6e
+      version: -1
+      name: Is Prisma Cloud v2 integration enabled?
+      description: Is Prisma Cloud v2 integration enabled?
+      type: condition
+      iscommand: false
+      brand: PrismaCloud v2
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "14"
+    continueonerror: true
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PrismaCloud v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: ff1ae442-5e53-498e-884c-afa86f9bf22e
+    type: regular
+    task:
+      id: ff1ae442-5e53-498e-884c-afa86f9bf22e
+      version: -1
+      name: Dismiss Prisma Cloud alert
+      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
+      script: PrismaCloud v2|||prisma-cloud-alert-dismiss
+      type: regular
+      iscommand: true
+      brand: PrismaCloud v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: incident
+          accessor: labels
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      dismissal_note:
+        simple: ${incident.labels.id} has been remediated by Cortex XSOAR.
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: ea7af525-a8bc-40d6-82d8-70f8f139f28d
+    type: playbook
+    task:
+      id: ea7af525-a8bc-40d6-82d8-70f8f139f28d
+      version: -1
+      name: Prisma Cloud Remediation - Azure Network Security Group Misconfiguration
+      description: |-
+        This playbook remediates the following Prisma Cloud Azure Network security group alerts.
+
+        Prisma Cloud policies remediated:
+
+        - Azure Network Security Group (NSG) having Inbound rule overly permissive to allow all traffic from any source on any protocol
+        - Azure Network Security Group (NSG) having Inbound rule overly permissive to allow all traffic from any source on TCP protocol
+        - Azure Network Security Group (NSG) having Inbound rule overly permissive to allow all traffic from any source on UDP protocol
+        - Azure Network Security Group (NSG) allows SSH traffic from internet on port 22
+        - Azure Network Security Group (NSG) allows traffic from internet on port 3389
+        - Azure Network Security Group allows DNS (TCP Port 53)
+        - Azure Network Security Group allows FTP (TCP Port 21)
+        - Azure Network Security Group allows FTP-Data (TCP Port 20)
+        - Azure Network Security Group allows MSQL (TCP Port 4333)
+        - Azure Network Security Group allows MySQL (TCP Port 3306)
+        - Azure Network Security Group allows Windows RPC (TCP Port 135)
+        - Azure Network Security Group allows Windows SMB (TCP Port 445)
+        - Azure Network Security Group allows PostgreSQL (TCP Port 5432)
+        - Azure Network Security Group allows SMTP (TCP Port 25)
+        - Azure Network Security Group allows SqlServer (TCP Port 1433)
+        - Azure Network Security Group allows Telnet (TCP Port 23)
+        - Azure Network Security Group allows VNC Listener (TCP Port 5500)
+        - Azure Network Security Group allows all traffic on ICMP (Ping)
+        - Azure Network Security Group allows CIFS (UDP Port 445)
+        - Azure Network Security Group allows NetBIOS (UDP Port 137)
+        - Azure Network Security Group allows NetBIOS (UDP Port 138)
+        - Azure Network Security Group allows SQLServer (UDP Port 1434)
+        - Azure Network Security Group allows DNS (UDP Port 53)
+      playbookName: Prisma Cloud Remediation - Azure Network Security Group Misconfiguration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      policyId:
+        complex:
+          root: inputs.policyId
+      portNumber:
+        complex:
+          root: inputs.portNumber
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_14_yes": 0.61,
+      "11_9_#default#": 0.53,
+      "2_3_#default#": 0.2,
+      "2_4_yes": 0.52,
+      "4_5_yes": 0.3,
+      "4_8_#default#": 0.22,
+      "5_6_#default#": 0.55,
+      "5_7_yes": 0.46,
+      "6_7_Yes": 0.46,
+      "6_8_#default#": 0.35,
+      "7_15_securityGroup": 0.51,
+      "7_8_#default#": 0.24
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1735,
+        "width": 1510,
+        "x": -500,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: AutoRemediateAzureNetwork
+  value:
+    simple: "no"
+  required: false
+  description: Execute Azure Network remediation automatically?
+  playbookInputQuery:
+- key: policyId
+  value:
+    complex:
+      root: incident
+      accessor: labels.policy
+      transformers:
+      - operator: ParseJSON
+      - operator: getField
+        args:
+          field:
+            value:
+              simple: policyId
+  required: false
+  description: Grab the Prisma Cloud policy ID.
+  playbookInputQuery:
+- key: portNumber
+  value:
+    complex:
+      root: incident
+      transformers:
+      - operator: getField
+        args:
+          field:
+            value:
+              simple: rawName
+      - operator: substringFrom
+        args:
+          from:
+            value:
+              simple: Port
+      - operator: substringTo
+        args:
+          to:
+            value:
+              simple: )
+      - operator: ParseJSON
+  required: false
+  description: Port number.
+  playbookInputQuery:
+outputs:
+- contextPath: incident.resourcename
+  description: Security group name.
+  type: string
+tests:
+- No Test

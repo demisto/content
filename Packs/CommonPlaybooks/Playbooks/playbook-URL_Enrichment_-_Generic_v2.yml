@@ -9,6 +9,7 @@ description: |-
   * SSL verification for URLs
   * Threat information
   * Providing of URL screenshots
+  * URL Reputation using !url
 starttaskid: "0"
 tasks:
   "0":
@@ -59,6 +60,7 @@ tasks:
       "yes":
       - "29"
       - "31"
+      - "38"
     scriptarguments:
       value:
         simple: inputs.URL
@@ -75,7 +77,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 125
+          "y": 155
         }
       }
     note: false
@@ -435,6 +437,119 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "38":
+    continueonerrortype: ""
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 704516ae-95d9-4ef5-8772-1958046fcac7
+      iscommand: false
+      name: URL Reputation
+      type: title
+      version: -1
+      description: ''
+    taskid: 704516ae-95d9-4ef5-8772-1958046fcac7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 360
+        }
+      }
+  "39":
+    continueonerrortype: ""
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Checks the reputation of a URL.
+      id: 0a97859d-7608-47b2-8c81-38009df2a4dd
+      iscommand: true
+      name: Check Reputation
+      script: '|||url'
+      type: regular
+      version: -1
+    taskid: 0a97859d-7608-47b2-8c81-38009df2a4dd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 710
+        }
+      }
+  "40":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.UseReputationCommand
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    continueonerrortype: ""
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e0b1281a-38c2-4cbd-8d6d-4330057e5729
+      iscommand: false
+      name: Should use !url command?
+      description: Check if should run URL reputation command
+      type: condition
+      version: -1
+    taskid: e0b1281a-38c2-4cbd-8d6d-4330057e5729
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 500
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
@@ -447,18 +562,13 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1229,
-        "width": 1380,
+        "width": 1920,
         "x": -510,
         "y": -39
       }
     }
   }
 inputs:
-- key: URL
-  value:
-    simple: "True"
-  required: false
-  description: URLs to enrich.
 - key: URL
   value:
     complex:
@@ -481,6 +591,15 @@ inputs:
   required: false
   description: Should the system perform SSL certificate verification on the URLs?
   playbookInputQuery:
+- description: |-
+    Define if you would like to use the !url command.
+    Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
+    Possible values: True / False.
+  key: UseReputationCommand
+  playbookInputQuery:
+  required: true
+  value:
+    simple: "False"
 outputs:
 - contextPath: URL
   description: The URL object.
@@ -500,6 +619,24 @@ outputs:
 - contextPath: URL.Description
   description: Additional information for the URL.
   type: string
+- contextPath: URL.Malicious.Vendor
+  description: For malicious URLs, the vendor that made the decision.
+- contextPath: URL.Malicious.Description
+  description: For malicious URLs, the reason that the vendor made the decision.
+- contextPath: DBotScore.Indicator
+  description: The indicator
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator's type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The reputation vendor
+  type: string
+- contextPath: DBotScore.Score
+  description: The reputation score
+  type: number
+- contextPath: DBotScore.Reliability
+  description: Reliability of the source providing the intelligence data.
 tests:
 - URL Enrichment - Generic v2 - Test
 system: true

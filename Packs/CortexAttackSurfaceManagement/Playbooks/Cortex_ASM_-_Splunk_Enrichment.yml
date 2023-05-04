@@ -1,0 +1,424 @@
+id: Cortex ASM - Splunk Enrichment
+version: -1
+name: Cortex ASM - Splunk Enrichment
+description: 'Given the IP address this playbook enriches information from Splunk results relevant to ASM alerts. '
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 527bb054-2b25-4590-8ba8-8d713b28aa5a
+    type: start
+    task:
+      id: 527bb054-2b25-4590-8ba8-8d713b28aa5a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 72482b7e-77fc-45e4-8b39-a627ad331449
+    type: condition
+    task:
+      id: 72482b7e-77fc-45e4-8b39-a627ad331449
+      version: -1
+      name: Is Splunk Enabled?
+      description: Check if Splunk integration is enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SplunkPy
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ede35b51-d3ae-47e6-847f-673e831f8787
+    type: condition
+    task:
+      id: ede35b51-d3ae-47e6-847f-673e831f8787
+      version: -1
+      name: Is there Splunk results?
+      description: Checks if there are any splunk results.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Splunk
+                accessor: Result
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3c99d371-eb96-45d5-80a5-d47285c61be4
+    type: title
+    task:
+      id: 3c99d371-eb96-45d5-80a5-d47285c61be4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 5fe81f50-f733-4977-83f3-cf940a202bcd
+    type: condition
+    task:
+      id: 5fe81f50-f733-4977-83f3-cf940a202bcd
+      version: -1
+      name: Are there any users in the Splunk results?
+      description: Checks if there are any users found in the Splunk results.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ${
+                accessor: =[]}
+                transformers:
+                - operator: GetValuesOfMultipleFields
+                  args:
+                    key:
+                      value:
+                        simple: Splunk.Result
+                      iscontext: true
+                    list:
+                      value:
+                        simple: user,email,user_name,user_id,src_user,src_user_name,owner_email,owner,owner_id,username,AD_username
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5b18ce60-eeec-49c3-8dd1-4f3361d021cd
+    type: regular
+    task:
+      id: 5b18ce60-eeec-49c3-8dd1-4f3361d021cd
+      version: -1
+      name: Splunk search for potential service owners
+      description: Searches Splunk for events.
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      earliest_time:
+        simple: -7d
+      event_limit:
+        simple: "100"
+      query:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: dest_ip=
+              suffix:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
+                    dest_translated_ip=IPADDRESS OR ip=IPADDRESS OR src_ip=IPADDRESS OR src_translated_ip=IPADDRESS OR client_ip=IPADDRESS OR server_ip=IPADDRESS OR ip_address=IPADDRESS OR source_ip=IPADDRESS OR
+                    destination_ip=IPADDRESS
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+              toReplace:
+                value:
+                  simple: IPADDRESS
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' AND (user=* OR email=* OR  user_name=* OR  user_id=* OR src_user=* OR src_user_name=* OR owner_email=* OR owner=* OR owner_id=* OR username=* OR AD_username=*) AND (user!="unknown" OR email!="unknown" OR  user_name!="unknown" OR  user_id!="unknown" OR src_user!="unknown" OR src_user_name!="unknown" OR owner_email!="unknown" OR owner!="unknown" OR owner_id!="unknown" OR username!="unknown" OR AD_username!="unknown") AND (user!="null" OR email!="null" OR  user_name!="null" OR  user_id!="null" OR src_user!="null" OR src_user_name!="null" OR owner_email!="null" OR owner!="null" OR owner_id!="null" OR username!="null" OR AD_username!="null")'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ae1d84ae-c010-4238-85f9-1b3b0ed2bf06
+    type: regular
+    task:
+      id: ae1d84ae-c010-4238-85f9-1b3b0ed2bf06
+      version: -1
+      name: Set service owner grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      gridfield:
+        simple: asmserviceowner
+      keys:
+        simple: Name,Email,Source,Timestamp
+      val1:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              list:
+                value:
+                  simple: user,email,user_name,user_id,src_user,src_user_name,owner_email,owner,owner_id,username,AD_username
+          - operator: uniq
+      val2:
+        simple: N/A
+      val3:
+        simple: Splunk
+      val4:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: TimeStampToDate
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 2e9ef418-886a-40b2-8df6-86c039c56d24
+    type: regular
+    task:
+      id: 2e9ef418-886a-40b2-8df6-86c039c56d24
+      version: -1
+      name: Get current time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_15_yes": 0.58,
+      "11_8_#default#": 0.39,
+      "1_12_yes": 0.57,
+      "1_8_#default#": 0.19,
+      "3_11_yes": 0.59,
+      "3_8_#default#": 0.29
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1495,
+        "width": 670,
+        "x": 170,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    complex:
+      root: alert
+      accessor: remoteip
+  required: true
+  description: 'Remote IP in an incident/alert. '
+  playbookInputQuery:
+outputs: []
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

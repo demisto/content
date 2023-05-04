@@ -20,6 +20,7 @@ This integration was integrated and tested with versions 3.5.284 and 4.x of Tani
     | Alert states to filter by in fetch incidents command. Empty list won't filter the incidents by state. | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
+    | API Version | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

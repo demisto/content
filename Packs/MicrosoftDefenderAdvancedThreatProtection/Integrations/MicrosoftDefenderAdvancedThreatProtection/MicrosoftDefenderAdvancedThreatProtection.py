@@ -3533,6 +3533,7 @@ def add_remove_machine_tag_command(client: MsClient, args: dict):
 def fetch_incidents(client: MsClient, last_run, fetch_evidence):
     first_fetch_time = dateparser.parse(client.alert_time_to_fetch,
                                         settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+    demisto.debug(f'First fetch time: {first_fetch_time}')
 
     if last_run:
         last_fetch_time = last_run.get('last_alert_fetched_time')
@@ -3545,6 +3546,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
 
     latest_created_time = dateparser.parse(last_fetch_time,
                                            settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+    demisto.debug(f'latest_created_time: {latest_created_time}')
 
     params = _get_incidents_query_params(client, fetch_evidence, last_fetch_time)
     demisto.debug(f'getting alerts using {params=}')
@@ -3569,19 +3571,22 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch_time:
             parsed = dateparser.parse(last_fetch_time, settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+            demisto.debug(f'Checking alert {alert["id"]} with parsed time {parsed}. last alert time is {alert_time}')
             if alert_time <= parsed:  # type: ignore
                 demisto.debug(f"{INTEGRATION_NAME} - alert {str(alert)} was created at {alert['alertCreationTime']}."
                               f' Skipping.')
                 continue
-
+        demisto.debug(f'Adding alert {alert["id"]}')
         incidents.append({
             'rawJSON': json.dumps(alert),
             'name': f'{INTEGRATION_NAME} Alert {alert["id"]}',
-            'occurred': alert['alertCreationTime']
+            'occurred': alert['alertCreationTime'],
+            'dbotMirrorId': alert["id"]
         })
 
         # Update last run and add incident if the incident is newer than last fetch
         if alert_time > latest_created_time:  # type: ignore
+            demisto.debug(f'Updating last created time to {alert_time}')
             latest_created_time = alert_time  # type: ignore
 
     # last alert is the newest as we ordered by it ascending
@@ -5408,8 +5413,8 @@ def main():  # pragma: no cover
     params: dict = demisto.params()
     base_url: str = params.get('url', '').rstrip('/') + '/api'
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
-    auth_id = params.get('auth_id') or params.get('_auth_id')
-    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
+    auth_id = params.get('_auth_id') or params.get('auth_id')
+    enc_key = (params.get('credentials') or {}).get('password') or params.get('enc_key')
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
@@ -5440,7 +5445,7 @@ def main():  # pragma: no cover
         if auth_code and redirect_uri:
             if not self_deployed:
                 raise Exception('In order to use Authorization Code, set Self Deployed: True.')
-        if (auth_code and not redirect_uri) or (redirect_uri and not auth_code):
+        if auth_code and not redirect_uri:
             raise Exception('In order to use Authorization Code auth flow, you should set: '
                             '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
 
@@ -5655,6 +5660,8 @@ def main():  # pragma: no cover
             return_results(get_machine_alerts_command(client, args))
         elif command == 'microsoft-atp-request-and-download-investigation-package':
             return_results(request_download_investigation_package_command(client, args))
+        elif command == 'microsoft-atp-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
 
     except Exception as err:
         return_error(str(err))

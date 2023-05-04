@@ -194,6 +194,9 @@ def main():  # pragma: no cover
         elif command == 'core-get-endpoints':
             return_results(get_endpoints_command(client, args))
 
+        elif command == 'core-endpoint-alias-change':
+            return_results(endpoint_alias_change_command(client, **args))
+
         elif command == 'core-isolate-endpoint':
             polling_args = {
                 **args,

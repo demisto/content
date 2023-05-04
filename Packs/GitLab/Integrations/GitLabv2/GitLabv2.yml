@@ -3427,12 +3427,249 @@ script:
     - contextPath: GitLab.User.web_url
       description: The user's web URL.
       type: String
+  - name: gitlab-pipelines-list
+    arguments:
+    - default: false
+      description: Project ID from which to retrieve pipelines.
+      isArray: false
+      name: project_id
+      required: false
+      secret: false
+    - default: false
+      description: ID of specific pipeline from which to retrieve its details.
+      isArray: false
+      name: pipeline_id
+      required: false
+      secret: false
+    - default: false
+      description: Reference name of the pipelines, e.g., 'master'.
+      isArray: false
+      name: ref
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Retrieves pipelines of which status matches the given status.
+      isArray: false
+      name: status
+      predefined:
+      - 'created'
+      - 'waiting_for_resource'
+      - 'preparing'
+      - 'pending'
+      - 'running'
+      - 'success'
+      - 'failed'
+      - 'canceled'
+      - 'skipped'
+      - 'manual'
+      - 'scheduled'
+      required: false
+      secret: false
+    description: Gets the details of the pipelines.
+    execution: false
+    outputs:
+    - contextPath: GitLab.Pipeline.id
+      description: Pipeline ID.
+      type: Number
+    - contextPath: GitLab.Pipeline.project_id
+      description: Project ID that the pipeline belongs to.
+      type: Number
+    - contextPath: GitLab.Pipeline.status
+      description: Status of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.ref
+      description: Reference of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.sha
+      description: SHA of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.created_at
+      description: Time when the pipeline was created.
+      type: Date
+    - contextPath: GitLab.Pipeline.updated_at
+      description: Time when the pipeline was last updated.
+      type: Date
+    - contextPath: GitLab.Pipeline.started_at
+      description: Time when the pipeline was started.
+      type: Date
+    - contextPath: GitLab.Pipeline.finished_at
+      description: Time when the pipeline was finished.
+      type: Date
+    - contextPath: GitLab.Pipeline.duration
+      description: Duration of the pipeline in seconds.
+      type: Number
+    - contextPath: GitLab.Pipeline.web_url
+      description: Web URL of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.name
+      description: Name of the user who triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.username
+      description: Username that triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.id
+      description: ID of the user who triggered the pipeline.
+      type: Number
+    - contextPath: GitLab.Pipeline.user.state
+      description: State of the user who triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.avatar_url
+      description: Avatar URL of the user who trigerred the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.web_url
+      description: Web URL of the user who triggered the pipeline.
+      type: String
+  - name: gitlab-pipelines-schedules-list
+    arguments:
+    - default: false
+      description: Project ID from which to retrieve pipeline schedules.
+      isArray: false
+      name: project_id
+      required: false
+      secret: false
+    - default: false
+      description: ID of the specific pipeline schedule from which to retrieve its details.
+      isArray: false
+      name: pipeline_schedule_id
+      required: false
+      secret: false
+    description: Gets the details of the pipeline schedules.
+    execution: false
+    outputs:
+    - contextPath: GitLab.PipelineSchedule.id
+      description: Pipeline schedule ID.
+      type: Number
+    - contextPath: GitLab.PipelineSchedule.description
+      description: Pipeline schedule description.
+      type: String
+    - contextPath: GitLab.PipelineSchedule.ref
+      description: Pipeline schedule reference.
+      type: String
+    - contextPath: GitLab.PipelineSchedule.next_run_at
+      description: Pipeline schedule next run scheduled time.
+      type: Date
+    - contextPath: GitLab.PipelineSchedule.active
+      description: Whether pipeline schedule is active.
+      type: Boolean
+    - contextPath: GitLab.PipelineSchedule.created_at
+      description: When pipeline schedule was created.
+      type: Date
+    - contextPath: GitLab.PipelineSchedule.updated_at
+      description: When the pipeline schedule was last updated.
+      type: Date
+    - contextPath: GitLab.PipelineSchedule.last_pipeline.id
+      description: ID of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given.
+      type: Number
+    - contextPath: GitLab.PipelineSchedule.last_pipeline.sha
+      description: SHA of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given.
+      type: String
+    - contextPath: GitLab.PipelineSchedule.last_pipeline.ref
+      description: Reference of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given.
+      type: String
+    - contextPath: GitLab.PipelineSchedule.last_pipeline.status
+      description: Status of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given.
+      type: String 
+  - name: gitlab-jobs-list
+    arguments:
+    - default: false
+      description: Project ID from which to retrieve jobs details.
+      isArray: false
+      name: project_id
+      required: false
+      secret: false
+    - default: false
+      description: ID of the pipeline from which to retrieve its jobs.
+      isArray: false
+      name: pipeline_id
+      required: true
+      secret: false
+    description: Gets job details.
+    execution: false
+    outputs:
+    - contextPath: GitLab.Job.status
+      description: The status of the job.
+      type: String
+    - contextPath: GitLab.Job.created_at
+      description: Time the job was created.
+      type: Date
+    - contextPath: GitLab.Job.started_at
+      description: Time the job was started.
+      type: Date
+    - contextPath: GitLab.Job.finished_at
+      description: Time the job was finished.
+      type: Date
+    - contextPath: GitLab.Job.duration
+      description: Duration of the job in seconds.
+      type: Number
+    - contextPath: GitLab.Job.id
+      description: ID of the job.
+      type: Number
+    - contextPath: GitLab.Job.name
+      description: Name of the job.
+      type: String
+    - contextPath: GitLab.Job.pipeline.id
+      description: Pipeline the job belongs to.
+      type: Number
+    - contextPath: GitLab.Job.pipeline.project_id
+      description: Project ID the job belongs to.
+      type: Number
+    - contextPath: GitLab.Job.pipeline.ref
+      description: Reference of the pipeline the job belongs to.
+      type: String
+    - contextPath: GitLab.Job.pipeline.sha
+      description: SHA of the pipeline the job belongs to.
+      type: String
+    - contextPath: GitLab.Job.pipeline.status
+      description: Status of the pipeline the job belongs to.
+      type: String
+    - contextPath: GitLab.Job.ref
+      description: Reference name of the job.
+      type: String
+    - contextPath: GitLab.Job.stage
+      description: Stage of the job.
+      type: String
+    - contextPath: GitLab.Job.web_url
+      description: Web URL of the job.
+      type: String
+  - name: gitlab-artifact-get
+    arguments:
+    - default: false
+      description: Project ID from which to retrieve an artifact.
+      isArray: false
+      name: project_id
+      required: false
+      secret: false
+    - default: false
+      description: ID of a specific job from which to retrieve its artifact.
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    - default: false
+      description: Suffix to the path of an artifact from which to retrieve its data.
+      isArray: false
+      name: artifact_path_suffix
+      required: true
+      secret: false 
+    description: Gets an artifact from a given artifact path, corresponding to a given job ID.
+    execution: false
+    outputs:
+    - contextPath: GitLab.Artifact.job_id
+      description: Job ID from which the artifact was taken.
+      type: String
+    - contextPath: GitLab.Artifact.artifact_path_suffix
+      description: Suffix of the given artifact path.
+      type: String
+    - contextPath: GitLab.Artifact.artifact_data
+      description: Data of the artifact requested.
+      type: String
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.10.48392
 fromversion: 6.5.0
 tests:
 - Test-GitLab-v2

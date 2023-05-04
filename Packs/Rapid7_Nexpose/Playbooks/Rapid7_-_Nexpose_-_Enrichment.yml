@@ -87,9 +87,9 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      id:
+      asset_id:
         complex:
-          root: Nexpose.Asset
+          root: 'Nexpose.Asset'
           accessor: AssetId
     separatecontext: false
     continueonerrortype: ""

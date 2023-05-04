@@ -29,12 +29,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Sandbox Cloud
-display: Joe Security
+description: Deprecated. Use Joe Security v2 instead.
+display: Joe Security (Deprecated)
 name: Joe Security
 script:
   commands:
-  - deprecated: false
+  - deprecated: true
     description: Check if Joe Sandbox is online or in maintenance mode.
     execution: false
     name: joe-is-online
@@ -80,7 +80,7 @@ script:
       - 'False'
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Submit a url for analysis.
     execution: false
     name: joe-analysis-submit-url
@@ -242,7 +242,7 @@ script:
       name: webid
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Show information about an analysis.
     execution: false
     name: joe-analysis-info
@@ -304,7 +304,7 @@ script:
     - contextPath: DBotScore.Malicious.SHA1
       description: The SHA1 of the file
       type: string
-  - deprecated: false
+  - deprecated: true
     description: List all analyses.
     execution: false
     name: joe-list-analysis
@@ -413,7 +413,7 @@ script:
       - 'False'
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Submit a sample for analysis.
     execution: false
     name: joe-analysis-submit-sample
@@ -497,7 +497,7 @@ script:
       - iocjson
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
     execution: false
     name: joe-download-report
@@ -625,7 +625,7 @@ script:
       name: query
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Search through all analyses.
     execution: false
     name: joe-search
@@ -694,7 +694,7 @@ script:
       name: webid
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Download the sample file of an analysis. for security reasons, the extension will be "dontrun"
     execution: false
     name: joe-download-sample
@@ -736,6 +736,6 @@ script:
   subtype: python2
   dockerimage: demisto/python:2.7.18.27799
 tests:
-- JoeSecurityTestPlaybook
-- JoeSecurityTestDetonation
+- No tests (deprecated)
 fromversion: 5.0.0
+deprecated: true
