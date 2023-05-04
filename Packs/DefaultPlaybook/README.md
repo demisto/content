@@ -2,7 +2,8 @@ Sometimes you may have an incident, or just some data at hand, that does not fal
 
 This pack provides you with the Default playbook and layout, which help automate the core steps of every investigation.
 The Default playbook automatically enriches indicators, parses files, detonates files and URLs, maps affected endpoints and calculates a severity for the incident.
-The Default layout is a good match for any incident type, as it dynamially displays mapped or unmapped incident data, files attachments and assets and indicators.
+The Default layout is a good match for any incident type, as it dynamically displays mapped or unmapped incident data, file attachments and assets and indicators.
+
 The layout also features remediation buttons as well as a collection of utilities any analyst would love to have at hand.
 
 ##### What does this pack do?
