@@ -1939,6 +1939,7 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
     cc = argToList(cc)
     bcc = argToList(bcc)
     reply_to = argToList(replyTo)
+    render_body = argToBoolean(renderBody)
 
     # Basic validation - we allow pretty much everything but you have to have at least a recipient
     # We allow messages without subject and also without body
@@ -1978,7 +1979,7 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
     client.send_email(message)
 
     results = [CommandResults(entry_type=EntryType.NOTE, raw_response='Mail sent successfully')]
-    if renderBody:
+    if render_body:
         results.append(CommandResults(
             entry_type=EntryType.NOTE,
             content_format=EntryFormat.HTML,
@@ -2442,7 +2443,6 @@ def sub_main():     # pragma: no cover
             "ews-get-folder": get_folder,
             "ews-expand-group": get_expanded_group,
             "ews-mark-items-as-read": mark_item_as_read,
-            "send-mail": send_email,
         }
 
         # commands that may return multiple results or non-note result
@@ -2465,6 +2465,9 @@ def sub_main():     # pragma: no cover
             demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
 
             demisto.incidents(incidents)
+        elif command == "send-mail":
+            commands_res = send_email(client, **args)
+            return_results(commands_res)
 
         # special outputs commands
         elif command in special_output_commands:
