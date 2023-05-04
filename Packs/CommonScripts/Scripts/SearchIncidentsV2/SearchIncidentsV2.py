@@ -66,8 +66,10 @@ def apply_filters(incidents: List, args: Dict):
 
     filtered_incidents = []
     for incident in incidents:
+        incident_id, incident_type = incident.get('id'), incident.get('type')
         if names_to_filter and incident['name'] not in names_to_filter:
             continue
+        demisto.debug(f'{incident_id=}, {incident_type=}')
         if types_to_filter and incident['type'] not in types_to_filter:
             continue
         filtered_incidents.append(incident)
