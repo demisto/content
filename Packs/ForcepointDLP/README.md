@@ -12,7 +12,7 @@ Use the Settings > General > Remediation page in the Data Security module of the
    * **Security/Authorization Messages (#10)** logs non-system authorization messages inside a protected file (for information of a sensitive nature, such as passwords).
    * **Local use 0-7 (#16-23)** specifies unreserved facilities available for any local use. Processes and daemons that have not been explicitly assigned a facility can use any of the "local use" facilities. Configuration is done in the syslog.conf file.
    To send incident data to the syslog, select **Audit Incident** > **Send Syslog Message** in the action plan for the policy.
-3. Click Test Connection to send the syslog server a verification test message.
+3. Click **Test Connection** to send the syslog server a verification test message.
 4. Under Release Quarantined Emails, specify which gateway to use when releasing a quarantined email message.
    * The default is Use the gateway that detected the incident. This gateway could be Forcepoint Email Security or the protector MTA, depending on your subscription.
    * To define a specific gateway, select Use the following gateway, then enter the gateway IP address or hostname and Port.
