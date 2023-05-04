@@ -2599,22 +2599,34 @@ def list_channels():
 
     if type(channels) == dict:
         channel = channels
+        creator = channel['creator']
+        body = {
+            'user':creator
+        }
+        creator_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
+        creator_details = creator_details_response['user']['name']    
         context = {
             'ID': channel['id'],
             'Name': channel['name'],
             'Created': channel['created'],
-            'Creator': channel['creator'],
+            'Creator': creator_details,
             'Purpose': channel['purpose']['value']
         }
         readable_output= tableToMarkdown(f'Channel details for {name_filter}', context)
     if type(channels) == list:
         context = []
         for channel in channels:
+            creator = channel['creator']
+            body = {
+                'user':creator
+            }
+            creator_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
+            creator_details = creator_details_response['user']['name']  
             entry = {
                 'ID': channel['id'],
                 'Name': channel['name'],
                 'Created': channel['created'],
-                'Creator': channel['creator'],
+                'Creator': creator_details,
                 'Purpose': channel['purpose']['value']
             }
             context.append(entry)
