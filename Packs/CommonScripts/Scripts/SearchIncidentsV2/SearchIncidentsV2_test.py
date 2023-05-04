@@ -242,6 +242,7 @@ def test_summarize_incidents():
     (205, {"limit": "105.5"}, 105),
     (700, {"limit": "500", 'type': 'A'}, 300),
     (1500, {"limit": "250", 'type': 'A'}, 250),
+    (500, {"limit": "100", 'name': 'incident-8'}, 1),
 ])
 def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args, expected_incidents_length):
     """
@@ -254,6 +255,7 @@ def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args, expected
        - Case F: Total of 205 incidents matching in XSOAR and limit = 105.5
        - Case G: Total of 700 incidents and only 300 incidents which match type = 'A' and limit = 500
        - Case H: Total of 1500 incidents and only 700 incidents which match type = 'A' and limit = 250
+       - Case I: Total of 500 incidents and only and only 1 incident that its name = 'incident-8' and limit = 100
 
     When:
        - Running the main flow
@@ -267,6 +269,7 @@ def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args, expected
        - Case F: Make sure only 105 (rounded) incidents have been returned.
        - Case G: Make sure only 300 incidents have been returned.
        - Case H: Make sure only 250 incidents have been returned.
+       - Case I: Make sure only one incident has been returned.
 
     """
     import SearchIncidentsV2
