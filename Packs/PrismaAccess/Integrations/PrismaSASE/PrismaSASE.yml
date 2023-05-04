@@ -1656,7 +1656,7 @@ script:
       isArray: false
       name: frequency
       required: false
-      description: Frequency to check for updates.
+      description: Frequency to check for updates. The default value is five minutes.
       predefined:
       - five_minute
       - hourly
