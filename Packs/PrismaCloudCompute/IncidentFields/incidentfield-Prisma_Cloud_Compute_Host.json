@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Prisma Cloud Compute Audit"
+        "Prisma Cloud Compute Audit",
+        "Prisma Cloud Compute Audit v2"
     ],
     "breachScript": "",
     "caseInsensitive": true,

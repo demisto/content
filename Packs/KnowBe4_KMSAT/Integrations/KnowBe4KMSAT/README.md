@@ -1066,3 +1066,50 @@
     ]
 }
 ```
+### kmsat-phishing-campaigns-security-tests-list
+
+***
+Returns All Campaign Phishing Security Tests (PSTs).
+
+#### Base Command
+
+`kmsat-phishing-campaigns-security-tests-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| campaign_id | Campaign ID. | Required | 
+| page | Page Number. | Required | 
+| per_page | Per Page Amount. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| KMSAT.CampaignPST.campaign_id | Number | Campaign Phishing Security Campaign ID | 
+| KMSAT.CampaignPST.pst_id | Number | Campaign Phishing Security PST ID | 
+| KMSAT.CampaignPST.status | String | Campaign Phishing Security Status | 
+| KMSAT.CampaignPST.name | String | Campaign Phishing Security Name | 
+| KMSAT.CampaignPST.groups.group_id | Number | Campaign Phishing Security Group ID | 
+| KMSAT.CampaignPST.groups.name | String | Campaign Phishing Security Name | 
+| KMSAT.CampaignPST.phish_prone_percentage | Number | Campaign Phishing Security Phish Prone Percentage | 
+| KMSAT.CampaignPST.started_at | Date | Campaign Phishing Security Started At | 
+| KMSAT.CampaignPST.duration | Number | Campaign Phishing Security Duration | 
+| KMSAT.CampaignPST.categories.category_id | Number | Campaign Phishing Security Categories Category ID | 
+| KMSAT.CampaignPST.categories.name | String | Campaign Phishing Security Categories Name | 
+| KMSAT.CampaignPST.template.id | Number | Campaign Phishing Security Template ID | 
+| KMSAT.CampaignPST.template.name | String | Campaign Phishing Security Template Name | 
+| KMSAT.CampaignPST.landing_page.id | Number | Campaign Phishing Security Landing Page ID | 
+| KMSAT.CampaignPST.landing_page.name | String | Campaign Phishing Security Landing Page Name | 
+| KMSAT.CampaignPST.scheduled_count | Number | Campaign Phishing Security Scheduled Count | 
+| KMSAT.CampaignPST.delivered_count | Number | Campaign Phishing Security Delivered Count | 
+| KMSAT.CampaignPST.opened_count | Number | Campaign Phishing Security Opened Count | 
+| KMSAT.CampaignPST.clicked_count | Number | Campaign Phishing Security Clicked Count | 
+| KMSAT.CampaignPST.replied_count | Number | Campaign Phishing Security Replied Count | 
+| KMSAT.CampaignPST.attachment_open_count | Number | Campaign Phishing Security Attachment Open Count | 
+| KMSAT.CampaignPST.macro_enabled_count | Number | Campaign Phishing Security Macro Enabled Count | 
+| KMSAT.CampaignPST.data_entered_count | Number | Campaign Phishing Security Data Entered Count | 
+| KMSAT.CampaignPST.qr_code_scanned_count | Number | Campaign Phishing Security QR Code Scanned Count | 
+| KMSAT.CampaignPST.reported_count | Number | Campaign Phishing Security Reported Count | 
+| KMSAT.CampaignPST.bounced_count | Number | Campaign Phishing Security Bounced Count | 

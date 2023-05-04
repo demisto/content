@@ -1555,7 +1555,24 @@ def panorama_create_address_command(args: dict):
     """
     address_name = args['name']
     description = args.get('description')
-    tags = argToList(args['tag']) if 'tag' in args else None
+
+    if tags := set(argToList(args.get('tag', []))):
+        result = http_request(URL, 'GET', params={'type': 'config', 'action': 'get', 'key': API_KEY, 'xpath': f'{XPATH_OBJECTS}tag'})
+        entries = result.get('response', {}).get('result', {}).get('tag', {}).get('entry', [])
+        if isinstance(entries, dict):  # In case there is only one tag.
+            entries = [entries]
+        existing_tags = set([entry.get('@name') for entry in entries])
+        if non_existent_tags := tags - existing_tags:
+            if argToBoolean(args.get('create_tag', False)):
+                for tag in non_existent_tags:
+                    http_request(URL, 'POST', body={'type': 'config', 'action': 'set', 'key': API_KEY,
+                                                    'xpath': f"{XPATH_OBJECTS}tag/entry[@name='{tag}']",
+                                                    'element': '<comments>created via API</comments>'})
+            else:
+                raise DemistoException(
+                    f'Failed to create the address object since the tags `{non_existent_tags}` does not exist. '
+                    f'You can use the `create_tag` argument to create the tag.'
+                )
 
     fqdn = args.get('fqdn')
     ip_netmask = args.get('ip_netmask')
@@ -1585,7 +1602,7 @@ def panorama_create_address_command(args: dict):
     if description:
         address_output['Description'] = description
     if tags:
-        address_output['Tags'] = tags
+        address_output['Tags'] = list(tags)
 
     return_results({
         'Type': entryTypes['note'],
@@ -3504,7 +3521,7 @@ def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, quer
     }
 
     if query:
-        params["xpath"] = f'{params["xpath"]}[{query}]'
+        params["xpath"] = f'{params["xpath"]}[{query.replace(" eq ", " = ")}]'
     elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
         params["xpath"] = f'{params["xpath"]}[{xpath_filter}]'
 
@@ -4245,12 +4262,16 @@ def panorama_list_applications_command(args:Dict[str, str]):
 
 
 def prettify_edls_arr(edls_arr: Union[list, dict]):
+
+    if isinstance(edls_arr, dict):  # handle case of only one edl in the instance
+        parse_pan_os_un_committed_data(edls_arr, ['@admin', '@dirtyId', '@time'])
+        return prettify_edl(edls_arr)
+
     for edl in edls_arr:
         parse_pan_os_un_committed_data(edl, ['@admin', '@dirtyId', '@time'])
 
     pretty_edls_arr = []
-    if not isinstance(edls_arr, list):  # handle case of only one edl in the instance
-        return prettify_edl(edls_arr)
+
     for edl in edls_arr:
         pretty_edl = {
             'Name': edl['@name'],
@@ -4636,8 +4657,6 @@ def panorama_register_ip_tag_command(args: dict):
 
     major_version = get_pan_os_major_version()
 
-    if timeout and persistent == '1':
-        raise DemistoException('When the persistent argument is true, you can not use the timeout argument.')
     if major_version <= 8 and timeout:
         raise DemistoException('The timeout argument is only applicable on 9.x PAN-OS versions or higher.')
 
@@ -7124,6 +7143,8 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
     edl = args.get('dns_signature_source')
     action = args.get('action')
     packet_capture = args.get('packet_capture', 'disable')
+        
+    # for Panorama instance
     params = {
         'action': 'set',
         'type': 'config',
@@ -7137,6 +7158,10 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
                    f'</lists>'
                    f'</botnet-domains>'
     }
+    if VSYS:  # if it's a firewall instance, modify the xpath param
+        params['xpath'] = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']" \
+         f"/profiles/spyware/entry[@name='{anti_spy_ware_name}']"
+            
     result = http_request(
         URL,
         'POST',

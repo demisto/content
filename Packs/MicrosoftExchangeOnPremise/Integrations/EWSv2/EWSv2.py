@@ -617,9 +617,9 @@ def get_items_from_mailbox(account, item_ids):     # pragma: no cover
         item_ids = [item_ids]
     items = map(lambda x: Item(item_id=x), item_ids)
     result = list(account.fetch(ids=items))
-    result = [x for x in result if not isinstance(x, ErrorItemNotFound)]
+    result = [x for x in result if not (isinstance(x, ErrorItemNotFound) or isinstance(x, ErrorInvalidIdMalformed))]
     if len(result) != len(item_ids):
-        raise Exception("One or more items were not found. Check the input item ids")
+        raise Exception("One or more items were not found/malformed. Check the input item ids")
     if exchangelib.__version__ != "1.12.0":  # Docker BC
         for item in result:
             item.folder = Folder(account=account)
@@ -1755,7 +1755,7 @@ def get_contacts(limit, target_mailbox=None):     # pragma: no cover
 
     for contact in account.contacts.all()[:int(limit)]:  # pylint: disable=E1101
         contacts.append(parse_contact(contact))
-    return get_entry_for_object('Email contacts for %s' % target_mailbox,
+    return get_entry_for_object('Email contacts for %s' % target_mailbox or ACCOUNT_EMAIL,
                                 'Account.Email(val.Address == obj.originMailbox).EwsContacts',
                                 contacts)
 
@@ -2199,13 +2199,14 @@ def get_none_empty_addresses(addresses_ls):
 
 def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None, from_mailbox=None,
-               raw_message=None, from_address=None):
+               raw_message=None, from_address=None, renderBody=False):
     if not manualAttachObj:
         manualAttachObj = []
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
     bcc = get_none_empty_addresses(argToList(bcc))
     cc = get_none_empty_addresses(argToList(cc))
     to = get_none_empty_addresses(argToList(to))
+    render_body = argToBoolean(renderBody)
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
     attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
@@ -2221,13 +2222,21 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
         'attachments': attachments_names
     }
 
-    return {
+    results = [{
         'Type': entryTypes['note'],
         'Contents': result_object,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Sent email', result_object),
-    }
+    }]
+    if render_body:
+        results.append({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['html'],
+            'Contents': htmlBody
+        })
+
+    return results
 
 
 def reply_email(to, inReplyTo, body="", subject="", bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",

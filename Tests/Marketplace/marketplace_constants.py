@@ -41,6 +41,7 @@ class BucketUploadFlow(object):
 
     """
     PACKS_RESULTS_FILE = "packs_results.json"
+    PACKS_RESULTS_FILE_FOR_SLACK = "packs_results_upload.json"
     PREPARE_CONTENT_FOR_TESTING = "prepare_content_for_testing"
     UPLOAD_PACKS_TO_MARKETPLACE_STORAGE = "upload_packs_to_marketplace_storage"
     SUCCESSFUL_PACKS = "successful_packs"
@@ -84,6 +85,7 @@ class GCPConfig(object):
     CI_PRIVATE_BUCKET = "marketplace-ci-build-private"
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
+    INDEX_V2_NAME = "index_v2"
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
     BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/{marketplace}/content/packs'
 
@@ -188,6 +190,7 @@ class Metadata(object):
     URL = 'url'
     MARKETPLACES = 'marketplaces'
     DISABLE_MONTHLY = 'disableMonthly'
+    MODULES = 'modules'
 
 
 class PackFolders(enum.Enum):
