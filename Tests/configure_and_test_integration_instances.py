@@ -1801,7 +1801,7 @@ def get_packs_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
 
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
 
-    packs_with_higher_min_version = get_packs_with_higher_min_version(set(build.pack_ids_to_install) - non_hidden_packs,
+    packs_with_higher_min_version = get_packs_with_higher_min_version(set(build.pack_ids_to_install),
                                                                       build.server_numeric_version)
     # packs to install used in post update
     build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
