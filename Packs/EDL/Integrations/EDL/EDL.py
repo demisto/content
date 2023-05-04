@@ -921,7 +921,7 @@ def route_edl() -> Response:
         ('X-EDL-Created', created.isoformat()),
         ('X-EDL-Query-Time-Secs', "{:.3f}".format(query_time)),
         ('X-EDL-Size', str(edl_size)),
-        ('X-EDL-Start-Size', original_indicators_count),
+        ('X-EDL-Origin-Size', original_indicators_count),
         ('ETag', etag),
     ]  # type: ignore[assignment]
 

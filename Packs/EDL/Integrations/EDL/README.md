@@ -212,7 +212,7 @@ The headers are:
 - `X-EDL-Created` - The date and time the response was created.
 - `X-EDL-Query-Time-Secs` - The time it took to execute the query and format the response.
 - `X-EDL-Size` - The number of indicators returned in the response.
-- `X-EDL-Start-Size` - The number of indicators originally fetched before formatting and deduplication.
+- `X-EDL-Origin-Size` - The number of indicators originally fetched before formatting and deduplication.
 
 
 #### Execution Time
