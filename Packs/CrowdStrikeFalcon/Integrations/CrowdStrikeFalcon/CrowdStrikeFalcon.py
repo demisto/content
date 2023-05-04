@@ -5002,7 +5002,7 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
         'file_paths': argToList(args.get('file_paths')),
         'scan_exclusions': argToList(args.get('scan_exclusions')),
         'initiated_from': args.get('initiated_from'),
-        'cpu_priority': CPU_UTILITY_STR_TO_INT_KEY_MAP.get(args.get('cpu_priority')),
+        'cpu_priority': CPU_UTILITY_STR_TO_INT_KEY_MAP.get(args.get('cpu_priority')),  # type: ignore[arg-type]
         'description': args.get('description'),
         'quarantine': argToBoolean(quarantine) if (quarantine := args.get('quarantine')) is not None else None,
         'endpoint_notification': True,  # TODO check if to make default

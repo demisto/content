@@ -4649,6 +4649,7 @@ def test_apply_quarantine_file_action_command(requests_mock):
 filter_args = {'key1': 'val1,val2', 'key2': 'val3', 'key3': None}
 custom_filter = 'key1:"val1"+key2:["val3","val4"]'
 
+
 @pytest.mark.parametrize(
     'filter_args, custom_filter, output_filter',
     (
@@ -5023,7 +5024,6 @@ def test_map_scan_host_resource_to_UI(mocker):
     assert output == mapped_resource
 
 
-
 @pytest.mark.parametrize(
     'input_params, call_params',
     (
@@ -5141,7 +5141,8 @@ def test_make_create_scan_request_body(args, is_scheduled, expected_result):
     (
         ({'is_scheduled': 'False'}, True, 'MUST set hosts OR host_groups.'),
         ({'hosts': 'john doe', 'is_scheduled': 'False'}, True, 'MUST set file_paths OR scan_exclusions.'),
-        ({'hosts': 'john doe', 'file_paths': '*', 'is_scheduled': 'true'}, True, 'MUST set schedule_start_timestamp AND schedule_interval AND host_groups for scheduled scans.'),
+        ({'hosts': 'john doe', 'file_paths': '*', 'is_scheduled': 'true'}, True,
+         'MUST set schedule_start_timestamp AND schedule_interval AND host_groups for scheduled scans.'),
         ({'hosts': 'john doe', 'file_paths': '*', 'is_scheduled': 'False'}, False, None),
     )
 )
@@ -5196,8 +5197,8 @@ def test_ODS_delete_scheduled_scans_request(mocker, ids, scans_filter, url_param
     http_request = mocker.patch('CrowdStrikeFalcon.http_request')
     ODS_delete_scheduled_scans_request(ids, scans_filter)
     http_request.assert_called_with('DELETE', f'/ods/entities/scheduled-scans/v1?{url_params}')
-    
-    
+
+
 def test_ODS_cancel_scans_request(mocker):
     """
     Test ODS_cancel_scans_request.
@@ -5213,7 +5214,7 @@ def test_ODS_cancel_scans_request(mocker):
     """
     # TODO need to find better check
     from CrowdStrikeFalcon import ODS_cancel_scans_request
-    
+
     ids = ['id1', 'id2']
 
     http_request = mocker.patch('CrowdStrikeFalcon.http_request')
