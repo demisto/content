@@ -213,10 +213,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "154":
     id: "154"
-    taskid: 5d5a87ca-dfb3-467a-8856-1de8d4a35cc9
+    taskid: 4ad68108-f4dd-485e-8e37-e97732468f8e
     type: regular
     task:
-      id: 5d5a87ca-dfb3-467a-8856-1de8d4a35cc9
+      id: 4ad68108-f4dd-485e-8e37-e97732468f8e
       version: -1
       name: Create New Incident For Testing
       description: 'As part of this task, an incident will be created for testing purposes, which includes all the incident fields that are essential to the testing process. '
@@ -322,10 +322,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "203":
     id: "203"
-    taskid: 5d0f1b85-51b4-4bcd-8a0c-43351117b678
+    taskid: df53a1ac-e083-4838-8b68-bd25c012c290
     type: regular
     task:
-      id: 5d0f1b85-51b4-4bcd-8a0c-43351117b678
+      id: df53a1ac-e083-4838-8b68-bd25c012c290
       version: -1
       name: Wait for playbook to end running
       description: Wait until the final task (Done) has been completed before starting tests.
@@ -345,7 +345,7 @@ tasks:
       interval_between_tries:
         simple: "10"
       max_timeout:
-        simple: "3000"
+        simple: "300"
       task_name:
         simple: Done
       task_states:
@@ -653,10 +653,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "216":
     id: "216"
-    taskid: 5b8b4f0f-040d-4520-8c86-10a8c7771c4e
+    taskid: 5b7cf209-b8fd-45d3-8f8a-2e8d0102d8c4
     type: condition
     task:
-      id: 5b8b4f0f-040d-4520-8c86-10a8c7771c4e
+      id: 5b7cf209-b8fd-45d3-8f8a-2e8d0102d8c4
       version: -1
       name: Verify Endpoint ID
       description: Verify that the 'PaloAltoNetworksXDR.RetrievedFiles.endpoint_id’ context key was populated.
@@ -682,6 +682,7 @@ tasks:
           right:
             value:
               simple: aeec6a2cc92e46fab3b6f621722e9916
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -812,10 +813,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "220":
     id: "220"
-    taskid: fe1d23fc-eed7-4858-82cb-3a012a42f2f5
+    taskid: 5ee8a1be-e8d7-4cb5-838d-5ed7b6655219
     type: condition
     task:
-      id: fe1d23fc-eed7-4858-82cb-3a012a42f2f5
+      id: 5ee8a1be-e8d7-4cb5-838d-5ed7b6655219
       version: -1
       name: Verify Status
       description: Verify that the 'PaloAltoNetworksXDR.RetrievedFiles.status’ context key was populated.
@@ -831,7 +832,7 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: isNotExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -928,10 +929,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "223":
     id: "223"
-    taskid: c67baf18-db6f-4980-889b-546ac493ac46
+    taskid: b5882dd5-3f6a-41a0-8e4a-8feae35426c4
     type: condition
     task:
-      id: c67baf18-db6f-4980-889b-546ac493ac46
+      id: b5882dd5-3f6a-41a0-8e4a-8feae35426c4
       version: -1
       name: Verify Extracted Files
       description: 'Verify that the ''ExtractedFiles'' context key has been extracted correctly and contains both the ''manifest.json'' and ''GoogleUpdate.exe'' files. '
@@ -1128,10 +1129,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "228":
     id: "228"
-    taskid: 131c3341-618e-4e85-864f-ac841c22a30d
+    taskid: 4095e83c-ee55-4c69-809c-16fb8aff4cb7
     type: condition
     task:
-      id: 131c3341-618e-4e85-864f-ac841c22a30d
+      id: 4095e83c-ee55-4c69-809c-16fb8aff4cb7
       version: -1
       name: Verify Name
       description: Verify that the 'File.Name' context key has been extracted correctly and contains both ZIP and Unzipped file names.
@@ -1342,10 +1343,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "233":
     id: "233"
-    taskid: 829445f6-a827-40e2-83d8-ff340aa81908
+    taskid: 0f6794c7-153a-4561-8f67-1e1c8275f03e
     type: condition
     task:
-      id: 829445f6-a827-40e2-83d8-ff340aa81908
+      id: 0f6794c7-153a-4561-8f67-1e1c8275f03e
       version: -1
       name: Verify Size
       description: Verify that the 'File.SHA512' context key has been extracted correctly and contains both ZIP and Unzipped file sizes.
@@ -1444,10 +1445,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "235":
     id: "235"
-    taskid: c61c0677-3a94-496b-82f7-4266e421d982
+    taskid: e8bd497b-7be3-43a8-88fd-e4b90aca90d6
     type: condition
     task:
-      id: c61c0677-3a94-496b-82f7-4266e421d982
+      id: e8bd497b-7be3-43a8-88fd-e4b90aca90d6
       version: -1
       name: Verify MD5
       description: Verify that the 'File.MD5' context key has been extracted correctly and contains both the 'manifest.json' and 'GoogleUpdate.exe' MD5 hashes.
@@ -1538,10 +1539,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "237":
     id: "237"
-    taskid: 593826a4-d621-402a-8be0-fbdc81b57de7
+    taskid: 441c199b-c897-4d05-8a7c-8f6e7b650d76
     type: condition
     task:
-      id: 593826a4-d621-402a-8be0-fbdc81b57de7
+      id: 441c199b-c897-4d05-8a7c-8f6e7b650d76
       version: -1
       name: Verify SHA1
       description: Verify that the 'File.SHA1' context key has been extracted correctly and contains both the 'manifest.json' and 'GoogleUpdate.exe' SHA1 hashes.
@@ -1632,10 +1633,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "239":
     id: "239"
-    taskid: 4d8acef0-9bd5-45b9-868e-85d673bff86b
+    taskid: 2010ae09-6b67-4e42-8954-157de9cec522
     type: condition
     task:
-      id: 4d8acef0-9bd5-45b9-868e-85d673bff86b
+      id: 2010ae09-6b67-4e42-8954-157de9cec522
       version: -1
       name: Verify SHA256
       description: 'Verify that the ''File.SHA256'' context key has been extracted correctly and contains both the ''manifest.json'' and ''GoogleUpdate.exe'' SHA256 hashes. '
@@ -1726,10 +1727,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "241":
     id: "241"
-    taskid: 0544d583-339a-4f5a-86d9-de26921f54dd
+    taskid: d0552d71-39fe-4dd7-80b6-6e4fdffb803a
     type: condition
     task:
-      id: 0544d583-339a-4f5a-86d9-de26921f54dd
+      id: d0552d71-39fe-4dd7-80b6-6e4fdffb803a
       version: -1
       name: Verify SHA512
       description: 'Verify that the ''File.SHA512'' context key has been extracted correctly and contains both the ''manifest.json'' and ''GoogleUpdate.exe'' SHA512 hashes. '
@@ -1820,10 +1821,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "243":
     id: "243"
-    taskid: 2f611100-f9d4-4147-8b8f-cc68b13f7a72
+    taskid: e195de38-755d-41ee-83d3-2c7345b5de31
     type: condition
     task:
-      id: 2f611100-f9d4-4147-8b8f-cc68b13f7a72
+      id: e195de38-755d-41ee-83d3-2c7345b5de31
       version: -1
       name: Verify Extension
       description: Verify that the 'File.Extension' context key has been extracted correctly and contains both ZIP and Unzipped file extensions.
@@ -1925,10 +1926,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "245":
     id: "245"
-    taskid: d076b597-68f0-47c8-8fc1-c9d04a343de2
+    taskid: 7523f595-44c7-4188-8294-baf5b52ccb06
     type: condition
     task:
-      id: d076b597-68f0-47c8-8fc1-c9d04a343de2
+      id: 7523f595-44c7-4188-8294-baf5b52ccb06
       version: -1
       name: Verify Type
       description: Verify that the 'File.Type' context key has been extracted correctly and contains both ZIP and Unzipped file types.
@@ -2206,10 +2207,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "255":
     id: "255"
-    taskid: 6dff1a8e-417c-4d84-8e2b-ffa18dc382ed
+    taskid: 74dfd773-e388-4d5f-8bc7-c950211fe641
     type: regular
     task:
-      id: 6dff1a8e-417c-4d84-8e2b-ffa18dc382ed
+      id: 74dfd773-e388-4d5f-8bc7-c950211fe641
       version: -1
       name: Wait for the files to be retrieved from XDR
       description: Ensure that 'Cortex XDR - Retrieve File' is complete before closing the incident and starting tests.
@@ -2229,7 +2230,7 @@ tasks:
       interval_between_tries:
         simple: "10"
       max_timeout:
-        simple: "3000"
+        simple: "300"
       task_name:
         simple: Cortex XDR - Retrieve File
       task_states:
