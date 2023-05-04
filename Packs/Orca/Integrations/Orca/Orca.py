@@ -335,7 +335,7 @@ def set_alert_severity(orca_client: OrcaClient, args: Dict[str, Any]) -> Command
         raise DemistoException(response.get("error"))
 
     return CommandResults(
-        readable_output="Alert severity changed",
+        readable_output=f"Alert severity changed to {score}",
         outputs_prefix="Orca.Alert",
         outputs=context,
         raw_response=response
@@ -360,8 +360,15 @@ def get_alert_event_log(orca_client: OrcaClient, args: Dict[str, Any]) -> Comman
     )
     context = response.get("event_log", [])
 
+    alert_logs = [{
+            "id": item.get("id"),
+            "alert_id": item.get("alert_id"),
+            "type": item.get("type"),
+            "description": item.get("details", {}).get("description")
+        } for item in context]
+
     return CommandResults(
-        readable_output="Alert event log",
+        readable_output=tableToMarkdown(f"Alert event log ({alert_id})", alert_logs, removeNull=True),
         outputs_prefix="Orca.EventLog",
         outputs=context
     )
@@ -375,7 +382,7 @@ def set_alert_status(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandRe
 
     response = orca_client.set_alert_status(alert_id=alert_id, status=status)
     return CommandResults(
-        readable_output="Set alert status",
+        readable_output=f"Alert status changed to {status}",
         outputs_prefix="Orca.Alert",
         outputs={
             "id": alert_id,
@@ -391,7 +398,7 @@ def verify_alert(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandResult
 
     response = orca_client.verify_alert(alert_id=alert_id)
     return CommandResults(
-        readable_output="Verify alert",
+        readable_output="The alert verify has started. This process may take some time.",
         outputs_prefix="Orca.Alert",
         outputs={
             "id": alert_id,
