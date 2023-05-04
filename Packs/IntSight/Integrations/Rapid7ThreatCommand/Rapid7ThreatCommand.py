@@ -4147,17 +4147,6 @@ def reputation_handler(
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
-    # responses = []
-    # test = {'OriginalValue': '23.235.252.197', 'Status': 'Done', 'Data': {'Value': '23.235.252.197', 'Type': 'IpAddresses', 'Sources': [{'Name': 'BotScout', 'ConfidenceLevel': 2}, {'Name': 'Cyware', 'ConfidenceLevel': 2}], 'SystemTags': ['Installation', 'bot'], 'Tags': [], 'Status': 'Active', 'IsKnownIoc': True, 'RelatedMalwares': [], 'RelatedThreatActors': [], 'RelatedCampaigns': [], 'FirstSeen': '2021-05-11T15:36:05.384Z', 'LastSeen': '2023-05-03T09:14:48.432Z', 'UpdateDate': '2023-05-03T09:22:32.593Z', 'Whitelisted': False, 'Severity': {'Value': 'Low', 'Score': 10, 'Origin': 'system'}, 'IpDetails': {'Country': 'US', 'ASN': 19437, 'ASDescription': 'SS-ASH'}, 'Whois': {'NetworkDetails': {'IPRange': '', 'Statuses': ['NETWORK']}, 'RegistrantDetails': []}, 'RelatedHashes': {'downloaded': [], 'communicating': [], 'referencing': []}, 'Resolutions': [{'ResolvedDomain': 'genus.mcnode.net', 'FirstResolved': '2015-10-13T00:33:45.000Z', 'LastResolved': '2017-02-04T14:16:14.000Z', 'ReportingSources': ['Farsight']}, {'ResolvedDomain': 'godlycraft.no-ip.org', 'FirstResolved': '2015-10-20T04:10:04.000Z', 'LastResolved': '2015-11-07T16:33:01.000Z', 'ReportingSources': ['Farsight']}, {'ResolvedDomain': 'mc.sinndev.com', 'FirstResolved': '2015-06-18T21:50:06.000Z', 'LastResolved': '2015-07-20T05:35:10.000Z', 'ReportingSources': ['Farsight']}]}}
-    # testt = {'OriginalValue': '23.151.232.6', 'Status': 'asdasd', 'Data': {'Value': '23.151.232.6', 'Type': 'IpAddresses', 'Sources': [{'Name': 'GreenSnow Blocklist', 'ConfidenceLevel': 2}, {'Name': 'Dan.me.uk Tor List', 'ConfidenceLevel': 1}, {'Name': 'TOR Project official exit nodes', 'ConfidenceLevel': 3}, {'Name': 'Cyware', 'ConfidenceLevel': 2}], 'SystemTags': [], 'Tags': [], 'Status': 'Active', 'IsKnownIoc': True, 'RelatedMalwares': [], 'RelatedThreatActors': [], 'RelatedCampaigns': [], 'FirstSeen': '2023-04-26T03:58:45.693Z', 'LastSeen': '2023-05-03T09:14:48.434Z', 'UpdateDate': '2023-05-03T09:25:03.860Z', 'Whitelisted': False, 'Severity': {'Value': 'Low', 'Score': 10, 'Origin': 'system'}, 'IpDetails': {'Country': 'US', 'ASN': 23470, 'ASDescription': 'ReliableSite.Net LLC'}, 'Whois': {'NetworkDetails': {'IPRange': '23.151.232.0 - 23.151.232.255', 'Statuses': [], 'CreatedDate': '2023-04-25T00:00:00.000Z', 'UpdatedDate': '2023-04-25T00:00:00.000Z'}, 'RegistrantDetails': [{'Organization': 'Qeru Systems, LLC', 'Name': 'Qeru Systems, LLC', 'Email': '', 'Telephone': '', 'Fax': '', 'City': 'Seattle', 'State': '', 'Country': 'UNITED STATES', 'Address': '1517 29th Ave', 'PostalCode': '98122', 'CountryCode': 'US'}]}, 'RelatedHashes': {'downloaded': [], 'communicating': [], 'referencing': []}, 'Resolutions': [{'ResolvedDomain': 'yelknas.myqnapcloud.com', 'FirstResolved': '2023-04-26T21:45:41.000Z', 'LastResolved': '2023-04-26T21:45:41.000Z', 'ReportingSources': ['Farsight']}]}}
-    # if args['unfinished_enriches'] == '1':
-    #     testt['Status'] = 'Done'
-    #     responses.append(testt)
-    # else:
-    #     responses.append(test)
-    #     responses.append(testt)
-
-
     ioc_values: List[str] = argToList(args[key])
     if args['unfinished_enriches'] == '-1':
         args['unfinished_enriches'] = len(ioc_values)
