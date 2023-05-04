@@ -16,6 +16,7 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 from datetime import datetime
 import typing
 import urllib.parse
+from dateutil import parser
 
 import dateutil
 import requests
@@ -73,14 +74,14 @@ class Client(BaseClient):
         self.timeout: int = timeout
         self.limit: int = limit
         if project_id:
-            self.project_id: int = project_id
+            self.project_id: Optional[int] = project_id
         else:
             self.project_id = None
 
         if collection_ids:
             self.collection_ids: typing.List[str] = collection_ids
         else:
-            self.collection_ids = None
+            self.collection_ids = []
 
     def make_request(self, method: str, endpoint: str, **kwargs) -> typing.Union[str, dict, bytes]:
         headers = {
@@ -96,7 +97,7 @@ class Client(BaseClient):
 
         response.raise_for_status()
 
-        response_type = response.headers.get("content-type")
+        response_type: str = response.headers.get("content-type", "")
         if "application/json" in response_type:
             return response.json()
         elif "text/html" in response_type:
@@ -108,7 +109,7 @@ class Client(BaseClient):
         endpoint = 'projects'
         response = self.make_request('GET', endpoint)
 
-        if not response.get('success'):
+        if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return'
                                    'a list of projects')
 
@@ -120,7 +121,7 @@ class Client(BaseClient):
         response = self.make_request('GET', endpoint,
                                      headers={'PROJECT_ID': project_id})
 
-        if not response.get('success'):
+        if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return'
                                    'a list of collections')
 
@@ -149,7 +150,7 @@ class Client(BaseClient):
             response = self.make_request('GET', endpoint, params=params,
                                          headers={'PROJECT_ID': self.project_id})
 
-            if not response.get('success'):
+            if not isinstance(response, dict) or not response.get('success'):
                 raise RuntimeError('Failed to retrieve issues from ASM')
 
             yield from response.get('result', {}).get('hits')
@@ -166,7 +167,7 @@ class Client(BaseClient):
         response = self.make_request('GET', endpoint,
                                      headers={'PROJECT_ID': self.project_id})
 
-        if not response.get('success'):
+        if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return details for'
                                    f'issue {issue_id} in project {self.project_id}')
 
@@ -180,7 +181,7 @@ class Client(BaseClient):
         response = self.make_request('GET', endpoint,
                                      headers={'PROJECT_ID': self.project_id})
 
-        if not response.get('success'):
+        if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return notes for'
                                    f'{resource_type} {resource_id} in project {self.project_id}')
 
@@ -205,7 +206,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 # TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-def helper_create_incident(issue: dict, project_id: str) -> dict:
+def helper_create_incident(issue: dict, project_id: int) -> dict:
     severity_map = {1: 4, 2: 3, 3: 2, 4: 1, 5: 0.5}
 
     raw_json = issue
@@ -215,13 +216,13 @@ def helper_create_incident(issue: dict, project_id: str) -> dict:
     issue = {
         'name': issue['summary']['pretty_name'],
         'details': json.dumps(issue, indent=4),
-        'occurred': dateutil.parser.parse(issue['first_seen']).isoformat(),
+        'occurred': parser.parse(issue['first_seen']).isoformat(),
         'severity': severity_map.get(issue['summary']['severity']),
         'rawJSON': json.dumps(raw_json),
         'dbotMirrorId': issue.get('id', issue.get('uid')),
         'CustomFields': {
             'masmcollection': issue['collection'],
-            'masmproject': project_id,
+            'masmproject': str(project_id),
             'masmconfirmed': issue['summary']['confidence'] == 'confirmed',
             'masmentityname': issue['entity_name'],
             'masmcategory': issue['summary']['category']
@@ -281,10 +282,7 @@ def get_projects(client: Client, args: dict = None) -> CommandResults:
 def get_collections(client: Client, args: dict = None) -> CommandResults:
     args = args if args else {}
 
-    project_id: int = client.project_id
-
-    if 'project_id' in args:
-        project_id = args.get('project_id')
+    project_id: int = args.get('project_id', client.project_id)
 
     response = client.get_collections_list(project_id)
 
@@ -305,10 +303,16 @@ def fetch_incidents(client: Client):
 
     params = demisto.params()
 
+    if not client.project_id:
+        raise DemistoException('Must configure a Project ID to fetch incidents from Mandiant ASM')
+
     if last_run and 'start_time' in last_run and last_run['start_time']:
-        last_start_time = dateutil.parser.parse(last_run.get('start_time'))
+        last_start_time = parser.parse(last_run.get('start_time'))
     else:
-        last_start_time = dateparser.parse(params.get("first_fetch"), settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
+        parsed_time = dateparser.parse(params.get("first_fetch"), settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
+        if not parsed_time:
+            parsed_time = datetime.now()
+        last_start_time = parsed_time
 
     issues = client.get_issues_since_time(last_start_time)
     most_recent_update = None
@@ -344,7 +348,14 @@ def fetch_incidents(client: Client):
 
 def get_remote_data_command(client: Client, args: dict):
     parsed_args = GetRemoteDataArgs(args)
-    last_updated: datetime = arg_to_datetime(parsed_args.last_update)
+    if not parsed_args.last_update:
+        parsed_date = arg_to_datetime(parsed_args.last_update)
+        if not parsed_date:
+            parsed_date = datetime.now()
+        last_updated = parsed_date
+
+    if not client.project_id:
+        raise DemistoException('Must configure a Project ID to fetch incidents from Mandiant ASM')
 
     demisto.debug(f'get-remote-data {parsed_args.last_update} {parsed_args.remote_incident_id}')
 
@@ -387,7 +398,7 @@ def update_remote_system_command(client: Client, args: dict):
 
     remote_incident_id = parsed_args.remote_incident_id
 
-    updated_incident = {}
+    updated_incident: dict = {}
 
     if not parsed_args.remote_incident_id or parsed_args.incident_changed:
         if parsed_args.remote_incident_id:

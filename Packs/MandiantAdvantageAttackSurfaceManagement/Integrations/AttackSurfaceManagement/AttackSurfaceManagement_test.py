@@ -13,7 +13,8 @@ you are implementing with your integration
 import json
 import io
 
-import sys, os
+import sys
+import os
 
 sys.path.append(os.getcwd())
 
