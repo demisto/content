@@ -1,5 +1,5 @@
 [MODEL: dataset="knowbe4_kmsat_raw"]
-alter xdm.alert.severity=json_extract(risk, "$.level"),
+alter xdm.alert.severity=json_extract_scalar(risk, "$.level"),
 xdm.source.user.identifier=json_extract(user, "$.id"),
 xdm.target.resource.id=external_id,
 xdm.alert.original_alert_id=json_extract(event_type, "$.id"),
