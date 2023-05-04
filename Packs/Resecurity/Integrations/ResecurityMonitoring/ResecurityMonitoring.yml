@@ -57,7 +57,7 @@ script:
       isArray: false
       name: mode
       required: false
-      secret: false  
+      secret: false
     deprecated: false
     description: 'Retrieve monitoring results from a specific monitor task'
     execution: false
@@ -98,7 +98,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.56857
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
