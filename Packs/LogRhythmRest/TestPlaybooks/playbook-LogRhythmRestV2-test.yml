@@ -3151,11 +3151,6 @@ tasks:
             value:
               simple: LogRhythm.Search.TaskId
             iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: LogRhythm.Search.Results
-            iscontext: true
     view: |-
       {
         "position": {
