@@ -3336,6 +3336,21 @@ class TestCheckChangesRelevanceForMarketplace:
         assert modified_files_data == expected_modified_files_data
 
 
+class TestVersionsMetadataFile:
+    """ Test class to check that the versions-metadata.json file is in the correct format."""
+
+    def test_version_map(self):
+        version_map_content = GCPConfig.VERSIONS_METADATA_CONTENTS.get('version_map')
+        for version, core_packs_info in version_map_content.items():
+            assert 'core_packs_file' in core_packs_info, \
+                f'Version {version} in version_map does not include the required `core_packs_file` key.'
+            assert core_packs_info.get('core_packs_file') == f'corepacks-{version}.json', \
+                f'corepacks file name of version {version} should be `corepacks-{version}.json` and not ' \
+                f'`{core_packs_info.get("core_packs_file")}`.'
+            assert 'core_packs_file_is_locked' in core_packs_info, \
+                f'Version {version} in version_map does not include the required `core_packs_file_is_locked` key.'
+
+
 @freeze_time("2023-01-01")
 @pytest.mark.parametrize('changelog, expected_result', [
     (copy.deepcopy(CHANGELOG_DATA_INITIAL_VERSION), ["1.0.0"]),
