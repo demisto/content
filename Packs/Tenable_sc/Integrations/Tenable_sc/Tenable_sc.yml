@@ -500,7 +500,7 @@ script:
       description: Plugin ID.
       isArray: false
       name: plugin_id
-      required: true
+      required: false
       secret: false
     - default: false
       description: Scan description.

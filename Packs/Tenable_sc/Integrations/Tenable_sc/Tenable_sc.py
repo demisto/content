@@ -181,9 +181,13 @@ class Client(BaseClient):
                 if time_zone and start_time:
                     body['schedule']['start'] = f"TZID={time_zone}:{start_time}"
                 else:
-                    return_error("Please make sure to provide both time_zone and start_time")
+                    return_error("Please make sure to provide both time_zone and start_time.")
+                if not repeat_rule_freq or not repeat_rule_interval or not repeat_rule_by_day:
+                    return_error("Please make sure to provide both repeat_rule_freq,repeat_rule_interval,  and repeat_rule_by_day.")
+                else:
+                    body['schedule']['FREQ'] = f"{repeat_rule_freq};INTERVAL={repeat_rule_interval};BYDAY={repeat_rule_by_day}"
+                body['schedule']['enabled'] = enabled
                 body['schedule']['repeatRule'] = dependent
-                
 
         if report_ids:
             body['reports'] = [{'id': r_id, 'reportSource': 'individual'} for r_id in argToList(report_ids)]
@@ -538,9 +542,9 @@ def list_policies_command(client: Client, args: Dict[str, Any]):
         'Name': p['name'],
         'Description': p['description'],
         'Tag': p['tags'],
-        'Type': p['policyTemplate'].get('name'),
-        'Group': p['ownerGroup'].get('name'),
-        'Owner': p['owner'].get('username'),
+        'Type': p.get('policyTemplate', {}).get('name'),
+        'Group': p.get('ownerGroup', {}).get('name'),
+        'Owner': p.get('owner', {}).get('username'),
         'LastModified': timestamp_to_utc(p['modifiedTime'])
     } for p in policies]
 
