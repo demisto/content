@@ -4214,7 +4214,6 @@ def file_reputation_handler(
         obj=obj, hash_=obj_id, reliability=client.reliability
     )
     file_indicator = Common.File(**command_args)
-    # file_context = file_indicator.to_context().get(Common.File.CONTEXT_PATH)
     command_args.pop("dbot_score")
     return CommandResults(
         outputs_prefix=f"{INTEGRATION_ENTRY_CONTEXT}.File",
