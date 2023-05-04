@@ -1,9 +1,11 @@
 from argparse import Namespace
+import logging
 from Utils.github_workflow_scripts.run_docs_review import run_docs_review
+from Utils.github_workflow_scripts.utils import flatten_call_args
 
 
 class TestsRunDocsReview:
-    def test_file_name_includes_apostrophe(self, mocker, capsys):
+    def test_file_name_includes_apostrophe(self, mocker):
         """
             Given:
                 - A string contains a file name with an apostrophe.
@@ -13,6 +15,7 @@ class TestsRunDocsReview:
                 - Verify the doc reviewer gets the file name with the apostrophe correctly.
                 - Verify that the output is as expected.
         """
+        logger_info = mocker.patch.object(logging.getLogger("demisto-sdk"), "info")
         file_name_with_apostrophe = "Packs/UnRealPack/Apostrophe's_Test.yml"
         file_name = 'Packs/UnRealPack/UnRealFile.yml'
         delimiter = ';'
@@ -24,6 +27,5 @@ class TestsRunDocsReview:
         mocker.patch('Utils.github_workflow_scripts.run_docs_review.parse_changed_files_names', return_value=args)
 
         result = run_docs_review()
-        captured = capsys.readouterr()
-        assert sdk_docs_reviewer_starting_string in captured.out
+        assert sdk_docs_reviewer_starting_string in flatten_call_args(logger_info.call_args_list)
         assert result == expected_exit_code_of_run_docs_review
