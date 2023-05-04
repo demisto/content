@@ -1,10 +1,17 @@
+import json
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
 def main():
     keys = [k.strip() for k in demisto.args()['keys'].split(',')]
-    values = [v.strip() for v in demisto.args()['values'].split(',')]
+    values_str = demisto.args()['values']
+    if values_str[0] == '[' and values_str[-1] == ']':
+        values = json.loads(f'[{values_str}]')
+    else:
+        values = argToList(values_str)
+
     ec = {demisto.args()['parent'] + '(true)': dict(zip(keys, values))}
     demisto.results({'Type': entryTypes['note'], 'Contents': ec, 'ContentsFormat': formats['json'],
                      'HumanReadable': 'Keys ' + ','.join(keys) + ' set', 'EntryContext': ec})
