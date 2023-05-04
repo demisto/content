@@ -62,7 +62,7 @@ XSOAR_TYPES_TO_STIX_SDO = {
     ThreatIntel.ObjectsNames.CAMPAIGN: 'campaign',
     ThreatIntel.ObjectsNames.COURSE_OF_ACTION: 'course-of-action',
     ThreatIntel.ObjectsNames.INFRASTRUCTURE: 'infrastructure',
-    ThreatIntel.ObjectsNames.INTRUSION_SET: 'instruction-set',
+    ThreatIntel.ObjectsNames.INTRUSION_SET: 'intrusion-set',
     ThreatIntel.ObjectsNames.REPORT: 'report',
     ThreatIntel.ObjectsNames.THREAT_ACTOR: 'threat-actor',
     ThreatIntel.ObjectsNames.TOOL: 'tool',
