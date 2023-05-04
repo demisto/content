@@ -1170,7 +1170,7 @@ def set_integration_params(build,
                 f"key: {build.api_key}")
             logging.info(
                 f"*** DEBUG integration_params {integration_params}")
-            integration_params['params'] = [{  # type: ignore
+            integration_params[0]['params'] = [{  # type: ignore
                 "url": build.base_url,
                 "creds_apikey": {
                     "identifier": str(build.xdr_auth_id),
