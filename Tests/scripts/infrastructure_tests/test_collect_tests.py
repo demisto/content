@@ -60,7 +60,7 @@ class CollectTestsMocker:
         self.path_manager = PathManager(content_path)
         self.path_manager.id_set_path = content_path / 'Tests' / 'id_set.json'
         self.path_manager.conf_path = content_path / 'Tests' / 'conf.json'
-        self.previous_path_manager = None
+        self.previous_path_manager: PathManager | None = None
 
     def __enter__(self):
         self.previous_path_manager = collect_tests.PATHS
