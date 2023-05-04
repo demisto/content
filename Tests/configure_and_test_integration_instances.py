@@ -1161,9 +1161,29 @@ def set_integration_params(build,
         (bool): True if integrations params were filled with secret configuration values, otherwise false
     """
     for integration in integrations:
+        logging.info(f"*** DEBUG integration['name'] - {integration['name']}")
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
+        if integration['name'] == "Core REST API" and build.is_cloud:
+            logging.info(
+                f"*** DEBUG build.is_cloud - {build.is_cloud}, build.base_url - {build.base_url}, build.xdr_auth_key: {build.xdr_auth_id}"
+                f"key: {build.api_key}")
+            logging.info(
+                f"*** DEBUG integration_params {integration_params}")
+            integration_params[0]['params'] = {  # type: ignore
+                "url": build.base_url,
+                "creds_apikey": {
+                    "identifier": str(build.xdr_auth_id),
+                    "password": build.api_key,
+                },
+                "auth_method": "Standard",
+                "insecure": True,
+                "proxy": False,
+            }
+
         if integration_params:
+            logging.info(
+                f"*** DEBUG integration_params {integration_params}")
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
             # values in our secret conf for multiple instances of the given integration and now we
@@ -1217,10 +1237,16 @@ def set_module_params(param_conf, integration_params):
     Returns:
         (dict): The configured parameter object
     """
+    logging.info(
+        "*** DEBUG in SET module")
+    logging.info(
+        f"*** DEBUG integration_params {integration_params}")
     if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
         # param defined in conf
         key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
-        if key == 'credentials':
+        if key == 'credentials' or key == "creds_apikey":
+            logging.info(
+                f"*** DEBUG key {key}")
             credentials = integration_params[key]
             param_value = {
                 'credential': '',
@@ -1237,6 +1263,8 @@ def set_module_params(param_conf, integration_params):
         # if the parameter doesn't have a value provided in the integration's configuration values
         # but does have a default value then assign it to the parameter for the module instance
         param_conf['value'] = param_conf['defaultValue']
+    logging.info(
+        f"*** DEBUG param_conf {param_conf}")
     return param_conf
 
 
@@ -1837,7 +1865,8 @@ def get_packs_with_higher_min_version(packs_names: Set[str],
     for pack_name in packs_names:
         pack_metadata = get_json_file(f"{extract_content_packs_path}/{pack_name}/metadata.json")
         server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION,
-                                               pack_metadata.get('server_min_version', Metadata.SERVER_DEFAULT_MIN_VERSION))
+                                               pack_metadata.get('server_min_version',
+                                                                 Metadata.SERVER_DEFAULT_MIN_VERSION))
 
         if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
             packs_with_higher_version.add(pack_name)
