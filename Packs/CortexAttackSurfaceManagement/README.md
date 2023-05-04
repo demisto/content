@@ -137,7 +137,7 @@ Playbook that given the IP address enriches GCP information relevant to ASM aler
 
 Playbook that given the IP address enriches Prisma Cloud information relevant to ASM alerts.
 
-![Cortex ASM - Prisma Cloud Enrichment]()
+![Cortex ASM - Prisma Cloud Enrichment](https://raw.githubusercontent.com/demisto/content/fb81c4212b33f1020dce1abc4f0198d4a0256936/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Prisma_Cloud_Enrichment.png)
 
 #### Cortex ASM - Qualys Enrichment
 
