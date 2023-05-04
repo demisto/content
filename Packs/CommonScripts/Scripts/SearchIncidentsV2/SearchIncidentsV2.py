@@ -157,13 +157,10 @@ def search_incidents(args: Dict):   # pragma: no cover
     # adding 1 here because the default page number start from 0
     max_page = (res[0]["Contents"]["total"] // DEFAULT_PAGE_SIZE) + 1
 
-    demisto.debug(f'amount of fetching incidents before pagination: {len(result_data_list)}')
     page = STARTING_PAGE_NUMBER
     while len(result_data_list) < limit and page < max_page:
         args['page'] = page
-        found_incidents = execute_command('getIncidents', args).get('data') or []
-        demisto.debug(f'Found the following incidents amount {len(found_incidents)} with args {args} during pagination')
-        result_data_list.extend(found_incidents)
+        result_data_list.extend(execute_command('getIncidents', args).get('data') or [])
         page += 1
 
     data = apply_filters(result_data_list, args)
@@ -183,7 +180,6 @@ def search_incidents(args: Dict):   # pragma: no cover
                 add_headers: List[str] = args.get("add_fields_to_summarize_context", '').split(",")
                 headers = headers + add_headers
         md = tableToMarkdown(name="Incidents found", t=data, headers=headers)
-    demisto.debug(f'Total amount of incidents found: {len(data)}')
     return md, data, res
 
 
