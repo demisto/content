@@ -30,7 +30,6 @@ def execute_get_incidents_command_side_effect(amount_of_mocked_incidents):
     for start in range(1, amount_of_mocked_incidents + 1, default_jump):
         end = min(amount_of_mocked_incidents, default_jump * counter)
 
-
         incident_type = 'A' if counter % 2 == 0 else 'B'
         if counter == 1:
             execute_command_mock = [
