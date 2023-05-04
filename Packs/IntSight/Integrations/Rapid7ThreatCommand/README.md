@@ -160,7 +160,7 @@ List cyber term CVEs by cyber term ID.
 | ThreatCommand.CVE.vendor_product | Number | CVE vendor product. | 
 
 #### Command example
-```!threat-command-cyber-term-cve-list cyber_term_id=628223a9b8a7a90f3aca3d7d limit=1```
+```!threat-command-cyber-term-cve-list cyber_term_id=1234 limit=1```
 #### Context Example
 ```json
 {
@@ -216,7 +216,7 @@ List cyber term IOCs by cyber term ID.
 | ThreatCommand.IOC.reporting_feeds | String | List of reporting feeds in which the value appears. | 
 
 #### Command example
-```!threat-command-cyber-term-ioc-list cyber_term_id=628223a9b8a7a90f3aca3d7d limit=1```
+```!threat-command-cyber-term-ioc-list cyber_term_id=1234 limit=1```
 #### Context Example
 ```json
 {
@@ -865,7 +865,7 @@ Get a list of alerts with all details.
             "is_closed": false,
             "is_flagged": false,
             "related_iocs": [
-                "https://t.me/cghostinfo"
+                "https://test.com/cghostinfo"
             ],
             "related_threat_ids": [],
             "severity": "Low",
@@ -873,7 +873,7 @@ Get a list of alerts with all details.
             "source_email": "",
             "source_network_type": "DarkWeb",
             "source_type": "Credit Card Black Market",
-            "source_url": "https://t.me/cghostinfo",
+            "source_url": "https://test.com/cghostinfo",
             "sub_type": "VulnerabilityInTechnologyInUse",
             "takedown_status": "NotSent",
             "title": "sdfsdf",
@@ -934,13 +934,13 @@ Get the alert's takedown status.
 | ThreatCommand.Alert.takedown_status | String | Alert's takedown status. | 
 
 #### Command example
-```!threat-command-alert-takedown-request-status-get alert_id=641cbbdfb6a71e6aa08b8e53```
+```!threat-command-alert-takedown-request-status-get alert_id=1234```
 #### Context Example
 ```json
 {
     "ThreatCommand": {
         "Alert": {
-            "id": "641cbbdfb6a71e6aa08b8e53",
+            "id": "1234",
             "takedown_status": "\"NotSent\""
         }
     }
@@ -949,7 +949,7 @@ Get the alert's takedown status.
 
 #### Human Readable Output
 
->### Takedown status for alert "641cbbdfb6a71e6aa08b8e53".
+>### Takedown status for alert "1234".
 >|Takedown Status|
 >|---|
 >| "NotSent" |
@@ -1035,13 +1035,13 @@ Close alert.
 | ThreatCommand.Alert.is_closed | String | Whether the alert is closed. | 
 
 #### Command example
-```!threat-command-alert-close alert_id=641cbbdfb6a71e6aa08b8e53 reason=Other```
+```!threat-command-alert-close alert_id=1234 reason=Other```
 #### Context Example
 ```json
 {
     "ThreatCommand": {
         "Alert": {
-            "id": "641cbbdfb6a71e6aa08b8e53",
+            "id": "1234",
             "is_closed": true
         }
     }
@@ -1050,10 +1050,10 @@ Close alert.
 
 #### Human Readable Output
 
->### Alert "641cbbdfb6a71e6aa08b8e53" successfully closed
+>### Alert "1234" successfully closed
 >|Id|Is Closed|
 >|---|---|
->| 641cbbdfb6a71e6aa08b8e53 | true |
+>| 1234 | true |
 
 
 ### threat-command-alert-severity-update
@@ -1080,13 +1080,13 @@ Change the alert's severity. Changing the severity level of alerts can help to p
 | ThreatCommand.Alert.severity | String | Alert severity. | 
 
 #### Command example
-```!threat-command-alert-severity-update alert_id=641cbbdfb6a71e6aa08b8e53 severity=Medium```
+```!threat-command-alert-severity-update alert_id=1234 severity=Medium```
 #### Context Example
 ```json
 {
     "ThreatCommand": {
         "Alert": {
-            "id": "641cbbdfb6a71e6aa08b8e53",
+            "id": "1234",
             "severity": "Medium"
         }
     }
@@ -1095,10 +1095,10 @@ Change the alert's severity. Changing the severity level of alerts can help to p
 
 #### Human Readable Output
 
->### Alert "641cbbdfb6a71e6aa08b8e53" severity successfully updated to "Medium".
+>### Alert "1234" severity successfully updated to "Medium".
 >|Id|Severity|
 >|---|---|
->| 641cbbdfb6a71e6aa08b8e53 | Medium |
+>| 1234 | Medium |
 
 
 ### threat-command-alert-blocklist-get
@@ -1125,14 +1125,14 @@ Get alert's blocklist status.
 | ThreatCommand.Alert.BlockList.status | String | Alert blocklist status. | 
 
 #### Command example
-```!threat-command-alert-blocklist-get alert_id=641cbbdfb6a71e6aa08b8e53```
+```!threat-command-alert-blocklist-get alert_id=1234```
 #### Context Example
 ```json
 {
     "ThreatCommand": {
         "Alert": {
             "BlockList": [],
-            "id": "641cbbdfb6a71e6aa08b8e53"
+            "id": "1234"
         }
     }
 }
@@ -1140,7 +1140,7 @@ Get alert's blocklist status.
 
 #### Human Readable Output
 
->### Blocklist for alert "641cbbdfb6a71e6aa08b8e53".
+>### Blocklist for alert "1234".
 >**No entries.**
 
 
@@ -1211,16 +1211,16 @@ Assign an alert to other ETP Suite users. When an alert is assigned, the assigne
 | ThreatCommand.Alert.assignees | String | Assignees list. | 
 
 #### Command example
-```!threat-command-alert-assign alert_id=641cbbdfb6a71e6aa08b8e53 user_id=631ef479b675f72ec9309785```
+```!threat-command-alert-assign alert_id=1234 user_id=1234```
 #### Context Example
 ```json
 {
     "ThreatCommand": {
         "Alert": {
             "assignees": [
-                "631ef479b675f72ec9309785"
+                "1234"
             ],
-            "id": "641cbbdfb6a71e6aa08b8e53"
+            "id": "1234"
         }
     }
 }
@@ -1228,10 +1228,10 @@ Assign an alert to other ETP Suite users. When an alert is assigned, the assigne
 
 #### Human Readable Output
 
->### Alert "641cbbdfb6a71e6aa08b8e53" successfully assign to user "631ef479b675f72ec9309785".
+>### Alert "1234" successfully assign to user "631ef479b675f72ec9309785".
 >|Id|Assignees|
 >|---|---|
->| 641cbbdfb6a71e6aa08b8e53 | 631ef479b675f72ec9309785 |
+>| 1234 | 1234 |
 
 
 ### threat-command-alert-unassign
@@ -1257,14 +1257,14 @@ Unassign an alert from all users.
 | ThreatCommand.Alert.assignees | String | Assignees list. | 
 
 #### Command example
-```!threat-command-alert-unassign alert_id=641cbbdfb6a71e6aa08b8e53```
+```!threat-command-alert-unassign alert_id=1234```
 #### Context Example
 ```json
 {
     "ThreatCommand": {
         "Alert": {
             "assignees": null,
-            "id": "641cbbdfb6a71e6aa08b8e53"
+            "id": "1234"
         }
     }
 }
@@ -1272,10 +1272,10 @@ Unassign an alert from all users.
 
 #### Human Readable Output
 
->### Alert '641cbbdfb6a71e6aa08b8e53' successfully unassigned from any user.
+>### Alert '1234' successfully unassigned from any user.
 >|Id|
 >|---|
->| 641cbbdfb6a71e6aa08b8e53 |
+>| 1234 |
 
 
 ### threat-command-alert-reopen
@@ -1297,10 +1297,10 @@ Reopen alert.
 
 There is no context output for this command.
 #### Command example
-```!threat-command-alert-reopen alert_id=641cbbdfb6a71e6aa08b8e53```
+```!threat-command-alert-reopen alert_id=1234```
 #### Human Readable Output
 
->Alert "641cbbdfb6a71e6aa08b8e53" successfully re-opened.
+>Alert "1234" successfully re-opened.
 
 ### threat-command-alert-tag-add
 
@@ -1322,10 +1322,10 @@ Adds a tag to an alert. This enables you to classify alerts and later search for
 
 There is no context output for this command.
 #### Command example
-```!threat-command-alert-tag-add alert_id=641cbbdfb6a71e6aa08b8e53 tag_name=test```
+```!threat-command-alert-tag-add alert_id=1234 tag_name=test```
 #### Human Readable Output
 
->The tag "test" successfully added to "641cbbdfb6a71e6aa08b8e53" Alert.
+>The tag "test" successfully added to "1234" Alert.
 
 ### threat-command-alert-tag-remove
 
@@ -1347,7 +1347,7 @@ Removes a tag from the alert.
 
 There is no context output for this command.
 #### Command example
-```!threat-command-alert-tag-remove alert_id=6432e3aa6ff61aae819dc46b tag_id=6453871c0d771fdc938f18d5```
+```!threat-command-alert-tag-remove alert_id=6432e3aa6ff61aae819dc46b tag_id=1234```
 #### Human Readable Output
 
 >The tag "6453871c0d771fdc938f18d5" successfully removed from "6432e3aa6ff61aae819dc46b" Alert.
@@ -1398,10 +1398,10 @@ Send a question to an analyst about the requested alert. Questions can revolve a
 
 There is no context output for this command.
 #### Command example
-```!threat-command-alert-analyst-ask alert_id=641cbbdfb6a71e6aa08b8e53 question=test```
+```!threat-command-alert-analyst-ask alert_id=1234 question=test```
 #### Human Readable Output
 
->The alert "641cbbdfb6a71e6aa08b8e53" successfully sent to the analyst.
+>The alert "1234" successfully sent to the analyst.
 
 ### threat-command-alert-analyst-conversation-list
 
@@ -1428,7 +1428,7 @@ Get alert's analyst response
 | ThreatCommand.Alert.Message.message | String | Response message | 
 
 #### Command example
-```!threat-command-alert-analyst-conversation-list alert_id=641cbbdfb6a71e6aa08b8e53```
+```!threat-command-alert-analyst-conversation-list alert_id=1234```
 #### Context Example
 ```json
 {
@@ -1437,36 +1437,21 @@ Get alert's analyst response
             "Message": [
                 {
                     "date": "2023-04-03T15:02:34.641Z",
-                    "initiator": "ronh@qmasters.co",
-                    "message": "Hello,\nI have a question regarding the CSV file that is linked to the alerts. Is it possible for the alert to contain a CSV file with different content, or do all CSV files have the same fields?"
+                    "initiator": "test@test.com",
+                    "message": "Hello"
                 },
                 {
                     "date": "2023-04-03T15:40:56.195Z",
                     "initiator": "Intsights",
-                    "message": "Hi Team,\r\n\r\nWe can provide a CSV files each time, but it will provide a different CSV each time, depending on the data provided.\r\n\r\nThank you\r\n\r\nThank you"
+                    "message": "Hi"
                 },
                 {
                     "date": "2023-04-03T18:29:41.169Z",
-                    "initiator": "ronh@qmasters.co",
-                    "message": "thank you!\n\nI will clarify my question, do all CSVs include the following fields? or their more types of csvs?\nemail\tpassword\tuserStatus\tpasswordStatus\tinternalDomain\tmessage\tremediationAction\tremediationStatus\trawData\n"
+                    "initiator": "test@test.com",
+                    "message": "thank you"
                 },
-                {
-                    "date": "2023-04-03T19:06:43.553Z",
-                    "initiator": "Intsights",
-                    "message": "Hi Ron,\r\n\r\nThe fields will typically vary, basing off of the fields and information provided to us by the source.\r\nFor example, a CSV downloaded from a forum posted by a threat actor may also include fields such as \"accountNumber\", \"accountBalance\", \"rewardPoints\", and whatnot. These fields are, of course, more relevant to customer accounts with balances, but sensitive information that may be included could be physical home addresses and whatnot.\r\n\r\nPlease let us know if this helps; however, if not, we are more than happy to provide more assistance.\r\n\r\nThank you,\r\nTrina L\r\nCyber Threat Intelligence Analyst"
-                },
-                {
-                    "date": "2023-04-04T10:30:25.852Z",
-                    "initiator": "ronh@qmasters.co",
-                    "message": "Hi Triana, and thanks for your response!\n\nI understand, we are developing automation for your product, so I need to know all the options that exist in the CSV,\nIs it possible for you to open test alerts that for each type of CSV?"
-                },
-                {
-                    "date": "2023-04-04T13:59:48.018Z",
-                    "initiator": "Intsights",
-                    "message": "Hi Ron,\r\n\r\nIntital requests of this nature are typically handled by your Sale's Engineer (aka, Security Solutions Engineer.)\r\nPlease reach out to your SE.\r\n\r\n\r\nBest Regards,\r\n\r\nWayne Currie\r\nTechnical Support & Intelligence Analyst Team"
-                }
             ],
-            "id": "641cbbdfb6a71e6aa08b8e53"
+            "id": "1234"
         }
     }
 }
@@ -1477,12 +1462,9 @@ Get alert's analyst response
 >### Alert conversation with analyst:
 >|Initiator|Message|Date|
 >|---|---|---|
->| ronh@qmasters.co | Hello,<br/>I have a question regarding the CSV file that is linked to the alerts. Is it possible for the alert to contain a CSV file with different content, or do all CSV files have the same fields? | 2023-04-03T15:02:34.641Z |
->| Intsights | Hi Team,<br/><br/>We can provide a CSV files each time, but it will provide a different CSV each time, depending on the data provided.<br/><br/>Thank you<br/><br/>Thank you | 2023-04-03T15:40:56.195Z |
->| ronh@qmasters.co | thank you!<br/><br/>I will clarify my question, do all CSVs include the following fields? or their more types of csvs?<br/>email	password	userStatus	passwordStatus	internalDomain	message	remediationAction	remediationStatus	rawData<br/> | 2023-04-03T18:29:41.169Z |
->| Intsights | Hi Ron,<br/><br/>The fields will typically vary, basing off of the fields and information provided to us by the source.<br/>For example, a CSV downloaded from a forum posted by a threat actor may also include fields such as "accountNumber", "accountBalance", "rewardPoints", and whatnot. These fields are, of course, more relevant to customer accounts with balances, but sensitive information that may be included could be physical home addresses and whatnot.<br/><br/>Please let us know if this helps; however, if not, we are more than happy to provide more assistance.<br/><br/>Thank you,<br/>Trina L<br/>Cyber Threat Intelligence Analyst | 2023-04-03T19:06:43.553Z |
->| ronh@qmasters.co | Hi Triana, and thanks for your response!<br/><br/>I understand, we are developing automation for your product, so I need to know all the options that exist in the CSV,<br/>Is it possible for you to open test alerts that for each type of CSV? | 2023-04-04T10:30:25.852Z |
->| Intsights | Hi Ron,<br/><br/>Intital requests of this nature are typically handled by your Sale's Engineer (aka, Security Solutions Engineer.)<br/>Please reach out to your SE.<br/><br/><br/>Best Regards,<br/><br/>Wayne Currie<br/>Technical Support & Intelligence Analyst Team | 2023-04-04T13:59:48.018Z |
+>| test@test.com | Hello| 2023-04-03T15:02:34.641Z |
+>| Intsights | Hi| 2023-04-03T15:40:56.195Z |
+>| test@test.com | thank you| 2023-04-03T18:29:41.169Z |
 
 
 ### threat-command-alert-activity-log-get
@@ -1527,7 +1509,7 @@ Get alert activity log.
 | ThreatCommand.Alert.ActivityLog.Messages.content | String | Alert message content. | 
 
 #### Command example
-```!threat-command-alert-activity-log-get alert_id=641cbbdfb6a71e6aa08b8e53```
+```!threat-command-alert-activity-log-get alert_id=1234```
 #### Context Example
 ```json
 {
@@ -1725,44 +1707,16 @@ Get alert activity log.
                 {
                     "Messages": [
                         {
-                            "content": "Hello,\nI have a question regarding the CSV file that is linked to the alerts. Is it possible for the alert to contain a CSV file with different content, or do all CSV files have the same fields?",
+                            "content": "Hello",
                             "date": "2023-04-03T15:02:34.793Z",
                             "initiator_id": "631ef479b675f72ec9309785",
                             "initiator_is_support": false
                         },
                         {
-                            "content": "Hi Team,\r\n\r\nWe can provide a CSV files each time, but it will provide a different CSV each time, depending on the data provided.\r\n\r\nThank you\r\n\r\nThank you",
+                            "content": "Hi",
                             "date": "2023-04-03T15:40:56.197Z",
                             "initiator_is_support": true
                         },
-                        {
-                            "content": "thank you!\n\nI will clarify my question, do all CSVs include the following fields? or their more types of csvs?\nemail\tpassword\tuserStatus\tpasswordStatus\tinternalDomain\tmessage\tremediationAction\tremediationStatus\trawData\n",
-                            "date": "2023-04-03T18:29:41.325Z",
-                            "initiator_id": "631ef479b675f72ec9309785",
-                            "initiator_is_support": false
-                        },
-                        {
-                            "content": "Hi Ron,\r\n\r\nThe fields will typically vary, basing off of the fields and information provided to us by the source.\r\nFor example, a CSV downloaded from a forum posted by a threat actor may also include fields such as \"accountNumber\", \"accountBalance\", \"rewardPoints\", and whatnot. These fields are, of course, more relevant to customer accounts with balances, but sensitive information that may be included could be physical home addresses and whatnot.\r\n\r\nPlease let us know if this helps; however, if not, we are more than happy to provide more assistance.\r\n\r\nThank you,\r\nTrina L\r\nCyber Threat Intelligence Analyst",
-                            "date": "2023-04-03T19:06:43.555Z",
-                            "initiator_is_support": true
-                        },
-                        {
-                            "content": "Hi Triana, and thanks for your response!\n\nI understand, we are developing automation for your product, so I need to know all the options that exist in the CSV,\nIs it possible for you to open test alerts that for each type of CSV?",
-                            "date": "2023-04-04T10:30:26.004Z",
-                            "initiator_id": "631ef479b675f72ec9309785",
-                            "initiator_is_support": false
-                        },
-                        {
-                            "content": "Hi Ron,\r\n\r\nIntital requests of this nature are typically handled by your Sale's Engineer (aka, Security Solutions Engineer.)\r\nPlease reach out to your SE.\r\n\r\n\r\nBest Regards,\r\n\r\nWayne Currie\r\nTechnical Support & Intelligence Analyst Team",
-                            "date": "2023-04-04T13:59:48.023Z",
-                            "initiator_is_support": true
-                        },
-                        {
-                            "content": "test",
-                            "date": "2023-05-04T10:11:58.270Z",
-                            "initiator_id": "API",
-                            "initiator_is_support": false
-                        }
                     ],
                     "created_date": "2023-04-03T15:02:34.793Z",
                     "id": "642aea8ababb12ffd004d60e",
@@ -1907,7 +1861,7 @@ Get alert activity log.
                     "update_date": "2023-05-04T10:11:58.271Z"
                 }
             ],
-            "id": "641cbbdfb6a71e6aa08b8e53"
+            "id": "1234"
         }
     }
 }
@@ -1915,7 +1869,7 @@ Get alert activity log.
 
 #### Human Readable Output
 
->### Alert "641cbbdfb6a71e6aa08b8e53" activity log
+>### Alert "1234" activity log
 >|Id|Type|Update Date|Sub Types|Initiator|
 >|---|---|---|---|---|
 >| 641cbc73bade6cc1ed3a1a25 | PolicyRule | 2023-03-23T20:54:11.730Z | PolicyClose,<br/>PolicyTag | 59490cd818a3b902664b4ed7 |
@@ -1966,7 +1920,7 @@ Get alert's CSV file in case of credentials leakage or leaked credit cards alert
 
 There is no context output for this command.
 #### Command example
-```!threat-command-alert-csv-get alert_id=641cbbdfb6a71e6aa08b8e53```
+```!threat-command-alert-csv-get alert_id=1234```
 #### Context Example
 ```json
 {
@@ -1974,7 +1928,7 @@ There is no context output for this command.
         "EntryID": "35323@b5fa0da4-31d6-4517-8d5c-484d4bb598ac",
         "Extension": "csv",
         "Info": "text/csv; charset=utf-8",
-        "Name": "641cbbdfb6a71e6aa08b8e53.csv",
+        "Name": "1234.csv",
         "Size": 150,
         "Type": "ASCII text, with CRLF line terminators"
     }
@@ -1983,7 +1937,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Alert "641cbbdfb6a71e6aa08b8e53" CSV file.
+>Alert "1234" CSV file.
 
 ### threat-command-alert-note-add
 
@@ -2006,10 +1960,10 @@ Add a note to the alert. You can add notes, as text or uploaded files, to an ale
 
 There is no context output for this command.
 #### Command example
-```!threat-command-alert-note-add alert_id=641cbbdfb6a71e6aa08b8e53 note=test```
+```!threat-command-alert-note-add alert_id=1234 note=test```
 #### Human Readable Output
 
->Note successfully add to alert "641cbbdfb6a71e6aa08b8e53".
+>Note successfully add to alert "1234".
 
 ### threat-command-alert-image-list
 
@@ -2030,10 +1984,10 @@ List alert images by ID.
 
 There is no context output for this command.
 #### Command example
-```!threat-command-alert-image-list alert_id=641cbbdfb6a71e6aa08b8e53```
+```!threat-command-alert-image-list alert_id=1234```
 #### Human Readable Output
 
->Alert "641cbbdfb6a71e6aa08b8e53" does not contain images.
+>Alert "1234" does not contain images.
 
 ### threat-command-cve-list
 
@@ -2483,7 +2437,7 @@ Search for strings in the scrapes database.
                 "author": "jamedoefo",
                 "comment_number": 321,
                 "date": "2023-05-04T10:20:02",
-                "id": "b95c143c7ad0c5382f3d316e2475092605e6c4f3",
+                "id": "1234",
                 "insertion_date": "2023-05-04T09:55:46.794664",
                 "original_url": "https://cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/unread",
                 "short_content": "i was here",
@@ -2525,7 +2479,7 @@ Search for strings in the scrapes database.
                 },
                 "author": "aleksandermachulin",
                 "date": "2023-05-04T10:16:18",
-                "id": "5ceb7e6e084d4d3da869abab12f15e6c442c894f",
+                "id": "1234",
                 "insertion_date": "2023-05-04T10:21:44.790150",
                 "short_content": "#include <cassert>\r\n#include <cstddef>\r\n#include <string>\r\n#include <utility>\r\n\r\ntemplate <typename Type>\r\nclass SingleLinkedList {\r\n    // Узел списка\r\n    struct Node {\r\n        Node() = default;\r\n        Node(const Type& val, Node* next)\r\n                : value(val)\r\n                , next_node(",
                 "source_date": "2023-05-04T10:16:18",
@@ -2681,7 +2635,7 @@ Search for strings in the scrapes database.
                 "date": "2023-05-04T10:15:18",
                 "id": "60e0bdce36800a3539b03ef010345d943d5669c4",
                 "insertion_date": "2023-05-04T10:21:51.176037",
-                "short_content": "-- logger module started --\r\nmain debug: VLC media player - 4.0.0-dev Otto Chriek\r\nmain debug: Copyright © 1996-2023 the VideoLAN team\r\nmain debug: revision 4.0.0-dev-23638-gdccda0e133\r\nmain debug: configured with /builds/videolan/vlc/extras/package/win32/../../../configure  '--enable-update-check' ",
+                "short_content": "test",
                 "source_date": "2023-05-04T10:15:18",
                 "title": "untitled",
                 "type": "paste",
@@ -2775,9 +2729,9 @@ Search for strings in the scrapes database.
 >### Mentions for "test.com" (page number 0).
 >|Author|Original Url|Url|Type|Id|Short Content|Title|Date|
 >|---|---|---|---|---|---|---|---|
->| jamedoefo | https:<span>//</span>cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/unread | https:<span>//</span>cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/page-33 | comment | b95c143c7ad0c5382f3d316e2475092605e6c4f3 | i was here |  | 2023-05-04T10:20:02 |
+>| jamedoefo | https:<span>//</span>cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/unread | https:<span>//</span>cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/page-33 | comment | 1234 | i was here |  | 2023-05-04T10:20:02 |
 >| anon | https:<span>//</span>www.wilderssecurity.com/threads/brave-browser-discussion-update-thread.388288/unread | https:<span>//</span>www.wilderssecurity.com/threads/brave-browser-discussion-update-thread.388288/page-36 | comment | f15c68c9c4d8a4ccc7efc21373f228a7f9d7826a | brave v1.51.110 (may 3, 2023) <br/>https:<span>//</span>brave.com/latest/<br/><br/>spoiler: release notes v1.51.110 (may 3, 2023)<br/>release notes v1.51.110 (may 3, 2023)<br/>web3<br/><br/>added the ability to set brave wallet permission duration when connecting to dapps. (#28841)<br/>[security] prevent blind cross chain signing as reported o |  | 2023-05-04T10:17:00 |
->| aleksandermachulin |  | https:<span>//</span>pastebin.com/z2sZCecJ | paste | 5ceb7e6e084d4d3da869abab12f15e6c442c894f | #include <cassert><br/>#include <cstddef><br/>#include <string><br/>#include <utility><br/><br/>template <typename Type><br/>class SingleLinkedList {<br/>    // Узел списка<br/>    struct Node {<br/>        Node() = default;<br/>        Node(const Type& val, Node* next)<br/>                : value(val)<br/>                , next_node( | итераторы | 2023-05-04T10:16:18 |
+>| aleksandermachulin |  | https:<span>//</span>pastebin.com/z2sZCecJ | paste | 1234 | #include <cassert><br/>#include <cstddef><br/>#include <string><br/>#include <utility><br/><br/>template <typename Type><br/>class SingleLinkedList {<br/>    // Узел списка<br/>    struct Node {<br/>        Node() = default;<br/>        Node(const Type& val, Node* next)<br/>                : value(val)<br/>                , next_node( | итераторы | 2023-05-04T10:16:18 |
 >| no_author |  | https:<span>//</span>pastebin.com/tQ4pR7pi | paste | 01b2a09ab8abab28f48c44aef1d3cce141cc1131 | #include <iostream><br/><br/>using namespace std;<br/><br/>struct nod{<br/>    int info;<br/>    nod * urm;<br/>};<br/><br/>int cmmdc(int a , int b)<br/>{<br/>    int r;<br/>    if(b == 0) return a;<br/>    return cmmdc(b , a % b);<br/>}<br/><br/>int numarare(nod *p)<br/>{<br/>    int perechi = 0;<br/>    for(nod *q  = p ; q -> urm ; q = q -> urm)<br/>       | untitled | 2023-05-04T10:16:08 |
 >| no_author |  | https:<span>//</span>pastebin.com/bQcx0nuj | paste | 0b847ec3750cf77211057d978a50226a4a6aba8b | To navigate from a SwiftUI view wrapped in a \`UIHostingController\` to another \`UIViewController\`, you can use a custom \`UIViewControllerRepresentable\`. This approach allows you to create a bridge between SwiftUI and UIKit components. Here's a step-by-step process to achieve this:<br/><br/>1. First, create | untitled | 2023-05-04T10:16:05 |
 >| juanliraz | https:<span>//</span>cybercarders.com/threads/heart-sender-3-0-33-full-clean-all-other-sources-are-fake-contains-malware.233594/unread | https:<span>//</span>cybercarders.com/threads/heart-sender-3-0-33-full-clean-all-other-sources-are-fake-contains-malware.233594/page-3 | comment | c61a9a37a18baef534d0cece9cd1e28207e75b5a | checking |  | 2023-05-04T10:16:01 |
@@ -2785,7 +2739,7 @@ Search for strings in the scrapes database.
 >| no_author |  | https:<span>//</span>pastebin.com/6Gm6jjGG | paste | d0a330840ac6908ce40fe7692b6151011a2334e7 | const axios = require('axios');<br/><br/>module.exports = {<br/> config: {<br/> name: "binary",<br/> aliases: ["bin"],<br/> version: "1.0",<br/> author: "shinpei",<br/> countDown: 0,<br/> role: 0,<br/> shortDescription: {<br/> en: "Converts text to binary."<br/> },<br/> longDescription: {<br/> en: "Converts text to binary using an API."<br/> } | untitled | 2023-05-04T10:15:49 |
 >| no_author |  | https:<span>//</span>pastebin.com/0Te6vfhK | paste | f0e20e7cf875b7d0d6cc042014ec1a3dcff6e3e6 | ##<br/># Host Database<br/>#<br/># localhost is used to configure the loopback interface<br/># when the system is booting.  Do not change this entry.<br/>##<br/>127.0.0.1    localhost<br/>255.255.255.255    broadcasthost<br/>::1             localhost<br/># Added by Docker Desktop<br/># To allow the same kube context to work on t | untitled | 2023-05-04T10:15:42 |
 >| no_author |  | https:<span>//</span>pastebin.com/GHNnERD4 | paste | f908cce77843dd1f974281d5e5ea67d43114c016 | [12:08:46 ERROR]: Could not pass event PlayerVelocityEvent to LibsDisguises v10.0.33<br/>java.lang.NoSuchMethodError: org.bukkit.World.getGameTime()J<br/>        at me.libraryaddict.disguise.utilities.DisguiseUtilities.setPlayerVelocity(DisguiseUtilities.java:556) ~[?:?]<br/>        at me.libraryaddict.disgu | untitled | 2023-05-04T10:15:32 |
->| no_author |  | https:<span>//</span>pastebin.com/uL32rurg | paste | 60e0bdce36800a3539b03ef010345d943d5669c4 | -- logger module started --<br/>main debug: VLC media player - 4.0.0-dev Otto Chriek<br/>main debug: Copyright © 1996-2023 the VideoLAN team<br/>main debug: revision 4.0.0-dev-23638-gdccda0e133<br/>main debug: configured with /builds/videolan/vlc/extras/package/win32/../../../configure  '--enable-update-check'  | untitled | 2023-05-04T10:15:18 |
+>| no_author |  | https:<span>//</span>pastebin.com/uL32rurg | paste | 60e0bdce36800a3539b03ef010345d943d5669c4 | -- logger module started --<br/>main debug: VLC media player - 4.0.0-dev Otto Chriek<br/>main debug: Copyright © 1996-2023 the VideoLAN team<br/>main debug: revision<br/>main debug: configured with /builds/videolan/vlc/extras/package/win32/../../../configure  '--enable-update-check'  | untitled | 2023-05-04T10:15:18 |
 >| no_author |  | https:<span>//</span>pastebin.com/ypvSpgA8 | paste | 3fc8bf2c1c67a61c8f35b0dd188ec555a629c6fa | Yeet | password | 2023-05-04T10:15:11 |
 >| no_author |  | https:<span>//</span>pastebin.com/dp4wF6MR | paste | f51f0fb266db888d946f8206ac82057e38dde44a | absl-py==1.4.0<br/>aiofiles==23.1.0<br/>aiohttp==3.8.4<br/>aiosignal==1.3.1<br/>altair==4.2.2<br/>anyio @ file:///home/conda/feedstock_root/build_artifacts/anyio_1666191106763/work/dist<br/>appdirs==1.4.4<br/>argon2-cffi @ file:///home/conda/feedstock_root/build_artifacts/argon2-cffi_1640817743617/work<br/>argon2-cffi-bind | untitled | 2023-05-04T10:15:06 |
 >| no_author |  | https:<span>//</span>pastebin.com/pK0YYRsa | paste | f55651764e3c6c05376f7e38cf6555f64fc23158 | [10:13:58 WARN]: [org.javacord.core.util.gateway.DiscordWebSocketAdapter] Websocket error!<br/>com.neovisionaries.ws.client.WebSocketException: Flushing frames to the server failed: Connection or outbound has closed<br/>        at com.neovisionaries.ws.client.WritingThread.doFlush(WritingThread.java:434)  | untitled | 2023-05-04T10:15:02 |
@@ -2873,7 +2827,7 @@ Get the details of the MSSPs users (In case you are an MSSP account).
 {
     "ThreatCommand": {
         "MsspUser": {
-            "email": "ronh+mssp@qmasters.co",
+            "email": "test@test.com",
             "id": "64214bc94c75609d09ebb56a",
             "is_deleted": false,
             "role": "Admin"
@@ -2887,7 +2841,7 @@ Get the details of the MSSPs users (In case you are an MSSP account).
 >### MSSP user list
 >|Id|Email|Role|Is Deleted|
 >|---|---|---|---|
->| 64214bc94c75609d09ebb56a | ronh+mssp@qmasters.co | Admin | false |
+>| 64214bc94c75609d09ebb56a | test@test.com | Admin | false |
 
 
 ### threat-command-account-user-list
@@ -2927,11 +2881,11 @@ List the users in your account. Mainly used to assign alerts.
 {
     "ThreatCommand": {
         "AccountUser": {
-            "email": "gregorin@qmasters.co",
-            "first_name": "Gregori",
+            "email": "test@test.com",
+            "first_name": "test",
             "id": "59490cd818a3b902664b4ed7",
             "is_deleted": false,
-            "last_name": "Nazrovsky",
+            "last_name": "test",
             "permissions": {
                 "Automation": {
                     "Extend": true,
@@ -3006,7 +2960,7 @@ List the users in your account. Mainly used to assign alerts.
 >### Account user list
 >|Id|Email|First Name|Last Name|Role|Is Deleted|
 >|---|---|---|---|---|---|
->| 59490cd818a3b902664b4ed7 | gregorin@qmasters.co | Gregori | Nazrovsky | Admin | false |
+>| 59490cd818a3b902664b4ed7 | test@test.com | test | test | Admin | false |
 
 
 ### threat-command-alert-type-list
