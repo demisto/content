@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Tuple
 from urllib.parse import quote
 
+import itertools
 import requests
 import json
 
