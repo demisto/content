@@ -3164,3 +3164,46 @@ def test_core_commands_raise_exception(mocker, command_to_run, args, error, rais
     else:
         assert (command_to_run(client, args).readable_output == "The operation executed is not supported on the given "
                                                                 "machine.")
+
+
+def test_endpoint_command_fails(requests_mock):
+    """
+    Given:
+    - no arguments
+    When:
+    - we mock the endpoint command
+    Then:
+    - Validate that there is a correct error
+    """
+    from CoreIRApiModule import endpoint_command, CoreClient
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    args = {}
+    with pytest.raises(DemistoException) as e:
+        endpoint_command(client, args)
+    assert 'In order to run this command, please provide a valid id, ip or hostname' in str(e)
+
+
+def test_generate_files_dict(mocker):
+    """
+    Given:
+    - no arguments
+    When:
+    - we mock the get_endpoints command with mac, linux and windows endpoints
+    Then:
+    - Validate that the dict is generated right
+    """
+
+    mocker.patch.object(test_client, "get_endpoints",
+                        side_effect=[load_test_data('test_data/get_endpoints_mac_response.json'),
+                                     load_test_data('test_data/get_endpoints_linux_response.json'),
+                                     load_test_data('test_data/get_endpoints_windows_response.json')])
+
+    res = test_client.generate_files_dict(endpoint_id_list=['1', '2', '3'],
+                                          file_path_list=['fake\\path1', 'fake\\path2', 'fake\\path3'])
+
+    assert res == {"macos": ['fake\\path1'], "linux": ['fake\\path2'], "windows": ['fake\\path3']}
