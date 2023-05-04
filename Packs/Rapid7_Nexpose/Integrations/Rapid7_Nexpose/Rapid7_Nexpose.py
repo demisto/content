@@ -1554,10 +1554,12 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the started scan.
         """
-        post_data = {
+        post_data: dict = {
             "name": scan_name,
-            "hosts": hosts
         }
+
+        if hosts:
+            post_data["hosts"] = hosts
 
         return self._http_request(
             url_suffix=f"/sites/{site_id}/scans",
@@ -2288,7 +2290,6 @@ def create_report(client: Client, scope: dict[str, Any], template_id: str | None
 
 
 def find_asset_last_scan_data(asset_data: dict) -> tuple[str, str]:
-
     """
     Find the date and ID for the last scan of an asset.
 
@@ -2475,7 +2476,11 @@ def normalize_scan_data(scan_data: dict) -> dict:
         include_none=True,
     )
 
-    result["TotalTime"] = readable_duration_time(scan_data["duration"])
+    if scan_data.get("duration"):
+        result["TotalTime"] = readable_duration_time(scan_data["duration"])
+
+    else:
+        result["TotalTime"] = "No duration data was found."
 
     return result
 
@@ -4920,20 +4925,10 @@ def start_site_scan_command(client: Client, site_id: str | None = None, site_nam
         client=client,
     )
 
-    if not name:
-        name = f"scan {datetime.now()}"
-
-    if hosts:
-        hosts_list = argToList(hosts)
-
-    else:
-        assets = client.get_site_assets(site.id)
-        hosts_list = [asset["ip"] for asset in assets]
-
     scan_response = client.start_site_scan(
         site_id=site.id,
-        scan_name=name,
-        hosts=hosts_list,
+        scan_name=name if name else f"scan {datetime.now()}",
+        hosts=argToList(hosts) if hosts else None,
     )
 
     if not scan_response or "id" not in scan_response:
@@ -5404,7 +5399,7 @@ def main():  # pragma: no cover
         elif command == "nexpose-delete-vulnerability-exception":
             results = delete_vulnerability_exception_command(client=client, vulnerability_exception_id=args.pop("id"))
         elif command == "nexpose-delete-site":
-            results = delete_site_command(client=client, **args)
+            results = delete_site_command(client=client, site_id=args.pop("id", None), **args)
         elif command == "nexpose-disable-shared-credential":
             results = set_assigned_shared_credential_status_command(client=client, enabled=False, **args)
         elif command == "nexpose-download-report":
@@ -5476,7 +5471,7 @@ def main():  # pragma: no cover
             results = start_assets_scan_command(client=client, ip_addresses=args.pop("IPs", None),
                                                 hostnames=args.pop("hostNames", None), **args)
         elif command == "nexpose-start-site-scan":
-            results = start_site_scan_command(client=client, **args)
+            results = start_site_scan_command(client=client, site_id=args.pop("site", None), **args)
         elif command == "nexpose-stop-scan":
             results = update_scan_command(client=client, scan_id=args.pop("id"), scan_status=ScanStatus.STOP)
         else:

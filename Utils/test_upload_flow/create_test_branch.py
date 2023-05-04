@@ -139,7 +139,7 @@ def create_new_pack():
 
 
 @add_changed_pack
-def add_dependency(base_pack: Path, new_depndency_pack: Path):
+def add_dependency(base_pack: Path, new_depndency_pack: Path, mandatory: bool = True):
     """
     Adds a new dependency to a given pack
     """
@@ -147,10 +147,12 @@ def add_dependency(base_pack: Path, new_depndency_pack: Path):
     with metadata_json.open('r') as fr:
         base_metadata = json.load(fr)
     new_pack_name = new_depndency_pack.name
-    base_metadata['dependencies'][new_pack_name] = {
-        "mandatory": True,
-        "display_name": new_pack_name
-    }
+    base_metadata.setdefault('dependencies', {}).update({
+        new_pack_name: {
+            "mandatory": mandatory,
+            "display_name": new_pack_name
+        }
+    })
     json_write(str(metadata_json), base_metadata)
     return base_pack, base_metadata['currentVersion'], None
 
@@ -293,16 +295,16 @@ def do_changes_on_branch(packs_path: Path):
     # Case 5: Verify modified existing release notes - Box
     update_existing_release_notes(packs_path / 'Box')
 
-    # TODO: fix after hidden pack mechanism is fixed - CIAC-3848
     # Case 6: Verify pack is set to hidden - Microsoft365Defender
-    # set_pack_hidden(packs_path / 'Microsoft365Defender')
+    set_pack_hidden(packs_path / 'Microsoft365Defender')
 
     # TODO: fix after README changes are collected the pack to upload is fixed - CIAC-5369
     # Case 7: Verify changed readme - Maltiverse
     # update_readme(packs_path / 'Maltiverse')
 
+    # TODO: need to cause this pack to fail in another way because the current way cause validation to fail
     # Case 8: Verify failing pack - Absolute
-    create_failing_pack(packs_path / 'Absolute')
+    # create_failing_pack(packs_path / 'Absolute')
 
     # Case 9: Verify changed image - Armis
     change_image(packs_path / 'Armis')
@@ -314,6 +316,10 @@ def do_changes_on_branch(packs_path: Path):
     # Case 11: Verify script path - CortexXDR
     modify_script_path(packs_path / 'CortexXDR/Scripts/XDRSyncScript',
                        'XDRSyncScript', 'XDRSyncScript_new_name')
+
+    # case 12: Verify setting hidden dependency does not add this dependency to the metadata - MicrosoftAdvancedThreatAnalytics
+    add_dependency(packs_path / 'MicrosoftAdvancedThreatAnalytics', packs_path / 'Microsoft365Defender',
+                   mandatory=False)
 
     logging.info("Finished making test changes on the branch")
 
@@ -360,7 +366,7 @@ def main():
         repo.git.commit(m="Added Test file", no_verify=True)
         repo.git.push('--set-upstream',
                       f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@'  # disable-secrets-detection
-                      f'code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
+                      f'code.pan.run/xsoar/content.git', branch, push_option="ci.skip")  # disable-secrets-detection
         logging.info("Successfuly pushing the branch to Gitlab content repo")
 
     except GitCommandError as e:

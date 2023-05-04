@@ -30,3 +30,10 @@ ignore=BA114
 
 [playbook-O365-SecurityAndCompliance-SearchAndDelete.yml]
 ignore=PB118
+
+[known_words]
+powershell
+
+[file:GetEWSFolder.yml]
+ignore=BA124
+

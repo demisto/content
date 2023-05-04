@@ -146,7 +146,7 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
 - The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)  
 
 ### Incident Mirroring
-**Imporatnt Notes*** 
+**Important Notes*** 
  - This feature is available from Cortex XSOAR version 6.0.0.
  - This feature is supported by Splunk Enterprise Security only.
  - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
@@ -391,6 +391,7 @@ Update an existing notable event in Splunk ES.
 | comment | The comment to add to the notable events. | Required | 
 | urgency | The urgency of the notable events. | Optional | 
 | status | The status of the notable events. Can be 0 - 5, where 0 - Unassigned, 1 - Assigned, 2 - In Progress, 3 - Pending, 4 - Resolved, 5 - Closed. | Optional | 
+| disposition | The disposition of the notable events. Can be one of the default options: True Positive - Suspicious Activity, Benign Positive - Suspicious But Expected, False Positive - Incorrect Analytic Logic, False Positive - Inaccurate Data, Other, Undetermined. Or you can specify custom dispositions as `disposition:#` where `#` is the number of the custom configured disposition on Splunk. | Optional | 
 
 
 ##### Context Output

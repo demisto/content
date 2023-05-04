@@ -3,7 +3,8 @@
   "associatedTypes": [
     "FireEye NX IPS Event",
     "FireEye NX Alert",
-    "FireEye EX Alert"
+    "FireEye EX Alert",
+    "AWS Security Hub Finding"
   ],
   "breachScript": "",
   "caseInsensitive": true,

@@ -1,0 +1,48 @@
+{
+    "res_data": [
+        {
+            "IP_addresses": [
+                "1.1.1.1"
+            ],
+            "domain_name": "test.com",
+            "order": 1
+        },
+        {
+            "IP_addresses": [
+                "3.3.3.3",
+                "4.4.4.4"
+            ],
+            "domain_name": "test10.com",
+            "order": 2
+        },
+        {
+            "IP_addresses": [
+                "1.1.1.1",
+                "2.2.2.2"
+            ],
+            "domain_name": "test4.com",
+            "order": 3
+        },
+        {
+            "IP_addresses": [
+                "1.1.1.1"
+            ],
+            "domain_name": "test3.com",
+            "order": 4
+        },
+        {
+            "IP_addresses": [
+                "1.1.1.1"
+            ],
+            "domain_name": "test2.com",
+            "order": 5
+        },
+        {
+            "IP_addresses": [
+                "8.8.8.8"
+            ],
+            "domain_name": "test15.com",
+            "order": 6
+        }
+    ]
+}

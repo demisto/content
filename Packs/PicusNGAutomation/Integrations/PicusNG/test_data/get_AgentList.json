@@ -1,0 +1,64 @@
+{
+  "agents": [
+    {
+      "name": "test1",
+      "id": 1342,
+      "status": "dead",
+      "type": "Windows",
+      "version": "3",
+      "created_at": 1641979529403,
+      "platform_name": "Windows 10",
+      "platform_architecture": "64-bit"
+    },
+    {
+      "name": "test2",
+      "id": 1870,
+      "status": "dead",
+      "type": "Windows",
+      "version": "4",
+      "created_at": 1652180074810,
+      "platform_name": "Windows 10",
+      "platform_architecture": "64-bit"
+    },
+    {
+      "name": "test3",
+      "id": 1903,
+      "status": "dead",
+      "type": "Windows",
+      "version": "4",
+      "created_at": 1652363868640,
+      "platform_name": "Windows 10",
+      "platform_architecture": "64-bit"
+    },
+    {
+      "name": "test4",
+      "id": 2431,
+      "status": "dead",
+      "type": "Installable Agent",
+      "version": "1",
+      "created_at": 1670239930984,
+      "platform_name": "Windows 10",
+      "platform_architecture": "64-bit"
+    },
+    {
+      "name": "test5",
+      "id": 2464,
+      "status": "dead",
+      "type": "Windows",
+      "version": "4",
+      "created_at": 1670585706549,
+      "platform_name": "Windows 10",
+      "platform_architecture": "64-bit"
+    },
+    {
+      "name": "test6",
+      "id": 2465,
+      "status": "alive",
+      "type": "Installable Agent",
+      "version": "1",
+      "created_at": 1670588906608,
+      "platform_name": "Windows 10",
+      "platform_architecture": "64-bit"
+    }
+  ]
+}

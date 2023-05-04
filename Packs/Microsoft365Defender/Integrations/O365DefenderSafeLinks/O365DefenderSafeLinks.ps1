@@ -484,6 +484,60 @@ class ExchangeOnlinePowershellV2Client {
         https://docs.microsoft.com/en-us/powershell/module/exchange/get-safelinksaggregatereport?view=exchange-ps
         #>
     }
+    [PSObject]
+    GetAtpPolicy() {
+        try{
+            $this.CreateSession()
+            $results = Get-AtpPolicyForO365
+            return $results
+        }
+        finally {
+            $this.DisconnectSession()
+        }
+        <#
+        .DESCRIPTION
+        Use this cmdlet to get the ATP policy.
+
+        .OUTPUTS
+        PSObject- Raw response
+
+        .LINK
+        https://docs.microsoft.com/en-us/powershell/module/exchange/get-atppolicyforo365
+        #>
+    }
+    [PSObject]
+    SetAtpPolicy(
+        [hashtable]$kwargs
+    ) {
+        try{
+            $cmd_params = @{}
+            if ($kwargs.allow_safe_docs_open) {
+                $cmd_params.AllowSafeDocsOpen = ConvertTo-Boolean $kwargs.allow_safe_docs_open
+            }
+            if ($kwargs.enable_atp_spo_teams_odb) {
+                $cmd_params.EnableATPForSPOTeamsODB = ConvertTo-Boolean $kwargs.enable_atp_spo_teams_odb
+            }
+            if ($kwargs.enable_safe_docs) {
+                $cmd_params.EnableSafeDocs = ConvertTo-Boolean $kwargs.enable_safe_docs
+            }
+            $this.CreateSession()
+            $results = Set-AtpPolicyForO365 @cmd_params
+            return $results
+        }
+        finally {
+            $this.DisconnectSession()
+        }
+        <#
+        .DESCRIPTION
+        Use this cmdlet to set the ATP policy.
+
+        .OUTPUTS
+        PSObject- Raw response
+
+        .LINK
+        https://docs.microsoft.com/en-us/powershell/module/exchange/set-atppolicyforo365
+        #>
+    }
 }
 
 
@@ -615,6 +669,40 @@ function GetAggregateReportCommand {
     return $human_readable, $entry_context, $raw_response
 }
 
+function GetAtpPolicyCommand {
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    Param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client
+    )
+
+    $raw_response = $client.GetAtpPolicy()
+    if (!$raw_response){
+        return "#### No records were found.", @{}, @{}
+    }
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.AtpPolicy(obj.Guid === val.Guid)" = $raw_response }
+    return $human_readable, $entry_context, $raw_response
+
+}
+
+function SetAtpPolicyCommand {
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    Param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
+        [hashtable]$kwargs
+    )
+
+    $raw_response = $client.SetAtpPolicy($kwargs)
+    if (!$raw_response){
+        return "#### SetAtpPolicyCommand finished with no output.", @{}, @{}
+    }
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.AtpPolicy(obj.Guid === val.Guid)" = $raw_response }
+    return $human_readable, $entry_context, $raw_response
+}
+
 function TestModuleCommand($client) {
     try {
         $client.CreateSession()
@@ -680,6 +768,12 @@ function Main {
             }
             "$script:COMMAND_PREFIX-aggregate-report-get" {
                 ($human_readable, $entry_context, $raw_response) = GetAggregateReportCommand -client $exo_client -kwargs $command_arguments
+            }
+            "$script:COMMAND_PREFIX-atp-policy-get" {
+                ($human_readable, $entry_context, $raw_response) = GetAtpPolicyCommand -client $exo_client
+            }
+            "$script:COMMAND_PREFIX-atp-policy-set" {
+                ($human_readable, $entry_context, $raw_response) = SetAtpPolicyCommand -client $exo_client -kwargs $command_arguments
             }
 
             default {

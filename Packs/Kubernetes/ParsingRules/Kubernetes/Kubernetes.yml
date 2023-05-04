@@ -1,0 +1,6 @@
+name: Kubernetes Parsing Rules
+id: Kubernetes_Parsing_Rules
+fromversion: 8.2.0
+tags: []
+rules: ''
+samples: ''

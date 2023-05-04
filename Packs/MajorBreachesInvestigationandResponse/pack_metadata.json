@@ -2,7 +2,7 @@
     "name": "Rapid Breach Response",
     "description": "This content Pack helps you collect, investigate, and remediate incidents related to major breaches.",
     "support": "xsoar",
-    "currentVersion": "1.6.26",
+    "currentVersion": "1.6.30",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -70,17 +70,29 @@
             "mandatory": false,
             "display_name": "CVE-2021-40444 - MSHTML RCE"
         },
-        "CVE_2021_30190": {
+        "CVE_2022_30190": {
             "mandatory": false,
             "display_name": "CVE-2022-30190 - MSDT RCE"
         },
-        "CVE-2022-3786 & CVE-2022-3602 - OpenSSL X.509 Buffer Overflows": {
+        "CVE_2022_26134": {
+            "mandatory": false,
+            "display_name": "CVE-2022-26134 - Confluence RCE"
+        },
+        "CVE_2022_3786_and_CVE_2022_3602_-_OpenSSL_X.509_Buffer_Overflows": {
             "mandatory": false,
             "display_name": "CVE-2022-3786 & CVE-2022-3602 - OpenSSL X.509 Buffer Overflows"
         },
-        "CVE-2022-41040 & CVE-2022-41082 - ProxyNotShell": {
+        "CVE_2022_41040_and_CVE_2022_41082_-_ProxyNotShell": {
             "mandatory": false,
             "display_name": "CVE-2022-41040 & CVE-2022-41082 - ProxyNotShell"
+        },
+        "CVE_2023_23397_-_Microsoft_Outlook_EoP": {
+            "mandatory": false,
+            "display_name": "CVE-2023-23397 - Microsoft Outlook EoP"
+        },
+        "3CXDesktopApp_Supply_Chain_Attack": {
+            "mandatory": false,
+            "display_name": "3CXDesktopApp Supply Chain Attack"
         },
         "ServiceNow": {
             "mandatory": false,

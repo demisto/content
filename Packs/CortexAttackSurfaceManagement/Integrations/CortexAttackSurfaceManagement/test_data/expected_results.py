@@ -790,3 +790,29 @@ INTERNET_EXPOSURE_POST_FORMAT = [
         "agent_id": null
     }
 ]
+
+REMEDIATION_RULES_RESULTS = [
+    {
+        "action": "Email",
+        "attack_surface_rule_id": "RdpServer",
+        "created_at": 1672897301000,
+        "created_by": "test@test.com",
+        "created_by_pretty": "Test User",
+        "criteria": [
+            {
+                "field": "severity",
+                "operator": "eq",
+                "value": "high"
+            },
+            {
+                "field": "isCloudManaged",
+                "operator": "eq",
+                "value": "true"
+            }
+        ],
+        "criteria_conjunction": "AND",
+        "description": "for testing",
+        "rule_id": "b935cf69-add9-4e75-8c3d-fe32ee471554",
+        "rule_name": "TestRule"
+    }
+]

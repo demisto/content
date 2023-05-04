@@ -40,17 +40,17 @@ tasks:
       id: 59ebb938-5cba-4c87-8663-ce8ca6f1442d
       version: -1
       name: Send Mail
-      script: EWS Mail Sender|||send-mail
+      script: EWS v2|||send-mail
       type: regular
       iscommand: true
-      brand: EWS Mail Sender
+      brand: EWS v2
     scriptarguments:
       attachIDs:
         simple: ${inputs.attIDs}
       cc:
         simple: ${inputs.cc}
       subject:
-        simple: EWS Mail Sender Test - UT8uFQBBVcJeqAC4t4XvzZ9bBvfLYSk1zST8Fkx7rtHs4SfjvtYzCv1ElFGsX10gNWZlH7XpHGgWv31KI3LbDGBGPLPckyPaZvujMZRa6JloV22SIH0wqvPGYiFcYPm9muVjDyj75R4QTyatXimGcdOcdKwt2Rofv0UFDAKW2W2EU9tKoeGIy5p2DEvKk12qgiCxqNFd4mqCXoR1P9rypsuYlQ3OaIa6hzvoZMrH0qWSqL43wjGbM25d8OhKcoda
+        simple: EWS v2 send mail Test - UT8uFQBBVcJeqAC4t4XvzZ9bBvfLYSk1zST8Fkx7rtHs4SfjvtYzCv1ElFGsX10gNWZlH7XpHGgWv31KI3LbDGBGPLPckyPaZvujMZRa6JloV22SIH0wqvPGYiFcYPm9muVjDyj75R4QTyatXimGcdOcdKwt2Rofv0UFDAKW2W2EU9tKoeGIy5p2DEvKk12qgiCxqNFd4mqCXoR1P9rypsuYlQ3OaIa6hzvoZMrH0qWSqL43wjGbM25d8OhKcoda
       to:
         simple: ${inputs.to}
     separatecontext: false

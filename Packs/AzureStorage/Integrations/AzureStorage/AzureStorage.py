@@ -754,6 +754,8 @@ def main() -> None:
         )
         if command == 'test-module':
             return_results(test_module(client))
+        elif command == 'azure-storage-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
         elif command == 'azure-storage-auth-start':
             return_results(start_auth(client))
         elif command == 'azure-storage-auth-complete':

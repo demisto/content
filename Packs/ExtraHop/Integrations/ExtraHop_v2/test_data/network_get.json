@@ -1,0 +1,20 @@
+[
+  {
+    "mod_time": 1673316957053,
+    "id": 0,
+    "node_id": null,
+    "appliance_uuid": "00000000008c42378048f711111111",
+    "description": null,
+    "name": "Capture 00:50:56:83:40:D5",
+    "idle": false
+  },
+  {
+    "mod_time": 1673316957053,
+    "id": 0,
+    "node_id": null,
+    "appliance_uuid": "aaaabbbbccccddddeeeeffffgggg",
+    "description": null,
+    "name": "Capture 00:50:56:83:40:D5",
+    "idle": false
+  }
+]

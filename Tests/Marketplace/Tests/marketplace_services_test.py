@@ -14,7 +14,6 @@ from freezegun import freeze_time
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple, Any
 from demisto_sdk.commands.common.constants import MarketplaceVersions
-from pathlib import Path
 
 # pylint: disable=no-member
 
@@ -946,23 +945,21 @@ class TestChangelogCreation:
         mocker.patch("os.listdir", return_value=dir_list)
         assert is_the_only_rn_in_block(release_notes_dir, version, AGGREGATED_CHANGELOG) == boolean_value
 
-    def test_get_version_to_pr_numbers(self, mocker):
+    def test_get_pr_numbers_for_version(self, mocker):
         """
            Given:
                - Mocked pr numbers for 3 files.
            When:
-               - Calling get_version_to_pr_numbers.
+               - Calling get_pr_numbers_for_version.
            Then:
                - Receive a dict with the proper version to pr number.
         """
-        dir_list = ['1_0_1.md', '1_0_2.md', '1_0_3.md']
-        mocker.patch("os.listdir", return_value=dir_list)
         mocker.patch("os.path.exists", return_value=True)
 
         mocker.patch("git.Git", return_value=GitMock())
 
-        versions_dict = Pack(pack_name='SomeName', pack_path='SomePath').get_version_to_pr_numbers('')
-        assert versions_dict == {'1.0.1': ['11', '111'], '1.0.2': ['22'], '1.0.3': ['33']}
+        versions_pr_numbers = Pack(pack_name='SomeName', pack_path='SomePath').get_pr_numbers_for_version('1.0.2')
+        assert versions_pr_numbers == ['22']
 
     def test_get_pull_request_numbers_from_file(self, mocker):
         """
@@ -1929,66 +1926,6 @@ class TestImagesUpload:
                                                    GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
         assert task_status
 
-    def test_copy_readme_images(self, mocker, dummy_pack):
-        """
-           Given:
-               - Readme Image.
-           When:
-               - Performing copy and upload of all the pack's Readme images.
-           Then:
-               - Validate that the image has been copied from build bucket to prod bucket
-       """
-        dummy_build_bucket = mocker.MagicMock()
-        dummy_prod_bucket = mocker.MagicMock()
-        blob_name = "content/packs/TestPack/readme_images/test_image.png"
-        mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
-        images_data = {"TestPack": {BucketUploadFlow.README_IMAGES: [os.path.basename(blob_name)]}}
-        task_status = dummy_pack.copy_readme_images(dummy_prod_bucket, dummy_build_bucket, images_data,
-                                                    GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
-        assert task_status
-
-    def test_collect_images_from_readme_and_replace_with_storage_path(self, dummy_pack):
-        """
-           Given:
-               - A README.md file with external urls
-           When:
-               - uploading the pack images to gcs
-           Then:
-               - replace the readme images url with the new path to gcs return a list of all replaces urls.
-       """
-        readme_images_test_folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data',
-                                                      'readme_images_test_data')
-        path_readme_to_replace_url = os.path.join(readme_images_test_folder_path, 'url_replace_README.md')
-        with open(os.path.join(readme_images_test_folder_path, 'original_README.md')) as original_readme:
-            data = original_readme.read()
-        with open(path_readme_to_replace_url, 'w') as to_replace:
-            to_replace.write(data)
-
-        expected_urls_ret = {
-            'original_read_me_url': 'https://raw.githubusercontent.com/crestdatasystems/content/'
-                                    '4f707f8922d7ef1fe234a194dcc6fa73f96a4a87/Packs/Lansweeper/doc_files/'
-                                    'Retrieve_Asset_Details_-_Lansweeper.png',
-            'new_gcs_image_path': Path('gcs_test_path/readme_images/Retrieve_Asset_Details_-_Lansweeper.png'),
-            'image_name': 'Retrieve_Asset_Details_-_Lansweeper.png'
-        }
-        ret = dummy_pack.collect_images_from_readme_and_replace_with_storage_path(path_readme_to_replace_url,
-                                                                                  'gcs_test_path', 'marketplacev2')
-        assert ret == [expected_urls_ret]
-
-        with open(path_readme_to_replace_url) as replaced_readme:
-            replaced = replaced_readme.read()
-        with open(os.path.join(readme_images_test_folder_path, 'README_after_replace.md')) as expected_res:
-            expected = expected_res.read()
-
-        assert replaced == expected
-
-    @pytest.mark.parametrize('path, expected_res', [('Packs/TestPack/README.md', True),
-                                                    ('Packs/Integrations/dummyIntegration/README.md', False),
-                                                    ('Packs/NotExists/README.md', False)])
-    def test_is_file_readme(self, dummy_pack, path, expected_res):
-        assert expected_res == dummy_pack.is_raedme_file(path)
-
 
 class TestCopyAndUploadToStorage:
     """ Test class for copying and uploading a pack to storage.
@@ -2161,63 +2098,6 @@ class TestSetDependencies:
 
         return pack_metadata
 
-    def test_set_dependencies_new_dependencies(self):
-        """
-           Given:
-               - Pack with user dependencies
-               - New generated dependencies
-           When:
-               - Formatting metadata
-           Then:
-               - The dependencies in the metadata file should be merged with the generated ones
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-        generated_dependencies = {
-            'ImpossibleTraveler': {
-                'dependencies': {
-                    'HelloWorld': {
-                        'mandatory': False,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'HelloWorld',
-                        'certification': 'certified'
-                    },
-                    'ServiceNow': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'ServiceNow',
-                        'certification': 'certified'
-                    },
-                    'Ipstack': {
-                        'mandatory': False,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Ipstack',
-                        'certification': 'certified'
-                    },
-                    'Active_Directory_Query': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Active Directory Query v2',
-                        'certification': 'certified'
-                    }
-                }
-            }
-        }
-        generated_dependencies['ImpossibleTraveler']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
-        p = Pack('ImpossibleTraveler', 'dummy_path')
-        dependencies = json.dumps(metadata['dependencies'])
-        dependencies = json.loads(dependencies)
-        dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
-        p._user_metadata = metadata
-        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
-
-        assert p.user_metadata['dependencies'] == dependencies
-
     def test_set_dependencies_no_user_dependencies(self):
         """
            Given:
@@ -2273,25 +2153,6 @@ class TestSetDependencies:
         p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert p.user_metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
-
-    def test_set_dependencies_no_generated_dependencies(self):
-        """
-           Given:
-               - Pack with user dependencies
-               - No generated dependencies
-           When:
-               - Formatting metadata
-           Then:
-               - The dependencies in the metadata file should be the user ones
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-        dependencies = metadata['dependencies']
-        p = Pack('ImpossibleTraveler', 'dummy_path')
-        p._user_metadata = metadata
-        p.set_pack_dependencies({}, {})
-        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack(self):
         """
@@ -2378,53 +2239,6 @@ class TestSetDependencies:
             p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
-
-    def test_set_dependencies_core_pack_mandatory_dependency_override(self):
-        """
-           Given:
-               - Core pack with new dependencies
-               - Mandatory dependencies that are not core packs that were overridden in the user metadata
-           When:
-               - Formatting metadata
-           Then:
-               - Metadata should be formatted correctly
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-
-        generated_dependencies = {
-            'HelloWorld': {
-                'dependencies': {
-                    'CommonPlaybooks': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'ServiceNow',
-                        'certification': 'certified'
-                    },
-                    'Ipstack': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Ipstack',
-                        'certification': 'certified'
-                    }
-                }
-            }
-        }
-
-        generated_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
-        p = Pack('HelloWorld', 'dummy_path')
-        user_dependencies = metadata['dependencies']
-        dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
-        dependencies = json.loads(dependencies)
-        dependencies.update(user_dependencies)
-        p._user_metadata = metadata
-
-        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
-
-        assert p.user_metadata['dependencies'] == dependencies
 
 
 class TestReleaseNotes:

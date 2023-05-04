@@ -264,17 +264,13 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
     return True
 
 
-def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
+def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf):
     integrations = []
-    is_nightly_integration = False
     test_skipped_integration = []
     for integration in integrations_conf:
         if integration in skipped_integrations_conf.keys():
             skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
             test_skipped_integration.append(integration)
-
-        if integration in nightly_integrations:
-            is_nightly_integration = True
 
         # string description
         integrations.append({
@@ -282,7 +278,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
             'params': {}
         })
 
-    return test_skipped_integration, integrations, is_nightly_integration
+    return test_skipped_integration, integrations
 
 
 def extract_filtered_tests():
@@ -557,7 +553,7 @@ def workflow_still_running(workflow_id: str) -> bool:
         try:
             workflow_details_response = requests.get(f'https://circleci.com/api/v2/workflow/{workflow_id}',
                                                      headers={'Accept': 'application/json'},
-                                                     auth=(CIRCLE_STATUS_TOKEN, ''))
+                                                     auth=(CIRCLE_STATUS_TOKEN, ''))  # type: ignore[arg-type]
             workflow_details_response.raise_for_status()
         except Exception:
             logging_manager.exception(f'Failed to get circleci response about workflow with id {workflow_id}.')

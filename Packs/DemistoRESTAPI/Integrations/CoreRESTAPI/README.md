@@ -10,10 +10,10 @@ Use Core REST APIs
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Core Server URL |  | True |
-    | Auth ID |  | True |
+    | API Key ID | The API Key ID that is linked to the API Key (relevant for Cortex XSIAM and Cortex XSOAR 8.0.0 and above). | True |
+    | API Key (Password) | The core server API key. | True |
     | Authentication method | Whether authentication should be using "Standard" API key or "Advanced" API key. | True |
     | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
-    | Core Server API Key (Password) |  | True |
     | Use system proxy settings | Use system proxy settings. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.

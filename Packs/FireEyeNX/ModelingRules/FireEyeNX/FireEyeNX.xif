@@ -1,4 +1,4 @@
-[MODEL: dataset=fireeye_mps_raw, model=Network] 
+[MODEL:model="Network", dataset="fireeye_mps_raw"] 
 alter XDM.Network.event_timestamp = parse_timestamp("%s",arrayindex( regextract(to_string(rt),"(\d+)\d{3}"),0) ),
     XDM.Network.Destination.port = to_number(dpt),
     XDM.Network.Source.port = to_number(spt),

@@ -1,4 +1,4 @@
-category: Network Security
+category: Email
 commonfields:
   id: MimecastV2
   version: -1
@@ -1268,7 +1268,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The group source by which to filter. 
+      description: The group source by which to filter.
       isArray: false
       name: query_source
       predefined:
@@ -1676,7 +1676,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The block action. 
+      description: The block action.
       isArray: false
       name: option
       predefined:
@@ -1698,7 +1698,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The part from where addresses are pulled. 
+      description: The part from where addresses are pulled.
       isArray: false
       name: fromPart
       predefined:
@@ -2546,7 +2546,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.10.48392
 tests:
 - Mimecast test
 fromversion: 5.0.0

@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 import base64
+import binascii
 import os
 import json
 import urllib3
@@ -130,7 +131,7 @@ def prepare_args(command, args):
             email_body = args.get('htmlBody')
         else:
             email_body = args.get('body', '')
-        return {
+        processed_args = {
             'to_recipients': argToList(args.get('to')),
             'cc_recipients': argToList(args.get('cc')),
             'bcc_recipients': argToList(args.get('bcc')),
@@ -146,6 +147,9 @@ def prepare_args(command, args):
             'attach_cids': argToList((args.get('attach_cids'))),
             'manual_attachments': args.get('manualAttachObj', [])
         }
+        if command == 'send-mail':
+            processed_args['renderBody'] = argToBoolean(args.get('renderBody') or False)
+        return processed_args
 
     elif command == 'msgraph-mail-reply-to':
         return {
@@ -238,11 +242,13 @@ class MsGraphClient:
                  private_key: Optional[str] = None,
                  display_full_email_body: bool = False,
                  fetch_mail_body_as_text: bool = True,
+                 refresh_token_param: Optional[str] = '',
                  mark_fetched_read: bool = False,
                  managed_identities_client_id: Optional[str] = None):
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token,
+                                         refresh_token_param=refresh_token_param,
                                          auth_code=auth_code, redirect_uri=redirect_uri,
                                          grant_type=AUTHORIZATION_CODE, certificate_thumbprint=certificate_thumbprint,
                                          private_key=private_key, retry_on_rate_limit=True,
@@ -933,7 +939,7 @@ class MsGraphClient:
 
         return human_readable, ec, created_draft
 
-    def send_email_command(self, **kwargs) -> tuple[str, dict]:
+    def send_email_command(self, **kwargs) -> List[CommandResults]:
         """
         Sends email from user's mailbox, the sent message will appear in Sent Items folder.
         Sending email process:
@@ -941,6 +947,7 @@ class MsGraphClient:
             and send the draft mail.
         2) if there aren't any attachments larger than 3MB, just send the email as usual.
         """
+        render_body = kwargs.pop('renderBody', False)
         message_content = self._build_message(**kwargs)
         email = kwargs.get('from', self._mailbox_to_fetch)
 
@@ -959,9 +966,17 @@ class MsGraphClient:
         message_content.pop('attachments', None)
         message_content.pop('internet_message_headers', None)
         human_readable = tableToMarkdown('Email was sent successfully.', message_content)
-        ec = {self.CONTEXT_SENT_EMAIL_PATH: message_content}
 
-        return human_readable, ec
+        results = [
+            CommandResults(readable_output=human_readable, outputs={self.CONTEXT_SENT_EMAIL_PATH: message_content})
+        ]
+        if render_body:
+            results.append(CommandResults(
+                entry_type=EntryType.NOTE,
+                content_format=EntryFormat.HTML,
+                raw_response=kwargs['body'],
+            ))
+        return results
 
     def send_mail(self, email, json_data):
         """
@@ -1164,14 +1179,20 @@ class MsGraphClient:
         Returns:
             dict:                   Attachment Data
         """
-        no_folder = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/' \
-                    f'?$expand=microsoft.graph.itemattachment/item'
-        with_folder = (f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/'  # type: ignore
-                       f'messages/{message_id}/attachments/{attachment_id}/'
-                       f'?$expand=microsoft.graph.itemattachment/item')
+        if attachment_id:
+            no_folder = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/' \
+                        f'?$expand=microsoft.graph.itemattachment/item'
+            with_folder = (f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/'  # type: ignore
+                           f'messages/{message_id}/attachments/{attachment_id}/'
+                           f'?$expand=microsoft.graph.itemattachment/item')
+        else:
+            no_folder = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments'
+            with_folder = (f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/'  # type: ignore
+                           f'messages/{message_id}/attachments')
         suffix = with_folder if folder_id else no_folder
-
+        demisto.debug(f'Getting attachment with suffix: {suffix}')
         response = self.ms_client.http_request('GET', suffix)
+        response = [response] if response and attachment_id else response.get('value', [])
         return response
 
     def get_email_as_eml(self, user_id: str, message_id: str) -> str:
@@ -1446,6 +1467,71 @@ def list_attachments_command(client: MsGraphClient, args):
     return command_results
 
 
+def file_result_creator(raw_response: dict) -> dict:
+    """
+
+    Args:
+        raw_response (dict):
+
+    Returns:
+        dict:
+
+    """
+    name = raw_response.get('name')
+    data = raw_response.get('contentBytes')
+    try:
+        data = base64.b64decode(data)  # type: ignore
+        return fileResult(name, data)
+    except binascii.Error:
+        raise DemistoException('Attachment could not be decoded')
+
+
+def item_result_creator(raw_response, user_id) -> CommandResults:
+    item = raw_response.get('item', {})
+    item_type = item.get('@odata.type', '')
+    if 'message' in item_type:
+        message_id = raw_response.get('id')
+        item['id'] = message_id
+        mail_context = build_mail_object(item, user_id=user_id, get_body=True)
+        human_readable = tableToMarkdown(
+            f'Attachment ID {message_id} \n **message details:**',
+            mail_context,
+            headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
+        )
+        return CommandResults(outputs_prefix='MSGraphMail',
+                              outputs_key_field='ID',
+                              outputs=mail_context,
+                              readable_output=human_readable,
+                              raw_response=raw_response)
+    else:
+        human_readable = f'Integration does not support attachments from type {item_type}'
+        return CommandResults(readable_output=human_readable, raw_response=raw_response)
+
+
+def create_attachment(raw_response, user_id) -> Union[CommandResults, dict]:
+    attachment_type = raw_response.get('@odata.type', '')
+    # Documentation about the different attachment types
+    # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
+    if 'itemAttachment' in attachment_type:
+        return item_result_creator(raw_response, user_id)
+    elif 'fileAttachment' in attachment_type:
+        return file_result_creator(raw_response)
+    else:
+        demisto.debug(f"Unsupported attachment type: {attachment_type}. Attachment was not added to incident")
+        return {}
+
+
+def get_attachment_command(client: MsGraphClient, args):
+    message_id = args.get('message_id')
+    folder_id = args.get('folder_id')
+    attachment_id = args.get('attachment_id')
+    raw_response = client.get_attachment(message_id, attachment_id=attachment_id, folder_id=folder_id)
+    attachments = []
+    for attachment in raw_response:
+        attachments.append(create_attachment(attachment, user_id=client.get_mailbox_to_fetch()))
+    return attachments
+
+
 def list_mails_command(client: MsGraphClient, args):
     search = args.get('search')
     odata = args.get('odata')
@@ -1518,6 +1604,11 @@ def update_email_status_command(client: MsGraphClient, args) -> CommandResults:
         readable_output=f'Emails status has been updated to {status}.',
         raw_response=raw_responses[0] if len(raw_responses) == 1 else raw_responses
     )
+
+
+def reset_auth() -> str:
+    set_integration_context({})
+    return 'Authorization was reset successfully. Run **!msgraph-mail-test** to verify the authentication.'
 
 
 def build_folders_path(folder_string: str) -> Optional[str]:
@@ -1680,13 +1771,19 @@ def main():     # pragma: no cover
     # params related to oproxy
     # In case the script is running for the first time, refresh token is retrieved from integration parameters,
     # in other case it's retrieved from integration context.
-    refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
+
+    # Client gets refresh_token_param as well as refresh_token which is the current refresh token from the integration
+    # context (if exists) so It will be possible to manually update the refresh token param for an existing integration
+    # instance.
+    refresh_token_param = refresh_token  # Refresh token from the integration parameters (i.e current instance config)
+    refresh_token = get_integration_context().get('current_refresh_token') or refresh_token_param
 
     client = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                           ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
-                           emails_fetch_limit, auth_code=auth_code, private_key=private_key,
+                           ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch,
+                           first_fetch_interval, emails_fetch_limit, auth_code=auth_code, private_key=private_key,
                            display_full_email_body=display_full_email_body, mark_fetched_read=mark_fetched_read,
                            redirect_uri=params.get('redirect_uri', ''), certificate_thumbprint=certificate_thumbprint,
+                           refresh_token_param=refresh_token_param,
                            managed_identities_client_id=managed_identities_client_id)
     try:
         command = demisto.command()
@@ -1702,6 +1799,8 @@ def main():     # pragma: no cover
                 raise Exception("Please use !msgraph-mail-test instead")
         if command == 'msgraph-mail-test':
             return_results(client.test_connection())
+        if command == 'msgraph-mail-auth-reset':
+            return_results(reset_auth())
         if command == 'fetch-incidents':
             next_run, incidents = client.fetch_incidents(demisto.getLastRun())
             demisto.setLastRun(next_run)
@@ -1716,18 +1815,21 @@ def main():     # pragma: no cover
             human_readable = client.send_draft_command(**args)  # pylint: disable=E1123
             return_outputs(human_readable)
         elif command == 'send-mail':
-            human_readable, ec = client.send_email_command(**args)
-            return_outputs(human_readable, ec)
+            return_results(client.send_email_command(**args))
         elif command == 'reply-mail':
             return_results(client.reply_mail_command(args))
         elif command == 'msgraph-mail-list-emails':
             return_results(list_mails_command(client, args))
         elif command == 'msgraph-mail-list-attachments':
             return_results(list_attachments_command(client, args))
+        elif command == 'msgraph-mail-get-attachment':
+            return_results(get_attachment_command(client, args))
         elif command == 'msgraph-mail-get-email-as-eml':
             return_results(get_email_as_eml_command(client, args))
         elif command == 'msgraph-update-email-status':
             return_results(update_email_status_command(client, args))
+        elif command == 'msgraph-mail-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
     except Exception as e:
         return_error(str(e))
 
