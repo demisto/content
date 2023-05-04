@@ -843,7 +843,7 @@ def external_dynamic_list_to_xsoar_format(outputs):
         outputs = [outputs]
     for output in outputs:
         # For pre-defined list, also predefined values are returned, and their structure is different
-        if output.get('folder') == 'predefined':
+        if output.get('snippet') == 'predefined':
             output['type'] = 'predefined'
             output['source'] = 'predefined'
             continue
@@ -856,7 +856,7 @@ def external_dynamic_list_to_xsoar_format(outputs):
                                    f'Type is missing. Dynamic list as returned by the API: {output}')
         output['description'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('description')
         output['source'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('url')
-        output['frequency'] = next(iter(dynamic_list_type_object.get(dynamic_list_type, {}).get('recurring').keys()))
+        output['frequency'] = next(iter(dynamic_list_type_object.get(dynamic_list_type, {}).get('recurring', {None})), None)
         output['exception_list'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('exception_list')
         output['type'] = dynamic_list_type
 
