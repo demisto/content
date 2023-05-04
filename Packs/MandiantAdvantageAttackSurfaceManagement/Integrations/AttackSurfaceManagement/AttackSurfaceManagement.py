@@ -119,7 +119,7 @@ class Client(BaseClient):
         endpoint = 'user_collections'
 
         response = self.make_request('GET', endpoint,
-                                     headers={'PROJECT_ID': project_id})
+                                     headers={'PROJECT_ID': str(project_id)})
 
         if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return'
@@ -148,7 +148,7 @@ class Client(BaseClient):
 
         while True:
             response = self.make_request('GET', endpoint, params=params,
-                                         headers={'PROJECT_ID': self.project_id})
+                                         headers={'PROJECT_ID': str(self.project_id)})
 
             if not isinstance(response, dict) or not response.get('success'):
                 raise RuntimeError('Failed to retrieve issues from ASM')
@@ -165,7 +165,7 @@ class Client(BaseClient):
         endpoint = f'issues/{issue_id}'
 
         response = self.make_request('GET', endpoint,
-                                     headers={'PROJECT_ID': self.project_id})
+                                     headers={'PROJECT_ID': str(self.project_id)})
 
         if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return details for'
@@ -179,7 +179,7 @@ class Client(BaseClient):
         endpoint = f'notes/{resource_type}/{resource_id}'
 
         response = self.make_request('GET', endpoint,
-                                     headers={'PROJECT_ID': self.project_id})
+                                     headers={'PROJECT_ID': str(self.project_id)})
 
         if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return notes for'
@@ -343,16 +343,17 @@ def fetch_incidents(client: Client):
     }
 
     demisto.setLastRun(last_run)
-    demisto.incidents(parsed_issues)
+    return demisto.incidents(parsed_issues)
+
 
 
 def get_remote_data_command(client: Client, args: dict):
     parsed_args = GetRemoteDataArgs(args)
-    if not parsed_args.last_update:
+    if parsed_args.last_update:
         parsed_date = arg_to_datetime(parsed_args.last_update)
-        if not parsed_date:
-            parsed_date = datetime.now()
-        last_updated = parsed_date
+    if not parsed_date:
+        parsed_date = datetime.now()
+    last_updated = parsed_date
 
     if not client.project_id:
         raise DemistoException('Must configure a Project ID to fetch incidents from Mandiant ASM')
@@ -378,6 +379,7 @@ def get_remote_data_command(client: Client, args: dict):
                                 f"{note['created_by_user']['printable_name']}",
                     'ContentsFormat': EntryFormat.MARKDOWN,
                     'Note': True,
+                    'Tags': ['note_from_ma_asm']
                 }
                 notes_entries.append(new_note)
 
@@ -386,6 +388,7 @@ def get_remote_data_command(client: Client, args: dict):
 
         return GetRemoteDataResponse(new_incident_data, notes_entries)
     except Exception as e:
+        print('error')
         print(e)
 
 def update_remote_system_command(client: Client, args: dict):

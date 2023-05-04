@@ -473,6 +473,9 @@ MOCK_GET_REMOTE_DATA_NOTES_RESPONSE = {
             "created_at": "2022-09-09 16:45:52 UTC",
             "collection": "attacksurface_mw3tdwq",
             "created_by": "c1ac6a07-fda8-4568-90c3-ea2ba6ec2535",
+            "created_by_user": {
+                "printable_name": "test_user"
+            },
             "uid": "ee74ee7d3c06791bf984480810169ab123d97541b39afd623bd08b3981450d93",
             "item_type": "issue",
             "updated_at": "2022-09-09T16:45:52Z",
@@ -553,8 +556,11 @@ def test_fetch_incidents(client: AttackSurfaceManagement.Client, requests_mock, 
     requests_mock.get(f'{SERVER_URL}/search/issues/collection%3A12341234%20collection%3A23452345%20last_seen_before%3A2023-04-17T15%3A49%3A54.000000Z%20last_seen_after%3A2023-03-18T15%3A49%3A54.000000Z?page=0',
                       headers={'content-type': 'application/json'}, json=MOCK_FETCH_ISSUES_RESPONSE)
 
+    requests_mock.get(f'{SERVER_URL}/issues/2e0134b5b346a5d0a9d5ee0efe7dfb69dfcc5c1cf65a6df63568f85dc587a120',
+                      headers={'content-type': 'application/json'}, json=MOCK_GET_REMOTE_DATA_RESPONSE)
+
     mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(demisto, "params", return_value={"initial_lookback": 30})
+    mocker.patch.object(demisto, "params", return_value={"first_fetch": "30 days"})
 
     results = AttackSurfaceManagement.fetch_incidents(client)['Contents']
 
@@ -564,11 +570,11 @@ def test_fetch_incidents(client: AttackSurfaceManagement.Client, requests_mock, 
 
     issue_result = issues_list[0]
 
-    assert issue_result['name'] == 'Apache HTTPD 2.4.39 mod_http2 Resource Exhaustion Vulnerability (Inferred CVE-2019-10081)'
-    assert issue_result['occurred'] == '2022-10-07T17:36:37+00:00'
-    assert issue_result['severity'] == 3
+    assert issue_result['name'] == 'Deprecated SSL/TLS Protocol Detected'
+    assert issue_result['occurred'] == '2022-08-18T17:12:20+00:00'
+    assert issue_result['severity'] == 0.5
 
-    assert issue_result['dbotMirrorId'] == '2e0134b5b346a5d0a9d5ee0efe7dfb69dfcc5c1cf65a6df63568f85dc587a120'
+    assert issue_result['dbotMirrorId'] == '8e02af6c136f297aa8fece36726a6d659bf59f512ca8a90350d93038215a19d7'
 
 @freeze_time(datetime.fromtimestamp(1681768194))
 def test_get_remote_data(client: AttackSurfaceManagement.Client, requests_mock, mocker):
@@ -580,10 +586,11 @@ def test_get_remote_data(client: AttackSurfaceManagement.Client, requests_mock, 
 
     results = AttackSurfaceManagement.get_remote_data_command(client,
                                                               {"id": "2e0134b5b346a5d0a9d5ee0efe7dfb69dfcc5c1cf65a6df63568f85dc587a120",
-                                                               "lastUpdate": "0"})
+                                                               "lastUpdate": "0"}).extract_for_local()
 
-    issue_data = results[0]
+    issue_data = json.loads(results[0]['details'])
     notes_data = results[1]
+    print(notes_data)
 
     assert issue_data['uuid'] == '9fc77fef-6362-4aef-a154-0ab4a058d5de'
     assert issue_data['entity_uid'] == 'a4cfa1f3c7864d343f8b9568248ad7550400598ddf10ea18959c860ca6253a01'
@@ -591,6 +598,8 @@ def test_get_remote_data(client: AttackSurfaceManagement.Client, requests_mock, 
     assert issue_data['severity'] == 5
 
     assert notes_data['Type'] == 1
-    assert notes_data['Contents'] == '- testing a note that supports markdown\n- and has some neat new features'
+    assert notes_data['Contents'] == '- testing a note that supports markdown\n'\
+                                     '- and has some neat new features\n'\
+                                     'test_user'
     assert notes_data['Note'] == True
     assert notes_data['Tags'] == ['note_from_ma_asm']
