@@ -408,7 +408,7 @@ workflows:
             - Setup Environment
           matrix:
             parameters:
-              dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
+              dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "native:candidate", "from-yml" ]
           name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
       - Run Validations:
           requires:

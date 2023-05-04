@@ -43,3 +43,5 @@ ignore=BA124
 [file:RapidBreachResponseTotalTasksCountWidget.yml]
 ignore=BA124
 
+[file:1_6_30.md]
+ignore=RN113,RN114

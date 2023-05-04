@@ -69,6 +69,8 @@ run-unittests-and-lint:
   rules:
     - if: '$BUCKET_UPLOAD == "true"'
       when: never
+    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
+      when: never
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
@@ -101,7 +103,8 @@ validate-content-conf:
         # replace slashes ('/') in the branch name, if exist, with underscores ('_')
         UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
         RESP=$(curl --location --request GET "https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH" --header "PRIVATE-TOKEN: $GITLAB_API_READ_TOKEN") # disable-secrets-detection
-        if [ "$RESP" != "[]" ]; then
+        EXIST=$(echo $RESP | jq --arg branch $UNDERSCORE_CI_BRANCH -c '.[] | select(.name==$branch)')
+        if [ -n "$EXIST" ]; then
             echo "Found a branch with the same name in contest-test-conf- $UNDERSCORE_CI_BRANCH."
             echo "Merge it in order to merge the current branch into content repo."
             job-done
@@ -135,7 +138,7 @@ validate-content-conf:
 
     - echo "Updating the content graph"
     - mkdir $ARTIFACTS_FOLDER/content_graph
-    - demisto-sdk create-content-graph --marketplace $MARKETPLACE_VERSION -o $ARTIFACTS_FOLDER/content_graph
+    - demisto-sdk update-content-graph --marketplace $MARKETPLACE_VERSION -o $ARTIFACTS_FOLDER/content_graph
     - echo "Successfully updated content graph"
 
     - section_end "Create or update content graph"
@@ -208,21 +211,21 @@ xsoar-prepare-testing-bucket:
   extends:
     - .generic-prepare-testing-bucket
 
-xpanse-prepare-testing-bucket:
-  variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
-    MARKETPLACE_VERSION: "xpanse"
-    PRODUCTNAME: "Cortex XPANSE"
-    MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
-  extends:
-    - .generic-prepare-testing-bucket
-
 mpv2-prepare-testing-bucket:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     MARKETPLACE_VERSION: "marketplacev2"
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
     PRODUCTNAME: "Cortex XSIAM"
+  extends:
+    - .generic-prepare-testing-bucket
+
+xpanse-prepare-testing-bucket:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    MARKETPLACE_VERSION: "xpanse"
+    PRODUCTNAME: "Cortex XPANSE"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
   extends:
     - .generic-prepare-testing-bucket
 
@@ -541,7 +544,6 @@ xsoar_ng_server_ga:
   needs:
     - job: xsoar-prepare-testing-bucket
       optional: true
-  allow_failure: true
 
 
 test-upload-flow:
