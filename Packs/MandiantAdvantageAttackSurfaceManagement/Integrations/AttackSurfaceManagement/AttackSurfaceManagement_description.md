@@ -1,8 +1,9 @@
-## BaseIntegration Help
+## Mandiant Advantage Attack Surface Management
 
-Markdown file for integration configuration  help snippet. In this file add:
+### Prerequisites
+- A Mandiant Advantage Attack Surface Management account
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+### Get Credentials
+- Log into `asm.advantage.mandiant.com`
+- Navigate to `Account Settings`, then to `API Keys`
+- Click `Generate New Key`, then copy the Access Key and Secret Key that are displayed.

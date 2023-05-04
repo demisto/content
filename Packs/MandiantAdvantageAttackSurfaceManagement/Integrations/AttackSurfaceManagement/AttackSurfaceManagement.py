@@ -214,7 +214,7 @@ def helper_create_incident(issue: dict, project_id: str) -> dict:
 
     issue = {
         'name': issue['summary']['pretty_name'],
-        'details': json.dumps(issue),
+        'details': json.dumps(issue, indent=4),
         'occurred': dateutil.parser.parse(issue['first_seen']).isoformat(),
         'severity': severity_map.get(issue['summary']['severity']),
         'rawJSON': json.dumps(raw_json),
@@ -317,7 +317,8 @@ def fetch_incidents(client: Client):
 
 
     for issue in issues:
-        new_incident = helper_create_incident(issue, client.project_id)
+        incident_details = client.get_issue_details(issue["id"])
+        new_incident = helper_create_incident(incident_details, client.project_id)
         new_incident['dbotMirrorLastSync'] = datetime.fromtimestamp(0).strftime("%Y-%m-%dT%H:%M:%SZ")
         new_incident['lastupdatetime'] = new_incident['dbotMirrorLastSync']
 
@@ -331,7 +332,7 @@ def fetch_incidents(client: Client):
         incidents_res=parsed_issues, last_run=last_run, fetch_limit=client.limit, id_field='dbotMirrorId'
     )
 
-    new_issues = [json.loads(i['rawJSON'])['id'] for i in parsed_issues]
+    new_issues = [json.loads(i['rawJSON'])['uid'] for i in parsed_issues]
 
     last_run = {
         'start_time': most_recent_update,
@@ -363,22 +364,16 @@ def get_remote_data_command(client: Client, args: dict):
             if timestamp.timestamp() > last_updated.timestamp():
                 new_note = {
                     'Type': EntryType.NOTE,
-                    'Contents': note['note'],
+                    'Contents': f"{note['note']}\n"
+                                f"{note['created_by_user']['printable_name']}",
                     'ContentsFormat': EntryFormat.MARKDOWN,
                     'Note': True,
                 }
                 notes_entries.append(new_note)
-            else:
-                demisto.debug("IGNORINGNOTE")
-                demisto.debug(timestamp.timestamp())
-                demisto.debug(last_updated.timestamp())
 
         new_incident_data['id'] = masm_id
         new_incident_data['in_mirror_error'] = ''
 
-        demisto.debug(json.dumps(new_incident_data))
-        demisto.debug("SEARCHNOTES")
-        demisto.debug(notes_entries)
         return GetRemoteDataResponse(new_incident_data, notes_entries)
     except Exception as e:
         print(e)
