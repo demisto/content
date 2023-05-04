@@ -1233,8 +1233,6 @@ def set_module_params(param_conf, integration_params):
         # param defined in conf
         key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
         if key == 'credentials' or key == "creds_apikey":
-            logging.info(
-                f"*** DEBUG key {key}")
             credentials = integration_params[key]
             param_value = {
                 'credential': '',
