@@ -21,18 +21,15 @@
   - demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
   - section_end "Upload Entities to Cortex XSOAR"
 
-
 demisto-sdk-nightly:run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
     - .sdk-nightly-schedule-rule
 
-
 demisto-sdk-nightly:run-validations:
   extends:
     - .run-validations
     - .sdk-nightly-schedule-rule
-
 
 demisto_sdk_nightly:check_idset_dependent_commands:
   tags:
@@ -83,7 +80,6 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - section_end "Calculate Packs Dependencies"
     - job-done
 
-
 demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   tags:
     - gke
@@ -93,17 +89,74 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   variables:
     IFRA_ENV_TYPE: "Server Master"
     KUBERNETES_CPU_REQUEST: 2000m
+    MARKETPLACE_VERSION: "xsoar"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
+
   cache:
     policy: pull-push
   needs: []
   stage: prepare-testing-bucket
   script:
-    - !reference [.download-demisto-conf]
-    - |
-      [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
-      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
+    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
+    - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
+demisto-sdk-nightly:mpv2-prepare-testing-bucket:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    MARKETPLACE_VERSION: "marketplacev2"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
+    PRODUCTNAME: "Cortex XSIAM"
+    IFRA_ENV_TYPE: "Server Master"
+    KUBERNETES_CPU_REQUEST: 2000m
+  cache:
+    policy: pull-push
+  needs: []
+  stage: prepare-testing-bucket
+  script:
+    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
+    - !reference [.generic-prepare-testing-bucket, script]
+    - job-done
+
+demisto-sdk-nightly:xpanse-prepare-testing-bucket:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    MARKETPLACE_VERSION: "xpanse"
+    PRODUCTNAME: "Cortex XPANSE"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
+    IFRA_ENV_TYPE: "Server Master"
+    KUBERNETES_CPU_REQUEST: 2000m
+  cache:
+    policy: pull-push
+  needs: []
+  stage: prepare-testing-bucket
+  script:
+    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
+    - !reference [.generic-prepare-testing-bucket, script]
+    - job-done
+
+demisto-sdk-nightly:test-upload-flow:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule
+  variables:
+    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
+  needs: []
+  stage: unittests-and-validations
+  script:
+    - !reference [test-upload-flow, script]
 
 demisto-sdk-nightly:run-commands-against-instance:
   tags:
@@ -111,7 +164,7 @@ demisto-sdk-nightly:run-commands-against-instance:
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
-  services:  # needed for running lint
+  services: # needed for running lint
     - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
       alias: docker
   variables:
@@ -121,6 +174,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     INSTANCE_ROLE: "Server Master"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
+  needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   script:
     - !reference [.open-ssh-tunnel]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
@@ -157,7 +211,6 @@ demisto-sdk-nightly:run-commands-against-instance:
     - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
     - section_end "Destroy instances"
     - job-done
-
 
 demisto-sdk-nightly:run-end-to-end-tests:
   tags:
@@ -198,16 +251,15 @@ demisto-sdk-nightly:fan-in:
   script:
     - echo "fan in"
 
-
 demisto-sdk-nightly:trigger-slack-notify:
   extends:
     - .trigger-slack-notification
     - .sdk-nightly-schedule-rule-always
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
-    WORKFLOW: 'Demisto SDK Nightly'
-    JOB_NAME: 'demisto-sdk-nightly:fan-in'
+    WORKFLOW: "Demisto SDK Nightly"
+    JOB_NAME: "demisto-sdk-nightly:fan-in"
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
-    SLACK_JOB: 'true'
+    SLACK_JOB: "true"
