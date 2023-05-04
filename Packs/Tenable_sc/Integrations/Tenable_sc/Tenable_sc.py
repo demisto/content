@@ -7,6 +7,7 @@ import functools
 import json
 from datetime import datetime
 from requests import cookies
+import pytz
 from typing import Dict, Any
 
 # disable insecure warnings
@@ -44,7 +45,7 @@ class Client(BaseClient):
         if not (user_name and password) and not (secret_key and access_key):
             return_error("Please provide either user_name and password or secret_key and access_key")
         if secret_key and access_key:
-            self.headers['x-apikey'] = {'accesskey': access_key, 'secretkey': secret_key}
+            self.headers['x-apikey'] = f"accesskey={access_key}; secretkey={secret_key}"
             BaseClient.__init__(self, base_url=self.url, headers=self.headers, verify=verify_ssl, proxy=proxy)
             self.send_request = self.send_request_new
         else:
@@ -136,8 +137,8 @@ class Client(BaseClient):
 
     def create_scan(self, name, repo_id, policy_id, plugin_id, description, zone_id, schedule, asset_ids,
                     ips, scan_virtual_hosts, report_ids, credentials, timeout_action, max_scan_time,
-                    dhcp_track, rollover_type, dependent):
-        path = 'scan'
+                    dhcp_track, rollover_type, dependent, start_time, repeat_rule_freq, repeat_rule_interval,
+                    repeat_rule_by_day, enabled, time_zone):
 
         scan_type = 'policy' if policy_id else 'plugin'
 
@@ -176,6 +177,14 @@ class Client(BaseClient):
             if dependent:
                 body['schedule']['dependentID'] = dependent
 
+            if schedule == 'ical':
+                if time_zone and start_time:
+                    body['schedule']['start'] = f"TZID={time_zone}:{start_time}"
+                else:
+                    return_error("Please make sure to provide both time_zone and start_time")
+                body['schedule']['repeatRule'] = dependent
+                
+
         if report_ids:
             body['reports'] = [{'id': r_id, 'reportSource': 'individual'} for r_id in argToList(report_ids)]
 
@@ -205,7 +214,7 @@ class Client(BaseClient):
         if max_scan_time:
             body['maxScanTime'] = max_scan_time * 3600
 
-        return self.send_request(path, method='post', body=body)
+        return self.send_request(path='scan', method='post', body=body)
 
     def get_scan_results(self, scan_results_id):
         path = 'scanResult/' + scan_results_id
@@ -860,7 +869,16 @@ def create_scan_command(client: Client, args: Dict[str, Any]):
     dhcp_track = args.get('dhcp_tracking')
     rollover_type = args.get('rollover_type')
     dependent = args.get('dependent_id')
+    time_zone = args.get("time_zone")
+    start_time = args.get("start_time")
+    repeat_rule_freq = args.get("repeat_rule_freq")
+    repeat_rule_interval = int(args.get("repeat_rule_interval", 0))
+    repeat_rule_by_day = argToList(args.get("repeat_rule_by_day"), [])
+    enabled = argToBoolean(args.get("enabled", True))
 
+    if time_zone and time_zone not in pytz.all_timezones:
+        return_error("Invalid time zone ID. Please choose one of the following: "
+                     "https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html")
     if not asset_ids and not ips:
         return_error('Error: Assets and/or IPs must be provided')
 
@@ -869,7 +887,8 @@ def create_scan_command(client: Client, args: Dict[str, Any]):
 
     res = client.create_scan(name, repo_id, policy_id, plugin_id, description, zone_id, schedule, asset_ids,
                              ips, scan_virtual_hosts, report_ids, credentials, timeout_action, max_scan_time,
-                             dhcp_track, rollover_type, dependent)
+                             dhcp_track, rollover_type, dependent, start_time, repeat_rule_freq, repeat_rule_interval,
+                             repeat_rule_by_day, enabled, time_zone)
 
     if not res or 'response' not in res:
         return_error('Error: Could not retrieve the scan')

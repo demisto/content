@@ -18,9 +18,10 @@ configuration:
   displaypassword: secret key
   section: Connect
 - display: Username
+  hiddenusername: true
+  hiddenpassword: true
   name: credentials
   required: false
-  hidden: true
   type: 9
   section: Connect
 - display: Trust any certificate (not secure)
@@ -484,38 +485,44 @@ script:
       type: number
   - arguments:
     - default: false
-      description: Scan name
+      description: Scan name.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: Policy ID, can be retrieved from list-policies command
+      description: Policy ID, can be retrieved from list-policies command.
       isArray: false
       name: policy_id
       required: true
       secret: false
     - default: false
-      description: Scan description
+      description: Plugin ID.
+      isArray: false
+      name: plugin_id
+      required: true
+      secret: false
+    - default: false
+      description: Scan description.
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
-      description: Scan Repository ID, can be retrieved from list-repositories command
+      description: Scan Repository ID, can be retrieved from list-repositories command.
       isArray: false
       name: repository_id
       required: true
       secret: false
     - default: false
-      description: Scan zone ID (default is all zones), can be retrieved from list-zones command
+      description: Scan zone ID (default is all zones), can be retrieved from list-zones command.
       isArray: false
       name: zone_id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Schedule for the scan
+      description: Schedule for the scan.
       isArray: false
       name: schedule
       predefined:
@@ -523,11 +530,12 @@ script:
       - ical
       - never
       - rollover
+      - now
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Either all assets or comma separated asset IDs to scan, can be retrieved from list-assets command
+      description: Either all assets or comma separated asset IDs to scan, can be retrieved from list-assets command.
       isArray: true
       name: asset_ids
       predefined:
@@ -537,7 +545,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to includes virtual hosts, default false
+      description: Whether to includes virtual hosts, default false.
       isArray: false
       name: scan_virtual_hosts
       predefined:
@@ -546,26 +554,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma separated IPs to scan e.g 10.0.0.1,10.0.0.2
+      description: Comma separated IPs to scan e.g 10.0.0.1,10.0.0.2 .
       isArray: false
       name: ip_list
       required: false
       secret: false
     - default: false
-      description: Comma separated list of report definition IDs to create post-scan, can be retrieved from list-report-definitions command
+      description: Comma separated list of report definition IDs to create post-scan, can be retrieved from list-report-definitions command.
       isArray: true
       name: report_ids
       required: false
       secret: false
     - default: false
-      description: Comma separated credentials IDs to use, can be retrieved from list-credentials command
+      description: Comma separated credentials IDs to use, can be retrieved from list-credentials command.
       isArray: true
       name: credentials
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Scan timeout action, default is import
+      description: Scan timeout action, default is import.
       isArray: false
       name: timeout_action
       predefined:
@@ -575,14 +583,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximum scan run time in hours, default is 1
+      description: Maximum scan run time in hours, default is 1.
       isArray: false
       name: max_scan_time
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Track hosts which have been issued new IP address, (e.g. DHCP)
+      description: Track hosts which have been issued new IP address, (e.g. DHCP).
       isArray: false
       name: dhcp_tracking
       predefined:
@@ -592,7 +600,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Scan rollover type
+      description: Scan rollover type.
       isArray: false
       name: rollover_type
       predefined:
@@ -600,11 +608,59 @@ script:
       required: false
       secret: false
     - default: false
-      description: Dependent scan ID in case of a dependent schedule, can be retrieved from list-scans command
+      description: Dependent scan ID in case of a dependent schedule, can be retrieved from list-scans command.
       isArray: false
       name: dependent_id
       required: false
       secret: false
+    - default: false
+      description: 'The timezone for the given start_time, possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html..'
+      isArray: false
+      name: time_zone
+      required: false
+      secret: false
+    - default: false
+      description: The scan start time, should be in the format of YYYY-MM-DD:HH:MM:SS or relative timestamp (i.e now, 3 days).
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: to specify repeating events based on an interval of a repeat_rule_freq or more.
+      isArray: false
+      name: repeat_rule_freq
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - HOURLY 
+      - DAILY
+      - WEEKLY 
+      - MONTHLY 
+      - YEARLY
+    - default: false
+      description: 'the number of repeat_rule_freq between each interval (for example: If repeat_rule_freq=DAILY and repeat_rule_interval=8 it means every eight days.)'
+      isArray: false
+      name: repeat_rule_interval
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of days of the week to run the schedule at. Possible values are: SU, MO, TU, WE, TH, FR, SA.'
+      isArray: yes
+      name: repeat_rule_interval
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The "enabled" field can only be set to "false" for schedules of type "ical". For all other schedules types, "enabled" is set to "true".
+      isArray: false
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+      defaultValue: 'true'
     deprecated: false
     description: Create a scan on Tenable.sc
     execution: false
