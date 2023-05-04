@@ -180,6 +180,7 @@ def search_incidents(args: Dict):   # pragma: no cover
                 add_headers: List[str] = args.get("add_fields_to_summarize_context", '').split(",")
                 headers = headers + add_headers
         md = tableToMarkdown(name="Incidents found", t=data, headers=headers)
+    demisto.debug(f'amount of incidents found: {len(data)}')
     return md, data, res
 
 
