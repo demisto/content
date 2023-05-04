@@ -10,6 +10,8 @@ from CommonServerPython import *  # noqa: F401
 
 
 
+
+
 import asyncio
 import concurrent
 import logging.handlers
@@ -2653,10 +2655,21 @@ def conversation_history():
         limit = 100
 
 
-    body = {
-        'channel': channel_id,
-        'limit': limit
-    }
+    conversation_id = demisto.args().get('conversation_id')
+    if conversation_id == None:
+        body = {
+            'channel': channel_id,
+            'limit': limit
+        }
+    else:
+        body = {
+            'channel': channel_id,
+            'oldest': conversation_id,
+            'inclusive': "true",
+            'limit': 1
+        }
+
+
 
     raw_response = send_slack_request_sync(CLIENT, 'conversations.history', http_verb="GET", body=body)
     messages = raw_response['messages']
@@ -2671,12 +2684,38 @@ def conversation_history():
                 }
                 user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
                 user_details = user_details_response['user']
+                if 'thread_ts' in message:
+                    context = {
+                        'Type': message['type'],
+                        'Text': message['text'],
+                        'UserId': message['user'],
+                        'Name': user_details['name'],
+                        'FullName': user_details['real_name'],
+                        'TimeStamp': message['ts'],
+                        'HasReplies': 'Yes',
+                        'ThreadTimeStamp': message['thread_ts']
+                    }
+                else:
+                    context = {
+                        'Type': message['type'],
+                        'Text': message['text'],
+                        'UserId': message['user'],
+                        'Name': user_details['name'],
+                        'FullName': user_details['real_name'],
+                        'TimeStamp': message['ts'],
+                        'HasReplies': 'No',
+                        'ThreadTimeStamp': 'N/A'
+                    }
+            elif 'subtype' in message and 'thread_ts' in message:
                 context = {
                     'Type': message['type'],
                     'Text': message['text'],
-                    'UserId': message['user'],
-                    'Name': user_details['name'],
-                    'FullName': user_details['real_name']
+                    'UserId': message['username'],
+                    'Name': message['username'],
+                    'FullName': message['username'],
+                    'TimeStamp': message['ts'],
+                    'HasReplies': 'Yes',
+                    'ThreadTimeStamp': message['thread_ts']
                 }
             else:
                 context = {
@@ -2684,7 +2723,10 @@ def conversation_history():
                     'Text': message['text'],
                     'UserId': message['username'],
                     'Name': message['username'],
-                    'FullName': message['username']
+                    'FullName': message['username'],
+                    'TimeStamp': message['ts'],
+                    'HasReplies': 'No',
+                    'ThreadTimeStamp': "N/A"
                 }
             readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
 
@@ -2699,12 +2741,40 @@ def conversation_history():
                 }
                 user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
                 user_details = user_details_response['user']
-                entry ={
+                if 'thread_ts' in message:
+                    entry = {
+                        'Type': message['type'],
+                        'Text': message['text'],
+                        'UserId': message['user'],
+                        'Name': user_details['name'],
+                        'FullName': user_details['real_name'],
+                        'TimeStamp': message['ts'],
+                        'HasReplies': 'Yes',
+                        'ThreadTimeStamp': message['thread_ts']
+                    }
+                    context.append(entry)
+                else:
+                    entry = {
+                        'Type': message['type'],
+                        'Text': message['text'],
+                        'UserId': message['user'],
+                        'Name': user_details['name'],
+                        'FullName': user_details['real_name'],
+                        'TimeStamp': message['ts'],
+                        'HasReplies': 'No',
+                        'ThreadTimeStamp': 'N/A'
+                    }
+                    context.append(entry)
+            elif 'subtype' in message and 'thread_ts' in message:
+                entry = {
                     'Type': message['type'],
                     'Text': message['text'],
-                    'UserId': message['user'],
-                    'Name': user_details['name'],
-                    'FullName': user_details['real_name']
+                    'UserId': message['username'],
+                    'Name': message['username'],
+                    'FullName': message['username'],
+                    'TimeStamp': message['ts'],
+                    'HasReplies': 'Yes',
+                    'ThreadTimeStamp': message['thread_ts']
                 }
                 context.append(entry)
             else:
@@ -2713,7 +2783,10 @@ def conversation_history():
                     'Text': message['text'],
                     'UserId': message['username'],
                     'Name': message['username'],
-                    'FullName': message['username']
+                    'FullName': message['username'],
+                    'TimeStamp': message['ts'],
+                    'HasReplies': 'No',
+                    'ThreadTimeStamp': "N/A"
                 }
                 context.append(entry)
         readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
@@ -2723,6 +2796,102 @@ def conversation_history():
         'Type': entryTypes['note'],
         'Contents': messages,
         'EntryContext': {'Slack.Messages': context},
+        'ContentsFormat': formats['json'],
+        'HumanReadable': readable_output,
+        'ReadableContentsFormat': formats['markdown']
+    })
+
+
+def conversation_replies():
+    """
+    Retrieves replies to specific messages, regardless of whether it's
+    from a public or private channel, direct message, or otherwise.
+    """
+
+    channel_id = demisto.args()['channel_id']
+    thread_id = demisto.args()['thread_id']
+    limit = demisto.args().get('limit')
+    if limit == None:
+        limit = 100
+
+
+    body = {
+        'channel': channel_id,
+        'ts': thread_id,
+        'limit': limit
+        }
+
+
+    raw_response = send_slack_request_sync(CLIENT, 'conversations.replies', http_verb="GET", body=body)
+    messages = raw_response['messages']
+
+
+    context = []
+    for message in messages:
+        if 'subtype' not in message:
+            user_id = message['user']
+            body = {
+                'user': user_id
+            }
+            user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
+            user_details = user_details_response['user']
+            if 'reply_count' not in message:
+                entry = {
+                    'Type': message['type'],
+                    'Text': message['text'],
+                    'UserId': message['user'],
+                    'Name': user_details['name'],
+                    'FullName': user_details['real_name'],
+                    'TimeStamp': message['ts'],
+                    'ThreadTimeStamp': message['thread_ts'],
+                    'IsParent': 'No'
+                }
+                context.append(entry)
+            else:
+                entry = {
+                    'Type': message['type'],
+                    'Text': message['text'],
+                    'UserId': message['user'],
+                    'Name': user_details['name'],
+                    'FullName': user_details['real_name'],
+                    'TimeStamp': message['ts'],
+                    'ThreadTimeStamp': message['thread_ts'],
+                    'IsParent': 'Yes'
+                }
+                context.append(entry)
+        else:
+            if 'reply_count' not in message:
+                entry = {
+                    'Type': message['type'],
+                    'Text': message['text'],
+                    'UserId': message['username'],
+                    'Name': message['username'],
+                    'FullName': message['username'],
+                    'TimeStamp': message['ts'],
+                    'ThreadTimeStamp': message['thread_ts'],
+                    'IsParent': 'No'
+                }
+            else:
+                entry = {
+                    'Type': message['type'],
+                    'Text': message['text'],
+                    'UserId': message['username'],
+                    'Name': message['username'],
+                    'FullName': message['username'],
+                    'TimeStamp': message['ts'],
+                    'ThreadTimeStamp': message['thread_ts'],
+                    'IsParent': 'Yes'
+                }
+                context.append(entry)
+
+
+    readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
+
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': messages,
+        'EntryContext': {'Slack.Threads': context},
         'ContentsFormat': formats['json'],
         'HumanReadable': readable_output,
         'ReadableContentsFormat': formats['markdown']
@@ -2915,7 +3084,8 @@ def main() -> None:
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
         'slack-pin-message': pin_message,
-        'slack-get-conversation-history': conversation_history
+        'slack-get-conversation-history': conversation_history,
+        'slack-get-conversation-replies': conversation_replies
     }
 
     command_name: str = demisto.command()
@@ -2942,6 +3112,7 @@ def main() -> None:
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
+
 
 
 
