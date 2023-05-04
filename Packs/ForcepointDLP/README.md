@@ -1,4 +1,4 @@
-# <Product Name>
+# Forcepoint DLP
 This pack includes Cortex XSIAM content.
 
 
