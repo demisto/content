@@ -102,9 +102,9 @@ class Client(BaseClient):
             try:
                 data = json.loads(raw_filter)
                 data["limit"] = limit
-            except Exception as e:
-                return_error(f"The provided filter must be in JSON format as detailed at https://apidocs.securitycloud.symantec.com/#/: "
-                             f"\nError: {e}")
+            except ValueError as e:
+                raise ValueError(f"The provided filter must be in JSON format as detailed at https://apidocs.securitycloud.symantec.com/#/: "
+                                 f"\nError: {e}")
         else:
             data = {"limit": limit, "select": INCIDENTS_LIST_BODY}
             if order_by:
@@ -283,7 +283,7 @@ class Client(BaseClient):
         data = {
             "name": pattern_name,
             "description": pattern_description,
-            "ruleType": 4
+            "ruleType": 4  # ruleType 4 = Sender pattern
         }
 
         if new_ips:
@@ -310,7 +310,7 @@ class Client(BaseClient):
         data = {
             "name": pattern_name,
             "description": pattern_description,
-            "ruleType": 2
+            "ruleType": 2  # ruleType 2 = Recipient pattern
         }
 
         if new_ips:
@@ -864,11 +864,8 @@ def get_incident_original_message_command(client: Client, args: Dict[str, Any]):
             original_filename = results.headers.get('Content-Disposition').split('=')[1]
         except DemistoException as e:
             original_filename = 'unknown'
-        demisto.results(fileResult(original_filename, original_message_file))
+        return fileResult(original_filename, original_message_file)
 
-        return CommandResults(
-            readable_output=f"Symantec DLP incident {incident_id} original message"
-        )
     except DemistoException as e:
         if '401' in str(e):
             raise DemistoException(f"Error 401: Incident access not authorized or the incident does not exist. {e.res}")
@@ -888,6 +885,7 @@ def get_report_filters_command(client: Client, args: Dict[str, Any]):
             readable_output=report_results['filterString'],
             outputs_prefix='SymantecDLP.ReportFilter',
             outputs=report_results,
+            outputs_key_field="id"
         )
     except DemistoException as e:
         if '401' in str(e):
@@ -915,20 +913,18 @@ def get_sender_recipient_pattern_command(client: Client, args: Dict[str, Any]):
     """
     Fetch the original message
     """
-    try:
-        pattern_id = args.get('pattern_id')
-        pattern_results = client.get_sender_recipient_pattern_request(pattern_id)
+    pattern_id = args.get('pattern_id')
+    pattern_results = client.get_sender_recipient_pattern_request(pattern_id)
 
-        return CommandResults(
-            readable_output=tableToMarkdown(
-                name=pattern_results['name'],
-                t=pattern_results
-            ),
-            outputs_prefix='SymantecDLP.SenderRecipientPattern',
-            outputs=pattern_results,
-        )
-    except DemistoException as e:
-        raise DemistoException(f"Error {e.res}")
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            name=pattern_results.get('name') or f'Pattern Results for Pattern ID {pattern_id}',
+            t=pattern_results,
+        ),
+        outputs_prefix='SymantecDLP.SenderRecipientPattern',
+        outputs=pattern_results,
+        outputs_key_field='id'
+    )
 
 
 def list_sender_recipient_patterns_command(client: Client) -> CommandResults:
@@ -941,6 +937,7 @@ def list_sender_recipient_patterns_command(client: Client) -> CommandResults:
         ),
         outputs_prefix='SymantecDLP.Patterns',
         outputs=patterns_results,
+        outputs_key_field='id'
     )
 
 
@@ -948,77 +945,48 @@ def update_sender_pattern_command(client: Client, args: Dict[str, Any]):
     """
     Update the sender pattern
     """
-    try:
-        pattern_id = args.get('pattern_id')
-        pattern_name = args.get('name')
-        pattern_description = args.get('description')
-        new_ips = args.get('ips')
-        new_users = args.get('users')
+    pattern_id = args.get('pattern_id')
+    pattern_name = args.get('name')
+    pattern_description = args.get('description')
+    new_ips = argToList(args.get('ips'))
+    new_users = argToList(args.get('users'))
 
-        if new_ips and ',' in new_ips:
-            new_ips = [entry.strip() for entry in new_ips.split(',')]
-        elif new_ips:
-            new_ips = [new_ips.strip()]
+    update_results = client.update_sender_pattern_request(pattern_id, pattern_name, pattern_description, new_ips, new_users)
 
-        if new_users and ',' in new_users:
-            new_users = [entry.strip() for entry in new_users.split(',')]
-        elif new_users:
-            new_users = [new_users.strip()]
-
-        update_results = client.update_sender_pattern_request(pattern_id, pattern_name, pattern_description, new_ips, new_users)
-
-        return CommandResults(
-            readable_output=tableToMarkdown(
-                "Sender Pattern Update Results",
-                update_results
-            ),
-            outputs_prefix='SymantecDLP.Update',
-            outputs=update_results,
-        )
-    except DemistoException as e:
-        raise DemistoException(f"{e}")
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Sender Pattern Update Results",
+            update_results
+        ),
+        outputs_prefix='SymantecDLP.Update',
+        outputs=update_results,
+        outputs_key_field="id"
+    )
 
 
 def update_recipient_pattern_command(client: Client, args: Dict[str, Any]):
     """
     Update the sender pattern
     """
-    try:
-        pattern_id = args.get('pattern_id')
-        pattern_name = args.get('name')
-        pattern_description = args.get('description')
-        new_ips = args.get('ips')
-        new_emails = args.get('emails')
-        new_domains = args.get('domains')
+    pattern_id = args.get('pattern_id')
+    pattern_name = args.get('name')
+    pattern_description = args.get('description')
+    new_ips = argToList(args.get('ips'))
+    new_emails = argToList(args.get('emails'))
+    new_domains = argToList(args.get('domains'))
 
-        if new_ips and ',' in new_ips:
-            new_ips = [entry.strip() for entry in new_ips.split(',')]
-        elif new_ips:
-            new_ips = [new_ips.strip()]
+    update_results = client.update_recipient_pattern_request(
+        pattern_id, pattern_name, pattern_description, new_ips, new_emails, new_domains)
 
-        if new_emails and ',' in new_emails:
-            new_emails = [entry.strip() for entry in new_emails.split(',')]
-        elif new_emails:
-            new_emails = [new_emails.strip()]
-
-        if new_domains and ',' in new_domains:
-            new_domains = [entry.strip() for entry in new_domains.split(',')]
-        elif new_domains:
-            new_domains = [new_domains.strip()]
-
-        update_results = client.update_recipient_pattern_request(
-            pattern_id, pattern_name, pattern_description, new_ips, new_emails, new_domains)
-
-        return CommandResults(
-            readable_output=tableToMarkdown(
-                "Sender Pattern Update Results",
-                update_results
-            ),
-            outputs_prefix='SymantecDLP.Update',
-            outputs=update_results,
-        )
-    except DemistoException as e:
-        raise DemistoException(f"{e}")
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Sender Pattern Update Results",
+            update_results
+        ),
+        outputs_prefix='SymantecDLP.Update',
+        outputs=update_results,
+        outputs_key_field="id"
+    )
 
 
 def get_message_body_command(client: Client, args: Dict[str, Any]):
@@ -1039,6 +1007,7 @@ def get_message_body_command(client: Client, args: Dict[str, Any]):
             ),
             outputs_prefix='SymantecDLP.MessageBody',
             outputs=results,
+            outputs_key_field="id"
         )
     except DemistoException as e:
         if '401' in str(e):

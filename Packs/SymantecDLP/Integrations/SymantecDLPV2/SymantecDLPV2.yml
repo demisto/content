@@ -495,27 +495,44 @@ script:
       required: true
     description: Fetches the original message from an incident.
     name: symantec-dlp-get-incident-original-message
+    outputs:
+    - contextPath: File
+      description: Original message file from the incident
+      type: unknown
   - arguments:
     - description: Report ID for which to retrieve filters.
       name: report_id
       required: true
     description: Retrieve the filter criteria for a saved search in the Enforce console by report ID.
     name: symantec-dlp-get-report-filters
+    outputs:
+    - contextPath: SymantecDLP.ReportFilter
+      description: The filter criteria for a saved search in the Enforce console
+      type: string
   - arguments: []
     description: Returns details for all SDLP users from the Enforce console.
     name: symantec-dlp-list-users
     outputs:
     - contextPath: SymantecDLP.Users
       description: List of SDLP users and details
+      type: string
   - arguments:
     - description: Pattern ID for which to retrieve pattern details
       name: pattern_id
       required: true
     description: Returns a sender/recipient pattern.
     name: symantec-dlp-get-sender-recipient-pattern
+    outputs:
+    - contextPath: SymantecDLP.SenderRecipientPattern
+      description: Sender/recipient pattern returned from the Enforce console.
+      type: string
   - arguments: []
     description: Returns a list of all sender/recipient patterns from the Enforce console.
     name: symantec-dlp-list-sender-recipient-patterns
+    outputs:
+    - contextPath: SymantecDLP.Patterns
+      description: ' The list of all sender/recipient patterns returned from the Enforce console.'
+      type: string
   - arguments:
     - description: ID number of the pattern to update
       name: pattern_id
@@ -534,6 +551,10 @@ script:
     description: Updates a sender pattern in the Enforce console.
     execution: true
     name: symantec-dlp-update-sender-pattern
+    outputs:
+    - contextPath: SymantecDLP.Update
+      description: Results of updating the sender pattern from the Enforce Console.
+      type: string
   - arguments:
     - description: ID number of the pattern to update
       name: pattern_id
@@ -555,13 +576,21 @@ script:
     description: Updates a recipient pattern in the Enforce console.
     execution: true
     name: symantec-dlp-update-recipient-pattern
+    outputs:
+    - contextPath: SymantecDLP.Update
+      description: Results of updating the recipient pattern from the Enforce Console.
+      type: string
   - arguments:
     - description: The incident ID.
       name: incident_id
       required: true
     description: Returns the message body from the Enforce console by incident ID
     name: symantec-dlp-get-message-body
-  dockerimage: demisto/python3:3.10.11.54132
+    outputs:
+    - contextPath: SymantecDLP.MessageBody
+      description: Message body for the incident returned by the Enforce console.
+      type: string
+  dockerimage: demisto/python3:3.10.11.57293
   isfetch: true
   runonce: false
   script: ''
