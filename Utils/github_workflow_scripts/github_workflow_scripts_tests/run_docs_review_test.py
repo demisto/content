@@ -5,7 +5,7 @@ from Utils.github_workflow_scripts.utils import flatten_call_args
 
 
 class TestsRunDocsReview:
-    def test_file_name_includes_apostrophe(self, mocker):
+    def test_file_name_includes_apostrophe(self, mocker, capsys):
         """
             Given:
                 - A string contains a file name with an apostrophe.
@@ -27,5 +27,7 @@ class TestsRunDocsReview:
         mocker.patch('Utils.github_workflow_scripts.run_docs_review.parse_changed_files_names', return_value=args)
 
         result = run_docs_review()
-        assert sdk_docs_reviewer_starting_string in flatten_call_args(logger_info.call_args_list)
+        # When demisto-sdk 1.14.1 is released, it's safe to remove the capsys check
+        assert sdk_docs_reviewer_starting_string in flatten_call_args(logger_info.call_args_list) or \
+            sdk_docs_reviewer_starting_string in capsys.readouterr().out
         assert result == expected_exit_code_of_run_docs_review
