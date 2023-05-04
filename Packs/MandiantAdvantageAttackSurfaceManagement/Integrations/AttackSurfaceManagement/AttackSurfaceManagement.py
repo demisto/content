@@ -308,13 +308,12 @@ def fetch_incidents(client: Client):
     if last_run and 'start_time' in last_run and last_run['start_time']:
         last_start_time = dateutil.parser.parse(last_run.get('start_time'))
     else:
-        last_start_time = datetime.now() - timedelta(days=int(params['initial_lookback']))
+        last_start_time = dateparser.parse(params.get("first_fetch"), settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
     issues = client.get_issues_since_time(last_start_time)
     most_recent_update = None
 
     parsed_issues = []
-
 
     for issue in issues:
         incident_details = client.get_issue_details(issue["id"])
