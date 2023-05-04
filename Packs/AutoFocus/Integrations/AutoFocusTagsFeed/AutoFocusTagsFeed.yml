@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: AutoFocusTagsFeed
   version: -1
-defaultEnabled: true
+defaultEnabled: false
 configuration:
 - display: AutoFocus Endpoint URL
   name: url
