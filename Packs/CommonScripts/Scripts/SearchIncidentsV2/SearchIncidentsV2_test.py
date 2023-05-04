@@ -255,7 +255,7 @@ def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args, expected
        - Case F: Total of 205 incidents matching in XSOAR and limit = 105.5
        - Case G: Total of 700 incidents and only 300 incidents which match type = 'A' and limit = 500
        - Case H: Total of 1500 incidents and only 700 incidents which match type = 'A' and limit = 250
-       - Case I: Total of 500 incidents and only and only 1 incident that its name = 'incident-8' and limit = 100
+       - Case I: Total of 500 incidents and only 1 incident that its name = 'incident-8' and limit = 100
 
     When:
        - Running the main flow
