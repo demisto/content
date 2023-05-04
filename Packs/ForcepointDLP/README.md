@@ -8,7 +8,7 @@ Use the Settings > General > Remediation page in the Data Security module of the
 1. Under Syslog Settings, enter the IP address or hostname of the syslog server, and the logging port. 
 2. To set the origin of syslog messages, select Use syslog facility for these messages, then use the drop-down menu to select the type of message to appear in the syslog:
    * **User-level Messages (#1)** logs generic user-level messages, such as "username/password expired".
-   * Security/Authorization Messages (#4) logs authentication- and authorization-related commands, such as "authentication failed for admin user".
+   * **Security/Authorization Messages (#4)** logs authentication and authorization-related commands, such as "authentication failed for admin user".
    * Security/Authorization Messages (#10) logs non-system authorization messages inside a protected file (for information of a sensitive nature, such as passwords).
    * Local use 0-7 (#16-23) specifies unreserved facilities available for any local use. Processes and daemons that have not been explicitly assigned a facility can use any of the "local use" facilities. Configuration is done in the syslog.conf file.
    To send incident data to the syslog, select Audit Incident > Send Syslog Message in the action plan for the policy.
