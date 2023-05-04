@@ -2395,8 +2395,8 @@ class Pack(object):
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
                             'dependency_packs': content_item.get('dependency_packs', {}),
-                            'fromVersion': content_item.get('fromVersion', ''),
-                            'toVersion': content_item.get('toVersion', ''),
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         }
 
