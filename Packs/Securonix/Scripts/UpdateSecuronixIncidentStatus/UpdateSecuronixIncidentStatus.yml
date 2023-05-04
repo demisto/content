@@ -34,7 +34,7 @@ dependson:
   - '|||securonix-xsoar-state-mapping-get'
   - '|||securonix-add-comment-to-incident'
 runonce: false
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.11.56857
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
