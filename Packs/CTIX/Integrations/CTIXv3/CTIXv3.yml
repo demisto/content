@@ -1766,7 +1766,7 @@ script:
       description: any parameters you would like to pass, in JSON format
       isArray: false
       required: false
-  dockerimage: demisto/python3:3.10.11.56082
+  dockerimage: demisto/python3:3.10.11.56857
   runonce: false
   subtype: python3
 tests:
