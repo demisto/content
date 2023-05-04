@@ -10,6 +10,10 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
+from freezegun import freeze_time
+import AttackSurfaceManagement
+from CommonServerPython import *
+import pytest
 import json
 import io
 
@@ -18,11 +22,6 @@ import os
 
 sys.path.append(os.getcwd())
 
-import pytest
-from CommonServerPython import *
-import AttackSurfaceManagement
-
-from freezegun import freeze_time
 
 SERVER_URL = "https://asm-api.advantage.mandiant.com/api/v1"
 
@@ -490,6 +489,7 @@ MOCK_GET_REMOTE_DATA_NOTES_RESPONSE = {
     ]
 }
 
+
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
@@ -551,6 +551,7 @@ def test_get_collections_with_project(client: AttackSurfaceManagement.Client, re
     assert collection_result['ID'] == 'attacksurface_mw3tdwq'
     assert collection_result['Owner'] == 'ASMQA_AttackSurfaceAPP'
 
+
 @freeze_time(datetime.fromtimestamp(1681768194))
 def test_fetch_incidents(client: AttackSurfaceManagement.Client, requests_mock, mocker):
     requests_mock.get(f'{SERVER_URL}/search/issues/collection%3A12341234%20collection%3A23452345%20last_seen_before%3A2023-04-17T15%3A49%3A54.000000Z%20last_seen_after%3A2023-03-18T15%3A49%3A54.000000Z?page=0',
@@ -576,13 +577,14 @@ def test_fetch_incidents(client: AttackSurfaceManagement.Client, requests_mock, 
 
     assert issue_result['dbotMirrorId'] == '8e02af6c136f297aa8fece36726a6d659bf59f512ca8a90350d93038215a19d7'
 
+
 @freeze_time(datetime.fromtimestamp(1681768194))
 def test_get_remote_data(client: AttackSurfaceManagement.Client, requests_mock, mocker):
     requests_mock.get(f'{SERVER_URL}/issues/2e0134b5b346a5d0a9d5ee0efe7dfb69dfcc5c1cf65a6df63568f85dc587a120',
                       headers={'content-type': 'application/json'}, json=MOCK_GET_REMOTE_DATA_RESPONSE)
 
     requests_mock.get(f'{SERVER_URL}/notes/issue/2e0134b5b346a5d0a9d5ee0efe7dfb69dfcc5c1cf65a6df63568f85dc587a120',
-                      headers={'content-type': 'application/json'},  json=MOCK_GET_REMOTE_DATA_NOTES_RESPONSE)
+                      headers={'content-type': 'application/json'}, json=MOCK_GET_REMOTE_DATA_NOTES_RESPONSE)
 
     results = AttackSurfaceManagement.get_remote_data_command(client,
                                                               {"id": "2e0134b5b346a5d0a9d5ee0efe7dfb69dfcc5c1cf65a6df63568f85dc587a120",
@@ -601,5 +603,5 @@ def test_get_remote_data(client: AttackSurfaceManagement.Client, requests_mock, 
     assert notes_data['Contents'] == '- testing a note that supports markdown\n'\
                                      '- and has some neat new features\n'\
                                      'test_user'
-    assert notes_data['Note'] == True
+    assert notes_data["Note"] is True
     assert notes_data['Tags'] == ['note_from_ma_asm']

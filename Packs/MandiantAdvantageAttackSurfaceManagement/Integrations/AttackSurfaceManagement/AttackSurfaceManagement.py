@@ -206,6 +206,8 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 # TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+
 def helper_create_incident(issue: dict, project_id: int) -> dict:
     severity_map = {1: 4, 2: 3, 3: 2, 4: 1, 5: 0.5}
 
@@ -230,6 +232,7 @@ def helper_create_incident(issue: dict, project_id: int) -> dict:
     }
 
     return issue
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -346,7 +349,6 @@ def fetch_incidents(client: Client):
     return demisto.incidents(parsed_issues)
 
 
-
 def get_remote_data_command(client: Client, args: dict):
     parsed_args = GetRemoteDataArgs(args)
     if parsed_args.last_update:
@@ -390,6 +392,7 @@ def get_remote_data_command(client: Client, args: dict):
     except Exception as e:
         raise e
 
+
 def update_remote_system_command(client: Client, args: dict):
     parsed_args = UpdateRemoteSystemArgs(args)
 
@@ -399,8 +402,6 @@ def update_remote_system_command(client: Client, args: dict):
     demisto.debug(parsed_args.inc_status)
 
     remote_incident_id = parsed_args.remote_incident_id
-
-    updated_incident: dict = {}
 
     if not parsed_args.remote_incident_id or parsed_args.incident_changed:
         if parsed_args.remote_incident_id:
