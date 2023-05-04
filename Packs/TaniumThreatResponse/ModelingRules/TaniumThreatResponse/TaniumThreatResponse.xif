@@ -18,7 +18,7 @@ alter
         xdm.alert.description = to_string(json_extract(_raw_log, "$.Match Details.match")),
         xdm.source.user.username = json_extract_scalar(_raw_log, "$.Match Details.match.properties.user"),
         xdm.source.process.name = json_extract_scalar(_raw_log, "$.Match Details.match.properties.name"),
-        xdm.source.process.pid = json_extract_scalar(_raw_log, "$.Match Details.match.properties.pid"),
+        xdm.source.process.pid = to_integer(json_extract_scalar(_raw_log, "$.Match Details.match.properties.pid")),
         xdm.source.process.command_line = json_extract_scalar(_raw_log, "$.Match Details.match.properties.args"),
         xdm.source.process.parent_id = json_extract_scalar(_raw_log, "$.Match Details.match.properties.ppid"),
-        xdm.source.process.executable.md5 = json_extract_scalar(_raw_log, "$.Match Details.match.properties.file.md5");
+        xdm.source.process.executable.md5 = json_extract_scalar(_raw_log, "$.Match Details.match.properties.fil)e.md5");
