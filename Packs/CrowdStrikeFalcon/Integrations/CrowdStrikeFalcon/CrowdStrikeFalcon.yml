@@ -3833,7 +3833,7 @@ script:
       required: true
     description: Cancel ODS scans.
     name: cs-falcon-ods-cancel-scan
-  dockerimage: demisto/python3:3.10.11.56082
+  dockerimage: demisto/python3:3.10.11.56857
   isfetch: true
   ismappable: true
   isremotesyncin: true
