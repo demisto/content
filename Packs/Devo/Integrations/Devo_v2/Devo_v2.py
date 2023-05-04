@@ -16,6 +16,7 @@ from typing import List, Dict, Set
 from devodsconnector import error_checking
 from functools import partial
 
+
 ''' GLOBAL VARS '''
 ALLOW_INSECURE = demisto.params().get('insecure', False)
 READER_ENDPOINT = demisto.params().get('reader_endpoint', None)
@@ -29,7 +30,6 @@ FETCH_INCIDENTS_LIMIT = demisto.params().get('fetch_incidents_limit') or 50
 FETCH_INCIDENTS_DEDUPE = demisto.params().get(
     'fetch_incidents_deduplication', None)
 TIMEOUT = demisto.params().get('timeout', '60')
-ITEMS_PER_PAGE = demisto.params().get('items_per_page', "1000")
 PORT = arg_to_number(demisto.params().get('port', '443') or '443')
 HEALTHCHECK_WRITER_RECORD = [{'hello': 'world', 'from': 'demisto-integration'}]
 HEALTHCHECK_WRITER_TABLE = 'test.keep.free'
@@ -41,8 +41,7 @@ COUNT_MULTI_TABLE = 0
 COUNT_ALERTS = 0
 USER_ALERT_TABLE = demisto.params().get('table_name', None)
 USER_PREFIX = demisto.params().get('prefix', None)
-INCIDENTS_FETCH_INTERVAL = demisto.params().get(
-    'incidentFetchInterval', 1) * 60
+INCIDENTS_FETCH_INTERVAL = demisto.params().get('incidentFetchInterval', 1) * 60
 DEFAULT_ALERT_TABLE = "siem.logtrust.alert.info"
 ALERTS_QUERY = '''
 from
@@ -85,7 +84,6 @@ SEVERITY_LEVELS_MAP = {
     'critical': 4
 }
 
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -100,17 +98,21 @@ def alert_to_incident(alert, user_prefix):
     alert_details = str(alert[alert_id])
     alert_occurred = demisto_ISO(float(alert[event_date]) / 1000)
     alert_labels = []
-
-    if demisto.get(alert[extra_data], 'alertPriority'):
-        alert_severity = SEVERITY_LEVELS_MAP[str(
-            alert[extra_data]['alertPriority']).lower()]
-
-    if demisto.get(alert[extra_data], 'alertName'):
-        alert_name = alert[extra_data]['alertName']
-
-    if demisto.get(alert[extra_data], 'alertDescription'):
-        alert_description = alert[extra_data]['alertDescription']
-
+    try:
+        if demisto.get(alert[extra_data], 'alertPriority'):
+            if alert[extra_data].get('alertPriority') \
+                    and alert[extra_data].get('alertPriority') != "null" \
+                    and str(alert[extra_data]['alertPriority']).lower() in SEVERITY_LEVELS_MAP:
+                alert_severity = SEVERITY_LEVELS_MAP[str(alert[extra_data]['alertPriority']).lower()]
+        if demisto.get(alert[extra_data], 'alertName'):
+            if alert[extra_data].get('alertName') and alert[extra_data].get('alertName') != "null":
+                alert_name = alert[extra_data]['alertName']
+        if demisto.get(alert[extra_data], 'alertDescription'):
+            if alert[extra_data].get('alertDescription') and alert[extra_data].get('alertDescription') != "null":
+                alert_description = alert[extra_data]['alertDescription']
+    except KeyError:
+        demisto.debug(
+            "couldn't get alertPriority, alertName and/or alertDescription, will take default values")
     new_alert: Dict = {
         'devo.metadata.alert': {}
     }
@@ -120,7 +122,6 @@ def alert_to_incident(alert, user_prefix):
         new_alert['devo.metadata.alert'][key] = alert[key]
         alert_labels.append(
             {'type': f'devo.metadata.alert.{key}', 'value': str(alert[key])})
-
     for key in alert[extra_data]:
         new_alert[key] = alert[extra_data][key]
         alert_labels.append(
@@ -130,16 +131,17 @@ def alert_to_incident(alert, user_prefix):
         'name': alert_name,
         'severity': alert_severity,
         'details': alert_details,
+        'description': alert_description,
         'occurred': alert_occurred,
         'labels': alert_labels,
-        'description': alert_description,
         'rawJSON': json.dumps(new_alert)
     }
 
     return incident
 
-
 # Monkey patching for backwards compatibility
+
+
 def get_types(self, linq_query, start, ts_format):
     type_map = self._make_type_map(ts_format)
     stop = self._to_unix(start)
@@ -260,7 +262,7 @@ def get_time_range(timestamp_from, timestamp_to):
             else:
                 t_to = float(timestamp_to)
         else:
-            t_from = date_to_timestamp(timestamp_from, "%Y-%m-%dT%H:%M:%S") / 1000
+            t_from = date_to_timestamp(timestamp_from) / 1000
             if timestamp_to is None:
                 t_to = time.time()
             else:
@@ -271,6 +273,7 @@ def get_time_range(timestamp_from, timestamp_to):
             t_to = time.time()
         else:
             t_to = timestamp_to.timestamp()
+
     return (t_from, t_to)
 
 
@@ -332,7 +335,6 @@ def fetch_incidents():
     last_events: List = []
     cur_events: List = []
     final_events: List = []
-
     new_last_run: Dict = {}
 
     if int(FETCH_INCIDENTS_LIMIT) < 10 or int(FETCH_INCIDENTS_LIMIT) > 100:
@@ -387,8 +389,9 @@ def fetch_incidents():
         if not isinstance(event[extra_data], dict):
             event[extra_data] = json.loads(event[extra_data])
         for ed in event[extra_data]:
-            event[extra_data][ed] = urllib.parse.unquote_plus(
-                event[extra_data][ed])
+            if event[extra_data][ed] and isinstance(event[extra_data][ed], str):
+                event[extra_data][ed] = urllib.parse.unquote_plus(
+                    event[extra_data][ed])
         cur_events.append(event[alert_id])
         inc = alert_to_incident(event, user_prefix)
         incidents.append(inc)
@@ -419,7 +422,7 @@ def run_query_command(offset, items):
     query_timeout = int(demisto.args().get('queryTimeout', TIMEOUT))
     linq_base = demisto.args().get('linqLinkBase', None)
     time_range = get_time_range(timestamp_from, timestamp_to)
-    to_query += f'offset {str(offset)} limit {str(items)}'
+    to_query = to_query + " offset " + str(offset) + " limit " + str(items)
     results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE,
                              timeout=query_timeout)
                    .query(to_query, start=float(time_range[0]), stop=float(time_range[1]),
@@ -481,7 +484,7 @@ def get_alerts_command(offset, items):
     alert_query = ALERTS_QUERY.format(
         table_name=user_alert_table, user_prefix=user_prefix)
 
-    query = f'{alert_query} offset {str(offset)} limit {str(items)}'
+    query = alert_query + " offset " + str(offset) + " limit " + str(items)
     time_range = get_time_range(timestamp_from, timestamp_to)
 
     if alert_filters:
@@ -724,7 +727,7 @@ def main():
             fetch_incidents()
         elif demisto.command() == 'devo-run-query':
             OFFSET = 0
-            items_per_page = int(demisto.args().get('items_per_page', ITEMS_PER_PAGE))
+            items_per_page = int(demisto.args()['items_per_page'])
             if items_per_page <= 0:
                 raise ValueError(
                     'items_per_page should be a positive non-zero value.')
@@ -737,7 +740,7 @@ def main():
                 demisto.results(run_query_command(OFFSET, items_per_page))
         elif demisto.command() == 'devo-get-alerts':
             OFFSET = 0
-            items_per_page = int(demisto.args().get('items_per_page', ITEMS_PER_PAGE))
+            items_per_page = int(demisto.args()['items_per_page'])
             if items_per_page <= 0:
                 raise ValueError(
                     'items_per_page should be a positive non-zero value.')
@@ -750,7 +753,7 @@ def main():
                 demisto.results(get_alerts_command(OFFSET, items_per_page))
         elif demisto.command() == 'devo-multi-table-query':
             OFFSET = 0
-            items_per_page = int(demisto.args().get('items_per_page', ITEMS_PER_PAGE))
+            items_per_page = int(demisto.args()['items_per_page'])
             if items_per_page <= 0:
                 raise ValueError(
                     'items_per_page should be a positive non-zero value.')
@@ -767,7 +770,7 @@ def main():
         elif demisto.command() == 'devo-write-to-lookup-table':
             demisto.results(write_to_lookup_table_command())
     except Exception as e:
-        return_error('Failed to execute command {}. Error: {}'.format(
+        return_error('Failed to execute command {}. Error: {}.'.format(
             demisto.command(), str(e)))
 
 

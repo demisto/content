@@ -11,6 +11,8 @@ requests-mock = "*"
 pytest-asyncio = "*"
 
 [packages]
+demisto-sdk = "*"
+devodsconnector = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.10"
