@@ -1520,8 +1520,8 @@ def validate_args_scan_commands(args):
                 or ip_list or group_name or platform or alias or hostname:
             raise Exception(err_msg)
     elif not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
-                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
-                and not alias and not hostname:
+            and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+            and not alias and not hostname:
         raise Exception(err_msg)
 
 
