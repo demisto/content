@@ -828,7 +828,7 @@ def get_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         return CommandResults(
             raw_response=results,
             readable_output=None if args.get('polled_once') else f"Waiting for request_id={request_id}",
-            outputs_prefix=args.get("output_prefix", "OpsGenie.Request"),
+            outputs_prefix="OpsGenie.Request",
             outputs=None if args.get('polled_once') else {"requestId": request_id},
             scheduled_command=ScheduledCommand(command='opsgenie-get-request',
                                                next_run_in_seconds=int(
