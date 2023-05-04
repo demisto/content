@@ -388,8 +388,7 @@ def get_remote_data_command(client: Client, args: dict):
 
         return GetRemoteDataResponse(new_incident_data, notes_entries)
     except Exception as e:
-        print('error')
-        print(e)
+        raise e
 
 def update_remote_system_command(client: Client, args: dict):
     parsed_args = UpdateRemoteSystemArgs(args)
