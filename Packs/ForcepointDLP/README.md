@@ -18,7 +18,7 @@ Use the Settings > General > Remediation page in the Data Security module of the
    * To define a specific gateway, select **Use the following gateway**, then enter the gateway IP address or hostname and port.
 5. If only recipients of a message should be able to release it from quarantine, select **Validate user before releasing message**.
 The system then ensures that the person attempting to release a message is a recipient of the message, and therefore authorized. Unauthorized users receive an email notification that they are not allowed release the message.
-6. Click OK to save your changes.
+6. Click **OK** to save your changes.
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
