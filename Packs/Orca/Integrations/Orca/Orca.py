@@ -361,11 +361,11 @@ def get_alert_event_log(orca_client: OrcaClient, args: Dict[str, Any]) -> Comman
     context = response.get("event_log", [])
 
     alert_logs = [{
-            "id": item.get("id"),
-            "alert_id": item.get("alert_id"),
-            "type": item.get("type"),
-            "description": item.get("details", {}).get("description")
-        } for item in context]
+        "id": item.get("id"),
+        "alert_id": item.get("alert_id"),
+        "type": item.get("type"),
+        "description": item.get("details", {}).get("description")
+    } for item in context]
 
     return CommandResults(
         readable_output=tableToMarkdown(f"Alert event log ({alert_id})", alert_logs, removeNull=True),
