@@ -42,9 +42,9 @@ def main():
     gitlab_client = gitlab.Gitlab(GITLAB_SERVER_URL, private_token=GITLAB_WRITE_TOKEN, ssl_verify=False)
     gl_project = gitlab_client.projects.get(int(GITLAB_PROJECT_ID))
     gitlab_branches = gl_project.branches.list(as_list=False)
-    print(f'{gitlab_branches.total=}')
+    print(f'{gitlab_branches.total=}')  # type: ignore[union-attr]
 
-    diff_count = gitlab_branches.total - github_branches.totalCount
+    diff_count = gitlab_branches.total - github_branches.totalCount  # type: ignore[operator,union-attr]
     print(f'{diff_count} branches require deletion')
 
     # delete gitlab branches

@@ -233,12 +233,12 @@ def test_summarize_incidents():
 
 
 @pytest.mark.parametrize('amount_of_mocked_incidents, args', [
-    # (306, {}),
-    # (306, {"limit": "200"}),
-    # (105, {"limit": "200"}),
-    # (1000, {"limit": "100"}),
-    # (1000, {"limit": "1100"}),
-    (205, {"limit": "105.5"})
+    (306, {}),
+    (306, {"limit": "200"}),
+    (105, {"limit": "200"}),
+    (1000, {"limit": "100"}),
+    (1000, {"limit": "1100"}),
+    (205, {"limit": "105.5"}),
 ])
 def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args):
     """
