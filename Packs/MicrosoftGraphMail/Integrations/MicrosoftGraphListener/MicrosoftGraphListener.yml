@@ -383,6 +383,10 @@ script:
       isArray: false
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       defaultValue: notFlagged
       description: 'The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged".'
