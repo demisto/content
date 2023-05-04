@@ -72,7 +72,7 @@ NO_RESULTS_FROM_API_MSG = "API didn't return any results for given search parame
 ERROR_MSG = "Something went wrong!\n"
 DATE_ERROR_MSG = "Unable to parse date. Please check help section for right format."
 URL_SEARCH_INCIDENTS = "https://api.datadoghq.com/api/v2/incidents/search"
-AUTHENTICATION_ERROR_MSG = "Authentication Error: Invalid API/APP Key. Make sure API/APP Key, Server URL is correctly set."
+AUTHENTICATION_ERROR_MSG = "Authentication Error: Invalid API Key. Make sure API Key and Server URL are correct."
 
 
 # """ HELPER FUNCTIONS """
@@ -190,53 +190,86 @@ def incident_for_lookup(incident: Dict) -> Dict:
     """
     return {
         "ID": str(incident.get("id")),
-        "Title": str(incident["attributes"]["title"]),
-        "Created": datetime.fromisoformat(incident["attributes"]["created"]).strftime(
-            UI_DATE_FORMAT
-        ),
-        "Customer Impacted": str(incident["attributes"]["customer_impacted"]),
-        "Customer Impact Duration": str(
-            incident["attributes"]["customer_impact_duration"]
-        ),
-        "Customer Impact Scope": str(incident["attributes"]["customer_impact_scope"]),
-        "Customer Impact Start": datetime.fromisoformat(
-            incident["attributes"]["customer_impact_start"]
+        "Title": str(incident.get("attributes", {}).get("title", "")),
+        "Created": datetime.fromisoformat(
+            incident.get("attributes", {}).get("created", "")
         ).strftime(UI_DATE_FORMAT)
-        if incident["attributes"]["customer_impact_start"]
+        if incident.get("attributes", {}).get("created", "")
+        else "",
+        "Customer Impacted": str(
+            incident.get("attributes", {}).get("customer_impacted", "")
+        ),
+        "Customer Impact Duration": str(
+            incident.get("attributes", {}).get("customer_impact_duration", "")
+        ),
+        "Customer Impact Scope": str(
+            incident.get("attributes", {}).get("customer_impact_scope", "")
+        ),
+        "Customer Impact Start": datetime.fromisoformat(
+            incident.get("attributes", {}).get("customer_impact_start", "")
+        ).strftime(UI_DATE_FORMAT)
+        if incident.get("attributes", {}).get("customer_impact_start", "")
         else "",
         "Customer Impact End": datetime.fromisoformat(
-            incident["attributes"]["customer_impact_end"]
+            incident.get("attributes", {}).get("customer_impact_end", "")
         ).strftime(UI_DATE_FORMAT)
-        if incident["attributes"]["customer_impact_end"]
+        if incident.get("attributes", {}).get("customer_impact_end", "")
         else "",
-        "Detected": datetime.fromisoformat(incident["attributes"]["detected"]).strftime(
-            UI_DATE_FORMAT
-        )
-        if incident["attributes"]["detected"]
+        "Detected": datetime.fromisoformat(
+            incident.get("attributes", {}).get("detected", "")
+        ).strftime(UI_DATE_FORMAT)
+        if incident.get("attributes", {}).get("detected", "")
         else "",
-        "Resolved": str(incident["attributes"]["resolved"]),
-        "Time to Detect": str(incident["attributes"]["time_to_detect"]),
+        "Resolved": str(incident.get("attributes", {}).get("resolved", "")),
+        "Time to Detect": str(incident.get("attributes", {}).get("time_to_detect", "")),
         "Time to Internal Response": str(
-            incident["attributes"]["time_to_internal_response"]
+            incident.get("attributes", {}).get("time_to_internal_response", "")
         ),
-        "Time to Repair": str(incident["attributes"]["time_to_repair"]),
-        "Time to Resolve": str(incident["attributes"]["time_to_resolve"]),
-        "Severity": str(incident["attributes"]["fields"]["severity"]["value"]),
-        "State": str(incident["attributes"]["fields"]["state"]["value"]),
+        "Time to Repair": str(incident.get("attributes", {}).get("time_to_repair", "")),
+        "Time to Resolve": str(
+            incident.get("attributes", {}).get("time_to_resolve", "")
+        ),
+        "Severity": str(
+            incident.get("attributes", {})
+            .get("fields", {})
+            .get("severity", {})
+            .get("value", "")
+        ),
+        "State": str(
+            incident.get("attributes", {})
+            .get("fields", {})
+            .get("state", {})
+            .get("value", "")
+        ),
         "Detection Method": str(
-            incident["attributes"]["fields"]["detection_method"]["value"]
+            incident.get("attributes", {})
+            .get("fields", {})
+            .get("detection_method", {})
+            .get("value", "")
         ),
-        "Root Cause": str(incident["attributes"]["fields"]["root_cause"]["value"]),
-        "Summary": str(incident["attributes"]["fields"]["summary"]["value"]),
+        "Root Cause": str(
+            incident.get("attributes", {})
+            .get("fields", {})
+            .get("root_cause", {})
+            .get("value", "")
+        ),
+        "Summary": str(
+            incident.get("attributes", {})
+            .get("fields", {})
+            .get("summary", {})
+            .get("value", "")
+        ),
         "Notification Display Name": str(
-            incident["attributes"]["notification_handles"][0]["display_name"]
+            incident.get("attributes", {})
+            .get("notification_handles")[0]
+            .get("display_name")
         )
-        if incident["attributes"]["notification_handles"]
+        if incident.get("attributes", {}).get("notification_handles")
         else None,
         "Notification Handle": str(
-            incident["attributes"]["notification_handles"][0]["handle"]
+            incident.get("attributes", {}).get("notification_handles")[0].get("handle")
         )
-        if incident["attributes"]["notification_handles"]
+        if incident.get("attributes", {}).get("notification_handles")
         else None,
     }
 
@@ -360,7 +393,7 @@ def module_test(configuration: Configuration) -> str:
             api_instance = AuthenticationApi(api_client)
             api_instance.validate()
         except Exception:
-            return "Authentication Error: Invalid API Key. Make sure API Key, Server URL is correctly set."
+            return AUTHENTICATION_ERROR_MSG
         # Testing application key
         try:
             events_api = EventsApi(api_client)
@@ -1248,9 +1281,7 @@ def fetch_incidents(configuration: Configuration, params: Dict):
                 datetime.fromisoformat(incident["attributes"]["modified"])
                 .replace(tzinfo=None)
                 .timestamp()
-                > datetime.strptime(
-                    last_run.get("lastRun"), "%Y-%m-%d %H:%M:%S.%f"
-                ).timestamp()
+                > datetime.fromisoformat(last_run.get("lastRun")).timestamp()
                 if last_run.get("lastRun")
                 else first_fetch_time.timestamp()
                 if first_fetch_time
@@ -1288,7 +1319,10 @@ def fetch_incidents(configuration: Configuration, params: Dict):
                 "type": "Datadog Cloud SIEM",
             }
             incidents.append(incident)
-    demisto.setLastRun({"lastRun": str(datetime.utcnow())})
+        if data_list:
+            demisto.setLastRun(
+                {"lastRun": data_list[0].get("attributes", {}).get("modified", "")}
+            )
     demisto.incidents(incidents)
     return "OK"
 
@@ -1349,10 +1383,11 @@ def main() -> None:
             return_results(commands[command](configuration, args))
         else:
             raise NotImplementedError
-    except (ForbiddenException, UnauthorizedException):
-        return_error(AUTHENTICATION_ERROR_MSG)
-    except Exception as e:
-        return_error(f"Failed to execute {command} command. Error: {str(e)}")
+    except (ForbiddenException, UnauthorizedException, Exception) as e:
+        error = None
+        if type(e) in (ForbiddenException, UnauthorizedException):
+            error = AUTHENTICATION_ERROR_MSG
+        return_error(error or f"Failed to execute {command} command. Error: {str(e)}")
 
 
 """ ENTRY POINT """

@@ -19,14 +19,6 @@ configuration:
   name: app_key
   required: true
   type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - defaultvalue: '50'
   display: How many incidents to fetch each time.
   hidden: false
@@ -45,6 +37,14 @@ configuration:
   type: 13
 - display: Fetch incidents
   name: isFetch
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
   required: false
   type: 8
 description: |-
