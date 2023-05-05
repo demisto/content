@@ -2747,8 +2747,8 @@ def list_siteshield_maps_ec(raw_response: dict) -> Tuple[list, list]:
     Returns:
         List of site shield maps
     """
-    entry_context = []
-    human_readable = []
+    entry_context: List = []
+    human_readable: List = []
     if raw_response:
         entry_context = raw_response.get('siteShieldMaps')
         human_readable = raw_response.get('siteShieldMaps')
