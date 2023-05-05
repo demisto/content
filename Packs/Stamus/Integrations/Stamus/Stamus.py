@@ -52,7 +52,7 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             params={},
-            url_suffix='/rest/appliances/threat_history_incident/%s/get_events' % _id)
+            url_suffix=f'/rest/appliances/threat_history_incident/{_id}/get_events')
 
     def get_by_ioc(self, key, value):
         """Get events from Stamus Central Server
@@ -80,7 +80,7 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             params={},
-            url_suffix='/rest/appliances/host_id/%s' % ip)
+            url_suffix=f'/rest/appliances/host_id/{ip}')
 
     def get_incidents(self, timestamp: int) -> Iterable:
         """Get incidents from Stamus Central Server
