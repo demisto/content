@@ -6,7 +6,7 @@ from dateutil import parser
 import dateutil
 import requests
 
-import demistomock as demisto
+# import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 

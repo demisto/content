@@ -22,7 +22,6 @@ import os
 
 sys.path.append(os.getcwd())
 
-
 SERVER_URL = "https://asm-api.advantage.mandiant.com/api/v1"
 
 MOCK_GET_PROJECTS_RESPONSE = {
@@ -385,7 +384,12 @@ MOCK_FETCH_ISSUES_RESPONSE = {
                 "buckets": []
             }
         },
-        "next_page_token": "eyJhbGciOiJBMjU2R0NNS1ciLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJDMmhPQlRweE5jT2psUTNlIiwidGFnIjoiTGpqaFhvQ1F0RWZjXzdJTkt4ZG5XZyJ9.MmWAi13CT942tNOv07i7l40wt9wm4XKt9PZ10x34cu0.0GDiGDyp6Snff9mk.MVB3X0pjYjkN8-9-glzlVQl5VjsAMkxtkFN_A8ZELCUGnpSg-pUEfMntNZ4iglMLk7amm4Bh7saZ2QGzNRLCmGcwIxlmSqTWqB1UrSRRkdMpHec5O1EdAyh41SK4B2Vh8DnTnBwLQFYdExi82oNobIX5tWdJmVKdsAFFm7F_0gW1J2TR49HreXyXxv5UtCRvFf3FlqvbPzWEO6cyQ8eMUuNEGvLi_F5YncAfxwsjuNY-FHk-TUl0aUOEj3mD4ZnaokFI4HK6SB95SqJ7WCFSf3iSulVSMihnuJ7e0V_YCS9Lrk8n6DSOHdPelQ.-Z1v3MQn335tNg7FcflqPA"
+        "next_page_token": "eyJhbGciOiJBMjU2R0NNS1ciLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJDMmhPQlRweE5jT2psUTNlIiwidGFnIjoiTGp"
+                           "qaFhvQ1F0RWZjXzdJTkt4ZG5XZyJ9.MmWAi13CT942tNOv07i7l40wt9wm4XKt9PZ10x34cu0.0GDiGDyp6Snff9mk."
+                           "MVB3X0pjYjkN8-9-glzlVQl5VjsAMkxtkFN_A8ZELCUGnpSg-pUEfMntNZ4iglMLk7amm4Bh7saZ2QGzNRLCmGcwIxl"
+                           "mSqTWqB1UrSRRkdMpHec5O1EdAyh41SK4B2Vh8DnTnBwLQFYdExi82oNobIX5tWdJmVKdsAFFm7F_0gW1J2TR49HreX"
+                           "yXxv5UtCRvFf3FlqvbPzWEO6cyQ8eMUuNEGvLi_F5YncAfxwsjuNY-FHk-TUl0aUOEj3mD4ZnaokFI4HK6SB95SqJ7W"
+                           "CFSf3iSulVSMihnuJ7e0V_YCS9Lrk8n6DSOHdPelQ.-Z1v3MQn335tNg7FcflqPA"
     }
 }
 
@@ -554,8 +558,10 @@ def test_get_collections_with_project(client: AttackSurfaceManagement.Client, re
 
 @freeze_time(datetime.fromtimestamp(1681768194))
 def test_fetch_incidents(client: AttackSurfaceManagement.Client, requests_mock, mocker):
-    requests_mock.get(f'{SERVER_URL}/search/issues/collection%3A12341234%20collection%3A23452345%20last_seen_before%3A2023-04-17T21%3A49%3A54.000000Z%20last_seen_after%3A2023-03-18T21%3A49%3A54.000000Z?page=0',
-                      headers={'content-type': 'application/json'}, json=MOCK_FETCH_ISSUES_RESPONSE)
+    requests_mock.get(
+        f'{SERVER_URL}/search/issues/collection%3A12341234%20collection%3A23452345%20last_seen_before'
+        f'%3A2023-04-17T21%3A49%3A54.000000Z%20last_seen_after%3A2023-03-18T21%3A49%3A54.000000Z?page=0',
+        headers={'content-type': 'application/json'}, json=MOCK_FETCH_ISSUES_RESPONSE)
     requests_mock.get(f'{SERVER_URL}/issues/2e0134b5b346a5d0a9d5ee0efe7dfb69dfcc5c1cf65a6df63568f85dc587a120',
                       headers={'content-type': 'application/json'}, json=MOCK_GET_REMOTE_DATA_RESPONSE)
 
@@ -583,9 +589,11 @@ def test_get_remote_data(client: AttackSurfaceManagement.Client, requests_mock, 
     requests_mock.get(f'{SERVER_URL}/notes/issue/2e0134b5b346a5d0a9d5ee0efe7dfb69dfcc5c1cf65a6df63568f85dc587a120',
                       headers={'content-type': 'application/json'}, json=MOCK_GET_REMOTE_DATA_NOTES_RESPONSE)
 
-    results = AttackSurfaceManagement.get_remote_data_command(client,
-                                                              {"id": "2e0134b5b346a5d0a9d5ee0efe7dfb69dfcc5c1cf65a6df63568f85dc587a120",
-                                                               "lastUpdate": "0"}).extract_for_local()
+    remote_data_params = {
+        "id": "2e0134b5b346a5d0a9d5ee0efe7dfb69dfcc5c1cf65a6df63568f85dc587a120",
+        "lastUpdate": "0"}
+
+    results = AttackSurfaceManagement.get_remote_data_command(client, remote_data_params).extract_for_local()
 
     issue_data = json.loads(results[0]['details'])
     notes_data = results[1]
@@ -596,9 +604,8 @@ def test_get_remote_data(client: AttackSurfaceManagement.Client, requests_mock, 
     assert issue_data['severity'] == 5
 
     assert notes_data['Type'] == 1
-    assert notes_data['Contents'] == '- testing a note that supports markdown\n'\
-                                     '- and has some neat new features\n'\
+    assert notes_data['Contents'] == '- testing a note that supports markdown\n' \
+                                     '- and has some neat new features\n' \
                                      'test_user'
     assert notes_data["Note"] is True
     assert notes_data['Tags'] == ['note_from_ma_asm']
-
