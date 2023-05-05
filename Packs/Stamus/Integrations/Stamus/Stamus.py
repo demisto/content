@@ -106,6 +106,9 @@ class Client(BaseClient):
 
 
 def escape(string):
+    '''
+    Escape other elasticsearch reserved characters
+    '''
     return string. \
         replace('=', r'\='). \
         replace('+', r'\+'). \
