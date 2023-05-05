@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Phishing - Generic v3
-description: "This playbook investigates and remediates a potential phishing incident. It engages with the user who triggered the incident while investigating the incident itself.\n\nNote: \n- Final remediation tasks are manual by default. can be managed by \"SearchAndDelete\" and \"BlockIndicators\" inputs.\n- Do not rerun this playbook inside a phishing incident since it can produce an unexpected result. Create a new incident instead if needed."
+description: "This playbook investigates and remediates a potential phishing incident. It engages with the user who triggered the incident while investigating the incident itself.\n\nNote:\n- Final remediation tasks are manual by default. can be managed by \"SearchAndDelete\" and \"BlockIndicators\" inputs. \n- Do not rerun this playbook inside a phishing incident since it can produce an unexpected result. Create a new incident instead if needed."
 starttaskid: "0"
 tasks:
   "0":
@@ -70,7 +70,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 2710
+          "y": 2520
         }
       }
     note: false
@@ -101,7 +101,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3215
+          "y": 3025
         }
       }
     note: false
@@ -133,8 +133,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -247.5,
-          "y": 4920
+          "x": -347.5,
+          "y": 4670
         }
       }
     note: false
@@ -254,7 +254,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 2895
+          "y": 2705
         }
       }
     note: false
@@ -304,7 +304,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3745
+          "y": 3555
         }
       }
     note: false
@@ -503,7 +503,7 @@ tasks:
       {
         "position": {
           "x": 432.5,
-          "y": 3930
+          "y": 3740
         }
       }
     note: false
@@ -598,7 +598,7 @@ tasks:
       {
         "position": {
           "x": 212.5,
-          "y": 4550
+          "y": 4360
         }
       }
     note: false
@@ -625,8 +625,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -247.5,
-          "y": 5085
+          "x": -347.5,
+          "y": 4835
         }
       }
     note: false
@@ -657,7 +657,7 @@ tasks:
       {
         "position": {
           "x": 432.5,
-          "y": 3070
+          "y": 2880
         }
       }
     note: false
@@ -688,7 +688,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3070
+          "y": 2880
         }
       }
     note: false
@@ -721,7 +721,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3380
+          "y": 3190
         }
       }
     note: false
@@ -752,7 +752,7 @@ tasks:
       {
         "position": {
           "x": -200,
-          "y": 4550
+          "y": 4360
         }
       }
     note: false
@@ -797,7 +797,7 @@ tasks:
       {
         "position": {
           "x": 212.5,
-          "y": 4200
+          "y": 4010
         }
       }
     note: false
@@ -862,7 +862,7 @@ tasks:
       {
         "position": {
           "x": 432.5,
-          "y": 4720
+          "y": 4530
         }
       }
     note: false
@@ -1022,6 +1022,7 @@ tasks:
       - "131"
       - "154"
       - "170"
+      - "216"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1079,8 +1080,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 1865
+          "x": 20,
+          "y": 1775
         }
       }
     note: false
@@ -1110,8 +1111,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 1730
+          "x": 20,
+          "y": 1640
         }
       }
     note: false
@@ -1153,8 +1154,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 2090
+          "x": 20,
+          "y": 2000
         }
       }
     note: false
@@ -1228,8 +1229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 2265
+          "x": 20,
+          "y": 2175
         }
       }
     note: false
@@ -1261,7 +1262,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 2540
+          "y": 2360
         }
       }
     note: false
@@ -1332,7 +1333,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1262.5,
+          "x": -1782.5,
           "y": 600
         }
       }
@@ -1470,14 +1471,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "213"
+      - "220"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 640,
-          "y": 4070
+          "y": 3880
         }
       }
     note: false
@@ -1508,7 +1509,7 @@ tasks:
       {
         "position": {
           "x": 212.5,
-          "y": 4070
+          "y": 3880
         }
       }
     note: false
@@ -1538,8 +1539,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -910,
-          "y": 1730
+          "x": -1050,
+          "y": 1640
         }
       }
     note: false
@@ -1584,8 +1585,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -910,
-          "y": 1865
+          "x": -1050,
+          "y": 1775
         }
       }
     note: false
@@ -1615,8 +1616,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1557.5,
-          "y": 1730
+          "x": -1467.5,
+          "y": 1640
         }
       }
     note: false
@@ -1659,8 +1660,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1557.5,
-          "y": 1865
+          "x": -1467.5,
+          "y": 1775
         }
       }
     note: false
@@ -1691,8 +1692,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1557.5,
-          "y": 2080
+          "x": -1467.5,
+          "y": 2160
         }
       }
     note: false
@@ -1828,7 +1829,7 @@ tasks:
       {
         "position": {
           "x": 190,
-          "y": 3760
+          "y": 3570
         }
       }
     note: false
@@ -1892,7 +1893,7 @@ tasks:
       {
         "position": {
           "x": 432.5,
-          "y": 3550
+          "y": 3360
         }
       }
     note: false
@@ -1940,7 +1941,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 3760
+          "y": 3570
         }
       }
     note: false
@@ -1987,7 +1988,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3560
+          "y": 3370
         }
       }
     note: false
@@ -2030,7 +2031,7 @@ tasks:
       {
         "position": {
           "x": 212.5,
-          "y": 4375
+          "y": 4185
         }
       }
     note: false
@@ -2099,8 +2100,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 1865
+          "x": 490,
+          "y": 1775
         }
       }
     note: false
@@ -2130,8 +2131,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 1730
+          "x": 490,
+          "y": 1640
         }
       }
     note: false
@@ -2213,8 +2214,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 2090
+          "x": 490,
+          "y": 2000
         }
       }
     note: false
@@ -2306,7 +2307,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1262.5,
+          "x": -1782.5,
           "y": 795
         }
       }
@@ -2489,8 +2490,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 1730
+          "x": 980,
+          "y": 1640
         }
       }
     note: false
@@ -2619,8 +2620,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 1865
+          "x": 980,
+          "y": 1775
         }
       }
     note: false
@@ -2680,8 +2681,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 2090
+          "x": 980,
+          "y": 2000
         }
       }
     note: false
@@ -2765,8 +2766,8 @@ tasks:
         - Block Account - Generic v2
         - Block IP - Generic v3
         - Block File - Generic v2
-        - Block Email - Generic
-        - Block Domain - Generic
+        - Block Email - Generic v2
+        - Block Domain - Generic v2
 
       playbookName: Block Indicators - Generic v3
       type: playbook
@@ -2802,6 +2803,12 @@ tasks:
                   simple: "3"
           accessor: Indicator
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SemiAutomatedBlockOptions.Name
+                iscontext: true
           - operator: uniq
       EmailToBlock:
         complex:
@@ -2826,6 +2833,12 @@ tasks:
                   simple: "3"
           accessor: Indicator
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SemiAutomatedBlockOptions.Email.Address
+                iscontext: true
           - operator: uniq
       FilesToBlock:
         complex:
@@ -2850,6 +2863,12 @@ tasks:
                   simple: "3"
           accessor: Indicator
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SemiAutomatedBlockOptions.SHA256
+                iscontext: true
           - operator: uniq
       IP:
         complex:
@@ -2874,6 +2893,12 @@ tasks:
                   simple: "3"
           accessor: Indicator
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SemiAutomatedBlockOptions.Address
+                iscontext: true
           - operator: uniq
       InputEnrichment:
         simple: "False"
@@ -2904,6 +2929,12 @@ tasks:
                   simple: "3"
           accessor: Indicator
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SemiAutomatedBlockOptions.Data
+                iscontext: true
           - operator: uniq
       UserVerification:
         simple: "False"
@@ -2942,7 +2973,7 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 4200
+          "y": 4360
         }
       }
     note: false
@@ -2985,7 +3016,7 @@ tasks:
       {
         "position": {
           "x": 432.5,
-          "y": 3200
+          "y": 3010
         }
       }
     note: false
@@ -3024,7 +3055,292 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 3380
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "216":
+    id: "216"
+    taskid: 774d29ad-0044-48f0-8ed8-8bde43ca7fb8
+    type: title
+    task:
+      id: 774d29ad-0044-48f0-8ed8-8bde43ca7fb8
+      version: -1
+      name: Threat Intelligence Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "217"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "217":
+    id: "217"
+    taskid: f18ca3f8-df34-40f4-8466-57f1140952a8
+    type: playbook
+    task:
+      id: f18ca3f8-df34-40f4-8466-57f1140952a8
+      version: -1
+      name: TIM - Indicator Relationships Analysis
+      playbookName: TIM - Indicator Relationships Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "218"
+    scriptarguments:
+      Indicator:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: URL.Data
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+      LimitResults:
+        simple: "300"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 1775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "218":
+    id: "218"
+    taskid: 44a904d8-10cd-4f8c-8d9f-1560df2b6d40
+    type: condition
+    task:
+      id: 44a904d8-10cd-4f8c-8d9f-1560df2b6d40
+      version: -1
+      name: Incident indicators related to campaign/report from TIM?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "84"
+      "yes":
+      - "219"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RelatedCampaign
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RelatedReport
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "219":
+    id: "219"
+    taskid: 5d9db4d3-8f4c-4835-815f-874362252bae
+    type: regular
+    task:
+      id: 5d9db4d3-8f4c-4835-815f-874362252bae
+      version: -1
+      name: Set Threat Intel findings to layout
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      relatedcampaign:
+        complex:
+          root: RelatedCampaign
+      relatedreport:
+        complex:
+          root: RelatedReport
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "220":
+    id: "220"
+    taskid: 224a0570-4019-4dc8-8d76-5f44f766859e
+    type: condition
+    task:
+      id: 224a0570-4019-4dc8-8d76-5f44f766859e
+      version: -1
+      name: Automatically block indicators?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "221"
+      "yes":
+      - "213"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BlockIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 4010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "221":
+    id: "221"
+    taskid: 92133fbe-7c78-4df5-89e3-3c7b82629767
+    type: regular
+    task:
+      id: 92133fbe-7c78-4df5-89e3-3c7b82629767
+      version: -1
+      name: Set all indicators to semi-automated block options
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "213"
+    scriptarguments:
+      key:
+        simple: SemiAutomatedBlockOptions
+      value:
+        complex:
+          root: File
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Domain
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Account
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: URL
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: IP
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 4185
         }
       }
     note: false
@@ -3038,8 +3354,8 @@ system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "132_133_yes": 0.55,
-      "132_84_#default#": 0.13,
+      "132_133_yes": 0.7,
+      "132_84_#default#": 0.33,
       "137_135_yes": 0.54,
       "137_52_#default#": 0.16,
       "149_148_yes - phishing": 0.66,
@@ -3055,6 +3371,7 @@ view: |-
       "179_211_yes": 0.5,
       "179_84_#default#": 0.1,
       "214_215_yes": 0.37,
+      "218_84_#default#": 0.48,
       "33_149_yes": 0.18,
       "36_152_Yes": 0.49,
       "79_82_yes": 0.46,
@@ -3062,9 +3379,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5660,
-        "width": 2797.5,
-        "x": -1557.5,
+        "height": 5410,
+        "width": 3142.5,
+        "x": -1782.5,
         "y": -510
       }
     }
