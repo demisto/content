@@ -952,7 +952,7 @@ script:
     - contextPath: Code42.WatchlistUsers.AddedTime
       description: The datetime the user was added to the watchlist.
       type: datetime
-  - name: code42-get-user-risk-profile
+  - name: code42-user-get-risk-profile
     description: Get the risk profile details for a given user
     arguments:
       - name: username

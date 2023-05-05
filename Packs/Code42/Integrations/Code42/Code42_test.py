@@ -33,6 +33,7 @@ from Code42 import (
     user_deactivate_command,
     user_reactivate_command,
     update_user_risk_profile,
+    get_user_risk_profile,
     legal_hold_add_user_command,
     legal_hold_remove_user_command,
     list_watchlists_command,
@@ -1196,10 +1197,11 @@ def code42_users_mock(code42_sdk_mock, mocker):
 
 @pytest.fixture
 def code42_user_risk_profile_mock(code42_sdk_mock, mocker):
-    update_risk_profile_response = create_mock_code42_sdk_response(
+    risk_profile_response = create_mock_code42_sdk_response(
         mocker, MOCK_USER_RISK_PROFILE_RESPONSE
     )
-    code42_sdk_mock.userriskprofile.update.return_value = update_risk_profile_response
+    code42_sdk_mock.userriskprofile.get_by_username.return_value = risk_profile_response
+    code42_sdk_mock.userriskprofile.update.return_value = risk_profile_response
     return code42_sdk_mock
 
 
@@ -2025,6 +2027,20 @@ def test_user_reactivate_command(code42_users_mock):
     assert cmd_res.outputs["UserID"] == 123456
     assert cmd_res.outputs_prefix == "Code42.User"
     code42_users_mock.users.reactivate.assert_called_once_with(123456)
+
+
+def test_user_get_risk_profile_command(code42_user_risk_profile_mock):
+    client = _create_client(code42_user_risk_profile_mock)
+    cmd_res = get_user_risk_profile(client, args={"username": "profile@example.com"})
+    assert cmd_res.raw_response == {
+        "EndDate": {"day": 10, "month": 10, "year": 2023},
+        "Notes": "test update",
+        "StartDate": {"day": 10, "month": 10, "year": 2020},
+        "Username": "profile@example.com",
+    }
+    assert cmd_res.outputs["EndDate"] == {"day": 10, "month": 10, "year": 2023}
+    assert cmd_res.outputs_prefix == "Code42.UserRiskProfiles"
+    code42_user_risk_profile_mock.userriskprofile.get_by_username.assert_called_once_with("profile@example.com")
 
 
 def test_user_update_risk_profile_command(code42_user_risk_profile_mock):
