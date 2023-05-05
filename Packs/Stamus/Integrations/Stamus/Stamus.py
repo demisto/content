@@ -151,10 +151,10 @@ def convert_to_demisto_severity(severity: int) -> int:
     }.get(severity, IncidentSeverity.UNKNOWN)
 
 
-def get_command_results(data: dict[str, Any], table: str) -> CommandResults:
+def get_command_results(data: dict[str, Any], table: str, context: str) -> CommandResults:
     return CommandResults(
         readable_output=table,
-        outputs_prefix='StamusIntegration.Output',
+        outputs_prefix=f'StamusIntegration.{context}',
         outputs=data
     )
 
@@ -169,7 +169,7 @@ def fetch_by_ioc(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     results = client.get_by_ioc(args['key'], args['value'])['results']
     table = tableToMarkdown('IOC Matches', results, headers=['timestamp', 'src_ip', 'dest_ip', 'event_type'])
-    return get_command_results(results, table)
+    return get_command_results(results, table, 'IOC')
 
 
 def fetch_events(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -186,7 +186,7 @@ def fetch_events(client: Client, args: dict[str, Any]) -> CommandResults:
             result['killchain'] = result.get('stamus', {}).get('kill_chain', 'unknown')
     headers = ['timestamp', 'asset', 'offender', 'killchain', 'method', 'info', 'src_ip', 'dest_ip', 'app_proto']
     table = tableToMarkdown('Individual Events List', results, headers=headers)
-    return get_command_results(results, table)
+    return get_command_results(results, table, 'RelatedEvents')
 
 
 ARRAY_ITEMS = ['client_service', 'hostname', 'username', 'http.user_agent', 'tls.ja3', 'ssh.client', 'roles']
@@ -255,7 +255,7 @@ def fetch_host_id(client: Client, args: dict[str, Any]) -> CommandResults:
 
     table = tableToMarkdown('Host Insight', host_info, headers=['timestamp', 'ip', 'type', 'value'])
 
-    return get_command_results(result, table)
+    return get_command_results(result, table, 'HostInsights')
 
 
 def fetch_incidents(client: Client, timestamp: int) -> tuple[dict[str, int], list[dict]]:

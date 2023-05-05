@@ -65,7 +65,7 @@ script:
     execution: false
     name: Stamus-Check-IOC
     outputs:
-    - contextPath: StamusIntegration.Output
+    - contextPath: StamusIntegration.IOC
       description: '[Fetch events matching an IOC.]'
       type: String
   - arguments:
@@ -80,7 +80,7 @@ script:
     execution: false
     name: Stamus-Get-Host-Insight
     outputs:
-    - contextPath: StamusIntegration.Output
+    - contextPath: StamusIntegration.HostInsights
       description: '[Fetch information about a host known by Host Insight module]'
       type: String
   - arguments:
@@ -95,7 +95,7 @@ script:
     execution: false
     name: Stamus-Get-DoC-Events
     outputs:
-    - contextPath: StamusIntegration.Output
+    - contextPath: StamusIntegration.RelatedEvents
       description: '[Get events for a Declaration of Compromise.]'
       type: String
   isfetch: true
