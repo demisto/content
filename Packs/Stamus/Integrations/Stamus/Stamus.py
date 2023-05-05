@@ -327,8 +327,6 @@ def main() -> None:
         arg_name='First fetch time',
         required=True
     )
-    if first_fetch_time is None:
-        first_fetch_time = datetime.now()
     timestamp = int(first_fetch_time.timestamp())
     headers = {'Authorization': f'Token {api_token}'}
 
