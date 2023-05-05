@@ -295,17 +295,8 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
-    try:
-        message = 'ok'
-        client.test_connection()
-
-    except Exception as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    client.test_connection()
+    return 'ok'
 
 
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
