@@ -53,7 +53,7 @@ function finish(playbookId, tag, err, entryGUID) {
         params.parentPlaybookID = playbookId;
     }
     if (entryGUID) {
-        res = executeCommand("stopScheduleEntry", {'scheduledEntryGuid': entryGUID});
+        var res = executeCommand("stopScheduleEntry", {'scheduledEntryGuid': entryGUID});
         if (isError(res[0])) {
             logError('Failed to stop scheduled entry: ' + res[0]);
         }
@@ -236,4 +236,4 @@ function main() {
     return genericPollingScheduledTaskWithoutGuid();
 }
 
-main();
+return main();
