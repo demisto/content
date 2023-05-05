@@ -592,7 +592,6 @@ def test_get_remote_data(client: AttackSurfaceManagement.Client, requests_mock, 
 
     issue_data = json.loads(results[0]['details'])
     notes_data = results[1]
-    print(notes_data)
 
     assert issue_data['uuid'] == '9fc77fef-6362-4aef-a154-0ab4a058d5de'
     assert issue_data['entity_uid'] == 'a4cfa1f3c7864d343f8b9568248ad7550400598ddf10ea18959c860ca6253a01'
