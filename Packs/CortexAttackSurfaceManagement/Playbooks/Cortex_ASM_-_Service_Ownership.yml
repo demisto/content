@@ -497,10 +497,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: ee63ee63-dd8c-497b-87af-7748c540a3f5
+    taskid: 7d2c20d1-9e85-44ec-8dd0-cc1848251282
     type: condition
     task:
-      id: ee63ee63-dd8c-497b-87af-7748c540a3f5
+      id: 7d2c20d1-9e85-44ec-8dd0-cc1848251282
       version: -1
       name: What provider is this service?
       description: Determines which cloud provider the service is in order to direct to the correct steps for gathering data to rank owners.
@@ -526,12 +526,6 @@ tasks:
           right:
             value:
               simple: Google
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.RemoteIP
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
