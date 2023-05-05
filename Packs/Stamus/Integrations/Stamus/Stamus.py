@@ -1,17 +1,6 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
+"""Stamus Integration for Cortex XSOAR (aka Demisto)
 
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
+This is an integration with Stamus Security Platform.
 """
 # mocks: is removed by xsoar server
 import demistomock as demisto
