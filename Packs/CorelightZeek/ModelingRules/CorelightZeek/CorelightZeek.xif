@@ -62,7 +62,7 @@ filter _path ~= "ntlm"
     xdm.auth.ntlm.domain = domainname,
     xdm.auth.ntlm.dns_domain = server_dns_computer_name,
     xdm.auth.ntlm.dns_three = server_tree_name,
-    xdm.event.outcome = if(success = "true", "SUCCESS", success = "false", "FAILED", success = null, null, "UNKNOWN");
+    xdm.event.outcome = if(success = true, XDM_CONST.OUTCOME_SUCCESS, success = false, XDM_CONST.OUTCOME_FAILED, success = null, null, "UNKNOWN");
 // Syslogs 
 filter _path ~= "syslog"
 | alter 
