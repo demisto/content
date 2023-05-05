@@ -285,6 +285,8 @@ def get_collections(client: Client, args: dict = None) -> CommandResults:
     )
 
 
+
+
 def fetch_incidents(client: Client):
     last_run = demisto.getLastRun()
     last_start_time: datetime
@@ -331,8 +333,7 @@ def fetch_incidents(client: Client):
     }
 
     demisto.setLastRun(last_run)
-    return demisto.incidents(parsed_issues)
-
+    return parsed_issues
 
 def get_remote_data_command(client: Client, args: dict):
     parsed_args = GetRemoteDataArgs(args)
@@ -482,8 +483,7 @@ def main() -> None:
             'attacksurfacemanagement-get-collections': get_collections
         }
         commands_no_args: dict[str, typing.Callable] = {
-            'test-module': test_module,
-            'fetch-incidents': fetch_incidents
+            'test-module': test_module
         }
 
         command = demisto.command()
@@ -497,6 +497,10 @@ def main() -> None:
             args = demisto.args()
             results = commands_with_args[command](client, args)
             return_results(results)
+
+        elif command == 'fetch-incidents':
+            results = fetch_incidents(client)
+            demisto.incidents(results)
 
         # TODO: REMOVE the following dummy command case:
         elif demisto.command() == 'baseintegration-dummy':
