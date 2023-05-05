@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
+          "x": 170,
           "y": -170
         }
       }
@@ -36,12 +36,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 911821d8-f053-4873-8384-d08acd8bbb6d
+    taskid: 86e45d85-5d9a-44f6-8bcb-9386e8a824a8
     type: condition
     task:
-      id: 911821d8-f053-4873-8384-d08acd8bbb6d
+      id: 86e45d85-5d9a-44f6-8bcb-9386e8a824a8
       version: -1
-      name: Is service account defined?
+      name: Is the ASM Cloud Project field defined?
       description: Determine whether a service account was included among the potential service owners.
       type: condition
       iscommand: false
@@ -59,16 +59,8 @@ tasks:
           left:
             value:
               complex:
-                root: alert.asmserviceowner
-                filters:
-                - - operator: startWith
-                    left:
-                      value:
-                        simple: alert.asmserviceowner.Source
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Service account on instance
+                root: alert.asmcloud
+                accessor: Project
             iscontext: true
           right:
             value: {}
@@ -76,8 +68,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 400,
-          "y": 630
+          "x": 440,
+          "y": 855
         }
       }
     note: false
@@ -89,10 +81,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 4a61e141-236d-4725-8abb-9e8b143943f4
+    taskid: 3f99ac12-8e98-428b-81dc-527a6f8f7e98
     type: regular
     task:
-      id: 4a61e141-236d-4725-8abb-9e8b143943f4
+      id: 3f99ac12-8e98-428b-81dc-527a6f8f7e98
       version: -1
       name: Lookup project owner
       description: Retrieves the IAM access control policy for the specified project.
@@ -106,32 +98,10 @@ tasks:
     scriptarguments:
       project_name:
         complex:
-          root: alert.asmserviceowner
-          filters:
-          - - operator: startWith
-              left:
-                value:
-                  simple: alert.asmserviceowner.Source
-                iscontext: true
-              right:
-                value:
-                  simple: Service account on instance
+          root: alert.asmcloud
+          accessor: Project
           transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: Email
-          - operator: RegexExtractAll
-            args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: (?<=@)[^\.]+(?=\.iam\.gserviceaccount\.com)
-              unpack_matches: {}
+          - operator: uniq
           - operator: concat
             args:
               prefix:
@@ -143,8 +113,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 870
+          "x": 440,
+          "y": 1100
         }
       }
     note: false
@@ -212,8 +182,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 1210
+          "x": 440,
+          "y": 1420
         }
       }
     note: false
@@ -247,8 +217,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 1380
+          "x": 790,
+          "y": 1600
         }
       }
     note: false
@@ -275,7 +245,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "14"
     scriptarguments:
       gridfield:
         simple: asmserviceownerunrankedraw
@@ -326,7 +296,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
+          "x": 570,
           "y": 210
         }
       }
@@ -359,8 +329,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 1040
+          "x": 440,
+          "y": 1260
         }
       }
     note: false
@@ -425,8 +395,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 0
+          "x": 170,
+          "y": -10
         }
       }
     note: false
@@ -453,8 +423,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": 1600
+          "x": 170,
+          "y": 1820
         }
       }
     note: false
@@ -514,8 +484,60 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 380
+          "x": 440,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ee63ee63-dd8c-497b-87af-7748c540a3f5
+    type: condition
+    task:
+      id: ee63ee63-dd8c-497b-87af-7748c540a3f5
+      version: -1
+      name: What provider is this service?
+      description: Determines which cloud provider the service is in order to direct to the correct steps for gathering data to rank owners.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      GCP:
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: GCP
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: ASM.ExternalService
+                accessor: externally_detected_providers
+            iscontext: true
+          right:
+            value:
+              simple: Google
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RemoteIP
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 370
         }
       }
     note: false
@@ -528,15 +550,18 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
+      "12_2_yes": 0.61,
       "12_6_#default#": 0.23,
+      "14_12_GCP": 0.54,
+      "2_4_yes": 0.65,
       "2_6_#default#": 0.28,
       "9_10_#default#": 0.34
     },
     "paper": {
       "dimensions": {
-        "height": 1835,
-        "width": 940,
-        "x": 180,
+        "height": 2055,
+        "width": 1000,
+        "x": 170,
         "y": -170
       }
     }
@@ -545,4 +570,4 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.8.0
