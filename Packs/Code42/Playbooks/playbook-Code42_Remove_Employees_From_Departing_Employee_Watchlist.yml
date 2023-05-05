@@ -46,6 +46,7 @@ tasks:
       id: b3190010-f9a9-443f-8738-6b1692ec530d
       version: -1
       name: Is Departure Date Before Look-Back String?
+      description: ""
       type: condition
       iscommand: false
       brand: ""

@@ -416,6 +416,7 @@ tasks:
       id: 279ac8e2-0783-4900-8e3c-da0ea00722d9
       version: -1
       name: Do Start Dates Match?
+      description: ""
       type: condition
       iscommand: false
       brand: ""

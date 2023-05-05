@@ -395,6 +395,7 @@ tasks:
       id: e141ca4b-a43a-48d3-80e6-e3b965fe5631
       version: -1
       name: Is Username Already in Watchlist?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -536,6 +537,7 @@ tasks:
       id: 56f1784c-9c22-4724-844e-08a62f246829
       version: -1
       name: Playbook Complete
+      description: ""
       type: title
       iscommand: false
       brand: ""
