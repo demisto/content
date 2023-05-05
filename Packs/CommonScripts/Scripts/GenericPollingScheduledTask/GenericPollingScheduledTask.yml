@@ -45,5 +45,5 @@ args:
 scripttarget: 0
 runonce: false
 tests:
-- No test
+- Generic Polling Test
 fromversion: 5.0.0
