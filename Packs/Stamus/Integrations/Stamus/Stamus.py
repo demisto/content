@@ -353,7 +353,6 @@ def main() -> None:
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-            # return_results(incidents)
 
         elif demisto.command() == 'Stamus-Get-Host-Insight':
             args = demisto.args()
