@@ -94,7 +94,7 @@ tasks:
       {
         "position": {
           "x": 300,
-          "y": 1130
+          "y": 970
         }
       }
     note: false
@@ -149,10 +149,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 25154e2e-3a5a-4af3-86b4-7bf542c9f622
+    taskid: a7eeac65-6444-4a9b-8d17-1293eea5a718
     type: regular
     task:
-      id: 25154e2e-3a5a-4af3-86b4-7bf542c9f622
+      id: a7eeac65-6444-4a9b-8d17-1293eea5a718
       version: -1
       name: Set "No Entries" Log Message
       description: Set a value in context under the key you entered.
@@ -171,6 +171,7 @@ tasks:
       value:
         simple: No employees on New Hire watchlist.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -218,7 +219,7 @@ tasks:
       {
         "position": {
           "x": -170,
-          "y": 445
+          "y": 285
         }
       }
     note: false
@@ -230,10 +231,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 0fd99491-d244-4f83-8e42-ce9ef4140ef0
+    taskid: 1ffa38cc-73d0-440b-8424-586af38674a2
     type: regular
     task:
-      id: 0fd99491-d244-4f83-8e42-ce9ef4140ef0
+      id: 1ffa38cc-73d0-440b-8424-586af38674a2
       version: -1
       name: Delete All Context Except Log
       description: |-
@@ -259,12 +260,13 @@ tasks:
       subplaybook:
         simple: "yes"
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 300,
-          "y": 790
+          "y": 630
         }
       }
     note: false
@@ -276,10 +278,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 8752f555-cbd4-4fcb-810a-097e1b220f5b
+    taskid: 1cf4bbe1-b454-4ec9-8ce3-b0e73c1146f8
     type: regular
     task:
-      id: 8752f555-cbd4-4fcb-810a-097e1b220f5b
+      id: 1cf4bbe1-b454-4ec9-8ce3-b0e73c1146f8
       version: -1
       name: Write Log to Incident War Room
       description: Prints text to war room (Markdown supported)
@@ -294,12 +296,13 @@ tasks:
       value:
         simple: ${Log}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 300,
-          "y": 960
+          "y": 800
         }
       }
     note: false
@@ -311,10 +314,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 4206a615-8c0b-4585-86c2-6289c3c4528d
+    taskid: 1100cd5a-66d7-40e1-8c89-7c42948122d6
     type: regular
     task:
-      id: 4206a615-8c0b-4585-86c2-6289c3c4528d
+      id: 1100cd5a-66d7-40e1-8c89-7c42948122d6
       version: -1
       name: Set "Employee(s) Retrieved" Log Message
       description: Set a value in context under the key you entered.
@@ -333,6 +336,7 @@ tasks:
       value:
         simple: Retrieved employee(s) from New Hire watchlist.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -350,10 +354,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 6b66264e-5903-42b8-881d-a7f8939af13b
+    taskid: b74f1de1-10ea-4218-8ccb-07924fed0d5f
     type: regular
     task:
-      id: 6b66264e-5903-42b8-881d-a7f8939af13b
+      id: b74f1de1-10ea-4218-8ccb-07924fed0d5f
       version: -1
       name: Set "Job Complete" Log Message
       description: Set a value in context under the key you entered.
@@ -372,12 +376,13 @@ tasks:
       value:
         simple: Finished New Hire Clean-Up Job.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 300,
-          "y": 620
+          "y": 460
         }
       }
     note: false
@@ -389,10 +394,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: b9b219fc-bba1-48c6-84a0-aae6511d50fb
+    taskid: 358b73c7-c8ba-40f0-867b-56dc179d0cba
     type: regular
     task:
-      id: b9b219fc-bba1-48c6-84a0-aae6511d50fb
+      id: 358b73c7-c8ba-40f0-867b-56dc179d0cba
       version: -1
       name: Set "Job Starting" Log Message
       description: Set a value in context under the key you entered.
@@ -411,6 +416,7 @@ tasks:
       value:
         simple: Beginning New Hire Clean-Up Job.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -431,7 +437,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1745,
+        "height": 1585,
         "width": 850,
         "x": -170,
         "y": -550

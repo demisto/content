@@ -15,9 +15,11 @@ This playbook does not use any sub-playbooks.
 ### Scripts
 
 * Set
+* DeleteContext
 
 ### Commands
 
+* code42-user-get-risk-profile
 * code42-user-update-risk-profile
 * code42-watchlists-remove-user
 

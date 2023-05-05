@@ -10,18 +10,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-This playbook does not use any integrations.
+* Code42
 
 ### Scripts
 
-* CountArraySize
 * Set
 * Print
 * DeleteContext
 
 ### Commands
 
-This playbook does not use any commands.
+* code42-watchlists-list-included-users
 
 ## Playbook Inputs
 

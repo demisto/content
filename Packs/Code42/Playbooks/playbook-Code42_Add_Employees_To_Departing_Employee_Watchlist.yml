@@ -18,17 +18,17 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "28"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 275,
-          "y": -420
+          "y": -600
         }
       }
     note: false
@@ -40,14 +40,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: f5f5cb05-4ce9-44dc-87b7-af91cc65ec86
+    taskid: ab144d3d-0bd9-4b30-81b0-6c83663bcefb
     type: regular
     task:
-      id: f5f5cb05-4ce9-44dc-87b7-af91cc65ec86
+      id: ab144d3d-0bd9-4b30-81b0-6c83663bcefb
       version: -1
       name: Add Employee to Departing Employee Watchlist
-      description: Adds a user to the Departing Employee List.
-      script: Code42|||code42-departingemployee-add
+      description: Add a user to a watchlist.
+      script: Code42|||code42-watchlists-add-user
       type: regular
       iscommand: true
       brand: Code42
@@ -57,10 +57,10 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
-      departuredate:
-        simple: ${inputs.ticket_departure_date}
       username:
         simple: ${inputs.ticket_username}
+      watchlist:
+        simple: DEPARTING_EMPLOYEE
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -69,85 +69,6 @@ tasks:
         "position": {
           "x": 640,
           "y": 60
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: a87476a2-78ac-4105-85b2-811a15c5bb3f
-    type: regular
-    task:
-      id: a87476a2-78ac-4105-85b2-811a15c5bb3f
-      version: -1
-      name: Query Departing Employee Watchlist for Username
-      description: Retrieve departing employee details.
-      script: Code42|||code42-departingemployee-get
-      type: regular
-      iscommand: true
-      brand: Code42
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      username:
-        simple: ${inputs.ticket_username}
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": -280
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: e5fd2eae-5e02-4e54-869a-b826086748b5
-    type: condition
-    task:
-      id: e5fd2eae-5e02-4e54-869a-b826086748b5
-      version: -1
-      name: Is Username Already in Watchlist?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Code42.DepartingEmployee.Username
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": -110
         }
       }
     note: false
@@ -172,7 +93,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "20"
     scriptarguments:
       append:
         simple: "true"
@@ -212,7 +133,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "20"
     scriptarguments:
       append:
         simple: "true"
@@ -228,7 +149,7 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 415
+          "y": 395
         }
       }
     note: false
@@ -240,10 +161,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: e2375977-d1ae-4c03-83a0-587260f7ae7c
+    taskid: a4dc31c7-d85d-4d1e-82a0-dc92f51904b9
     type: condition
     task:
-      id: e2375977-d1ae-4c03-83a0-587260f7ae7c
+      id: a4dc31c7-d85d-4d1e-82a0-dc92f51904b9
       version: -1
       name: Do Departure Dates Match?
       description: ""
@@ -252,7 +173,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "23"
+      - "26"
       "Yes":
       - "11"
     separatecontext: false
@@ -266,7 +187,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Code42.DepartingEmployee.DepartureDate
+              simple: departure_date
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -285,12 +206,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 9f997538-531d-41c0-8d9c-ac11220cce66
+    taskid: 84611635-3fd9-483e-8f8d-de9dac670f62
     type: regular
     task:
-      id: 9f997538-531d-41c0-8d9c-ac11220cce66
+      id: 84611635-3fd9-483e-8f8d-de9dac670f62
       version: -1
-      name: Set "Updated Departure" Log Message
+      name: Set "Updated Departure Date" Log Message
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -298,7 +219,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "20"
     scriptarguments:
       append:
         simple: "true"
@@ -308,12 +229,13 @@ tasks:
         simple: Updated ${inputs.ticket_username}'s Incydr departure date to ${inputs.ticket_departure_date}
           based on ticket.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 415
+          "x": 150,
+          "y": 395
         }
       }
     note: false
@@ -325,10 +247,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 2814e148-cb7b-4ddb-89fc-2ea581c50ff2
+    taskid: 70f031fc-3d18-42a0-8ddc-1e7cce3778c5
     type: regular
     task:
-      id: 2814e148-cb7b-4ddb-89fc-2ea581c50ff2
+      id: 70f031fc-3d18-42a0-8ddc-1e7cce3778c5
       version: -1
       name: Set "Error Adding" Log Message
       description: Set a value in context under the key you entered.
@@ -338,7 +260,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "20"
     scriptarguments:
       append:
         simple: "true"
@@ -347,12 +269,13 @@ tasks:
       value:
         simple: Error adding ${inputs.ticket_username} to Departing Employee watchlist.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1110,
-          "y": 415
+          "y": 395
         }
       }
     note: false
@@ -364,63 +287,36 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: c7202372-10bc-47fa-8283-f7eda03ac698
-    type: title
-    task:
-      id: c7202372-10bc-47fa-8283-f7eda03ac698
-      version: -1
-      name: Playbook Complete
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -315,
-          "y": 760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: fcb5b104-0099-479a-81ab-21d5ab425344
+    taskid: dc76f3f0-4fd0-48f5-8084-0a4c0d08d4b6
     type: regular
     task:
-      id: fcb5b104-0099-479a-81ab-21d5ab425344
+      id: dc76f3f0-4fd0-48f5-8084-0a4c0d08d4b6
       version: -1
-      name: Delete Departing Employee Context
+      name: Delete User Profile Context
       description: |-
         Delete field from context.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "29"
     scriptarguments:
       key:
-        simple: Code42.DepartingEmployee
+        simple: Code42.UserRiskProfiles
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -315,
-          "y": 590
+          "y": 570
         }
       }
     note: false
@@ -432,10 +328,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 9e26526f-13af-4b28-848d-9630df9fbf65
+    taskid: ca8fc457-40dd-464a-82d2-850ce2c3085a
     type: regular
     task:
-      id: 9e26526f-13af-4b28-848d-9630df9fbf65
+      id: ca8fc457-40dd-464a-82d2-850ce2c3085a
       version: -1
       name: Update Incydr User Profile
       description: Update a user's risk profile.
@@ -475,6 +371,7 @@ tasks:
       username:
         simple: ${inputs.ticket_username}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -490,16 +387,60 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: bdff5093-50d8-4788-82bc-c0e0cccf7c1d
+  "25":
+    id: "25"
+    taskid: e141ca4b-a43a-48d3-80e6-e3b965fe5631
+    type: condition
+    task:
+      id: e141ca4b-a43a-48d3-80e6-e3b965fe5631
+      version: -1
+      name: Is Username Already in Watchlist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: inputs.ticket_username
+            iscontext: true
+          right:
+            value:
+              simple: Code42.WatchlistUsers.Username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 4ef067d0-0eb5-4767-807d-4c33373c278e
     type: regular
     task:
-      id: bdff5093-50d8-4788-82bc-c0e0cccf7c1d
+      id: 4ef067d0-0eb5-4767-807d-4c33373c278e
       version: -1
-      name: Update Incydr Departure Date
-      description: Adds a user to the Departing Employee List.
-      script: Code42|||code42-departingemployee-add
+      name: Update Incydr User Profile
+      description: Update a user's risk profile.
+      script: Code42|||code42-user-update-risk-profile
       type: regular
       iscommand: true
       brand: Code42
@@ -507,9 +448,11 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      departuredate:
+      end_date:
         simple: ${inputs.ticket_departure_date}
-      note:
+      ignore-outputs:
+        simple: "false"
+      notes:
         complex:
           root: incident
           accessor: created
@@ -526,19 +469,121 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: '[XSOAR] Updated departure date on '
+                  simple: '[XSOAR] Added to Departing Employee watchlist on '
               suffix:
                 value:
                   simple: .
       username:
         simple: ${inputs.ticket_username}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 160,
+          "x": 150,
           "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 1afb696a-412f-4371-8763-cb8566df4f44
+    type: regular
+    task:
+      id: 1afb696a-412f-4371-8763-cb8566df4f44
+      version: -1
+      name: Get Incydr User Profile Information
+      description: Update a user's risk profile.
+      script: Code42|||code42-user-update-risk-profile
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      username:
+        simple: ${inputs.ticket_username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": -455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 56f1784c-9c22-4724-844e-08a62f246829
+    type: title
+    task:
+      id: 56f1784c-9c22-4724-844e-08a62f246829
+      version: -1
+      name: Playbook Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -315,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: e190ca25-5f34-4bc1-8c66-0ee494c220db
+    type: regular
+    task:
+      id: e190ca25-5f34-4bc1-8c66-0ee494c220db
+      version: -1
+      name: Format Departure Date for Time Comparison
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      key:
+        simple: departure_date
+      value:
+        simple: ${Code42.UserRiskProfiles.EndDate.year}-${Code42.UserRiskProfiles.EndDate.month}-${Code42.UserRiskProfiles.EndDate.day}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": -280
         }
       }
     note: false
@@ -553,10 +598,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1245,
+        "height": 1415,
         "width": 1805,
         "x": -315,
-        "y": -420
+        "y": -600
       }
     }
   }

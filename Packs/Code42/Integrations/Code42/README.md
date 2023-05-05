@@ -638,11 +638,11 @@ List all users who have been explicitly added to a given watchlist.
 ### code42-get-user-risk-profile
 
 ***
-Get the risk profile details for a given user
+Get the risk profile details for a given user.
 
 #### Base Command
 
-`code42-get-user-risk-profile`
+`code42-user-get-risk-profile`
 
 #### Input
 

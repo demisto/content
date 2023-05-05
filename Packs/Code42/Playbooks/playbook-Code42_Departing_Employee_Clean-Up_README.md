@@ -14,14 +14,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* CountArraySize
 * Set
 * Print
 * DeleteContext
 
 ### Commands
 
-* code42-departingemployee-get-all
+* code42-watchlists-list-included-users
 
 ## Playbook Inputs
 

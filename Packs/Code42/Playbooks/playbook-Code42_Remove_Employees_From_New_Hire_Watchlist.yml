@@ -40,10 +40,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 72a3ce84-04db-47c5-88bd-fea1a9d7f47b
+    taskid: 4c414a23-9b16-4ee7-87bf-d7a2aed2068c
     type: condition
     task:
-      id: 72a3ce84-04db-47c5-88bd-fea1a9d7f47b
+      id: 4c414a23-9b16-4ee7-87bf-d7a2aed2068c
       version: -1
       name: Is Start Date Before Look-Back Input?
       description: ""
@@ -63,8 +63,7 @@ tasks:
           left:
             value:
               complex:
-                root: Code42.UpdatedUserRiskProfiles
-                accessor: StartDate
+                root: start_date
                 transformers:
                 - operator: DateStringToISOFormat
                   args:
@@ -107,10 +106,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: ea09e6f2-c127-4ac4-81eb-38ce6406936a
+    taskid: 51e9dac9-63d1-4b8f-82e5-b9e64c9cce57
     type: regular
     task:
-      id: ea09e6f2-c127-4ac4-81eb-38ce6406936a
+      id: 51e9dac9-63d1-4b8f-82e5-b9e64c9cce57
       version: -1
       name: Get Incydr User Profile Information
       description: Update a user's risk profile.
@@ -124,30 +123,10 @@ tasks:
     scriptarguments:
       ignore-outputs:
         simple: "false"
-      notes:
-        complex:
-          root: incident
-          accessor: created
-          transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: T
-              fields:
-                value:
-                  simple: "1"
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'Last checked by XSOAR automation on '
-              suffix:
-                value:
-                  simple: .
       username:
         simple: ${inputs.incydr_username}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -165,10 +144,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 78e2e8a9-6b5a-43cb-8a29-05016a281e76
+    taskid: 9f2e7f86-1933-437e-85b1-495f6426a76a
     type: regular
     task:
-      id: 78e2e8a9-6b5a-43cb-8a29-05016a281e76
+      id: 9f2e7f86-1933-437e-85b1-495f6426a76a
       version: -1
       name: Remove User from New Employee Watchlist
       description: Remove a user from a watchlist.
@@ -205,10 +184,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: d57897d5-7dcc-4db6-8011-003613442233
+    taskid: 948cda91-b608-47fe-816b-abde4c7120b8
     type: regular
     task:
-      id: d57897d5-7dcc-4db6-8011-003613442233
+      id: 948cda91-b608-47fe-816b-abde4c7120b8
       version: -1
       name: Set "No Action Taken" Log Message
       description: Set a value in context under the key you entered.
@@ -228,6 +207,7 @@ tasks:
         simple: No action taken on ${inputs.incydr_username}. Start date is within
           defined look-back.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -245,10 +225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 4237fba4-9c5a-419f-8789-8c5bed109fcc
+    taskid: 37bbca06-0156-45e4-83b5-6f7666f57633
     type: regular
     task:
-      id: 4237fba4-9c5a-419f-8789-8c5bed109fcc
+      id: 37bbca06-0156-45e4-83b5-6f7666f57633
       version: -1
       name: Set "Removed from Watchlist" Log Message
       description: Set a value in context under the key you entered.
@@ -268,6 +248,7 @@ tasks:
         simple: Removed ${inputs.incydr_username} from New Hire watchlist. Start date
           is before defined look-back.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -285,10 +266,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 62296c53-3809-40e0-8024-6cbd98644c2a
+    taskid: 0c0d22b6-d0c9-4388-808d-8ad5429cb3ab
     type: regular
     task:
-      id: 62296c53-3809-40e0-8024-6cbd98644c2a
+      id: 0c0d22b6-d0c9-4388-808d-8ad5429cb3ab
       version: -1
       name: Set "Error Removing" Log Message
       description: Set a value in context under the key you entered.
@@ -308,6 +289,7 @@ tasks:
         simple: Attempted to remove ${inputs.incydr_username} from New Hire watchlist
           but encountered an error.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -325,10 +307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 9575d0b3-e439-4a1f-8e5c-03772ad90d83
+    taskid: 4f585b1a-e0db-4437-8a3c-04c774a4f96e
     type: regular
     task:
-      id: 9575d0b3-e439-4a1f-8e5c-03772ad90d83
+      id: 4f585b1a-e0db-4437-8a3c-04c774a4f96e
       version: -1
       name: Format Start Date for Time Comparison
       description: Set a value in context under the key you entered.
@@ -341,10 +323,11 @@ tasks:
       - "1"
     scriptarguments:
       key:
-        simple: Code42.UpdatedUserRiskProfiles.StartDate
+        simple: start_date
       value:
-        simple: ${Code42.UpdatedUserRiskProfiles.StartDate.year}-${Code42.UpdatedUserRiskProfiles.StartDate.month}-${Code42.UpdatedUserRiskProfiles.StartDate.day}
+        simple: ${Code42.UserRiskProfiles.StartDate.year}-${Code42.UserRiskProfiles.StartDate.month}-${Code42.UserRiskProfiles.StartDate.day}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -362,10 +345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 9452c454-b0e9-4881-8eb3-d27b19af2931
+    taskid: 81188106-dfb8-4250-8c8b-7a6d4afe328d
     type: regular
     task:
-      id: 9452c454-b0e9-4881-8eb3-d27b19af2931
+      id: 81188106-dfb8-4250-8c8b-7a6d4afe328d
       version: -1
       name: Update Incydr User Profile
       description: Update a user's risk profile.
@@ -403,6 +386,7 @@ tasks:
       username:
         simple: ${inputs.incydr_username}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -420,12 +404,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 942bb6fe-671f-46b5-8d3f-cf0832286e83
+    taskid: 40b0c383-031d-4177-8091-cc375bf69f41
     type: regular
     task:
-      id: 942bb6fe-671f-46b5-8d3f-cf0832286e83
+      id: 40b0c383-031d-4177-8091-cc375bf69f41
       version: -1
-      name: Delete Code42 Context
+      name: Delete User Profile Context
       description: |-
         Delete field from context.
 
@@ -441,8 +425,9 @@ tasks:
       - "24"
     scriptarguments:
       key:
-        simple: Code42.UpdatedUserRiskProfiles
+        simple: Code42.UserRiskProfiles
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -506,7 +491,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
     continueonerrortype: ""
     view: |-

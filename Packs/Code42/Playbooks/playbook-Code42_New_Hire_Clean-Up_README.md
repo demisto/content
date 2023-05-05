@@ -14,7 +14,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* CountArraySize
 * Set
 * Print
 * DeleteContext

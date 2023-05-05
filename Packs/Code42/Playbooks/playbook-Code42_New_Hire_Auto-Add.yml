@@ -49,7 +49,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -68,10 +68,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: a324257b-d602-422c-8489-3d31b9504b09
+    taskid: e87d3ab8-9f4c-4e94-8f83-46291b2ac3ea
     type: regular
     task:
-      id: a324257b-d602-422c-8489-3d31b9504b09
+      id: e87d3ab8-9f4c-4e94-8f83-46291b2ac3ea
       version: -1
       name: Query Stand-Up Tickets
       description: "This task is meant to be edited/replaced with one that makes a
@@ -97,6 +97,7 @@ tasks:
         simple: Replace this task with input from a ticketing system and direct the
           output to a key called Ticket. See "Details" tab for more information.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -114,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 82287946-0c7b-4fe2-8eba-304a906c0481
+    taskid: 9d24c633-2fcb-4a94-8971-c5c45c05805e
     type: regular
     task:
-      id: 82287946-0c7b-4fe2-8eba-304a906c0481
+      id: 9d24c633-2fcb-4a94-8971-c5c45c05805e
       version: -1
       name: Delete All Context Except Log
       description: |-
@@ -143,6 +144,7 @@ tasks:
       keysToKeep:
         simple: Log
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -203,10 +205,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 1b83b69b-54b9-4703-8839-6e08af1e4bbd
+    taskid: ce060ac0-e704-47f9-8b21-8db8e5b365b6
     type: regular
     task:
-      id: 1b83b69b-54b9-4703-8839-6e08af1e4bbd
+      id: ce060ac0-e704-47f9-8b21-8db8e5b365b6
       version: -1
       name: Set "No Tickets" Log Message
       description: Set a value in context under the key you entered.
@@ -225,6 +227,7 @@ tasks:
       value:
         simple: Found no open tickets.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -242,10 +245,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 0abbc216-2427-4e2c-842b-bc337698e334
+    taskid: 7052f0b3-83c2-4984-89cd-e27c4e9cbc4e
     type: regular
     task:
-      id: 0abbc216-2427-4e2c-842b-bc337698e334
+      id: 7052f0b3-83c2-4984-89cd-e27c4e9cbc4e
       version: -1
       name: Write Log to Incident War Room
       description: Prints text to war room (Markdown supported)
@@ -260,6 +263,7 @@ tasks:
       value:
         simple: ${Log}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -323,10 +327,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 3a8b1308-ca89-4410-88c3-282a49009d23
+    taskid: 119ef6fc-6d51-4b3f-8ff7-0e760301851b
     type: regular
     task:
-      id: 3a8b1308-ca89-4410-88c3-282a49009d23
+      id: 119ef6fc-6d51-4b3f-8ff7-0e760301851b
       version: -1
       name: Set "Retrieved Ticket(s)" Log Message
       description: Set a value in context under the key you entered.
@@ -345,6 +349,7 @@ tasks:
       value:
         simple: Retrieved stand-up ticket(s).
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -362,10 +367,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 9182e12d-2f63-4e30-8413-476246435da5
+    taskid: 96b6da7c-be12-4c35-86eb-b837d178e90a
     type: regular
     task:
-      id: 9182e12d-2f63-4e30-8413-476246435da5
+      id: 96b6da7c-be12-4c35-86eb-b837d178e90a
       version: -1
       name: Set "Job Complete" Log Message
       description: Set a value in context under the key you entered.
@@ -384,6 +389,7 @@ tasks:
       value:
         simple: Finished New Hire Auto-Add Job.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -401,10 +407,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 63ad0694-c936-4afd-8f04-a19adddb8a59
+    taskid: 96dc9ce2-a4ac-4371-8aa2-f87fd6d7ad89
     type: regular
     task:
-      id: 63ad0694-c936-4afd-8f04-a19adddb8a59
+      id: 96dc9ce2-a4ac-4371-8aa2-f87fd6d7ad89
       version: -1
       name: Query New Hire Watchlist
       description: List all users who have been explicitly added to a given watchlist.
@@ -419,6 +425,7 @@ tasks:
       watchlist:
         simple: NEW_EMPLOYEE
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -436,10 +443,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 9b75881b-9d1e-418c-85b2-c2607168b272
+    taskid: 7aa3c567-9211-4124-8b1b-de9af4674d30
     type: regular
     task:
-      id: 9b75881b-9d1e-418c-85b2-c2607168b272
+      id: 7aa3c567-9211-4124-8b1b-de9af4674d30
       version: -1
       name: Set "Job Starting" Log Message
       description: Set a value in context under the key you entered.
@@ -458,6 +465,7 @@ tasks:
       value:
         simple: Beginning New Hire Auto-Add Job.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {

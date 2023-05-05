@@ -28,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": -190
+          "y": -610
         }
       }
     note: false
@@ -40,13 +40,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 4e877a9c-d8ab-4620-8dc8-eb99c5fe5d85
+    taskid: b3190010-f9a9-443f-8738-6b1692ec530d
     type: condition
     task:
-      id: 4e877a9c-d8ab-4620-8dc8-eb99c5fe5d85
+      id: b3190010-f9a9-443f-8738-6b1692ec530d
       version: -1
       name: Is Departure Date Before Look-Back String?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -63,7 +62,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.incydr_departure_date
+                root: end_date
                 transformers:
                 - operator: DateStringToISOFormat
                   args:
@@ -105,14 +104,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 18c48c4d-ef01-482a-8428-cb23ad756a1b
+    taskid: f2e05e3b-e938-467f-8bbd-1ba8facf34ad
     type: regular
     task:
-      id: 18c48c4d-ef01-482a-8428-cb23ad756a1b
+      id: f2e05e3b-e938-467f-8bbd-1ba8facf34ad
       version: -1
       name: Remove User from Departing Employee Watchlist
-      description: Removes a user from the Departing Employee List.
-      script: Code42|||code42-departingemployee-remove
+      description: Remove a user from a watchlist.
+      script: Code42|||code42-watchlists-remove-user
       type: regular
       iscommand: true
       brand: Code42
@@ -124,6 +123,8 @@ tasks:
     scriptarguments:
       username:
         simple: ${inputs.incydr_username}
+      watchlist:
+        simple: DEPARTING_EMPLOYEE
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -143,10 +144,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 1a107fb0-fefc-4246-8c55-411b3b85f083
+    taskid: e0456cdd-79b1-4ff1-8c18-a8d18adfa385
     type: regular
     task:
-      id: 1a107fb0-fefc-4246-8c55-411b3b85f083
+      id: e0456cdd-79b1-4ff1-8c18-a8d18adfa385
       version: -1
       name: Check for Post-Departure File Events in Incydr
       description: Search for Code42 Incydr File Events
@@ -194,6 +195,7 @@ tasks:
             "srtDir": "desc"
           }
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -259,10 +261,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 60928eb4-6b03-4176-8614-2eacf59c14bf
+    taskid: c5dee7f2-adaa-48fa-8a28-79fcd396e62a
     type: regular
     task:
-      id: 60928eb4-6b03-4176-8614-2eacf59c14bf
+      id: c5dee7f2-adaa-48fa-8a28-79fcd396e62a
       version: -1
       name: Set "Error Removing" Log Message
       description: Set a value in context under the key you entered.
@@ -272,7 +274,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "23"
     scriptarguments:
       append:
         simple: "true"
@@ -282,6 +284,7 @@ tasks:
         simple: Attempted to remove ${inputs.incydr_username} from Departing Employee
           watchlist but encountered an error.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -299,10 +302,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 2501002b-26dd-4dea-8b6b-93627f489836
+    taskid: 2e7ff8b6-50a9-4ef9-80d6-01b759de40aa
     type: regular
     task:
-      id: 2501002b-26dd-4dea-8b6b-93627f489836
+      id: 2e7ff8b6-50a9-4ef9-80d6-01b759de40aa
       version: -1
       name: Set "Removed from Watchlist" Log Message
       description: Set a value in context under the key you entered.
@@ -312,7 +315,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "23"
     scriptarguments:
       append:
         simple: "true"
@@ -322,6 +325,7 @@ tasks:
         simple: Removed ${inputs.incydr_username} from Departing Employee watchlist.
           Departure date is before defined look-back.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -339,10 +343,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 492369f6-224b-493e-8f38-62aa174dc6f2
+    taskid: ad3637a5-2e4e-43de-868c-4827a3f3415b
     type: regular
     task:
-      id: 492369f6-224b-493e-8f38-62aa174dc6f2
+      id: ad3637a5-2e4e-43de-868c-4827a3f3415b
       version: -1
       name: Set "No Action Taken" Log Message
       description: Set a value in context under the key you entered.
@@ -352,7 +356,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "23"
     scriptarguments:
       append:
         simple: "true"
@@ -362,6 +366,7 @@ tasks:
         simple: No action taken on ${inputs.incydr_username}. Departure date is within
           defined look-back.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -379,10 +384,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 995ecbd4-b7da-4ce6-8fd2-e7096113c9c6
+    taskid: ef443751-a12c-4e15-852d-23c1da9f2895
     type: regular
     task:
-      id: 995ecbd4-b7da-4ce6-8fd2-e7096113c9c6
+      id: ef443751-a12c-4e15-852d-23c1da9f2895
       version: -1
       name: Set "Post-Departure Activity" Log Message
       description: Set a value in context under the key you entered.
@@ -392,7 +397,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "23"
     scriptarguments:
       append:
         simple: "true"
@@ -401,6 +406,7 @@ tasks:
       value:
         simple: Not removing ${inputs.incydr_username} because of post-departure activity.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -418,10 +424,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 258e3ce7-1f0f-413e-8058-6c7462a73161
+    taskid: 4160848f-fe80-44bb-8272-5aea46c4af07
     type: regular
     task:
-      id: 258e3ce7-1f0f-413e-8058-6c7462a73161
+      id: 4160848f-fe80-44bb-8272-5aea46c4af07
       version: -1
       name: Update Incydr User Profile
       description: Update a user's risk profile.
@@ -459,6 +465,7 @@ tasks:
       username:
         simple: ${inputs.incydr_username}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -492,7 +499,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 1170
+          "y": 1340
         }
       }
     note: false
@@ -504,10 +511,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: e5f448b2-6679-4f61-8a53-e57a0b2700f8
+    taskid: f120c5a2-7263-4640-8659-1304638ee415
     type: regular
     task:
-      id: e5f448b2-6679-4f61-8a53-e57a0b2700f8
+      id: f120c5a2-7263-4640-8659-1304638ee415
       version: -1
       name: Set Relative Look-Back String
       description: Set a value in context under the key you entered.
@@ -517,7 +524,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "21"
     scriptarguments:
       key:
         simple: relative_look_back
@@ -529,7 +536,122 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": -40
+          "y": -460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 3d7f1658-ca30-4601-8707-7536c39e9d15
+    type: regular
+    task:
+      id: 3d7f1658-ca30-4601-8707-7536c39e9d15
+      version: -1
+      name: Get Incydr User Profile Information
+      description: Get a user's risk profile.
+      script: Code42|||code42-user-get-risk-profile
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      username:
+        simple: ${inputs.incydr_username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 091f2845-19b3-4e1a-8b3d-352c1d98ca34
+    type: regular
+    task:
+      id: 091f2845-19b3-4e1a-8b3d-352c1d98ca34
+      version: -1
+      name: Format Departure Date for Time Comparison
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: departure_date
+      value:
+        simple: ${Code42.UserRiskProfiles.EndDate.year}-${Code42.UserRiskProfiles.EndDate.month}-${Code42.UserRiskProfiles.EndDate.day}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 6c099632-b127-44a0-8847-158bf94080ec
+    type: regular
+    task:
+      id: 6c099632-b127-44a0-8847-158bf94080ec
+      version: -1
+      name: Delete User Profile Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: Code42.UserRiskProfiles
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1170
         }
       }
     note: false
@@ -546,28 +668,18 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1425,
+        "height": 2015,
         "width": 1540,
         "x": 230,
-        "y": -190
+        "y": -610
       }
     }
   }
 inputs:
-- key: incydr_departure_date
-  value: {}
-  required: true
-  description: The departure date (in YYYY-MM-DD format) provided by Code42 Incydr.
-  playbookInputQuery: null
 - key: incydr_username
   value: {}
   required: true
   description: The username (in email format) provided by Code42 Incydr.
-  playbookInputQuery: null
-- key: incydr_uid
-  value: {}
-  required: false
-  description: The unique identifier of a user provided by Code42 Incydr (optional).
   playbookInputQuery: null
 - key: look_back
   value:

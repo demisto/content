@@ -19,7 +19,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 330,
-          "y": 755
+          "y": 935
         }
       }
     note: false
@@ -69,10 +69,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 304b6e68-503f-4256-8fef-33cd72231384
+    taskid: a5b8fc4d-44c2-4d32-89d3-ef800d8170ea
     type: regular
     task:
-      id: 304b6e68-503f-4256-8fef-33cd72231384
+      id: a5b8fc4d-44c2-4d32-89d3-ef800d8170ea
       version: -1
       name: Query Stand-Down Tickets
       description: |-
@@ -100,6 +100,7 @@ tasks:
         simple: Replace this task with input from a ticketing system and direct the
           output to a key called Ticket. See "Details" tab for more information.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -117,10 +118,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 2b3fa71a-84ae-442c-8efa-11f404882111
+    taskid: 6e980a2f-aa3b-4a8f-81d0-6d1336b712ea
     type: regular
     task:
-      id: 2b3fa71a-84ae-442c-8efa-11f404882111
+      id: 6e980a2f-aa3b-4a8f-81d0-6d1336b712ea
       version: -1
       name: Delete All Context Except Log
       description: |-
@@ -146,12 +147,13 @@ tasks:
       subplaybook:
         simple: "yes"
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 330,
-          "y": 410
+          "y": 590
         }
       }
     note: false
@@ -245,10 +247,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c6b3aa53-2470-47d9-8a89-b3c309bea431
+    taskid: f39fa59b-3826-4330-8ee3-628caeef9f20
     type: regular
     task:
-      id: c6b3aa53-2470-47d9-8a89-b3c309bea431
+      id: f39fa59b-3826-4330-8ee3-628caeef9f20
       version: -1
       name: Write Log to Incident War Room
       description: Prints text to war room (Markdown supported)
@@ -263,12 +265,13 @@ tasks:
       value:
         simple: ${Log}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 330,
-          "y": 580
+          "y": 760
         }
       }
     note: false
@@ -280,10 +283,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: f6a29705-5db3-42c2-89bc-7d2e83a43c55
+    taskid: 696e5ea9-e83b-4523-80d7-2cbb32177a3a
     type: regular
     task:
-      id: f6a29705-5db3-42c2-89bc-7d2e83a43c55
+      id: 696e5ea9-e83b-4523-80d7-2cbb32177a3a
       version: -1
       name: Set "Retrieved Ticket(s)" Log Message
       description: Set a value in context under the key you entered.
@@ -293,7 +296,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "24"
     scriptarguments:
       append:
         simple: "true"
@@ -302,6 +305,7 @@ tasks:
       value:
         simple: Retrieved stand-down ticket(s).
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -319,10 +323,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: a85d42ec-1d03-416a-8588-45ba70c999dd
+    taskid: 1cf3d48a-e795-41cd-818e-6625ef954b4b
     type: regular
     task:
-      id: a85d42ec-1d03-416a-8588-45ba70c999dd
+      id: 1cf3d48a-e795-41cd-818e-6625ef954b4b
       version: -1
       name: Set "Job Complete" Log Message
       description: Set a value in context under the key you entered.
@@ -341,12 +345,13 @@ tasks:
       value:
         simple: Finished Departing Employee Auto-Add Job.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 330,
-          "y": 240
+          "y": 420
         }
       }
     note: false
@@ -393,7 +398,7 @@ tasks:
       {
         "position": {
           "x": -220,
-          "y": 65
+          "y": 245
         }
       }
     note: false
@@ -405,10 +410,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 8d460d24-0623-46ec-809c-8c9f0d0b5344
+    taskid: f7e9f911-e3a5-4a33-8768-b10a17bacfc1
     type: regular
     task:
-      id: 8d460d24-0623-46ec-809c-8c9f0d0b5344
+      id: f7e9f911-e3a5-4a33-8768-b10a17bacfc1
       version: -1
       name: Set "Job Starting" Log Message
       description: Set a value in context under the key you entered.
@@ -427,6 +432,7 @@ tasks:
       value:
         simple: Beginning Departing Employee Auto-Add Job.
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -442,12 +448,48 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: bbc522c1-0b59-48e9-8a0c-441763b39761
+    type: regular
+    task:
+      id: bbc522c1-0b59-48e9-8a0c-441763b39761
+      version: -1
+      name: Query Departing Employee Watchlist
+      description: List all users who have been explicitly added to a given watchlist.
+      script: Code42|||code42-watchlists-list-included-users
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      watchlist:
+        simple: DEPARTING_EMPLOYEE
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1580,
+        "height": 1760,
         "width": 930,
         "x": -220,
         "y": -760
