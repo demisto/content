@@ -109,7 +109,7 @@
             "is_array": false
         },
         "success": {
-            "type": "string",
+            "type": "boolean",
             "is_array": false
         },
         "message": {
