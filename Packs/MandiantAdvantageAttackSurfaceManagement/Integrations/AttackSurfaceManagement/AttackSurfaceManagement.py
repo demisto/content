@@ -1,18 +1,3 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
 from datetime import datetime
 import typing
 import urllib.parse
@@ -360,8 +345,6 @@ def get_remote_data_command(client: Client, args: dict):
     if not client.project_id:
         raise DemistoException('Must configure a Project ID to fetch incidents from Mandiant ASM')
 
-    demisto.debug(f'get-remote-data {parsed_args.last_update} {parsed_args.remote_incident_id}')
-
     try:
         masm_id = parsed_args.remote_incident_id
 
@@ -370,7 +353,6 @@ def get_remote_data_command(client: Client, args: dict):
         new_incident_data['lastupdatedtime'] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
         notes = client.get_notes('issue', masm_id)
-        demisto.debug(notes)
         notes_entries = []
         for note in notes:
             timestamp: datetime = dateutil.parser.parse(note['created_at'])
