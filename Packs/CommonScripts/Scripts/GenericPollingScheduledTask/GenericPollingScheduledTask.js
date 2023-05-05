@@ -214,7 +214,7 @@ function genericPollingScheduledTaskWithGuid() {
             }
         }
 
-        return res
+        return res;
     }
     catch (err) {
         finish(args.playbookId, args.tag, err, guid);
