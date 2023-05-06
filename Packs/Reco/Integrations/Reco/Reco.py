@@ -26,6 +26,7 @@ RECO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEMISTO_INFORMATIONAL = 0.5
 RECO_API_TIMEOUT_IN_SECONDS = 30  # Increase timeout for RECO API
 RECO_ACTIVE_INCIDENTS_VIEW = "active_incidents_view"
+RECO_ACTIVE_ALERTS_VIEW = "alerts"
 RECO_INCIDENT_ID_FIELD = "incident_id"
 RECO_TIMELINE_EVENT_TYPE = "TIMELINE_EVENT_TYPE_USER_COMMENT"
 CREATED_AT_FIELD = "created_at"
@@ -121,6 +122,112 @@ class RecoClient(BaseClient):
             demisto.error(f"Findings Request ReadTimeout error: {str(e)}")
         demisto.info(f"done fetching RECO alerts, fetched {len(alerts)} alerts.")
         return alerts
+
+    def get_alerts(
+            self,
+            risk_level: Optional[int] = None,
+            source: Optional[str] = None,
+            before: Optional[datetime] = None,
+            after: Optional[datetime] = None,
+            limit: int = 1000,
+    ) -> List[Dict[str, Any]]:
+        """
+        Fetch alerts from Reco API
+        :param risk_level: The risk level of the incidents to fetch
+        :param source: The source of the incidents to fetch
+        :param before: The maximum date of the incidents to fetch
+        :param after: The minimum date of the incidents to fetch
+        :param limit: int
+        :return: dict
+        """
+        demisto.info("Get alerts, enter")
+        alerts: List[Dict[str, Any]] = []
+        params: Dict[str, Any] = {
+            "getTableRequest": {
+                "tableName": RECO_ACTIVE_ALERTS_VIEW,
+                "pageSize": limit,
+                "fieldFilters": {
+                    "relationship": FILTER_RELATIONSHIP_AND,
+                    "filters": {"filters": []},
+                },
+                "fieldSorts": {
+                    "sorts": [
+                        {"sortBy": "updated_at", "sortDirection": "SORT_DIRECTION_ASC"}
+                    ]
+                },
+            }
+        }
+        if risk_level:
+            params["getTableRequest"]["fieldFilters"]["filters"]["filters"].append(
+                {"field": "risk_level", "stringEquals": {"value": risk_level}}
+            )
+        if source:
+            params["getTableRequest"]["fieldFilters"]["filters"]["filters"].append(
+                {"field": "data_source", "stringEquals": {"value": source}}
+            )
+        if before:
+            params["getTableRequest"]["fieldFilters"]["filters"]["filters"].append(
+                {
+                    "field": CREATED_AT_FIELD,
+                    "before": {"value": before.strftime("%Y-%m-%dT%H:%M:%SZ")},
+                }
+            )
+        if after:
+            params["getTableRequest"]["fieldFilters"]["filters"]["filters"].append(
+                {
+                    "field": CREATED_AT_FIELD,
+                    "after": {"value": after.strftime("%Y-%m-%dT%H:%M:%SZ")},
+                }
+            )
+
+        demisto.debug(f"params: {params}")
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/alert-inbox/table",
+                data=json.dumps(params),
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+            )
+            if response.get("getTableResponse") is None:
+                demisto.info(f"got bad response, {response}")
+            else:
+                demisto.info(
+                    f"Count of incidents: {response.get('getTableResponse').get('totalNumberOfResults')}"
+                )
+                alerts = (
+                    response.get("getTableResponse", {}).get("data", {}).get("rows", [])
+                )
+                demisto.info(f"Got {len(alerts)} alerts")
+        except Exception as e:
+            demisto.error(f"Findings Request ReadTimeout error: {str(e)}")
+        demisto.info(f"done fetching RECO alerts, fetched {len(alerts)} alerts.")
+        return alerts
+
+    def get_single_alert(self, alert_id: str) -> Any:
+        """
+        Fetch a single alert from Reco API
+        :param alert_id: The id of the alert to fetch
+        :return: dict
+        """
+        demisto.info("Get single alert, enter")
+        alert: Dict[str, Any] = {}
+        try:
+            response = self._http_request(
+                method="GET",
+                url_suffix=f"/alert-inbox/{alert_id}",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+            )
+            if response.get("alert") is None:
+                demisto.info(f"got bad response, {response}")
+            else:
+                demisto.info(f"got good response, {response}")
+                alert = response.get("alert", {})
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+        demisto.info(f"done fetching RECO alert, fetched {alert}")
+        return alert
 
     def get_incidents_assets(self, incident_id: str) -> List[Dict[str, Any]]:
         """
@@ -479,10 +586,43 @@ def parse_table_row_to_dict(alert: List[Dict[str, Any]]) -> Dict[str, Any]:
             if parsed_time:
                 obj[key] = parsed_time.strftime(DEMISTO_OCCURRED_FORMAT)
         if key == "risk_level":
-            obj[key] = int(obj[key])
+            try:
+                obj[key] = int(obj[key])
+            except Exception:
+                obj[key] = str(obj[key])
         alert_as_dict[key] = obj[key]
 
     return alert_as_dict
+
+
+def get_alerts(reco_client: RecoClient,
+               risk_level: Optional[int] = None,
+               source: Optional[str] = None,
+               before: Optional[datetime] = None,
+               after: Optional[datetime] = None,
+               limit: int = 1000) -> List[Any]:
+    """Get alerts from Reco.
+    :param reco_client: The Reco client
+    :param risk_level: The risk level to filter by
+    :param source: The source to filter by
+    :param before: The before time to filter by
+    :param after: The after time to filter by
+    :param limit: The limit of alerts to get
+    :return: The alerts"""
+    alerts = reco_client.get_alerts(risk_level, source, before, after, limit)
+    alerts_data = []
+    for alert in alerts:
+        alert_as_dict = parse_table_row_to_dict(alert.get("cells", {}))
+        alert_id = alert_as_dict.get("id", None)
+        if alert_id is not None:
+            single_alert = reco_client.get_single_alert(alert_id)
+            violations = single_alert["policyViolations"]
+            for violation in violations:
+                violation["jsonData"] = json.loads(base64.b64decode(violation["jsonData"]))
+            alerts_data.append(single_alert)
+        else:
+            demisto.info(f"Got alert without id: {alert_as_dict}")
+    return alerts_data
 
 
 def get_risky_users_from_reco(reco_client: RecoClient) -> CommandResults:
@@ -563,6 +703,27 @@ def map_reco_score_to_demisto_score(
         20: demisto_medium,
         10: demisto_informational,
         0: demisto_informational,
+    }
+
+    return MAPPING[reco_score]
+
+
+def map_reco_alert_score_to_demisto_score(
+        reco_score: str,
+) -> Union[int, float]:  # pylint: disable=E1136
+    # demisto_unknown = 0  (commented because of linter issues)
+    demisto_informational = 0.5
+    # demisto_low = 1  (commented because of linter issues)
+    demisto_medium = 2
+    demisto_high = 3
+    demisto_critical = 4
+
+    # LHS is Reco score
+    MAPPING = {
+        "CRITICAL": demisto_critical,
+        "HIGH": demisto_high,
+        "MEDIUM": demisto_medium,
+        "LOW": demisto_informational,
     }
 
     return MAPPING[reco_score]
@@ -674,12 +835,16 @@ def fetch_incidents(
         limit=max_fetch,
     )
     incidents = parse_incidents_objects(reco_client, incidents_raw)
+    alerts = get_alerts(reco_client, risk_level, source, before, after, max_fetch)
+    alerts_as_incidents = parse_alerts_to_incidents(alerts)
+    incidents.extend(alerts_as_incidents)
+
     existing_incidents = last_run.get("incident_ids", [])
     incidents = [
         incident
         for incident in incidents
         if (incident.get("severity", 0) > DEMISTO_INFORMATIONAL)
-        and (incident.get("dbotMirrorId", None) not in existing_incidents)
+           and (incident.get("dbotMirrorId", None) not in existing_incidents)
     ]  # type: ignore
 
     incidents_sorted = sorted(incidents, key=lambda k: k["occurred"])
@@ -689,7 +854,25 @@ def fetch_incidents(
     next_run["incident_ids"] = existing_incidents + [
         incident["dbotMirrorId"] for incident in incidents
     ]
+
     return next_run, incidents
+
+
+def parse_alerts_to_incidents(alerts: Dict[str, Any]) -> List[Dict[str, Any]]:
+    alerts_as_incidents = []
+    for alert in alerts:
+        incident = {
+            "name": alert.get("description", ""),
+            "occurred": alert.get("createdAt", ""),
+            "dbotMirrorId": alert.get("id", ""),
+            "rawJSON": json.dumps(alert),
+            "severity": map_reco_alert_score_to_demisto_score(
+                reco_score=alert.get("riskLevel", DEMISTO_INFORMATIONAL)
+            ),
+        }
+
+        alerts_as_incidents.append(incident)
+    return alerts_as_incidents
 
 
 def get_max_fetch(max_fetch: int) -> int:
