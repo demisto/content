@@ -2003,6 +2003,16 @@ tasks:
             iscontext: true
           right:
             value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserEngagement
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -3377,7 +3387,8 @@ tasks:
     task:
       id: 008ca31a-5683-4eaa-8dc3-47ab98b22a93
       version: -1
-      name: Engage With User?
+      name: Engage with the user?
+      description: Checks whether to inform the user about the verdict of the incident.
       type: condition
       iscommand: false
       brand: ""
@@ -3426,6 +3437,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "8"
@@ -3468,6 +3480,7 @@ tasks:
       id: 4f8b03ff-597e-46ac-873c-8672a09e1ad9
       version: -1
       name: Take manual actions
+      description: 'Take notes and additional necessary manual actions before continuing. Once this task will be completed, the incident will be closed.'
       type: regular
       iscommand: false
       brand: ""
