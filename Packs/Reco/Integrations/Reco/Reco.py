@@ -858,7 +858,7 @@ def fetch_incidents(
     return next_run, incidents
 
 
-def parse_alerts_to_incidents(alerts: Dict[str, Any]) -> List[Dict[str, Any]]:
+def parse_alerts_to_incidents(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     alerts_as_incidents = []
     for alert in alerts:
         incident = {
