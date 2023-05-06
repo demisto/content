@@ -1945,7 +1945,7 @@ def send_email_command(client: MsGraphClient, args):
             content_format=EntryFormat.HTML,
             raw_response=prepared_args['body'],
         ))
-    return results
+    return_results(results)
 
 
 def prepare_outputs_for_reply_mail_command(reply, email_to, message_id):

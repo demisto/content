@@ -452,7 +452,7 @@ def test_validate_fetch_incident_parameters_when_valid_params_are_provided():
     # Expected response
     fetch_params = {
         'page[size]': 15,
-        'filter[created_at_gteq]': '2021-03-06T00:00:00.000000Z',
+        'filter[updated_at_gteq]': '2021-03-06T00:00:00.000000Z',
         'filter[categorization_tags_any]': 'snow',
         'filter[location]': 'Inbox,Processed',
         'filter[match_priority]': '0,1,2',
