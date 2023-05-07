@@ -42,6 +42,9 @@ args:
 - name: additionalPollingCommandArgValues
   description: Commas separated arguments values of the polling command
   isArray: true
+- name: scheduledEntryGuid
+  description: The GUID of the scheduled entry that runs the polling command.
+  type: textArea
 scripttarget: 0
 runonce: false
 tests:

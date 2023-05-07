@@ -150,19 +150,28 @@ function genericPollingScheduledTaskWithoutGuid() {
 
 function genericPollingScheduledTaskWithGuid() {
     try {
-
-        if (invContext.RemainingPollingIteration == null || invContext.RemainingPollingIteration == undefined) {
-            setContext("RemainingPollingIteration", parseInt(args.timeout));
-        }
         var guid = args.scheduledEntryGuid;
-        var timeout = invContext.RemainingPollingIteration
-        var origTimeout = (parseInt(timeout) - parseInt(args.interval))
+        var contextTimeoutKey = `GP-${guid}`;
+        var timeout = parseInt(args.timeout);
+        var interval = parseInt(args.interval);
 
+        if ('playbookId' in args) {
+            const subPlaybook = `subplaybook-${args.playbookId}`;
+            if ((!invContext[subPlaybook][contextTimeoutKey]) && (invContext[subPlaybook][contextTimeoutKey] !== 0)) {
+                setContext(`${subPlaybook}.${contextTimeoutKey}`, (Math.floor(timeout / interval)));
+            }
+            else{
+                timeout = invContext[subPlaybook][contextTimeoutKey];
+            }
+        var origTimeout = timeout - interval;
         if (origTimeout <= 0) {
             return finish(args.playbookId, args.tag, undefined, guid);
         }
-
-        setContext("RemainingPollingIteration", origTimeout);
+        setContext(`${subPlaybook}.${contextTimeoutKey}`, origTimeout);
+        }
+        else{
+            logError('playbookId is not defined');
+        }
 
         // Get ids that have not finished yet
         var ids = argToList(args.ids);
@@ -224,7 +233,7 @@ function genericPollingScheduledTaskWithGuid() {
 
 function main() {
     res = getDemistoVersion();
-    platform = res.platform
+    platform = res.platform;
     version = res.version;
     buildNumber = res.buildNumber;
 
