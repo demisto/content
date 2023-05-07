@@ -1160,6 +1160,8 @@ script:
       description: Number of results per page to display.
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
+    - description: The name of the object to use as a filter.
+      name: name
     deprecated: false
     execution: false
     description: Lists all address groups.
