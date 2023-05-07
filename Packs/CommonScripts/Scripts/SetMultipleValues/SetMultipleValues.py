@@ -7,10 +7,9 @@ from CommonServerPython import *  # noqa: F401
 def main():
     keys = [k.strip() for k in demisto.args()['keys'].split(',')]
     values_str = demisto.args()['values']
-    if values_str[0] == '[' and values_str[-1] == ']':
-        values = json.loads(f'[{values_str}]')
-    else:
-        values = argToList(values_str)
+    if '[' in values_str and ']' in values_str:
+        values_str = f'[{values_str}]'
+    values = argToList(values_str)
 
     ec = {demisto.args()['parent'] + '(true)': dict(zip(keys, values))}
     demisto.results({'Type': entryTypes['note'], 'Contents': ec, 'ContentsFormat': formats['json'],
