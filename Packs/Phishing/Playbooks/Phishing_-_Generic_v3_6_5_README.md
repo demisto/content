@@ -10,20 +10,20 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Detonate URL - Generic
-* Phishing - Indicators Hunting
-* TIM - Indicator Relationships Analysis
 * Detect & Manage Phishing Campaigns
-* Email Address Enrichment - Generic v2.1
-* Search And Delete Emails - Generic v2
-* Entity Enrichment - Phishing v2
+* Detonate URL - Generic
+* Detonate File - Generic
+* TIM - Indicator Relationships Analysis
 * Extract Indicators From File - Generic v2
-* Phishing - Machine Learning Analysis
+* Process Microsoft's Anti-Spam Headers
 * Block Indicators - Generic v3
 * Calculate Severity - Generic v2
+* Search And Delete Emails - Generic v2
+* Entity Enrichment - Phishing v2
+* Phishing - Machine Learning Analysis
+* Phishing - Indicators Hunting
 * Process Email - Generic v2
-* Detonate File - Generic
-* Process Microsoft's Anti-Spam Headers
+* Email Address Enrichment - Generic v2.1
 
 ### Integrations
 
@@ -33,14 +33,14 @@ This playbook does not use any integrations.
 
 * SetAndHandleEmpty
 * AssignAnalystToIncident
-* Set
 * CheckEmailAuthenticity
+* Set
 
 ### Commands
 
-* closeInvestigation
-* setIncident
 * send-mail
+* setIncident
+* closeInvestigation
 * setIndicator
 
 ## Playbook Inputs
@@ -73,7 +73,7 @@ This playbook does not use any integrations.
 | SendMailInstance | The name of the instance to be used when executing the "send-mail" command in the playbook. In case it will be empty, all available instances will be used \(default\). |  | Optional |
 | OriginalAuthenticationHeader | This input will be used as the "original_authentication_header" argument in the "CheckEmailAuthenticity" script under the "Authenticate email" task.<br/>The header that holds the original Authentication-Results header value. This can be used when an intermediate server changes the original email and holds the original header value in a different header. Note - Use this only if you trust the server creating this header. |  | Optional |
 | UserEngagement | Specify whether to engage with the user via email for investigation updates.<br/>Set the value to 'True' to allow user engagement, or 'False' to avoid user engagement. | True | Optional |
-| TakeManualActions | Specify whether to stop the playbook to take additional action before closing the incident.<br/>Set the value to 'True' to stop the playbook before closing the incidents, or "False" to close the incident once the playbook flow is done. | True | Optional |
+| TakeManualActions | Specify whether to stop the playbook to take additional action before closing the incident.<br/>Set the value to 'True' to stop the playbook before closing the incidents, or "False" to close the incident once the playbook flow is done. | False | Optional |
 
 ## Playbook Outputs
 
