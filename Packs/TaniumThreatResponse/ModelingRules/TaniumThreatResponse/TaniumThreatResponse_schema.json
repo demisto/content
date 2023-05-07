@@ -1,10 +1,6 @@
 {
-    "tanium_tanium_raw": {
-      "EdgeResponseBytes": {
-          "type": "int",
-          "is_array": false
-        },
-      "EdgePathingOp": {
+    "tanium_threat_response_raw": {
+      "_raw_log": {
           "type": "string",
           "is_array": false
         }
