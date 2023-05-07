@@ -6222,10 +6222,10 @@ class TestFetchIncidentsHelperFunctions:
         - assert that the returned context formatted incident entry is valid
         """
         from Panorama import incident_entry_to_incident_context, DATE_FORMAT
-        raw_entry = {'seqno': '1', 'time_generated': '2022/01/01 12:00', 'type': 'TYPE'}
+        raw_entry = {'seqno': '1', 'time_generated': '2022/01/01 12:00', 'type': 'TYPE', 'device_name': 'dummy_device'}
         if occured := dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'}):
             context_entry = {
-                'name': 'None 1',
+                'name': 'dummy_device 1',
                 'occurred': occured.strftime(DATE_FORMAT),
                 'rawJSON': json.dumps(raw_entry),
                 'type': 'TYPE'
@@ -6545,7 +6545,7 @@ def test_update_max_fetch_dict(mocker):
     - last_fetch_dict - dictionary with the last fetch time per log type.
     When:
         - update_max_fetch_dict is called.
-        - last_fetch_dict has a log type that is not in max_fetch_dict.
+        - max_fetch_dict has a log type that is not in last_fetch_dict.
     Then:
         - The max_fetch_dict is updated with the maximum number of incidents to fetch per log type.
     """
@@ -6559,7 +6559,7 @@ def test_update_max_fetch_dict(mocker):
 def test_find_largest_id_per_device():
     """
     Given:
-    - list of dictionares repesenting raw entries.
+    - list of dictionaries representing raw entries.
     When:
         - find_largest_id_per_device is called.
     Then:
@@ -6576,7 +6576,7 @@ def test_find_largest_id_per_device():
 def test_remove_duplicate_entries():
     """
     Given:
-    - list of dictionares repesenting raw entries, some contain seqno and some not.
+    - list of dictionares repesenting raw entries, some contain seqno and some don't.
     - dictionary with the largest id per device.
     When:
     - remove_duplicate_entries is called.
