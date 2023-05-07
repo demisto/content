@@ -725,7 +725,6 @@ function UploadFileCommand([RemotingClient]$client, [string]$entry_id, [string]$
         $old_path = $src_path
         $src_path = "$src_path.zip"
         $dst_path = "$dst_path.zip"
-        $dst_path = "$dst_path.zip"
         $Demisto.debug("zipping file")
         Compress-Archive -Path $old_path -Update -DestinationPath $src_path
     }
