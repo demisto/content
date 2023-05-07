@@ -230,13 +230,11 @@ class RemotingClient
 
     CopyItemToSession([string]$path, [string]$file_name)
     {
-        $Demisto.Debug("copying item to session")
         if (!$this.session)
         {
             $this.CreateSession()
         }
         Copy-Item -ToSession $this.session $path -Destination $file_name
-        $Demisto.Debug("Done copying item")
     <#
         .DESCRIPTION
         This method copies an item from the local path to the session destination file_name.
@@ -715,6 +713,7 @@ function ExportRegistryCommand([RemotingClient]$client, [string]$reg_key_hive, [
 function UploadFileCommand([RemotingClient]$client, [string]$entry_id, [string]$dst_path, [string]$zip_file, [string]$check_hash)
 {
     $src_path = $script:Demisto.GetFilePath($entry_id).path
+    $Demisto.debug("got file path")
     $file_exists = Test-Path $src_path -PathType Leaf
     if (-Not $file_exists)
     {
@@ -726,7 +725,8 @@ function UploadFileCommand([RemotingClient]$client, [string]$entry_id, [string]$
         $old_path = $src_path
         $src_path = "$src_path.zip"
         $dst_path = "$dst_path.zip"
-        $Demisto.Debug("zipping file")
+        $dst_path = "$dst_path.zip"
+        $Demisto.debug("zipping file")
         Compress-Archive -Path $old_path -Update -DestinationPath $src_path
     }
     if ($check_hash -eq 'true')
@@ -734,7 +734,11 @@ function UploadFileCommand([RemotingClient]$client, [string]$entry_id, [string]$
         # save hash before upload
         $src_hash = (Get-FileHash $src_path -Algorithm MD5).Hash
     }
+    $Demisto.debug("copying item to session")
+
     $client.CopyItemToSession($src_path, $dst_path)
+    $Demisto.debug("Done copying item")
+
     if ($check_hash -eq 'true')
     {
         $command = "(Get-FileHash $dst_path -Algorithm MD5).Hash"
@@ -744,15 +748,15 @@ function UploadFileCommand([RemotingClient]$client, [string]$entry_id, [string]$
             throw "Failed check_hash: The uploaded file has a different hash than the local file. LocalFileHash=$src_hash UploadedFileHash=$dst_hash"
         }
     }
-    $Demisto.Debug("Before close session")
+    $Demisto.debug("Before close session")
 
     $client.CloseSession()
-    $Demisto.Debug("done closing session")
+    $Demisto.debug("done closing session")
 
     $file_name_leaf = Split-Path $src_path -leaf
     $file_ext = [System.IO.Path]::GetExtension($file_name_leaf)
     $file_ext = If ($file_ext) {$file_ext.SubString(1, $file_ext.length - 1)} else {""}
-    $Demisto.Debug("creating entry")
+    $Demisto.debug("creating entry")
 
     $entry_context = @{
         PsRemoteUploadedFile = @{
@@ -845,7 +849,7 @@ function Main
                 $Demisto.Error("Unsupported command was entered: $command.")
             }
         }
-        $Demisto.Debug("returning outputs")
+        $Demisto.debug("returning outputs")
 
         # Return results to Demisto Server
         ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
