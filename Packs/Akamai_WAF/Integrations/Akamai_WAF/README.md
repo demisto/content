@@ -1439,18 +1439,15 @@ There is no input for this command.
         "example@akamai.com"
       ],
       "currentCidrs": [
-        "104.71.333.0/24",
-        "104.77.348.0/24"
+        "ip1",
+        "ip2"
       ],
       "id": 1910627,
       "latestTicketId": 22728,
       "mapAlias": "Americas Secure Map",
       "mcmMapRuleId": 14002,
       "proposedCidrs": [
-        "104.71.131.0/24",
-        "104.77.168.0/24",
-        "104.97.78.0/24",
-        "184.27.45.0/24"
+        "ip3",
       ],
       "ruleName": "s1702.akamaiedge.net",
       "service": "S",
