@@ -243,8 +243,10 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        else:
+        elif command in commands:
             return_results(commands[command](client, args))
+        else:
+            raise NotImplementedError(f'Command {command} is not implemented.') 
 
     # Log exceptions and return errors
     except Exception as e:
