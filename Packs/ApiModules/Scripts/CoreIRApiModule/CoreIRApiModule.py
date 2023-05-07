@@ -209,6 +209,7 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"get_endpoints response = {reply}")
 
         endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
@@ -892,6 +893,8 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"retrieve_file = {reply}")
+
         return reply.get('reply')
 
     def generate_files_dict(self, endpoint_id_list: list, file_path_list: list) -> Dict[str, Any]:
@@ -913,7 +916,7 @@ class CoreClient(BaseClient):
                 files['windows'].append(file_path)
             elif 'linux' in endpoint_os_type.lower():
                 files['linux'].append(file_path)
-            elif 'macos' in endpoint_os_type.lower():
+            elif 'mac' in endpoint_os_type.lower():
                 files['macos'].append(file_path)
 
         # remove keys with no value
@@ -932,9 +935,11 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"retrieve_file_details = {reply}")
 
         return reply.get('reply').get('data')
 
+    @logger
     def get_scripts(self, name: list, description: list, created_by: list, windows_supported,
                     linux_supported, macos_supported, is_high_risk) -> Dict[str, Any]:
 
@@ -1099,8 +1104,11 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"action_status_get = {reply}")
+
         return reply.get('reply').get('data')
 
+    @logger
     def get_file(self, file_link):
         reply = self._http_request(
             method='GET',
@@ -1119,6 +1127,7 @@ class CoreClient(BaseClient):
         )
         return reply
 
+    @logger
     def get_endpoints_by_status(self, status, last_seen_gte=None, last_seen_lte=None):
         filters = []
 
@@ -1571,11 +1580,10 @@ def validate_args_scan_commands(args):
         if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
                 or ip_list or group_name or platform or alias or hostname:
             raise Exception(err_msg)
-    else:
-        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
-                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
-                and not alias and not hostname:
-            raise Exception(err_msg)
+    elif not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
+            and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+            and not alias and not hostname:
+        raise Exception(err_msg)
 
 
 def endpoint_scan_command(client: CoreClient, args) -> CommandResults:
@@ -1750,7 +1758,7 @@ def convert_os_to_standard(endpoint_os):
         os_type = "Windows"
     elif 'linux' in endpoint_os:
         os_type = "Linux"
-    elif 'macos' in endpoint_os:
+    elif 'mac' in endpoint_os:
         os_type = "Macos"
     elif 'android' in endpoint_os:
         os_type = "Android"
