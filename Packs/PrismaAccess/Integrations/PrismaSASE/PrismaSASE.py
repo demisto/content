@@ -1367,7 +1367,8 @@ def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+        'name': args.get('name'),
     }
     tsg_id = args.get('tsg_id')
     if tag_id := args.get('tag_id'):
@@ -1377,7 +1378,9 @@ def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         query_params.update(get_pagination_params(args))
 
         raw_response = client.list_tags(query_params=query_params, tsg_id=tsg_id)  # type: ignore
-        outputs = raw_response.get('data', [])
+        # A dict containing a list of results is returned by the API.
+        # A single dict is returned when filtering the request by name.
+        outputs = raw_response.get('data', raw_response)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Tag',
