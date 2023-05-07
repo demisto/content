@@ -1,5 +1,6 @@
 import ast
 import argparse
+import math
 import os
 import sys
 
@@ -135,28 +136,42 @@ def reset_base_pack_version(client: demisto_client):
         return False
 
 
-def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 30):
+def wait_for_uninstallation_to_complete(client: demisto_client):
     """
     Query if there are still installed packs, as it might take time to complete.
     Args:
         client (demisto_client): The client to connect to.
-        retries: Max number of sleep priods.
 
     Returns: True if all packs were uninstalled successfully
 
     """
     retry = 0
+    sleep_duration = 150
     try:
         installed_packs = get_all_installed_packs(client)
+        # Monitoring when uninstall packs don't work
+        installed_packs_amount_history, failed_uninstall_attempt_count = len(installed_packs), 0
+        # new calculation for num of retries
+        retries = math.ceil(len(installed_packs) / 2)
         while len(installed_packs) > 1:
             if retry > retries:
                 raise Exception('Waiting time for packs to be uninstalled has passed, there are still installed '
                                 'packs. Aborting.')
+            if failed_uninstall_attempt_count >= 3:
+                raise Exception(f'Uninstalling packs failed three times. {installed_packs=}')
             logging.info(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
-                         f'packs installed. Sleeping for 10 seconds.')
-            sleep(60)
+                         f'packs installed. Sleeping for {sleep_duration} seconds.')
+            sleep(sleep_duration)
             installed_packs = get_all_installed_packs(client)
-            retry = retry + 1
+
+            if len(installed_packs) == installed_packs_amount_history:
+                # did not uninstall any pack
+                failed_uninstall_attempt_count += 1
+            else:  # uninstalled at least one pack
+                installed_packs_amount_history = len(installed_packs)
+                failed_uninstall_attempt_count = 0
+
+            retry += 1
 
     except Exception as e:
         logging.exception(f'Exception while waiting for the packs to be uninstalled. The error is {e}')

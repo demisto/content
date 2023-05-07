@@ -2127,13 +2127,15 @@ def import_ioc_with_approval(client: Client, import_type, import_value, confiden
         raise DemistoException('The data was not imported. Check if valid arguments were passed')
 
 
-def import_ioc_without_approval(client: Client, file_id, classification, confidence=None, allow_unresolved='no',
+def import_ioc_without_approval(client: Client, classification, file_id=None, confidence=None, allow_unresolved='no',
                                 source_confidence_weight=None, expiration_ts=None, severity=None,
-                                tags=None, trustedcircles=None):
+                                tags=None, trustedcircles=None, indicators_json=None):
     """
         Imports indicators data to ThreatStream.
         file_id of uploaded file to war room.
     """
+    if not file_id and not indicators_json:
+        raise DemistoException(f'{THREAT_STREAM} - Please specify file_id or indicators_json')
     if tags:
         tags = argToList(tags)
     if trustedcircles:
@@ -2142,15 +2144,19 @@ def import_ioc_without_approval(client: Client, file_id, classification, confide
         confidence = int(confidence)
     if source_confidence_weight:
         source_confidence_weight = int(source_confidence_weight)
-    try:
-        # entry id of uploaded file to war room
-        file_info = demisto.getFilePath(file_id)
-        with open(file_info['path'], 'rb') as uploaded_file:
-            ioc_to_import = json.load(uploaded_file)
-    except json.JSONDecodeError:
-        raise DemistoException(f'{THREAT_STREAM} - Entry {file_id} does not contain a valid json file.')
-    except Exception:
-        raise DemistoException(f'{THREAT_STREAM} - Entry {file_id} does not contain a file.')
+    ioc_to_import = {}
+    if file_id:
+        try:
+            # entry id of uploaded file to war room
+            file_info = demisto.getFilePath(file_id)
+            with open(file_info['path'], 'rb') as uploaded_file:
+                ioc_to_import = json.load(uploaded_file)
+        except json.JSONDecodeError:
+            raise DemistoException(f'{THREAT_STREAM} - Entry {file_id} does not contain a valid json file.')
+        except Exception:
+            raise DemistoException(f'{THREAT_STREAM} - Entry {file_id} does not contain a file.')
+    elif indicators_json:
+        ioc_to_import = json.loads(indicators_json.replace("'", '"'))
     meta = ioc_to_import.get('meta', {})
     meta |= assign_params(
         classification=classification,
@@ -2162,9 +2168,8 @@ def import_ioc_without_approval(client: Client, file_id, classification, confide
         tags=tags,
         trustedcircles=trustedcircles
     )
-
     ioc_to_import.update({"meta": meta})
-    client.http_request("PATCH", "v1/intelligence/", json=ioc_to_import, resp_type='text')
+    client.http_request("PATCH", "v2/intelligence/", json=ioc_to_import, resp_type='text')
     return "The data was imported successfully."
 
 

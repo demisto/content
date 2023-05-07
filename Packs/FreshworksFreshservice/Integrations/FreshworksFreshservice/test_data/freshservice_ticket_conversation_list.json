@@ -1,0 +1,27 @@
+{
+    "conversations": [
+        {
+            "id": 1,
+            "user_id": 21001397559,
+            "to_emails": [
+                "conversations[0]_to_emails_0"
+            ],
+            "body": "<div>We are working on this issue. Will keep you posted.</div>",
+            "body_text": "We are working on this issue. Will keep you posted.",
+            "ticket_id": 6,
+            "created_at": "conversations[0]_created_at",
+            "updated_at": "conversations[0]_updated_at",
+            "incoming": false,
+            "private": false,
+            "support_email": "conversations[0]_support_email",
+            "source": 0,
+            "from_email": "conversations[0]_from_email",
+            "cc_emails": [],
+            "bcc_emails": [],
+            "attachments": []
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

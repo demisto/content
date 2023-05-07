@@ -724,6 +724,7 @@ Creates an address object.
 | ip_wildcard       | The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255 | Optional | 
 | device-group      | The device group for which to return addresses (Panorama instances). | Optional | 
 | tag               | The tag for the new address. | Optional | 
+| create_tag        | Whether to create the tag if it does not exist. | Optional | 
 
 
 #### Context Output
@@ -736,7 +737,7 @@ Creates an address object.
 | Panorama.Addresses.IP_Netmask | string | Address IP Netmask. | 
 | Panorama.Addresses.IP_Range | string | Address IP range. | 
 | Panorama.Addresses.DeviceGroup | String | Device group for the address \(Panorama instances\). | 
-| Panorama.Addresses.Tag | String | Address tag. | 
+| Panorama.Addresses.Tags | String | Address tags. | 
 
 
 #### Command Example
@@ -827,7 +828,7 @@ Returns a list of address groups.
 | Panorama.AddressGroups.Description | string | Address group description. | 
 | Panorama.AddressGroups.Addresses | String | Static Address group addresses. | 
 | Panorama.AddressGroups.DeviceGroup | String | Device group for the address group \(Panorama instances\). | 
-| Panorama.AddressGroups.Tag | String | Address group tag. | 
+| Panorama.AddressGroups.Tags | String | Address group tags. | 
 
 
 #### Command Example
@@ -952,7 +953,7 @@ Creates a static or dynamic address group.
 | Panorama.AddressGroups.Addresses | string | Static Address group list of addresses. | 
 | Panorama.AddressGroups.Description | string | Address group description. | 
 | Panorama.AddressGroups.DeviceGroup | String | Device group for the address group \(Panorama instances\). | 
-| Panorama.AddressGroups.Tag | String | Address group tags. | 
+| Panorama.AddressGroups.Tags | String | Address group tags. | 
 
 
 #### Command Example

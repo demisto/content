@@ -1,0 +1,43 @@
+{
+  "data": {
+    "hasNextPage": true,
+    "objects": [
+      {
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "Detect when a change to a GCP Pub/Sub Subscription has been made. This could stop audit logs from being sent.",
+        "id": "2e4f64c2-e8c5-53ae-b0aa-01e5005155a7",
+        "name": "GCP Audit Pub/Sub Subscriber Modified",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-U01518",
+        "severity": 3,
+        "stage": "Defense Evasion",
+        "tags": [
+          "_mitreAttackTechnique:T1578",
+          "_mitreAttackTactic:TA0005"
+        ],
+        "timestamp": "2021-05-18T14:34:18.123000"
+      },
+      {
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "Detect when a GCP Pub/Sub Subscribtion has been deleted. This could stop audit logs from being sent.",
+        "id": "ead54992-94f6-5aa3-b902-ec0fb5318dbc",
+        "name": "GCP Audit Pub/Sub Topic Deleted",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-U01519",
+        "severity": 3,
+        "stage": "Defense Evasion",
+        "tags": [
+          "_mitreAttackTechnique:T1578",
+          "_mitreAttackTactic:TA0005"
+        ],
+        "timestamp": "2021-05-18T14:45:51.123000"
+      }
+    ],
+    "total": 2 
+  },
+  "errors": []
+}
