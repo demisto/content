@@ -274,23 +274,28 @@ def delete_email(search_args: dict, search_function: str,
 def get_search_args(args: dict):
     """
     Get the parsed arguments needed for the search operation
+
     Args:
         args: this script's arguments.
 
     Returns: parsed arguments needed for the search operation
-
     """
     incident_info = demisto.incident()
     custom_fields = incident_info.get('CustomFields', {})
     message_id = custom_fields.get('reportedemailmessageid')
     user_id = custom_fields.get('reportedemailto')
+    email_subject = custom_fields.get('reportedemailsubject')
+    from_user_id = custom_fields.get('reportedemailfrom')
     delete_type = args.get('delete_type', custom_fields.get('emaildeletetype', 'soft'))
     delete_from_brand = delete_from_brand_handler(incident_info, args)
+
+    if not message_id:
+        raise ValueError("Message ID ('reportedemailmessageid') is missing from the incident's custom fields.")
 
     search_args = {
         'delete-type': delete_type,
         'using-brand': delete_from_brand,
-        'email_subject': custom_fields.get('reportedemailsubject'),
+        'email_subject': email_subject,
         'message-id': message_id,
     }
     additional_args = {
@@ -299,8 +304,8 @@ def get_search_args(args: dict):
         'EWS v2': {'target-mailbox': user_id},
         'MicrosoftGraphMail': {'user_id': user_id, 'odata': f'"$filter=internetMessageId eq '
                                                             f'\'{quote(unquote(message_id))}\'"'},
-        'SecurityAndCompliance': {'to_user_id': user_id, 'from_user_id': custom_fields.get('reportedemailfrom')},
-        'SecurityAndComplianceV2': {'to_user_id': user_id, 'from_user_id': custom_fields.get('reportedemailfrom')}
+        'SecurityAndCompliance': {'to_user_id': user_id, 'from_user_id': from_user_id},
+        'SecurityAndComplianceV2': {'to_user_id': user_id, 'from_user_id': from_user_id}
     }
 
     search_args.update(additional_args.get(delete_from_brand, {}))
@@ -339,8 +344,8 @@ def main():
     search_args = get_search_args(args)
     result, deletion_failure_reason, scheduled_command = '', '', None
     delete_from_brand = search_args['using-brand']
-    try:
 
+    try:
         if delete_from_brand in ['SecurityAndCompliance', 'SecurityAndComplianceV2']:
             security_and_compliance_args = {k.replace('-', '_'): v for k, v in search_args.items()}
             result, scheduled_command = security_and_compliance_delete_mail(args, **security_and_compliance_args)

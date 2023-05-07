@@ -67,7 +67,6 @@ def test_get_deletion_args(integration_name):
     Then:
     return the suitable deletion args
     """
-
     with open(os.path.join(TEST_DATA, f'{integration_name}{SEARCH_RESPONSE_SUFFIX}'), 'r') as file:
         search_results = json.load(file)
     assert EXPECTED_DELETION_ARGS_RESULTS[integration_name] == ARGS_FUNC[integration_name](search_results, SEARCH_ARGS)
@@ -243,7 +242,6 @@ def test_search_args(mocker, brand):
             Return the suitable search args
 
     """
-    import DeleteReportedEmail
     INCIDENT_INFO = {
         'CustomFields':
             {
@@ -260,6 +258,11 @@ def test_search_args(mocker, brand):
     current_search_args = GENERAL_SEARCH_ARGS.copy()
     current_search_args.update(ADDED_SEARCH_ARGS.get(brand, {}))
     assert get_search_args({}) == current_search_args
+
+    # Test missing message id
+    INCIDENT_INFO['CustomFields'].pop("reportedemailmessageid")
+    with pytest.raises(ValueError):
+        get_search_args({})
 
 
 def test_schedule_next_command(mocker):
