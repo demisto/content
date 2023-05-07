@@ -1330,7 +1330,7 @@ script:
     outputs:
     - contextPath: Akamai.SiteShieldMaps
       description: Akamai SiteShield Maps
-  dockerimage: demisto/akamai:1.0.0.55039
+  dockerimage: demisto/akamai:1.0.0.57618
   runonce: false
   script: ''
   subtype: python3
