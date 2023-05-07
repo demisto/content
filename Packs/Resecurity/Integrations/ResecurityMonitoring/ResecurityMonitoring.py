@@ -38,7 +38,7 @@ STATUS_CODE_MSGS = {
     500: "There are some troubles on server with your request."
 }
 
-DEFAULT_RESULTS_SIZE_LIMIT = 1000
+DEFAULT_RESULTS_SIZE_LIMIT = 100
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_MODE = 2  # last results
 
