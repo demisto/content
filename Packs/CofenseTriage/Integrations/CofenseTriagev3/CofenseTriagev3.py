@@ -332,7 +332,7 @@ def validate_fetch_incidents_parameters(params: dict) -> dict:
     first_fetch_time = arg_to_datetime(first_fetch)
     if first_fetch_time is None:
         raise ValueError(MESSAGES["INVALID_FIRST_FETCH"])
-    fetch_params["filter[created_at_gteq]"] = first_fetch_time.strftime(DATE_FORMAT)
+    fetch_params["filter[updated_at_gteq]"] = first_fetch_time.strftime(DATE_FORMAT)
 
     locations = params.get('mailbox_location', [])
     if locations:
@@ -1371,7 +1371,15 @@ def fetch_incidents(client: Client, last_run: dict, params: Dict) -> Tuple[dict,
 
     if last_run.get('id'):
         fetch_params["filter[id_gt]"] = last_run.get('id')
-        del fetch_params["filter[created_at_gteq]"]
+        del fetch_params["filter[updated_at_gteq]"]
+    elif last_run.get('updated_at'):
+        fetch_params["filter[updated_at_gteq]"] = last_run.get("updated_at")
+
+    ids = last_run.get('ids', [])
+
+    fetch_params["sort"] = "updated_at"
+    fetch_params["page[number]"] = last_run.get("page_number", 1)
+    remove_nulls_from_dictionary(fetch_params)
 
     category_id = params.get('category_id')
     if category_id:
@@ -1386,16 +1394,26 @@ def fetch_incidents(client: Client, last_run: dict, params: Dict) -> Tuple[dict,
     next_run = last_run
     incidents = []
     for result in results:
-        result['mirror_direction'] = MIRROR_DIRECTION.get(params.get('mirror_direction', 'None'))
-        result['mirror_instance'] = demisto.integrationInstance()
-        incidents.append({
-            'name': result.get('attributes').get('subject', ''),
-            'occurred': result.get('attributes').get('created_at'),
-            'rawJSON': json.dumps(result)
-        })
+        if result.get('id') not in ids:
+            result['mirror_direction'] = MIRROR_DIRECTION.get(params.get('mirror_direction', 'None'))
+            result['mirror_instance'] = demisto.integrationInstance()
+            incidents.append({
+                'name': result.get('attributes', {}).get('subject', ''),
+                'occurred': result.get('attributes', {}).get('created_at'),
+                'rawJSON': json.dumps(result)
+            })
+            ids.append(result.get('id'))
+        else:
+            demisto.debug(f"Skipping report {result.get('id')} since it has already been fetched.")
 
     if results:
-        next_run['id'] = results[-1].get('id')
+        next_run.pop('id', None)
+        next_run["ids"] = ids
+        if len(results) < int(params.get("max_fetch")) or not next_run.get("updated_at"):  # type:ignore
+            next_run['updated_at'] = results[-1].get('attributes', {}).get('updated_at')
+            next_run["page_number"] = 1
+        else:
+            next_run["page_number"] = last_run.get("page_number", 1) + 1
 
     return next_run, incidents
 
