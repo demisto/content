@@ -238,7 +238,7 @@ def main() -> None:
             "get-task-monitor-results-data-breaches": get_task_monitor_results_command(MODULE_NAME_BREACHES)
         }
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
