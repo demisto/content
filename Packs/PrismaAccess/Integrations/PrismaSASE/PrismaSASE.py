@@ -1214,7 +1214,7 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
         raw_response = client.list_address_objects(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
         outputs = raw_response.copy()
-        # The API returns a dict containing a list of results if there are more than one, otherwise it returns a single dict.
+        # A dict containing a list of results is returned by the API. A single dict is returned when filtering the request by name.
         outputs = outputs.get('data', outputs)
 
     address_to_xsoar_format(outputs)
@@ -1314,7 +1314,7 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
         query_params.update(get_pagination_params(args))
 
         raw_response = client.list_security_rules(query_params=query_params, tsg_id=tsg_id)  # type: ignore
-        # The API returns a dict containing a list of results, if filtering it returns a single dict.
+        # A dict containing a list of results is returned by the API. A single dict is returned when filtering the request by name.
         outputs = raw_response.get('data') or raw_response
 
     return CommandResults(
