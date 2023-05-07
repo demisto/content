@@ -46,7 +46,8 @@ jobs:
           echo "Updating External PR ${{ github.event.pull_request.html_url }}"
           cd Utils/github_workflow_scripts
           pipenv sync
-          pipenv run ./handle_external_pr.py
+
+          pipenv run ./handle_external_pr.py --changed_files "${{ steps.changed-files.outputs.all_changed_files }}" --delimiter "${{ env.CHANGED_FILES_DELIMITER }}"
           echo "Finished Handling External PR"
       - name: Send Notification
         env:

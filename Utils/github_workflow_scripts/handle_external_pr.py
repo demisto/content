@@ -138,6 +138,7 @@ def main():
     parser_args = parse_changed_files_names()
     print(f'{parser_args.changed_files=}')
     changed_files_list = parser_args.changed_files.split(parser_args.delimiter)
+    print(f'{changed_files_list=}')
 
     labels_to_add = [CONTRIBUTION_LABEL]
     if support_label := get_support_level_label(changed_files_list):
