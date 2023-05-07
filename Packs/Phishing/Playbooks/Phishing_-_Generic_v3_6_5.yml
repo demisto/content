@@ -3728,7 +3728,7 @@ inputs:
   playbookInputQuery:
 - key: TakeManualActions
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: |-
     Specify whether to stop the playbook to take additional action before closing the incident.
