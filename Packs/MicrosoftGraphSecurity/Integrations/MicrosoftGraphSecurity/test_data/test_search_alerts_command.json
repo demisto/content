@@ -1,7 +1,7 @@
 {
     "test_case_1": {
         "args": {"severity": "medium", "limit": "50"},
-        "api_version": "API V1",
+        "api_version": "Legacy Alerts",
         "mock_response": {"@odata.context": "https://graph.microsoft.com/v1.0/$metadata#Security/alerts", "value": [{
             "id": "da637229984903196572_-755436942", "azureTenantId": "<azureTenantId>",
             "azureSubscriptionId": null, "riskScore": null, "tags": [], "activityGroupName": null,
@@ -90,7 +90,7 @@
     },
     "test_case_2": {
         "args": {"limit": "1"},
-        "api_version": "API V2",
+        "api_version": "Alerts v2",
         "mock_response": {"value": [{"actorDisplayName":null,"alertWebUrl":"https://security.microsoft.com/alerts/pid?tid=tenantId",
             "assignedTo":null,"category":"None","classification":null,"comments":[],"createdDateTime":"2022-10-03T03:39:21.7562976Z","description":"Created for test","detectionSource":"customTi",
             "detectorId":"did","determination":null,"evidence":[{"@odata.type":"#microsoft.graph.security.processEvidence","createdDateTime":"2022-10-03T03:39:21.79Z",

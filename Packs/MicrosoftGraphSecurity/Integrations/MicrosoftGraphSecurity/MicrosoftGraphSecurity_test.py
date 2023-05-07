@@ -9,8 +9,8 @@ import demistomock as demisto
 import re
 
 
-API_V2 = "API V2"
-API_V1 = "API V1"
+API_V2 = "Alerts v2"
+API_V1 = "Legacy Alerts"
 client_mocker = MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
                               base_url='url', verify='use_ssl', proxy='proxy', self_deployed='self_deployed')
 
@@ -41,9 +41,9 @@ def test_get_alert_details_command(mocker, test_case):
         Given:
         - test case that point to the relevant test case in the json test data which include:
           args including alert_id and fields_to_include, response mock, expected hr and ec outputs, and api version.
-        - Case 1: args with all fields to include in fields_to_include, response of a v1 alert and, api version 1 flag.
-        - Case 2: args with only FileStates to include in fields_to_include, response of a v1 alert and, api version 1 flag.
-        - Case 3: args with only FileStates to include in fields_to_include, response of a v1 alert and, api version 2 flag.
+        - Case 1: args with all fields to include in fields_to_include, response of a Legacy Alerts alert and, api version Legacy Alerts flag.
+        - Case 2: args with only FileStates to include in fields_to_include, response of a Legacy Alerts alert and, api version Legacy Alerts flag.
+        - Case 3: args with only FileStates to include in fields_to_include, response of a Legacy Alerts alert and, api version Alerts v2 flag.
 
         When:
         - Running get_alert_details_command.
@@ -74,10 +74,10 @@ def test_search_alerts_command(mocker, test_case):
         Given:
         - test case that point to the relevant test case in the json test data which include:
           args, api version, response mock, expected hr and ec outputs.
-        - Case 1: args with medium severity and limit of 50 incidents, response of a v1 search_alert command results,
-                  and a V1 api version flag.
-        - Case 2: args with limit of 1 incident, response of a v1 search_alert command results with 2 alerts,
-                  and a V2 api version flag.
+        - Case 1: args with medium severity and limit of 50 incidents, response of a Legacy Alerts search_alert command results,
+                  and a Legacy Alerts api version flag.
+        - Case 2: args with limit of 1 incident, response of a Legacy Alerts search_alert command results with 2 alerts,
+                  and a Alerts v2 api version flag.
 
         When:
         - Running search_alerts_command.
@@ -106,7 +106,7 @@ def test_fetch_incidents_command(mocker, test_case):
     """
         Given:
         - test case that point to the relevant test case in the json test data which include a response mock.
-        - Case 1: Response of a v1 search_alert command results.
+        - Case 1: Response of a Legacy Alerts search_alert command results.
 
         When:
         - Running fetch_incidents.
@@ -144,10 +144,10 @@ def test_create_search_alerts_filters(mocker, args, expected_params, is_fetch, a
     """
         Given:
         - args, expected_params results, is_fetch flag, and a api_version flag.
-        - Case 1: args with filter and status (relevant only for v2) fields, is_fetch is True and API version flag is V1.
-        - Case 2: args with filter and status (relevant only for v2) fields, is_fetch is True and API version flag is V2.
-        - Case 3: args with filter and status (relevant only for v2) fields, is_fetch is False and API version flag is V1.
-        - Case 4: args with only page field, is_fetch is False and API version flag is V1.
+        - Case 1: args with filter and status (relevant only for Alerts v2) fields, is_fetch is True and API version flag is Legacy Alerts.
+        - Case 2: args with filter and status (relevant only for Alerts v2) fields, is_fetch is True and API version flag is Alerts v2.
+        - Case 3: args with filter and status (relevant only for Alerts v2) fields, is_fetch is False and API version flag is Legacy Alerts.
+        - Case 4: args with only page field, is_fetch is False and API version flag is Legacy Alerts.
 
         When:
         - Running create_search_alerts_filters.
@@ -166,27 +166,27 @@ def test_create_search_alerts_filters(mocker, args, expected_params, is_fetch, a
 
 
 @pytest.mark.parametrize('args, expected_error, api_version', [
-    ({"page_size": "1001"}, "Please note that the page size limit for API V1 is 1000", API_V1),
-    ({"page_size": "1000", "page": "3"}, 'Please note that the maximum amount of alerts you can skip in API V1 is 500',
+    ({"page_size": "1001"}, "Please note that the page size limit for Legacy Alerts is 1000", API_V1),
+    ({"page_size": "1000", "page": "3"}, 'Please note that the maximum amount of alerts you can skip in Legacy Alerts is 500',
      API_V1),
-    ({"page_size": "2001"}, "Please note that the page size limit for API V2 is 2000", API_V2)
+    ({"page_size": "2001"}, "Please note that the page size limit for Alerts v2 is 2000", API_V2)
 ])
 def test_create_search_alerts_filters_errors(mocker, args, expected_error, api_version):
     """
         Given:
         - args, expected_error, and a api_version flag.
-        - Case 1: Args with page_size = 1001, and API version flag is V1.
-        - Case 2: Args with page_size = 1000 and page = 3 (total of page=3000) and API version flag is V1.
-        - Case 3: Args with page_size = 2001, and API version flag is V2.
+        - Case 1: Args with page_size = 1001, and API version flag is Legacy Alerts.
+        - Case 2: Args with page_size = 1000 and page = 3 (total of page=3000) and API version flag is Legacy Alerts.
+        - Case 3: Args with page_size = 2001, and API version flag is Alerts v2.
 
         When:
         - Running create_search_alerts_filters.
 
         Then:
         - Ensure that the right error was thrown.
-        - Case 1: Should throw an error for page_size too big for V1 limitations.
-        - Case 2: Should throw an error for too many alerts to skip for V1 limitations.
-        - Case 3: Should throw an error for page_size too big for V2 limitations.
+        - Case 1: Should throw an error for page_size too big for Legacy Alerts limitations.
+        - Case 2: Should throw an error for too many alerts to skip for Legacy Alerts limitations.
+        - Case 3: Should throw an error for page_size too big for Alerts v2 limitations.
     """
     mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
     with pytest.raises(DemistoException) as e:
@@ -240,11 +240,11 @@ def test_create_data_to_update(mocker, args, expected_results, api_version):
     """
         Given:
         - args, expected_results, and a api_version flag.
-        - Case 1: args with vendor_information, provider information, and assigned_to fields, and API version flag is V1.
-        - Case 2: args with vendor_information, provider information, and comment (relevant only for v1) fields,
-                  and API version flag is V1.
-        - Case 3: args with status ('new' which is supported only by v2) and comment (relevant only for v1) fields,
-                  and API version flag is V2.
+        - Case 1: args with vendor_information, provider information, and assigned_to fields, and API version flag is Legacy Alerts.
+        - Case 2: args with vendor_information, provider information, and comment (relevant only for Legacy Alerts) fields,
+                  and API version flag is Legacy Alerts.
+        - Case 3: args with status ('new' which is supported only by Alerts v2) and comment (relevant only for Legacy Alerts) fields,
+                  and API version flag is Alerts v2.
 
         When:
         - Running create_data_to_update.
@@ -263,17 +263,17 @@ def test_create_data_to_update(mocker, args, expected_results, api_version):
 
 
 @pytest.mark.parametrize('args, expected_error, api_version', [
-    ({'assigned_to': 'someone'}, 'When using API V1, both vendor_information and provider_information must be provided.',
+    ({'assigned_to': 'someone'}, 'When using Legacy Alerts, both vendor_information and provider_information must be provided.',
      API_V1),
-    ({'closed_date_time': 'now'}, "No data relevant for API V2 to update was provided, please provide at least one of the "
+    ({'closed_date_time': 'now'}, "No data relevant for API Alerts v2 to update was provided, please provide at least one of the "
      "following: assigned_to, determination, classification, status.", API_V2)
 ])
 def test_create_data_to_update_errors(mocker, args, expected_error, api_version):
     """
         Given:
         - args, expected_error, and a api_version flag.
-        - Case 1: args with only assigned_to field, and API version flag is V1.
-        - Case 4: Args with only 'closed_date_time' field (relevant only for v1),  and API version flag is V2.
+        - Case 1: args with only assigned_to field, and API version flag is Legacy Alerts.
+        - Case 2: Args with only 'closed_date_time' field (relevant only for Legacy Alerts),  and API version flag is Alerts v2.
 
         When:
         - Running create_data_to_update.
@@ -281,7 +281,7 @@ def test_create_data_to_update_errors(mocker, args, expected_error, api_version)
         Then:
         - Ensure that the right error was thrown.
         - Case 1: Should throw an error for missing vendor and provider information.
-        - Case 4: Should throw an error for missing V2 relevant data to update.
+        - Case 2: Should throw an error for missingAlerts v2 relevant data to update.
     """
     mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
     with pytest.raises(DemistoException) as e:
@@ -290,21 +290,21 @@ def test_create_data_to_update_errors(mocker, args, expected_error, api_version)
 
 
 @pytest.mark.parametrize('args, expected_error, api_version', [
-    ({'alert_id': 'alert_id', "comment": "comment"}, "This command is available only for V2."
-     " If you wish to add a comment to an alert with V1 please use 'msg-update-alert' command.", API_V1)
+    ({'alert_id': 'alert_id', "comment": "comment"}, "This command is available only for Alerts v2."
+     " If you wish to add a comment to an alert with Legacy Alerts please use 'msg-update-alert' command.", API_V1)
 ])
 def test_create_alert_comment_command_error(mocker, args, expected_error, api_version):
     """
         Given:
         - args, expected_error, and a api_version flag.
-        - Case 1: args with alert_id and a comment to add, and API version flag is V1.
+        - Case 1: args with alert_id and a comment to add, and API version flag is Legacy Alerts.
 
         When:
         - Running create_alert_comment_command.
 
         Then:
         - Ensure that the right error was thrown.
-        - Case 1: Should throw an error for running the command using V1 of the API.
+        - Case 1: Should throw an error for running the command using Legacy Alerts of the API.
     """
     mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
     with pytest.raises(DemistoException) as e:
@@ -349,11 +349,12 @@ def test_create_filter_query(mocker, param, providers_param, service_sources_par
         Given:
         - param, providers_param, service_sources_param function arguments,
           expected_results, and a api_version flag.
-        - Case 1: param, providers_param, and service_sources_param function arguments filled, and API version flag is V1.
-        - Case 2: param, providers_param, and service_sources_param function arguments filled, and API version flag is V2.
-        - Case 3: Only providers_param and service_sources_param function arguments filled, and API version flag is V1.
-        - Case 4: Only providers_param and service_sources_param function arguments filled, and API version flag is V2.
-        - Case 5: param, providers_param, and service_sources_param function arguments Empty, and API version flag is V2.
+        - Case 1: param, providers_param, and service_sources_param function arguments filled,
+                  and API version flag is Legacy Alerts.
+        - Case 2: param, providers_param, and service_sources_param function arguments filled, and API version flag is Alerts v2.
+        - Case 3: Only providers_param and service_sources_param function arguments filled, and API version flag is Legacy Alerts.
+        - Case 4: Only providers_param and service_sources_param function arguments filled, and API version flag is Alerts v2.
+        - Case 5: param, providers_param, and service_sources_param function arguments Empty, and API version flag is Alerts v2.
         When:
         - Running create_filter_query.
 
