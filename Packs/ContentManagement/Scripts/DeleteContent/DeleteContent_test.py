@@ -565,7 +565,7 @@ def test_get_and_delete_needed_ids(requests_mock, mocker, args, xsoar_ids_state,
     Then:
          Assert deleted id lists are correct.
     """
-    requests_mock.get(CORE_PACKS_LIST_URL, text='[\n  "Base",\n  "rasterize",\n  "DemistoRESTAPI"\n]')
+    requests_mock.get(CORE_PACKS_LIST_URL, text='{"core_packs_list": [\n  "Base",\n  "rasterize",\n  "DemistoRESTAPI"\n]}')
 
     def execute_command_mock(command_name, command_args, fail_on_error=False):
         status, response = mock_demisto_responses(command_name, command_args, xsoar_ids_state)
@@ -606,7 +606,7 @@ def test_dry_run_delete(requests_mock, mocker, args, xsoar_ids_state, expected_o
          Assert deleted id lists are correct.
          Assert call count to executeCommand API does not include calls for actual deletion.
     """
-    requests_mock.get(CORE_PACKS_LIST_URL, text='[\n  "Base",\n  "rasterize",\n  "DemistoRESTAPI"\n]')
+    requests_mock.get(CORE_PACKS_LIST_URL, text='{"core_packs_list": [\n  "Base",\n  "rasterize",\n  "DemistoRESTAPI"\n]}')
 
     def execute_command_mock(command_name, command_args, fail_on_error=False):
         status, response = mock_demisto_responses(command_name, command_args, xsoar_ids_state)
