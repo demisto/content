@@ -119,7 +119,10 @@ def test_module(client: Client) -> str:
     message: str = ''
     try:
         result = client.check_connection()
-        message = result['message']
+        if result.get('message') == 'success':
+            return 'ok'
+        else:
+            raise e...
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
