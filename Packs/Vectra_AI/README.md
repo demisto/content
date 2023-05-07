@@ -21,8 +21,8 @@ This pack is designed to quickly integrate with Vectra Detect platform to detect
 
 To get up and running with this pack, you must have a valid API token on your Vectra AI instance. In your Vectra AI instance:
 
-1. Navigate to *My Profile*.
-2. Click on the *General* tab.
+1. Navigate to **My Profile**.
+2. Click the **General** tab.
 3. Create an API Token.  
 
 Be sure that the user has a role with sufficient permissions to do all the actions.

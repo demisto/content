@@ -10,7 +10,7 @@ configuration:
   type: 0
 - name: credentials
   displaypassword: API Token
-  additionalinfo: The API Token to use for authentication
+  additionalinfo: The API Token to use for authentication.
   required: true
   hiddenusername: true
   type: 9
@@ -37,7 +37,7 @@ configuration:
   display: Use system proxy settings
   required: false
   type: 8
-description: 'Collects Vectra Detections and Audits into XSIAM Events'
+description: 'Collects Vectra Detections and Audits into XSIAM Events.'
 display: 'Vectra AI Event Collector'
 name: VectraAIEventCollector
 script:
