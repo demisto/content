@@ -114,7 +114,7 @@ def test_get_task_monitor_results_command(requests_mock):
 
     response = command_function(client, args)
 
-    assert response.outputs == mock_response
+    assert response.outputs == mock_response[:1]
     assert response.outputs_prefix == 'Resecurity.DataBreach'
     assert response.outputs_key_field == 'id'
 

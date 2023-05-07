@@ -119,10 +119,10 @@ def test_module(client: Client) -> str:
     message: str = ''
     try:
         result = client.check_connection()
-        if result.get('message') == 'success':
+        if result.get('message') == 'ok':
             return 'ok'
         else:
-            raise e...
+            raise DemistoException("Failed to establish connection with provided credentials.")
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
@@ -141,7 +141,7 @@ def get_task_monitor_results_command(module_name: str):
 
         # get params from user
         monitor_task_id = arg_to_number(args.get("monitor_task_id"), 'monitor_task_id', True)
-        limit = int(args.get("limit", DEFAULT_RESULTS_SIZE_LIMIT))
+        limit = arg_to_number(args.get("limit", DEFAULT_RESULTS_SIZE_LIMIT))
         page = arg_to_number(args.get("page"))
         page_size = arg_to_number(args.get("page_size", DEFAULT_PAGE_SIZE))
         mode = arg_to_number(args.get("mode", DEFAULT_MODE))
@@ -156,12 +156,12 @@ def get_task_monitor_results_command(module_name: str):
             page = 1
 
             # limit 'page size' value if it is bigger that 'limit' value
-            if limit is not None and page_size > limit:
+            if limit is not None and page_size is not None and page_size > limit:
                 page_size = limit
             result_count = 0
 
             result = []
-            while result_count < limit:
+            while limit is not None and result_count < limit:
                 response = client.get_task_monitor_results(monitor_task_id, module_name, page, page_size, mode)
 
                 total_pages = response.headers.get(PAGINATION_HEADER_NAME)
