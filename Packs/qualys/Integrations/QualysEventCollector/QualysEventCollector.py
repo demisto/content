@@ -2,10 +2,11 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import Dict
 import urllib3
+import csv
+import io
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
 
 """ CONSTANTS """
 
@@ -14,6 +15,29 @@ API_SUFFIX = "/api/2.0/fo/"
 TAG_API_SUFFIX = "/qps/rest/2.0/"
 VENDOR = 'qualys'
 PRODUCT = 'qualys'
+BEGIN_RESPONSE_LOGS_CSV = "----BEGIN_RESPONSE_BODY_CSV"
+END_RESPONSE_LOGS_CSV = "----END_RESPONSE_BODY_CSV"
+BEGIN_RESPONSE_FOOTER_CSV = "----BEGIN_RESPONSE_FOOTER_CSV"
+END_RESPONSE_FOOTER_CSV = "----END_RESPONSE_FOOTER_CSV"
+
+qualys_host_list_detection = {
+    "api_route": API_SUFFIX + "asset/host/vm/detection/?action=list",
+    "call_method": "GET",
+    "resp_type": "text",
+}
+
+
+def get_partial_response(response: str, start: str, end: str):
+    start_index = response.index(start) + len(start)
+    end_index = response.index(end)
+    result = response[start_index:end_index].strip()
+    return result
+
+
+def csv2json(csv_data: str):
+    reader = csv.DictReader(io.StringIO(csv_data))
+    json_data = json.dumps(list(reader))
+    return json_data
 
 
 """ CLIENT CLASS """
@@ -41,28 +65,68 @@ class Client(BaseClient):
         raise DemistoException(err_msg, res=res)
 
     @logger
-    def command_http_request(self, command_api_data: Dict[str, str]) -> Union[str, bytes]:
+    def get_user_activity_logs(self, since_datetime) -> Union[str, bytes]:
         """
-        Make a http request to Qualys API
+        Make a http request to Qualys API to get user activities logs
         Args:
-            command_api_data: Information about the API request of the requested command
         Returns:
             response from Qualys API
         Raises:
             DemistoException: can be raised by the _http_request function
         """
-        if content_type := command_api_data.get("Content-Type"):
-            self._headers.update({"Content-Type": content_type})
+        self._headers.update({"Content-Type": 'application/json'})
+        params = {
+            "since_datetime": since_datetime,
+            "truncation_limit": 0
+        }
 
-        return self._http_request(
-            method=command_api_data["call_method"],
-            url_suffix=command_api_data["api_route"],
-            params=args_values,
-            resp_type=command_api_data["resp_type"],
+        response = self._http_request(
+            method='GET',
+            url_suffix=urljoin(API_SUFFIX, 'activity_log/?action=list'),
+            resp_type='text/csv',
+            params=params,
             timeout=60,
-            data=command_api_data.get("request_body", None),
             error_handler=self.error_handler,
         )
+
+        return response.text
+
+
+def parse_raw_response(response: Union[bytes, requests.Response]) -> Dict:
+    """
+    Parses raw response from Qualys.
+    Tries to load as JSON. If fails to do so, tries to load as XML.
+    If both fails, returns an empty dict.
+    Args:
+        response (Union[bytes, requests.Response]): Response from Qualys service.
+
+    Returns:
+        (Dict): Dict representing the data returned by Qualys service.
+    """
+    try:
+        return json.loads(str(response))
+    except Exception:
+        try:
+            return json.loads(xml2json(response))
+        except Exception:
+            return {}
+
+
+@logger
+def get_simple_response_from_raw(raw_response: Any) -> Union[Any, Dict]:
+    """
+    Gets the simple response from a given JSON dict structure returned by Qualys service
+    If object is not a dict, returns the response as is.
+    Args:
+        raw_response (Any): Raw response from Qualys service.
+
+    Returns:
+        (Union[Any, Dict]): Simple response path if object is a dict, else response as is.
+    """
+    simple_response = None
+    if raw_response and isinstance(raw_response, dict):
+        simple_response = raw_response.get("SIMPLE_RETURN", {}).get("RESPONSE", {})
+    return simple_response
 
 
 def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -> str:
@@ -80,13 +144,11 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     """
 
     try:
-        alert_status = params.get('alert_status', None)
-
         fetch_events(
             client=client,
             last_run={},
             first_fetch_time=first_fetch_time,
-            alert_status=alert_status,
+            max_fetch=1
         )
 
     except Exception as e:
@@ -98,21 +160,55 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     return 'ok'
 
 
-def add_time_to_events(events):
+def add_time_to_events(events, time_field):
     """
     Adds the _time key to the events.
     Args:
         events: List[Dict] - list of events to add the _time key to.
+        time_field:
     Returns:
         list: The events with the _time key.
     """
     if events:
         for event in events:
-            create_time = arg_to_datetime(arg=event.get('created_time'))
+            create_time = arg_to_datetime(arg=event.get(time_field))
             event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
 """ MAIN FUNCTION """
+
+
+def fetch_events(client, last_run, first_fetch_time, max_fetch):
+    events = []
+    activity_logs_last_run = last_run.get('activity_logs')
+    host_list_detection_last_run = last_run.get('host_list_detection')
+
+    if not last_run:
+        activity_logs_last_run = first_fetch_time
+        host_list_detection_last_run = first_fetch_time
+
+    # todo: call user activity log
+    activity_logs = client.get_user_activity_logs(since_datetime=activity_logs_last_run)
+    activity_logs_events = csv2json(get_partial_response(activity_logs, BEGIN_RESPONSE_LOGS_CSV, END_RESPONSE_LOGS_CSV))
+
+    add_time_to_events(activity_logs_events, 'Date')
+
+    # todo: call host list detection
+
+    add_time_to_events(events, "TODO")
+
+    next_run = {'activity_logs': '', 'host_list_detection': ''}
+    return {}, events
+
+
+def get_events(client):
+    events = []
+    # todo: call user activity log
+
+    # todo: call host list detection
+
+    add_time_to_events(events)
+    return {}, events
 
 
 def main():  # pragma: no cover
@@ -133,8 +229,8 @@ def main():  # pragma: no cover
         arg_name='First fetch time',
         required=True
     )
+    # todo: 2023-05-04T12:36:59Z
     first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
-    assert isinstance(first_fetch_timestamp, int)
 
     demisto.debug(f'Command being called is {command}')
 
@@ -155,12 +251,11 @@ def main():  # pragma: no cover
             result = test_module(client, params, first_fetch_timestamp)
             return_results(result)
 
-        elif command == 'hello-world-get-events':
+        elif command == 'qualys-get-events':
             should_push_events = argToBoolean(args.pop('should_push_events'))
             events, results = get_events(client)
             return_results(results)
             if should_push_events:
-                add_time_to_events(events)
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
@@ -175,7 +270,6 @@ def main():  # pragma: no cover
                 first_fetch_time=first_fetch_timestamp,
                 max_fetch=max_fetch,
             )
-            add_time_to_events(events)
             send_events_to_xsiam(
                 events,
                 vendor=VENDOR,
