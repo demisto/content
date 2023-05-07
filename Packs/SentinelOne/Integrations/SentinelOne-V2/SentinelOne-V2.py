@@ -3239,6 +3239,7 @@ def main():
     """ PARSE INTEGRATION PARAMETERS """
 
     global IS_VERSION_2_1
+    demisto.debug('test')
 
     params = demisto.params()
     token = params.get('token') or params.get('credentials', {}).get('password')

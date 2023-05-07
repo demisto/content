@@ -13397,6 +13397,8 @@ def main(): # pragma: no cover
         command = demisto.command()
         LOG(f'Command being called is: {command}')
 
+        demisto.debug("test")
+        
         # Remove proxy if not set to true in params
         handle_proxy()
 
