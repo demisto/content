@@ -96,7 +96,7 @@ class Client(BaseClient):
 
 def get_human_readable_output(module_name, monitor_task_id, result):
     return tableToMarkdown(name="{0} results from task with ID {1}".format(module_name, monitor_task_id),
-                           t=result, removeNull=False, date_fields=['detection_date'])
+                           t=result, removeNull=True, date_fields=['detection_date'])
 
 
 ''' COMMAND FUNCTIONS '''
