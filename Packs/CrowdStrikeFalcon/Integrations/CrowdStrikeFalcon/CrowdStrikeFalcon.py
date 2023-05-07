@@ -4691,7 +4691,7 @@ def build_cs_falcon_filter(custom_filter: str = None, **filter_args) -> str:
     custom_filter_list = custom_filter.split('+') if custom_filter else []
     arguments = [f'{key}:{argToList(value)}' for key, value in filter_args.items() if value]
     # custom_filter takes priority because it is first
-    return "%2B".join(custom_filter_list + arguments).replace(',', '%2C')
+    return "%2B".join(custom_filter_list + arguments)
 
 
 def ODS_query_scans_request(**query_params) -> dict:
@@ -4713,7 +4713,8 @@ def map_scan_resource_to_UI(resource: dict) -> dict:
         'ID': resource.get('id'),
         'Status': resource.get('status'),
         'Severity': resource.get('severity'),
-        # 'File Count': '\n'.join(f'{k}: {v}' for k, v in resource.get('filecount', {}).items()), TODO
+        'File Count': '\n-\n'.join(f' {filecount}'.translate(str.maketrans(',', '\n', "{}'"))
+                                    for host in resource.get('metadata', []) if (filecount := host.get('filecount'))),
         'Description': resource.get('description'),
         'Hosts/Host groups': resource.get('hosts') or resource.get('host_groups'),
         'Start time': resource.get('scan_started_on'),
@@ -4805,12 +4806,12 @@ def map_scheduled_scan_resource_to_UI(resource: dict) -> dict:
 
 
 def ODS_get_scheduled_scan_resources_to_human_readable(resources: list[dict]) -> str:
-    # TODO NEEDS ALL FIELDS IN UI
+
     human_readable = tableToMarkdown(
         'CrowdStrike Falcon ODS Scheduled Scans',
         [map_scheduled_scan_resource_to_UI(resource) for resource in resources],
         headers=['ID', 'Hosts targeted', 'Description',
-                 'Host groups', 'Start time', 'Created by']
+                 'Host groups', 'Start time', 'Created by'],
     )
 
     return human_readable
@@ -4895,11 +4896,29 @@ def get_ODS_scan_host_ids(args: dict) -> list[str] | None:
 
 
 def map_scan_host_resource_to_UI(resource: dict) -> dict:
-    pass  # TODO
+    output = {
+        'ID': resource.get('id'),
+        'Scan ID': resource.get('scan_id'),
+        'Host ID': resource.get('host_id'),
+        'Filecount': '\n'.join(f'{k}: {v}' for k, v in resource.get('filecount', {}).items()),
+        'Status': resource.get('status'),
+        'Severity': resource.get('severity'),
+        'Started on': resource.get('started_on'),
+    }
+    return output
 
 
 def ODS_get_scan_hosts_resources_to_human_readable(resources: list[dict]) -> str:
-    pass  # TODO
+
+    human_readable = tableToMarkdown(
+        'CrowdStrike Falcon ODS Scan Hosts',
+        [map_scan_host_resource_to_UI(resource) for resource in resources],
+        headers=['ID', 'Scan ID', 'Host ID',
+                 'Filecount', 'Status',
+                 'Severity', 'Started on'],
+    )
+
+    return human_readable
 
 
 def cs_falcon_ods_query_scan_host_command(args: dict) -> CommandResults:
@@ -4938,11 +4957,26 @@ def ODS_get_malicious_files_by_id_request(ids: list[str]) -> dict:
 
 
 def map_malicious_file_resource_to_UI(resource: dict) -> dict:
-    pass
+    output = {
+        'ID': resource.get('id'),
+        'Scan id': resource.get('scan_id'),
+        'Filename': resource.get('filename'),
+        'Hash': resource.get('hash'),
+        'Severity': resource.get('severity'), 
+        'Last updated': resource.get('last_updated'),
+    }
+    return output
 
 
 def ODS_get_malicious_files_resources_to_human_readable(resources: list[dict]) -> str:
-    pass
+
+    human_readable = tableToMarkdown(
+        'CrowdStrike Falcon ODS Malicious Files',
+        [map_malicious_file_resource_to_UI(resource) for resource in resources],
+        headers=['ID', 'Scan id', 'Filename', 'Hash', 'Severity', 'Last updated'],
+    )
+
+    return human_readable
 
 
 def get_ODS_malicious_files_ids(args: dict) -> list[str] | None:

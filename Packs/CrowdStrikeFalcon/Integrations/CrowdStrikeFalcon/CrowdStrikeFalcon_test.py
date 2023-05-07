@@ -4778,7 +4778,13 @@ def test_map_scan_resource_to_UI(mocker):
             {
                 "host_id": "15dbb9d8f06b45fe9f61eb46e829d986",
                 "scan_host_metadata_id": "2e99e4fc7a4f4b1e9254e0af210a6994",
-                "filecount": {},
+                "filecount": {
+                    "scanned": 0,
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "skipped": 0,
+                    "traversed": 209
+                },
                 "status": "failed",
                 "last_updated": "2023-04-05T02:23:10.316500752Z"
             }
@@ -4811,6 +4817,7 @@ def test_map_scan_resource_to_UI(mocker):
         'Status': "failed",
         'Severity': None,
         'Description': "desc3456346",
+        'File Count': ' scanned: 0\n malicious: 0\n quarantined: 0\n skipped: 0\n traversed: 518464\n-\n scanned: 0\n malicious: 0\n quarantined: 0\n skipped: 0\n traversed: 209',
         'Hosts/Host groups': [
             "7471ba0636b34cbb8c65fae7979a6a9b"
         ],
@@ -5016,8 +5023,35 @@ def test_map_scan_host_resource_to_UI(mocker):
     """
     from CrowdStrikeFalcon import map_scan_host_resource_to_UI
 
-    resource = {}
-    mapped_resource = {}
+    resource = {
+        "id": "185a0ad5e159418e8927d956c1a793d8",
+        "cid": "3c74ca9ad4k43592ea2adf4ca94k4359",
+        "scan_id": "fadde07ee8a44a07988e009b3152e339",
+        "profile_id": "ddf8914cca5f4ac595272fe8122e308f",
+        "host_id": "82395m302t8zea2u25978416be1973c5",
+        "host_scan_id": "7e80aa16a44d30cb819e27144d2603b0",
+        "filecount": {
+            "scanned": 1021,
+            "malicious": 104,
+            "quarantined": 0,
+            "skipped": 9328
+        },
+        "status": "completed",
+        "severity": 70,
+        "started_on": "2022-11-01T18:54:59.39861174Z",
+        "completed_on": "2022-11-01T19:08:17.903700092Z",
+        "last_updated": "2022-11-01T19:08:17.903732519Z"
+    }
+    
+    mapped_resource = {
+        'ID': "185a0ad5e159418e8927d956c1a793d8",
+        'Scan ID': "fadde07ee8a44a07988e009b3152e339",
+        'Host ID': "82395m302t8zea2u25978416be1973c5",
+        'Filecount': 'scanned: 1021\nmalicious: 104\nquarantined: 0\nskipped: 9328',
+        'Status': "completed",
+        'Severity': 70,
+        'Started on': "2022-11-01T18:54:59.39861174Z",
+    }
 
     output = map_scan_host_resource_to_UI(resource)
 
@@ -5092,8 +5126,28 @@ def test_map_malicious_file_resource_to_UI(mocker):
     """
     from CrowdStrikeFalcon import map_malicious_file_resource_to_UI
 
-    resource = {}
-    mapped_resource = {}
+    resource = {
+        "id": "d684849d4cea435daec706e473743863",
+        "cid": "91a0649f84749a38f6d939423bed5576",
+        "scan_id": "81c8009a59be4570b5c66f8946559205",
+        "host_id": "3c7be1c5ea21849fa5c74ca9842f46a9",
+        "host_scan_id": "4f9fea030a0626ed4dc53a7dec70a100",
+        "filepath": "C:\\\\Windows\\Malicious\\Mimikatz_newzipp\\Mimikatz\\x86\\mimilib.dll",
+        "filename": "mimilib.dll",
+        "hash": "9ff1a527861a69b436b51a8d464aaee8d416e39ff1a52aee16e39b436b564a78",
+        "pattern_id": 4004,
+        "severity": 70,
+        "quarantined": True,
+        "last_updated": "2022-11-01T17:06:18.900620631Z"
+    }
+    mapped_resource = {
+        'ID': 'd684849d4cea435daec706e473743863',
+        'Scan id': '81c8009a59be4570b5c66f8946559205',
+        'Filename': 'mimilib.dll',
+        'Hash': '9ff1a527861a69b436b51a8d464aaee8d416e39ff1a52aee16e39b436b564a78',
+        'Severity': 70,
+        'Last updated': '2022-11-01T17:06:18.900620631Z',
+    }
 
     output = map_malicious_file_resource_to_UI(resource)
 
