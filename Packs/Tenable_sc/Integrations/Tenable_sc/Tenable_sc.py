@@ -61,7 +61,7 @@ class Client(BaseClient):
 
     def send_request_new(self, path, method='get', body=None, params=None, headers=None):
         headers = headers or self.headers
-        return self._http_request(method, url_suffix=path, params=params, data=body)
+        return self._http_request(method, url_suffix=path, params=params, data=json.dumps(body))
 
     def send_request_old(self, path, method='get', body=None, params=None, headers=None, try_number=1):
         body = body if body is not None else {}
@@ -137,8 +137,8 @@ class Client(BaseClient):
 
     def create_scan(self, name, repo_id, policy_id, plugin_id, description, zone_id, schedule, asset_ids,
                     ips, scan_virtual_hosts, report_ids, credentials, timeout_action, max_scan_time,
-                    dhcp_track, rollover_type, dependent, start_time, repeat_rule_freq, repeat_rule_interval,
-                    repeat_rule_by_day, enabled, time_zone):
+                    dhcp_track, rollover_type, dependent, start_time="", repeat_rule_freq="", repeat_rule_interval="",
+                    repeat_rule_by_day="", enabled=True, time_zone=""):
 
         scan_type = 'policy' if policy_id else 'plugin'
 
@@ -180,14 +180,13 @@ class Client(BaseClient):
             if schedule == 'ical':
                 if time_zone and start_time:
                     body['schedule']['start'] = f"TZID={time_zone}:{start_time}"
-                else:
+                elif (time_zone and not start_time) or (start_time and not time_zone):
                     return_error("Please make sure to provide both time_zone and start_time.")
-                if not repeat_rule_freq or not repeat_rule_interval or not repeat_rule_by_day:
-                    return_error("Please make sure to provide both repeat_rule_freq,repeat_rule_interval,  and repeat_rule_by_day.")
-                else:
-                    body['schedule']['FREQ'] = f"{repeat_rule_freq};INTERVAL={repeat_rule_interval};BYDAY={repeat_rule_by_day}"
+                # if not repeat_rule_freq or not repeat_rule_interval or not repeat_rule_by_day:
+                #     return_error("Please make sure to provide both repeat_rule_freq,repeat_rule_interval, and repeat_rule_by_day.")
+                # else:
+                # body['schedule']['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval};BYDAY={repeat_rule_by_day}"
                 body['schedule']['enabled'] = enabled
-                body['schedule']['repeatRule'] = dependent
 
         if report_ids:
             body['reports'] = [{'id': r_id, 'reportSource': 'individual'} for r_id in argToList(report_ids)]
@@ -875,9 +874,9 @@ def create_scan_command(client: Client, args: Dict[str, Any]):
     dependent = args.get('dependent_id')
     time_zone = args.get("time_zone")
     start_time = args.get("start_time")
-    repeat_rule_freq = args.get("repeat_rule_freq")
+    repeat_rule_freq = args.get("repeat_rule_freq", "")
     repeat_rule_interval = int(args.get("repeat_rule_interval", 0))
-    repeat_rule_by_day = argToList(args.get("repeat_rule_by_day"), [])
+    repeat_rule_by_day = argToList(args.get("repeat_rule_by_day"), "")
     enabled = argToBoolean(args.get("enabled", True))
 
     if time_zone and time_zone not in pytz.all_timezones:
