@@ -267,7 +267,8 @@ def get_email_related_incident_id(email_related_incident_code, email_original_su
     incidents_details = get_incident_by_query(query)
 
     for incident in incidents_details:
-        if email_original_subject in incident.get('emailsubject', ''):
+        email_subject = incident.get('emailsubject', '')
+        if email_subject and email_original_subject in email_subject:
             return str(incident.get('id'))
         else:
             # If 'emailsubject' doesn't match, check 'EmailThreads' context entries
