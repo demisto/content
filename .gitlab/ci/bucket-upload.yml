@@ -379,7 +379,7 @@ upload-packs-to-marketplace-v2:
     - |
       PACKS_SRC="gs://$GCS_MARKET_V2_BUCKET/$STORAGE_BASE_PATH/packs"
       ZIP_FOLDER=$(mktemp -d)
-      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/$ARTIFACTS_FOLDER/auth.out
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
       echo "successfully activated google cloud service account"
       gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
       echo "successfully downloaded index.zip"
