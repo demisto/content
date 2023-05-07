@@ -436,7 +436,7 @@ def main() -> None:  # pragma: no cover
 
             call_send_events_to_xsiam(events=events, vulnerabilities=vulnerabilities)
 
-            demisto.info(f'Setting new last_runto {new_last_run}')
+            demisto.debug(f'Setting new last_run to {new_last_run}')
             demisto.setLastRun(new_last_run)
 
     # Log exceptions and return errors
