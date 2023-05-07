@@ -183,7 +183,7 @@ def get_task_monitor_results_command(module_name: str):
         return CommandResults(
             outputs_prefix="Resecurity.{0}".format(MAPPING.get(module_name, {}).get("prefix", "").replace(" ", "")),
             outputs_key_field="id",
-            outputs=result,
+            outputs=result[:limit],
             readable_output=get_human_readable_output(MAPPING.get(module_name, {}).get("prefix"), monitor_task_id, result),
             raw_response=result,
             ignore_auto_extract=True
