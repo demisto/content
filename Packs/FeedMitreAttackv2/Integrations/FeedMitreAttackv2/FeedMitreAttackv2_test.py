@@ -276,7 +276,8 @@ def test_attack_pattern_reputation_command(mocker):
     ("Waterbear is modular malware attributed to BlackTech ...(Citation: Trend Micro Waterbear December 2019)",
      "Waterbear is modular malware attributed to BlackTech ..."),
     ("Adversaries may employ various means to detect and avoid debuggers.(Citation: ProcessHacker Github)\
-        (assuming a present debugger would “swallow” or handle the potential error).(Citation: hasherezade debug)(Citation: AlKhaser Debug)(Citation: vxunderground debug)\
+        (assuming a present debugger would “swallow” or handle the potential error).\
+(Citation: hasherezade debug)(Citation: AlKhaser Debug)(Citation: vxunderground debug)\
             <code>OutputDebugStringW()</code>.(Citation: wardle evilquest partii)(Citation: Checkpoint Dridex Jan 2021)",
      "Adversaries may employ various means to detect and avoid debuggers.\
             (assuming a present debugger would “swallow” or handle the potential error).\
