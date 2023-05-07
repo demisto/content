@@ -3405,7 +3405,70 @@ Retrieve information about one or more roles created in your environment.
 >|---|---|---|---|---|
 >| dummy | The user(s) have full access to the given app(s). | dummy,<br/>dummy,<br/>| dummy@dummy.com,<br/>dummy@dummy.com,<br/>dummy@dummy.com,<br/>dummy@dummy.com,<br/> |  |
 
+### xdr-list-user-groups
 
+***
+Retrieve a list of the current user emails associated with one or more user groups in your environment.
+
+#### Base Command
+
+`xdr-list-user-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_names | List of one or more user group names for which you want the associated users. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.UserGroup.group_name | String | Name of the User Group. | 
+| PaloAltoNetworksXDR.UserGroup.description | String | Description of the User Group, if available. | 
+| PaloAltoNetworksXDR.UserGroup.pretty_name | String | Name of the User Group as it appears in the Management Console. | 
+| PaloAltoNetworksXDR.UserGroup.insert_time | Number | Timestamp of when the User Group was created. | 
+| PaloAltoNetworksXDR.UserGroup.update_time | Number | Timestamp of when the User Group was last updated. | 
+| PaloAltoNetworksXDR.UserGroup.user_email | array | List of email addresses belonging to the users associated with the User Group. | 
+| PaloAltoNetworksXDR.UserGroup.source | String | Type of User Group. | 
+
+### xdr-set-user-role
+
+***
+Add one or more users to a role.
+
+#### Base Command
+
+`xdr-set-user-role`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_emails | List of one or more user emails of users you want to add to a role. | Required | 
+| role_name | Name of the role you want to add a user to. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### xdr-remove-user-role
+
+***
+Remove one or more users from a role.
+
+#### Base Command
+
+`xdr-remove-user-role`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_emails | List of one or more user emails of users you want to remove from a role. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
 ## xdr-script-run
 ***
 Initiates a new endpoint script execution action using a script from the script library and returns the results.

@@ -50,3 +50,4 @@
 !xdr-list-risky-users user_id=dummy
 !xdr-list-risky-hosts host_id=dummy
 !xdr-list-roles role_names="dummy dummy"
+!xdr-list-user-groups
