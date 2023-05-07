@@ -2330,3 +2330,181 @@ There is no context output for this command.
 
 >The endpoint alias was changed successfully.
 Note: If there is no error in the process, then this is the output even when the specific endpoint does not exist.
+
+### core-list-users
+
+***
+Retrieve a list of the current users in your environment.
+
+#### Base Command
+
+`core-list-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.User.user_email | string | Email address of the user | 
+| Core.User.user_first_name | string | First name of the user | 
+| Core.User.user_last_name | string | Last name of the user. | 
+| Core.User.role_name | string | Role name associated with the user. | 
+| Core.User.last_logged_in | integer | Timestamp of when the user last logged in. | 
+| Core.User.user_type | string | Type of user. | 
+| Core.User.groups | array | Name of user groups associated with the user, if applicable. | 
+| Core.User.scope | array | Name of scope associated with the user, if applicable. | 
+
+### core-list-risky-users
+
+***
+Retrieve the risk score of a specific user or list of users with the highest risk score in your environment along with the reason affecting each score.
+
+#### Base Command
+
+`core-list-risky-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | Unique ID of a specific user.<br/>User ID should be in the following format: dummy/dummy<br/>. | Optional | 
+| limit | Limit the number of users that will appear in the list. By default, the limit is 50 users.(use limit when you don't asking for specific user). Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.RiskyUser.type | String | Form of identification element. | 
+| Core.RiskyUser.id | String | Identification value of the type field. | 
+| Core.RiskyUser.score | Integer | The score assigned to the user. | 
+| Core.RiskyUser.reasons.date created | String | Date the incident created. | 
+| Core.RiskyUser.reasons.description | String | Description of the incident. | 
+| Core.RiskyUser.reasons.severity | String | The severity of the incident | 
+| Core.RiskyUser.reasons.status | String | Incident status | 
+| Core.RiskyUser.reasons.points | integer | Points the incident get | 
+
+### core-list-risky-hosts
+
+***
+Retrieve the risk score of a specific host or list of hosts with the highest risk score in your environment along with the reason affecting each score.
+
+#### Base Command
+
+`core-list-risky-hosts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | Unique ID of a specific host.<br/>. | Optional | 
+| limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(use limit when you don't asking for specific host). Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.RiskyHost.type | String | Form of identification element. | 
+| Core.RiskyHost.id | String | Identification value of the type field. | 
+| Core.RiskyHost.score | Integer | The score assigned to the host. | 
+| Core.RiskyHost.reasons.date created | String | Date the incident created. | 
+| Core.RiskyHost.reasons.description | String | Description of the incident. | 
+| Core.RiskyHost.reasons.severity | String | The severity of the incident. | 
+| Core.RiskyHost.reasons.status | String | Incident status. | 
+| Core.RiskyHost.reasons.points | integer | Points the incident get. | 
+
+### core-list-user-groups
+
+***
+Retrieve a list of the current user emails associated with one or more user groups in your environment.
+
+#### Base Command
+
+`core-list-user-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_names | List of one or more user group names for which you want the associated users. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.UserGroup.group_name | String | Name of the User Group. | 
+| Core.UserGroup.description | String | Description of the User Group, if available. | 
+| Core.UserGroup.pretty_name | String | Name of the User Group as it appears in the Management Console. | 
+| Core.UserGroup.insert_time | Number | Timestamp of when the User Group was created | 
+| Core.UserGroup.update_time | Number | Timestamp of when the User Group was last updated. | 
+| Core.UserGroup.user_email | array | List of email addresses belonging to the users associated with the User Group. | 
+| Core.UserGroup.source | String | Type of User Group. | 
+
+### core-list-roles
+
+***
+Retrieve information about one or more roles created in your environment.
+
+#### Base Command
+
+`core-list-roles`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| role_names | List of one or more role names in your environment for which you want detailed information. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.Role.pretty_name | String | Name of the role as it appears in the Management Console. | 
+| Core.Role.permissions | array | List of permissions associated with this role. | 
+| Core.Role.insert_time | Number | Timestamp of when the Role was created. | 
+| Core.Role.update_time | Number | Timestamp of when the Role was last updated. | 
+| Core.Role.created_by | String | Email of the user who created the Role. | 
+| Core.Role.description | String | Description of the Role, if available. | 
+| Core.Role.groups | array | Group names associated with the Role. | 
+| Core.Role.users | array | Email address of users associated with the Role. | 
+
+### core-set-user-role
+
+***
+Add one or more users to a role.
+
+#### Base Command
+
+`core-set-user-role`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_emails | List of one or more user emails of users you want to add to a role. | Required | 
+| role_name | Name of the role you want to add a user to. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### core-remove-user-role
+
+***
+Remove one or more users from a role.
+
+#### Base Command
+
+`core-remove-user-role`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_emails | List of one or more user emails of users you want to remove from a role. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
