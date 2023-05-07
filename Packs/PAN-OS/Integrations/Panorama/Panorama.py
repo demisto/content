@@ -13201,12 +13201,12 @@ def create_max_fetch_dict(queries_dict: Dict[str, str], configured_max_fetch: in
     return max_fetch_dict
 
 
-def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: Dict[str, int], last_fetch_dict: Dict[str, int]):
+def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: Dict[str, int], last_fetch_dict: Dict[str, str]) -> Dict[str, int]:
     """ This function updates the max fetch value for each log type according to the last fetch timestamp.
     Args:
         configured_max_fetch (int): the max fetch value for the first fetch cycle
         max_fetch_dict (Dict[str, int]): a dictionary of log type and its max fetch value
-        last_fetch_dict (Dict[str, datetime]): a dictionary of log type and its last fetch timestamp
+        last_fetch_dict (Dict[str, str]): a dictionary of log type and its last fetch timestamp
     Returns:
         max_fetch_dict (Dict[str, int]): a dictionary of log type and its updated max fetch value
     """
