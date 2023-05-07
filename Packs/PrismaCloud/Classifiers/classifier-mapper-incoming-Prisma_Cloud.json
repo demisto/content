@@ -167,6 +167,13 @@
 						"transformers": []
 					}
 				},
+				"Prisma Cloud Dismissal Note": {
+					"complex": {
+						"filters": [],
+						"root": "dismissalNote",
+						"transformers": []
+					}
+				},
 				"Prisma Cloud Time": {
 					"complex": {
 						"filters": [],
@@ -537,6 +544,13 @@
 					"complex": {
 						"filters": [],
 						"root": "status",
+						"transformers": []
+					}
+				},
+				"Prisma Cloud Dismissal Note": {
+					"complex": {
+						"filters": [],
+						"root": "dismissalNote",
 						"transformers": []
 					}
 				},
@@ -913,6 +927,13 @@
 						"transformers": []
 					}
 				},
+				"Prisma Cloud Dismissal Note": {
+					"complex": {
+						"filters": [],
+						"root": "dismissalNote",
+						"transformers": []
+					}
+				},
 				"Prisma Cloud Time": {
 					"complex": {
 						"filters": [],
@@ -1283,6 +1304,13 @@
 					"complex": {
 						"filters": [],
 						"root": "status",
+						"transformers": []
+					}
+				},
+				"Prisma Cloud Dismissal Note": {
+					"complex": {
+						"filters": [],
+						"root": "dismissalNote",
 						"transformers": []
 					}
 				},
@@ -1659,6 +1687,13 @@
 						"transformers": []
 					}
 				},
+				"Prisma Cloud Dismissal Note": {
+					"complex": {
+						"filters": [],
+						"root": "dismissalNote",
+						"transformers": []
+					}
+				},
 				"Prisma Cloud Time": {
 					"complex": {
 						"filters": [],
@@ -2027,6 +2062,13 @@
 						"transformers": []
 					}
 				},
+				"Prisma Cloud Dismissal Note": {
+					"complex": {
+						"filters": [],
+						"root": "dismissalNote",
+						"transformers": []
+					}
+				},
 				"Prisma Cloud Time": {
 					"complex": {
 						"filters": [],
@@ -2381,6 +2423,13 @@
 					"complex": {
 						"filters": [],
 						"root": "status",
+						"transformers": []
+					}
+				},
+				"Prisma Cloud Dismissal Note": {
+					"complex": {
+						"filters": [],
+						"root": "dismissalNote",
 						"transformers": []
 					}
 				},

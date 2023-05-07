@@ -51,7 +51,7 @@ MIRROR_DIRECTION = MIRROR_DIRECTION_MAPPING.get(demisto.params().get('mirror_dir
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote']
-INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES = ['Dismissed', 'Resolved', 'Snoozed']
+INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES = ['dismissed', 'resolved', 'snoozed']
 INCIDENT_INCOMING_MIRROR_REOPENING_STATUS = 'Open'
 INCIDENT_INCOMING_MIRROR_CLOSING_MAPPING = {
     'Dismissed': 'Other',
@@ -676,9 +676,12 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], remote_alert_id: 
     # TODO: need to add description
     """
     if demisto.params().get('close_incident'):  #  TODO: need to remove the close option parameters cause this is the only thing we do in this mirroring.
-        if mirrored_status := updated_object.get('status') in set(INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES):
-            mirrored_dismissal_note = updated_object.get('dismissalNote')
-            entry = close_incident_in_xsoar(remote_alert_id, mirrored_status, mirrored_dismissal_note)
+        demisto.debug("#### In close_incident condition")
+        demisto.debug(f"#### mirrored_status: {updated_object.get('status')}, mirrored_dismissal_note: {updated_object.get('dismissalNote')}")
+        if mirrored_status := updated_object.get('status'):
+            if mirrored_status in set(INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES):
+                mirrored_dismissal_note = updated_object.get('dismissalNote')
+                entry = close_incident_in_xsoar(remote_alert_id, mirrored_status, mirrored_dismissal_note)
         elif updated_object.get('status') == INCIDENT_INCOMING_MIRROR_REOPENING_STATUS:
             # TODO: need to verify that with Dima (if this is the only option for re-open scenario) - test all possible scenarios.
             entry = reopen_incident_in_xsoar(remote_alert_id)
@@ -1667,7 +1670,7 @@ def get_modified_remote_data_command(client: Client,
     demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
 
     # TODO: do we have a limit for the mirroring? if yes - need to add it to alert_search_request() -
-    #  consult with dima\yuval about rate limit and Burst limit - we might take 120 as a limit.
+    #  consult with dima\yuval about rate limit and Burst limit - we might take 120 as a limit. - sounds logical to limit the mirror in to 100 - document it.
 
     detailed = 'false'  # TODO: took false from the thread example - not sure - need to check if the mirrored fields arrived with false
     sort_by = ['alertTime:asc']
@@ -1681,6 +1684,7 @@ def get_modified_remote_data_command(client: Client,
     response = client.alert_search_request(time_range=time_filter, filters=filters, detailed=detailed, sort_by=sort_by)
     response_items = response.get('items', [])
     modified_records_ids = [str(item.get('id')) for item in response_items]
+    demisto.debug(f"##### Get modified records ids: {modified_records_ids}")
 
     return GetModifiedRemoteDataResponse(modified_records_ids)
 
