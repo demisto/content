@@ -1772,7 +1772,8 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+        'name': args.get('name')
     }
     tsg_id = args.get('tsg_id')
     if external_dynamic_list_id := args.get('id'):
@@ -1786,7 +1787,9 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
         raw_response = client.list_external_dynamic_list(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
         outputs = raw_response.copy()
-        outputs = outputs.get('data', [])
+        # A dict containing a list of results is returned by the API. 
+        # A single dict is returned when filtering the request by name.
+        outputs = outputs.get('data', outputs)
 
     external_dynamic_list_to_xsoar_format(outputs)
 
