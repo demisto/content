@@ -28,6 +28,6 @@ class TestsRunDocsReview:
 
         result = run_docs_review()
         # When demisto-sdk 1.14.1 is released, it's safe to remove the capsys check
-        assert any(log in sdk_docs_reviewer_starting_string for log in flatten_call_args(logger_info.call_args_list)) or \
+        assert any(sdk_docs_reviewer_starting_string in log for log in flatten_call_args(logger_info.call_args_list)) or \
             sdk_docs_reviewer_starting_string in capsys.readouterr().out
         assert result == expected_exit_code_of_run_docs_review
