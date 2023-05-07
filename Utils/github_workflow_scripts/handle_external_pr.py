@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import os
+import re
 from typing import List
 
 import urllib3
@@ -9,6 +11,7 @@ from github import Github
 from github.Repository import Repository
 
 from utils import get_env_var, timestamped_print
+from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
@@ -88,23 +91,29 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
     return selected_reviewer
 
 
-def get_highest_support_label(found_labels):
+def get_packs_support_level_label(file_paths: List[str]) -> str:
+    """
+    Get The pack support level for the contribution.
+
+    Args:
+        file_paths(str): file paths
+    """
+    try:
+        pack_names = {get_pack_name(file_path) for file_path in file_paths}
+        packs_support_levels = [get_pack_metadata(pack_name).get('support') for pack_name in pack_names]
+        return get_highest_support_label(packs_support_levels)
+    except Exception as e:
+        print(f'Could not retrieve support label, {e}')
+        return ''
+
+
+def get_highest_support_label(found_labels: List[str]):
     if 'xsoar' in found_labels:
         return XSOAR_SUPPORT_LEVEL
     elif 'partner' in found_labels:
         return PARTNER_SUPPORT_LEVEL
     else:
         return COMMUNITY_SUPPORT_LEVEL
-
-
-def get_support_level_label(pack_metadata_files) -> str:
-    try:
-        return get_highest_support_label(
-            [json.loads(pack_metadata_path).get('support') for pack_metadata_path in pack_metadata_files]
-        )
-    except Exception as e:
-        print(f'Could not retrieve support label, {e}')
-        return ''
 
 
 def main():
@@ -141,7 +150,7 @@ def main():
     print(f'{changed_files_list=}')
 
     labels_to_add = [CONTRIBUTION_LABEL]
-    if support_label := get_support_level_label(changed_files_list):
+    if support_label := get_packs_support_level_label(changed_files_list):
         labels_to_add.append(support_label)
 
     # Add 'Contribution' + support Label to the external PR
