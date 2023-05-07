@@ -13,7 +13,7 @@ def util_load_json(path):
 
 
 def test_test_module(requests_mock):
-    from ResecurityMonitoring import Client, test_module
+    from ResecurityMonitoring import Client, test_module, DemistoException
     url = 'https://test.com/api/monitor/check-connection'
 
     mock_response = util_load_json('test_data/test_module_result.json')
@@ -27,6 +27,12 @@ def test_test_module(requests_mock):
 
     result_message = test_module(client)
     assert result_message == mock_response["message"]
+
+    # case when message is empty - the result is fail
+    requests_mock.get(url, json={})
+    with pytest.raises((DemistoException),
+                       match="Failed to establish connection with provided credentials."):
+        test_module(client)
 
 
 def test_get_task_monitor_results_command(requests_mock):
