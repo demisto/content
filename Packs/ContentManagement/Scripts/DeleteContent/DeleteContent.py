@@ -5,7 +5,6 @@ from abc import ABC, abstractmethod
 from typing import Tuple
 from urllib.parse import quote
 
-import itertools
 import requests
 import json
 
@@ -421,8 +420,7 @@ class InstalledPackAPI(EntityAPI):
         if proxy_skip:
             skip_proxy()
         core_packs_response = requests.get(CORE_PACKS_LIST_URL, verify=verify)
-        core_packs_list = list(itertools.chain.from_iterable(json.loads(core_packs_response.text).values()))
-        self.always_excluded = core_packs_list + self.always_excluded
+        self.always_excluded = json.loads(core_packs_response.text).get("core_packs_list") + self.always_excluded
 
     def search_specific_id(self, specific_id: str):
         return execute_command('demisto-api-get',
