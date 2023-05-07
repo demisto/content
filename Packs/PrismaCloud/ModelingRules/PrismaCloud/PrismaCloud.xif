@@ -77,7 +77,7 @@ alter
 	xdm.source.user_agent = userAgent,
 	xdm.network.tls.cipher = coalesce(tls_cipher, additionalEventData_tlscipher),
 	xdm.network.tls.server_name = tls_server,
-	xdm.auth.is_mfa_needed = if(mfa_passed = true, to_boolean("true"), to_boolean("true")),
+	xdm.auth.is_mfa_needed = if(mfa_passed = "true", to_boolean("true"), mfa_passed = "false", to_boolean("true"), null),
 	xdm.target.port = to_integer(get_port),
 	xdm.source.host.ipv4_addresses = arraycreate(srchost_ip_v4),
 	xdm.source.host.ipv6_addresses = arraycreate(srchost_ip_v6),
