@@ -3,6 +3,10 @@ from freezegun import freeze_time
 from InfobloxBloxOneThreatDefenseEventCollector import *
 
 
+EVENT_TIME = '2023-04-01T00:00:00.000Z'
+EVENT_TIME_DATETIME = f'{EVENT_TIME[:-1]}+00:00'
+
+
 class TestBloxOneTDEventCollectorClient:
     def test_fetch_url(self, requests_mock):
         request_mock_get = requests_mock.get('/api/dnsdata/v2/dns_event', json={"result": []})
@@ -10,12 +14,12 @@ class TestBloxOneTDEventCollectorClient:
         assert request_mock_get.called_once
 
     def test_event_time_mapping(self, requests_mock):
-        event_time = 'the event time'
         requests_mock.get('/api/dnsdata/v2/dns_event', json={
-            "result": [{'event_time': event_time}]
+            "result": [{'event_time': EVENT_TIME}]
         })
         event = BloxOneTDEventCollectorClient('').fetch_events(0, 0)[0]
-        assert event['event_time'] == event['_time'] == event_time
+        assert event['event_time'] == EVENT_TIME
+        assert event['_time'] == EVENT_TIME_DATETIME
 
 
 class TestFetchEventsCommand:
@@ -31,7 +35,7 @@ class TestFetchEventsCommand:
     @pytest.mark.parametrize('last_run, expected_next_run, events_length', data_test_fetch_events_command)
     def test_fetch_events_command(self, last_run, expected_next_run, events_length, requests_mock, mocker):
         requests_mock.get('/api/dnsdata/v2/dns_event', json={
-            "result": [{'event_time': 'event_time'}] * events_length
+            "result": [{'event_time': EVENT_TIME}] * events_length
         })
         set_last_run = mocker.patch.object(demisto, 'setLastRun')
         send_events_to_xsiam_mock = mocker.patch('InfobloxBloxOneThreatDefenseEventCollector.send_events_to_xsiam')
@@ -41,12 +45,12 @@ class TestFetchEventsCommand:
         )
         set_last_run.assert_called_once_with(expected_next_run)
         send_events_to_xsiam_mock.assert_called_once_with(
-            [{'_time': 'event_time', 'event_time': 'event_time'}] * events_length, 'Infoblox BloxOne', 'Threat Defense')
+            [{'_time': EVENT_TIME_DATETIME, 'event_time': EVENT_TIME}] * events_length, 'Infoblox BloxOne', 'Threat Defense')
 
     @freeze_time('2023-04-01T00:00:00.000Z')
     def test_fetch_events_first_fetch(self, requests_mock, mocker):
         get_events_api_call = requests_mock.get('/api/dnsdata/v2/dns_event', json={
-            "result": [{'event_time': 'event_time'}]
+            "result": [{'event_time': EVENT_TIME}]
         })
         send_events_to_xsiam_mock = mocker.patch('InfobloxBloxOneThreatDefenseEventCollector.send_events_to_xsiam')
         fetch_events_command(
@@ -54,7 +58,7 @@ class TestFetchEventsCommand:
             {'max_fetch': 5, 'first_fetch': '5 min'}, {}
         )
         send_events_to_xsiam_mock.assert_called_once_with(
-            [{'_time': 'event_time', 'event_time': 'event_time'}], 'Infoblox BloxOne', 'Threat Defense')
+            [{'_time': EVENT_TIME_DATETIME, 'event_time': EVENT_TIME}], 'Infoblox BloxOne', 'Threat Defense')
         assert get_events_api_call.last_request.qs['t0'][0] == '1680306900'
 
     def test_fetch_events_with_invalid_first_fetch(self, requests_mock, mocker):
@@ -69,7 +73,7 @@ class TestGetEventsCommand:
     def test_get_events_command_without_send_to_xsiam(self, requests_mock, mocker):
         send_events_to_xsiam_mock = mocker.patch('InfobloxBloxOneThreatDefenseEventCollector.send_events_to_xsiam')
         get_events_api_call = requests_mock.get('/api/dnsdata/v2/dns_event', json={
-            "result": [{'event_time': 'event_time'}]
+            "result": [{'event_time': EVENT_TIME}]
         })
         get_events_command(BloxOneTDEventCollectorClient(''), {'from': 1, 'to': 2})
         assert get_events_api_call.called_once
@@ -80,14 +84,14 @@ class TestGetEventsCommand:
     def test_get_events_command_and_send_to_xsiam(self, requests_mock, mocker):
         send_events_to_xsiam_mock = mocker.patch('InfobloxBloxOneThreatDefenseEventCollector.send_events_to_xsiam')
         get_events_api_call = requests_mock.get('/api/dnsdata/v2/dns_event', json={
-            "result": [{'event_time': 'event_time'}]
+            "result": [{'event_time': EVENT_TIME}]
         })
         get_events_command(BloxOneTDEventCollectorClient(''), {'from': 1, 'to': 2, 'should_push_events': 'yes'})
         assert get_events_api_call.called_once
         assert get_events_api_call.last_request.qs['t0'][0] == '1'
         assert get_events_api_call.last_request.qs['t1'][0] == '2'
         send_events_to_xsiam_mock.assert_called_once_with(
-            [{'_time': 'event_time', 'event_time': 'event_time'}], 'Infoblox BloxOne', 'Threat Defense')
+            [{'_time': EVENT_TIME_DATETIME, 'event_time': EVENT_TIME}], 'Infoblox BloxOne', 'Threat Defense')
 
 
 class TestParseFromTsFromParams:
@@ -109,19 +113,19 @@ class TestParseFromTsFromParams:
 class TestCommandTestModule:
     def test_default_flow(self, requests_mock):
         requests_mock.get('/api/dnsdata/v2/dns_event', json={
-            "result": [{'event_time': 'event_time'}]
+            "result": [{'event_time': EVENT_TIME}]
         })
         assert command_test_module(BloxOneTDEventCollectorClient(''), {}) == 'ok'
 
     def test_valid_first_fetch(self, requests_mock):
         requests_mock.get('/api/dnsdata/v2/dns_event', json={
-            "result": [{'event_time': 'event_time'}]
+            "result": [{'event_time': EVENT_TIME}]
         })
         assert command_test_module(BloxOneTDEventCollectorClient(''), {'first_fetch': '5 min'}) == 'ok'
 
     def test_invalid_first_fetch(self, requests_mock):
         requests_mock.get('/api/dnsdata/v2/dns_event', json={
-            "result": [{'event_time': 'event_time'}]
+            "result": [{'event_time': EVENT_TIME}]
         })
         with pytest.raises(DemistoException):
             command_test_module(BloxOneTDEventCollectorClient(''), {'first_fetch': 'invalid'})
@@ -173,34 +177,34 @@ class TestMain:
     def test_fetch_events_happy_flow(self, mocker, requests_mock):
         demisto_input_mocker(mocker, 'fetch-events')
         requests_mock.get('/api/dnsdata/v2/dns_event', json={
-            "result": [{'event_time': 'event_time'}]
+            "result": [{'event_time': EVENT_TIME}]
         })
         send_events_to_xsiam_mock = mocker.patch('InfobloxBloxOneThreatDefenseEventCollector.send_events_to_xsiam')
         main()
         send_events_to_xsiam_mock.assert_called_once_with(
-            [{'_time': 'event_time', 'event_time': 'event_time'}], 'Infoblox BloxOne', 'Threat Defense')
+            [{'_time': EVENT_TIME_DATETIME, 'event_time': EVENT_TIME}], 'Infoblox BloxOne', 'Threat Defense')
 
     def test_get_events_and_send_to_server_happy_flow(self, mocker, requests_mock, return_results_mock):
         demisto_input_mocker(mocker, 'bloxone-td-event-collector-get-events',
                              args={'from': 'from', 'to': 'to', 'should_push_events': 'yes'})
         requests_mock.get('/api/dnsdata/v2/dns_event', json={
-            "result": [{'event_time': 'event_time'}]
+            "result": [{'event_time': EVENT_TIME}]
         })
         send_events_to_xsiam_mock = mocker.patch('InfobloxBloxOneThreatDefenseEventCollector.send_events_to_xsiam')
         main()
         send_events_to_xsiam_mock.assert_called_once_with(
-            [{'_time': 'event_time', 'event_time': 'event_time'}], 'Infoblox BloxOne', 'Threat Defense')
-        assert return_results_mock.call_args.args[0].outputs == [{'_time': 'event_time', 'event_time': 'event_time'}]
+            [{'_time': EVENT_TIME_DATETIME, 'event_time': EVENT_TIME}], 'Infoblox BloxOne', 'Threat Defense')
+        assert return_results_mock.call_args.args[0].outputs == [{'_time': EVENT_TIME_DATETIME, 'event_time': EVENT_TIME}]
         assert return_results_mock.call_args.args[0].outputs_prefix == "TestGetEvents"
 
     def test_get_events_without_send_to_server_happy_flow(self, mocker, requests_mock, return_results_mock):
         demisto_input_mocker(mocker, 'bloxone-td-event-collector-get-events',
                              args={'from': 'from', 'to': 'to', 'should_push_events': 'no'})
         requests_mock.get('/api/dnsdata/v2/dns_event', json={
-            "result": [{'event_time': 'event_time'}]
+            "result": [{'event_time': EVENT_TIME}]
         })
         send_events_to_xsiam_mock = mocker.patch('InfobloxBloxOneThreatDefenseEventCollector.send_events_to_xsiam')
         main()
         assert send_events_to_xsiam_mock.call_count == 0
-        assert return_results_mock.call_args.args[0].outputs == [{'_time': 'event_time', 'event_time': 'event_time'}]
+        assert return_results_mock.call_args.args[0].outputs == [{'_time': EVENT_TIME_DATETIME, 'event_time': EVENT_TIME}]
         assert return_results_mock.call_args.args[0].outputs_prefix == "TestGetEvents"

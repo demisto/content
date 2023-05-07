@@ -18,8 +18,11 @@ class BloxOneTDEventCollectorClient(BaseClient):
 
     def fetch_events(self, from_ts: int, to_ts: int, limit: int = 1000, offset: int = 0) -> list[dict]:
         def map_time(event: dict) -> dict:
-            event['_time'] = event.get('event_time')
-            return event
+            try:
+                event_time = event['event_time']
+                event['_time'] = f'{event_time[:-1]}+00:00' if event_time[-1] == 'Z' else event_time
+            finally:
+                return event
 
         events = self._http_request('GET', '/api/dnsdata/v2/dns_event',
                                     params={'t0': from_ts, 't1': to_ts, '_limit': limit, '_offset': offset}
