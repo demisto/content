@@ -3411,6 +3411,13 @@ tasks:
             value:
               simple: "true"
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: reporteremailaddress
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
