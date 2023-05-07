@@ -10,11 +10,10 @@ urllib3.disable_warnings()
 
 APP_NAME = 'ms-graph-security'
 CMD_URL = 'security/alerts_v2'
-API_V2 = "API V2"
-API_V1 = "API V1"
+API_V2 = "Alerts v2"
+API_V1 = "Legacy Alerts"
 API_VER = API_V2
 PAGE_SIZE_LIMIT_DICT = {API_V2: 2000, API_V1: 1000}
-CORRECT_STATUS_DICT = {API_V2: "new", API_V1: "newAlert"}
 API_V1_PAGE_LIMIT = 500
 POSSIBLE_FIELDS_TO_INCLUDE = ["All", "NetworkConnections", "Processes", "RegistryKeys", "UserStates", "HostStates", "FileStates",
                               "CloudAppStates", "MalwareStates", "CustomerComments", "Triggers", "VendorInformation",
@@ -102,7 +101,7 @@ def create_data_to_update(args):
         vendor_information = args.get('vendor_information')
         provider_information = args.get('provider_information')
         if not vendor_information or not provider_information:
-            raise DemistoException("When using API V1, both vendor_information and provider_information must be provided.")
+            raise DemistoException("When using Legacy Alerts, both vendor_information and provider_information must be provided.")
         data['vendorInformation'] = {
             'provider': provider_information,
             'vendor': vendor_information
@@ -581,9 +580,9 @@ def get_alert_details_command(client: MsGraphClient, args):
 def update_alert_command(client: MsGraphClient, args):
     alert_id = args.get('alert_id')
     status: str = args.get('status', "")
-    if status == "new" or status == "newAlert":
-        args["status"] = CORRECT_STATUS_DICT.get(API_VER)
-        status = CORRECT_STATUS_DICT.get(API_VER)  # type: ignore
+    if status == "newAlert" and API_VER == API_V2:
+        args["status"] = "new"
+        status = "new"
     provider_information = args.get('provider_information')
     params = create_data_to_update(args)
     client.update_alert(alert_id, params)
@@ -651,8 +650,8 @@ def create_alert_comment_command(client: MsGraphClient, args):
         str, Dict, Dict: the human readable, parsed outputs and request's response.
     """
     if API_VER == API_V1:
-        raise DemistoException("This command is available only for V2."
-                               " If you wish to add a comment to an alert with V1 please use 'msg-update-alert' command.")
+        raise DemistoException("This command is available only for Alerts v2."
+                               " If you wish to add a comment to an alert with Legacy Alerts please use 'msg-update-alert' command.")
     alert_id = args.get('alert_id', '')
     comment = args.get('comment', '')
     params = {"comment": comment}
