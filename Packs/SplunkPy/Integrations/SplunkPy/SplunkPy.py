@@ -430,6 +430,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, cache_obj
 def fetch_incidents(service: client.Service, mapper: UserMappingObject):
     if ENABLED_ENRICHMENTS:
         integration_context = get_integration_context()
+        demisto.debug('$$$$$$$$ GOT INTEGRATION_CONTEXT: {}'.format(str(integration_context)))
         if not demisto.getLastRun() and integration_context:
             # In "Pull from instance" in Classification & Mapping the last run object is empty, integration context
             # will not be empty because of the enrichment mechanism. In regular enriched fetch, we use dummy data
@@ -767,7 +768,8 @@ class Cache:
 
     def dump_to_integration_context(self, integration_context):
         integration_context[CACHE] = json.dumps(self, default=lambda obj: obj.__dict__)
-        set_integration_context(integration_context)
+        demisto.debug('$$$$$$$$ SAVING INTEGRATION_CONTEXT: {}'.format(str(integration_context)))
+        set_to_integration_context_with_retries(integration_context)
 
 
 def get_fields_query_part(notable_data, prefix, fields, raw_dict=None, add_backslash=False):
