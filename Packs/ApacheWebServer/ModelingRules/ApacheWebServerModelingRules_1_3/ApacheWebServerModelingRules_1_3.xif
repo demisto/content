@@ -1,21 +1,34 @@
 [MODEL: dataset="apache_httpd_raw"]
 filter _raw_log contains "[info]" or _raw_log contains "[alert]" or _raw_log contains "[crit]" or _raw_log contains "[error]" or _raw_log contains "[warn]" or _raw_log contains "[notice]" or _raw_log contains "[debug]"
 | alter Tid = arrayindex(regextract(_raw_log,"tid\s(\d+)"),0),
-		sourceipv4 = arrayindex(regextract(_raw_log,"client\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
-		sourceipv6 = arrayindex(regextract(_raw_log,"client\s(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"),0)
-| alter sourceip = coalesce(sourceipv4,sourceipv6)
-| alter pid = arrayindex(regextract(_raw_log,"\[\w+\s(\d+)\:"),0),
-		error_status_code = arrayindex(regextract(_raw_log,"\:\d+\]\s+(\S+)\:"),0),
-		Source_code_file_line = arrayindex(regextract(_raw_log,"tid\s\d+\]\s([^\:|\[]+)"),0),
-		message = arrayindex(regextract(_raw_log,"client\s\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\S+[^\:]+\:([^\@]+)"),0)
+    sourceipv4 = arrayindex(regextract(_raw_log,"client\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    sourceipv6 = arrayindex(regextract(_raw_log,"client\s(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"),0),
+    pid = arrayindex(regextract(_raw_log,"\[\w+\s(\d+)\:"),0),
+    error_status_code = arrayindex(regextract(_raw_log,"\:\d+\]\s+(\S+)\:"),0),
+    Source_code_file_line = arrayindex(regextract(_raw_log,"tid\s\d+\]\s([^\:|\[]+)"),0),
+    message1 = arrayindex(regextract(_raw_log ,"\[msg\s\"*([^\"]+)\""),0),
+    message2 = arrayindex(regextract(_raw_log,"client\s\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\S+[^\:]+\:([^\@]+)"),0),
+    severity1 = arrayindex(regextract(_raw_log, "]:\s*\[([^\]]+)\]"),0),
+    severity2 = arrayindex(regextract(_raw_log ,"\[severity\s\"*([^\"]+)\""),0),
+    uri = arrayindex(regextract(_raw_log ,"\[uri\s\"*([^\"]+)\""),0),
+    dest_domain = arrayindex(regextract(_raw_log ,"\(server\s([^\d]+)\:\d+"),0),
+    dest_port = arrayindex(regextract(_raw_log ,"\(server\s[^\d]+\:(\d+)"),0),
+    source_hostname = arrayindex(regextract(_raw_log ,"\[hostname\s\"*([^\"]+)\""),0)
+| alter sourceip = coalesce(sourceipv4,sourceipv6),
+    severity = coalesce(severity1, severity2),
+    message = coalesce(message1 , message2 )
 | alter
     xdm.source.process.pid = to_number(pid),
-    xdm.alert.severity = arrayindex(regextract(_raw_log, "]:\s*\[([^\]]+)\]"),0),
+    xdm.alert.severity = severity ,
     xdm.source.process.thread_id = to_number(tid),
     xdm.source.ipv4 = sourceip,
     xdm.source.user.identifier = error_status_code,
     xdm.target.resource.id = Source_code_file_line,
     xdm.alert.description = message,
+    xdm.target.module.path = uri,
+    xdm.target.domain = dest_domain,
+    xdm.target.port = to_integer(dest_port),
+    xdm.source.host.hostname = source_hostname,
     xdm.event.type = "Error Logs";
 filter _raw_log contains "\"ACL" or _raw_log contains "\"BASELINE_CONTROL" or _raw_log contains "\"BIND" or _raw_log contains "\"CHECKIN" or _raw_log contains "\"CHECKOUT" or _raw_log contains "\"CONNECT" or _raw_log contains "\"COPY" or _raw_log contains "\"DELETE" or _raw_log contains "\"GET" or _raw_log contains "\"HEAD" or _raw_log contains "\"LABEL" or _raw_log contains "\"LINK" or _raw_log contains "\"LOCK" or _raw_log contains "\"MERGE" or _raw_log contains "\"MKACTIVITY" or _raw_log contains "\"MKCALENDAR" or _raw_log contains "\"MKCOL" or _raw_log contains "\"MKREDIRECTREF" or _raw_log contains "\"MKWORKSPACE" or _raw_log contains "\"MOVE" or _raw_log contains "\"OPTIONS" or _raw_log contains "\"ORDERPATCH" or _raw_log contains "\"PATCH" or _raw_log contains "\"POST" or _raw_log contains "\"PRI" or _raw_log contains "\"PROPFIND" or _raw_log contains "\"PROPPATCH" or _raw_log contains "\"PUT" or _raw_log contains "\"REBIND" or _raw_log contains "\"REPORT" or _raw_log contains "\"SEARCH" or _raw_log contains "\"TRACE" or _raw_log contains "\"UNBIND" or _raw_log contains "\"UNCHECKOUT" or _raw_log contains "\"UNLINK" or _raw_log contains "\"UNLOCK" or _raw_log contains "\"UPDATE" or _raw_log contains "\"UPDATEREDIRECTREF" or _raw_log contains "\"VERSION_CONTROL"
 // Extract fields
