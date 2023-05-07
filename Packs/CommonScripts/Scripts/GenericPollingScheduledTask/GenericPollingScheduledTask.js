@@ -163,10 +163,10 @@ function genericPollingScheduledTaskWithGuid() {
             else{
                 timeout = invContext[subPlaybook][contextTimeoutKey];
             }
-        var origTimeout = timeout - interval;
-        if (origTimeout <= 0) {
-            return finish(args.playbookId, args.tag, undefined, guid);
-        }
+            var origTimeout = timeout - interval;
+            if (origTimeout <= 0) {
+                return finish(args.playbookId, args.tag, undefined, guid);
+            }
         setContext(`${subPlaybook}.${contextTimeoutKey}`, origTimeout);
         }
         else{
