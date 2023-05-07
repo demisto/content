@@ -6573,7 +6573,7 @@ def test_find_largest_id_per_device():
     assert res == {'dummy_device1': '000000002', 'dummy_device2': '000000001'}
 
 
-def test_remove_duplicate_entries():
+def test_remove_duplicate_entries(mocker):
     """
     Given:
     - list of dictionares repesenting raw entries, some contain seqno and some don't.
@@ -6581,7 +6581,8 @@ def test_remove_duplicate_entries():
     When:
     - remove_duplicate_entries is called.
     Then:
-    - return a dictionary the entries that there id is larger then the id in the id_dict, and the entries that do not have seqno.
+    - return a dictionary the entries that there id is larger then the id in the id_dict, without the entries that do not have seqno.
+    - confirm that the debug message is printed.
     """
     from Panorama import remove_duplicate_entries
     raw_entries = {"log_type1": [{'device_name': 'dummy_device1'},
@@ -6589,9 +6590,11 @@ def test_remove_duplicate_entries():
                    {'device_name': 'dummy_device2', 'seqno': '000000001'}],
                    "log_type2": [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
     id_dict = {"log_type1": {'dummy_device1': '000000003', 'dummy_device2': '000000000'}}
+    debug_mocker = mocker.patch('Panorama.demisto.debug')
     res = remove_duplicate_entries(raw_entries, id_dict)
-    assert res == {'log_type1': [{'device_name': 'dummy_device1'}, {'device_name': 'dummy_device2', 'seqno': '000000001'}],
+    assert res == {'log_type1': [{'device_name': 'dummy_device2', 'seqno': '000000001'}],
                    'log_type2': [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
+    assert debug_mocker.call_args[0][0] == "Could not parse seqno from log: {'device_name': 'dummy_device1'}, skipping."
 
 
 def test_create_max_fetch_dict():

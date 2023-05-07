@@ -13181,7 +13181,10 @@ def remove_duplicate_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_d
         for log in entries_dict[log_type]:
             device_name = log.get("device_name", '')
             latest_id_per_device = id_dict.get(log_type,{}).get(device_name, 0) # get the latest id for that device, if that device is not in the dict, set the id to 0
-            if not log.get("seqno") or arg_to_number(log["seqno"]) > arg_to_number(latest_id_per_device):     # type: ignore
+            current_log_id = arg_to_number(log.get("seqno"))
+            if not current_log_id:
+                demisto.debug(f'Could not parse seqno from log: {log}, skipping.')
+            elif current_log_id > arg_to_number(latest_id_per_device):     # type: ignore
                     new_entries_dict.setdefault(log_type, []).append(log)
     return new_entries_dict
 
