@@ -205,7 +205,7 @@ install-packs-in-server-master:
     - section_end "Download configuration"
     - section_start "Lock Machine"
     - echo "Authenticating GCP"
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/auth.out 2>&1
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - echo "Auth done successfully"
     - ./Tests/scripts/wait_in_line_for_cloud_env.sh
     - source CloudEnvVariables
