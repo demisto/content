@@ -1,8 +1,9 @@
 [INGEST:vendor="bluecat", product="address_manager", target_dataset="bluecat_address_manager_raw", no_hit=keep]
+alter
 datetime=arrayindex(regextract(_raw_log, "\<\d+\>(\w+\s+\d{1,2}\s\d{2}\:\d{2}\:\d{2})\s"),0),
-|alter tmp_current_year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
-|alter tmp_date  = concat(tmp_current_year," ", datetime)
-|alter _time = parse_timestamp("%Y %h %d %H:%M:%S", tmp_date)
+tmp_current_year=arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
+| alter 
+tmp_date=concat(tmp_current_year," ", datetime)
+| alter 
+_time=parse_timestamp("%Y %h %d %H:%M:%S", tmp_date)
 | fields -tmp_current_year,tmp_date,datetime;
-
-
