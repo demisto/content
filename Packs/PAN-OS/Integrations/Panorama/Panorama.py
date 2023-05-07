@@ -13399,6 +13399,7 @@ def main(): # pragma: no cover
 
         # Remove proxy if not set to true in params
         handle_proxy()
+        demisto.debug('test')
 
         if command == 'test-module':
             panorama_test(params)
