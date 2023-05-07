@@ -1202,7 +1202,7 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER, 'name': args.get('name')
     }
     tsg_id = args.get('tsg_id')
     if object_id := args.get('object_id'):
@@ -1214,7 +1214,8 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
         raw_response = client.list_address_objects(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
         outputs = raw_response.copy()
-        outputs = outputs.get('data', [])
+        # The API returns a dict containing a list of results if there are more than one, otherwise it returns a single dict.
+        outputs = outputs.get('data', outputs)
 
     address_to_xsoar_format(outputs)
     return CommandResults(
@@ -1301,7 +1302,8 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
 
     query_params = {
         'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
-        'position': encode_string_results(args.get('position')) or DEFAULT_POSITION
+        'position': encode_string_results(args.get('position')) or DEFAULT_POSITION,
+        'name': args.get('name')
     }
     tsg_id = args.get('tsg_id')
 
@@ -1312,7 +1314,8 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
         query_params.update(get_pagination_params(args))
 
         raw_response = client.list_security_rules(query_params=query_params, tsg_id=tsg_id)  # type: ignore
-        outputs = raw_response.get('data') or {}
+        # The API returns a dict containing a list of results, if filtering it returns a single dict.
+        outputs = raw_response.get('data') or raw_response
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}SecurityRule',
