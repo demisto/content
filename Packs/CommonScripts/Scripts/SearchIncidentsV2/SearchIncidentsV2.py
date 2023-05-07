@@ -172,8 +172,8 @@ def search_incidents(args: Dict):   # pragma: no cover
         args['page'] = page
         current_page_found_incidents = execute_command('getIncidents', args).get('data') or []
         demisto.debug(
-            f'Amount of incidents before filtering = {len(current_page_found_incidents)} '
-            f'with args {args} with page = {page}'
+            f'before filtering {len(current_page_found_incidents)=} '
+            f' {args=} {page=}'
         )
         current_page_found_incidents = add_incidents_link(apply_filters(current_page_found_incidents, args), platform)
         demisto.debug(f'after filtering = {len(current_page_found_incidents)=}')
