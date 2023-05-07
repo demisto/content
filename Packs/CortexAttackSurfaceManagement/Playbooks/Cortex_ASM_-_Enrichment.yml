@@ -33,6 +33,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: e93cd351-12f2-4f18-85d5-5e534de22c16
@@ -76,6 +77,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: ed49e8a4-f7d6-4f3f-8ec0-afe044ff8b2a
@@ -106,6 +108,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: 8d8d3caa-9c02-4792-81d7-5f159e37ebef
@@ -148,6 +151,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: bb77938e-2420-4151-8c9f-c44127d282ac
@@ -239,6 +243,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
     taskid: bf9bc181-4d75-436f-808a-3390fe289517
@@ -299,6 +304,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "35":
     id: "35"
     taskid: 2946f0ab-a0b2-4ca3-80ba-f92b8e15958a
@@ -329,6 +335,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "38":
     id: "38"
     taskid: ac5266ca-1735-46be-81a6-63b924837e89
@@ -356,6 +363,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "61":
     id: "61"
     taskid: fbbfa1d7-0b7f-4ade-84c2-b8c3770128f2
@@ -368,7 +376,7 @@ tasks:
       iscommand: false
       brand: ""
       description: ''
-      playbookId: Cortex ASM - ServiceNow CMDB Enrichment
+      playbookName: Cortex ASM - ServiceNow CMDB Enrichment
     nexttasks:
       '#none#':
       - "62"
@@ -396,6 +404,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "62":
     id: "62"
     taskid: f9e407eb-b8cd-46aa-8fee-cd49815ddba5
@@ -426,6 +435,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "63":
     id: "63"
     taskid: 4f4d8a1f-f39d-4efb-85fe-63c7a7913197
@@ -438,7 +448,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      playbookId: Cortex ASM - Tenable.io Enrichment
+      playbookName: Cortex ASM - Tenable.io Enrichment
     nexttasks:
       '#none#':
       - "70"
@@ -468,6 +478,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "64":
     id: "64"
     taskid: 56b57a42-f7fb-4f15-8649-37d40bfce0b8
@@ -480,7 +491,7 @@ tasks:
       iscommand: false
       brand: ""
       description: 'Given the IP address this playbook enriches AWS information relevant to ASM alerts.'
-      playbookId: Cortex ASM - AWS Enrichment
+      playbookName: Cortex ASM - AWS Enrichment
     nexttasks:
       '#none#':
       - "3"
@@ -508,6 +519,7 @@ tasks:
       exitCondition: ""
       wait: 1
       max: 100
+    continueonerrortype: ""
   "66":
     id: "66"
     taskid: d44c0e22-65e8-4bc4-816f-3affc2334a1c
@@ -550,6 +562,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "67":
     id: "67"
     taskid: bbdf6750-10f4-49a2-8fd9-3ec98925e7e8
@@ -586,6 +599,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "68":
     id: "68"
     taskid: 54398952-9c5c-4f93-8090-f32d0f58f4a3
@@ -598,10 +612,10 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      script: InferWhetherServiceIsDev
+      scriptName: InferWhetherServiceIsDev
     nexttasks:
       '#none#':
-      - "77"
+      - "78"
     scriptarguments:
       active_classifications:
         complex:
@@ -626,6 +640,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "69":
     id: "69"
     taskid: 869e8493-816d-4548-8908-4cbc088e09be
@@ -638,7 +653,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      playbookId: Cortex ASM - Azure Enrichment
+      playbookName: Cortex ASM - Azure Enrichment
     nexttasks:
       '#none#':
       - "3"
@@ -666,6 +681,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "70":
     id: "70"
     taskid: ad08d1b9-9745-4123-82cc-b5a4db969781
@@ -696,6 +712,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "71":
     id: "71"
     taskid: 8026d630-6577-4f7e-8ee4-91afb1dd33c6
@@ -708,7 +725,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      playbookId: Cortex ASM - Splunk Enrichment
+      playbookName: Cortex ASM - Splunk Enrichment
     nexttasks:
       '#none#':
       - "73"
@@ -738,6 +755,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "72":
     id: "72"
     taskid: 7a1aa580-c79e-4def-832a-6c76f919b3e4
@@ -750,7 +768,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      playbookId: Cortex ASM - Rapid7 Enrichment
+      playbookName: Cortex ASM - Rapid7 Enrichment
     nexttasks:
       '#none#':
       - "74"
@@ -780,6 +798,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "73":
     id: "73"
     taskid: c4460aec-1b5d-4189-8d52-fe7c71803501
@@ -810,6 +829,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "74":
     id: "74"
     taskid: a56a4cbf-3445-44b4-8d74-7641b034c244
@@ -840,6 +860,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "75":
     id: "75"
     taskid: 2a1d1161-ef36-4bac-8348-0804e9bc8597
@@ -852,7 +873,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      playbookId: Cortex ASM - Qualys Enrichment
+      playbookName: Cortex ASM - Qualys Enrichment
     nexttasks:
       '#none#':
       - "68"
@@ -882,6 +903,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "76":
     id: "76"
     ignoreworker: false
@@ -900,9 +922,9 @@ tasks:
       id: e6d5c7c5-5611-4653-83c5-59fa0bbf6280
       iscommand: false
       name: Cortex ASM - GCP Enrichment
-      playbookId: Cortex ASM - GCP Enrichment
       type: playbook
       version: -1
+      playbookName: Cortex ASM - GCP Enrichment
     taskid: e6d5c7c5-5611-4653-83c5-59fa0bbf6280
     timertriggers: []
     type: playbook
@@ -913,37 +935,39 @@ tasks:
           "y": 1230
         }
       }
-  "77":
-    id: "77"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    continueonerrortype: ""
+  "78":
+    id: "78"
+    taskid: 014ea56f-2ff8-43b7-8b3c-2d6c48d05e69
+    type: playbook
+    task:
+      id: 014ea56f-2ff8-43b7-8b3c-2d6c48d05e69
+      version: -1
+      name: Cortex ASM - Service Ownership
+      playbookName: Cortex ASM - Service Ownership
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "38"
-    note: false
-    quietmode: 0
     separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ""
-      id: d1d88b2c-0b00-4758-8ed5-0eda2f9a1183
-      iscommand: false
-      name: 3a1ae341-bbe0-4da9-85f1-527b508efd74
-      playbookId: 3a1ae341-bbe0-4da9-85f1-527b508efd74
-      type: playbook
-      version: -1
-      description: ''
-    taskid: d1d88b2c-0b00-4758-8ed5-0eda2f9a1183
-    timertriggers: []
-    type: playbook
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 100,
-          "y": 3440
+          "y": 3430
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
