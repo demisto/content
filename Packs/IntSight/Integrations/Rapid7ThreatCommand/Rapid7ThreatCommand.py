@@ -4186,7 +4186,7 @@ def reputation_handler(
             args_for_next_run=args
         )
     return PollResult(
-        partial_result=command_results[0],
+        partial_result=command_results,
         response=command_results,
         continue_to_poll=True,
         args_for_next_run=args
