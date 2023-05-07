@@ -13160,14 +13160,15 @@ def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[s
     for entry in incident_entries:
         device_name: str = entry.get('device_name', '')
         incident_id: str = entry.get('seqno', '')
-    
+        if not device_name or not incident_id:
+            continue
         # Upsert the device's id if it's a new device, or it's a larger id
         if device_name not in new_largest_id.keys() or int(incident_id) > int(new_largest_id[device_name]):
             new_largest_id[device_name] = incident_id
     return new_largest_id
 
 
-def remove_duplicate_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dict: Dict[str, Dict[str, str]]):
+def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dict: Dict[str, Dict[str, str]]):
     """
     This function removes entries that have already been fetched in the previous fetch cycle.
     Args:
@@ -13180,11 +13181,12 @@ def remove_duplicate_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_d
     for log_type in entries_dict:
         for log in entries_dict[log_type]:
             device_name = log.get("device_name", '')
-            latest_id_per_device = id_dict.get(log_type,{}).get(device_name, 0) # get the latest id for that device, if that device is not in the dict, set the id to 0
             current_log_id = arg_to_number(log.get("seqno"))
-            if not current_log_id:
-                demisto.debug(f'Could not parse seqno from log: {log}, skipping.')
-            elif current_log_id > arg_to_number(latest_id_per_device):     # type: ignore
+            latest_id_per_device = id_dict.get(log_type,{}).get(device_name, 0) # get the latest id for that device, if that device is not in the dict, set the id to 0
+            if not current_log_id or not device_name:
+                demisto.debug(f'Could not parse seqno or device name from log: {log}, skipping.')
+                continue
+            if current_log_id > arg_to_number(latest_id_per_device):     # type: ignore
                     new_entries_dict.setdefault(log_type, []).append(log)
     return new_entries_dict
 
@@ -13415,7 +13417,7 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
     demisto.debug('raw incident entries fetching has completed.')
     
     # remove duplicated incidents from incident_entries_dict
-    unique_incident_entries_dict = remove_duplicate_entries(entries_dict=incident_entries_dict, id_dict =last_id_dict)
+    unique_incident_entries_dict = filter_fetched_entries(entries_dict=incident_entries_dict, id_dict =last_id_dict)
     
     parsed_incident_entries_dict = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict, last_id_dict)
 

@@ -6556,45 +6556,50 @@ def test_update_max_fetch_dict(mocker):
     assert res == {'log_type1': 15, 'log_type2': 5}
 
 
-def test_find_largest_id_per_device():
+def test_find_largest_id_per_device(mocker):
     """
     Given:
-    - list of dictionaries representing raw entries.
+    - list of dictionaries representing raw entries, some contain seqno and some don't, some contain device_name and
     When:
         - find_largest_id_per_device is called.
     Then:
-        - return a dictionary with the largest id per device.
+        - return a dictionary with the largest id per device and skip entries that don't contain seqno or device_name.
     """
     raw_entries = [{'device_name': 'dummy_device1', 'seqno': '000000001'},
                    {'device_name': 'dummy_device1', 'seqno': '000000002'},
-                   {'device_name': 'dummy_device2', 'seqno': '000000001'}]
+                   {'device_name': 'dummy_device2', 'seqno': '000000001'},
+                   {'device_name': 'dummy_device7'},
+                   {'seqno': '000000008'}]
     from Panorama import find_largest_id_per_device
     res = find_largest_id_per_device(raw_entries)
     assert res == {'dummy_device1': '000000002', 'dummy_device2': '000000001'}
 
 
-def test_remove_duplicate_entries(mocker):
+def test_filter_fetched_entries(mocker):
     """
     Given:
-    - list of dictionares repesenting raw entries, some contain seqno and some don't.
+    - list of dictionares repesenting raw entries, some contain seqno and some don't,  some contain device_name and some don't.
     - dictionary with the largest id per device.
     When:
-    - remove_duplicate_entries is called.
+    - filter_fetched_entries is called.
     Then:
     - return a dictionary the entries that there id is larger then the id in the id_dict, without the entries that do not have seqno.
     - confirm that the debug message is printed.
+    - confirm that the debug was called twcie, once for missing seqno and once for missing device_name.
     """
-    from Panorama import remove_duplicate_entries
+    from Panorama import filter_fetched_entries
     raw_entries = {"log_type1": [{'device_name': 'dummy_device1'},
                    {'device_name': 'dummy_device1', 'seqno': '000000002'},
                    {'device_name': 'dummy_device2', 'seqno': '000000001'}],
-                   "log_type2": [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
+                   "log_type2": [{'device_name': 'dummy_device3', 'seqno': '000000004'},
+                                 {'seqno': '000000007'}]}
     id_dict = {"log_type1": {'dummy_device1': '000000003', 'dummy_device2': '000000000'}}
     debug_mocker = mocker.patch('Panorama.demisto.debug')
-    res = remove_duplicate_entries(raw_entries, id_dict)
+    res = filter_fetched_entries(raw_entries, id_dict)
     assert res == {'log_type1': [{'device_name': 'dummy_device2', 'seqno': '000000001'}],
                    'log_type2': [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
-    assert debug_mocker.call_args[0][0] == "Could not parse seqno from log: {'device_name': 'dummy_device1'}, skipping."
+    assert debug_mocker.call_args[0][0] == "Could not parse seqno or device name from log: {'seqno': '000000007'}, skipping."
+    assert debug_mocker.call_count == 2
 
 
 def test_create_max_fetch_dict():
