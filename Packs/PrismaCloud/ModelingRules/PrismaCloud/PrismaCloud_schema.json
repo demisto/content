@@ -105,7 +105,7 @@
             "is_array": false
         },
         "isSuccess": {
-            "type": "string",
+            "type": "boolean",
             "is_array": false
         }                                                                                                                
    }
