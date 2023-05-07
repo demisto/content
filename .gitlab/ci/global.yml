@@ -196,10 +196,10 @@
       - local: .gitlab/ci/slack-notify.yml
 
 
-.run-unittests-and-lint:
+.unittests-and-lint-settings:
   tags:
     - gce
-  needs: []
+  needs: [ ]
   stage: unittests-and-validations
   artifacts:
     reports:
@@ -221,6 +221,11 @@
     DOCKER_TLS_CERTDIR: ""
   extends:
     - .default-job-settings
+
+
+.run-unittests-and-lint:
+  extends:
+    - .unittests-and-lint-settings
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
@@ -258,13 +263,16 @@
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
           demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image ${DOCKER}
+        fi
+        if [[ -n $BUCKET_UPLOAD ]]; then
+          demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
         else
-          if [[ -n $BUCKET_UPLOAD ]]; then
-            demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
-          else
+          if [[ "$CI_COMMIT_BRANCH" != "master" ]]; then
+            # skip running `lint -g` on master
             demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
           fi
         fi
+      
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
           if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||   -n "$SHOULD_LINT_ALL"  ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
             demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --allowed-coverage-degradation-percentage 100
@@ -280,7 +288,7 @@
     - job-done
   parallel:
     matrix:
-      - DOCKER: ['native:ga,native:maintenance','native:dev,from-yml']
+      - DOCKER: ['native:ga,native:maintenance,native:candidate','native:dev,from-yml']
 
 .run-validations:
   stage: unittests-and-validations

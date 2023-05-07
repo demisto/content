@@ -1,21 +1,27 @@
 This playbook searches for files via Code42 security events by either MD5 or SHA256 hash. The data is output to the Code42.SecurityData context for use.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * code42-securitydata-search
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -24,6 +30,7 @@ This playbook does not use any scripts.
 | SHA256 | SHA256 hash to search for | File.SHA256 | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -74,5 +81,6 @@ This playbook does not use any scripts.
 | File.Hostname | Hostname where file event was captured | unknown |
 
 ## Playbook Image
+
 ---
 ![Code42 File Search](https://raw.githubusercontent.com/demisto/content/dd418027433970a18ce06ebef97933c70a92a940/Packs/Code42/doc_files/Code42_File_Search.png)

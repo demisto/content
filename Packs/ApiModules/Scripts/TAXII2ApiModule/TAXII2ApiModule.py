@@ -60,6 +60,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "md5": FeedIndicatorType.File,
     "sha-1": FeedIndicatorType.File,
     "sha-256": FeedIndicatorType.File,
+    "sha-512": FeedIndicatorType.File,
     "file:hashes": FeedIndicatorType.File,
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malware": ThreatIntel.ObjectsNames.MALWARE,
@@ -978,13 +979,15 @@ class Taxii2FeedClient:
                     continue
 
             a_threat_intel_type = relationships_object.get('source_ref', '').split('--')[0]
-            a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type, '')  # type: ignore
+            a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(
+                a_threat_intel_type, '') or STIX_2_TYPES_TO_CORTEX_TYPES.get(a_threat_intel_type, '')  # type: ignore
             if a_threat_intel_type == 'indicator':
                 id = relationships_object.get('source_ref', '')
                 a_type = self.get_ioc_type(id, self.id_to_object)
 
             b_threat_intel_type = relationships_object.get('target_ref', '').split('--')[0]
-            b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type, '')  # type: ignore
+            b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(
+                b_threat_intel_type, '') or STIX_2_TYPES_TO_CORTEX_TYPES.get(b_threat_intel_type, '')  # type: ignore
             if b_threat_intel_type == 'indicator':
                 b_type = self.get_ioc_type(relationships_object.get('target_ref', ''), self.id_to_object)
 
@@ -1281,7 +1284,7 @@ class Taxii2FeedClient:
         """
         ioc_obj = id_to_obj.get(ioc)
         if ioc_obj:
-            name = ioc_obj.get('name', '')
+            name = ioc_obj.get('name', '') or ioc_obj.get('value', '')
             if "file:hashes.'SHA-256' = '" in name:
                 return Taxii2FeedClient.get_ioc_value_from_ioc_name(ioc_obj)
             else:

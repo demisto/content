@@ -30,6 +30,7 @@ ignore=RM106
 
 [file:classifier-mapper-incoming-QRadar.json]
 ignore=BA101
+
 [file:incidentfield-Number_Of_Events_In_Offense.json]
 ignore=IF100
 
@@ -38,3 +39,19 @@ ignore=IF100
 
 [file:classifier-QRadar.json]
 ignore=BA101
+
+[file:QRadarMirroringEventsStatus.yml]
+ignore=BA124
+
+[file:QRadarFetchedEventsSum.yml]
+ignore=BA124
+
+[file:QRadarPrintEvents.yml]
+ignore=BA124
+
+[file:QRadarMagnitude.yml]
+ignore=BA124
+
+[file:QRadarPrintAssets.yml]
+ignore=BA124
+
