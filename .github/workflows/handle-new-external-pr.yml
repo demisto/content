@@ -37,7 +37,7 @@ jobs:
         with:
           separator: ${{ env.CHANGED_FILES_DELIMITER }}
           files: |
-            Packs/**/pack_metadata.json/**
+            Packs/**/pack_metadata.json
       - name: Update External PR
         env:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
