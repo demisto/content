@@ -206,16 +206,16 @@ def main() -> None:
     api_key = params.get('credentials', {}).get('password')
 
     # get the service API URL
-    base_url = urljoin(demisto.params()['url'], '/api')
+    base_url = urljoin(params['url'], '/api')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not params.get('insecure', False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
