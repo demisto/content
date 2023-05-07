@@ -20,7 +20,7 @@ class TestsRunDocsReview:
         file_name = 'Packs/UnRealPack/UnRealFile.yml'
         delimiter = ';'
         files_names = f'{file_name_with_apostrophe}{delimiter}{file_name}'
-        sdk_docs_reviewer_starting_string = '================= Starting Doc Review ================='
+        sdk_docs_reviewer_starting_string = "Starting Doc Review"
         expected_exit_code_of_run_docs_review = 0
 
         args = Namespace(changed_files=files_names, delimiter=delimiter)
