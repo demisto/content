@@ -332,7 +332,7 @@ script:
     - contextPath: Picus.filterinsecure
       description: Insecure Attack List
       type: String
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: false
   longRunning: false

@@ -7,7 +7,7 @@ import pytest
 import os
 from tempfile import mkdtemp
 import demistomock as demisto
-from EDL import DONT_COLLAPSE, initialize_edl_context, get_indicators_to_format
+from EDL import DONT_COLLAPSE, initialize_edl_context, get_indicators_to_format, check_platform_and_version
 
 IOC_RES_LEN = 38
 
@@ -742,6 +742,36 @@ def test_get_indicators_to_format_symantec():
     f.seek(0)
     indicators = f.read()
     assert indicators == 'define category bc_category\ngoogle.com\ndemisto.com\ndemisto.com/qwertqwer\ndemisto.com\nend'
+
+
+@pytest.mark.parametrize('port, platform, expected_res', [('', {'platform': 'xsiam', 'version': '8.1.1'}, False),
+                                                          ('', {'platform': 'xsiam', 'version': '7.0.0'}, False),
+                                                          ('', {'platform': 'xsoar', 'version': '7.0.0'}, True),
+                                                          ('8888', {'platform': 'xsoar', 'version': '7.0.0'}, False),
+                                                          ('0000', {'platform': 'xsoar', 'version': '8.4.0'}, False),
+                                                          ])
+def test_no_port_param_lower_than_xsoar_8(port, platform, expected_res, mocker):
+    """
+    Given:
+        - longRuningPort param Empry with xsiam platform
+        - longRuningPort param Empry with xsiam platform
+        - longRuningPort param Empry with xsoar platform
+        - longRuningPort param value with xsoar platform
+        - longRuningPort param value with xsoar platform
+
+    When:
+        - Checking if the platform is xsoar and the version is less than 8.0.0
+
+    Then:
+        Valdiate correct expected result
+        - False
+        - False
+        - True
+        - False
+        - False
+    """
+    mocker.patch.object(demisto, 'demistoVersion', return_value=platform)
+    assert check_platform_and_version({'longRunningPort': port}) == expected_res
 
 
 def test_get_indicators_to_format_text():

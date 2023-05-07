@@ -1115,6 +1115,8 @@ You can send the message `help` in order to see the supported commands:
 
 ![image](https://raw.githubusercontent.com/demisto/content/c7d516e68459f04102fd31ebfadd6574d775f436/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/dm.png)
 
+Note: To enrich an incident created via the Demisto BOT (`new incident` command) with extra information received with the request, as in regular `fetch-incidents` process users may create custom mappers and map the desired values.  
+
 ## Troubleshooting
 
 1. The integration works by spinning up a web server that listens to events and data posted to it from Microsoft Teams.

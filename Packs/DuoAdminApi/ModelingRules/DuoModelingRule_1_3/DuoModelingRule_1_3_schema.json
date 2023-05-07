@@ -51,6 +51,22 @@
     "type": {
       "type": "string",
       "is_array": false
+    },
+    "host": {
+      "type": "string",
+      "is_array": false
+    },
+    "reason": {
+      "type": "string",
+      "is_array": false
+    },
+    "result": {
+      "type": "string",
+      "is_array": false
+    },
+    "integration": {
+      "type": "string",
+      "is_array": false
     }
   }
 }

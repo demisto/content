@@ -13,6 +13,8 @@ LABEL_STATUS_ACTIVE = "LABEL_STATUS_ACTIVE"
 
 RISKY_USER = "Risky User"
 
+LEAVING_ORG_USER = "Leaving Org User"
+
 ENTRY_TYPE_EVENT = "ENTRY_TYPE_EVENT"
 
 LABEL_STATUS_RESOLVED = "LABEL_STATUS_RESOLVED"
@@ -41,12 +43,12 @@ class RecoClient(BaseClient):
         )
 
     def get_incidents(
-        self,
-        risk_level: Optional[int] = None,
-        source: Optional[str] = None,
-        before: Optional[datetime] = None,
-        after: Optional[datetime] = None,
-        limit: int = 1000,
+            self,
+            risk_level: Optional[int] = None,
+            source: Optional[str] = None,
+            before: Optional[datetime] = None,
+            after: Optional[datetime] = None,
+            limit: int = 1000,
     ) -> List[Dict[str, Any]]:
         """
         Fetch incidents from Reco API
@@ -109,7 +111,7 @@ class RecoClient(BaseClient):
                 demisto.info(f"got bad response, {response}")
             else:
                 demisto.info(
-                    f"Count of incidents: {response.get('getTableResponse').get('totalNumberOfRecords')}"
+                    f"Count of incidents: {response.get('getTableResponse').get('totalNumberOfResults')}"
                 )
                 alerts = (
                     response.get("getTableResponse", {}).get("data", {}).get("rows", [])
@@ -234,7 +236,7 @@ class RecoClient(BaseClient):
                 raise Exception(f"got bad response, {response}")
             else:
                 demisto.info(
-                    f"Count of risky users: {response.get('getTableResponse').get('totalNumberOfRecords')}"
+                    f"Count of risky users: {response.get('getTableResponse').get('totalNumberOfResults')}"
                 )
                 users = (
                     response.get("getTableResponse", {}).get("data", {}).get("rows", [])
@@ -246,7 +248,7 @@ class RecoClient(BaseClient):
             raise e
 
     def get_assets_user_has_access(
-        self, email_address: str, only_sensitive: bool
+            self, email_address: str, only_sensitive: bool
     ) -> List[Dict[str, Any]]:
         """Get assets user has access to. Returns a list of assets."""
         params: Dict[str, Any] = {
@@ -307,7 +309,79 @@ class RecoClient(BaseClient):
                 raise Exception(f"got bad response, {response}")
             else:
                 demisto.info(
-                    f"Count of assets: {response.get('getTableResponse').get('totalNumberOfRecords')}"
+                    f"Count of assets: {response.get('getTableResponse').get('totalNumberOfResults')}"
+                )
+                assets = (
+                    response.get("getTableResponse", {}).get("data", {}).get("rows", [])
+                )
+                demisto.info(f"Got {len(assets)} result")
+                return assets
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+    def get_sensitive_assets_information(self,
+                                         asset_name: Optional[str],
+                                         asset_id: Optional[str],
+                                         regex_search: bool) -> List[Dict[str, Any]]:
+        """Get sensitive assets' information. Returns a list of assets."""
+        filter = "regexCaseInsensitive" if regex_search else "stringEquals"
+        field_to_search = "file_name" if asset_name else "file_id"
+        value_to_search = asset_name if asset_name else asset_id
+        params: Dict[str, Any] = {
+            "getTableRequest": {
+                "tableName": "files_view",
+                "pageSize": 1000,
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_AND",
+                    "fieldFilterGroups": {
+                        "fieldFilters": [
+                            {
+                                "relationship": "FILTER_RELATIONSHIP_OR",
+                                "filters": {
+                                    "filters": [
+                                        {
+                                            "field": field_to_search,
+                                            filter: {
+                                                "value": value_to_search
+                                            },
+                                        }
+                                    ]
+                                },
+                            },
+                            {
+                                "relationship": "FILTER_RELATIONSHIP_OR",
+                                "filters": {
+                                    "filters": [
+                                        {
+                                            "field": "sensitivity_level",
+                                            "stringEquals": {"value": "30"},
+                                        },
+                                        {
+                                            "field": "sensitivity_level",
+                                            "stringEquals": {"value": "40"},
+                                        },
+                                    ]
+                                },
+                            }
+                        ]
+                    },
+                },
+            }
+        }
+        try:
+            response = self._http_request(
+                method="POST",
+                url_suffix="/asset-management",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
+                data=json.dumps(params),
+            )
+            if response.get("getTableResponse") is None:
+                demisto.error(f"got bad response, {response}")
+                raise Exception(f"got bad response, {response}")
+            else:
+                demisto.info(
+                    f"Count of assets: {response.get('getTableResponse').get('totalNumberOfResults')}"
                 )
                 assets = (
                     response.get("getTableResponse", {}).get("data", {}).get("rows", [])
@@ -319,7 +393,7 @@ class RecoClient(BaseClient):
             raise e
 
     def set_entry_label_relations(
-        self, entry_id: str, label_name: str, label_status: str, entry_type: str
+            self, entry_id: str, label_name: str, label_status: str, entry_type: str
     ) -> Any:
         """Set entry label relations.
         :param entry_id: The entry id to set (email_address, asset_id etc.)
@@ -340,15 +414,17 @@ class RecoClient(BaseClient):
         try:
             response = self._http_request(
                 method="PUT",
-                url_suffix=f"/entry-labels/{entry_id}",
+                url_suffix="/entry-label-relations",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
-                data=json.dumps(
-                    {
-                        "entryId": entry_id,
-                        "entryType": entry_type,
-                        "entryLabelsNamesAndCount": {"name": label_name, "count": 1},
-                    }
-                ),
+                data=json.dumps({"labelRelations": [{
+                    "labelName": label_name,
+                    "entryId": entry_id,
+                    "count": 1,
+                    "confidence": 1,
+                    "entryType": entry_type,
+                    "labelStatus": label_status,
+                    "attributes": {}
+                }]}),
             )
         except Exception as e:
             demisto.error(f"Set entry label relations error: {str(e)}")
@@ -440,8 +516,19 @@ def add_risky_user_label(reco_client: RecoClient, email_address: str) -> Command
     )
 
 
+def add_leaving_org_user(reco_client: RecoClient, email_address: str) -> CommandResults:
+    """Tag user as leaving org."""
+    raw_response = reco_client.set_entry_label_relations(
+        email_address, LEAVING_ORG_USER, LABEL_STATUS_ACTIVE, ENTRY_TYPE_USER
+    )
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f"User {email_address} labeled as leaving org user",
+    )
+
+
 def enrich_incident(
-    reco_client: RecoClient, single_incident: Dict[str, Any]
+        reco_client: RecoClient, single_incident: Dict[str, Any]
 ) -> Dict[str, Any]:
     alert_as_dict = parse_table_row_to_dict(single_incident.get("cells", {}))
     if RECO_INCIDENT_ID_FIELD in alert_as_dict.keys():
@@ -460,7 +547,7 @@ def enrich_incident(
 
 
 def map_reco_score_to_demisto_score(
-    reco_score: int,
+        reco_score: int,
 ) -> Union[int, float]:  # pylint: disable=E1136
     # demisto_unknown = 0  (commented because of linter issues)
     demisto_informational = 0.5
@@ -482,7 +569,7 @@ def map_reco_score_to_demisto_score(
 
 
 def parse_incidents_objects(
-    reco_client: RecoClient, incidents_raw: List[Dict[str, Any]]
+        reco_client: RecoClient, incidents_raw: List[Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
     demisto.info("parse_incidents_objects enter")
     incidents = []
@@ -495,7 +582,7 @@ def parse_incidents_objects(
 
 
 def get_assets_user_has_access(
-    reco_client: RecoClient, email_address: str, only_sensitive: bool
+        reco_client: RecoClient, email_address: str, only_sensitive: bool
 ) -> CommandResults:
     """Get assets from Reco. If only_sensitive is True, only sensitive assets will be returned."""
     assets = reco_client.get_assets_user_has_access(email_address, only_sensitive)
@@ -509,7 +596,7 @@ def get_assets_user_has_access(
             assets_list,
             headers=[
                 "file_name",
-                "owner",
+                "file_owner",
                 "file_url",
                 "currently_permitted_users",
                 "visibility",
@@ -524,14 +611,54 @@ def get_assets_user_has_access(
     )
 
 
+def get_sensitive_assets_by_name(reco_client: RecoClient, asset_name: str, regex_search: bool) -> CommandResults:
+    """Get sensitive assets from Reco. If contains is True, the asset name will be searched as a regex."""
+    assets = reco_client.get_sensitive_assets_information(asset_name, None, regex_search)
+    return assets_to_command_result(assets)
+
+
+def assets_to_command_result(assets: List[Dict[str, Any]]) -> CommandResults:
+    """Convert assets to CommandResults."""
+    assets_list = []
+    for asset in assets:
+        asset_as_dict = parse_table_row_to_dict(asset.get("cells", {}))
+        assets_list.append(asset_as_dict)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Assets",
+            assets_list,
+            headers=[
+                "file_name",
+                "file_owner",
+                "file_url",
+                "currently_permitted_users",
+                "visibility",
+                "location",
+                "source",
+                "sensitivity_level"
+            ],
+        ),
+        outputs_prefix="Reco.SensitiveAssets",
+        outputs_key_field="asset_value",
+        outputs=assets_list,
+        raw_response=assets,
+    )
+
+
+def get_sensitive_assets_by_id(reco_client: RecoClient, asset_id: str) -> CommandResults:
+    """Get sensitive assets from Reco by file id."""
+    assets = reco_client.get_sensitive_assets_information(None, asset_id, False)
+    return assets_to_command_result(assets)
+
+
 def fetch_incidents(
-    reco_client: RecoClient,
-    last_run: Dict[str, Any],
-    max_fetch: int,
-    risk_level: Optional[int] = None,
-    source: Optional[str] = None,
-    before: Optional[datetime] = None,
-    after: Optional[datetime] = None,
+        reco_client: RecoClient,
+        last_run: Dict[str, Any],
+        max_fetch: int,
+        risk_level: Optional[int] = None,
+        source: Optional[str] = None,
+        before: Optional[datetime] = None,
+        after: Optional[datetime] = None,
 ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     demisto.info(f"fetch-incidents called {max_fetch=}")
     next_run = {}
@@ -651,18 +778,37 @@ def main() -> None:
             email_address = demisto.args()["email_address"]
             result = add_risky_user_label(reco_client, email_address)
             return_results(result)
+        elif command == "reco-add-leaving-org-user-label":
+            email_address = demisto.args()["email_address"]
+            result = add_leaving_org_user(reco_client, email_address)
+            return_results(result)
         elif command == "reco-get-assets-user-has-access-to":
+            only_sensitive = demisto.args().get("only_sensitive", False)
             result = get_assets_user_has_access(
                 reco_client,
-                demisto.args()["asset_owner"],
-                demisto.args()["only_sensitive"],
+                demisto.args()["email_address"],
+                only_sensitive,
+            )
+            return_results(result)
+        elif command == "reco-get-sensitive-assets-by-name":
+            regex_search = demisto.args().get("regex_search", False)
+            result = get_sensitive_assets_by_name(
+                reco_client,
+                demisto.args()["asset_name"],
+                regex_search,
+            )
+            return_results(result)
+        elif command == "reco-get-sensitive-assets-by-id":
+            result = get_sensitive_assets_by_id(
+                reco_client,
+                demisto.args()["asset_id"]
             )
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")
     except Exception as e:
         demisto.error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
-        raise e
+        return_error(str(e))
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
