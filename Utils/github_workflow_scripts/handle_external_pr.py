@@ -46,13 +46,6 @@ def parse_changed_files_names() -> argparse.Namespace:
         "--changed_files",
         help="The files that are passed to handle external PR (passed as one string).",
     )
-    parser.add_argument(
-        "-d",
-        "--delimiter",
-        help="the delimiter that separates the changed files names (determined in"
-        " the call to tj-actions/changed-files in "
-        "handle external PR script).",
-    )
     args = parser.parse_args()
 
     return args
@@ -145,8 +138,7 @@ def main():
     pr = content_repo.get_pull(pr_number)
 
     parser_args = parse_changed_files_names()
-    print(f'{parser_args.changed_files=}')
-    changed_files_list = parser_args.changed_files.split(parser_args.delimiter)
+    changed_files_list = parser_args.changed_files
     print(f'{changed_files_list=}')
 
     labels_to_add = [CONTRIBUTION_LABEL]
