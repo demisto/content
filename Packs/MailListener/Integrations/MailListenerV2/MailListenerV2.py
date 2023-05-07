@@ -24,7 +24,7 @@ class Email(object):
         self.mail_bytes = message_bytes
         try:
             email_object = parse_from_bytes(message_bytes)
-            email_object = parse_from_string(message_bytes.decode('ISO-8859-1'))
+            # email_object = parse_from_string(message_bytes.decode('ISO-8859-1'))
         except UnicodeDecodeError as e:
             demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
                          '\nWill replace backslash and try to parse again')
