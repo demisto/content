@@ -145,10 +145,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 139925f3-8d97-456d-880f-03a567a3bac6
+    taskid: 8412e521-872a-4d76-84b0-c29227462938
     type: condition
     task:
-      id: 139925f3-8d97-456d-880f-03a567a3bac6
+      id: 8412e521-872a-4d76-84b0-c29227462938
       version: -1
       name: Did enrichment work?
       description: Checks whether the enrichment outputs that we expected are in the context.
@@ -164,26 +164,42 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Endpoint.ID
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: Endpoint.ID
+                      iscontext: true
+                    ignorecase: true
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CylanceProtectDevice
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: CylanceProtectDevice
+                      iscontext: true
+                    ignorecase: true
+            iscontext: true
+        - operator: containsGeneral
           left:
             value:
               complex:
                 root: Endpoint
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: ID
-                      iscontext: true
-                    right:
-                      value:
-                        simple: DC=demisto,DC=ninja
+                accessor: ID
             iscontext: true
-      - - operator: isExists
-          left:
+          right:
             value:
-              simple: Endpoint.CbSensorID
-            iscontext: true
+              simple: DC=demisto,DC=ninja
     view: |-
       {
         "position": {
@@ -255,7 +271,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1185
+          "y": 1175
         }
       }
     note: false
