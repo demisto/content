@@ -200,11 +200,12 @@ def insert_type_to_logs(audit_logs: list, vulnerabilities: list):
         log.update({'xsiam_type': 'vulnerability'})
 
 
-def call_send_events_to_xsiam(events, vulnerabilities):
+def call_send_events_to_xsiam(events, vulnerabilities, should_push_events=False):
     """Enhanced and sends events and vulnerabilities to XSIAM"""
     insert_type_to_logs(audit_logs=events, vulnerabilities=vulnerabilities)
-    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-    send_events_to_xsiam(vulnerabilities, vendor=VENDOR, product=PRODUCT)
+    if should_push_events:
+        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+        send_events_to_xsiam(vulnerabilities, vendor=VENDOR, product=PRODUCT)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -412,8 +413,8 @@ def main() -> None:  # pragma: no cover
                                                      limit=args.get('limit'))
             return_results(results)
 
-            if argToBoolean(args.get('should_push_events', 'true')):
-                call_send_events_to_xsiam(events=events, vulnerabilities=vulnerabilities)
+            call_send_events_to_xsiam(events=events, vulnerabilities=vulnerabilities,
+                                      should_push_events=argToBoolean(args.get('should_push_events', 'true')))
 
         elif command == 'tenable-get-vulnerabilities':
             results = get_vulnerabilities_command(args, client)
@@ -422,8 +423,8 @@ def main() -> None:  # pragma: no cover
                     vulnerabilities = results.raw_response  # type: ignore
             return_results(results)
 
-            if argToBoolean(args.get('should_push_events', 'true')):
-                call_send_events_to_xsiam(events=events, vulnerabilities=vulnerabilities)
+            call_send_events_to_xsiam(events=events, vulnerabilities=vulnerabilities,
+                                      should_push_events=argToBoolean(args.get('should_push_events', 'true')))
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
@@ -434,7 +435,7 @@ def main() -> None:  # pragma: no cover
             vulnerabilities = fetch_vulnerabilities(client, last_run, severity)
             events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
 
-            call_send_events_to_xsiam(events=events, vulnerabilities=vulnerabilities)
+            call_send_events_to_xsiam(events=events, vulnerabilities=vulnerabilities, should_push_events=True)
 
             demisto.debug(f'Setting new last_run to {new_last_run}')
             demisto.setLastRun(new_last_run)
