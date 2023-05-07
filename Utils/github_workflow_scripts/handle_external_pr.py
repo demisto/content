@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import argparse
 import json
 from typing import List
 
@@ -24,15 +24,42 @@ WELCOME_MSG_WITH_GFORM = 'Thank you for your contribution. Your generosity and c
                          'so our content wizard @{selected_reviewer} will know the proposed changes are ready to be ' \
                          'reviewed.'
 
+XSOAR_SUPPORT_LEVEL = 'Xsoar Support Level'
+PARTNER_SUPPORT_LEVEL = 'Partner Support Level'
+COMMUNITY_SUPPORT_LEVEL = 'Community Support Level'
+CONTRIBUTION_LABEL = 'Contribution'
+
+
+def parse_changed_files_names() -> argparse.Namespace:
+    """
+    Run_doc_review script gets the files that were changed in the PR as a string (default delimiter is ';').
+    This function is in charge of parsing the info and separate the files names.
+    Returns: an argparse.Namespace object which includes the changed files names and the delimiter argument.
+    """
+    parser = argparse.ArgumentParser(description="Parse the changed files names.")
+    parser.add_argument(
+        "-c",
+        "--changed_files",
+        help="The files that are passed to handle external PR (passed as one string).",
+    )
+    parser.add_argument(
+        "-d",
+        "--delimiter",
+        help="the delimiter that separates the changed files names (determined in"
+        " the call to tj-actions/changed-files in "
+        "handle external PR script).",
+    )
+    args = parser.parse_args()
+
+    return args
+
 
 def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
     """Checks the number of open 'Contribution' PRs that have either been assigned to a user or a review
     was requested from the user for each potential reviewer and returns the user with the smallest amount
-
     Args:
         potential_reviewers (List): The github usernames from which a reviewer will be selected
         repo (Repository): The relevant repo
-
     Returns:
         str: The github username to assign to a PR
     """
@@ -58,20 +85,38 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
     return selected_reviewer
 
 
+def get_highest_support_label(found_labels):
+    if 'xsoar' in found_labels:
+        return XSOAR_SUPPORT_LEVEL
+    elif 'partner' in found_labels:
+        return PARTNER_SUPPORT_LEVEL
+    else:
+        return COMMUNITY_SUPPORT_LEVEL
+
+
+def get_support_level_label(pack_metadata_files) -> str:
+    try:
+        return get_highest_support_label(
+            [json.loads(pack_metadata_path).get('support') for pack_metadata_path in pack_metadata_files]
+        )
+    except Exception as e:
+        print(f'Could not retrieve support label, {e}')
+        return ''
+
+
 def main():
     """Handles External PRs (PRs from forks)
-
     Performs the following operations:
     1. If the external PR's base branch is master we create a new branch and set it as the base branch of the PR.
     2. Labels the PR with the "Contribution" label. (Adds the "Hackathon" label where applicable.)
     3. Assigns a Reviewer.
     4. Creates a welcome comment
-
     Will use the following env vars:
     - CONTENTBOT_GH_ADMIN_TOKEN: token to use to update the PR
     - EVENT_PAYLOAD: json data from the pull_request event
     """
     t = Terminal()
+
     payload_str = get_env_var('EVENT_PAYLOAD')
     if not payload_str:
         raise ValueError('EVENT_PAYLOAD env variable not set or empty')
@@ -85,10 +130,18 @@ def main():
     pr_number = payload.get('pull_request', {}).get('number')
     pr = content_repo.get_pull(pr_number)
 
-    # Add 'Contribution' Label to PR
-    contribution_label = 'Contribution'
-    pr.add_to_labels(contribution_label)
-    print(f'{t.cyan}Added "Contribution" label to the PR{t.normal}')
+    parser_args = parse_changed_files_names()
+    print(f'{parser_args.changed_files=}')
+    changed_files_list = parser_args.changed_files.split(parser_args.delimiter)
+
+    labels_to_add = [CONTRIBUTION_LABEL]
+    if support_label := get_support_level_label(changed_files_list):
+        labels_to_add.append(support_label)
+
+    # Add 'Contribution' + support Label to the external PR
+    for label in labels_to_add:
+        pr.add_to_labels(label)
+        print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
 
     # check base branch is master
     if pr.base.ref == 'master':
