@@ -41,6 +41,8 @@ tags:
 - duplicate
 - incidents
 - dynamic-section
+skipPrepare:
+- script-name-incident-to-alert
 timeout: 300ns
 type: python
 fromversion: 6.0.0

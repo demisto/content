@@ -5,6 +5,8 @@ name: UpdateSecuronixIncidentStatus
 script: ''
 type: python
 tags: []
+skipPrepare:
+- script-name-incident-to-alert
 comment: Update the status of the Securonix incident using the configuration provided in integration configuration.
 enabled: true
 args:

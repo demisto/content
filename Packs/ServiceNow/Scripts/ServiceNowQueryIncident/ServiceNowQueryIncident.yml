@@ -43,6 +43,8 @@ script: '-'
 tags:
 - servicenow
 - servicenow v2
+skipPrepare:
+- script-name-incident-to-alert
 system: false
 timeout: '0'
 type: python

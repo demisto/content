@@ -7,6 +7,8 @@ type: python
 subtype: python3
 tags:
 - RSA NetWitness Security Analytics
+skipPrepare:
+- script-name-incident-to-alert
 comment: This command will add new events to an existing NetWitness SA incident
 system: true
 args:

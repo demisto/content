@@ -8,6 +8,8 @@ tags:
 - dynamic-section
 - python
 - servicenow v2
+skipPrepare:
+- script-name-incident-to-alert
 comment: |
   populates the value of the ServiceNow Ticket State field and display it in a layout widget.
 enabled: true

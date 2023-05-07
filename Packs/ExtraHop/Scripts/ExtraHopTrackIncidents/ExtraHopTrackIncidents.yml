@@ -8,6 +8,8 @@ tags:
 - incidents
 - ExtraHop
 - field-change-triggered
+skipPrepare:
+- script-name-incident-to-alert
 comment: Links an incident investigation back to the ExtraHop Detection that created it.
 script: '-'
 system: false

@@ -5,6 +5,8 @@ name: PenteraOperationToIncident
 script: ''
 type: python
 tags: []
+skipPrepare:
+- script-name-incident-to-alert
 enabled: true
 args:
 - name: full_action_report

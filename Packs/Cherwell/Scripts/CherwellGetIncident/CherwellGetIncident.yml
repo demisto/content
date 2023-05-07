@@ -54,6 +54,8 @@ system: false
 timeout: '0'
 type: python
 tags: [Cherwell]
+skipPrepare:
+- script-name-incident-to-alert
 dependson:
   must:
   - Cherwell|||cherwell-get-business-object

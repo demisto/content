@@ -25,6 +25,8 @@ scripttarget: 0
 subtype: python3
 tags:
 - dynamic-section
+skipPrepare:
+- script-name-incident-to-alert
 type: python
 fromversion: 6.0.0
 tests:

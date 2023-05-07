@@ -237,6 +237,8 @@ script: '-'
 subtype: python3
 tags:
 - bmcremedyforce
+skipPrepare:
+- script-name-incident-to-alert
 system: false
 timeout: '0'
 type: python

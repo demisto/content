@@ -53,6 +53,8 @@ outputs:
 script: '-'
 system: false
 tags: [Cherwell]
+skipPrepare:
+- script-name-incident-to-alert
 timeout: '0'
 type: python
 dependson:
