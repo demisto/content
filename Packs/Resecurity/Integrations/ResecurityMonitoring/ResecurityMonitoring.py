@@ -140,8 +140,8 @@ def get_task_monitor_results_command(module_name: str):
         monitor_task_id = arg_to_number(args.get("monitor_task_id"), 'monitor_task_id', True)
         limit = int(args.get("limit", DEFAULT_RESULTS_SIZE_LIMIT))
         page = arg_to_number(args.get("page"))
-        page_size = int(args.get("page_size", DEFAULT_PAGE_SIZE))
-        mode = int(args.get("mode", DEFAULT_MODE))
+        page_size = arg_to_number(args.get("page_size", DEFAULT_PAGE_SIZE))
+        mode = arg_to_number(args.get("mode", DEFAULT_MODE))
 
         if page is not None:
             # request data from specific page
