@@ -1,5 +1,5 @@
 Rapid7 Insight - Threat Command allows managing alerts, CVEs, IOCs, and assets by accounts and MSSP accounts.
-This integration was integrated and tested with version xx of rapid7_threat_command
+This integration was integrated and tested with version 3.1.4 of rapid7_threat_command
 
 ## Configure Rapid7 - Threat Command (IntSights) on Cortex XSOAR
 
