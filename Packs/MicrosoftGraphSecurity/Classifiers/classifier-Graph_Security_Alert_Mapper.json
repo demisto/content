@@ -51,7 +51,7 @@
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Threat Actor": {
-                    "simple": "threatDisplayName"
+                    "simple": "actorDisplayName"
                 }
             }
         },
