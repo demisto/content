@@ -350,7 +350,6 @@ def convert_date_to_unix(date_str: str) -> int:
     """
     Convert the given string to milliseconds since epoch.
     """
-    demisto.debug(f'In convert_date_to_unix date_str is {date_str}')
     if not (date := dateparser.parse(date_str, settings={'TIMEZONE': 'UTC'})):
         raise DemistoException(f'The date "{date_str}" given is not valid.')
     return int(date.timestamp() * 1000)
@@ -628,7 +627,7 @@ def get_remote_alert_data(client: Client, remote_alert_id: str) -> Tuple[Dict, D
     Takes from the entity only the relevant incoming mirroring fields, and returns the updated_object for the incident
     we want to mirror in, from the mirrored data, according to the mirroring fields.
     """
-    alert_details = client.alert_get_details_request(alert_id=remote_alert_id, detailed='true') # TODO: need to check maybe enough to use detailed=false.
+    alert_details = client.alert_get_details_request(alert_id=remote_alert_id, detailed='false')
 
     updated_object: Dict[str, Any] = {}
     for field in INCIDENT_INCOMING_MIRROR_ARGS:
@@ -1684,21 +1683,27 @@ def get_modified_remote_data_command(client: Client,
     demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
 
     # TODO: do we have a limit for the mirroring? if yes - need to add it to alert_search_request() -
-    #  consult with dima\yuval about rate limit and Burst limit - we might take 120 as a limit. - sounds logical to limit the mirror in to 100 - document it.
+    #  consult with dima\yuval about rate limit and Burst limit - we might take 120 as a limit.
+    #  - sounds logical to limit the mirror in to 100 - document it.
 
-    detailed = 'false'  # TODO: took false from the thread example - not sure - need to check if the mirrored fields arrived with false
+    detailed = 'false'
     sort_by = ['alertTime:asc']
     time_filter = handle_time_filter(time_from=last_update,
                                      time_to='now')
-    filters = argToList(params.get('filters')) # TODO: there is a chance we need to remove the alert.status=open filter (alert.status filters in general need to be removed)
+    filters = argToList(params.get('filters'))
+    # According to the PM of prisma cloud this filter provide us with all the alerts that their status has been changed
+    # It is not yet documented in the Prisma Cloud API reference - for more info see this issue:
+    # https://jira-hq.paloaltonetworks.local/browse/CIAC-5504
     filters.append('timeRange.type=ALERT_STATUS_UPDATED')
-    filters.extend(['alert.status=dismissed', 'alert.status=snoozed', 'alert.status=resolved'])
+    # Removes the 'alert.status=open' filter to retrieve all relevant statuses (open, resolved, dismissed and snoozed)
+    if 'alert.status=open' in set(filters):
+        filters.remove('alert.status=open')
 
     # TODO: what next_token is used for? need to check if I need to implement it.
     response = client.alert_search_request(time_range=time_filter, filters=filters, detailed=detailed, sort_by=sort_by)
     response_items = response.get('items', [])
     modified_records_ids = [str(item.get('id')) for item in response_items]
-    demisto.debug(f"{len(modified_records_ids)} alerts has detected as modified in Prisma")
+    demisto.debug(f"Detected {len(modified_records_ids)} modified alerts in Prisma Cloud")
 
     return GetModifiedRemoteDataResponse(modified_records_ids)
 
