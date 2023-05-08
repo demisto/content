@@ -1,0 +1,27 @@
+{
+    "name": "Palo Alto Networks Cortex XSIAM - SOX Dashboards and Reports",
+    "description": "Pack for generating SOX reports and dashboards. Dashboards and reports utilize XQL queries which refrence XDM, allowing queries to refrence data across multiple datasets.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSIAM",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [
+    ],
+    "created": "2023-03-20T13:16:53Z",
+    "useCases": [
+        "Compliance"
+    ],
+    "keywords": [
+        "compliance"
+    ],
+    "modules": [
+        "compliance"
+    ]
+    "marketplaces": [
+    "marketplacev2"
+    ]
+
+}
