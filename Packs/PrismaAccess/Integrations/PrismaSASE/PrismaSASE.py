@@ -1214,7 +1214,7 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
         raw_response = client.list_address_objects(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
         outputs = raw_response.copy()
-        # A dict containing a list of results is returned by the API. 
+        # A dict containing a list of results is returned by the API.
         # A single dict is returned when filtering the request by name.
         outputs = outputs.get('data', outputs)
 
@@ -1787,7 +1787,7 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
         raw_response = client.list_external_dynamic_list(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
         outputs = raw_response.copy()
-        # A dict containing a list of results is returned by the API. 
+        # A dict containing a list of results is returned by the API.
         # A single dict is returned when filtering the request by name.
         outputs = outputs.get('data', outputs)
 
