@@ -2,7 +2,7 @@ This playbook investigates and remediates a potential phishing incident. It enga
 
 Note: 
 - Final remediation tasks are manual by default. can be managed by "SearchAndDelete" and "BlockIndicators" inputs.
-- Please do not rerun this playbook inside a phishing incident since it can produce an unexpected result. Create a new incident instead if needed.
+- Do not rerun this playbook inside a phishing incident since it can produce an unexpected result. Create a new incident instead if needed.
 
 ## Dependencies
 
@@ -10,19 +10,20 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Process Microsoft's Anti-Spam Headers
-* Entity Enrichment - Phishing v2
-* Phishing - Indicators Hunting
 * Process Email - Generic v2
-* Phishing - Machine Learning Analysis
+* Search And Delete Emails - Generic v2
 * Email Address Enrichment - Generic v2.1
-* Extract Indicators From File - Generic v2
-* Detonate File - Generic
-* Detect & Manage Phishing Campaigns
 * Block Indicators - Generic v3
 * Calculate Severity - Generic v2
-* Search And Delete Emails - Generic v2
+* Phishing - Indicators Hunting
+* Phishing - Machine Learning Analysis
+* Process Microsoft's Anti-Spam Headers
+* Extract Indicators From File - Generic v2
 * Detonate URL - Generic
+* Detonate File - Generic
+* Entity Enrichment - Phishing v2
+* Detect & Manage Phishing Campaigns
+* TIM - Indicator Relationships Analysis
 
 ### Integrations
 
@@ -30,15 +31,17 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* SetAndHandleEmpty
 * AssignAnalystToIncident
 * CheckEmailAuthenticity
-* SetAndHandleEmpty
+* Set
 
 ### Commands
 
-* send-mail
+* setIndicator
 * closeInvestigation
 * setIncident
+* send-mail
 
 ## Playbook Inputs
 
