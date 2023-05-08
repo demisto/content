@@ -14,41 +14,7 @@ MAX_EVENTS_PER_REQUEST = 100
 VENDOR = 'Workday'
 PRODUCT = 'Workday'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-TEST = [{
-    "systemAccount": "123",
-    "activityAction": "test_action",
-    "requestTime": "2023-04-24T07:00:00Z",
-    "userAgent": "test_agent",
-    "taskId": "1",
-    "deviceType": "test_device",
-    "ipAddress": "1.1.1.1",
-    "userActivityEntryCount": "1234",
-    "sessionId": "test_session_id",
-    "target":
-        {
-            "id": "1234",
-            "descriptor": "test_descriptor",
-            "href": "test_href"
-        },
-    "taskDisplayName": "test_display"
-}, {
-    "systemAccount": "123",
-    "activityAction": "test_action",
-    "requestTime": "2023-04-24T07:00:00Z",
-    "userAgent": "test_agent",
-    "taskId": "2",
-    "deviceType": "test_device",
-    "ipAddress": "1.1.1.1",
-    "userActivityEntryCount": "1234",
-    "sessionId": "test_session_id",
-    "target":
-        {
-            "id": "1234",
-            "descriptor": "test_descriptor",
-            "href": "test_href"
-        },
-    "taskDisplayName": "test_display"
-}]
+
 ''' CLIENT CLASS '''
 
 
@@ -268,7 +234,7 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
                                                        logging_to_fetch=max_fetch,
                                                        from_date=from_date,
                                                        to_date=to_date)
-    # activity_loggings = TEST
+
     # setting last run object
     remove_milliseconds_from_time_of_loggings(activity_loggings=activity_loggings)
     activity_loggings, last_fetched_loggings = remove_duplicated_activity_logging(
