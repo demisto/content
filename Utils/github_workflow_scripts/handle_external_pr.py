@@ -93,7 +93,9 @@ def get_packs_support_level_label(file_paths: List[str]) -> str:
     """
     try:
         pack_names = {get_pack_name(file_path) for file_path in file_paths if 'Packs' in file_path}
+        print(f'{pack_names=}')
         packs_support_levels = [get_pack_metadata(pack_name).get('support') for pack_name in pack_names]
+        print(f'{packs_support_levels=}')
         return get_highest_support_label(packs_support_levels)
     except Exception as e:
         print(f'Could not retrieve support label, {e}')
@@ -168,9 +170,9 @@ def main():
         master_branch_commit_sha = content_repo.get_branch('master').commit.sha
         # create new branch
         print(f'{t.cyan}Creating new branch "{new_branch_name}"{t.normal}')
-        content_repo.create_git_ref(f'refs/heads/{new_branch_name}', master_branch_commit_sha)
+        # content_repo.create_git_ref(f'refs/heads/{new_branch_name}', master_branch_commit_sha)
         # update base branch of the PR
-        pr.edit(base=new_branch_name)
+        # pr.edit(base=new_branch_name)
         print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
 
     # assign reviewers / request review from
