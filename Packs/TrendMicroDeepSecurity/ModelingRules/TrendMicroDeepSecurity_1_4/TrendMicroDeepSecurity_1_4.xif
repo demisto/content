@@ -1,3 +1,5 @@
+
+
 /*****************************************************/
 /* TM (Trend Micro) DS (Deep Security) Utility Rules */
 /*****************************************************/
@@ -10,11 +12,12 @@ alter event_tags = regextract(TrendMicroDsTags, "[\w-]+")
     xdm.event.description  = cefName,
     xdm.event.tags  = event_tags, 
     xdm.alert.name = cefName,
+    xdm.alert.severity = cefSeverity,
     xdm.source.agent.type = TrendMicroDsTenant, 
     xdm.source.agent.identifier = TrendMicroDsTenantId,
     xdm.observer.type = TrendMicroDsTenant,
     xdm.observer.unique_identifier = TrendMicroDsTenantId,
-    xdm.observer.content_version = cefDeviceVersion
+    xdm.observer.version = cefDeviceVersion
 ;
 
 [RULE: tm_ds_agent_common_fields_modeling]
@@ -119,6 +122,7 @@ call tm_ds_convert_cef_event_id_to_int
     xdm.network.http.http_header.value = xff,
     xdm.network.http.http_header.header = if(xff != null, "X-Forwarded-For", null)
 ;
+
 
 /* Integrity Monitoring Events := cefDeviceEventClassId in ([30], [2000000-2999999]) */
 call tm_ds_convert_cef_event_id_to_int
