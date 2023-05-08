@@ -9307,31 +9307,31 @@ Create an ODS scan.
 | CrowdStrike.ODSScan.last_updated | Date | The timestamp when the scan job was last updated. | 
 
 #### Command example
-```!cs-falcon-ods-create-scan cpu_priority=Low scan_inclusions=* host_groups=111111111111111 is_scheduled=true pause_duration=3 quarantine=true schedule_start_timestamp=2023-05-06T06:49 schedule_interval="every other week"```
+```!cs-falcon-ods-create-scan cpu_priority=Low scan_inclusions=* host_groups=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 is_scheduled=true pause_duration=3 quarantine=true schedule_start_timestamp=2023-05-06T06:49 schedule_interval="every other week"```
 #### Context Example
 ```json
 {
     "CrowdStrike": {
         "ODSScan": {
-            "cid": "111111111111111",
+            "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "cloud_ml_level_detection": 2,
             "cloud_ml_level_prevention": 2,
             "cpu_priority": 2,
-            "created_by": "111111111111111",
+            "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "created_on": "2023-05-08T09:30:51.913654051Z",
             "deleted": false,
             "endpoint_notification": true,
             "host_groups": [
-                "111111111111111"
+                "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
             ],
-            "id": "111111111111111",
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "initiated_from": "cloud_scheduled",
             "last_updated": "2023-05-08T09:30:51.913654051Z",
             "max_duration": 2,
             "max_file_size": 60,
             "metadata": [
                 {
-                    "host_id": "111111111111111",
+                    "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                     "last_updated": "2023-05-08T09:30:51.913654051Z"
                 }
             ],
@@ -9396,7 +9396,7 @@ Create an ODS scan.
 #### Human Readable Output
 
 >Scheduled Scan Created
->ID: 111111111111111
+>ID: a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
 ### cs-falcon-ods-delete-scheduled-scan
 
 ***
@@ -9417,11 +9417,11 @@ Delete ODS scheduled scans.
 
 There is no context output for this command.
 #### Command example
-```!cs-falcon-ods-delete-scheduled-scan ids=111111111111111```
+```!cs-falcon-ods-delete-scheduled-scan ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
 #### Human Readable Output
 
 >### Deleted Scans:
 >|Scan ID|
 >|---|
->| 111111111111111 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
