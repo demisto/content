@@ -1,9 +1,11 @@
 import json
 import time
 import copy
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
-from Devo_v2 import fetch_incidents, run_query_command, get_alerts_command,\
+import pytest
+
+from Devo_v2 import alert_to_incident, fetch_incidents, run_query_command, get_alerts_command,\
     multi_table_query_command, write_to_table_command, write_to_lookup_table_command,\
     check_configuration, get_time_range
 
@@ -32,6 +34,10 @@ MOCK_FETCH_INCIDENTS_FILTER = {
         }
     ]
 }
+
+
+MOCK_FETCH_INCIDENTS_LIMIT_INCORRECT = 1000
+
 MOCK_FETCH_INCIDENTS_DEDUPE = {
     "cooldown": 120
 }
@@ -135,6 +141,91 @@ MOCK_KEYS = {
 }
 OFFSET = 0
 ITEMS_PER_PAGE = 10
+
+ALERT_WITH_MISSING_DATA = {
+    'user_prefixcontext': 'sample.context.value',
+    'user_prefixalertId': 'alert123',
+    'eventdate': 1646895689000,
+    'user_prefixextraData': {
+        'alertPriority': 'HIGH',
+        'alertName': 'null',
+        'alertDescription': 'This is a sample alert'
+    },
+    'sample_key1': 'sample_value1',
+    'sample_key2': 'sample_value2'
+}
+
+ALERT = {
+    'user_prefixcontext': 'sample.context.value',
+    'user_prefixalertId': 'alert123',
+    'eventdate': 1646895689000,
+    'user_prefixextraData': {
+        'alertPriority': 'HIGH',
+        'alertName': 'Sample Alert',
+        'alertDescription': 'This is a sample alert'
+    },
+    'sample_key1': 'sample_value1',
+    'sample_key2': 'sample_value2'
+}
+USER_PREFIX = 'user_prefix'
+EXPECTED_LABELS_WITH_NULL = [
+    {'type': 'devo.metadata.alert.user_prefixcontext', 'value': 'sample.context.value'},
+    {'type': 'devo.metadata.alert.user_prefixalertId', 'value': 'alert123'},
+    {'type': 'devo.metadata.alert.eventdate', 'value': '1646895689000'},
+    {'type': 'devo.metadata.alert.sample_key1', 'value': 'sample_value1'},
+    {'type': 'devo.metadata.alert.sample_key2', 'value': 'sample_value2'},
+    {'type': 'alertPriority', 'value': 'HIGH'},
+    {'type': 'alertName', 'value': 'null'},
+    {'type': 'alertDescription', 'value': 'This is a sample alert'}
+]
+
+EXPECTED_LABELS = [{'type': 'devo.metadata.alert.user_prefixcontext', 'value': 'sample.context.value'},
+                   {'type': 'devo.metadata.alert.user_prefixalertId', 'value': 'alert123'},
+                   {'type': 'devo.metadata.alert.eventdate', 'value': '1646895689000'},
+                   {'type': 'devo.metadata.alert.sample_key1', 'value': 'sample_value1'},
+                   {'type': 'devo.metadata.alert.sample_key2', 'value': 'sample_value2'},
+                   {'type': 'alertPriority', 'value': 'HIGH'},
+                   {'type': 'alertName', 'value': 'Sample Alert'},
+                   {'type': 'alertDescription', 'value': 'This is a sample alert'}]
+LAST_RUN_DATA = {
+    'from_time': '1234567000.0',
+    'last_fetch_events': []
+}
+
+MOCK_EVENTS = [
+    {
+        "alertId": "123",
+        "extraData": {
+            "key1": "value1",
+            "key2": "value2"
+        },
+        "eventdate": "1234567890.0",
+        "context": "value1"
+    },
+    {
+        "alertId": "456",
+        "extraData": {
+            "key1": "value3",
+            "key2": "value4"
+        },
+        "eventdate": "1234567891.0",
+        "context": "value2"
+    },
+    {
+        "alertId": "789",
+        "extraData": {
+            "key1": "value3",
+            "key2": "value4"
+        },
+        "eventdate": "1234567892.0",
+        "context": "value3"
+    }
+]
+
+EXPECTED_LAST_RUN_DATA = {
+    "from_time": "1234567892.0",
+    "last_fetch_events": ["123", "456", "789"]
+}
 
 
 class MOCK_LOOKUP(object):
@@ -283,3 +374,67 @@ def test_write_lookup_devo(mock_lookup_writer_lookup, mock_lookup_writer_sender,
     mock_lookup_writer_lookup.return_value = MOCK_LOOKUP()
     results = write_to_lookup_table_command()
     assert len(results[0]['EntryContext']['Devo.RecordsWritten']) == 3
+
+
+@patch('Devo_v2.demisto_ISO', return_value='2022-03-15T15:01:23.456Z')
+def test_alert_to_incident_all_data(mock_demisto_ISO):
+    incident = alert_to_incident(ALERT, USER_PREFIX)
+    assert incident['name'] == 'Sample Alert'
+    assert incident['severity'] == 3
+    assert incident['details'] == 'alert123'
+    assert incident['description'] == 'This is a sample alert'
+    assert incident['occurred'] == '2022-03-15T15:01:23.456Z'
+    assert incident['labels'] == EXPECTED_LABELS
+    assert 'devo.metadata.alert' in json.loads(incident['rawJSON'])
+    assert 'sample_key1' in json.loads(incident['rawJSON'])['devo.metadata.alert']
+    assert 'sample_key2' in json.loads(incident['rawJSON'])['devo.metadata.alert']
+    assert 'alertPriority' in json.loads(incident['rawJSON'])
+    assert 'alertName' in json.loads(incident['rawJSON'])
+    assert 'alertDescription' in json.loads(incident['rawJSON'])
+    assert mock_demisto_ISO.called
+
+
+@patch('Devo_v2.demisto_ISO', return_value='2022-03-15T15:01:23.456Z')
+def test_alert_to_incident_missing_data(mock_demisto_ISO):
+    incident = alert_to_incident(ALERT_WITH_MISSING_DATA, USER_PREFIX)
+    assert incident['name'] == 'value'
+    assert incident['severity'] == 3
+    assert incident['details'] == 'alert123'
+    assert incident['description'] == 'This is a sample alert'
+    assert incident['occurred'] == '2022-03-15T15:01:23.456Z'
+    assert incident['labels'] == EXPECTED_LABELS_WITH_NULL
+    assert 'devo.metadata.alert' in json.loads(incident['rawJSON'])
+    assert 'sample_key1' in json.loads(incident['rawJSON'])['devo.metadata.alert']
+    assert 'sample_key2' in json.loads(incident['rawJSON'])['devo.metadata.alert']
+    assert 'alertPriority' in json.loads(incident['rawJSON'])
+    assert 'alertName' in json.loads(incident['rawJSON'])
+    assert 'alertDescription' in json.loads(incident['rawJSON'])
+    assert mock_demisto_ISO.called
+
+
+@patch('Devo_v2.demisto.getLastRun')
+@patch('Devo_v2.ds.Reader')
+@patch('Devo_v2.demisto.setLastRun')
+@patch('Devo_v2.demisto.incidents')
+def test_fetch_incidents(
+        mock_incidents: MagicMock,
+        mock_setLastRun: MagicMock,
+        mock_Reader: MagicMock,
+        mock_getLastRun: MagicMock
+):
+    mock_getLastRun.return_value = LAST_RUN_DATA
+
+    mock_Reader.return_value.query.return_value = MOCK_EVENTS
+    # Call the function
+    fetch_incidents()
+    # Check that setLastRun was called with the expected argument
+
+    mock_setLastRun.assert_called_once_with(EXPECTED_LAST_RUN_DATA)
+    mock_incidents.assert_called_once()
+
+
+@patch('Devo_v2.FETCH_INCIDENTS_LIMIT', MOCK_FETCH_INCIDENTS_LIMIT_INCORRECT, create=True)
+def fetch_incidents_limit_out_of_range():
+    with pytest.raises(ValueError) as e:
+        fetch_incidents()
+    assert 'Fetch incidents limit should be greater than or equal to 10 and smaller than or equal to 100' in str(e.value)
