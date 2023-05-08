@@ -813,10 +813,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "220":
     id: "220"
-    taskid: 5ee8a1be-e8d7-4cb5-838d-5ed7b6655219
+    taskid: 9b56ab3b-cd65-45f7-8a03-9f39e48921f6
     type: condition
     task:
-      id: 5ee8a1be-e8d7-4cb5-838d-5ed7b6655219
+      id: 9b56ab3b-cd65-45f7-8a03-9f39e48921f6
       version: -1
       name: Verify Status
       description: Verify that the 'PaloAltoNetworksXDR.RetrievedFiles.status’ context key was populated.
@@ -832,7 +832,7 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: isNotEmpty
+      - - operator: isNotExists
           left:
             value:
               complex:
@@ -2409,4 +2409,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.5.0
+fromversion: 6.8.0
