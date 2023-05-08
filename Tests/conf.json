@@ -22,7 +22,7 @@
     "tests": [
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256"
+            "playbookID": "Test_Playbook_-_Cortex_XDR_-_Retrieve_File_by_sha256"
         },
         {
             "integrations": "Twitter v2",
