@@ -127,8 +127,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Retrieves indicators from the Mandiant Advantage Feed.
-display: Mandiant Advantage Feed
+description: Deprecated. Use Mandiant Advantage Threat Intelligence instead.
+display: Mandiant Advantage Feed (Deprecated)
 name: FeedMandiant
 script:
   commands:
@@ -195,3 +195,4 @@ script:
 tests:
 - Fetch Indicators Test
 fromversion: 6.1.0
+deprecated: true
