@@ -71,7 +71,7 @@ alter event_id = to_integer(cefDeviceEventClassId)
 /*********************************************/
 /* DSM (Deep Security Manager) System Events */
 /*********************************************/
-[MODEL: dataset="trend_micro_deep_security_manager2_raw"]
+[MODEL: dataset="trend_micro_deep_security_manager_raw"]
 call tm_ds_common_fields_modeling
 | alter 
     target_type = uppercase(targetType)
