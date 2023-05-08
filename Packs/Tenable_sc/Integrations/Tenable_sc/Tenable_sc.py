@@ -178,19 +178,24 @@ class Client(BaseClient):
                 body['schedule']['dependentID'] = dependent
 
             if schedule == 'ical':
-                timestamp_format = "%Y-%m-%dT%H:%M:%S"
+                timestamp_format = "%Y%m%dT%H%M%S"
+                expected_format = "%Y-%m-%d:%H:%M:%S"
                 try:
-                    start_time = datetime.datetime(start_time).strftime(timestamp_format)
+                    start_time = datetime.strptime(start_time, expected_format)
+                    start_time = datetime.strftime(start_time, timestamp_format)
                 except Exception:
-                    start_time = parse_date_range(start_time, date_format=timestamp_format)
+                    start_time = parse_date_range(start_time, date_format=timestamp_format)[0]
                 if time_zone and start_time:
                     body['schedule']['start'] = f"TZID={time_zone}:{start_time}"
                 else:
                     return_error("Please make sure to provide both time_zone and start_time.")
-                # if not repeat_rule_freq or not repeat_rule_interval or not repeat_rule_by_day:
-                #     return_error("Please make sure to provide both repeat_rule_freq,repeat_rule_interval, and repeat_rule_by_day.")
-                # else:
-                # body['schedule']['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval};BYDAY={repeat_rule_by_day}"
+                if all(repeat_rule_freq, repeat_rule_interval, repeat_rule_by_day):
+                    body['schedule']['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval};BYDAY={repeat_rule_by_day}"
+                elif repeat_rule_freq and repeat_rule_interval:
+                    body['schedule']['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval}"
+                elif any(repeat_rule_freq, repeat_rule_interval, repeat_rule_by_day):
+                    return_error("Please make sure to provide repeat_rule_freq, repeat_rule_interval with or without "
+                                 "repeat_rule_by_day, or don't provide any of them.")
                 body['schedule']['enabled'] = enabled
 
         if report_ids:
