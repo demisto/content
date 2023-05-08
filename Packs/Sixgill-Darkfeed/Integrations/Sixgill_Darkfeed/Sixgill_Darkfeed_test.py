@@ -563,13 +563,14 @@ def test_test_module_command(mocker):
     from Sixgill_Darkfeed import test_module_command
     test_module_command()
 
+
 def test_filter_confidence(mocker):
     from Sixgill_Darkfeed import filter_confidence
     
-    assert True == filter_confidence('all', {"sixgill_confidence": 80})
-    assert True == filter_confidence(60, {"sixgill_confidence": 80})
-    assert True == filter_confidence(80, {"sixgill_confidence": 80})
-    assert False == filter_confidence(80, {"sixgill_confidence": 60})
+    assert True is filter_confidence('all', {"sixgill_confidence": 80})
+    assert True is filter_confidence(60, {"sixgill_confidence": 80})
+    assert True is filter_confidence(80, {"sixgill_confidence": 80})
+    assert False is filter_confidence(80, {"sixgill_confidence": 60})
 
 
 def test_fetch_indicators_command(mocker):
