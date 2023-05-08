@@ -450,4 +450,4 @@ def test_categories_parse_item_as_dict():
                       )
 
     return_value = parse_item_as_dict(message, False)
-    assert return_value["rawJSON"].get("categories") == ['Purple category', 'Orange category']
+    assert return_value.get("categories") == ['Purple category', 'Orange category']
