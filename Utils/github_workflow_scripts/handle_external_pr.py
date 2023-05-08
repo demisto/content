@@ -92,7 +92,7 @@ def get_packs_support_level_label(file_paths: List[str]) -> str:
         file_paths(str): file paths
     """
     try:
-        pack_names = {get_pack_name(file_path) for file_path in file_paths}
+        pack_names = {get_pack_name(file_path) for file_path in file_paths if 'Packs' in file_path}
         packs_support_levels = [get_pack_metadata(pack_name).get('support') for pack_name in pack_names]
         return get_highest_support_label(packs_support_levels)
     except Exception as e:
