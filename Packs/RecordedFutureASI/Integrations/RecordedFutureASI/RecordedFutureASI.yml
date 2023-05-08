@@ -4,7 +4,6 @@ commonfields:
 name: RecordedFutureASI
 display: Recorded Future Attack Surface Intelligence
 category: Data Enrichment & Threat Intelligence
-defaultmapperin: Recorded Future ASI - Incoming Mapper
 description: Attack Surface Intelligence Risk Rules help security teams take risk and vulnerability prioritization to the next level by helping organizations identify the biggest weaknesses within their attack surface in mere seconds.
 configuration:
 - display: Fetch incidents
@@ -71,10 +70,11 @@ script:
     - name: expand_issues
       description: true/false to make an incident per host & per new issue
     description: Gets the issues for a project from a particular snapshot (defaults to recent)
-  dockerimage: demisto/python3:3.10.11.56082
+  dockerimage: demisto/python3:3.10.11.57293
   isfetch: true
   runonce: false
   subtype: python3
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+defaultmapperin: Recorded Future ASI - Incoming Mapper
