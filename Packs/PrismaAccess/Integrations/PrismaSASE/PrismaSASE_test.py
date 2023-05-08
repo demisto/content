@@ -637,7 +637,7 @@ def test_external_dynamic_list_to_xsoar_format():
     external_dynamic_list_to_xsoar_format(dynamic_list)
     assert dynamic_list['type'] == 'ip'
     assert dynamic_list['source'] == 'https://www.test.com'
-    assert dynamic_list['frequency'] == {'five_minute': {}}
+    assert dynamic_list['frequency'] == 'five_minute'
     assert dynamic_list['exception_list'] == ['www.test.com']
 
 
