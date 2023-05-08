@@ -3,8 +3,10 @@ from CommonServerPython import *  # noqa: F401
 import uuid
 
 # Constant to verify the minimum build number and XSIAM version for the new polling command (stopScheduleEntry feature).
-MINIMUM_BUILD_NUMBER = 309463
+MINIMUM_BUILD_NUMBER_XSIAM = 313276
+MINIMUM_BUILD_NUMBER_XSOAR = 309463
 MINIMUM_XSIAM_VERSION = '8.3.0'
+MINIMUM_XSOAR_VERSION = '8.2.0'
 
 
 # Returns a comma-separated string representation of a list
@@ -60,8 +62,8 @@ def main():
         'times': 1
     }
     if build_number != "REPLACE_THIS_WITH_CI_BUILD_NUM" and \
-            ((platform == "x2" and is_demisto_version_ge(MINIMUM_XSIAM_VERSION))
-             or (platform == "xsoar" and int(build_number) >= MINIMUM_BUILD_NUMBER)):
+            ((platform == "x2" and is_demisto_version_ge(MINIMUM_XSIAM_VERSION) and int(build_number) >= MINIMUM_BUILD_NUMBER_XSIAM)
+             or (platform == "xsoar" and is_demisto_version_ge(MINIMUM_XSOAR_VERSION) and int(build_number) >= MINIMUM_BUILD_NUMBER_XSOAR)):
         entryGuid = str(uuid.uuid4())
         command_string = f'{command_string} scheduledEntryGuid="{entryGuid}"'
         schedule_command_args['command'] = command_string
