@@ -603,6 +603,9 @@ def filter_alerts(fetched_ids: Dict[str, int], response_items: List[Dict[str, An
 def add_mirroring_fields(alert: Dict):
     """
     Updates the given Prisma Cloud fetched alert to hold the needed mirroring fields.
+
+    Args:
+        alert: The Prisma Cloud fetched alert.
     """
     alert['mirror_direction'] = MIRROR_DIRECTION
     alert['mirror_instance'] = INTEGRATION_INSTANCE
@@ -625,7 +628,13 @@ def get_remote_alert_data(client: Client, remote_alert_id: str) -> Tuple[Dict, D
     Called every time get-remote-data command runs on an alert.
     Gets the details of the relevant alert entity from the remote system (Prisma Cloud).
     Takes from the entity only the relevant incoming mirroring fields, and returns the updated_object for the incident
-    we want to mirror in, from the mirrored data, according to the mirroring fields.
+    we want to mirror in.
+
+    Args:
+        client: Demisto client.
+        remote_alert_id: The id of the mirrored Prisma Cloud alert.
+
+    Returns: The raw alert's details, and a dictionary contains only the mirrored fields and their values.
     """
     alert_details = client.alert_get_details_request(alert_id=remote_alert_id, detailed='false')
 
@@ -641,7 +650,7 @@ def close_incident_in_xsoar(remote_alert_id: str, mirrored_status: str, mirrored
     Closes an XSOAR incident.
 
     Args:
-        remote_alert_id: The id of the mirrored Prisma alert to be closed.
+        remote_alert_id: The id of the mirrored Prisma Cloud alert to be closed.
         mirrored_status: The status of the mirrored Prisma alert.
         mirrored_dismissal_note: The dismissal note of the mirrored Prisma alert.
 
@@ -666,10 +675,9 @@ def reopen_incident_in_xsoar(remote_alert_id: str):
     Reopens an XSOAR incident.
 
     Args:
-        remote_alert_id:  The id of the mirrored Prisma alert to be reopened.
+        remote_alert_id:  The id of the mirrored Prisma Cloud alert to be reopened.
 
     Returns: An entry object with relevant data for reopening an XSOAR incident.
-
     """
     demisto.debug(f'Prisma Alert {remote_alert_id} was reopened')
     entry = {
@@ -687,7 +695,7 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], remote_alert_id: 
     Extracts the status of the mirrored Prisma alert, and close/reopen the matched XSOAR incident in accordance.
     Args:
         updated_object: A dictionary contains the mirrored relevant fields.
-        remote_alert_id: The id of the mirrored Prisma alert.
+        remote_alert_id: The id of the mirrored Prisma Cloud alert.
 
     Returns: An entry object with relevant data for closing or reopening an XSOAR incident.
     """
