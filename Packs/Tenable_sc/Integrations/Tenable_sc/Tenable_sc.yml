@@ -142,8 +142,44 @@ script:
       description: Scan results ID from the scan-report command
       isArray: false
       name: scan_results_id
-      required: true
+      required: false
       secret: false
+    - default: false
+      description: Can be created via the Tenable.sc UI > Analysis > queries. can be retrieved from tenable-sc-list-query command.
+      isArray: false
+      name: query_id
+      required: false
+      secret: false
+    - default: false
+      description: Default is 'ASC'. Requires companion parameter, sort_field.
+      isArray: false
+      name: sort_direction
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'ASC'
+      - 'DESC'
+      defaultValue: 'ASC'
+    - default: false
+      description: Which field to sort by, For vulnerabilities data, Tenable recommends you sort by severity.
+      isArray: false
+      name: sort_field
+      required: false
+      secret: false
+      defaultValue: severity
+    - default: false
+      description: When the source_type is "individual", a scan_results_id must be provided. cumulative — Analyzes cumulative vulnerabilities. patched — Analyzes mitigated vulnerabilities.  
+      isArray: false
+      name: source_type
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - individual
+      - cumulative
+      - patched
+      defaultValue: individual
     - default: false
       defaultValue: '50'
       description: The number of objects to return in one response (maximum limit is 200).

@@ -1152,6 +1152,10 @@ def get_vulnerabilities(client: Client, scan_results_id):
 def get_vulnerability_command(client: Client, args: Dict[str, Any]):
     vuln_id = args.get('vulnerability_id')
     scan_results_id = args.get('scan_results_id')
+    sort_field = args.get('sort_field')
+    query_id = args.get('query_id')
+    sort_direction = args.get('sort_direction')
+    source_type = args.get('source_type', "individual")
     page = int(args.get('page', '0'))
     limit = int(args.get('limit', '50'))
     if limit > 200:
@@ -1164,13 +1168,25 @@ def get_vulnerability_command(client: Client, args: Dict[str, Any]):
     }]
 
     query = {
-        'scanID': scan_results_id,
         'filters': vuln_filter,
         'tool': 'vulndetails',
         'type': 'vuln',
         'startOffset': page,  # Lower bound for the results list (must be specified)
         'endOffset': page + limit  # Upper bound for the results list (must be specified)
+        # 'sortField': sort_field,
+        # 'sortDir': sort_direction
     }
+
+    if source_type == 'individual':
+        if scan_results_id:
+            query['scanID'] = scan_results_id
+        else:
+            return_error("When choosing source_type = individual - scan_results_id must be provided.")
+    else:
+        if query_id:
+            query["id"] = query_id
+        else:
+            return_error(f"When choosing source_type = {source_type} - query_id must be provided.")
 
     analysis = client.get_analysis(query, scan_results_id)
 
