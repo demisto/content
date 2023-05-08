@@ -31,8 +31,6 @@ jobs:
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v14.6  # disable-secrets-detection
-        with:
-          files: Packs
 
       - name: Update External PR
         env:
