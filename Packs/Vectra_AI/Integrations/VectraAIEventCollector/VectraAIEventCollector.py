@@ -9,19 +9,7 @@ See https://support.vectra.ai/s/article/KB-VS-1174 for more the API reference.
 """
 
 import demistomock as demisto
-from CommonServerPython import (
-    BaseClient,
-    timestamp_to_datestring,
-    CommandResults,
-    tableToMarkdown,
-    send_events_to_xsiam,
-    arg_to_datetime,
-    arg_to_number,
-    argToBoolean,
-    return_results,
-    return_error,
-)
-
+from CommonServerPython import *
 from typing import Dict, Any, Tuple, List
 import pytest
 from datetime import datetime, timedelta
