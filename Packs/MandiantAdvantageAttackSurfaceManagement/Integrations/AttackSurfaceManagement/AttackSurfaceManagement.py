@@ -58,59 +58,34 @@ class Client(BaseClient):
 
         self.timeout: int = timeout
         self.limit: int = limit
-        if project_id:
-            self.project_id: Optional[int] = project_id
-        else:
-            self.project_id = None
 
-        if collection_ids:
-            self.collection_ids: typing.List[str] = collection_ids
-        else:
-            self.collection_ids = []
+        self.project_id: Optional[int] = project_id
+        self.collection_ids: typing.List[str] = collection_ids or []
 
     def make_request(self, method: str, endpoint: str, **kwargs) -> typing.Union[str, dict, bytes]:
-        headers = {
-            "INTRIGUE_ACCESS_KEY": self._access_key,
-            "INTRIGUE_SECRET_KEY": self._secret_key
-        }
-        if kwargs.get('headers') is not None:
-            headers.update(kwargs.pop('headers'))
-
-        url = urljoin(self.base_url, endpoint)
-
-        response = requests.request(method, url, headers=headers, **kwargs)
-
-        response.raise_for_status()
-
-        response_type: str = response.headers.get("content-type", "")
-        if "application/json" in response_type:
-            return response.json()
-        elif "text/html" in response_type:
-            return response.text
-        else:
-            return response.content
+        raise Exception('DO NOT USE')
 
     def get_projects_list(self) -> typing.List:
         endpoint = 'projects'
-        response = self.make_request('GET', endpoint)
+        response = self._http_request('GET', endpoint)
 
         if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return'
                                    'a list of projects')
 
-        return response.get('result', [])
+        return response.get('result') or []
 
     def get_collections_list(self, project_id: int) -> typing.List:
         endpoint = 'user_collections'
 
-        response = self.make_request('GET', endpoint,
+        response = self._http_request('GET', endpoint,
                                      headers={'PROJECT_ID': str(project_id)})
 
         if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return'
                                    'a list of collections')
 
-        return response.get('result', [])
+        return response.get('result') or []
 
     def get_issues_since_time(self,
                               since: Optional[datetime],
@@ -132,7 +107,7 @@ class Client(BaseClient):
         params = {'page': 0}
 
         while True:
-            response = self.make_request('GET', endpoint, params=params,
+            response = self._http_request('GET', endpoint, params=params,
                                          headers={'PROJECT_ID': str(self.project_id)})
 
             if not isinstance(response, dict) or not response.get('success'):
@@ -149,7 +124,7 @@ class Client(BaseClient):
                           issue_id: str) -> dict:
         endpoint = f'issues/{issue_id}'
 
-        response = self.make_request('GET', endpoint,
+        response = self._http_request('GET', endpoint,
                                      headers={'PROJECT_ID': str(self.project_id)})
 
         if not isinstance(response, dict) or not response.get('success'):
@@ -163,35 +138,17 @@ class Client(BaseClient):
                   resource_id: str) -> dict:
         endpoint = f'notes/{resource_type}/{resource_id}'
 
-        response = self.make_request('GET', endpoint,
+        response = self._http_request('GET', endpoint,
                                      headers={'PROJECT_ID': str(self.project_id)})
 
         if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return notes for'
                                    f'{resource_type} {resource_id} in project {self.project_id}')
 
-        return response['result']
-
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+        return response.get('result') or []
 
 
 ''' HELPER FUNCTIONS '''
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
 
 def helper_create_incident(issue: dict, project_id: int) -> dict:
     severity_map = {1: 4, 2: 3, 3: 2, 4: 1, 5: 0.5}
@@ -218,6 +175,51 @@ def helper_create_incident(issue: dict, project_id: int) -> dict:
 
     return issue
 
+def fetch_incident_helper(client: Client, last_run: dict) -> typing.Tuple[dict, list]:
+    last_start_time: datetime
+
+    params = demisto.params()
+
+    if not client.project_id:
+        raise DemistoException('Must configure a Project ID to fetch incidents from Mandiant ASM')
+
+    if last_run and 'start_time' in last_run and last_run['start_time']:
+        last_start_time = parser.parse(last_run.get('start_time'))
+    else:
+        parsed_time = dateparser.parse(params.get("first_fetch"), settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
+        if not parsed_time:
+            parsed_time = datetime.now()
+        last_start_time = parsed_time
+
+    issues = client.get_issues_since_time(last_start_time)
+    most_recent_update = None
+
+    parsed_issues = []
+
+    for issue in issues:
+        incident_details = client.get_issue_details(issue["id"])
+        new_incident = helper_create_incident(incident_details, client.project_id)
+        new_incident['dbotMirrorLastSync'] = datetime.fromtimestamp(0).strftime("%Y-%m-%dT%H:%M:%SZ")
+        new_incident['lastupdatetime'] = new_incident['dbotMirrorLastSync']
+
+        parsed_issues.append(new_incident)
+        most_recent_update = issue['last_seen']
+
+        if len(parsed_issues) >= client.limit:
+            break
+
+    parsed_issues = filter_incidents_by_duplicates_and_limit(
+        incidents_res=parsed_issues, last_run=last_run, fetch_limit=client.limit, id_field='dbotMirrorId'
+    )
+
+    new_issues = [json.loads(i['rawJSON'])['uid'] for i in parsed_issues]
+
+    last_run = {
+        'start_time': most_recent_update,
+        'found_incident_ids': list(set(new_issues + last_run.get('found_incident_ids', [])))
+    }
+
+    return last_run, parsed_issues,
 
 ''' COMMAND FUNCTIONS '''
 
@@ -240,7 +242,8 @@ def test_module(client: Client) -> str:
     try:
         client.get_projects_list()
 
-        fetch_incidents(client)
+        if demisto.params().get('isFetch', False):
+            fetch_incident_helper(client)
 
         message = 'ok'
     except DemistoException as e:
@@ -289,51 +292,11 @@ def get_collections(client: Client, args: dict = None) -> CommandResults:
 
 def fetch_incidents(client: Client):
     last_run = demisto.getLastRun()
-    last_start_time: datetime
 
-    params = demisto.params()
-
-    if not client.project_id:
-        raise DemistoException('Must configure a Project ID to fetch incidents from Mandiant ASM')
-
-    if last_run and 'start_time' in last_run and last_run['start_time']:
-        last_start_time = parser.parse(last_run.get('start_time'))
-    else:
-        parsed_time = dateparser.parse(params.get("first_fetch"), settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
-        if not parsed_time:
-            parsed_time = datetime.now()
-        last_start_time = parsed_time
-
-    issues = client.get_issues_since_time(last_start_time)
-    most_recent_update = None
-
-    parsed_issues = []
-
-    for issue in issues:
-        incident_details = client.get_issue_details(issue["id"])
-        new_incident = helper_create_incident(incident_details, client.project_id)
-        new_incident['dbotMirrorLastSync'] = datetime.fromtimestamp(0).strftime("%Y-%m-%dT%H:%M:%SZ")
-        new_incident['lastupdatetime'] = new_incident['dbotMirrorLastSync']
-
-        parsed_issues.append(new_incident)
-        most_recent_update = issue['last_seen']
-
-        if len(parsed_issues) >= client.limit:
-            break
-
-    parsed_issues = filter_incidents_by_duplicates_and_limit(
-        incidents_res=parsed_issues, last_run=last_run, fetch_limit=client.limit, id_field='dbotMirrorId'
-    )
-
-    new_issues = [json.loads(i['rawJSON'])['uid'] for i in parsed_issues]
-
-    last_run = {
-        'start_time': most_recent_update,
-        'found_incident_ids': list(set(new_issues + last_run.get('found_incident_ids', [])))
-    }
+    last_run, new_issues = fetch_incident_helper(client, last_run)
 
     demisto.setLastRun(last_run)
-    return parsed_issues
+    return new_issues
 
 def get_remote_data_command(client: Client, args: dict):
     parsed_args = GetRemoteDataArgs(args)
@@ -406,22 +369,6 @@ def update_remote_system_command(client: Client, args: dict):
     for entry in warroom_entries:
         # TODO: Identify if entry originated from ASM or XSOAR
         demisto.debug(entry)
-
-
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
 
 
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
