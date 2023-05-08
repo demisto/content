@@ -1,4 +1,5 @@
 import base64
+import json
 from datetime import datetime
 import dateutil.parser
 
@@ -619,7 +620,11 @@ def get_alerts(reco_client: RecoClient,
             single_alert = reco_client.get_single_alert(alert_id)
             violations = single_alert["policyViolations"]
             for violation in violations:
-                violation["jsonData"] = json.loads(base64.b64decode(violation["jsonData"]))
+                violation_data = json.loads(base64.b64decode(violation["jsonData"]))
+                if "violation" in violation_data.keys():
+                    violation_data.pop("violation")
+                violation["jsonData"] = violation_data
+            single_alert["policyViolations"] = json.loads(json.dumps(single_alert["policyViolations"]))
             alerts_data.append(single_alert)
         else:
             demisto.info(f"Got alert without id: {alert_as_dict}")
