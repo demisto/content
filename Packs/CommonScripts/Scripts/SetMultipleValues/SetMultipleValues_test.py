@@ -26,14 +26,14 @@ def test_main(mocker):
 
 @pytest.mark.parametrize("keys, values, expected_result", [
     (
-            "array1,array2",
-            '["1.1.1.1","8.8.8.8"],["test@gmail.com", "google.com"]',
-            {'array1': ['1.1.1.1', '8.8.8.8'], 'array2': ['test@gmail.com', 'google.com']}
+        "array1,array2",
+        '["1.1.1.1","8.8.8.8"],["test@gmail.com", "google.com"]',
+        {'array1': ['1.1.1.1', '8.8.8.8'], 'array2': ['test@gmail.com', 'google.com']}
     ),
     (
-            "array,val",
-            '["1.1.1.1","8.8.8.8"], "test_val"',
-            {'array': ['1.1.1.1', '8.8.8.8'], 'val': "test_val"}),
+        "array,val",
+        '["1.1.1.1","8.8.8.8"], "test_val"',
+        {'array': ['1.1.1.1', '8.8.8.8'], 'val': "test_val"}),
 ])
 def test_arrays_as_values(mocker, keys, values, expected_result):
     """
