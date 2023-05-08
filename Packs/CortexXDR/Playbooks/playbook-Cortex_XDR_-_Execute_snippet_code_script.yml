@@ -1,43 +1,27 @@
-description: Initiates a new endpoint script execution action using the provided snippet
-  code and retrieves the file results.
 id: Cortex XDR - Execute snippet code script
-inputs:
-- description: 'A comma-separated list of endpoint IDs. '
-  key: endpoint_id
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: Section of a script you want to initiate on an endpoint (e.g., print("7")).
-  key: snippet_code
-  playbookInputQuery:
-  required: false
-  value: {}
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex XDR - Execute snippet code script
-outputs:
-- contextPath: PaloAltoNetworksXDR.ScriptResult.results._return_value
-  description: Value returned by the script in case the type is not a dictionary.
+description: Initiates a new endpoint script execution action using the provided snippet code and retrieves the file results.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 99aba054-dc08-4f71-868e-f74490aef7fe
+    type: start
+    task:
+      id: 99aba054-dc08-4f71-868e-f74490aef7fe
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 99aba054-dc08-4f71-868e-f74490aef7fe
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 99aba054-dc08-4f71-868e-f74490aef7fe
-    timertriggers: []
-    type: start
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -45,14 +29,29 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    ignoreworker: false
+    taskid: 516d4dea-8b72-4ecf-80e3-762ab62e503d
+    type: regular
+    task:
+      id: 516d4dea-8b72-4ecf-80e3-762ab62e503d
+      version: -1
+      name: Run snippet code script
+      description: Initiates a new endpoint script execution action using the provided snippet code.
+      script: '|||xdr-snippet-code-script-execute'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     scriptarguments:
       endpoint_ids:
         complex:
@@ -61,20 +60,7 @@ tasks:
         complex:
           root: inputs.snippet_code
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Initiates a new endpoint script execution action using the provided
-        snippet code.
-      id: 2e822da5-e8f5-4236-801d-98e37f4c33d8
-      iscommand: true
-      name: Run snippet code script
-      script: '|||xdr-run-snippet-code-script'
-      type: regular
-      version: -1
-    taskid: 2e822da5-e8f5-4236-801d-98e37f4c33d8
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -82,39 +68,41 @@ tasks:
           "y": 210
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    ignoreworker: false
-    loop:
-      exitCondition: ""
+    taskid: 7c9c0237-6c2b-4bfb-893a-dea2a01bc001
+    type: playbook
+    task:
+      id: 7c9c0237-6c2b-4bfb-893a-dea2a01bc001
+      version: -1
+      name: Cortex XDR - Check Action Status
+      description: Checks the action status of an action ID. \nEnter the action ID of the action whose status you want to know.
+      playbookName: Cortex XDR - Check Action Status
+      type: playbook
       iscommand: false
-      max: 100
-      wait: 1
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     scriptarguments:
       action_id:
         complex:
-          accessor: action_id
           root: PaloAltoNetworksXDR.ScriptRun
+          accessor: action_id
     separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Checks the action status of an action ID. \nEnter the action ID
-        of the action whose status you want to know.
-      id: 7c9c0237-6c2b-4bfb-893a-dea2a01bc001
+    continueonerrortype: ""
+    loop:
       iscommand: false
-      name: Cortex XDR - Check Action Status
-      playbookId: Cortex XDR - Check Action Status
-      type: playbook
-      version: -1
-    taskid: 7c9c0237-6c2b-4bfb-893a-dea2a01bc001
-    timertriggers: []
-    type: playbook
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -122,24 +110,27 @@ tasks:
           "y": 390
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 0d883e68-ffe8-411e-871d-d822e7883841
+    type: title
     task:
-      brand: ""
       id: 0d883e68-ffe8-411e-871d-d822e7883841
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: 0d883e68-ffe8-411e-871d-d822e7883841
-    timertriggers: []
-    type: title
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -147,33 +138,36 @@ tasks:
           "y": 740
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    ignoreworker: false
+    taskid: 4412d823-21b3-49ee-8d36-abf1fdb50020
+    type: regular
+    task:
+      id: 4412d823-21b3-49ee-8d36-abf1fdb50020
+      version: -1
+      name: Get script execution results
+      description: Retrieve the results of a script execution action.
+      script: '|||xdr-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       action_id:
         complex:
-          accessor: action_id
           root: PaloAltoNetworksXDR.ScriptRun
+          accessor: action_id
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Retrieve the results of a script execution action.
-      id: 4412d823-21b3-49ee-8d36-abf1fdb50020
-      iscommand: true
-      name: Get script execution results
-      script: '|||xdr-get-script-execution-results'
-      type: regular
-      version: -1
-    taskid: 4412d823-21b3-49ee-8d36-abf1fdb50020
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -181,7 +175,13 @@ tasks:
           "y": 580
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -194,6 +194,20 @@ view: |-
       }
     }
   }
+inputs:
+- key: endpoint_id
+  value: {}
+  required: false
+  description: 'A comma-separated list of endpoint IDs. '
+  playbookInputQuery:
+- key: snippet_code
+  value: {}
+  required: false
+  description: Section of a script you want to initiate on an endpoint (e.g., print("7")).
+  playbookInputQuery:
+outputs:
+- contextPath: PaloAltoNetworksXDR.ScriptResult.results._return_value
+  description: Value returned by the script in case the type is not a dictionary.
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
