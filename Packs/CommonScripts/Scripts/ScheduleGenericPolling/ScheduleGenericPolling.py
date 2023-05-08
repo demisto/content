@@ -62,8 +62,10 @@ def main():
         'times': 1
     }
     if build_number != "REPLACE_THIS_WITH_CI_BUILD_NUM" and \
-            ((platform == "x2" and is_demisto_version_ge(MINIMUM_XSIAM_VERSION) and int(build_number) >= MINIMUM_BUILD_NUMBER_XSIAM)
-             or (platform == "xsoar" and is_demisto_version_ge(MINIMUM_XSOAR_VERSION) and int(build_number) >= MINIMUM_BUILD_NUMBER_XSOAR)):
+            ((platform == "x2" and is_demisto_version_ge(MINIMUM_XSIAM_VERSION) and int(
+                build_number) >= MINIMUM_BUILD_NUMBER_XSIAM)
+             or (platform == "xsoar" and is_demisto_version_ge(MINIMUM_XSOAR_VERSION) and int(
+                 build_number) >= MINIMUM_BUILD_NUMBER_XSOAR)):
         entryGuid = str(uuid.uuid4())
         command_string = f'{command_string} scheduledEntryGuid="{entryGuid}"'
         schedule_command_args['command'] = command_string
