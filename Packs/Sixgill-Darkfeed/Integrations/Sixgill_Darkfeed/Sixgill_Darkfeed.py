@@ -343,7 +343,11 @@ def main():
         'test-module': test_module_command,
         'sixgill-get-indicators': get_indicators_command
     }
-    confidence = arg_to_number(demisto.params().get("confidence"), "confidence", required=False)
+    confidence = demisto.params().get("confidence")
+    if confidence is None or confidence in ['', 'all']:
+        confidence = 'all'
+    else:
+        confidence = arg_to_number(confidence, "confidence", required=False)
     try:
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators_command(client, tags=tags, tlp_color=tlp_color, confidence=confidence)
