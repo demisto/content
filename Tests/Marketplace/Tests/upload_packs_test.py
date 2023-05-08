@@ -507,6 +507,67 @@ class TestCleanPacks:
         shutil.rmtree.assert_called_with(os.path.join(index_folder_path, invalid_pack))
 
 
+class TestCorepacksFiles:
+    @staticmethod
+    def get_index_folder_path():
+        index_json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
+        return index_json_path
+
+    def test_corepacks_files_upload(self, mocker):
+        """
+        Test the upload flow of the corepacks files in the private bucket.
+        """
+        from Tests.Marketplace.upload_packs import create_corepacks_config
+        from Tests.Marketplace.marketplace_constants import GCPConfig
+        import os
+        import shutil
+
+        dummy_storage_bucket = mocker.MagicMock()
+        dummy_storage_bucket.name = GCPConfig.CI_BUILD_BUCKET
+        index_folder_path = self.get_index_folder_path()
+
+        build_number = '123456'
+        corepacks_version = 'corepacks-8.3.0.json'
+        pack1 = 'pack_1'
+        pack2 = 'pack_2'
+
+        # Create a temp artifacts dir for the corepacks files:
+        artifacts_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tmp')
+        os.makedirs(artifacts_dir, exist_ok=True)
+
+        corepacks_list = [pack1, pack2]
+        mocker.patch("Tests.Marketplace.marketplace_constants.GCPConfig.get_core_packs", return_value=corepacks_list)
+        mocker.patch("Tests.Marketplace.marketplace_constants.GCPConfig.get_core_packs_to_upgrade",
+                     return_value=[pack1])
+        mocker.patch("Tests.Marketplace.marketplace_constants.GCPConfig.get_core_packs_unlocked_files",
+                     return_value=[corepacks_version])
+
+        create_corepacks_config(storage_bucket=dummy_storage_bucket, build_number=build_number,
+                                index_folder_path=index_folder_path, artifacts_dir=artifacts_dir,
+                                storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
+
+        # Assert that the required files were created:
+        assert set(os.listdir(artifacts_dir)) == {corepacks_version, GCPConfig.CORE_PACK_FILE_NAME}
+
+        # Assert that the paths in the corepacks.json file are the full paths:
+        with open(os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME), 'r') as corepacks_file:
+            corepacks_file_contents = json.load(corepacks_file)
+            pack_paths = corepacks_file_contents.get('corePacks')
+            assert set(pack_paths) == {'https://storage.googleapis.com/marketplace-ci-build/content/packs/pack_1/1.4.0'
+                                       '/pack_1.zip',
+                                       'https://storage.googleapis.com/marketplace-ci-build/content/packs/pack_2/2.2.3'
+                                       '/pack_2.zip'}
+
+        # Assert that the paths in the versioned corepacks file are relative paths:
+        with open(os.path.join(artifacts_dir, corepacks_version), 'r') as corepacks_file:
+            corepacks_file_contents = json.load(corepacks_file)
+            pack_paths = corepacks_file_contents.get('corePacks')
+            assert set(pack_paths) == {'pack_1/1.4.0/pack_1.zip', 'pack_2/2.2.3/pack_2.zip'}
+
+        # Remove the temp artifacts dir that was created for testing:
+        shutil.rmtree(artifacts_dir)
+
+
 class TestUpdatedPrivatePacks:
 
     @staticmethod

@@ -410,6 +410,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
     corepacks_files_names = [GCPConfig.CORE_PACK_FILE_NAME]
     corepacks_files_names.extend(GCPConfig.get_core_packs_unlocked_files())
     for corepacks_file in corepacks_files_names:
+        logging.info(f"Creating corepacks file {corepacks_file}.")
         core_packs_public_urls = []
         bucket_core_packs = set()
         for pack in os.scandir(index_folder_path):

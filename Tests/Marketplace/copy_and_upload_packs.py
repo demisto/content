@@ -153,6 +153,8 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
             logging.critical(f"{corepacks_file} is missing in {build_bucket.name} bucket, exiting...")
             sys.exit(1)
 
+        logging.info(f"Uploading corepacks file {corepacks_file} in {build_bucket.name} bucket.")
+
         if corepacks_file == GCPConfig.CORE_PACK_FILE_NAME:
             # change the storage paths to the prod bucket
             temp_corepacks_file_path = os.path.join(extract_destination_path, GCPConfig.CORE_PACK_FILE_NAME)
